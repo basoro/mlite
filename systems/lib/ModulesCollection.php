@@ -9,12 +9,9 @@ class ModulesCollection
 
     public function __construct($core)
     {
-        $modules = array_column($core->db('mlite_modules')->asc('sequence')->toArray(), 'dir');
-        if ($core instanceof \Systems\Admin) {
-            $clsName = 'Admin';
-        } else {
-            $clsName = 'Site';
-        }
+        $modules = array_column($core->dbmlite->select('mlite_modules', '*', ['ORDER' => 'sequence']), 'dir');
+
+        $clsName = 'Admin';
 
         foreach ($modules as $dir) {
             $file = MODULES.'/'.$dir.'/'.$clsName.'.php';
@@ -27,23 +24,12 @@ class ModulesCollection
         // Init loop
         $this->initLoop();
 
-        // Routes loop for Site
-        if ($clsName != 'Admin') {
-            $this->routesLoop();
-        }
     }
 
     protected function initLoop()
     {
         foreach ($this->modules as $module) {
             $module->init();
-        }
-    }
-
-    protected function routesLoop()
-    {
-        foreach ($this->modules as $module) {
-            $module->routes();
         }
     }
 

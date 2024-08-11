@@ -1,0 +1,265 @@
+            <!-- Row starts -->
+            <div class="row gx-3">
+              <div class="col-xxl-9 col-sm-12">
+                <div class="card mb-3 bg-3">
+                  <div class="card-body">
+                    <div class="mh-230">
+                      <div class="py-4 px-3 text-white">
+                        <h6>{$dashboard.salam},</h6>
+                        <h2>{$dashboard.user.fullname}</h2>
+                        <h5>Jadwal anda hari ini...</h5>
+                        <div class="mt-4 d-flex gap-3">
+                          <div class="d-flex align-items-center">
+                            <div class="icon-box lg bg-arctic rounded-2 me-3">
+                              <i class="ri-surgical-mask-line fs-4"></i>
+                            </div>
+                            <div class="d-flex flex-column">
+                              <h2 class="m-0 lh-1">{$dashboard.count_reg_periksa}</h2>
+                              <p class="m-0">Pasien Rawat Jalan</p>
+                            </div>
+                          </div>
+                          <div class="d-flex align-items-center">
+                            <div class="icon-box lg bg-lime rounded-2 me-3">
+                              <i class="ri-lungs-line fs-4"></i>
+                            </div>
+                            <div class="d-flex flex-column">
+                              <h2 class="m-0 lh-1">{$dashboard.count_booking_operasi}</h2>
+                              <p class="m-0">Pasien Jadwal Operasi</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xxl-3 col-sm-12">
+                <div class="card mb-3 bg-lime">
+                  <div class="card-body">
+                    <div class="mh-230 text-white">
+                      <h5>Kunjungan Pasien</h5>
+                      <div class="text-body chart-height-md">
+                        <div id="docActivity"></div>
+                      </div>
+                      <div class="text-center">
+                        Statistik rawat jalan dan rawat inap satu minggu terakhir.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Row ends -->
+
+            <!-- Row starts -->
+            <div class="row gx-3">
+              <div class="col-xxl-6 col-sm-12">
+                <div class="card mb-3">
+                  <div class="card-header">
+                    <h5 class="card-title">Data Dokter</h5>
+                  </div>
+                  <div class="card-body">
+                    <div id="carouselAvailableDocs" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                      <div class="carousel-inner">
+                        {loop: $dashboard.dokter as $key => $value}
+                        <div class="carousel-item {if: $key == '0'}active{/if}" data-bs-interval="4000">
+                          <div class="grid gap-2 p-1">
+                            <div class="g-col-6">
+                              <div class="border rounded-2 p-3 mh-100">
+                                <div class="d-flex align-items-start">
+                                  <img src="{?=url()?}/plugins/pegawai/img/default.png" class="img-4x rounded-5" alt="Doctor Dashboard">
+                                  <div class="ms-3">
+                                    <h6 class="mb-1">{$value.0.nm_dokter|cut:15}</h6>
+                                    <p class="mb-1">{$value.0.bidang|cut:15}</p>
+                                    <div class="d-flex align-items-center">
+                                      <div class="rating-stars-sm">
+                                        <div class="readonly5"></div>
+                                      </div>
+                                      <span class="ms-1 lh-1">5</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="g-col-6">
+                              <div class="border rounded-2 p-3 mh-100">
+                                <div class="d-flex align-items-start">
+                                  <img src="{?=url()?}/plugins/pegawai/img/default.png" class="img-4x rounded-5" alt="Doctor Dashboard">
+                                  <div class="ms-3">
+                                    <h6 class="mb-1">{$value.1.nm_dokter|cut:15}</h6>
+                                    <p class="mb-1">{$value.1.bidang|cut:15}</p>
+                                    <div class="d-flex align-items-center">
+                                      <div class="rating-stars-sm">
+                                        <div class="readonly5"></div>
+                                      </div>
+                                      <span class="ms-1 lh-1">5</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {/loop} 
+                      </div>
+                      <div class="carousel-custom-btns">
+                        <button class="carousel-control-prev btn text-danger" type="button"
+                          data-bs-target="#carouselAvailableDocs" data-bs-slide="prev">
+                          <i class="ri-arrow-left-s-line fs-2 lh-1"></i>
+                        </button>
+                        <button class="carousel-control-next btn text-danger" type="button"
+                          data-bs-target="#carouselAvailableDocs" data-bs-slide="next">
+                          <i class="ri-arrow-right-s-line fs-2 lh-1"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xxl-6 col-sm-12">
+                <div class="card mb-3">
+                  <div class="card-header">
+                    <h5 class="card-title">Jadwal Operasi</h5>
+                  </div>
+                  <div class="card-body">
+                    <div id="carouselSurgeries" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                      <div class="carousel-inner">
+                        {loop: $dashboard.booking_operasi as $key => $value}
+                        <div class="carousel-item {if: $key == '0'}active{/if}" data-bs-interval="3000">
+                          <div class="grid gap-2 p-1">
+                            <div class="g-col-6">
+                              <div class="border rounded-2 p-3 mh-100">
+                                <div class="d-flex align-items-start">
+                                  <div class="icon-box lg rounded-3 bg-primary-subtle text-primary">
+                                    <div class="d-flex flex-column text-center">
+                                      <p class="m-0">{?=\Carbon\Carbon::parse($value.0.tanggal)->locale('id')->shortDayName?}</p>
+                                      <h3 class="m-0">{?=date('d', strtotime($value.0.tanggal))?}</h3>
+                                    </div>
+                                  </div>
+                                  <div class="ms-3">
+                                    <h6 class="mb-1">{$value.0.nm_pasien|cut:15}</h6>
+                                    <p class="mb-1">{$value.0.nm_perawatan|cut:15}</p>
+                                    <span class="badge bg-primary">{$value.0.jam_mulai} - {$value.0.jam_selesai}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="g-col-6">
+                              <div class="border rounded-2 p-3 mh-100">
+                                <div class="d-flex align-items-start">
+                                  <div class="icon-box lg rounded-3 bg-primary-subtle text-primary">
+                                    <div class="d-flex flex-column text-center">
+                                      <p class="m-0">{?=\Carbon\Carbon::parse($value.1.tanggal)->locale('id')->shortDayName?}</p>
+                                      <h3 class="m-0">{?=date('d', strtotime($value.1.tanggal))?}</h3>
+                                    </div>
+                                  </div>
+                                  <div class="ms-3">
+                                    <h6 class="mb-1">{$value.1.nm_pasien|cut:15}</h6>
+                                    <p class="mb-1">{$value.1.nm_perawatan|cut:15}</p>
+                                    <span class="badge bg-primary">{$value.1.jam_mulai} - {$value.1.jam_selesai}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {/loop}
+                      </div>
+                      <div class="carousel-custom-btns">
+                        <button class="carousel-control-prev btn text-danger" type="button"
+                          data-bs-target="#carouselSurgeries" data-bs-slide="prev">
+                          <i class="ri-arrow-left-s-line fs-2 lh-1"></i>
+                        </button>
+                        <button class="carousel-control-next btn text-danger" type="button"
+                          data-bs-target="#carouselSurgeries" data-bs-slide="next">
+                          <i class="ri-arrow-right-s-line fs-2 lh-1"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Row ends -->
+
+            <!-- Row starts -->
+            <div class="row gx-3">
+              <div class="col-sm-12">
+                <div class="card mb-3">
+                  <div class="card-header">
+                    <h5 class="card-title">Pasien Hari Ini</h5>
+                  </div>
+                  <div class="card-body">
+
+                    <!-- Table starts -->
+                    <div class="table-outer">
+                      <div class="table-responsive">
+                        <table class="table m-0 align-middle">
+                          <thead>
+                            <tr>
+                              <th>Antrian</th>
+                              <th>Nama Pasien</th>
+                              <th>Umur</th>
+                              <th>Nomor Rawat</th>
+                              <th>Dokter</th>
+                              <th>Cara Bayar</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {loop: $dashboard.pendaftaran_pasien}
+                            <tr>
+                              <td>{$value.no_reg}</td>
+                              <td>{$value.nm_pasien}</td>
+                              <td>{$value.umurdaftar} {$value.sttsumur}</td>
+                              <td>{$value.no_rawat}</td>
+                              <td>
+                                <img src="{?=url()?}/plugins/pegawai/img/default.png" class="img-shadow img-2x rounded-5 me-1" alt="{$value.nama}">
+                                {$value.nama}
+                              </td>
+                              <td>{$value.png_jawab}</td>
+                              <td>
+                                <div class="d-inline-flex gap-1">
+                                  <a href="{?=url(['reg_periksa', 'view', convertNoRawat($value.no_rawat)])?}" class="btn btn-outline-success btn-sm" 
+                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Pemeriksaan dan Layanan">
+                                    <i class="ri-checkbox-circle-line"></i> View
+                                  </a>
+                                  <a href="{?=url(['reg_periksa', 'detail', convertNoRawat($value.no_rawat)])?}" class="btn btn-outline-info btn-sm"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Detail Pendaftaran" data-toggle="modal" data-bs-target="#myModal">
+                                    <i class="ri-edit-box-line"></i> Detail
+                                  </a>
+                                </div>
+                              </td>
+                            </tr>
+                            {/loop}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <!-- Table ends -->
+
+                  </div>
+                </div>
+              </div>
+              <div class="col-xxl-6 col-sm-12">
+                <div class="card mb-3">
+                  <div class="card-header">
+                    <h5 class="card-title">Income</h5>
+                  </div>
+                  <div class="card-body">
+                    <div id="income"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xxl-6 col-sm-12">
+                <div class="card mb-3">
+                  <div class="card-header">
+                    <h5 class="card-title">Pharmacy Orders</h5>
+                  </div>
+                  <div class="card-body">
+                    <div id="orders"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Row ends -->

@@ -25,7 +25,6 @@ class Templates
                 '{(\$[a-zA-Z\-\._\[\]\'"0-9]+)\|e}' => '<?php echo htmlspecialchars(%%$1, ENT_QUOTES | ENT_HTML5, "UTF-8"); ?>',
                 '{(\$[a-zA-Z\-\._\[\]\'"0-9]+)\|cut:([0-9]+)}' => '<?php echo str_limit(strip_tags(%%$1), $2); ?>',
                 '{include: (.+?\.[a-z]{2,4})}' => '<?php include_once(str_replace(url()."/", "", "$1")); ?>',
-                '{template: (.+?\.[a-z]{2,4})}' => '<?php include_once(str_replace(url()."/", "", $mlite["theme"]."/$1")); ?>',
             ];
 
     public $core;
@@ -140,35 +139,47 @@ class Templates
 
             ob_start();
             include($tmpFile);
-            // if (!DEV_MODE) {
-            //     unlink($tmpFile);
-            // }
+            if (!DEV_MODE) {
+                unlink($tmpFile);
+            }
             return ob_get_clean();
         }
     }
 
     public function draw($file, $last = false)
     {
-        if (preg_match('#plugins(\/[^"]*\/)view\/([^"]*.'.pathinfo($file, PATHINFO_EXTENSION).')#', $file, $m)) {
-            $themeFile = THEMES.'/'.$this->core->settings->get('settings.theme').$m[1].$m[2];
-            if (is_file($themeFile)) {
-                $file = $themeFile;
-            }
-        }
-
         $result = $this->execute($file);
         if (!$last) {
             return $result;
         } else {
             $result = str_replace(['*bracket*','*/bracket*'], ['{', '}'], $result);
             $result = str_replace('*dollar*', '$', $result);
-
-            //if (HTML_BEAUTY) {
-            //    $tidyHTML = new Indenter;
-            //    return $tidyHTML->indent($result);
-            //}
+            if (!DEV_MODE) {
+               $result = $this->sanitize_output($result);
+            }
             return $result;
         }
+    }
+
+    public function sanitize_output($buffer) {
+
+        $search = array(
+            '/\>[^\S ]+/s',     // strip whitespaces after tags, except space
+            '/[^\S ]+\</s',     // strip whitespaces before tags, except space
+            '/(\s)+/s',         // shorten multiple whitespace sequences
+            '/<!--(.|\s)*?-->/' // Remove HTML comments
+        );
+    
+        $replace = array(
+            '>',
+            '<',
+            '\\1',
+            ''
+        );
+    
+        $buffer = preg_replace($search, $replace, $buffer);
+    
+        return $buffer;
     }
 
     public function noParse($content)

@@ -1,0 +1,108 @@
+<div class="modal-header">
+    <h4 class="modal-title">Detail Pegawai</h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div id="detail_pegawai"></div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup</button>
+    <button type="submit" id="export_pdf_detail" class="btn btn-danger"><i class="ri-file-pdf-2-line"></i> PDF</button>
+</div>
+<script>
+$(document).ready(function() {
+
+    $.ajax({
+        url: "{?=url(['pegawai','read', $nik])?}",
+        method: "GET",
+        data: {},
+        dataType: 'json',
+        success: function (res) {
+            var eTable = "<div class='table-responsive'><table id='tbl_detail_pegawai' class='table display dataTable' style='width:100%'><thead></thead>";
+eTable += '<tr><td>Id</td><td>' + res.msg['id'] + '</td><tr>';
+eTable += '<tr><td>Nik</td><td>' + res.msg['nik'] + '</td><tr>';
+eTable += '<tr><td>Nama</td><td>' + res.msg['nama'] + '</td><tr>';
+eTable += '<tr><td>Jk</td><td>' + res.msg['jk'] + '</td><tr>';
+eTable += '<tr><td>Jbtn</td><td>' + res.msg['jbtn'] + '</td><tr>';
+eTable += '<tr><td>Jnj Jabatan</td><td>' + res.msg['jnj_jabatan'] + '</td><tr>';
+eTable += '<tr><td>Kode Kelompok</td><td>' + res.msg['kode_kelompok'] + '</td><tr>';
+eTable += '<tr><td>Kode Resiko</td><td>' + res.msg['kode_resiko'] + '</td><tr>';
+eTable += '<tr><td>Kode Emergency</td><td>' + res.msg['kode_emergency'] + '</td><tr>';
+eTable += '<tr><td>Departemen</td><td>' + res.msg['departemen'] + '</td><tr>';
+eTable += '<tr><td>Bidang</td><td>' + res.msg['bidang'] + '</td><tr>';
+eTable += '<tr><td>Stts Wp</td><td>' + res.msg['stts_wp'] + '</td><tr>';
+eTable += '<tr><td>Stts Kerja</td><td>' + res.msg['stts_kerja'] + '</td><tr>';
+eTable += '<tr><td>Npwp</td><td>' + res.msg['npwp'] + '</td><tr>';
+eTable += '<tr><td>Pendidikan</td><td>' + res.msg['pendidikan'] + '</td><tr>';
+eTable += '<tr><td>Gapok</td><td>' + res.msg['gapok'] + '</td><tr>';
+eTable += '<tr><td>Tmp Lahir</td><td>' + res.msg['tmp_lahir'] + '</td><tr>';
+eTable += '<tr><td>Tgl Lahir</td><td>' + res.msg['tgl_lahir'] + '</td><tr>';
+eTable += '<tr><td>Alamat</td><td>' + res.msg['alamat'] + '</td><tr>';
+eTable += '<tr><td>Kota</td><td>' + res.msg['kota'] + '</td><tr>';
+eTable += '<tr><td>Mulai Kerja</td><td>' + res.msg['mulai_kerja'] + '</td><tr>';
+eTable += '<tr><td>Ms Kerja</td><td>' + res.msg['ms_kerja'] + '</td><tr>';
+eTable += '<tr><td>Indexins</td><td>' + res.msg['indexins'] + '</td><tr>';
+eTable += '<tr><td>Bpd</td><td>' + res.msg['bpd'] + '</td><tr>';
+eTable += '<tr><td>Rekening</td><td>' + res.msg['rekening'] + '</td><tr>';
+eTable += '<tr><td>Stts Aktif</td><td>' + res.msg['stts_aktif'] + '</td><tr>';
+eTable += '<tr><td>Wajibmasuk</td><td>' + res.msg['wajibmasuk'] + '</td><tr>';
+eTable += '<tr><td>Pengurang</td><td>' + res.msg['pengurang'] + '</td><tr>';
+eTable += '<tr><td>Indek</td><td>' + res.msg['indek'] + '</td><tr>';
+eTable += '<tr><td>Mulai Kontrak</td><td>' + res.msg['mulai_kontrak'] + '</td><tr>';
+eTable += '<tr><td>Cuti Diambil</td><td>' + res.msg['cuti_diambil'] + '</td><tr>';
+eTable += '<tr><td>Dankes</td><td>' + res.msg['dankes'] + '</td><tr>';
+eTable += '<tr><td>Photo</td><td>' + res.msg['photo'] + '</td><tr>';
+eTable += '<tr><td>No Ktp</td><td>' + res.msg['no_ktp'] + '</td><tr>';
+
+            eTable += "</tbody></table></div>";
+            $('#detail_pegawai').html(eTable);
+        }
+    });
+
+    // ===========================================
+    // Ketika tombol export pdf di tekan
+    // ===========================================
+    $("#export_pdf_detail").click(function () {
+        var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
+        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        doc.addImage(img, 'JPEG', 20, 10, 50, 50);
+        doc.setFontSize(20);
+        doc.text("{$settings.nama_instansi}", 80, 35, null, null, null);
+        doc.setFontSize(10);
+        doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
+        doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
+        doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
+        doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
+        doc.setFontSize(14);
+        doc.text("Data Detail", 20, 95, null, null, null);
+        const totalPagesExp = "{total_pages_count_string}";        
+        doc.autoTable({
+            html: '#tbl_detail_pegawai',
+            startY: 105,
+            margin: {
+                left: 20, 
+                right: 20
+            }, 
+            styles: {
+                fontSize: 10,
+                cellPadding: 5
+            }, 
+            didDrawPage: data => {
+                let footerStr = "Page " + doc.internal.getNumberOfPages();
+                if (typeof doc.putTotalPages === 'function') {
+                footerStr = footerStr + " of " + totalPagesExp;
+                }
+                doc.setFontSize(10);
+                doc.text(`© ${new Date().getFullYear()} {$settings.nama_instansi}.`, data.settings.margin.left, doc.internal.pageSize.height - 10);                
+                doc.text(footerStr, data.settings.margin.left + 480, doc.internal.pageSize.height - 10);
+           }
+        });
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPagesExp);
+        }
+        // doc.save('table_data_propinsi.pdf')
+        window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+              
+    }) 
+}); 
+</script>

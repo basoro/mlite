@@ -1,0 +1,228 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-12 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='tambah_data_permintaan_radiologi' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_permintaan_radiologi' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_permintaan_radiologi' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_permintaan_radiologi" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>[]</th>
+                            <th>Noorder</th>
+                            <th>No Rawat</th>
+                            <th>Tgl Permintaan</th>
+                            <th>Jam Permintaan</th>
+                            <th>Tgl Sampel</th>
+                            <th>Jam Sampel</th>
+                            <th>Tgl Hasil</th>
+                            <th>Jam Hasil</th>
+                            <th>Dokter Perujuk</th>
+                            <th>Status</th>
+                            <th>Informasi Tambahan</th>
+                            <th>Diagnosa Klinis</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_permintaan_radiologi" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Permintaan Radiologi</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_permintaan_radiologi">
+          <input type="hidden" class="form-control" id="typeact" /> 
+          <div class='row gx-3'>
+            <div class='col-xxl-3 col-lg-4 col-sm-6'>
+                <div class='mb-3'>
+                <label class='form-label' for='noorder'>Noorder</label>
+                <input type='text' class='form-control' id='noorder' name='noorder' />
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-3 col-lg-4 col-sm-6'>
+                <div class='mb-3'>
+                <label class='form-label' for='no_rawat'>No Rawat</label>
+                <input type='text' class='form-control' id='no_rawat_permintaan_radiologi' name='no_rawat' />
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-3 col-lg-4 col-sm-6'>
+                <div class='mb-3'>
+                <label class='form-label' for='tgl_permintaan'>Tgl Permintaan</label>
+                <input type='text' class='form-control datepicker' id='tgl_permintaan' name='tgl_permintaan' />
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-3 col-lg-4 col-sm-6'>
+                <div class='mb-3'>
+                <label class='form-label' for='jam_permintaan'>Jam Permintaan</label>
+                <input type='text' class='form-control timepicker' id='jam_permintaan' name='jam_permintaan' />
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-3 col-lg-4 col-sm-6 d-none'>
+                <div class='mb-3'>
+                <label class='form-label' for='tgl_sampel'>Tgl Sampel</label>
+                <input type='text' class='form-control' id='tgl_sampel' name='tgl_sampel' value="0000-00-00" />
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-3 col-lg-4 col-sm-6 d-none'>
+                <div class='mb-3'>
+                <label class='form-label' for='jam_sampel'>Jam Sampel</label>
+                <input type='text' class='form-control' id='jam_sampel' name='jam_sampel' value="00:00:00" />
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-3 col-lg-4 col-sm-6 d-none'>
+                <div class='mb-3'>
+                <label class='form-label' for='tgl_hasil'>Tgl Hasil</label>
+                <input type='text' class='form-control' id='tgl_hasil' name='tgl_hasil' value="0000-00-00" />
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-3 col-lg-4 col-sm-6 d-none'>
+                <div class='mb-3'>
+                <label class='form-label' for='jam_hasil'>Jam Hasil</label>
+                <input type='text' class='form-control' id='jam_hasil' name='jam_hasil' value="00:00:00" />
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-3 col-lg-4 col-sm-6'>
+                <div class='mb-3'>
+                <label class='form-label' for='dokter_perujuk'>Dokter Perujuk</label>
+                <select class="form-select" name="dokter_perujuk" id="dokter_perujuk">
+                    <option value="">Select</option>
+                    {loop: $view.dokter}
+                    <option value="{$value.kd_dokter}" {if: $value.kd_dokter == $view.user}selected{/if}>{$value.nm_dokter}</option>
+                    {/loop}
+                </select>
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-3 col-lg-4 col-sm-6 d-none'>
+                <div class='mb-3'>
+                <label class='form-label' for='status'>Status</label>
+                <input type='text' class='form-control' id='status' name='status' value="ralan" />
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-3 col-lg-4 col-sm-6'>
+                <div class='mb-3'>
+                <label class='form-label' for='informasi_tambahan'>Informasi Tambahan</label>
+                <input type='text' class='form-control' id='informasi_tambahan' name='informasi_tambahan' />
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-3 col-lg-4 col-sm-6'>
+                <div class='mb-3'>
+                <label class='form-label' for='diagnosa_klinis'>Diagnosa Klinis</label>
+                <input type='text' class='form-control' id='diagnosa_klinis' name='diagnosa_klinis' />
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table id="tbl_jns_perawatan_radiologi" class="table table-bordered table-hover" width="100%">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Nama Perawatan</th>
+                    <th>Kd Pj</th>
+                    <th>Status</th>
+                    <th>Kelas</th>                    
+                    <th>Bagian Rs</th>
+                    <th>Bhp</th>
+                    <th>Tarif Perujuk</th>
+                    <th>Tarif Tindakan Dokter</th>
+                    <th>Tarif Tindakan Petugas</th>
+                    <th>Kso</th>
+                    <th>Menejemen</th>
+                    <th>Total Byr</th>
+                  </tr>
+                </thead>
+              
+                <tbody>
+                  {loop: $view.jns_perawatan_radiologi}
+                  <tr class="text-center">
+                    <td data-order="0"><input class="form-check-input" type="checkbox" name="kd_jenis_prw[]" id="kd_jenis_prw" value="{$value.kd_jenis_prw}"></td>
+                    <td>{$value.nm_perawatan}</td>
+                    <td>{$value.kd_pj}</td>
+                    <td>{$value.status}</td>
+                    <td>{$value.kelas}</td>
+                    <td>{$value.bagian_rs}</td>
+                    <td>{$value.bhp}</td>
+                    <td>{$value.tarif_perujuk}</td>
+                    <td>{$value.tarif_tindakan_dokter}</td>
+                    <td>{$value.tarif_tindakan_petugas}</td>
+                    <td>{$value.kso}</td>
+                    <td>{$value.menejemen}</td>
+                    <td>{$value.total_byr}</td>
+                  </tr>
+                  {/loop}
+                </tbody>
+            </table>
+        </div>          
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_permintaan_radiologi" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_permintaan_radiologi" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Permintaan Radiologi</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_permintaan_radiologi"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_permintaan_radiologi" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

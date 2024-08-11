@@ -12,12 +12,13 @@ class Autoloader
         $file = array_pop($className);
         $file = strtolower(implode('/', $className)).'/'.$file.'.php';
 
-        if (strpos($_SERVER['SCRIPT_NAME'], '/'.ADMIN.'/') !== false) {
+        if (strpos($_SERVER['SCRIPT_NAME'], '/api/') !== false) {
             $file = '../'.$file;
         }
         if (is_readable($file)) {
             require_once($file);
         }
+
     }
 }
 

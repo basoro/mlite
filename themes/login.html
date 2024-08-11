@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>{$mlite.nama_instansi} | Login</title>
+
+    <!-- Meta -->
+    <meta name="description" content="Marketplace for Bootstrap Admin Dashboards">
+    <meta property="og:title" content="Admin Templates - Dashboard Templates">
+    <meta property="og:description" content="Marketplace for Bootstrap Admin Dashboards">
+    <meta property="og:type" content="Website">
+    <link rel="shortcut icon" href="{?=url()?}/{$mlite.logo}">
+
+    <link rel="stylesheet" href="{?=url()?}/assets/fonts/remix/remixicon.css">
+    <link rel="stylesheet" href="{?=url()?}/assets/css/main.css?v=1">
+  </head>
+
+  <body class="login-bg">
+
+    <!-- Container starts -->
+    <div class="container">
+
+      <!-- Auth wrapper starts -->
+      <div class="auth-wrapper">
+
+        <!-- Form starts -->
+        <form action="{$_SERVER['REQUEST_URI']}" method="POST">
+
+          <div class="auth-box">
+            <a href="{?=url()?}" class="auth-logo mb-4">
+              <img src="{?=url()?}/{$mlite.logo}" alt="Bootstrap Gallery"> <span class="auth-logo-text">{$mlite.nama_instansi}</span>
+            </a>
+
+            <h4 class="mb-4">Login</h4>
+
+            <div class="mb-3">
+              <label class="form-label" for="username">Nama Pengguna <span class="text-danger">*</span></label>
+              <input type="text" name="mlite_username" id="mlite_username" class="form-control" placeholder="Nama Pengguna">
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label" for="pwd">Kata Sandi <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <input type="password" name="mlite_password" id="mlite_password" class="form-control" placeholder="Kata Sandi">
+                <button class="btn btn-outline-secondary" type="button" id="openclose">
+                  <i class="ri-eye-line text-primary"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <input class="form-check-input" type="checkbox" name="mlite_remember_me">
+              <label class="form-check-label">Ingat saya</label>
+    
+            </div>
+
+            <div class="d-flex justify-content-end mb-3">
+              <a href="{?=url()?}" class="text-decoration-underline">Lupa kata sandi?</a>
+            </div>
+
+            <div class="mb-3 d-grid gap-2">
+              <button type="submit" name="login" class="btn btn-primary">Login</button>
+            </div>
+
+          </div>
+
+        </form>
+        <!-- Form ends -->
+
+      </div>
+      <!-- Auth wrapper ends -->
+
+    </div>
+    <!-- Container ends -->
+    <script src="{?=url()?}/assets/js/jquery.min.js"></script>
+    <script>
+      $("#openclose").on("click", function () {
+          var paswd= $('#mlite_password');
+          if(paswd.attr("type")== "password"){
+              paswd.attr("type","text");
+              $('#openclose').attr("value","hide");
+              $("i").removeClass("ri-eye-line").addClass("ri-eye-off-line");
+          }else{
+              paswd.attr("type","password");
+              $('#openclose').attr("value","show");
+              $("i").removeClass("ri-eye-off-line").addClass("ri-eye-line");
+          }
+      })
+    </script>
+
+  </body>
+
+</html>

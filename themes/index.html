@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>{$mlite.nama_instansi}</title>
+
+    <!-- Meta -->
+    <meta name="description" content="mLITE Indonesia">
+    <meta property="og:title" content="{$mlite.nama_instansi} - SIMKES Masa Kini">
+    <meta property="og:description" content="Sistem Informasi Manajemen Kesehatan Yang Aman, Ringan dan Modular">
+    <meta property="og:type" content="Website">
+    <link rel="shortcut icon" href="{?=url()?}/{$mlite.logo}">
+
+    <link rel="stylesheet" href="{?=url()?}/assets/fonts/remix/remixicon.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="{?=url()?}/assets/css/main.css?v=6">
+    <link rel="stylesheet" href="{?=url()?}/themes/css/styles.css?v=3">
+    <script src="{?=url()?}/assets/js/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js"></script>
+
+    <script>
+      var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}"};
+      // let URL_WEBSOCKET = "ws://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
+      // let ws = new WebSocket(URL_WEBSOCKET);
+      if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+        ws.onclose = function(){
+          // Jika terputus dari websocket server, maka mencoba terhubung kembali.
+          let interval_reconnect_ws = setInterval(function(){
+            if(ws.readyState != 0){
+              if(ws.readyState == 1){ // readyState = 1 (Open) , berarti sudah terhubung dengan websocket. Maka gak perlu interval lagi.
+                clearInterval(interval_reconnect_ws);
+              }else{
+                ws = new WebSocket(URL_WEBSOCKET);	
+              }
+            }
+          },5000);
+        }
+      } 
+    </script>
+    {loop: $mlite.header}{$value}{/loop}
+  </head>
+
+  <body class="">
+
+    <!-- Loading starts -->
+    <div id="loading-wrapper">
+      <div class='spin-wrapper'>
+        <div class='spin'>
+          <div class='inner'></div>
+        </div>
+        <div class='spin'>
+          <div class='inner'></div>
+        </div>
+        <div class='spin'>
+          <div class='inner'></div>
+        </div>
+        <div class='spin'>
+          <div class='inner'></div>
+        </div>
+        <div class='spin'>
+          <div class='inner'></div>
+        </div>
+        <div class='spin'>
+          <div class='inner'></div>
+        </div>
+      </div>
+    </div>
+    <!-- Loading ends -->
+
+    <!-- Page wrapper starts -->
+    <div class="page-wrapper">
+
+      <!-- App header starts -->
+      <div class="app-header d-flex align-items-center">
+
+        <!-- Toggle buttons starts -->
+        <div class="d-flex">
+          <button class="toggle-sidebar">
+            <i class="ri-menu-line"></i>
+          </button>
+          <button class="pin-sidebar">
+            <i class="ri-menu-line"></i>
+          </button>
+        </div>
+        <!-- Toggle buttons ends -->
+
+        <!-- App brand starts -->
+        <div class="app-brand ms-3">
+          <a href="{?=url()?}" class="d-lg-block d-none">
+            <img src="{?=url()?}/{$mlite.logo}" class="logo" alt="{$mlite.nama_instansi}"> <span class="logo-text">{$mlite.nama_instansi}</span>
+          </a>
+          <a href="{?=url()?}" class="d-lg-none d-md-block">
+            <img src="{?=url()?}/{$mlite.logo}" class="logo" alt="{$mlite.nama_instansi}">
+          </a>
+        </div>
+        <!-- App brand ends -->
+
+        <!-- App header actions starts -->
+        <div class="header-actions">
+
+          <!-- Search container starts -->
+          <div class="search-container d-lg-block d-none mx-3">
+            <input type="text" class="form-control" id="term" name="term" placeholder="Cari pasien">
+            <i class="ri-search-line"></i>
+          </div>
+          <!-- Search container ends -->
+
+          <!-- Header actions starts -->
+          <div class="d-lg-flex d-none gap-2">
+
+            <!-- Notifications dropdown starts -->
+            <div class="dropdown">
+              <a class="dropdown-toggle header-icon" href="#!" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <i class="ri-alarm-warning-line"></i>
+                <span class="count-label success"></span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-end dropdown-300">
+                <h5 class="fw-semibold px-3 py-2 text-primary">Alerts</h5>
+
+                <!-- Scroll starts -->
+                <div class="scroll300">
+
+                  <!-- Alert list starts -->
+                  <div class="p-3">
+                    <div class="d-flex py-2">
+                      <div class="icon-box md bg-info rounded-circle me-3">
+                        <span class="fw-bold fs-6 text-white">DS</span>
+                      </div>
+                      <div class="m-0">
+                        <h6 class="mb-1 fw-semibold">Douglass Shaw</h6>
+                        <p class="mb-1">
+                          Appointed as a new President 2014-2025
+                        </p>
+                        <p class="small m-0 opacity-50">Today, 07:30pm</p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Alert list ends -->
+
+                </div>
+                <!-- Scroll ends -->
+
+                <!-- View all button starts -->
+                <div class="d-grid m-3">
+                  <a href="javascript:void(0)" class="btn btn-primary">View all</a>
+                </div>
+                <!-- View all button ends -->
+
+              </div>
+            </div>
+            <!-- Notifications dropdown ends -->
+
+          </div>
+          <!-- Header actions ends -->
+
+          <!-- Header user settings starts -->
+          <div class="dropdown ms-2">
+            <a id="userSettings" class="dropdown-toggle d-flex align-items-center" href="#!" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <div class="avatar-box"><img src="{?=url()?}/uploads/users/{$mlite.avatar}" height="20"><span class="status busy"></span></div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end shadow-lg">
+              <div class="px-3 py-2">
+                <span class="small">{$mlite.fullname|cut:16}</span>
+                <h6 class="m-0">{$mlite.role}</h6>
+              </div>
+              <div class="mx-3 my-2 d-grid">
+                <a href="{?=url('logout')?}" class="btn btn-danger">Logout</a>
+              </div>
+            </div>
+          </div>
+          <!-- Header user settings ends -->
+
+        </div>
+        <!-- App header actions ends -->
+
+      </div>
+      <!-- App header ends -->
+
+      <!-- Main container starts -->
+      <div class="main-container">
+
+        <!-- Sidebar wrapper starts -->
+        <nav id="sidebar" class="sidebar-wrapper">
+
+          <!-- Sidebar profile starts -->
+          <div class="sidebar-profile">
+            <img src="{?=url()?}/uploads/users/{$mlite.avatar}" class="img-shadow img-3x me-3 rounded-5" alt="Hospital Admin Templates">
+            <div class="m-0">
+              <h5 class="mb-1 profile-name text-nowrap text-truncate">{$mlite.fullname|cut:14}</h5>
+              <p class="m-0 small profile-name text-nowrap text-truncate">{$mlite.role}</p>
+            </div>
+          </div>
+          <!-- Sidebar profile ends -->
+          <div class="sidebar-search">
+            <input type="text" class="form-control" id="myInput" placeholder="Search Menu">
+            <i class="ri-search-line"></i>
+          </div>
+          <!-- Sidebar menu starts -->
+          <div class="sidebarMenuScroll">
+            <ul class="sidebar-menu">
+              {loop: $mlite.nav}
+              {if: $value.hidden == 'false'}
+              <li class="{if: !empty($value.subnav)}treeview{/if} {$value.active} {if: $value.active}current-page{/if}" data-module="{$value.dir}">
+                  <a href="{$value.url}"><i class="ri-{$value.icon}"></i><span class="menu-text">{$value.name|cut:18}</span></a>
+                  {if: !empty($value.subnav)}
+                  <ul class="treeview-menu">
+                      {loop: $value.subnav}
+                      <li><a href="{$value.url}" class="{if: $value.active}active-sub{/if}">{$value.name|cut:18}</a></li>
+                      {/loop}
+                  </ul>
+                  {/if}
+              </li>
+              {/if}
+              {/loop}
+            </ul>
+          </div>
+          <!-- Sidebar menu ends -->
+
+          <!-- Sidebar contact starts -->
+          <div class="sidebar-contact">
+            <p class="fw-light mb-1 text-nowrap text-truncate">Kontak Darurat</p>
+            <h5 class="m-0 lh-1 text-nowrap text-truncate">081250067788</h5>
+            <i class="ri-phone-line"></i>
+          </div>
+          <!-- Sidebar contact ends -->
+
+        </nav>
+        <!-- Sidebar wrapper ends -->
+
+        <!-- App container starts -->
+        <div class="app-container">
+
+          <!-- App hero header starts -->
+          <div class="app-hero-header d-flex align-items-center">
+
+            <!-- Breadcrumb starts -->
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <i class="ri-home-8-line lh-1 pe-3 me-3 border-end"></i>
+                <a href="index.html">Home</a>
+              </li>
+              <li class="breadcrumb-item text-primary" aria-current="page">
+                {$module.name}
+              </li>
+            </ol>
+            <!-- Breadcrumb ends -->
+
+            <!-- Sales stats starts -->
+            <div class="ms-auto d-lg-flex d-none flex-row">
+              <div class="d-flex flex-row gap-1 day-sorting">
+                <a href="{?=url(['dashboard','help',$module.dir])?}" class="btn btn-sm btn-primary" data-toggle="modal" data-bs-target="#myModal"><i class="ri-question-line"></i> Help</a> <button type="button" class="btn btn-sm btn-danger" id="reload_page"><i class="ri-refresh-line"></i> Reload</button>
+              </div>
+            </div>
+            <!-- Sales stats ends -->
+
+          </div>
+          <!-- App Hero header ends -->
+
+          {if: $mlite.notify}
+          <div id="notify" class="alert alert-{$mlite.notify.type} alert-dismissible fade show" role="alert">
+              {$mlite.notify.text}
+              <script>
+                  var audio = new Audio('{?=url()?}/assets/sound/{$mlite.notify.type}.mp3');
+                  audio.play();                
+              </script>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {/if}
+                    
+          <!-- App body starts -->
+          <div class="app-body">
+
+            {$module.content}
+            
+          </div>
+          <!-- App body ends -->
+
+          <!-- App footer starts -->
+          <div class="app-footer bg-white clearfix">
+            <span class="float-start">© Medic LITE Indonesia 2018 - {?=date('Y')?}</span>
+            <span class="float-end">Crafted with <i class="ri-heart-fill text-danger"></i> by drg. F. Basoro</span>
+          </div>
+          <!-- App footer ends -->
+
+        </div>
+        <!-- App container ends -->
+
+      </div>
+      <!-- Main container ends -->
+
+    </div>
+    <!-- Page wrapper ends -->
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+          <div class="modal-content">
+              ...
+          </div>
+      </div>
+    </div>
+
+    <!-- Required jQuery first, then Bootstrap Bundle JS -->
+    <!-- <script src="{?=url()?}/assets/js/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js"></script> -->
+
+    <script src="{?=url()?}/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="{?=url()?}/assets/js/bootbox.min.js"></script>
+    <script src="{?=url()?}/assets/js/moment.min.js"></script>
+
+    <!--- Selectator -->
+    <script src="{?=url()?}/assets/js/selectator.js"></script>
+
+    <script src="{?=url()?}/assets/js/jquery.slimscroll.js"></script>
+
+    <!-- Custom JS files -->
+    <!-- <script src="{?=url()?}/assets/js/custom.js"></script> -->
+    <script src="{?=url()?}/themes/js/scripts.js?v=1"></script>
+    <script>
+      $(function() {
+          $( "#term" ).autocomplete({
+            source: "{?=url(['dashboard', 'search'])?}",
+            select: function(event, ui) {
+                $("#term").val(ui.item.nm_pasien);
+                return false;
+            }
+          })
+        .autocomplete("instance")._renderItem = function(ul, item) {
+            return $("<li class='each'>")
+            .append("<div class='item'><a href='{?=url()?}/pasien/view/" + item.no_rkm_medis +"?t=" + mlite.token + "'><b>Nama : " +
+                item.nm_pasien + "</b><br><small>Nomor RM : " +        
+                item.no_rkm_medis + "</small></a><br></div>")
+            .appendTo(ul);
+        };
+        $('#reload_page').click(function() {
+            location.reload();
+        });
+
+      });      
+    </script>
+    {loop: $mlite.footer}{$value}{/loop}
+
+  </body>
+
+</html>

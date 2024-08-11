@@ -1,0 +1,117 @@
+<style>
+    #table_copy_soap th, #table_copy_soap td {
+        white-space: nowrap; 
+    }
+</style>
+<div class="modal-header">
+    <h4 class="modal-title"><span id="modal-title">Data Copy SOAP</span></h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">  
+    <div class="row gx-3">
+        <div class="col-xxl-12 col-sm-12">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="table_copy_soap" class="table table-striped display dataTable" style="width:100%">
+                            <thead>
+                                <tr> 
+                                    <th>No Rawat</th>
+                                    <th>Tgl Perawatan</th>
+                                    <th>Jam Rawat</th>
+                                    <th>Suhu Tubuh</th>
+                                    <th>Tensi</th>
+                                    <th>Nadi</th>
+                                    <th>Respirasi</th>
+                                    <th>Tinggi</th>
+                                    <th>Berat</th>
+                                    <th>Spo2</th>
+                                    <th>Gcs</th>
+                                    <th>Kesadaran</th>
+                                    <th>Keluhan</th>
+                                    <th>Pemeriksaan</th>
+                                    <th>Alergi</th>
+                                    <th>Lingkar Perut</th>
+                                    <th>Rtl</th>
+                                    <th>Penilaian</th>
+                                    <th>Instruksi</th>
+                                    <th>Evaluasi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {loop: $soap}
+                                <tr 
+                                data-suhu_tubuh="{$value.suhu_tubuh}" 
+                                data-tensi="{$value.tensi}" 
+                                data-nadi="{$value.nadi}" 
+                                data-respirasi="{$value.respirasi}" 
+                                data-tinggi="{$value.tinggi}" 
+                                data-berat="{$value.berat}" 
+                                data-spo2="{$value.spo2}" 
+                                data-gcs="{$value.gcs}" 
+                                data-kesadaran="{$value.kesadaran}" 
+                                data-keluhan="{$value.keluhan}" 
+                                data-pemeriksaan="{$value.pemeriksaan}" 
+                                data-alergi="{$value.alergi}" 
+                                data-lingkar_perut="{$value.lingkar_perut}" 
+                                data-rtl="{$value.rtl}" 
+                                data-penilaian="{$value.penilaian}" 
+                                data-instruksi="{$value.instruksi}" 
+                                data-evaluasi="{$value.evaluasi}" 
+                                > 
+                                    <td>{$value.no_rawat}</td>
+                                    <td>{$value.tgl_perawatan}</td>
+                                    <td>{$value.jam_rawat}</td>
+                                    <td>{$value.suhu_tubuh}</td>
+                                    <td>{$value.tensi}</td>
+                                    <td>{$value.nadi}</td>
+                                    <td>{$value.respirasi}</td>
+                                    <td>{$value.tinggi}</td>
+                                    <td>{$value.berat}</td>
+                                    <td>{$value.spo2}</td>
+                                    <td>{$value.gcs}</td>
+                                    <td>{$value.kesadaran}</td>
+                                    <td>{$value.keluhan}</td>
+                                    <td>{$value.pemeriksaan}</td>
+                                    <td>{$value.alergi}</td>
+                                    <td>{$value.lingkar_perut}</td>
+                                    <td>{$value.rtl}</td>
+                                    <td>{$value.penilaian}</td>
+                                    <td>{$value.instruksi}</td>
+                                    <td>{$value.evaluasi}</td>
+                                </tr>  
+                                {/loop}                                      
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+</div>
+
+<script>
+    $('#table_copy_soap').on('click', 'tr', function () {
+        $("#suhu_tubuh").val($(this).attr("data-suhu_tubuh"));
+        $("#tensi").val($(this).attr("data-tensi"));
+        $("#nadi").val($(this).attr("data-nadi"));
+        $("#respirasi").val($(this).attr("data-respirasi"));
+        $("#tinggi").val($(this).attr("data-tinggi"));
+        $("#berat").val($(this).attr("data-berat"));
+        $("#spo2").val($(this).attr("data-spo2"));
+        $("#gcs").val($(this).attr("data-gcs"));
+        $("#kesadaran").val($(this).attr("data-kesadaran")).change();
+        $("#keluhan").val($(this).attr("data-keluhan"));
+        $("#pemeriksaan").val($(this).attr("data-pemeriksaan"));
+        $("#alergi").val($(this).attr("data-alergi"));
+        $("#lingkar_perut").val($(this).attr("data-lingkar_perut"));
+        $("#rtl").val($(this).attr("data-rtl"));
+        $("#penilaian").val($(this).attr("data-penilaian"));
+        $("#instruksi").val($(this).attr("data-instruksi"));
+        $("#evaluasi").val($(this).attr("data-evaluasi"));
+        $("#modal_detail_pemeriksaan_ralan").modal('hide');
+    })
+</script>

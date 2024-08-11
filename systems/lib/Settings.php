@@ -22,7 +22,7 @@ class Settings
 
     public function reload()
     {
-        $results = $this->core->db('mlite_settings')->toArray();
+        $results = $this->core->dbmlite->select('mlite_settings', '*');
         foreach ($results as $result) {
             $this->cache[$result['module']][$result['field']] = $result['value'];
         }
@@ -52,7 +52,7 @@ class Settings
             throw new \Exception('Value cannot be empty');
         }
 
-        if ($this->core->db('mlite_settings')->where('module', $module)->where('field', $field)->save(['value' => $value])) {
+        if ($this->core->dbmlite('mlite_settings')->where('module', $module)->where('field', $field)->save(['value' => $value])) {
             $this->cache[$module][$field] = $value;
             return true;
         }

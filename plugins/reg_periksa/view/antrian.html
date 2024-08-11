@@ -1,0 +1,121 @@
+<div class="modal-header">
+    <h4 class="modal-title">Detail Reg Periksa</h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body mx-auto">
+    <table id="tbl_detail_reg_periksa" style="width:300px;">
+        <thead>
+        </thead>
+        <tbody>
+				<tr>
+					<td rowspan="2" style="width:70px"><img src="{?=url()?}/{$settings.logo}" height="50px"></td>
+					<td><strong style="font-size: 14pt;" > {$settings.nama_instansi} </strong></td>
+				</tr>
+				<tr style="border-bottom: 1px solid #ddd;">
+					<td colspan="2">
+						<span style="font-size: 8pt;">
+							<div>{$settings.alamat}</div>
+							{$settings.nomor_telepon} - {$settings.email}
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="text-center" colspan="2"><br>
+						<span style="font-size: 16px;">BUKTI PENDAFTARAN</span><br>
+						<small>Tanggal : {?=date('Y-m-d')?}</small>
+					</td>
+				</tr>
+				<tr>
+					<td class="text-center" colspan="2">
+						<div class="panel panel-default">
+							<div class="pane-body display-5">
+								{$antrian.no_reg}
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="float-start">ID Daftar</span><span class="float-end">{$antrian.no_rawat}</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="float-start">Nama</span><span class="float-end">{$antrian.nm_pasien}</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="float-start">Nomor RM</span><span class="float-end">{$antrian.no_rkm_medis}</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="float-start">Poliklinik</span><span class="float-end">{$antrian.nm_poli}</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="float-start">Dokter</span><span class="float-end">{$antrian.nm_dokter}</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="float-start">Penjamin</span><span class="float-end">{$antrian.png_jawab}</span><br><br>
+					</td>
+				</tr>
+				<tr style="border-top: 1px solid #ddd;text-align:center;">
+					<td colspan="2">
+						Terima Kasih Atas kepercayaan Anda.<br>
+						Bawalah kartu Berobat anda<br>
+						dan datang 30 menit sebelumnya.<br>
+					</td>
+				</tr>                
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+    <button type="submit" id="export_pdf_detail" class="btn btn-danger"><i class="ri-file-pdf-2-line"></i> PDF</button>
+</div>
+<script>
+    // ===========================================
+    // Ketika tombol export pdf di tekan
+    // ===========================================
+    $("#export_pdf_detail").click(function () {
+        var doc = new jsPDF('p', 'pt', ['210','297']); /* pilih 'l' atau 'p' */
+        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        doc.addImage(img, 'JPEG', 5, 5, 30, 30);
+        doc.setFontSize(10);
+        doc.text("{$settings.nama_instansi}", 40, 15, null, null, null);
+        doc.setFontSize(8);
+        doc.text("{$settings.alamat}", 40, 25, null, null, null);
+        doc.text("Tlp: {$settings.nomor_telepon}", 40, 35, null, null, null);
+        doc.line(5,43,202,43,null); 
+        doc.line(5,45,202,45,null); 
+        doc.setFontSize(12);
+        doc.text("BUKTI PENDAFTARAN", 102, 70, {align: 'center'});
+        doc.text("Tanggal : {?=date('Y-m-d')?}", 102, 85, {align: 'center'});
+        doc.setFontSize(42);
+        doc.text("{$antrian.no_reg}", 102, 130, {align: 'center'});
+        doc.setFontSize(10);
+        doc.text("ID Daftar", 5, 150);
+        doc.text("{$antrian.no_rawat}", 200, 150, {align: 'right'});
+        doc.text("Nama", 5, 162);
+        doc.text("{$antrian.nm_pasien}", 200, 162, {align: 'right'});
+        doc.text("Nomor RM", 5, 174);
+        doc.text("{$antrian.no_rkm_medis}", 200, 174, {align: 'right'});
+        doc.text("Poliklinik", 5, 186);
+        doc.text("{$antrian.nm_poli}", 200, 186, {align: 'right'});
+        doc.text("Dokter", 5, 198);
+        doc.text("{$antrian.nm_dokter}", 200, 198, {align: 'right'});
+        doc.text("Penjamin", 5, 210);
+        doc.text("{$antrian.png_jawab}", 200, 210, {align: 'right'});
+        doc.line(5,220,202,220,null); 
+        doc.text("Terima Kasih Atas kepercayaan Anda.", 102, 240, {align: 'center'});
+        doc.text("Bawalah kartu Berobat anda", 102, 252, {align: 'center'});
+        doc.text("dan datang 30 menit sebelumnya.", 102, 264, {align: 'center'});
+        window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+              
+    })    
+</script>

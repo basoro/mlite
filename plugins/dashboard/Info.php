@@ -1,16 +1,16 @@
 <?php
 
-return [
-    'name'          =>  'Dashboard',
-    'description'   =>  'Akses cepat pada modul dan berita.',
-    'author'        =>  'Basoro.ID',
-    'version'       =>  '1.1',
-    'compatibility' =>  '4.*.*',
-    'icon'          =>  'home',
-    'pages'         =>  ['Main' => 'main'] ,
-    'install'       =>  function () use ($core) {
-    },
-    'uninstall'     =>  function() use($core)
-    {
-    }
-];
+    return [
+        'name'          =>  'Dashboard',
+        'description'   =>  'Modul reg periksa untuk mLITE',
+        'author'        =>  'Basoro',
+        'version'       =>  '1.0',
+        'compatibility' =>  '4.0.*',
+        'icon'          =>  'home-6-line',
+        'help'          =>  '',
+        'install'       =>  function () use ($core) {
+        },
+        'uninstall'     =>  function() use($core)
+        {
+        }
+    ];

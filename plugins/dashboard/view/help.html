@@ -1,0 +1,35 @@
+<div class="modal-header">
+    <h4 class="modal-title"><i class="ri-{$module.icon}"></i> {$module.name} {$module.version}</h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div class="table-responsive">
+        <table class="table no-bottom-margin">
+            <thead>
+                <tr>
+                    <th>Tutorial {$module.name} </th>
+                </tr>
+            </thead>
+            <tbody>
+              {if: $module.help}
+                <tr>
+                    <td>
+                        <div class="ratio ratio-16x9">
+                            <iframe class="embed-responsive-item" src="{$module.help}" allowscriptaccess="always" allow="autoplay"></iframe>
+                        </div>
+                    </td>
+                </tr>
+              {else}
+                <tr>
+                    <td>
+                        Halaman turorial atau bantuan belum tersedia.
+                    </td>
+                </tr>
+              {/if}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Tutup</button>
+</div>

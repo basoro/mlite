@@ -1,0 +1,162 @@
+<div class="col-sm-12">
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="custom-tabs-container">
+          <ul class="nav nav-tabs" id="customTab3" role="tablist">
+            <li class="nav-item" role="presentation">
+              <a class="nav-link active" id="tab-oneAA" data-bs-toggle="tab" href="#oneAA" role="tab"
+                aria-controls="oneAA" aria-selected="true"><i class="ri-shake-hands-line me-2"></i>Pengaturan Umum</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" id="tab-twoAA" data-bs-toggle="tab" href="#twoAA" role="tab"
+                aria-controls="twoAA" aria-selected="false" tabindex="-1"><i
+                  class="ri-service-line me-2"></i>Bridging VClaim</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" id="tab-threeAA" data-bs-toggle="tab" href="#threeAA" role="tab"
+                aria-controls="threeAA" aria-selected="false" tabindex="-1"><i
+                  class="ri-emoji-sticker-line me-2"></i>WA Gateway</a>
+            </li>
+          </ul>
+          <div class="tab-content" id="customTabContent3">
+            <div class="tab-pane fade show active" id="oneAA" role="tabpanel" aria-labelledby="tab-oneAA">
+              <div class="p-3">
+                <div class="col-lg-6">
+                    <form action="{?=url('/mlite_settings/saveGeneral')?}" method="POST" enctype="multipart/form-data" class="form form-vertical">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Logo</label>
+                                        <div>
+                                        <img src="{?=url()?}/{$settings.logo}" width="96" height="96" class="img-thumbnail" id="logoPreview" style="cursor:pointer;" onclick="$('input[name=logo]').click()" />
+                                        <input type="file" name="logo" class="form-control visually-hidden" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Nama Instansi</label>
+                                        <input type="text" name="nama_instansi" class="form-control" value="{$settings.nama_instansi}" required />
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Alamat</label>
+                                        <input type="text" name="alamat" class="form-control" value="{$settings.alamat}" required />
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Kota/Kabupaten</label>
+                                        <input type="text" name="kota" class="form-control" value="{$settings.kota}" required />
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Propinsi</label>
+                                        <input type="text" name="propinsi" class="form-control" value="{$settings.propinsi}" required />
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Nomor Telepon</label>
+                                        <input type="text" name="nomor_telepon" class="form-control" value="{$settings.nomor_telepon}" required />
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">E-Mail</label>
+                                        <input type="text" name="email" class="form-control" value="{$settings.email}" required />                    
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Website</label>
+                                        <input type="text" name="website" class="form-control" value="{$settings.website}" required />                    
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Zona waktu</label>
+                                        <select name="timezone" class="form-control" data-use-search="true">
+                                            {loop: $settings.timezones}
+                                            <option value="{$key}" {if: $settings.timezone == $key}selected{/if}>{$value}</option>
+                                            {/loop}
+                                        </select>                    
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Aktifkan Log Query</label>
+                                        <select name="logquery" class="form-control" data-use-search="true">
+                                            <option value="0" {if: $settings.logquery == '0'}selected{/if}>Tidak</option>
+                                            <option value="1" {if: $settings.logquery == '1'}selected{/if}>Ya</option>
+                                        </select>                    
+                                    </div>
+                                </div>                                
+                                <div class="col-12 d-flex justify-content-end">
+                                    <button type="submit" name="save" class="btn btn-primary me-1 mb-1"><i class="ri-save-3-line"></i> Simpan </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>    
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="twoAA" role="tabpanel" aria-labelledby="tab-twoAA">
+              <div class="p-3">
+                <div class="col-lg-6">
+                  <form action="{?=url('/mlite_settings/saveGeneral')?}" method="POST" enctype="multipart/form-data" class="form form-vertical">
+                      <div class="form-body">
+                          <div class="row">
+                              <div class="col-12">
+                                  <div class="form-group mb-3">
+                                      <label class="form-label">URL API BPJS</label>
+                                      <input type="text" name="BpjsApiUrl" class="form-control" value="{$settings.BpjsApiUrl}" required />
+                                  </div>
+                              </div>
+                              <div class="col-12">
+                                  <div class="form-group mb-3">
+                                      <label class="form-label">Service Name BPJS</label>
+                                      <input type="text" name="BpjsServiceName" class="form-control" value="{$settings.BpjsServiceName}" required />
+                                  </div>
+                              </div>
+                              <div class="col-12">
+                                  <div class="form-group mb-3">
+                                      <label class="form-label">Cons ID BPJS</label>
+                                      <input type="text" name="BpjsConsID" class="form-control" value="{$settings.BpjsConsID}" required />
+                                  </div>
+                              </div>
+                              <div class="col-12">
+                                  <div class="form-group mb-3">
+                                      <label class="form-label">Secret Key BPJS</label>
+                                      <input type="text" name="BpjsSecretKey" class="form-control" value="{$settings.BpjsSecretKey}" required />                    
+                                  </div>
+                              </div>
+                              <div class="col-12">
+                                  <div class="form-group mb-3">
+                                      <label class="form-label">User Key BPJS</label>
+                                      <input type="text" name="BpjsUserKey" class="form-control" value="{$settings.BpjsUserKey}" required />
+                                  </div>
+                              </div>
+                              <div class="col-12 d-flex justify-content-end">
+                                  <button type="submit" name="save" class="btn btn-primary me-1 mb-1"><i class="ri-save-3-line"></i> Simpan </button>
+                              </div>
+                          </div>
+                      </div>
+                  </form>    
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="threeAA" role="tabpanel" aria-labelledby="tab-threeAA">
+              <div class="p-3">
+                Tiga
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+</div>

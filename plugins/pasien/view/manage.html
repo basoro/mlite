@@ -1,0 +1,487 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Pasien</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-6 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_pasien' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_pasien' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_pasien' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_pasien' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                              <select class="form-select" id='search_field_pasien' name='search_field_pasien' style="margin: 0 !important;"> 
+                                  <option value='no_rkm_medis'>No Rkm Medis</option>
+                                  <option value='nm_pasien'>Nm Pasien</option>
+                                  <option value='no_ktp'>No Ktp</option>
+                                  <option value='jk'>Jk</option>
+                                  <option value='tmp_lahir'>Tmp Lahir</option>
+                                  <option value='tgl_lahir'>Tgl Lahir</option>
+                                  <option value='nm_ibu'>Nm Ibu</option>
+                                  <option value='alamat'>Alamat</option>
+                                  <option value='gol_darah'>Gol Darah</option>
+                                  <option value='pekerjaan'>Pekerjaan</option>
+                                  <option value='stts_nikah'>Stts Nikah</option>
+                                  <option value='agama'>Agama</option>
+                                  <option value='tgl_daftar'>Tgl Daftar</option>
+                                  <option value='no_tlp'>No Tlp</option>
+                                  <option value='umur'>Umur</option>
+                                  <option value='pnd'>Pnd</option>
+                                  <option value='keluarga'>Keluarga</option>
+                                  <option value='namakeluarga'>Namakeluarga</option>
+                                  <option value='kd_pj'>Kd Pj</option>
+                                  <option value='no_peserta'>No Peserta</option>
+                                  <option value='kd_kel'>Kd Kel</option>
+                                  <option value='kd_kec'>Kd Kec</option>
+                                  <option value='kd_kab'>Kd Kab</option>
+                                  <option value='pekerjaanpj'>Pekerjaanpj</option>
+                                  <option value='alamatpj'>Alamatpj</option>
+                                  <option value='kelurahanpj'>Kelurahanpj</option>
+                                  <option value='kecamatanpj'>Kecamatanpj</option>
+                                  <option value='kabupatenpj'>Kabupatenpj</option>
+                                  <option value='perusahaan_pasien'>Perusahaan Pasien</option>
+                                  <option value='suku_bangsa'>Suku Bangsa</option>
+                                  <option value='bahasa_pasien'>Bahasa Pasien</option>
+                                  <option value='cacat_fisik'>Cacat Fisik</option>
+                                  <option value='email'>Email</option>
+                                  <option value='nip'>Nip</option>
+                                  <option value='kd_prop'>Kd Prop</option>
+                                  <option value='propinsipj'>Propinsipj</option>
+                              </select>
+                          </span>
+                          <input class='form-control' name='search_text_pasien' id='search_text_pasien' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <input type="hidden" class="form-control" id="tanggal_awal" placeholder="Tanggal Awal"> 
+                          <input type="hidden" class="form-control" id="tanggal_akhir" placeholder="Tanggal Akhir">                   
+                          <input type="text" class="form-control daterange" placeholder="Range Tanggal"> 
+                          <span class="input-group-text" id='filter_search_pasien' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_pasien" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>No Rkm Medis</th>
+                            <th>Nm Pasien</th>
+                            <th>No Ktp</th>
+                            <th>Jk</th>
+                            <th>Tmp Lahir</th>
+                            <th>Tgl Lahir</th>
+                            <th>Nm Ibu</th>
+                            <th>Alamat</th>
+                            <th>Gol Darah</th>
+                            <th>Pekerjaan</th>
+                            <th>Stts Nikah</th>
+                            <th>Agama</th>
+                            <th>Tgl Daftar</th>
+                            <th>No Tlp</th>
+                            <th>Umur</th>
+                            <th>Pnd</th>
+                            <th>Keluarga</th>
+                            <th>Namakeluarga</th>
+                            <th>Kd Pj</th>
+                            <th>Penanggunag Jawab</th>
+                            <th>No Peserta</th>
+                            <th>Kd Kel</th>
+                            <th>Nama Kelurahan</th>
+                            <th>Kd Kec</th>
+                            <th>Nama Kecamatan</th>
+                            <th>Kd Kab</th>
+                            <th>Nama Kabupaten</th>
+                            <th>Kd Prop</th>
+                            <th>Nama Propinsi</th>
+                            <th>Pekerjaanpj</th>
+                            <th>Alamatpj</th>
+                            <th>Kelurahanpj</th>
+                            <th>Kecamatanpj</th>
+                            <th>Kabupatenpj</th>
+                            <th>Propinsipj</th>
+                            <th>Kode Perusahaan</th>
+                            <th>Nama Perusahaan Pasien</th>
+                            <th>Kode Suku</th>
+                            <th>Nama Suku Bangsa</th>
+                            <th>Kode Bahasa</th>
+                            <th>Nama Bahasa Pasien</th>
+                            <th>Kode Cacat</th>
+                            <th>Cacat Fisik</th>
+                            <th>Email</th>
+                            <th>Nip</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_pasien" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title"><span id="modal-title">Edit Data Pasien</span></h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form name="form_pasien">
+          <input type="hidden" class="form-control" id="typeact" /> 
+          <!-- Row starts -->
+          <div class="row gx-3">
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="tgl_daftar">Tanggal Daftar <span class="text-danger">*</span></label>
+                <input type="text" class="form-control datepicker" id="tgl_daftar" name="tgl_daftar" placeholder="Enter Date Registration">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="no_rkm_medis">No Rkm Medis <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="no_rkm_medis" name="no_rkm_medis" placeholder="Enter No RM">
+                  <button type="button" class="btn btn-primary" id="refresh_no_rkm_medis"><i class="ri-refresh-line"></i></button>
+                </div>
+                <div class="invalid-feedback error"></div>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="nm_pasien">Nama Pasien <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="nm_pasien" name="nm_pasien" placeholder="Enter Nama Pasien">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="nm_pasien">Nomor KTP <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="no_ktp" name="no_ktp" placeholder="Enter Nomor KTP">
+                  <button type="button" class="btn btn-warning" id="cari-nik-bpjs"><i class="ri-attachment-line"></i></button>
+                </div>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="jk">Jenis Kelamin <span class="text-danger">*</span></label>
+                <select class="form-select" id="jk" name="jk">
+                  <option value="">Select</option>
+                  <option value="L">Laki-Laki</option>
+                  <option value="P">Perempuan</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="tmp_lahir">Tempat Lahir <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="tmp_lahir" name="tmp_lahir" placeholder="Enter Tempat Lahir">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="tgl_lahir">Tanggal Lahir <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="text" class="form-control datepicker" id="tgl_lahir" name="tgl_lahir" placeholder="Tanggal Lahir">
+                  <input type="text" class="form-control" id="umur" name="umur" placeholder="Umur Daftar">  
+                </div>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="nm_ibu">Nama Ibu <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="nm_ibu" name="nm_ibu" placeholder="Enter Nama Ibu">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="alamat">Alamat <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="alamat" name="alamat" placeholder="Enter Address">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="gol_darah">Golongan Darah <span class="text-danger">*</span></label>
+                <select class="form-select" id="gol_darah" name="gol_darah">
+                  <option value="">Select</option>
+                  {loop: $pasien.gol_darah}
+                  <option value="{$value}">{$value}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="pekerjaan">Pekerjaan <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="pekerjaan" name="pekerjaan" placeholder="Enter Occupation">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="stts_nikah">Status Nikah <span class="text-danger">*</span></label>
+                <select class="form-select" id="stts_nikah" name="stts_nikah">
+                  <option value="">Select</option>
+                  {loop: $pasien.stts_nikah}
+                  <option value="{$value}">{$value}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="agama">Agama <span class="text-danger">*</span></label>
+                <select class="form-select" id="agama" name="agama">
+                  <option value="">Select</option>
+                  {loop: $pasien.agama}
+                  <option value="{$value}">{$value}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="no_tlp">Nomor Telepon <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="no_tlp" name="no_tlp" placeholder="Enter Phone Number">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="email">Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter Alamat Email">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="pnd">Pendidikan <span class="text-danger">*</span></label>
+                <select class="form-select" id="pnd" name="pnd">
+                  <option value="">Select</option>
+                  {loop: $pasien.pnd}
+                  <option value="{$value}">{$value}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="keluarga">Keluarga <span class="text-danger">*</span></label>
+                <select class="form-select" id="keluarga" name="keluarga">
+                  <option value="">Select</option>
+                  {loop: $pasien.keluarga}
+                  <option value="{$value}">{$value}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="namakeluarga">Nama Keluarga <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="namakeluarga" name="namakeluarga" placeholder="Enter Nama Keluarga">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="kd_pj">Penanggung Jawab <span class="text-danger">*</span></label>
+                <select class="form-select" id="kd_pj" name="kd_pj">
+                  <option value="">Select</option>
+                  {loop: $pasien.penjab}
+                  <option value="{$value.kd_pj}">{$value.png_jawab}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="namakeluarga">Nomor Peserta <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="no_peserta" name="no_peserta" placeholder="Enter Nomor Peserta">
+                  <button type="button" class="btn btn-warning" id="cari-noka-bpjs"><i class="ri-attachment-line"></i></button>
+                </div>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="kd_prop">Propinsi <span class="text-danger">*</span></label>
+                <select class="form-select" id="kd_prop" name="kd_prop">
+                  <option value="">Select</option>
+                  {loop: $pasien.propinsi}
+                  <option value="{$value.kd_prop}">{$value.nm_prop}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="kd_kab">Kabupaten <span class="text-danger">*</span></label>
+                <select class="form-select" id="kd_kab" name="kd_kab">
+                  <option value="">Select</option>
+                  {loop: $pasien.kabupaten}
+                  <option value="{$value.kd_kab}">{$value.nm_kab}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="kd_kec">Kecamatan <span class="text-danger">*</span></label>
+                <select class="form-select" id="kd_kec" name="kd_kec">
+                  <option value="">Select</option>
+                  {loop: $pasien.kecamatan}
+                  <option value="{$value.kd_kec}">{$value.nm_kec}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="kd_kel">Kelurahan <span class="text-danger">*</span></label>
+                <select class="form-select" id="kd_kel" name="kd_kel">
+                  <option value="">Select</option>
+                  {loop: $pasien.kelurahan}
+                  <option value="{$value.kd_kel}">{$value.nm_kel}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="perusahaan_pasien">Perusahaan Pasien <span class="text-danger">*</span></label>
+                <select class="form-select" id="perusahaan_pasien" name="perusahaan_pasien">
+                  <option value="">Select</option>
+                  {loop: $pasien.perusahaan_pasien}
+                  <option value="{$value.kode_perusahaan}">{$value.nama_perusahaan}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="suku_bangsa">Suku Bangsa <span class="text-danger">*</span></label>
+                <select class="form-select" id="suku_bangsa" name="suku_bangsa">
+                  <option value="">Select</option>
+                  {loop: $pasien.suku_bangsa}
+                  <option value="{$value.id}">{$value.nama_suku_bangsa}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="bahasa_pasien">Bahasa Pasien <span class="text-danger">*</span></label>
+                <select class="form-select" id="bahasa_pasien" name="bahasa_pasien">
+                  <option value="">Select</option>
+                  {loop: $pasien.bahasa_pasien}
+                  <option value="{$value.id}">{$value.nama_bahasa}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6">
+              <div class="mb-3">
+                <label class="form-label" for="cacat_fisik">Cacat Fisik <span class="text-danger">*</span></label>
+                <select class="form-select" id="cacat_fisik" name="cacat_fisik">
+                  <option value="">Select</option>
+                  {loop: $pasien.cacat_fisik}
+                  <option value="{$value.id}">{$value.nama_cacat}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6 d-none">
+              <div class="mb-3">
+                <label class="form-label" for="pekerjaanpj">Pekerjaan PJ</label>
+                <input type="text" class="form-control" id="pekerjaanpj" name="pekerjaanpj" placeholder="Enter Pekerjaan PJ">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6 d-none">
+              <div class="mb-3">
+                <label class="form-label" for="pekerjaanpj">Alamat PJ</label>
+                <input type="text" class="form-control" id="alamatpj" name="alamatpj" placeholder="Enter Alamat PJ">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6 d-none">
+              <div class="mb-3">
+                <label class="form-label" for="kelurahanpj">Kelurahan PJ</label>
+                <input type="text" class="form-control" id="kelurahanpj" name="kelurahanpj" placeholder="Enter Kelurahan PJ">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6 d-none">
+              <div class="mb-3">
+                <label class="form-label" for="kecamatanpj">Kecamatan PJ</label>
+                <input type="text" class="form-control" id="kecamatanpj" name="kecamatanpj" placeholder="Enter Kecamatan PJ">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6 d-none">
+              <div class="mb-3">
+                <label class="form-label" for="kabupatenpj">Kabupaten PJ</label>
+                <input type="text" class="form-control" id="kabupatenpj" name="kabupatenpj" placeholder="Enter Kabupaten PJ">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6 d-none">
+              <div class="mb-3">
+                <label class="form-label" for="propinsipj">Propinsi PJ</label>
+                <input type="text" class="form-control" id="propinsipj" name="propinsipj" placeholder="Enter Propinsi PJ">
+              </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-6 d-none">
+              <div class="mb-3">
+                <label class="form-label" for="nip">NIP</label>
+                <input type="text" class="form-control" id="nip" name="nip" value="-" placeholder="Enter NIP">
+              </div>
+            </div>
+          </div>
+          <!-- Row ends -->
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+          <button type="submit" id="simpan_data_pasien" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </div>
+      </form>
+  </div>
+  </div>
+</div>
+
+<div id="modal_lihat_pasien" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Pasien</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_pasien"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_pasien" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

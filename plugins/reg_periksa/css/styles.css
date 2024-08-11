@@ -1,0 +1,39 @@
+#tbl_reg_periksa th, 
+#tbl_reg_periksa td, 
+#forTable_reg_periksa th, 
+#forTable_reg_periksa td, 
+#tbl_pemeriksaan_riwayat td, 
+#tbl_pemeriksaan_riwayat th,
+#tbl_rawat_jl_dr th, #tbl_rawat_jl_dr td, #forTable_rawat_jl_dr th, #forTable_rawat_jl_dr td,
+#tbl_rawat_jl_pr th, #tbl_rawat_jl_pr td, #forTable_rawat_jl_pr th, #forTable_rawat_jl_pr td,
+#tbl_rawat_jl_drpr th, #tbl_rawat_jl_drpr td, #forTable_rawat_jl_drpr th, #forTable_rawat_jl_drpr td,
+#tbl_resep_dokter th, #tbl_resep_dokter td, #forTable_resep_dokter th, #forTable_resep_dokter td,
+#tbl_resep_dokter_racikan th, #tbl_resep_dokter_racikan td, #forTable_resep_dokter_racikan th, #forTable_resep_dokter_racikan td, 
+#tbl_permintaan_lab th, #tbl_permintaan_lab td, #forTable_permintaan_lab th, #forTable_permintaan_lab td, 
+#tbl_jns_perawatan_radiologi th, #tbl_jns_perawatan_radiologi td, #forTable_jns_perawatan_radiologi th, #forTable_jns_perawatan_radiologi td, 
+#tbl_permintaan_radiologi th, #tbl_permintaan_radiologi td, #forTable_permintaan_radiologi th, #forTable_permintaan_radiologi td {
+  white-space: nowrap; 
+}
+#tbl_pasien th, #tbl_pasien td, #forTable_pasien th, #forTable_pasien td, 
+#tbl_pemeriksaan_ralan th, #tbl_pemeriksaan_ralan td {
+  white-space: nowrap; 
+}
+.dataTables_wrapper th, .dataTables_wrapper td {
+  white-space: nowrap; 
+}
+.pmd-datatable-pagination {
+  padding-top: 10px !important;
+}
+.dt-length {
+  display: inline;
+}
+.dt-paging {
+  display: inline;
+  float: right;
+}
+@media (max-width:767px) {
+  .dt-length{
+    display: none !important;
+  }
+}
+#tbl_reg_periksa_info {display: inline;}

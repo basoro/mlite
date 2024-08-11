@@ -1,0 +1,479 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Pegawai</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-6 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_pegawai' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_pegawai' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_pegawai' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_pegawai' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-select" id='search_field_pegawai' name='search_field_pegawai' style="margin: 0 !important;"> 
+                              <option value='id'>Id</option>
+                              <option value='nik'>Nik</option>
+                              <option value='nama'>Nama</option>
+                              <option value='jk'>Jk</option>
+                              <option value='jbtn'>Jbtn</option>
+                              <option value='jnj_jabatan'>Jnj Jabatan</option>
+                              <option value='kode_kelompok'>Kode Kelompok</option>
+                              <option value='kode_resiko'>Kode Resiko</option>
+                              <option value='kode_emergency'>Kode Emergency</option>
+                              <option value='departemen'>Departemen</option>
+                              <option value='bidang'>Bidang</option>
+                              <option value='stts_wp'>Stts Wp</option>
+                              <option value='stts_kerja'>Stts Kerja</option>
+                              <option value='npwp'>Npwp</option>
+                              <option value='pendidikan'>Pendidikan</option>
+                              <option value='gapok'>Gapok</option>
+                              <option value='tmp_lahir'>Tmp Lahir</option>
+                              <option value='tgl_lahir'>Tgl Lahir</option>
+                              <option value='alamat'>Alamat</option>
+                              <option value='kota'>Kota</option>
+                              <option value='mulai_kerja'>Mulai Kerja</option>
+                              <option value='ms_kerja'>Ms Kerja</option>
+                              <option value='indexins'>Indexins</option>
+                              <option value='bpd'>Bpd</option>
+                              <option value='rekening'>Rekening</option>
+                              <option value='stts_aktif'>Stts Aktif</option>
+                              <option value='wajibmasuk'>Wajibmasuk</option>
+                              <option value='pengurang'>Pengurang</option>
+                              <option value='indek'>Indek</option>
+                              <option value='mulai_kontrak'>Mulai Kontrak</option>
+                              <option value='cuti_diambil'>Cuti Diambil</option>
+                              <option value='dankes'>Dankes</option>
+                              <option value='photo'>Photo</option>
+                              <option value='no_ktp'>No Ktp</option>
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_pegawai' id='search_text_pegawai' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-text" id='filter_search_pegawai' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_pegawai" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>Id</th>
+                            <th>Nik</th>
+                            <th>Nama</th>
+                            <th>Jk</th>
+                            <th>Jbtn</th>
+                            <th>Jnj Jabatan</th>
+                            <th>Kode Kelompok</th>
+                            <th>Kode Resiko</th>
+                            <th>Kode Emergency</th>
+                            <th>Departemen</th>
+                            <th>Bidang</th>
+                            <th>Stts Wp</th>
+                            <th>Stts Kerja</th>
+                            <th>Npwp</th>
+                            <th>Pendidikan</th>
+                            <th>Gapok</th>
+                            <th>Tmp Lahir</th>
+                            <th>Tgl Lahir</th>
+                            <th>Alamat</th>
+                            <th>Kota</th>
+                            <th>Mulai Kerja</th>
+                            <th>Ms Kerja</th>
+                            <th>Indexins</th>
+                            <th>Bpd</th>
+                            <th>Rekening</th>
+                            <th>Stts Aktif</th>
+                            <th>Wajibmasuk</th>
+                            <th>Pengurang</th>
+                            <th>Indek</th>
+                            <th>Mulai Kontrak</th>
+                            <th>Cuti Diambil</th>
+                            <th>Dankes</th>
+                            <th>Photo</th>
+                            <th>No Ktp</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_pegawai" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Pegawai</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_pegawai">
+          <input type="hidden" class="form-control" id="typeact" /> 
+        <div class='row gx-3'>
+          <div class='col-xxl-12 col-lg-12 col-sm-12'>
+            <div class='mb-3'>
+              <img src="" width="96" height="96" class="img-thumbnail" id="photo" style="cursor:pointer;" onclick="$('input[name=fileToUpload]').click()" />
+              <input type="file" name="fileToUpload" id="fileToUpload" class="form-control" style="display: none;" />
+              <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6 d-none'>
+            <div class='mb-3'>
+              <label class='form-label' for='id'>Id</label>
+              <input type='text' class='form-control' id='id' name='id' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='nik'>Nomor Induk</label>
+              <input type='text' class='form-control' id='nik' name='nik' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='nama'>Nama</label>
+              <input type='text' class='form-control' id='nama' name='nama' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='jk'>Jenis Kelamin</label>
+              <select class="form-select" id="jk" name="jk">
+                <option value="">Select</option>
+                <option value="Pria">Laki-Laki</option>
+                <option value="Wanita">Perempuan</option>
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='jbtn'>Jbtn</label>
+              <input type='text' class='form-control' id='jbtn' name='jbtn' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='jnj_jabatan'>Jnj Jabatan</label>
+              <select class="form-select" name="jnj_jabatan" id="jnj_jabatan">
+                <option value="">Select</option>
+                {loop: $pegawai.jnj_jabatan}
+                  <option value="{$value.kode}">{$value.nama}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kode_kelompok'>Kode Kelompok</label>
+              <select class="form-select" name="kode_kelompok" id="kode_kelompok">
+                <option value="">Select</option>
+                {loop: $pegawai.kelompok_jabatan}
+                  <option value="{$value.kode_kelompok}">{$value.nama_kelompok}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kode_resiko'>Kode Resiko</label>
+              <select class="form-select" name="kode_resiko" id="kode_resiko">
+                <option value="">Select</option>
+                {loop: $pegawai.resiko_kerja}
+                <option value="{$value.kode_resiko}">{$value.nama_resiko}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kode_emergency'>Kode Emergency</label>
+              <select class="form-select" name="kode_emergency" id="kode_emergency">
+                <option value="">Select</option>
+                {loop: $pegawai.emergency_index}
+                  <option value="{$value.kode_emergency}">{$value.nama_emergency}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='departemen'>Departemen</label>
+              <select name="departemen" id="departemen" class="form-select">
+                <option value="">Select</option>
+                {loop: $pegawai.departemen}
+                  <option value="{$value.dep_id}">{$value.nama}</option> 
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='bidang'>Bidang</label>
+              <select name="bidang" id="bidang" class="form-select">
+                <option value="">Select</option>
+                {loop: $pegawai.bidang} 
+                  <option value="{$value.nama}">{$value.nama}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='stts_wp'>Stts Wp</label>
+              <select name="stts_wp" id="stts_wp" class="form-select">
+                <option value="">Select</option>
+                {loop: $pegawai.stts_wp}
+                  <option value="{$value.stts}">{$value.ktg}</option> 
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='stts_kerja'>Stts Kerja</label>
+              <select name="stts_kerja" id="stts_kerja" class="form-select">
+                <option value="">Select</option>
+                {loop: $pegawai.stts_kerja}
+                  <option value="{$value.stts}">{$value.ktg}</option> 
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='npwp'>Npwp</label>
+              <input type='text' class='form-control' id='npwp' name='npwp' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='pendidikan'>Pendidikan</label>
+              <select name="pendidikan" id="pendidikan" class="form-select">
+                <option value="">Select</option>
+                {loop: $pegawai.pendidikan} 
+                  <option value="{$value.tingkat}">{$value.tingkat}</option>
+                {/loop} 
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='gapok'>Gapok</label>
+              <input type='text' class='form-control' id='gapok' name='gapok' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='tmp_lahir'>Tmp Lahir</label>
+              <input type='text' class='form-control' id='tmp_lahir' name='tmp_lahir' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='tgl_lahir'>Tgl Lahir</label>
+              <input type='text' class='form-control datepicker' id='tgl_lahir' name='tgl_lahir' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='alamat'>Alamat</label>
+              <input type='text' class='form-control' id='alamat' name='alamat' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kota'>Kota</label>
+              <input type='text' class='form-control' id='kota' name='kota' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='mulai_kerja'>Mulai Kerja</label>
+              <input type='text' class='form-control datepicker' id='mulai_kerja' name='mulai_kerja' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='ms_kerja'>Ms Kerja</label>
+              <select name="ms_kerja" id="ms_kerja" class="form-select">
+                <option value="">Select</option>
+                {loop: $pegawai.ms_kerja}
+                  <option value="{$value}">{$value}</option> 
+                {/loop} 
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='indexins'>Indexins</label>
+              <select name="indexins" id="indexins" class="form-select">
+                <option value="">Select</option>
+                {loop: $pegawai.departemen} 
+                  <option value="{$value.dep_id}">{$value.nama}</option>
+                {/loop} 
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='bpd'>Bpd</label>
+              <select name="bpd" id="bpd" class="form-select">
+                <option value="">Select</option>
+                {loop: $pegawai.bank}
+                  <option value="{$value.namabank}">{$value.namabank}</option> 
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='rekening'>Rekening</label>
+              <input type='text' class='form-control' id='rekening' name='rekening' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='stts_aktif'>Stts Aktif</label>
+              <select name="stts_aktif" id="stts_aktif" class="form-select">
+                <option value="">Select</option>
+                {loop: $pegawai.stts_aktif}
+                  <option value="{$value}">{$value}</option> 
+                {/loop} 
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='wajibmasuk'>Wajibmasuk</label>
+              <input type='text' class='form-control' id='wajibmasuk' name='wajibmasuk' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='pengurang'>Pengurang</label>
+              <input type='text' class='form-control' id='pengurang' name='pengurang' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='indek'>Indek</label>
+              <input type='text' class='form-control' id='indek' name='indek' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='mulai_kontrak'>Mulai Kontrak</label>
+              <input type='text' class='form-control datepicker' id='mulai_kontrak' name='mulai_kontrak' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='cuti_diambil'>Cuti Diambil</label>
+              <input type='text' class='form-control' id='cuti_diambil' name='cuti_diambil' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='dankes'>Dankes</label>
+              <input type='text' class='form-control' id='dankes' name='dankes' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='no_ktp'>No Ktp</label>
+              <input type='text' class='form-control' id='no_ktp' name='no_ktp' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_pegawai" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_pegawai" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Pegawai</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_pegawai"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_pegawai" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

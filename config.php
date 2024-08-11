@@ -6,19 +6,10 @@ if (!version_compare(PHP_VERSION, '7.0.0', '>=')) {
 define('DBHOST', 'localhost');
 define('DBPORT', '3306');
 define('DBUSER', 'root');
-define('DBPASS', '');
-define('DBNAME', 'mlite');
+define('DBPASS', 'basoro');
+define('DBNAME', 'mlite.io');
 
-// URL Webapps
-define('WEBAPPS_URL', 'http://localhost/mlite/uploads');
-define('WEBAPPS_PATH', BASE_DIR . '/uploads');
-
-// Multi APP
-define('MULTI_APP', false);
-#define('MULTI_APP_REDIRECT', 'dokter_ulun');
-
-// Admin cat name
-define('ADMIN', 'admin');
+define('WHITELIST_IP', '*');
 
 // Themes path
 define('THEMES', BASE_DIR . '/themes');
@@ -29,25 +20,16 @@ define('MODULES', BASE_DIR . '/plugins');
 // Uploads path
 define('UPLOADS', BASE_DIR . '/uploads');
 
-// Lock files
-define('FILE_LOCK', false);
-
 // Basic modules
 define('BASIC_MODULES', serialize([
-    9 => 'settings',
     0 => 'dashboard',
-    1 => 'master',
-    2 => 'pasien',
-    3 => 'rawat_jalan',
-    4 => 'kasir_rawat_jalan',
-    5 => 'kepegawaian',
-    6 => 'farmasi',
-    8 => 'users',
-    7 => 'modules',
-   10 => 'wagateway'
+    1 => 'mlite_modules', 
+    2 => 'mlite_users',
+    3 => 'mlite_settings', 
+    4 => 'crud_generator',
+    5 => 'mlite_api_tools'
 ]));
 
 // Developer mode
-define('DEV_MODE', false);
-
+define('DEV_MODE', true);
 ?>

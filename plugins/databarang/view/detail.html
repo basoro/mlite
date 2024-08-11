@@ -1,0 +1,99 @@
+<div class="modal-header">
+    <h4 class="modal-title">Detail Databarang</h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div id="detail_databarang"></div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup</button>
+    <button type="submit" id="export_pdf_detail" class="btn btn-danger"><i class="ri-file-pdf-2-line"></i> PDF</button>
+</div>
+<script>
+$(document).ready(function() {
+
+    $.ajax({
+        url: "{?=url(['databarang','read', $kode_brng])?}",
+        method: "GET",
+        data: {},
+        dataType: 'json',
+        success: function (res) {
+            var eTable = "<div class='table-responsive'><table id='tbl_detail_databarang' class='table display dataTable' style='width:100%'><thead></thead>";
+                eTable += '<tr><td>Kode Brng</td><td>' + res.msg['kode_brng'] + '</td><tr>';
+                eTable += '<tr><td>Nama Brng</td><td>' + res.msg['nama_brng'] + '</td><tr>';
+                eTable += '<tr><td>Kode Satbesar</td><td>' + res.msg['kode_satbesar'] + '</td><tr>';
+                eTable += '<tr><td>Kode Sat</td><td>' + res.msg['kode_sat'] + '</td><tr>';
+                eTable += '<tr><td>Letak Barang</td><td>' + res.msg['letak_barang'] + '</td><tr>';
+                eTable += '<tr><td>Dasar</td><td>' + res.msg['dasar'] + '</td><tr>';
+                eTable += '<tr><td>H Beli</td><td>' + res.msg['h_beli'] + '</td><tr>';
+                eTable += '<tr><td>Ralan</td><td>' + res.msg['ralan'] + '</td><tr>';
+                eTable += '<tr><td>Kelas1</td><td>' + res.msg['kelas1'] + '</td><tr>';
+                eTable += '<tr><td>Kelas2</td><td>' + res.msg['kelas2'] + '</td><tr>';
+                eTable += '<tr><td>Kelas3</td><td>' + res.msg['kelas3'] + '</td><tr>';
+                eTable += '<tr><td>Utama</td><td>' + res.msg['utama'] + '</td><tr>';
+                eTable += '<tr><td>Vip</td><td>' + res.msg['vip'] + '</td><tr>';
+                eTable += '<tr><td>Vvip</td><td>' + res.msg['vvip'] + '</td><tr>';
+                eTable += '<tr><td>Beliluar</td><td>' + res.msg['beliluar'] + '</td><tr>';
+                eTable += '<tr><td>Jualbebas</td><td>' + res.msg['jualbebas'] + '</td><tr>';
+                eTable += '<tr><td>Karyawan</td><td>' + res.msg['karyawan'] + '</td><tr>';
+                eTable += '<tr><td>Stokminimal</td><td>' + res.msg['stokminimal'] + '</td><tr>';
+                eTable += '<tr><td>Kdjns</td><td>' + res.msg['kdjns'] + '</td><tr>';
+                eTable += '<tr><td>Isi</td><td>' + res.msg['isi'] + '</td><tr>';
+                eTable += '<tr><td>Kapasitas</td><td>' + res.msg['kapasitas'] + '</td><tr>';
+                eTable += '<tr><td>Expire</td><td>' + res.msg['expire'] + '</td><tr>';
+                eTable += '<tr><td>Status</td><td>' + res.msg['status'] + '</td><tr>';
+                eTable += '<tr><td>Kode Industri</td><td>' + res.msg['kode_industri'] + '</td><tr>';
+                eTable += '<tr><td>Kode Kategori</td><td>' + res.msg['kode_kategori'] + '</td><tr>';
+                eTable += '<tr><td>Kode Golongan</td><td>' + res.msg['kode_golongan'] + '</td><tr>';
+                eTable += "</tbody></table></div>";
+            $('#detail_databarang').html(eTable);
+        }
+    });
+
+    // ===========================================
+    // Ketika tombol export pdf di tekan
+    // ===========================================
+    $("#export_pdf_detail").click(function () {
+        var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
+        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        doc.addImage(img, 'JPEG', 20, 10, 50, 50);
+        doc.setFontSize(20);
+        doc.text("{$settings.nama_instansi}", 80, 35, null, null, null);
+        doc.setFontSize(10);
+        doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
+        doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
+        doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
+        doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
+        doc.setFontSize(14);
+        doc.text("Data Detail", 20, 95, null, null, null);
+        const totalPagesExp = "{total_pages_count_string}";        
+        doc.autoTable({
+            html: '#tbl_detail_databarang',
+            startY: 105,
+            margin: {
+                left: 20, 
+                right: 20
+            }, 
+            styles: {
+                fontSize: 10,
+                cellPadding: 5
+            }, 
+            didDrawPage: data => {
+                let footerStr = "Page " + doc.internal.getNumberOfPages();
+                if (typeof doc.putTotalPages === 'function') {
+                footerStr = footerStr + " of " + totalPagesExp;
+                }
+                doc.setFontSize(10);
+                doc.text(`© ${new Date().getFullYear()} {$settings.nama_instansi}.`, data.settings.margin.left, doc.internal.pageSize.height - 10);                
+                doc.text(footerStr, data.settings.margin.left + 480, doc.internal.pageSize.height - 10);
+           }
+        });
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPagesExp);
+        }
+        // doc.save('detail_data_databarang.pdf')
+        window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+              
+    }) 
+}); 
+</script>
