@@ -1,3 +1,6 @@
 .DS_Store
 config.php
+composer.lock
+vendor/
+plugins/crud_generator
 systems/data/database.sdb
