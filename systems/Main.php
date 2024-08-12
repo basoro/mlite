@@ -36,16 +36,16 @@ abstract class Main
         ]);
 
         $this->dbmlite = new Medoo([
-            // 'type' => 'sqlite', /* For dev only */
-            // 'database' => BASE_DIR . '/systems/data/database.sdb' /* For dev onnly */
-            'type' => 'mysql',
-            'host' => DBHOST,
-            'port' => DBPORT, 
-            'database' => DBNAME,
-            'username' => DBUSER,
-            'password' => DBPASS,
-            'logging' => true,
-            'error' => \PDO::ERRMODE_SILENT
+            'type' => 'sqlite', /* For dev only */
+            'database' => BASE_DIR . '/systems/data/database.sdb' /* For dev onnly */
+            // 'type' => 'mysql',
+            // 'host' => DBHOST,
+            // 'port' => DBPORT, 
+            // 'database' => DBNAME,
+            // 'username' => DBUSER,
+            // 'password' => DBPASS,
+            // 'logging' => true,
+            // 'error' => \PDO::ERRMODE_SILENT
         ]);
 
         $this->vclaim = [

@@ -1,0 +1,21 @@
+#tbl_resep_dokter th, #tbl_resep_dokter td, #forTable_resep_dokter th, #forTable_resep_dokter td {
+  white-space: nowrap; 
+}
+.dataTables_wrapper th, .dataTables_wrapper td {
+  white-space: nowrap; 
+}
+.pmd-datatable-pagination {
+  padding-top: 10px !important;
+}
+.dt-length {
+  display: inline;
+}
+.dt-paging {
+  display: inline;
+  float: right;
+}
+@media (max-width:767px) {
+  .dt-length{
+    display: none !important;
+  }
+}

@@ -762,17 +762,17 @@ class Admin extends AdminModule
                 'respirasi'=>$row['respirasi'],
                 'tinggi'=>$row['tinggi'],
                 'berat'=>$row['berat'],
-                'spo2'=>isset_or($row['spo2']),
+                'spo2'=>$row['spo2'],
                 'gcs'=>$row['gcs'],
-                'kesadaran'=>isset_or($row['kesadaran']),
+                'kesadaran'=>$row['kesadaran'],
                 'keluhan'=>$row['keluhan'],
                 'pemeriksaan'=>$row['pemeriksaan'],
                 'alergi'=>$row['alergi'],
-                'lingkar_perut'=>isset_or($row['lingkar_perut']),
+                'lingkar_perut'=>$row['lingkar_perut'],
                 'rtl'=>$row['rtl'],
                 'penilaian'=>$row['penilaian'],
-                'instruksi'=>isset_or($row['instruksi']),
-                'evaluasi'=>isset_or($row['evaluasi']),
+                'instruksi'=>$row['instruksi'],
+                'evaluasi'=>$row['evaluasi'],
                 'nip'=>$row['nip']
             );
         }
@@ -1013,18 +1013,21 @@ class Admin extends AdminModule
 
         $data = array();
         foreach($result as $row) {
-            $data[] = array(
-                'no_resep'=>$row['no_resep'],
-                'tgl_perawatan'=>$row['tgl_perawatan'],
-                'jam'=>$row['jam'],
-                'no_rawat'=>$row['no_rawat'],
-                'kd_dokter'=>$row['kd_dokter'],
-                'tgl_peresepan'=>$row['tgl_peresepan'],
-                'jam_peresepan'=>$row['jam_peresepan'],
-                'status'=>$row['status'],
-                'tgl_penyerahan'=>isset_or($row['tgl_penyerahan']),
-                'jam_penyerahan'=>isset_or($row['jam_penyerahan'])
-            );
+            $isResepDokter = $this->core->db->has('resep_dokter', ['no_resep' => $row['no_resep']]);
+            if($isResepDokter) {
+              $data[] = array(
+                  'no_resep'=>$row['no_resep'],
+                  'tgl_perawatan'=>$row['tgl_perawatan'],
+                  'jam'=>$row['jam'],
+                  'no_rawat'=>$row['no_rawat'],
+                  'kd_dokter'=>$row['kd_dokter'],
+                  'tgl_peresepan'=>$row['tgl_peresepan'],
+                  'jam_peresepan'=>$row['jam_peresepan'],
+                  'status'=>$row['status'],
+                  'tgl_penyerahan'=>$row['tgl_penyerahan'],
+                  'jam_penyerahan'=>$row['jam_penyerahan']
+              );
+            }
         }
 
         ## Response
@@ -1074,25 +1077,28 @@ class Admin extends AdminModule
 
       $data = array();
       foreach($result as $row) {
-          $row2 = $this->core->db->get('resep_dokter_racikan', '*', ['no_resep' => $row['no_resep']]);
-          $data[] = array(
-              'no_resep'=>$row['no_resep'],
-              'tgl_perawatan'=>$row['tgl_perawatan'],
-              'jam'=>$row['jam'],
-              'no_rawat'=>$row['no_rawat'],
-              'kd_dokter'=>$row['kd_dokter'],
-              'tgl_peresepan'=>$row['tgl_peresepan'],
-              'jam_peresepan'=>$row['jam_peresepan'],
-              'status'=>$row['status'],
-              'tgl_penyerahan'=>isset_or($row['tgl_penyerahan']),
-              'jam_penyerahan'=>isset_or($row['jam_penyerahan']),
-              'no_racik'=>isset_or($row2['no_racik']),
-              'nama_racik'=>isset_or($row2['nama_racik']),
-              'kd_racik'=>isset_or($row2['kd_racik']),
-              'jml_dr'=>isset_or($row2['jml_dr']),
-              'aturan_pakai'=>isset_or($row2['aturan_pakai']),
-              'keterangan'=>isset_or($row2['keterangan'])
-          );
+          $isResepDokterRacikan = $this->core->db->has('resep_dokter_racikan', ['no_resep' => $row['no_resep']]);
+          if($isResepDokterRacikan) {
+            $row2 = $this->core->db->get('resep_dokter_racikan', '*', ['no_resep' => $row['no_resep']]);
+            $data[] = array(
+                'no_resep'=>$row['no_resep'],
+                'tgl_perawatan'=>$row['tgl_perawatan'],
+                'jam'=>$row['jam'],
+                'no_rawat'=>$row['no_rawat'],
+                'kd_dokter'=>$row['kd_dokter'],
+                'tgl_peresepan'=>$row['tgl_peresepan'],
+                'jam_peresepan'=>$row['jam_peresepan'],
+                'status'=>$row['status'],
+                'tgl_penyerahan'=>$row['tgl_penyerahan'],
+                'jam_penyerahan'=>$row['jam_penyerahan'],
+                'no_racik'=>isset_or($row2['no_racik']),
+                'nama_racik'=>isset_or($row2['nama_racik']),
+                'kd_racik'=>isset_or($row2['kd_racik']),
+                'jml_dr'=>isset_or($row2['jml_dr']),
+                'aturan_pakai'=>isset_or($row2['aturan_pakai']),
+                'keterangan'=>isset_or($row2['keterangan'])
+            );
+          }
       }
 
       ## Response
@@ -1153,8 +1159,8 @@ class Admin extends AdminModule
                 'jam_hasil'=>$row['jam_hasil'],
                 'dokter_perujuk'=>$row['dokter_perujuk'],
                 'status'=>$row['status'],
-                'informasi_tambahan'=>isset_or($row['informasi_tambahan']),
-                'diagnosa_klinis'=>isset_or($row['diagnosa_klinis'])
+                'informasi_tambahan'=>$row['informasi_tambahan'],
+                'diagnosa_klinis'=>$row['diagnosa_klinis']
             );
         }
 
@@ -1216,8 +1222,8 @@ class Admin extends AdminModule
                 'jam_hasil'=>$row['jam_hasil'],
                 'dokter_perujuk'=>$row['dokter_perujuk'],
                 'status'=>$row['status'],
-                'informasi_tambahan'=>isset_or($row['informasi_tambahan']),
-                'diagnosa_klinis'=>isset_or($row['diagnosa_klinis'])
+                'informasi_tambahan'=>$row['informasi_tambahan'],
+                'diagnosa_klinis'=>$row['diagnosa_klinis']
 
             );
         }
