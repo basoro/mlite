@@ -1,0 +1,372 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Databarang</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-6 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_databarang' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_databarang' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_databarang' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_databarang' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-select" id='search_field_databarang' name='search_field_databarang' style="margin: 0 !important;"> 
+                              <option value='kode_brng'>Kode Brng</option>
+                              <option value='nama_brng'>Nama Brng</option>
+                              <option value='kode_satbesar'>Kode Satbesar</option>
+                              <option value='kode_sat'>Kode Sat</option>
+                              <option value='letak_barang'>Letak Barang</option>
+                              <option value='dasar'>Dasar</option>
+                              <option value='h_beli'>H Beli</option>
+                              <option value='ralan'>Ralan</option>
+                              <option value='kelas1'>Kelas1</option>
+                              <option value='kelas2'>Kelas2</option>
+                              <option value='kelas3'>Kelas3</option>
+                              <option value='utama'>Utama</option>
+                              <option value='vip'>Vip</option>
+                              <option value='vvip'>Vvip</option>
+                              <option value='beliluar'>Beliluar</option>
+                              <option value='jualbebas'>Jualbebas</option>
+                              <option value='karyawan'>Karyawan</option>
+                              <option value='stokminimal'>Stokminimal</option>
+                              <option value='kdjns'>Kdjns</option>
+                              <option value='isi'>Isi</option>
+                              <option value='kapasitas'>Kapasitas</option>
+                              <option value='expire'>Expire</option>
+                              <option value='status'>Status</option>
+                              <option value='kode_industri'>Kode Industri</option>
+                              <option value='kode_kategori'>Kode Kategori</option>
+                              <option value='kode_golongan'>Kode Golongan</option>
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_databarang' id='search_text_databarang' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-text" id='filter_search_databarang' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_databarang" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>Kode Brng</th>
+                            <th>Nama Brng</th>
+                            <th>Kode Satbesar</th>
+                            <th>Kode Sat</th>
+                            <th>Letak Barang</th>
+                            <th>Dasar</th>
+                            <th>H Beli</th>
+                            <th>Ralan</th>
+                            <th>Kelas1</th>
+                            <th>Kelas2</th>
+                            <th>Kelas3</th>
+                            <th>Utama</th>
+                            <th>Vip</th>
+                            <th>Vvip</th>
+                            <th>Beliluar</th>
+                            <th>Jualbebas</th>
+                            <th>Karyawan</th>
+                            <th>Stokminimal</th>
+                            <th>Kdjns</th>
+                            <th>Isi</th>
+                            <th>Kapasitas</th>
+                            <th>Expire</th>
+                            <th>Status</th>
+                            <th>Kode Industri</th>
+                            <th>Kode Kategori</th>
+                            <th>Kode Golongan</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_databarang" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Databarang</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_databarang">
+        <input type="hidden" class="form-control" id="typeact" /> 
+        <div class='row gx-3'>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kode_brng'>Kode Brng</label>
+              <input type='text' class='form-control' id='kode_brng' name='kode_brng' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='nama_brng'>Nama Brng</label>
+              <input type='text' class='form-control' id='nama_brng' name='nama_brng' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kode_satbesar'>Kode Satbesar</label>
+              <select name="kode_satbesar" id="kode_satbesar" class="form-select">
+                <option value="">Select</option>
+                {loop: $databarang.kodesatuan}
+                <option value="{$value.kode_sat}">{$value.satuan}</option> 
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kode_sat'>Kode Sat</label>
+              <select name="kode_sat" id="kode_sat" class="form-select">
+                <option value="">Select</option>
+                {loop: $databarang.kodesatuan}
+                <option value="{$value.kode_sat}">{$value.satuan}</option> 
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='letak_barang'>Letak Barang</label>
+              <input type='text' class='form-control' id='letak_barang' name='letak_barang' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='dasar'>Dasar</label>
+              <input type='text' class='form-control' id='dasar' name='dasar' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='h_beli'>H Beli</label>
+              <input type='text' class='form-control' id='h_beli' name='h_beli' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='ralan'>Ralan</label>
+              <input type='text' class='form-control' id='ralan' name='ralan' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kelas1'>Kelas1</label>
+              <input type='text' class='form-control' id='kelas1' name='kelas1' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kelas2'>Kelas2</label>
+              <input type='text' class='form-control' id='kelas2' name='kelas2' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kelas3'>Kelas3</label>
+              <input type='text' class='form-control' id='kelas3' name='kelas3' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='utama'>Utama</label>
+              <input type='text' class='form-control' id='utama' name='utama' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='vip'>Vip</label>
+              <input type='text' class='form-control' id='vip' name='vip' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='vvip'>Vvip</label>
+              <input type='text' class='form-control' id='vvip' name='vvip' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='beliluar'>Beliluar</label>
+              <input type='text' class='form-control' id='beliluar' name='beliluar' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='jualbebas'>Jualbebas</label>
+              <input type='text' class='form-control' id='jualbebas' name='jualbebas' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='karyawan'>Karyawan</label>
+              <input type='text' class='form-control' id='karyawan' name='karyawan' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='stokminimal'>Stokminimal</label>
+              <input type='text' class='form-control' id='stokminimal' name='stokminimal' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kdjns'>Kdjns</label>
+              <select name="kdjns" id="kdjns" class="form-select">
+                <option value="">Select</option>
+                {loop: $databarang.jenis}
+                <option value="{$value.kdjns}">{$value.nama}</option> 
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='isi'>Isi</label>
+              <input type='text' class='form-control' id='isi' name='isi' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kapasitas'>Kapasitas</label>
+              <input type='text' class='form-control' id='kapasitas' name='kapasitas' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='expire'>Expire</label>
+              <input type='text' class='form-control datepicker' id='expire' name='expire' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='status'>Status</label>
+              <select name="status" id="status" class="form-select">
+                <option value="">Select</option>
+                <option value="1">Aktif</option>
+                <option value="0">Tidak Aktif</option>
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kode_industri'>Kode Industri</label>
+              <select name="kode_industri" id="kode_industri" class="form-select">
+                <option value="">Select</option>
+                {loop: $databarang.industrifarmasi}
+                <option value="{$value.kode_industri}">{$value.nama_industri}</option> 
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kode_kategori'>Kode Kategori</label>
+              <select name="kode_kategori" id="kode_kategori" class="form-select">
+                <option value="">Select</option>
+                {loop: $databarang.kategori_barang}
+                <option value="{$value.kode}">{$value.nama}</option> 
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kode_golongan'>Kode Golongan</label>
+              <select name="kode_golongan" id="kode_golongan" class="form-select">
+                <option value="">Select</option>
+                {loop: $databarang.golongan_barang}
+                <option value="{$value.kode}">{$value.nama}</option> 
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_databarang" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_databarang" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Databarang</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_databarang"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_databarang" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

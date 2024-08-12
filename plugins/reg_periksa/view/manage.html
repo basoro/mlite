@@ -1,0 +1,316 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Pasien Rawat Jalan</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-6 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_reg_periksa' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_reg_periksa' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_reg_periksa' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_reg_periksa' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:130px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-select" id='search_field_reg_periksa' name='search_field_reg_periksa' style="margin: 0 !important;"> 
+                              <option value='no_reg'>No Reg</option>
+                              <option value='no_rawat'>No Rawat</option>
+                              <option value='tgl_registrasi'>Tgl Registrasi</option>
+                              <option value='jam_reg'>Jam Reg</option>
+                              <option value='kd_dokter'>Dokter</option>
+                              <option value='no_rkm_medis'>No Rkm Medis</option>
+                              <option value='nm_pasien'>Nama Pasien</option>
+                              <option value='kd_poli'>Poliklinik</option>
+                              <option value='p_jawab'>P Jawab</option>
+                              <option value='almt_pj'>Alamat PJ</option>
+                              <option value='hubunganpj'>Hubungan PJ</option>
+                              <option value='biaya_reg'>Biaya Reg</option>
+                              <option value='stts'>Status</option>
+                              <option value='stts_daftar'>Stts Daftar</option>
+                              <option value='status_lanjut'>Status Lanjut</option>
+                              <option value='kd_pj'>Cara Bayar</option>
+                              <option value='status_bayar'>Status Bayar</option>
+                              <option value='status_poli'>Status Poli</option>
+                          </select>
+                          </span>
+                          <span id="tempat_pilih"></span>
+                          <input class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" type="search" placeholder="Masukkan Kata Kunci Pencarian" />  
+                          <input type="hidden" class="form-control" id="tanggal_awal" placeholder="Tanggal Awal"> 
+                          <input type="hidden" class="form-control" id="tanggal_akhir" placeholder="Tanggal Akhir">                   
+                          <input type="text" class="form-control daterange" placeholder="Range Tanggal"> 
+                          <span class="input-group-text" id='filter_search' data-toggle='tooltip' data-placement='top' title='Filter Tanggal'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_reg_periksa" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>No Rawat</th>
+                            <th>Tgl Registrasi</th>
+                            <th>Jam Reg</th>
+                            <th>No Reg</th>
+                            <th>Kd Dokter</th>
+                            <th>Nama Dokter</th>
+                            <th>No Rkm Medis</th>
+                            <th>Nama Pasien</th>
+                            <th>Kd Poli</th>
+                            <th>Nama Poli</th>
+                            <th>P Jawab</th>
+                            <th>Almt Pj</th>
+                            <th>Hubunganpj</th>
+                            <th>Biaya Reg</th>
+                            <th>Stts</th>
+                            <th>Stts Daftar</th>
+                            <th>Status Lanjut</th>
+                            <th>Kd Pj</th>
+                            <th>Png Jawab</th>
+                            <th>Status Bayar</th>
+                            <th>Status Poli</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_reg_periksa" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Pendaftaran</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_reg_periksa">
+        <input type="hidden" class="form-control" id="typeact" /> 
+        <!-- Row starts -->
+        <div class="row gx-3">
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="tgl_registrasi">Tanggal Daftar <span class="text-danger">*</span></label>
+              <input type="text" class="form-control datepicker" id="tgl_registrasi" name="tgl_registrasi" placeholder="Enter Date Registration">
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="jam_reg">Jam Pendaftaran <span class="text-danger">*</span></label>
+              <input type="text" class="form-control timepicker" id="jam_reg" name="jam_reg" placeholder="Enter Time Registraion">
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="kd_poli">Nama Poliklinik <span class="text-danger">*</span></label>
+              <select class="form-select" id="kd_poli" name="kd_poli">
+                <option value="">Select</option>
+                {loop: $reg_periksa.poliklinik}
+                <option value="{$value.kd_poli}">{$value.nm_poli}</option>
+                {/loop}                
+              </select>
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="kd_dokter">Nama Dokter <span class="text-danger">*</span></label>
+              <select class="form-select" id="kd_dokter" name="kd_dokter">
+                <option value="">Select</option>
+                {loop: $reg_periksa.dokter}
+                <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                {/loop}                
+              </select>
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="no_rawat">Nomor Rawat <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="no_rawat" name="no_rawat" placeholder="Enter Nomor Rawat">
+                <button type="button" class="btn btn-primary" id="refresh_no_rawat"><i class="ri-refresh-line"></i></button>
+              </div>
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="no_reg">Nomor Antrian <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="no_reg" name="no_reg" placeholder="Enter Nomor Antrian">
+                <button type="button" class="btn btn-primary" id="refresh_no_reg"><i class="ri-refresh-line"></i></button>
+              </div>
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="nm_pasien">Nama Pasien <span class="text-danger">*</span></label>
+              <input type="hidden" class="form-control" id="no_rkm_medis" name="no_rkm_medis" placeholder="Enter Nomor RM">
+              <input type="text" class="form-control" id="nm_pasien" name="nm_pasien" placeholder="Enter Nama Pasien">
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="kd_pj">Cara Bayar <span class="text-danger">*</span></label>
+              <select class="form-select" id="kd_pj" name="kd_pj">
+                <option value="">Select</option>
+                {loop: $reg_periksa.penjab}
+                <option value="{$value.kd_pj}">{$value.png_jawab}</option>
+                {/loop}                
+              </select>
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="p_jawab">Penanggung Jawab <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="p_jawab" name="p_jawab" placeholder="Enter Penanggung Jawab">
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="almt_pj">Alamat PJ<span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="almt_pj" name="almt_pj" placeholder="Enter Alamat PJ">
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="hubunganpj">Hubungan PJ <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="hubunganpj" name="hubunganpj" placeholder="Enter Hubungan PJ">
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="stts">Status <span class="text-danger">*</span></label>
+              <select class="form-select" id="stts" name="stts">
+                <option value="">Select</option>
+                {loop: $reg_periksa.stts}
+                <option value="{$value}">{$value}</option>
+                {/loop}                
+              </select>
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="stts_daftar">Status Daftar <span class="text-danger">*</span></label>
+              <select class="form-select" id="stts_daftar" name="stts_daftar">
+                <option value="">Select</option>
+                {loop: $reg_periksa.stts_daftar}
+                <option value="{$value}">{$value}</option>
+                {/loop}                
+              </select>
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="status_lanjut">Status Lanjut <span class="text-danger">*</span></label>
+              <select class="form-select" id="status_lanjut" name="status_lanjut">
+                <option value="">Select</option>
+                {loop: $reg_periksa.status_lanjut}
+                <option value="{$value}">{$value}</option>
+                {/loop}                
+              </select>
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="status_bayar">Status Bayar <span class="text-danger">*</span></label>
+              <select class="form-select" id="status_bayar" name="status_bayar">
+                <option value="">Select</option>
+                {loop: $reg_periksa.status_bayar}
+                <option value="{$value}">{$value}</option>
+                {/loop}                
+              </select>
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="mb-3">
+              <label class="form-label" for="status_poli">Statu Poli <span class="text-danger">*</span></label>
+              <select class="form-select" id="status_poli" name="status_poli">
+                <option value="">Select</option>
+                {loop: $reg_periksa.status_poli}
+                <option value="{$value}">{$value}</option>
+                {/loop}                
+              </select>
+              <div class="invalid-feedback error"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Row ends -->          
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_reg_periksa" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+      </div>
+      </form>
+  </div>
+  </div>
+</div>
+
+<div id="modal_lihat_reg_periksa" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Pendaftaran</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_reg_periksa"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_reg_periksa" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_reg_periksa_pasien" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

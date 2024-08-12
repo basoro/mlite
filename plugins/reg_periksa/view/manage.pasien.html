@@ -1,0 +1,90 @@
+<div class="modal-header">
+  <h4 class="modal-title">Detail Reg Periksa</h4>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Pasien</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-12 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-control selectator" id='search_field_pasien' name='search_field_pasien' style="margin: 0 !important;"> 
+                              <option value='no_rkm_medis'>No Rkm Medis</option>
+                              <option value='nm_pasien'>Nm Pasien</option>
+                              <option value='no_ktp'>No Ktp</option>
+                              <option value='jk'>Jk</option>
+                              <option value='tmp_lahir'>Tmp Lahir</option>
+                              <option value='tgl_lahir'>Tgl Lahir</option>
+                              <option value='nm_ibu'>Nm Ibu</option>
+                              <option value='alamat'>Alamat</option>
+                              <option value='gol_darah'>Gol Darah</option>
+                              <option value='pekerjaan'>Pekerjaan</option>
+                              <option value='stts_nikah'>Stts Nikah</option>
+                              <option value='agama'>Agama</option>
+                              <option value='no_tlp'>No Tlp</option>
+                              <option value='pnd'>Pnd</option>
+                              <option value='keluarga'>Keluarga</option>
+                              <option value='namakeluarga'>Namakeluarga</option>
+                              <option value='kd_pj'>Kd Pj</option>
+                              <option value='no_peserta'>No Peserta</option>
+                              <option value='kd_kel'>Kd Kel</option>
+                              <option value='kd_kec'>Kd Kec</option>
+                              <option value='kd_kab'>Kd Kab</option>
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_pasien' id='search_text_pasien' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-text">
+                          <span id='searchclear_pasien' data-toggle='tooltip' data-placement='top' title='Clear'><i class="ri-close-line text-danger"></i></span>
+                          </span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_pasien" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                          <th>No Rkm Medis</th>
+                          <th>Nm Pasien</th>
+                          <th>No Ktp</th>
+                          <th>Jk</th>
+                          <th>Tmp Lahir</th>
+                          <th>Tgl Lahir</th>
+                          <th>Nm Ibu</th>
+                          <th>Alamat</th>
+                          <th>Gol Darah</th>
+                          <th>Pekerjaan</th>
+                          <th>Stts Nikah</th>
+                          <th>Agama</th>
+                          <th>No Tlp</th>
+                          <th>Pnd</th>
+                          <th>Keluarga</th>
+                          <th>Namakeluarga</th>
+                          <th>Kd Pj</th>
+                          <th>No Peserta</th>
+                          <th>Kd Kel</th>
+                          <th>Kd Kec</th>
+                          <th>Kd Kab</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+</div>
+
+<script>
+</script>

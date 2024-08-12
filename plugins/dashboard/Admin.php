@@ -6,340 +6,237 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
-  public function navigation()
-  {
-    return [
-      'Main' => 'main',
-      //'Menu' => 'menu'
-    ];
-  }
 
-  public function getMain()
-  {
-    $this->core->addJS(url(MODULES . '/dashboard/js/admin/webcam.js?v={$mlite.version}'));
-    $settings = $this->settings('settings');
-
-    $day = array(
-      'Sun' => 'AKHAD',
-      'Mon' => 'SENIN',
-      'Tue' => 'SELASA',
-      'Wed' => 'RABU',
-      'Thu' => 'KAMIS',
-      'Fri' => 'JUMAT',
-      'Sat' => 'SABTU'
-    );
-    $hari = $day[date('D', strtotime(date('Y-m-d')))];
-
-    $presensi = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
-    $cek_presensi = [];
-    $jam_jaga = [];
-    $cek_rekap = [];
-    $nama_pegawai = '';
-    $teks = array("Jangan Lupa Bahagia", "Cara untuk memulai adalah berhenti berbicara dan mulai melakukan", "Waktu yang hilang tidak akan pernah ditemukan lagi", "Kamu bisa membodohi semua orang, tetapi kamu tidak bisa membohongi pikiranmu", "Ini bukan tentang ide. Ini tentang mewujudkan ide", "Bekerja bukan hanya untuk mencari materi. Bekerja merupakan manfaat bagi banyak orang");
-    $random_keys = array_rand($teks);
-    $teks = $teks[$random_keys];
-    if ($presensi) {
-      $nama_pegawai = $this->core->getPegawaiInfo('nama', $this->core->getUserInfo('username', null, true));
-      if ($this->core->getUserInfo('username', null, true) == 'admin') {
-        $nama_pegawai = 'Administrator';
-      }
-      $idpeg        = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
-      $cek_presensi = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
-      $cek_rekap = $this->db('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%' . date('Y-m-d') . '%')->oneArray();
-      $jam_jaga = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->toArray();
-    }
-    return $this->draw('main.html', [
-      'settings' => $settings,
-      'cek_presensi' => $cek_presensi,
-      'cek_rekap' => $cek_rekap,
-      'jam_jaga' => $jam_jaga,
-      'presensi' => $presensi,
-      'nama' => $nama_pegawai,
-      'teks' => $teks,
-      'notif_presensi' => $this->settings('settings', 'notif_presensi')
-    ]);
-  }
-
-  public function getMenu()
-  {
-    $this->core->addCSS(url(MODULES . '/dashboard/css/admin/dashboard.css?v={$mlite.version}'));
-    $this->core->addJS(url(MODULES . '/dashboard/js/admin/dashboard.js?v={$mlite.version}'), 'footer');
-    return $this->draw('dashboard.html', ['modules' => $this->_modulesList()]);
-  }
-
-  private function _modulesList()
-  {
-    $modules = array_column($this->db('mlite_modules')->asc('sequence')->toArray(), 'dir');
-    $result = [];
-
-    if ($this->core->getUserInfo('access') != 'all') {
-      $modules = array_intersect($modules, explode(',', $this->core->getUserInfo('access')));
+    public function navigation()
+    {
+        return [
+            'Manajemen'   => 'main'
+        ];
     }
 
-    foreach ($modules as $name) {
-      $files = [
-        'info'  => MODULES . '/' . $name . '/Info.php',
-        'admin' => MODULES . '/' . $name . '/Admin.php',
-      ];
+    public function getMain(){ 
 
-      if (file_exists($files['info']) && file_exists($files['admin'])) {
-        $details        = $this->core->getModuleInfo($name);
-        $features       = $this->core->getModuleNav($name);
+        $waktu = gmdate("H:i",time()+8*3600);
+        $t = explode(":",$waktu);
+        $jam = $t[0];
+        $menit = $t[1];
 
-        if (empty($features)) {
-          continue;
-        }
-
-        $details['url'] = url([ADMIN, $name, array_shift($features)]);
-        $details['dir'] = $name;
-
-        $result[] = $details;
-      }
-    }
-    return $result;
-  }
-
-  public function postChangeOrderOfNavItem()
-  {
-    foreach ($_POST as $module => $order) {
-      $this->db('mlite_modules')->where('dir', $module)->save(['sequence' => $order]);
-    }
-    exit();
-  }
-
-  public function postUpload()
-  {
-    if ($photo = isset_or($_FILES['webcam']['tmp_name'], false)) {
-      $img = new \Systems\Lib\Image;
-      if ($img->load($photo)) {
-        if ($img->getInfos('width') < $img->getInfos('height')) {
-          $img->crop(0, 0, $img->getInfos('width'), $img->getInfos('width'));
-        } else {
-          $img->crop(0, 0, $img->getInfos('height'), $img->getInfos('height'));
-        }
-
-        if ($img->getInfos('width') > 512) {
-          $img->resize(512, 512);
-        }
-        $gambar = uniqid('photo') . "." . $img->getInfos('type');
-      }
-
-      if (isset($img) && $img->getInfos('width')) {
-        date_default_timezone_set('Asia/Makassar');
-        $img->save(WEBAPPS_PATH . "/presensi/" . $gambar);
-
-        $urlnya         = WEBAPPS_URL . '/presensi/' . $gambar;
-        $barcode        = $this->core->getUserInfo('username', null, true);
-
-        $bulan = date('m');
-        $tahun = date('y');
-        $hari = date('j');
-        $shift = $_GET['shift'];
-
-        $idpeg          = $this->db('barcode')->where('barcode', $barcode)->oneArray();
-        $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $shift)->oneArray();
-
-        $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h' . $hari, $jam_jaga['shift'])->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
-        $jadwal_tambahan = $this->db('jadwal_tambahan')->where('id', $idpeg['id'])->where('h' . $hari, $jam_jaga['shift'])->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
-        $isFullAbsen = $this->db('rekap_presensi')->where('id', $idpeg['id'])->where('shift', $jam_jaga['shift'])->like('jam_datang', date('Y-m-d') . '%')->oneArray();
-        $isAbsen = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
-
-        $set_keterlambatan  = $this->db('set_keterlambatan')->oneArray();
-        $toleransi      = $set_keterlambatan['toleransi'];
-        $terlambat1     = $set_keterlambatan['terlambat1'];
-        $terlambat2     = $set_keterlambatan['terlambat2'];
-
-        $toleransi      = (int)$toleransi;
-        $terlambat1     = (int)$terlambat1;
-        $terlambat2     = (int)$terlambat2;
-
-        if (!$isFullAbsen) {
-          if (!$isAbsen) {
-            if (!$jadwal_pegawai) {
-              if ($jadwal_tambahan) {
-                if (empty($urlnya)) {
-                  $this->notify('failure', 'Pilih shift dulu...!!!!');
-                } else {
-
-                  $status = 'Tepat Waktu';
-
-                  if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_jaga['jam_masuk'])) > ($toleransi * 60)) {
-                    $status = 'Terlambat Toleransi';
-                  }
-                  if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_jaga['jam_masuk'])) > ($terlambat1 * 60)) {
-                    $status = 'Terlambat I';
-                  }
-                  if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_jaga['jam_masuk'])) > ($terlambat2 * 60)) {
-                    $status = 'Terlambat II';
-                  }
-
-                  if (strtotime(date('Y-m-d H:i:s')) - (date('Y-m-d') . $jam_jaga['jam_masuk']) > ($toleransi * 60)) {
-                    $awal  = new \DateTime(date('Y-m-d') . ' ' . $jam_jaga['jam_masuk']);
-                    $akhir = new \DateTime();
-                    $diff = $akhir->diff($awal, true); // to make the difference to be always positive.
-                    $keterlambatan = $diff->format('%H:%I:%S');
-                  }
-
-                  $insert = $this->db('temporary_presensi')
-                    ->save([
-                      'id' => $idpeg['id'],
-                      'shift' => $jam_jaga['shift'],
-                      'jam_datang' => date('Y-m-d H:i:s'),
-                      'jam_pulang' => NULL,
-                      'status' => $status,
-                      'keterlambatan' => $keterlambatan,
-                      'durasi' => '',
-                      'photo' => $urlnya
-                    ]);
-
-                  if ($insert) {
-                    $this->notify('success', 'Presensi Masuk jam ' . $jam_jaga['jam_masuk'] . ' ' . $status . ' ' . $keterlambatan);
-                  }
-                }
-              } else {
-                $this->notify('failure', 'ID Pegawai atau jadwal shift tidak sesuai!');
-              }
-            } else {
-              if (empty($urlnya)) {
-                $this->notify('failure', 'Pilih shift dulu...!!!!');
-              } else {
-
-                $status = 'Tepat Waktu';
-
-                if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_jaga['jam_masuk'])) > ($toleransi * 60)) {
-                  $status = 'Terlambat Toleransi';
-                }
-                if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_jaga['jam_masuk'])) > ($terlambat1 * 60)) {
-                  $status = 'Terlambat I';
-                }
-                if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_jaga['jam_masuk'])) > ($terlambat2 * 60)) {
-                  $status = 'Terlambat II';
-                }
-
-                if (strtotime(date('Y-m-d H:i:s')) - (date('Y-m-d') . $jam_jaga['jam_masuk']) > ($toleransi * 60)) {
-                  $awal  = new \DateTime(date('Y-m-d') . ' ' . $jam_jaga['jam_masuk']);
-                  $akhir = new \DateTime();
-                  $diff = $akhir->diff($awal, true); // to make the difference to be always positive.
-                  $keterlambatan = $diff->format('%H:%I:%S');
-                }
-
-                $insert = $this->db('temporary_presensi')
-                  ->save([
-                    'id' => $idpeg['id'],
-                    'shift' => $jam_jaga['shift'],
-                    'jam_datang' => date('Y-m-d H:i:s'),
-                    'jam_pulang' => NULL,
-                    'status' => $status,
-                    'keterlambatan' => $keterlambatan,
-                    'durasi' => '',
-                    'photo' => $urlnya
-                  ]);
-
-                if ($insert) {
-                  $this->notify('success', 'Presensi Masuk jam ' . $jam_jaga['jam_masuk'] . ' ' . $status . ' ' . $keterlambatan);
-                }
-              }
+        $this->assign['salam']="Assalamualaikum....";
+        
+        if ($jam >= 00 and $jam < 10 ){
+            if ($menit >00 and $menit<60){
+                $this->assign['salam']="Selamat Pagi";
             }
-          } else {
-            if ($jam_jaga['shift'] != $isAbsen['shift']) {
-              $this->notify('failure', 'ID Pegawai atau jadwal shift tidak sesuai!');
-            } else {
-              $jamDatang = substr($isAbsen['jam_datang'], 16);
-              if ((strtotime(date('Y-m-d H:i')) - strtotime($jamDatang)) < 2 * 60) {
-                $this->notify('failure', 'Sabar ... Jangan pencet terus');
-              } else {
-                $status = $isAbsen['status'];
-                $dayShift = date('Y-m-d');
-                if ($isAbsen['shift'] == 'Malam') {
-                  $dayShift = substr($isAbsen['jam_datang'], 10);
-                  $dayShift = date('Y-m-d', strtotime($dayShift . ' +1 day'));
-                }
-                if ((strtotime(date('Y-m-d H:i:s')) - strtotime($dayShift . $jam_jaga['jam_pulang'])) < 0) {
-                  $status = $isAbsen['status'] . ' & PSW';
-                }
-
-                $awal  = new \DateTime($isAbsen['jam_datang']);
-                $akhir = new \DateTime();
-                $diff = $akhir->diff($awal, true); // to make the difference to be always positive.
-                $durasi = $diff->format('%H:%I:%S');
-
-                $ubah = $this->db('temporary_presensi')
-                  ->where('id', $idpeg['id'])
-                  ->save([
-                    'jam_pulang' => date('Y-m-d H:i:s'),
-                    'status' => $status,
-                    'durasi' => $durasi
-                  ]);
-
-                if ($ubah) {
-                  $presensi = $this->db('temporary_presensi')->where('id', $isAbsen['id'])->oneArray();
-                  $insert = $this->db('rekap_presensi')
-                    ->save([
-                      'id' => $presensi['id'],
-                      'shift' => $presensi['shift'],
-                      'jam_datang' => $presensi['jam_datang'],
-                      'jam_pulang' => $presensi['jam_pulang'],
-                      'status' => $presensi['status'],
-                      'keterlambatan' => $presensi['keterlambatan'],
-                      'durasi' => $presensi['durasi'],
-                      'keterangan' => '-',
-                      'photo' => $presensi['photo']
-                    ]);
-                  if ($insert) {
-                    $this->notify('success', 'Presensi pulang telah disimpan');
-                    $this->db('temporary_presensi')->where('id', $isAbsen['id'])->delete();
-                  }
-                }
-              }
+        }else if ($jam >= 10 and $jam < 15 ){
+            if ($menit >00 and $menit<60){
+                $this->assign['salam']="Selamat Siang";
             }
-          }
-        } else {
-          $this->notify('failure', 'Anda sudah presensi untuk tanggal ' . date('Y-m-d'));
+        }else if ($jam >= 15 and $jam < 18 ){
+            if ($menit >00 and $menit<60){
+                $this->assign['salam']="Selamat Sore";
+            }
+        }else if ($jam >= 18 and $jam <= 24 ){
+            if ($menit >00 and $menit<60){
+                $this->assign['salam']="Selamat Malam";
+            }
+        }else {
+            $this->assign['salam']="Assalamualaikum....";
         }
-      }
+
+        $this->assign['user'] = $this->core->dbmlite->get('mlite_users', '*', ['id' => $_SESSION['mlite_user']]);
+
+        $this->core->addJS(url(['assets/vendor/apex/apexcharts.min.js']), 'footer');
+        if($this->core->dbmlite->get('mlite_users', 'role', ['id' => $_SESSION['mlite_user']]) == 'medis') {
+
+            $this->assign['count_reg_periksa'] = $this->core->db->count('reg_periksa', 'no_rawat', ['tgl_registrasi' => date('Y-m-d'), 'kd_dokter' => $this->core->dbmlite->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']])]);
+            $this->assign['count_booking_operasi'] = $this->core->db->count('booking_operasi', 'no_rawat', ['tanggal' => date('Y-m-d'), 'kd_dokter' => $this->core->dbmlite->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']])]);
+            
+            $this->assign['dokter'] = array_chunk($this->core->db->rand('dokter', [
+                '[>]pegawai' => ['kd_dokter' => 'nik']
+            ], [
+                'kd_dokter', 
+                'nm_dokter', 
+                'bidang', 
+                'photo'
+            ], [
+                'pegawai.stts_aktif' => 'Aktif', 
+                'LIMIT' => 10
+            ]), 2);
+
+            $this->assign['booking_operasi'] = array_chunk($this->core->db->rand('booking_operasi', [
+                '[>]reg_periksa' => ['no_rawat' => 'no_rawat'], 
+                '[>]pasien' => ['reg_periksa.no_rkm_medis' => 'no_rkm_medis'], 
+                '[>]paket_operasi' => ['kode_paket' => 'kode_paket']
+            ], [
+                'pasien.nm_pasien', 
+                'paket_operasi.nm_perawatan', 
+                'tanggal', 
+                'jam_mulai', 
+                'jam_selesai'
+            ], [
+                'booking_operasi.status[!]' => 'Selesai', 
+                'LIMIT' => 10
+            ]), 2);
+
+            $cap = $this->core->dbmlite->get('mlite_users', 'cap', ['id' => $_SESSION['mlite_user']]);
+
+            $this->assign['pendaftaran_pasien'] = $this->core->db->select('reg_periksa', [
+                '[>]pasien' => ['no_rkm_medis' => 'no_rkm_medis'], 
+                '[>]poliklinik' => ['kd_poli' => 'kd_poli'], 
+                '[>]penjab' => ['kd_pj' => 'kd_pj'],
+                '[>]pegawai' => ['kd_dokter' => 'nik']
+            ],[
+                'no_rawat',
+                'no_reg',  
+                'nm_pasien', 
+                'umurdaftar', 
+                'sttsumur', 
+                'nm_poli', 
+                'png_jawab', 
+                'nama', 
+                'photo'
+            ],[
+                'tgl_registrasi' => date('Y-m-d'), 
+                'reg_periksa.kd_poli' => explode(',', $cap), 
+                'LIMIT' => 10
+            ]);
+
+            $this->core->addJS(url(['assets/vendor/rating/raty.js']), 'footer');
+            $this->core->addJS(url(['dashboard', 'dokterjavascript']), 'footer');
+
+            return $this->draw('dokter.html', ['dashboard' => $this->assign]);
+
+        } else {
+
+            $this->assign['count_reg_periksa'] = $this->core->db->count('reg_periksa', 'no_rawat', ['tgl_registrasi' => date('Y-m-d')]);
+            $this->assign['count_kamar_inap'] = $this->core->db->count('kamar_inap', 'no_rawat', ['tgl_masuk' => date('Y-m-d')]);
+            $this->assign['count_booking_operasi'] = $this->core->db->count('booking_operasi', 'no_rawat', ['tanggal' => date('Y-m-d')]);
+            $this->assign['count_pasien_pulang'] = $this->core->db->count('kamar_inap', 'no_rawat', ['tgl_keluar' => date('Y-m-d')]);
+
+            $kamar = $this->core->db->select('kamar', '*', [
+                'GROUP' => 'kd_bangsal'
+            ]);
+            $this->assign['kamar'] = [];
+            foreach($kamar as $row) {
+                $row['nm_bangsal'] = $this->core->db->get('bangsal', 'nm_bangsal', ['kd_bangsal' => $row['kd_bangsal']]);
+                $row['isi'] = $this->core->db->count('kamar', '*', ['kd_bangsal' => $row['kd_bangsal'], 'status' => 'ISI']);
+                $row['kosong'] = $this->core->db->count('kamar', '*', ['kd_bangsal' => $row['kd_bangsal'], 'status' => 'KOSONG']);
+                $this->assign['kamar'][] = $row;
+            }
+
+            $this->core->addJS(url(['dashboard', 'javascript']), 'footer');
+
+            return $this->draw('manage.html', ['dashboard' => $this->assign]);
+        }
+
     }
 
-    exit();
-  }
-
-  public function postGeolocation()
-  {
-
-    $idpeg = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
-
-    if (isset($_POST['lat'], $_POST['lng'])) {
-      if (!$this->db('mlite_geolocation_presensi')->where('id', $idpeg['id'])->where('tanggal', date('Y-m-d'))->oneArray()) {
-        $this->db('mlite_geolocation_presensi')
-          ->save([
-            'id' => $idpeg['id'],
-            'tanggal' => date('Y-m-d'),
-            'latitude' => $_POST['lat'],
-            'longitude' => $_POST['lng']
-          ]);
-      }
+    public function getDokterJavascript()
+    {
+        header('Content-type: text/javascript');
+        $result = [];
+        for ($i=0 ; $i < 7 ;$i++)
+        {
+            $row['date']=date('Y-m-d',strtotime("+{$i} day",strtotime('-1 week', strtotime(date('Y-m-d')))));
+            $row['day'] = \Carbon\Carbon::parse($row['date'])->locale('id')->shortDayName;
+            $row['reg_periksa'] = $this->core->db->count('reg_periksa', 'no_rawat', ['tgl_registrasi' => $row['date']]);
+            $result[] = $row;
+        }
+        $activity['date'] = implode(',', array_column($result, 'date'));
+        $activity['day'] = implode('","', array_column($result, 'day')); 
+        $activity['reg_periksa'] = implode(',', array_column($result, 'reg_periksa'));
+        echo $this->draw(MODULES.'/dashboard/js/dokter.js', ['activity' =>  $activity]);
+        exit();
     }
 
-    exit();
-  }
+    public function getJavascript()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/dashboard/js/scripts.js');
+        exit();
+    }
+    
+    public function getSearch()
+    {
+        $term = '%' . $_GET['term'] . '%';
 
-  public function getHelp($dir)
-  {
-    $files = [
-      'info'      => MODULES . '/' . $dir . '/Info.php',
-      'help'    => MODULES . '/' . $dir . '/Help.md'
-    ];
+        $result = $this->core->db->select('pasien', [
+            'no_rkm_medis', 
+            'nm_pasien'
+        ], [
+            'AND' => [
+                'OR' => [
+                    'no_rkm_medis[~]' => $term, 
+                    'nm_pasien[~]' => $term
+                ]
+            ], 
+            'LIMIT' => 2
+        ]);
 
-    $module = $this->core->getModuleInfo($dir);
-    $module['description'] = $this->tpl->noParse($module['description']);
-
-    // ReadMe.md
-    if (file_exists($files['help'])) {
-      $parsedown = new \Systems\Lib\Parsedown();
-      $module['help'] = $parsedown->text($this->tpl->noParse(file_get_contents($files['help'])));
+        $data = array();
+        foreach($result as $row) {
+            $data[] = $row;
+        }
+    
+        echo json_encode($data);
+        exit();   
     }
 
-    $this->tpl->set('module', $module);
-    echo $this->tpl->draw(MODULES . '/modules/view/admin/help.html', true);
-    exit();
-  }
+    public function getHelp($dir)
+    {
+
+      $module = $this->core->getModuleInfo($dir);
+      $module['description'] = $this->tpl->noParse($module['description']);
+      $module['help'] = $this->tpl->noParse($module['help']);
+    
+      $this->tpl->set('module', $module);
+      echo $this->tpl->draw(MODULES . '/dashboard/view/help.html', true);
+      exit();
+    }
+
+    public function getTest()
+    {
+
+        // $cap = $this->core->dbmlite->get('mlite_users', 'cap', ['id' => $_SESSION['mlite_user']]);
+
+        // $this->assign['pendaftaran_pasien'] = $this->core->db->select('reg_periksa', [
+        //     '[>]pasien' => ['no_rkm_medis' => 'no_rkm_medis'], 
+        //     '[>]poliklinik' => ['kd_poli' => 'kd_poli'], 
+        //     '[>]penjab' => ['kd_pj' => 'kd_pj'],
+        //     '[>]pegawai' => ['kd_dokter' => 'nik']
+        // ],[
+        //     'no_rawat',
+        //     'no_reg',  
+        //     'nm_pasien', 
+        //     'umurdaftar', 
+        //     'sttsumur', 
+        //     'nm_poli', 
+        //     'png_jawab', 
+        //     'nama', 
+        //     'photo'
+        // ],[
+        //     'tgl_registrasi' => date('2024-08-07'), 
+        //     'reg_periksa.kd_poli' => explode(',', $cap), 
+        //     'LIMIT' => 10
+        // ]);
+
+
+        $this->assign['dokter'] = $this->core->db->rand('dokter', [
+            '[>]pegawai' => ['kd_dokter' => 'nik']
+        ], [
+            'kd_dokter', 
+            'nm_dokter', 
+            'bidang', 
+            'photo'
+        ], [
+            'pegawai.stts_aktif' => 'Aktif', 
+            'LIMIT' => 4
+        ]);
+
+        $array_chunk = array_chunk($this->assign['dokter'], 2);
+
+        echo json_encode($array_chunk, JSON_PRETTY_PRINT);        
+        exit();
+    }
+
 }

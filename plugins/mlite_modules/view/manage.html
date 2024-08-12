@@ -1,0 +1,91 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Modul-Modul</h5>
+                <ul class="nav nav-tabs justify-content-end">
+                    <li class="nav-item">
+                        <a href="{?=url('/mlite_modules/manage/active')?}" class="nav-link {if: $tab == 'active'}active{/if}" role="tab">Aktif</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{?=url('/mlite_modules/manage/inactive')?}" class="nav-link {if: $tab == 'inactive'}active{/if}" role="tab">Tidak Aktif</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                {if: !empty($modules)}
+				<div class="table-responsive no-margin">
+					<table id="tbl_modules" class="table table-striped no-margin display dataTable">
+						<thead>
+							<tr>
+								<th>Icon</th>
+								<th>Module</th>
+								<th>Versi</th>
+                                <th>Status</th>
+								<th><span class="float-end">Aksi</span></th>
+							</tr>
+						</thead>
+						<tbody>
+							{loop: $modules}
+                                {loop: $value}
+                                <tr>
+                                    <td class="text-center"><i class="ri-{$value.icon} display-6"></i></td>
+                                    <td>
+                                        <a href="{$value.manageUrl}">
+                                            <strong>{$value.name}</strong>
+                                        </a>
+                                        <p>{$value.description|cut:54}</p>
+                                    </td>
+                                    <td>{$value.version}</td>
+                                    <td>
+                                        {if: !$value.compatible}
+                                            <span class="label label-danger">Lawas</span>
+                                        {else}
+                                            <span class="label label-primary">Sesuai</span>
+                                        {/if}
+                                    </td>
+                                    <td>
+                                        <div class="float-end">
+                                            <a href="{$value.detailsUrl}" class="btn btn-primary btn-xs" data-toggle="modal" data-bs-target="#moduleModal">
+                                                <i class="ri-search-line"></i> <span class="hidden-xs">Detil</span>
+                                            </a>
+                                            {if: $value.installed}
+                                                <a href="{$value.manageUrl}" class="btn btn-success btn-xs">
+                                                    <i class="ri-input-cursor-move"></i> <span class="hidden-xs">Manage</span>
+                                                </a>
+                                                <a href="{$value.uninstallUrl}" class="btn btn-danger btn-xs {if: $value.basic}disabled{/if}" data-confirm="Yakin ingin menonaktifkan modul ini?">
+                                                    <i class="ri-close-line"></i> <span class="hidden-xs">Matikan</span>
+                                                </a>
+                                            {else}
+                                                <a href="{$value.installUrl}" class="btn btn-success btn-xs {if: !$value.compatible}disabled{/if}">
+                                                    <i class="ri-checkbox-circle-line"></i> <span class="hidden-xs">Aktifkan</span>
+                                                </a>
+                                                <a href="{$value.removeUrl}" class="btn btn-danger btn-xs {if: $value.basic}disabled{/if}" data-confirm="Yakin ingin menghapus modul terpilih?">
+                                                    <i class="ri-delete-bin-line"></i> <span class="hidden-xs">Hapus</span>
+                                                </a>
+                                            {/if}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {/loop}
+							{/loop}
+						</tbody>
+					</table>
+				</div>
+                {else}
+                <p class="no-margin">Tidak ada item untuk ditampilkan</p>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="moduleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+

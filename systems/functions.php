@@ -1,9 +1,10 @@
 <?php
-    // require_once '../vendor/autoload.php';
-    // use Endroid\QrCode\ErrorCorrectionLevel;
-    // use Endroid\QrCode\LabelAlignment;
-    // use Endroid\QrCode\QrCode;
-    // use Endroid\QrCode\Response\QrCodeResponse;
+
+function httpReply($code , $msg){
+    http_response_code($code);
+    echo $msg;
+    exit();
+}
 
 function checkEmptyFields(array $keys, array $array)
 {
@@ -31,7 +32,7 @@ function deleteDir($path)
 
 function createSlug($text)
 {
-    setlocale(LC_ALL, 'pl_PL');
+    setlocale(LC_ALL, 'en_EN');
     $text = str_replace(' ', '-', trim($text));
     $text = str_replace('.', '-', trim($text));
     $text = iconv('utf-8', 'ascii//translit', $text);
@@ -58,13 +59,70 @@ function revertNorawat($text)
     return $result;
 }
 
+function mlite_dir() {
+    return dirname($_SERVER['SCRIPT_NAME']);
+}
+
+function isset_or(&$var, $alternate = null)
+{
+    return (isset($var)) ? $var : $alternate;
+}
+
+function url($data = '')
+{
+    if (filter_var($data, FILTER_VALIDATE_URL) !== false) {
+        return $data;
+    }
+
+    if (!is_array($data) && strpos($data, '#') === 0) {
+        return $data;
+    }
+
+    if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off')
+        || isset_or($_SERVER['SERVER_PORT'], null) == 443
+        || isset_or($_SERVER['HTTP_X_FORWARDED_PORT'], null) == 443
+    ) {
+        $protocol = 'https://';
+    } else {
+        $protocol = 'http://';
+    }
+
+    $url = trim($protocol.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']), '/\\');
+
+    if (is_array($data)) {
+        $url = $url.'/'.implode('/', $data);
+    } elseif ($data) {
+        $data = str_replace(BASE_DIR.'/', '', $data);
+        $url = $url.'/'.trim($data, '/');
+    }
+
+    if ($data !== '') {
+        $url = addToken($url);
+    }
+
+    return $url;
+}
+
+function addToken($url)
+{
+    if (isset($_SESSION['token'])) {
+        if (parse_url($url, PHP_URL_QUERY)) {
+            return $url.'&t='.$_SESSION['token'];
+        } else {
+            return $url.'?t='.$_SESSION['token'];
+        }
+    }
+
+    return $url;
+}
+
 function htmlspecialchars_array(array $array)
 {
     foreach ($array as $key => $value) {
         if (is_array($value)) {
             $array[$key] = htmlspecialchars_array($value);
         } else {
-            $array[$key] = htmlspecialchars($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $array[$key] = htmlspecialchars($value ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
         }
     }
 
@@ -112,11 +170,7 @@ function getRedirectData()
 
 function currentURL($query = false)
 {
-    if (isset_or($GLOBALS['core'], null) instanceof \Systems\Admin) {
-        $url = url(ADMIN.'/'.implode('/', parseURL()));
-    } else {
-        $url = url(implode('/', parseURL()));
-    }
+    $url = url(implode('/', parseURL()));
 
     if ($query) {
         return $url.'?'.$_SERVER['QUERY_STRING'];
@@ -124,7 +178,6 @@ function currentURL($query = false)
         return $url;
     }
 }
-
 
 function parseURL($key = null)
 {
@@ -140,99 +193,13 @@ function parseURL($key = null)
     }
 }
 
-
-function addToken($url)
+function cv($variable)
 {
-    if (isset($_SESSION['token'])) {
-        if (parse_url($url, PHP_URL_QUERY)) {
-            return $url.'&t='.$_SESSION['token'];
-        } else {
-            return $url.'?t='.$_SESSION['token'];
-        }
+    if (!is_string($variable) && is_callable($variable)) {
+        return $variable();
     }
 
-    return $url;
-}
-
-function addTokenVedika($url)
-{
-    if (isset($_SESSION['vedika_token'])) {
-        if (parse_url($url, PHP_URL_QUERY)) {
-            return $url.'&t='.$_SESSION['vedika_token'];
-        } else {
-            return $url.'?t='.$_SESSION['vedika_token'];
-        }
-    }
-
-    return $url;
-}
-
-function url($data = null)
-{
-    if (filter_var($data, FILTER_VALIDATE_URL) !== false) {
-        return $data;
-    }
-
-    if (!is_array($data) && strpos($data, '#') === 0) {
-        return $data;
-    }
-
-    if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off')
-        || isset_or($_SERVER['SERVER_PORT'], null) == 443
-        || isset_or($_SERVER['HTTP_X_FORWARDED_PORT'], null) == 443
-    ) {
-        $protocol = 'https://';
-    } else {
-        $protocol = 'http://';
-    }
-
-    $url = trim($protocol.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']), '/\\');
-    $url = str_replace('/'.ADMIN, '', $url);
-
-    if (is_array($data)) {
-        $url = $url.'/'.implode('/', $data);
-    } elseif ($data) {
-        $data = str_replace(BASE_DIR.'/', null, $data);
-        $url = $url.'/'.trim($data, '/');
-    }
-
-    if (strpos($url, '/'.ADMIN.'/') !== false) {
-        $url = addToken($url);
-    }
-
-    if (strpos($url, '/veda/') !== false) {
-        $url = addTokenVedika($url);
-    }
-
-    return $url;
-}
-
-
-function domain($with_protocol = true, $cut_www = false)
-{
-    $url = parse_url(url());
-
-    if ($cut_www && strpos($url['host'], 'www.') === 0) {
-        $host = str_replace('www.', null, $url['host']);
-    } else {
-        $host = $url['host'];
-    }
-
-    if ($with_protocol) {
-        return $url['scheme'].'://'.$host;
-    }
-
-    return $host;
-}
-
-
-function mlite_dir() {
-    return dirname(str_replace(ADMIN, null, $_SERVER['SCRIPT_NAME']));
-}
-
-function isset_or(&$var, $alternate = null)
-{
-    return (isset($var)) ? $var : $alternate;
+    return $variable;
 }
 
 function cmpver($a, $b)
@@ -320,250 +287,67 @@ function gz64_decode($string)
     return gzuncompress(base64_decode(str_replace(['_', '-'], ['+', '/'], $string)));
 }
 
-function cv($variable)
-{
-    if (!is_string($variable) && is_callable($variable)) {
-        return $variable();
-    }
-
-    return $variable;
-}
-
-function month()
-{
-  $month = [
-    'jan' => 'Januari',
-    'feb' => 'Februari',
-    'mar' => 'Maret',
-    'apr' => 'April',
-    'may' => 'Mey',
-    'jun' => 'Juni',
-    'jul' => 'Juli',
-    'aug' => 'Agustus',
-    'sep' => 'September',
-    'oct' => 'Oktober',
-    'nov' => 'Nopember',
-    'dec' => 'Desember'
-  ];
-  return $month;
-}
-
-function getDayIndonesia($date)
-{
-    if($date != '0000-00-00'){
-        $data = hari(date('D', strtotime($date)));
-    }else{
-        $data = '-';
-    }
-
-    return $data;
-}
-
-
-function hari($day) {
-    $hari = $day;
-
-    switch ($hari) {
-        case "Sun":
-            $hari = "Minggu";
-            break;
-        case "Mon":
-            $hari = "Senin";
-            break;
-        case "Tue":
-            $hari = "Selasa";
-            break;
-        case "Wed":
-            $hari = "Rabu";
-            break;
-        case "Thu":
-            $hari = "Kamis";
-            break;
-        case "Fri":
-            $hari = "Jum'at";
-            break;
-        case "Sat":
-            $hari = "Sabtu";
-            break;
-    }
-    return $hari;
-}
-
-function dateIndonesia($date){
-    if($date != '0000-00-00'){
-        $date = explode('-', $date);
-
-        $data = $date[2] . ' ' . bulan($date[1]) . ' '. $date[0];
-    }else{
-        $data = 'Format tanggal salah';
-    }
-
-    return $data;
-}
-
-function bulan($bln) {
-    $bulan = $bln;
-
-    switch ($bulan) {
-        case 1:
-            $bulan = "Januari";
-            break;
-        case 2:
-            $bulan = "Februari";
-            break;
-        case 3:
-            $bulan = "Maret";
-            break;
-        case 4:
-            $bulan = "April";
-            break;
-        case 5:
-            $bulan = "Mei";
-            break;
-        case 6:
-            $bulan = "Juni";
-            break;
-        case 7:
-            $bulan = "Juli";
-            break;
-        case 8:
-            $bulan = "Agustus";
-            break;
-        case 9:
-            $bulan = "September";
-            break;
-        case 10:
-            $bulan = "Oktober";
-            break;
-        case 11:
-            $bulan = "November";
-            break;
-        case 12:
-            $bulan = "Desember";
-            break;
-    }
-    return $bulan;
-}
-
-function penyebut($nilai) {
-	$nilai = abs($nilai);
-	$huruf = array('','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan','Sepuluh','Sebelas');
-	$temp = "";
-	if ($nilai < 12) {
-		$temp = " ". $huruf[$nilai];
-	} else if ($nilai <20) {
-		$temp = penyebut($nilai - 10). " Belas";
-	} else if ($nilai < 100) {
-		$temp = penyebut($nilai/10)." Puluh". penyebut($nilai % 10);
-	} else if ($nilai < 200) {
-		$temp = " Seratus" . penyebut($nilai - 100);
-	} else if ($nilai < 1000) {
-		$temp = penyebut($nilai/100) . " Ratus" . penyebut($nilai % 100);
-	} else if ($nilai < 2000) {
-		$temp = " Seribu" . penyebut($nilai - 1000);
-	} else if ($nilai < 1000000) {
-		$temp = penyebut($nilai/1000) . " Ribu" . penyebut($nilai % 1000);
-	} else if ($nilai < 1000000000) {
-		$temp = penyebut($nilai/1000000) . " Juta" . penyebut($nilai % 1000000);
-	} else if ($nilai < 1000000000000) {
-		$temp = penyebut($nilai/1000000000) . " Milyar" . penyebut(fmod($nilai,1000000000));
-	} else if ($nilai < 1000000000000000) {
-		$temp = penyebut($nilai/1000000000000) . " Trilyun" . penyebut(fmod($nilai,1000000000000));
-	}
-	return $temp;
-}
-
-function terbilang($nilai) {
-	if($nilai<0) {
-		$hasil = "Minus ". trim(penyebut($nilai));
-	} else {
-		$hasil = trim(penyebut($nilai));
-	}
-	return $hasil;
-}
-
-if (!function_exists('apache_request_headers')) {
-    function apache_request_headers() {
-        $return = array();
-        foreach($_SERVER as $key=>$value) {
-            if (substr($key,0,5)=="HTTP_") {
-                $key=str_replace(" ","-",ucwords(strtolower(str_replace("_"," ",substr($key,5)))));
-                $return[$key]=$value;
-            }else{
-                $return[$key]=$value;
-	        }
+function array_to_table($arr, $first=true, $sub_arr=false){
+    $width = ($sub_arr) ? 'width="100%"' : '' ;
+    $table = ($first) ? '<table class="table table-bordered" align="center" '.$width.' bgcolor="#FFFFFF" border="1px solid">' : '';
+    $rows = array();
+    foreach ($arr as $key => $value):
+        $value_type = gettype($value);
+        switch ($value_type) {
+            case 'string':
+                $val = (in_array($value, array(""))) ? "&nbsp;" : $value;
+                $rows[] = "<tr><td><strong>{$key}</strong></td><td>{$val}</td></tr>";
+                break;
+            case 'integer':
+                $val = (in_array($value, array(""))) ? "&nbsp;" : $value;
+                $rows[] = "<tr><td><strong>{$key}</strong></td><td>{$value}</td></tr>";
+                break;
+            case 'array':
+                if (gettype($key) == "integer"):
+                    $rows[] = array_to_table($value, false);
+                elseif(gettype($key) == "string"):
+                    $rows[] = "<tr><td><strong>{$key}</strong></td><td>".
+                    array_to_table($value, true, true) . "</td>";
+                endif;
+                break;
+            default:
+                # code...
+                break;
         }
-        return $return;
+    endforeach;
+    $ROWS = implode("\n", $rows);
+    $table .= ($first) ? $ROWS . '</table>' : $ROWS;
+    return $table;
+}
+
+function get_x_header($string){
+    $header = '';
+    if (function_exists('apache_request_headers')) {
+        $requestHeaders = apache_request_headers();
+        // Server-side fix for bug in old Android versions (a nice side-effect of this fix means we don't care about capitalization for Authorization)
+        $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
+        //print_r($requestHeaders);
+        if (isset($requestHeaders[$string])) {
+            $header = trim($requestHeaders[$string]);
+        }
     }
+    return $header;
 }
 
-function sendMSG($number, $msg, $sender)
-{
-    $url = "https://waapi.basoro.id/send-message";
-    $data = [
-        "sender" => $sender,
-        "number" => $number,
-        "message" => $msg
-    ];
+function isAllowed($ip, $whitelist){
+    // If the ip is matched, return true
+    if(in_array($ip, $whitelist)) {
+        return true;
+    }
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-    curl_setopt($ch, CURLOPT_URL, $url);
-    //  curl_setopt($ch, CURLOPT_TIMEOUT_MS, 10000);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    $result = curl_exec($ch);
-    curl_close($ch);
-    return json_decode($result, true);
-}
+    foreach($whitelist as $i){
+        $wildcardPos = strpos($i, "*");
 
-function sendMedia($number, $message, $sender, $filetype, $filename, $urll)
-{
-    $url = "https://waapi.basoro.id/send-media";
-    $data = [
-        'sender' => $sender,
-        'number' => $number,
-        'caption' => $message,
-        'url' => $urll,
-        'filename' => $filename,
-        'filetype' => $filetype,
-    ];
-    //var_dump($data); die;
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    $result = curl_exec($ch);
-    curl_close($ch);
-    return json_decode($result, true);
-}
+        // Check if the ip has a wildcard
+        if($wildcardPos !== false && substr($ip, 0, $wildcardPos) . "*" == $i) {
+            return true;
+        }
+    }
 
-function formatDuit($duit){
-    return "Rp. ".number_format($duit,0,",",".").",-";
-}
-
-function stringDecrypt($key, $string){
-    //date_default_timezone_set('UTC');
-    //$tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
-    //=====KEY====/
-    //$key = $consid.$secretkey.$tStamp;
-
-    $encrypt_method = 'AES-256-CBC';
-    $key_hash = hex2bin(hash('sha256', $key));
-    $iv = substr(hex2bin(hash('sha256', $key)), 0, 16);
-
-    $output = openssl_decrypt(base64_decode($string), $encrypt_method, $key_hash, OPENSSL_RAW_DATA, $iv);
-
-    return $output;
-}
-
-function decompress($string){
-    return \LZCompressor\LZString::decompressFromEncodedURIComponent($string);
+    return false;
 }

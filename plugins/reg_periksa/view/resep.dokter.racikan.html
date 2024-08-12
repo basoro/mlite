@@ -1,0 +1,239 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-12 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='tambah_data_resep_dokter_racikan' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.resep_dokter_racikan.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_resep_dokter_racikan' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.resep_dokter_racikan.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_resep_dokter_racikan' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.resep_dokter_racikan.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_resep_dokter_racikan" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>[]</th>
+                            <th>No Resep</th>
+                            <th>Tgl Perawatan</th>
+                            <th>Jam</th>
+                            <th>No Rawat</th>
+                            <th>Kd Dokter</th>
+                            <th>Tgl Peresepan</th>
+                            <th>Jam Peresepan</th>
+                            <th>Status</th>
+                            <th>Tgl Penyerahan</th>
+                            <th>Jam Penyerahan</th>
+                            <th>No Racik</th>
+                            <th>Nama Racik</th>
+                            <th>Kd Racik</th>
+                            <th>Jml Dr</th>
+                            <th>Aturan Pakai</th>
+                            <th>Keterangan</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_resep_dokter_racikan" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Resep Dokter Racikan</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_resep_dokter_racikan">
+            <input type="hidden" class="form-control" id="typeact" /> 
+        <div class='row gx-3'>
+            <div class='col-xxl-4 col-lg-4 col-sm-6'>
+                <div class='mb-3'>
+                <label class='form-label' for='no_resep'>No Resep</label>
+                <div class="input-group">
+                  <input type='text' class='form-control' id='no_resep_racikan' name='no_resep' />
+                  <button type="button" class="btn btn-success" id="refresh_no_resep_racikan"><i class="ri-refresh-line"></i></button>  
+                </div>
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-4 col-lg-4 col-sm-6'>
+                <div class='mb-3'>
+                <label class='form-label' for='no_rawat'>No Rawat</label>
+                <input type='text' class='form-control' id='no_rawat_resep_dokter_racikan' name='no_rawat' />
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-4 col-lg-4 col-sm-6'>
+                <div class='mb-3'>
+                <label class='form-label' for='kd_dokter'>Kd Dokter</label>
+                <select class="form-select" name="kd_dokter" id="kd_dokter">
+                  <option value="">Select</option>
+                  {loop: $view.dokter}
+                  <option value="{$value.kd_dokter}" {if: $value.kd_dokter == $view.user}selected{/if}>{$value.nm_dokter}</option>
+                  {/loop}
+                </select>
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-4 col-lg-4 col-sm-6'>
+                <div class='mb-3'>
+                <label class='form-label' for='tgl_peresepan'>Tgl Peresepan</label>
+                <input type='text' class='form-control datepicker' id='tgl_peresepan' name='tgl_peresepan' />
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-4 col-lg-4 col-sm-6'>
+                <div class='mb-3'>
+                <label class='form-label' for='jam_peresepan'>Jam Peresepan</label>
+                <input type='text' class='form-control timepicker' id='jam_peresepan' name='jam_peresepan' />
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+            <div class='col-xxl-4 col-lg-4 col-sm-6'>
+                <div class='mb-3'>
+                <label class='form-label' for='status'>Status</label>
+                <select class="form-select" name="status" id="status_racikan">
+                  <option value="">Select</option>
+                  <option value="ralan">Rawat Jalan</option>
+                  <option value="ranap">Rawat Inap</option>
+                </select>
+                <div class='invalid-feedback error'></div>
+                </div>
+            </div>
+
+                    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+                        <div class='mb-3'>
+                        <label class='form-label' for='kd_racik'>Racikan</label>
+                        <select class="form-select" name="kd_racik" id="kd_racik">
+                            <option value="">Select</option>
+                            {loop: $view.metode_racik} 
+                            <option value="{$value.kd_racik}">{$value.nm_racik}</option>
+                            {/loop}
+                        </select>
+                        <div class='invalid-feedback error'></div>
+                        </div>
+                    </div>
+                    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+                        <div class='mb-3'>
+                        <label class='form-label' for='jml_dr'>Jml Dr</label>
+                        <input type='text' class='form-control' id='jml_dr' name='jml_dr' />
+                        <div class='invalid-feedback error'></div>
+                        </div>
+                    </div>
+                    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+                        <div class='mb-3'>
+                        <label class='form-label' for='aturan_pakai'>Aturan Pakai</label>
+                        <input type='text' class='form-control' id='aturan_pakai' name='aturan_pakai' />
+                        <div class='invalid-feedback error'></div>
+                        </div>
+                    </div>
+                    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+                        <div class='mb-3'>
+                        <label class='form-label' for='keterangan'>Keterangan</label>
+                        <input type='text' class='form-control' id='keterangan' name='keterangan' />
+                        <div class='invalid-feedback error'></div>
+                        </div>
+                    </div>
+
+                    <div id="repeat-div-racikan">
+                        <div class="outer row">
+                          <div class='col-xxl-6 col-lg-6 col-sm-6'>
+                              <div class='mb-3'>
+                                  <label class='form-label' for='kode_brng'>Kode Brng</label>
+                                  <select class="form-select" name="kode_brng[]" id="kode_brng_racikan">
+                                    <option value="">Select</option>
+                                    {loop: $view.databarang}
+                                    <option value="{$value.kode_brng}" data-subtitle="{$value.h_beli}" data-right="{$value.kapasitas}">{$value.nama_brng}</option>
+                                    {/loop}
+                                  </select>
+                                  <div class='invalid-feedback error'></div>
+                              </div>
+                          </div>
+                          <div class='col-xxl-2 col-lg-2 col-sm-6'>
+                              <div class='mb-3'>
+                              <label class='form-label' for='kandungan'>Kandungan</label>
+                              <input type='text' class='form-control' id='kandungan' name='kandungan[]' />
+                              <div class='invalid-feedback error'></div>
+                              </div>
+                          </div>
+                          <div class='col-xxl-1 col-lg-1 col-sm-6'>
+                              <div class='mb-3'>
+                              <label class='form-label' for='p1'>Pembilang</label>
+                              <input type='text' class='form-control' id='p1' name='p1[]' />
+                              <div class='invalid-feedback error'></div>
+                              </div>
+                          </div>
+                          <div class='col-xxl-1 col-lg-1 col-sm-6'>
+                              <div class='mb-3'>
+                              <label class='form-label' for='p2'>Penyebut</label>
+                              <input type='text' class='form-control' id='p2' name='p2[]' />
+                              <div class='invalid-feedback error'></div>
+                              </div>
+                          </div>
+                          <div class='col-xxl-2 col-lg-2 col-sm-6'>
+                              <div class='mb-3'>
+                                <label class='form-label' for='kandungan'>Kapasitas</label>
+                                <div class="input-group">
+                                  <input type='text' class='form-control' id='kapasitas' name='kapasitas[]' />
+                                  <button class="btn btn-success btn-add" id="coannnn" type="button"><i class="ri-add-line"></i></button>      
+                                </div>
+                                <div class='invalid-feedback error'></div>
+                              </div>
+                          </div>                          
+                        </div>
+                    </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_resep_dokter_racikan" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_resep_dokter_racikan" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Resep Dokter Racikan</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_resep_dokter_racikan"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_resep_dokter_racikan" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

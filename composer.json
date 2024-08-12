@@ -1,5 +1,19 @@
 {
+    "name": "basoro/mlite",
+    "description": "SIM Kesehatan Aman, Ringan & Modular. Jalan di sisi server sebagai aplikasi web (PWA Ready) dan bersifat mobile first (responsive).",
+    "type": "project",
     "require": {
-        "nullpunkt/lz-string-php": "^1.3"
-    }
+        "catfan/medoo": "*",
+        "guzzlehttp/guzzle": ">=6.0", 
+        "bridging/bpjs": "^1.0", 
+        "workerman/workerman": "^4.0",
+        "nesbot/carbon": "^3.6"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "basoro",
+            "email": "dentix.id@gmail.com"
+        }
+    ]
 }

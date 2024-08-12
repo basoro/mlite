@@ -1,0 +1,258 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Jns Perawatan</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-6 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_jns_perawatan' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_jns_perawatan' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_jns_perawatan' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_jns_perawatan' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-select" id='search_field_jns_perawatan' name='search_field_jns_perawatan' style="margin: 0 !important;"> 
+                              <option value='kd_jenis_prw'>Kd Jenis Prw</option>
+                              <option value='nm_perawatan'>Nm Perawatan</option>
+                              <option value='kd_kategori'>Kd Kategori</option>
+                              <option value='material'>Material</option>
+                              <option value='bhp'>Bhp</option>
+                              <option value='tarif_tindakandr'>Tarif Tindakandr</option>
+                              <option value='tarif_tindakanpr'>Tarif Tindakanpr</option>
+                              <option value='kso'>Kso</option>
+                              <option value='menejemen'>Menejemen</option>
+                              <option value='total_byrdr'>Total Byrdr</option>
+                              <option value='total_byrpr'>Total Byrpr</option>
+                              <option value='total_byrdrpr'>Total Byrdrpr</option>
+                              <option value='kd_pj'>Kd Pj</option>
+                              <option value='kd_poli'>Kd Poli</option>
+                              <option value='status'>Status</option>
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_jns_perawatan' id='search_text_jns_perawatan' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-text" id='filter_search_jns_perawatan' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_jns_perawatan" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>Kd Jenis Prw</th>
+                            <th>Nm Perawatan</th>
+                            <th>Kd Kategori</th>
+                            <th>Material</th>
+                            <th>Bhp</th>
+                            <th>Tarif Tindakandr</th>
+                            <th>Tarif Tindakanpr</th>
+                            <th>Kso</th>
+                            <th>Menejemen</th>
+                            <th>Total Byrdr</th>
+                            <th>Total Byrpr</th>
+                            <th>Total Byrdrpr</th>
+                            <th>Kd Pj</th>
+                            <th>Kd Poli</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_jns_perawatan" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Jns Perawatan</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_jns_perawatan">
+        <input type="hidden" class="form-control" id="typeact" /> 
+        <div class='row gx-3'>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_jenis_prw'>Kd Jenis Prw</label>
+              <input type='text' class='form-control' id='kd_jenis_prw' name='kd_jenis_prw' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='nm_perawatan'>Nm Perawatan</label>
+              <input type='text' class='form-control' id='nm_perawatan' name='nm_perawatan' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_kategori'>Kd Kategori</label>
+              <select name="kd_kategori" id="kd_kategori" class="form-select">
+                <option value="">Select</option>
+                {loop: $jns_perawatan.kategori_perawatan} 
+                  <option value="{$value.kd_kategori}">{$value.nm_kategori}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='material'>Material</label>
+              <input type='text' class='form-control' id='material' name='material' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='bhp'>Bhp</label>
+              <input type='text' class='form-control' id='bhp' name='bhp' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='tarif_tindakandr'>Tarif Tindakandr</label>
+              <input type='text' class='form-control' id='tarif_tindakandr' name='tarif_tindakandr' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='tarif_tindakanpr'>Tarif Tindakanpr</label>
+              <input type='text' class='form-control' id='tarif_tindakanpr' name='tarif_tindakanpr' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kso'>Kso</label>
+              <input type='text' class='form-control' id='kso' name='kso' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='menejemen'>Menejemen</label>
+              <input type='text' class='form-control' id='menejemen' name='menejemen' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='total_byrdr'>Total Byrdr</label>
+              <input type='text' class='form-control' id='total_byrdr' name='total_byrdr' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='total_byrpr'>Total Byrpr</label>
+              <input type='text' class='form-control' id='total_byrpr' name='total_byrpr' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='total_byrdrpr'>Total Byrdrpr</label>
+              <input type='text' class='form-control' id='total_byrdrpr' name='total_byrdrpr' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_pj'>Kd Pj</label>
+              <select name="kd_pj" id="kd_pj" class="form-select">
+                <option value="">Select</option>
+                {loop: $jns_perawatan.penjab} 
+                  <option value="{$value.kd_pj}">{$value.png_jawab}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_poli'>Kd Poli</label>
+              <select name="kd_poli" id="kd_poli" class="form-select">
+                <option value="">Select</option>
+                {loop: $jns_perawatan.poliklinik} 
+                  <option value="{$value.kd_poli}">{$value.nm_poli}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='status'>Status</label>
+              <select name="status" id="status" class="form-select">
+                <option value="">Select</option>
+                <option value="1">Aktif</option>
+                <option value="0">Tidak Aktif</option>
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_jns_perawatan" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_jns_perawatan" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Jns Perawatan</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_jns_perawatan"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_jns_perawatan" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

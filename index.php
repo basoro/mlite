@@ -14,8 +14,35 @@ if (DEV_MODE) {
 }
 
 require_once('systems/lib/Autoloader.php');
-ob_start(base64_decode('XFN5c3RlbXNcTWFpbjo6dmVyaWZ5TGljZW5zZQ=='));
 
-$core = new Systems\Site;
+$core = new Systems\Admin;
+
+if ($core->loginCheck()) {
+    $core->loadModules();
+
+    $core->router->set('(:str)/(:str)(:any)', function ($module, $method, $params) use ($core) {
+        $core->createNav($module, $method);
+        if ($params) {
+            $core->loadModule($module, $method, explode('/', trim($params, '/')));
+        } else {
+            $core->loadModule($module, $method);
+        }
+    });
+
+    $core->router->execute();
+    $core->drawTheme('index.html');
+    $core->module->finishLoop();
+} else {
+    if (isset($_POST['login'])) {
+        if ($core->login($_POST['mlite_username'], $_POST['mlite_password'], isset($_POST['mlite_remember_me']))) {
+            if (count($arrayURL = parseURL()) > 1) {
+                $url = array_merge($arrayURL);
+                redirect(url($url));
+            }
+            redirect(url(['dashboard', 'main']));
+        }
+    }
+    $core->drawTheme('login.html');
+}
 
 ob_end_flush();

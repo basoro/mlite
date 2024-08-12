@@ -1,0 +1,37 @@
+<ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <a class="nav-link active" id="tab-resep-dokter" data-bs-toggle="tab" href="#resep-dokter" role="tab" aria-controls="resep-dokter" aria-selected="true"> 
+        Resep Dokter
+      </a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="tab-resep-dokter-racikan" data-bs-toggle="tab" href="#resep-dokter-racikan" role="tab" aria-controls="resep-dokter-racikan" aria-selected="false"> 
+        Resep Dokter Racikan
+      </a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="resep-dokter" role="tabpanel">
+
+        <!-- Row starts -->
+        <div class="row gx-3">
+            <div class="col-md-12" id="resep_dokter_reg_periksa">
+                {include: ./plugins/reg_periksa/view/resep.dokter.html}
+            </div>
+        </div>
+        <!-- Row ends -->
+
+    </div>
+    <div class="tab-pane fade" id="resep-dokter-racikan" role="tabpanel">
+
+        <!-- Row starts -->
+        <div class="row gx-3">
+            <div class="col-md-12" id="resep_dokter_racikan_reg_periksa">
+                {include: ./plugins/reg_periksa/view/resep.dokter.racikan.html}
+            </div>
+        </div>
+        <!-- Row ends -->
+
+    </div>
+</div>
+

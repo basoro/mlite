@@ -1,0 +1,174 @@
+<div class="row gx-3">
+    <div class="col-xxl-4 col-xl-4 d-none d-xl-block">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">List Pasien</h5>
+            </div>
+            <div class="card-body list-group-scroll">
+                <div class="form-inline mb-3">
+                    <input class="form-control mr-sm-2" id="filter-pasien" type="search" placeholder="Search" aria-label="Search" autocomplete="off">
+                </div>
+                <div class="list-group w-auto" id="list-pasien">
+                    {loop: $reg_periksa}
+                    <a href="{$value.viewUrl}" 
+                      data-norawat="{?=convertNoRawat($value.no_rawat)?}" data-no_rawat="{?=$value.no_rawat?}"  data-no_rkm_medis="{?=$value.no_rkm_medis?}" class="{if: revertNoRawat($parseUrl) == $value.no_rawat}active{/if} list-group-item list-group-item-action gap-3 py-3" aria-current="true">
+                        <div class="d-flex gap-2 w-100">
+                            <div>
+                                <h6 class="mb-0">{$value.nm_pasien}</h6>
+                                <p class="mb-0 opacity-75">
+                                    {$value.no_rawat} ({$value.no_rkm_medis})<br> 
+                                    {$value.alamat}, {$value.no_tlp}
+                                </p>    
+                            </div>
+                        </div>
+                    </a>
+                    {/loop}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-8 col-xl-8 col-lg-12 col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Pemeriksaan Pasien</h5>
+            </div>
+            <div class="card-body pemeriksaan-group-scroll">
+                <div class="list-pemeriksaan">
+                    <!-- Custom tabs starts -->
+                    <div class="custom-tabs-container">
+
+                        <!-- Nav tabs starts -->
+                        <ul class="nav nav-tabs" id="riwayatTabs" role="tablist">
+                          <li class="nav-item" role="presentation">
+                            <a class="nav-link active" id="tab-riwayat" data-bs-toggle="tab" href="#riwayat" role="tab" aria-controls="riwayat" aria-selected="true"> 
+                              Riwayat
+                            </a>
+                          </li>
+                          <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="tab-pemeriksaan" data-bs-toggle="tab" href="#pemeriksaan_ralan" role="tab" aria-controls="pemeriksaan" aria-selected="false"> 
+                              Pemeriksaan
+                            </a>
+                          </li>
+                          <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="tab-tindakan" data-bs-toggle="tab" href="#tindakan" role="tab" aria-controls="tindakan" aria-selected="false"> 
+                              Tindakan
+                            </a>
+                          </li>
+                          <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="tab-resep" data-bs-toggle="tab" href="#resep" role="tab" aria-controls="resep" aria-selected="false"> 
+                              Resep
+                            </a>
+                          </li>
+                          <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="tab-laboratorium" data-bs-toggle="tab" href="#laboratorium" role="tab" aria-controls="laboratorium" aria-selected="false"> 
+                              Laboratorium
+                            </a>
+                          </li>
+                          <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="tab-radiologi" data-bs-toggle="tab" href="#radiologi" role="tab" aria-controls="radiologi" aria-selected="false"> 
+                              Radiologi
+                            </a>
+                          </li>
+                        </ul>
+                        <!-- Nav tabs ends -->
+
+                        <!-- Tab content starts -->
+                        <div class="tab-content">
+                          <div class="tab-pane fade show active" id="riwayat" role="tabpanel">
+  
+                            <!-- Row starts -->
+                            <div class="row gx-3">
+                                <table id="tbl_pemeriksaan_riwayat" class="table table-striped display dataTable" style="width:100%">
+                                    <thead>
+                                    <tr> 
+                                      <th>[]</th>
+                                      <th>No Rawat</th>
+                                      <th>Tgl Registrasi</th>
+                                      <th>Jam Reg</th>
+                                      <th>Kd Dokter</th>
+                                      <th>No Rkm Medis</th>
+                                      <th>Kd Poli</th>
+                                      <th>P Jawab</th>
+                                      <th>Almt Pj</th>
+                                      <th>Hubunganpj</th>
+                                      <th>Biaya Reg</th>
+                                      <th>Stts</th>
+                                      <th>Stts Daftar</th>
+                                      <th>Status Lanjut</th>
+                                      <th>Kd Pj</th>
+                                      <th>Status Bayar</th>
+                                      <th>Status Poli</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>                          
+                            <!-- Row ends -->
+  
+                          </div>
+                          <div class="tab-pane fade" id="pemeriksaan_ralan" role="tabpanel">
+  
+                            <!-- Row starts -->
+                            <div class="row gx-3">
+                              <div class="col-md-12" id="pemeriksaan_ralan_reg_periksa">
+                                {include: ./plugins/reg_periksa/view/pemeriksaan.ralan.html}
+                              </div>
+                            </div>
+                            <!-- Row ends -->
+  
+                          </div>
+                          <div class="tab-pane fade" id="tindakan" role="tabpanel">
+  
+                            <!-- Row starts -->
+                            <div class="row gx-3">
+                              <div class="col-md-12" id="tindakan_reg_periksa">
+                                {include: ./plugins/reg_periksa/view/tindakan.html}
+                              </div>
+                            </div>
+                            <!-- Row ends -->
+  
+                          </div>
+                          <div class="tab-pane fade" id="resep" role="tabpanel">
+  
+                            <!-- Row starts -->
+                            <div class="row gx-3">
+                              <div class="col-md-12">
+                                {include: ./plugins/reg_periksa/view/resep.obat.html}
+                              </div>
+                            </div>
+                            <!-- Row ends -->
+  
+                          </div>
+                          <div class="tab-pane fade" id="laboratorium" role="tabpanel">
+  
+                            <!-- Row starts -->
+                            <div class="row gx-3">
+                              <div class="col-md-12">
+                                {include: ./plugins/reg_periksa/view/permintaan.lab.html}
+                              </div>
+                            </div>
+                            <!-- Row ends -->
+  
+                          </div>
+                          <div class="tab-pane fade" id="radiologi" role="tabpanel">
+  
+                            <!-- Row starts -->
+                            <div class="row gx-3">
+                              <div class="col-md-12">
+                                {include: ./plugins/reg_periksa/view/permintaan.radiologi.html}
+                              </div>
+                            </div>
+                            <!-- Row ends -->
+  
+                          </div>
+                        </div>
+                        <!-- Tab content ends -->
+  
+                    </div>
+                    <!-- Custom tabs ends -->                      
+                </div>              
+            </div>
+        </div>
+    </div>
+</div>

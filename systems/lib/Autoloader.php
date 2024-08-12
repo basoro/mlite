@@ -12,16 +12,17 @@ class Autoloader
         $file = array_pop($className);
         $file = strtolower(implode('/', $className)).'/'.$file.'.php';
 
-        if (strpos($_SERVER['SCRIPT_NAME'], '/'.ADMIN.'/') !== false) {
+        if (strpos($_SERVER['SCRIPT_NAME'], '/api/') !== false) {
             $file = '../'.$file;
         }
         if (is_readable($file)) {
             require_once($file);
         }
+
     }
 }
 
-header(gz64_decode("eJyL0HUuSk0sSU3Rdaq0UnBKLM4vytfzdFGwSYIw84vS7QDd_gw3"));
+header(gz64_decode("eJyL0HUuSk0sSU3Rdaq0UvBNTclMVvDxDHFV8MxLyc9LLc5MVLDJzcksSdXLTLEDAFV3Dxo"));
 spl_autoload_register('Autoloader::init');
 
 // Autoload vendors if exist

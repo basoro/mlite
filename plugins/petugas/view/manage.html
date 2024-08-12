@@ -1,0 +1,238 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Petugas</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-6 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_petugas' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_petugas' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_petugas' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_petugas' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-select" id='search_field_petugas' name='search_field_petugas' style="margin: 0 !important;"> 
+                              <option value='nip'>Nip</option>
+                              <option value='nama'>Nama</option>
+                              <option value='jk'>Jk</option>
+                              <option value='tmp_lahir'>Tmp Lahir</option>
+                              <option value='tgl_lahir'>Tgl Lahir</option>
+                              <option value='gol_darah'>Gol Darah</option>
+                              <option value='agama'>Agama</option>
+                              <option value='stts_nikah'>Stts Nikah</option>
+                              <option value='alamat'>Alamat</option>
+                              <option value='kd_jbtn'>Kd Jbtn</option>
+                              <option value='no_telp'>No Telp</option>
+                              <option value='status'>Status</option>
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_petugas' id='search_text_petugas' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-text" id='filter_search_petugas' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_petugas" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>Nip</th>
+                            <th>Nama</th>
+                            <th>Jk</th>
+                            <th>Tmp Lahir</th>
+                            <th>Tgl Lahir</th>
+                            <th>Gol Darah</th>
+                            <th>Agama</th>
+                            <th>Stts Nikah</th>
+                            <th>Alamat</th>
+                            <th>Kd Jbtn</th>
+                            <th>No Telp</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_petugas" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Petugas</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_petugas">
+          <input type="hidden" class="form-control" id="typeact" /> 
+        <div class='row gx-3'>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='nip'>Petugas</label>
+              <select name="nip" id="nip" class="form-select">
+                <option value="">Select</option>
+                {loop: $petugas.pegawai} 
+                  <option value="{$value.nik}">{$value.nama}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='jk'>Jk</label>
+              <select name="jk" id="jk" class="form-select">
+                <option value="">Select</option>
+                <option value="L">Laki-Laki</option>
+                <option value="P">Perempuan</option>
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='tmp_lahir'>Tmp Lahir</label>
+              <input type='text' class='form-control' id='tmp_lahir' name='tmp_lahir' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='tgl_lahir'>Tgl Lahir</label>
+              <input type='text' class='form-control datepicker' id='tgl_lahir' name='tgl_lahir' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='gol_darah'>Gol Darah</label>
+              <select name="gol_darah" id="gol_darah" class="form-select">
+                <option value="">Select</option>
+                {loop: $petugas.gol_darah} 
+                  <option value="{$value}">{$value}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='agama'>Agama</label>
+              <select name="agama" id="agama" class="form-select">
+                <option value="">Select</option>
+                {loop: $petugas.agama} 
+                  <option value="{$value}">{$value}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='stts_nikah'>Stts Nikah</label>
+              <select name="stts_nikah" id="stts_nikah" class="form-select">
+                <option value="">Select</option>
+                {loop: $petugas.stts_nikah} 
+                  <option value="{$value}">{$value}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='alamat'>Alamat</label>
+              <input type='text' class='form-control' id='alamat' name='alamat' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_jbtn'>Kd Jbtn</label>
+              <select name="kd_jbtn" id="kd_jbtn" class="form-select">
+                <option value="">Select</option>
+                {loop: $petugas.jabatan}
+                  <option value="{$value.kd_jbtn}">{$value.nm_jbtn}</option> 
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='no_telp'>No Telp</label>
+              <input type='text' class='form-control' id='no_telp' name='no_telp' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='status'>Status</label>
+              <select name="status" id="status" class="form-select">
+                <option value="">Select</option>
+                <option value="1">Aktif</option>
+                <option value="0">Tidak Aktif</option>
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_petugas" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_petugas" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Petugas</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_petugas"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_petugas" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

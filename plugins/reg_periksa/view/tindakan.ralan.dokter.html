@@ -1,0 +1,195 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-12 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='tambah_data_rawat_jl_dr' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.tindakan_ralan_dokter.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_rawat_jl_dr' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.tindakan_ralan_dokter.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_rawat_jl_dr' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.tindakan_ralan_dokter.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_rawat_jl_dr" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>No Rawat</th>
+                            <th>Kd Jenis Prw</th>
+                            <th>Kd Dokter</th>
+                            <th>Tgl Perawatan</th>
+                            <th>Jam Rawat</th>
+                            <th>Material</th>
+                            <th>Bhp</th>
+                            <th>Tarif Tindakandr</th>
+                            <th>Kso</th>
+                            <th>Menejemen</th>
+                            <th>Biaya Rawat</th>
+                            <th>Stts Bayar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_rawat_jl_dr" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Tindakan Ralan Dokter</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_rawat_jl_dr">
+          <input type="hidden" class="form-control" id="typeact" /> 
+          <div class='row gx-3'>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='no_rawat'>No Rawat</label>
+              <input type='text' class='form-control' id='no_rawat_rawat_jl_dr' name='no_rawat' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_dokter'>Dokter</label>
+              <select class="form-select" name="kd_dokter" id="kd_dokter">
+                <option value="">Select</option>
+                {loop: $view.dokter}
+                <option value="{$value.kd_dokter}" {if: $value.kd_dokter == $view.user}selected{/if}>{$value.nm_dokter}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='tgl_perawatan'>Tgl Perawatan</label>
+              <input type='text' class='form-control datepicker' id='tgl_perawatan' name='tgl_perawatan' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='jam_rawat'>Jam Rawat</label>
+              <input type='text' class='form-control timepicker' id='jam_rawat' name='jam_rawat' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_jenis_prw'>Kd Jenis Prw</label>
+              <select class="form-select" name="kd_jenis_prw" id="kd_jenis_prw">
+                <option value="">Select</option>
+                {loop: $view.jns_perawatan}
+                <option value="{$value.kd_jenis_prw}">{$value.nm_perawatan}</option>
+                {/loop}
+              </select>
+              <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='material'>Material</label>
+              <input type='text' class='form-control' id='material' name='material' />
+              <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='bhp'>Bhp</label>
+              <input type='text' class='form-control' id='bhp' name='bhp' />
+              <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='tarif_tindakandr'>Tarif Tindakandr</label>
+              <input type='text' class='form-control' id='tarif_tindakandr' name='tarif_tindakandr' />
+              <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kso'>Kso</label>
+              <input type='text' class='form-control' id='kso' name='kso' />
+              <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='menejemen'>Menejemen</label>
+              <input type='text' class='form-control' id='menejemen' name='menejemen' />
+              <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='biaya_rawat'>Biaya Rawat</label>
+              <input type='text' class='form-control' id='biaya_rawat' name='biaya_rawat' />
+              <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='stts_bayar'>Stts Bayar</label>
+              <select class="form-select" name="stts_bayar" id="stts_bayar">
+                <option value="">Select</option>
+                <option value="Belum">Belum</option>
+                <option value="Sudah">Sudah</option>
+              </select>
+              <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_rawat_jl_dr" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_rawat_jl_dr" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Tindakan Ralan Dokter</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_rawat_jl_dr"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_rawat_jl_dr" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

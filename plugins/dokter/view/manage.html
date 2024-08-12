@@ -1,0 +1,258 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Dokter</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-6 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_dokter' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_dokter' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_dokter' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_dokter' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-select" id='search_field_dokter' name='search_field_dokter' style="margin: 0 !important;"> 
+                              <option value='kd_dokter'>Kd Dokter</option>
+<option value='nm_dokter'>Nm Dokter</option>
+<option value='jk'>Jk</option>
+<option value='tmp_lahir'>Tmp Lahir</option>
+<option value='tgl_lahir'>Tgl Lahir</option>
+<option value='gol_drh'>Gol Drh</option>
+<option value='agama'>Agama</option>
+<option value='almt_tgl'>Almt Tgl</option>
+<option value='no_telp'>No Telp</option>
+<option value='stts_nikah'>Stts Nikah</option>
+<option value='kd_sps'>Kd Sps</option>
+<option value='alumni'>Alumni</option>
+<option value='no_ijn_praktek'>No Ijn Praktek</option>
+<option value='status'>Status</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_dokter' id='search_text_dokter' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-text" id='filter_search_dokter' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_dokter" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>Kd Dokter</th>
+<th>Nm Dokter</th>
+<th>Jk</th>
+<th>Tmp Lahir</th>
+<th>Tgl Lahir</th>
+<th>Gol Drh</th>
+<th>Agama</th>
+<th>Almt Tgl</th>
+<th>No Telp</th>
+<th>Stts Nikah</th>
+<th>Kd Sps</th>
+<th>Alumni</th>
+<th>No Ijn Praktek</th>
+<th>Status</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_dokter" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Dokter</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_dokter">
+        <input type="hidden" class="form-control" id="typeact" /> 
+        <div class='row gx-3'>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_dokter'>Dokter</label>
+              <select class="form-select" name="kd_dokter" id="kd_dokter">
+                <option value="">Select</option>
+                {loop: $dokter.pegawai} 
+                <option value="{$value.nik}">{$value.nama}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='jk'>Jk</label>
+              <select class="form-select" name="jk" id="jk">
+                <option value="">Select</option>
+                <option value="L">Laki-Laki</option>
+                <option value="P">Perempuan</option>
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='tmp_lahir'>Tmp Lahir</label>
+              <input type='text' class='form-control' id='tmp_lahir' name='tmp_lahir' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='tgl_lahir'>Tgl Lahir</label>
+              <input type='text' class='form-control datepicker' id='tgl_lahir' name='tgl_lahir' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='gol_drh'>Gol Drh</label>
+              <select class="form-select" name="gol_drh" id="gol_drh">
+                <option value="">Select</option>
+                {loop: $dokter.gol_drh} 
+                  <option value="{$value}">{$value}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='agama'>Agama</label>
+              <select name="agama" id="agama" class="form-select">
+                <option value="">Select</option>
+                {loop: $dokter.agama}
+                  <option value="{$value}">{$value}</option> 
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='almt_tgl'>Almt Tgl</label>
+              <input type='text' class='form-control' id='almt_tgl' name='almt_tgl' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='no_telp'>No Telp</label>
+              <input type='text' class='form-control' id='no_telp' name='no_telp' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='stts_nikah'>Stts Nikah</label>
+              <select class="form-select" name="stts_nikah" id="stts_nikah">
+                <option value="">Select</option>
+                {loop: $dokter.stts_nikah} 
+                  <option value="{$value}">{$value}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_sps'>Kd Sps</label>
+              <select name="kd_sps" id="kd_sps" class="form-select">
+                <option value="">Select</option>
+                {loop: $dokter.spesialis}
+                  <option value="{$value.kd_sps}">{$value.nm_sps}</option> 
+                {/loop} 
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='alumni'>Alumni</label>
+              <input type='text' class='form-control' id='alumni' name='alumni' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='no_ijn_praktek'>No Ijn Praktek</label>
+              <input type='text' class='form-control' id='no_ijn_praktek' name='no_ijn_praktek' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='status'>Status</label>
+              <select name="status" id="status" class="form-select">
+                <option value="">Select</option>
+                <option value="1">Aktif</option>
+                <option value="0">Tidak Aktif</option>
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_dokter" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_dokter" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Dokter</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_dokter"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_dokter" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

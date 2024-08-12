@@ -2,11 +2,10 @@
 
 namespace Systems;
 
-use Systems\Lib\QueryWrapper;
+use Medoo\Medoo;
 use Systems\Lib\Templates;
 use Systems\Lib\Router;
 use Systems\Lib\Settings;
-use Systems\Lib\License;
 
 
 abstract class Main
@@ -24,66 +23,80 @@ abstract class Main
     public function __construct()
     {
         $this->setSession();
+        
+        $this->db = new Medoo([
+            'type' => 'mysql',
+            'host' => DBHOST,
+            'port' => DBPORT, 
+            'database' => DBNAME,
+            'username' => DBUSER,
+            'password' => DBPASS,
+            'logging' => true,
+            'error' => \PDO::ERRMODE_SILENT
+        ]);
 
-        QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."", DBUSER, DBPASS);
+        $this->dbmlite = new Medoo([
+            // 'type' => 'sqlite',
+            // 'database' => 'systems/data/database.sdb'
+            'type' => 'mysql',
+            'host' => DBHOST,
+            'port' => DBPORT, 
+            'database' => DBNAME,
+            'username' => DBUSER,
+            'password' => DBPASS,
+            'logging' => true,
+            'error' => \PDO::ERRMODE_SILENT
+        ]);
 
-        $check_db = $this->db()->pdo()->query("SHOW TABLES LIKE 'mlite_modules'");
-        $check_db->execute();
-        $check_db = $check_db->fetch();
-
-        if (!is_dir(WEBAPPS_PATH)) {
-            mkdir(WEBAPPS_PATH, 0777);
-        }
+        $this->vclaim = [
+            'cons_id' => $this->dbmlite->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsConsID']),
+            'secret_key' => $this->dbmlite->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsSecretKey']),
+            'user_key' => $this->dbmlite->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsUserKey']),
+            'base_url' => $this->dbmlite->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsApiUrl']),
+            'service_name' => $this->dbmlite->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsServiceName'])
+        ];
 
         if (!is_dir(UPLOADS)) {
             mkdir(UPLOADS, 0777);
         }
 
-        if (!is_dir(WEBAPPS_PATH."/berkasrawat")) {
-            mkdir(WEBAPPS_PATH."/berkasrawat", 0777);
+        if (!is_dir(UPLOADS."/users")) {
+            mkdir(UPLOADS."/users", 0777);
         }
 
-        if (!is_dir(WEBAPPS_PATH."/berkasrawat/pages")) {
-            mkdir(WEBAPPS_PATH."/berkasrawat/pages", 0777);
+        if (!is_dir(UPLOADS."/berkasrawat")) {
+            mkdir(UPLOADS."/berkasrawat", 0777);
         }
 
-        if (!is_dir(WEBAPPS_PATH."/berkasrawat/pages/upload")) {
-            mkdir(WEBAPPS_PATH."/berkasrawat/pages/upload", 0777);
+        if (!is_dir(UPLOADS."/presensi")) {
+            mkdir(UPLOADS."/presensi", 0777);
         }
 
-        if (!is_dir(WEBAPPS_PATH."/presensi")) {
-            mkdir(WEBAPPS_PATH."/presensi", 0777);
+        if (!is_dir(UPLOADS."/pasien")) {
+            mkdir(UPLOADS."/pasien", 0777);
         }
 
-        if (!is_dir(WEBAPPS_PATH."/penggajian")) {
-            mkdir(WEBAPPS_PATH."/penggajian", 0777);
-        }
-
-        if (!is_dir(WEBAPPS_PATH."/photopasien")) {
-            mkdir(WEBAPPS_PATH."/photopasien", 0777);
-        }
-
-        if (!is_dir(WEBAPPS_PATH."/penggajian/pages")) {
-            mkdir(WEBAPPS_PATH."/penggajian/pages", 0777);
-        }
-
-        if (!is_dir(WEBAPPS_PATH."/penggajian/pages/pegawai")) {
-            mkdir(WEBAPPS_PATH."/penggajian/pages/pegawai", 0777);
-        }
-
-        if (!is_dir(WEBAPPS_PATH."/penggajian/pages/pegawai/photo")) {
-            mkdir(WEBAPPS_PATH."/penggajian/pages/pegawai/photo", 0777);
+        if (!is_dir(UPLOADS."/pegawai")) {
+            mkdir(UPLOADS."/pegawai", 0777);
         }
 
         if (!is_dir(UPLOADS."/settings")) {
             mkdir(UPLOADS."/settings", 0777);
         }
 
-        copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
-
-        if(empty($check_db)) {
-            $this->freshInstall();
+        if (!is_dir(UPLOADS."/invoices")) {
+            mkdir(UPLOADS."/invoices", 0777);
         }
+
+        if (!is_dir(UPLOADS."/laboratorium")) {
+            mkdir(UPLOADS."/laboratorium", 0777);
+        }
+
+        if (!is_dir(UPLOADS."/radiologi")) {
+            mkdir(UPLOADS."/radiologi", 0777);
+        }
+        
+        copy(THEMES.'/img/logo.png', UPLOADS.'/settings/logo.png');
 
         $this->settings = new Settings($this);
         date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -91,12 +104,6 @@ abstract class Main
         $this->tpl = new Templates($this);
         $this->router = new Router;
 
-        $this->append(base64_decode('PG1ldGEgbmFtZT0iZ2VuZXJhdG9yIiBjb250ZW50PSJCYXNvcm8uSUQiIC8+'), 'header');
-    }
-
-    public function db($table = null)
-    {
-        return new QueryWrapper($table);
     }
 
     public function getSettings($module = 'settings', $field = null, $refresh = false)
@@ -112,7 +119,7 @@ abstract class Main
     {
         return $this->settings->set($module, $field, $value);
     }
-
+    
     private function setSession()
     {
         ini_set('session.use_only_cookies', 1);
@@ -121,7 +128,7 @@ abstract class Main
         session_start();
     }
 
-    public function setNotify($type, $text, $args = null)
+    public function setNotify($type, $text, $args = '')
     {
         $variables = [];
         $numargs = func_num_args();
@@ -165,32 +172,19 @@ abstract class Main
     {
         $this->appends[$location][] = $string."\n";
     }
-
-    public static function verifyLicense($buffer)
-    {
-        $core = isset_or($GLOBALS['core'], false);
-        if (!$core) {
-            return $buffer;
-        }
-        $checkBuffer = preg_replace('/<!--(.|\s)*?-->/', '', $buffer);
-        $isHTML = strpos(get_headers_list('Content-Type'), 'text/html') !== false;
-        $hasBacklink = strpos($checkBuffer, base64_decode('UG93ZXJlZCBieSA8YSBocmVmPSJodHRwczovL2Jhc29yby5vcmcvIj5LaGFuemFMSVRFPC9hPg==')) !== false;
-        $hasHeader = get_headers_list('X-Created-By') === 'Basoro.ID <basoro.org>';
-        $license = License::verify($core->settings->get('settings.license'));
-        if (($license == License::UNREGISTERED) && $isHTML && (!$hasBacklink || !$hasHeader)) {
-            return '<center><strong>Ciluk baaa......</strong><br />Menghapus trade mark saya yaa....! Upsss....</center>';
-        //} elseif ($license == License::TIME_OUT) {
-        //    return $buffer.'<script>alert("Upstream Server\nCan\'t connect to server and verify it.");</script>';
-        } elseif ($license == License::ERROR) {
-            return '<strong>Upstream Server</strong><br />The server is not valid. Please correct it or go to settings module and save.';
-        }
-
-        return trim($buffer);
-    }
-
+    
     public function loginCheck()
     {
+
+        $whitelist = explode(',', WHITELIST_IP);
+
+        if (!isAllowed($_SERVER['REMOTE_ADDR'], $whitelist)) {
+            echo $this->drawTheme('403.html');
+            exit();
+        }
+
         if (isset($_SESSION['mlite_user']) && isset($_SESSION['token']) && isset($_SESSION['userAgent']) && isset($_SESSION['IPaddress'])) {
+            
             if ($_SESSION['IPaddress'] != $_SERVER['REMOTE_ADDR']) {
                 return false;
             }
@@ -199,114 +193,87 @@ abstract class Main
             }
 
             if (empty(parseURL(1))) {
-                redirect(url([ADMIN, 'dashboard', 'main']));
+                redirect(url(['dashboard', 'main']));
             } elseif (!isset($_GET['t']) || ($_SESSION['token'] != @$_GET['t'])) {
                 return false;
+            }
+
+            if(!$this->getModuleInfo(parseUrl()[0]) && parseUrl()[0] !='logout') {
+                $this->tpl->set('module', '');
+                echo $this->tpl->draw(THEMES.'/404.html', true);
+                exit;
             }
 
             return true;
         } elseif (isset($_COOKIE['mlite_remember'])) {
             $token = explode(":", $_COOKIE['mlite_remember']);
             if (count($token) == 2) {
-                $row = $this->db('mlite_users')->leftJoin('remember_me', 'remember_me.user_id = mlite_users.id')->where('mlite_users.id', $token[0])->where('remember_me.token', $token[1])->select(['mlite_users.*', 'remember_me.expiry', 'token_id' => 'remember_me.id'])->oneArray();
-
+                $row = $this->dbmlite->get('mlite_users', [
+                  '[>]mlite_remember_me' => ['id' => 'user_id']
+                ],[
+                  'mlite_users.id', 'mlite_remember_me.expiry', 'mlite_remember_me.id(token_id)'
+                ]);
+          
                 if ($row) {
                     if (time() - $row['expiry'] > 0) {
-                        $this->db('mlite_remember_me')->delete(['id' => $row['token_id']]);
+                        $this->dbmlite->delete('mlite_remember_me', [
+                            'AND' => [
+                                'id' => $row['token_id']
+                            ]
+                        ]);
                     } else {
                         $_SESSION['mlite_user']= $row['id'];
                         $_SESSION['token']      = bin2hex(openssl_random_pseudo_bytes(6));
                         $_SESSION['userAgent']  = $_SERVER['HTTP_USER_AGENT'];
                         $_SESSION['IPaddress']  = $_SERVER['REMOTE_ADDR'];
 
-                        $this->db('mlite_remember_me')->where('remember_me.user_id', $token[0])->where('remember_me.token', $token[1])->save(['expiry' => time()+60*60*24*30]);
-
-                        if (strpos($_SERVER['SCRIPT_NAME'], '/'.ADMIN.'/') !== false) {
-                            redirect(url([ADMIN, 'dashboard', 'main']));
-                        }
+                        $this->dbmlite->update('mlite_remember_me', [
+                            'expiry' => time()+60*60*24*30
+                        ],[
+                            'user_id' => $token[0], 
+                            'token' => $token[1]
+                        ]);                    
+                        
+                        redirect(url(['dashboard', 'main']));
 
                         return true;
                     }
                 }
             }
-            setcookie('mlite_remember', null, -1, '/');
+            setcookie('mlite_remember', '', -1, '/');
         }
 
         return false;
     }
 
-    public function getUserInfo($field, $id = null, $refresh = false)
+    public function getUserInfo($field, $id = '', $refresh = false)
     {
         if (!$id) {
             $id = isset_or($_SESSION['mlite_user'], 0);
         }
 
         if (empty(self::$userCache) || $refresh) {
-            self::$userCache = $this->db('mlite_users')->where('id', $id)->oneArray();
+            self::$userCache = $this->dbmlite->get('mlite_users', '*', ['id' => $id]);
         }
 
-        return self::$userCache[$field];
+        return isset_or(self::$userCache[$field], false);
     }
 
     public function getEnum($table_name, $column_name) {
-      $result = $this->db()->pdo()->prepare("SHOW COLUMNS FROM $table_name LIKE '$column_name'");
-      $result->execute();
-      $result = $result->fetch();
-      $result = explode("','",preg_replace("/(enum|set)\('(.+?)'\)/","\\2", $result[1]));
-      return $result;
+        $result = $this->db->pdo->prepare("SHOW COLUMNS FROM $table_name LIKE '$column_name'");
+        $result->execute();
+        $result = $result->fetch();
+        if(!empty($result[1])) {
+            $result = explode("','",preg_replace("/(enum|set)\('(.+?)'\)/","\\2", $result[1]));
+        } else {
+            $result = [];
+        }
+        return $result;
     }
-
-    public function getDokterInfo($field, $kd_dokter)
-    {
-        $row = $this->db('dokter')->where('kd_dokter', $kd_dokter)->oneArray();
-        return $row[$field];
-    }
-
-    public function getPoliklinikInfo($field, $kd_poli)
-    {
-        $row = $this->db('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
-        return $row[$field];
-    }
-
-    public function getPenjabInfo($field, $kd_pj)
-    {
-        $row = $this->db('penjab')->where('kd_pj', $kd_pj)->oneArray();
-        return $row[$field];
-    }
-
-    public function getPegawaiInfo($field, $nik)
-    {
-        $row = $this->db('pegawai')->where('nik', $nik)->oneArray();
-        return $row[$field];
-    }
-
-    public function getPasienInfo($field, $no_rkm_medis)
-    {
-        $row = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
-        return $row[$field];
-    }
-
-    public function getRegPeriksaInfo($field, $no_rawat)
-    {
-        $row = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
-        return $row[$field];
-    }
-
-    public function getKamarInapInfo($field, $no_rawat)
-    {
-        $row = $this->db('kamar_inap')->where('no_rawat', $no_rawat)->oneArray();
-        return $row[$field];
-    }
-
-    public function getDepartemenInfo($dep_id)
-    {
-        $row = $this->db('departemen')->where('dep_id', $dep_id)->oneArray();
-        return $row['nama'];
-    }
-
+  
     public function setNoRM()
     {
-        $last_no_rm = $this->db('set_no_rkm_medis')->oneArray();
+        $last_no_rm = $this->db->get('set_no_rkm_medis', '*');
         $last_no_rm = substr($last_no_rm['no_rkm_medis'], 0, 6);
         $next_no_rm = sprintf('%06s', ($last_no_rm + 1));
         return $next_no_rm;
@@ -314,8 +281,8 @@ abstract class Main
 
     public function setNoRawat($date)
     {
-        $last_no_rawat = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date'");
-        $last_no_rawat->execute();
+        $last_no_rawat = $this->db->pdo->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0) FROM reg_periksa WHERE tgl_registrasi = ?");
+        $last_no_rawat->execute([$date]);
         $last_no_rawat = $last_no_rawat->fetch();
         if(empty($last_no_rawat[0])) {
           $last_no_rawat[0] = '000000';
@@ -326,52 +293,37 @@ abstract class Main
         return $next_no_rawat;
     }
 
-    public function setNoReg($kd_dokter, $kd_poli = null)
+    public function setNoReg($kd_poli = '', $kd_dokter = '')
     {
-        $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
-        if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
-          $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
-        }
-        if(empty($max_id['no_reg'])) {
-          $max_id['no_reg'] = '000';
-        }
-        $_next_no_reg = sprintf('%03s', ($max_id['no_reg'] + 1));
-
-        return $_next_no_reg;
-    }
-
-    public function setNoBooking($kd_dokter, $date)
-    {
-        $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
-        $last_no_reg->execute();
+        $date = date('Y-m-d');
+        $last_no_reg = $this->db->pdo->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM reg_periksa WHERE tgl_registrasi = ? AND kd_poli = ? AND kd_dokter = ?");
+        $last_no_reg->execute([$date, $kd_poli, $kd_dokter]);    
         $last_no_reg = $last_no_reg->fetch();
         if(empty($last_no_reg[0])) {
           $last_no_reg[0] = '000';
         }
         $next_no_reg = sprintf('%03s', ($last_no_reg[0] + 1));
-
+  
         return $next_no_reg;
     }
 
-    public function setNoResep()
+    public function setNoResep($date)
     {
-        $date = date('Y-m-d');
-        $last_no_resep = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_resep,6),signed)),0) FROM resep_obat WHERE tgl_peresepan = '$date'");
+        $last_no_resep = $this->db->pdo->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0) FROM resep_obat WHERE tgl_peresepan = '$date' OR tgl_perawatan =  '$date'");
         $last_no_resep->execute();
         $last_no_resep = $last_no_resep->fetch();
         if(empty($last_no_resep[0])) {
-          $last_no_resep[0] = '000000';
+          $last_no_resep[0] = '0000';
         }
-        $next_no_resep = sprintf('%06s', ($last_no_resep[0] + 1));
-        $next_no_resep = date('Ymd').''.$next_no_resep;
+        $next_no_resep = sprintf('%04s', ($last_no_resep[0] + 1));
+        $next_no_resep = date('Ymd', strtotime($date)).''.$next_no_resep;
 
         return $next_no_resep;
     }
 
-    public function setNoOrderLab()
+    public function setNoOrderLab($date)
     {
-        $date = date('Y-m-d');
-        $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_lab WHERE tgl_permintaan = '$date'");
+        $last_no_order = $this->db->pdo->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_lab WHERE tgl_permintaan = '$date'");
         $last_no_order->execute();
         $last_no_order = $last_no_order->fetch();
         if(empty($last_no_order[0])) {
@@ -383,10 +335,9 @@ abstract class Main
         return $next_no_order;
     }
 
-    public function setNoOrderRad()
+    public function setNoOrderRadiologi($date)
     {
-        $date = date('Y-m-d');
-        $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_lab WHERE tgl_permintaan = '$date'");
+        $last_no_order = $this->db->pdo->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_radiologi WHERE tgl_permintaan = '$date'");
         $last_no_order->execute();
         $last_no_order = $last_no_order->fetch();
         if(empty($last_no_order[0])) {
@@ -398,63 +349,110 @@ abstract class Main
         return $next_no_order;
     }
 
-    public function setNoSKDP()
+    public function setKodeDatabarang()
     {
-        $year = date('Y');
-        $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_antrian,6),signed)),0) FROM skdp_bpjs WHERE tahun = '$year'");
-        $last_no->execute();
-        $last_no = $last_no->fetch();
-        if(empty($last_no[0])) {
-          $last_no[0] = '000000';
+        $last_kode_brng = $this->db->pdo->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(kode_brng,5),signed)),0) FROM databarang");
+        $last_kode_brng->execute();
+        $last_kode_brng = $last_kode_brng->fetch();
+        if(empty($last_kode_brng[0])) {
+          $last_kode_brng[0] = '00000';
         }
-        $next_no = sprintf('%06s', ($last_no[0] + 1));
-        return $next_no;
+        $next_kode_brng = sprintf('%05s', ($last_kode_brng[0] + 1));
+        $next_kode_brng = 'B'.$next_kode_brng;
+
+        return $next_kode_brng;
     }
 
-    public function setNoNotaRalan()
+    public function setKodeJnsPerawatan()
     {
-        $date = date('Y-m');
-        $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_nota,6),signed)),0) FROM nota_jalan WHERE left(tanggal,7) = '$date'");
-        $last_no->execute();
-        $last_no = $last_no->fetch();
-        if(empty($last_no[0])) {
-          $last_no[0] = '000000';
+        $last = $this->db->pdo->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(kd_jenis_prw,3),signed)),0) FROM jns_perawatan");
+        $last->execute();
+        $last = $last->fetch();
+        if(empty($last[0])) {
+          $last[0] = '0000';
         }
-        $next_no = sprintf('%06s', ($last_no[0] + 1));
-        $next_no = date('Y').'/'.date('m').'/RJ/'.$next_no;
-        return $next_no;
+        $next = sprintf('%03s', ($last[0] + 1));
+        $next = 'RJ'.$next;
+
+        return $next;
+    }
+
+    public function setKodeJnsPerawatanInap()
+    {
+        $last = $this->db->pdo->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(kd_jenis_prw,3),signed)),0) FROM jns_perawatan_inap");
+        $last->execute();
+        $last = $last->fetch();
+        if(empty($last[0])) {
+          $last[0] = '0000';
+        }
+        $next = sprintf('%03s', ($last[0] + 1));
+        $next = 'RI'.$next;
+
+        return $next;
+    }
+
+    public function setKodeJnsPerawatanLab()
+    {
+        $last = $this->db->pdo->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(kd_jenis_prw,3),signed)),0) FROM jns_perawatan_lab");
+        $last->execute();
+        $last = $last->fetch();
+        if(empty($last[0])) {
+          $last[0] = '0000';
+        }
+        $next = sprintf('%03s', ($last[0] + 1));
+        $next = 'LAB'.$next;
+
+        return $next;
+    }    
+
+    public function setKodeJnsPerawatanRadiologi()
+    {
+        $last = $this->db->pdo->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(kd_jenis_prw,3),signed)),0) FROM jns_perawatan_radiologi");
+        $last->execute();
+        $last = $last->fetch();
+        if(empty($last[0])) {
+          $last[0] = '0000';
+        }
+        $next = sprintf('%03s', ($last[0] + 1));
+        $next = 'RAD'.$next;
+
+        return $next;
+    }
+
+    public function loadDisabledMenu($module)
+    {
+        $disable_menu = $this->dbmlite->get('mlite_disabled_menu', ['create', 'read', 'update', 'delete'], ['user' => $this->getUserInfo('username', $_SESSION['mlite_user'], true), 'module' => $module]);
+        if(!$disable_menu) {
+            $disable_menu = array('create' => 'true', 'read' => 'true', 'update' => 'true', 'delete' => 'true');
+        }
+        if($this->getUserInfo('role', $_SESSION['mlite_user'], true) == 'admin') {
+            $disable_menu = array('create' => 'false', 'read' => 'false', 'update' => 'false', 'delete' => 'false');
+        }    
+
+        return $disable_menu;
+    }
+
+    public function LogQuery($endpoint)
+    {
+
+        $user = $this->dbmlite->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']]);
+        $tanggal = date('Y-m-d');
+
+        $this->db->insert('mlite_log_query_database', [
+          'user' => $user, 
+          'tanggal' => $tanggal, 
+          'endpoint' => $endpoint, 
+          'query' => json_encode($this->db->log(), JSON_PRETTY_PRINT)
+        ]);              
+        return false;
+
     }
 
     public function loadModules()
     {
-        if ($this->module == null) {
+        if ($this->module == '') {
             $this->module = new Lib\ModulesCollection($this);
         }
     }
 
-    private function freshInstall()
-    {
-        QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."",DBUSER, DBPASS);
-        $pdo = QueryWrapper::pdo();
-
-        $core = $this;
-
-        $modules = unserialize(BASIC_MODULES);
-        foreach ($modules as $module) {
-            $file = MODULES.'/'.$module.'/Info.php';
-
-            if (file_exists($file)) {
-                $info = include($file);
-                if (isset($info['install'])) {
-                    $info['install']();
-                }
-            }
-        }
-
-        foreach ($modules as $order => $name) {
-            $core->db('mlite_modules')->save(['dir' => $name, 'sequence' => $order]);
-        }
-
-        redirect(url());
-    }
 }
