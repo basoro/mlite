@@ -6,7 +6,7 @@ if (!version_compare(PHP_VERSION, '7.0.0', '>=')) {
 define('DBHOST', '127.0.0.1');
 define('DBPORT', '3306');
 define('DBUSER', 'root');
-define('DBPASS', '');
+define('DBPASS', 'basoro');
 define('DBNAME', 'mlite');
 
 define('WHITELIST_IP', '*');

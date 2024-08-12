@@ -37,11 +37,7 @@ abstract class Main
 
         $this->dbmlite = new Medoo([
             'type' => 'sqlite',
-<<<<<<< HEAD
             'database' => BASE_DIR . '/systems/data/database.sdb'
-=======
-            'database' => 'systems/data/database.sdb'
->>>>>>> 4d21574be4390bde2eca629a7d73c48f59af3153
         ]);
 
         $this->vclaim = [
