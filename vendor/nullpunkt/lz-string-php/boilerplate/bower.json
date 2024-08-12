@@ -1,0 +1,25 @@
+{
+  "name": "lz-string-php-boilerplate",
+  "homepage": "https://github.com/nullpunkt/lz-string-php",
+  "authors": [
+    "Tobias Seiple <tobias.seipke@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "lz-string": "~1.4.4",
+    "bootstrap": "~3.3.6",
+    "angular": "angularjs#~1.5.0",
+    "moment": "~2.11.2",
+    "javascript-md5": "~2.3.0"
+  }
+}

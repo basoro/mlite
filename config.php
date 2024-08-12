@@ -6,8 +6,8 @@ if (!version_compare(PHP_VERSION, '7.0.0', '>=')) {
 define('DBHOST', 'localhost');
 define('DBPORT', '3306');
 define('DBUSER', 'root');
-define('DBPASS', 'basoro');
-define('DBNAME', 'mlite.io');
+define('DBPASS', 'root');
+define('DBNAME', 'mlite_oi');
 
 define('WHITELIST_IP', '*');
 
