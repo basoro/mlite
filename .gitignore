@@ -5,5 +5,9 @@ vendor/
 tmp/
 uploads/
 plugins/crud_generator
+plugins/pemeriksaan_ralan
+plugins/rawat_jl_dr
+plugins/rawat_jl_pr
+plugins/rawat_jl_drpr
 systems/Main.php
 systems/data/database.sdb

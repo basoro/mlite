@@ -185,7 +185,7 @@ class Admin extends AdminModule
             $no_ktp = $_POST['no_ktp'];
             
             $result = $this->core->db->insert('pegawai', [
-              'id'=>$id, 'nik'=>$nik, 'nama'=>$nama, 'jk'=>$jk, 'jbtn'=>$jbtn, 'jnj_jabatan'=>$jnj_jabatan, 'kode_kelompok'=>$kode_kelompok, 'kode_resiko'=>$kode_resiko, 'kode_emergency'=>$kode_emergency, 'departemen'=>$departemen, 'bidang'=>$bidang, 'stts_wp'=>$stts_wp, 'stts_kerja'=>$stts_kerja, 'npwp'=>$npwp, 'pendidikan'=>$pendidikan, 'gapok'=>$gapok, 'tmp_lahir'=>$tmp_lahir, 'tgl_lahir'=>$tgl_lahir, 'alamat'=>$alamat, 'kota'=>$kota, 'mulai_kerja'=>$mulai_kerja, 'ms_kerja'=>$ms_kerja, 'indexins'=>$indexins, 'bpd'=>$bpd, 'rekening'=>$rekening, 'stts_aktif'=>$stts_aktif, 'wajibmasuk'=>$wajibmasuk, 'pengurang'=>$pengurang, 'indek'=>$indek, 'mulai_kontrak'=>$mulai_kontrak, 'cuti_diambil'=>$cuti_diambil, 'dankes'=>$dankes, 'photo'=>$photo, 'no_ktp'=>$no_ktp
+              'id'=>$id, 'nik'=>$nik, 'nama'=>$nama, 'jk'=>$jk, 'jbtn'=>$jbtn, 'jnj_jabatan'=>$jnj_jabatan, /*'kode_kelompok'=>$kode_kelompok, 'kode_resiko'=>$kode_resiko, 'kode_emergency'=>$kode_emergency,*/ 'departemen'=>$departemen, 'bidang'=>$bidang, 'stts_wp'=>$stts_wp, 'stts_kerja'=>$stts_kerja, 'npwp'=>$npwp, 'pendidikan'=>$pendidikan, 'gapok'=>$gapok, 'tmp_lahir'=>$tmp_lahir, 'tgl_lahir'=>$tgl_lahir, 'alamat'=>$alamat, 'kota'=>$kota, 'mulai_kerja'=>$mulai_kerja, 'ms_kerja'=>$ms_kerja, 'indexins'=>$indexins, 'bpd'=>$bpd, 'rekening'=>$rekening, 'stts_aktif'=>$stts_aktif, 'wajibmasuk'=>$wajibmasuk, 'pengurang'=>$pengurang, 'indek'=>$indek, 'mulai_kontrak'=>$mulai_kontrak, 'cuti_diambil'=>$cuti_diambil, 'dankes'=>$dankes, 'photo'=>$photo, 'no_ktp'=>$no_ktp
             ]);
 
 
@@ -282,7 +282,7 @@ class Admin extends AdminModule
             // BUANG FIELD PERTAMA
 
             $result = $this->core->db->update('pegawai', [
-              'nama'=>$nama, 'jk'=>$jk, 'jbtn'=>$jbtn, 'jnj_jabatan'=>$jnj_jabatan, 'kode_kelompok'=>$kode_kelompok, 'kode_resiko'=>$kode_resiko, 'kode_emergency'=>$kode_emergency, 'departemen'=>$departemen, 'bidang'=>$bidang, 'stts_wp'=>$stts_wp, 'stts_kerja'=>$stts_kerja, 'npwp'=>$npwp, 'pendidikan'=>$pendidikan, 'gapok'=>$gapok, 'tmp_lahir'=>$tmp_lahir, 'tgl_lahir'=>$tgl_lahir, 'alamat'=>$alamat, 'kota'=>$kota, 'mulai_kerja'=>$mulai_kerja, 'ms_kerja'=>$ms_kerja, 'indexins'=>$indexins, 'bpd'=>$bpd, 'rekening'=>$rekening, 'stts_aktif'=>$stts_aktif, 'wajibmasuk'=>$wajibmasuk, 'pengurang'=>$pengurang, 'indek'=>$indek, 'mulai_kontrak'=>$mulai_kontrak, 'cuti_diambil'=>$cuti_diambil, 'dankes'=>$dankes, 'photo'=>$photo, 'no_ktp'=>$no_ktp
+              'nama'=>$nama, 'jk'=>$jk, 'jbtn'=>$jbtn, 'jnj_jabatan'=>$jnj_jabatan, /*'kode_kelompok'=>$kode_kelompok, 'kode_resiko'=>$kode_resiko, 'kode_emergency'=>$kode_emergency,*/ 'departemen'=>$departemen, 'bidang'=>$bidang, 'stts_wp'=>$stts_wp, 'stts_kerja'=>$stts_kerja, 'npwp'=>$npwp, 'pendidikan'=>$pendidikan, 'gapok'=>$gapok, 'tmp_lahir'=>$tmp_lahir, 'tgl_lahir'=>$tgl_lahir, 'alamat'=>$alamat, 'kota'=>$kota, 'mulai_kerja'=>$mulai_kerja, 'ms_kerja'=>$ms_kerja, 'indexins'=>$indexins, 'bpd'=>$bpd, 'rekening'=>$rekening, 'stts_aktif'=>$stts_aktif, 'wajibmasuk'=>$wajibmasuk, 'pengurang'=>$pengurang, 'indek'=>$indek, 'mulai_kontrak'=>$mulai_kontrak, 'cuti_diambil'=>$cuti_diambil, 'dankes'=>$dankes, 'photo'=>$photo, 'no_ktp'=>$no_ktp
             ], [
               'id'=>$id
             ]);

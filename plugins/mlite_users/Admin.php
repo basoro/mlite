@@ -160,7 +160,7 @@ class Admin extends AdminModule
             }
             
             $result = $this->core->dbmlite->insert('mlite_users', [
-              'id'=>$id, 'username'=>$username, 'fullname'=>$fullname, 'description'=>$description, 'password'=>$password, 'avatar'=>$avatar, 'email'=>$email, 'role'=>$role, 'cap'=>$cap, 'access'=>$access
+              'id'=>NULL, 'username'=>$username, 'fullname'=>$fullname, 'description'=>$description, 'password'=>$password, 'avatar'=>$avatar, 'email'=>$email, 'role'=>$role, 'cap'=>$cap, 'access'=>$access
             ]);
             
             if (!empty($result)){
@@ -381,7 +381,7 @@ class Admin extends AdminModule
         $id = isset_or($jwt['user_id']);
  
         $result = [];
-        $mlite_disabled_menu = $this->core->dbmlite->select('mlite_disabled_menu', 'module', ['user' => $this->core->dbmlite->get('mlite_users', 'username', ['id' => '2']), 'hidden' => 'false']);
+        $mlite_disabled_menu = $this->core->dbmlite->select('mlite_disabled_menu', 'module', ['user' => $this->core->dbmlite->get('mlite_users', 'username', ['id' => $id]), 'hidden' => 'false']);
         foreach($mlite_disabled_menu as $row) {
             $files = [
                 'info'  => MODULES.'/'.$row.'/Info.php'

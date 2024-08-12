@@ -43,13 +43,26 @@ jQuery().ready(function () {
             { 'data': 'karyawan' },
             { 'data': 'stokminimal' },
             { 'data': 'kdjns' },
+            { 'data': 'nama_jenis' },
             { 'data': 'isi' },
             { 'data': 'kapasitas' },
             { 'data': 'expire' },
-            { 'data': 'status' },
+            { 'data': 'status', 
+                "render": function (data) {
+                    if(data == '1') {
+                        var status = 'Aktif';
+                    } else {
+                        var status = 'Tidak Aktif';
+                    }
+                    return status;
+                } 
+            },
             { 'data': 'kode_industri' },
+            { 'data': 'nama_industri' },
             { 'data': 'kode_kategori' },
-            { 'data': 'kode_golongan' }
+            { 'data': 'nama_kategori' },
+            { 'data': 'kode_golongan' },
+            { 'data': 'nama_golongan' }
         ],
         "columnDefs": [
             { 'targets': 0},
@@ -77,7 +90,11 @@ jQuery().ready(function () {
             { 'targets': 22},
             { 'targets': 23},
             { 'targets': 24},
-            { 'targets': 25}
+            { 'targets': 25},
+            { 'targets': 26},
+            { 'targets': 27},
+            { 'targets': 28},
+            { 'targets': 29}
         ],
         order: [[1, 'DESC']], 
         buttons: [],

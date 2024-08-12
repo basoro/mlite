@@ -65,13 +65,17 @@ class Admin extends AdminModule
 
         $data = array();
         foreach($result as $row) {
+            $nama_jenis = $this->core->db->get('jenis', 'nama', ['kdjns' => $row['kdjns']]);
+            $nama_industri = $this->core->db->get('industrifarmasi', 'nama_industri', ['kode_industri' => $row['kode_industri']]);
+            $nama_kategori = $this->core->db->get('kategori_barang', 'nama', ['kode' => $row['kode_kategori']]);
+            $nama_golongan = $this->core->db->get('golongan_barang', 'nama', ['kode' => $row['kode_kategori']]);
             $data[] = array(
                 'kode_brng'=>$row['kode_brng'],
                 'nama_brng'=>$row['nama_brng'],
-                'kode_satbesar'=>$row['kode_satbesar'],
+                'kode_satbesar'=>isset_or($row['kode_satbesar'], ''),
                 'kode_sat'=>$row['kode_sat'],
                 'letak_barang'=>$row['letak_barang'],
-                'dasar'=>$row['dasar'],
+                'dasar'=>isset_or($row['dasar'], ''),
                 'h_beli'=>$row['h_beli'],
                 'ralan'=>$row['ralan'],
                 'kelas1'=>$row['kelas1'],
@@ -85,13 +89,17 @@ class Admin extends AdminModule
                 'karyawan'=>$row['karyawan'],
                 'stokminimal'=>$row['stokminimal'],
                 'kdjns'=>$row['kdjns'],
-                'isi'=>$row['isi'],
+                'nama_jenis'=>$nama_jenis, 
+                'isi'=>isset_or($row['isi'], ''),
                 'kapasitas'=>$row['kapasitas'],
                 'expire'=>$row['expire'],
                 'status'=>$row['status'],
                 'kode_industri'=>$row['kode_industri'],
+                'nama_industri'=>$nama_industri, 
                 'kode_kategori'=>$row['kode_kategori'],
-                'kode_golongan'=>$row['kode_golongan']
+                'nama_kategori'=>$nama_kategori, 
+                'kode_golongan'=>$row['kode_golongan'], 
+                'nama_golongan'=>$nama_golongan
             );
         }
 
@@ -334,10 +342,10 @@ class Admin extends AdminModule
                 $data[] = array(
                     'kode_brng'=>$row['kode_brng'],
                     'nama_brng'=>$row['nama_brng'],
-                    'kode_satbesar'=>$row['kode_satbesar'],
+                    'kode_satbesar'=>isset_or($row['kode_satbesar'], ''),
                     'kode_sat'=>$row['kode_sat'],
                     'letak_barang'=>$row['letak_barang'],
-                    'dasar'=>$row['dasar'],
+                    'dasar'=>isset_or($row['dasar'], ''),
                     'h_beli'=>$row['h_beli'],
                     'ralan'=>$row['ralan'],
                     'kelas1'=>$row['kelas1'],
@@ -351,7 +359,7 @@ class Admin extends AdminModule
                     'karyawan'=>$row['karyawan'],
                     'stokminimal'=>$row['stokminimal'],
                     'kdjns'=>$row['kdjns'],
-                    'isi'=>$row['isi'],
+                    'isi'=>isset_or($row['isi'], ''),
                     'kapasitas'=>$row['kapasitas'],
                     'expire'=>$row['expire'],
                     'status'=>$row['status'],
