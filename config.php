@@ -5,8 +5,8 @@ if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
 
 define('DBHOST', 'mysql');
 define('DBPORT', '3306');
-define('DBUSER', 'root');
-define('DBPASS', 'root');
+define('DBUSER', '');
+define('DBPASS', '');
 define('DBNAME', 'rshd_sik');
 
 // URL Webapps
