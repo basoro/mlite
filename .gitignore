@@ -1,7 +1,9 @@
 .DS_Store
 config.php
-kasir.zip
-webapps
-admin/tmp
-tmp
-uploads
+composer.lock
+vendor/
+tmp/
+uploads/
+plugins/crud_generator
+systems/Main.php
+systems/data/database.sdb
