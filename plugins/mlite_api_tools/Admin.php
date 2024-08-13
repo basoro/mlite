@@ -22,7 +22,7 @@ class Admin extends AdminModule
           if ($row == "true" ) $row = "disabled"; 
         } 
         unset($row);
-        $mlite_users = $this->core->dbmlite->select('mlite_users', '*');
+        $mlite_users = $this->core->db->select('mlite_users', '*');
         return $this->draw('manage.html', ['disabled_menu' => $disabled_menu, 'mlite_users' => $mlite_users]);
     }
 
@@ -37,7 +37,7 @@ class Admin extends AdminModule
         $access = $this->core->getUserInfo('access');
         $access = explode(',', isset_or($access, ''));
         if($this->core->getUserInfo('role') == 'admin') {
-          $access = array_column($this->core->dbmlite->select('mlite_modules', '*', ['ORDER' => 'sequence']), 'dir');
+          $access = array_column($this->core->db->select('mlite_modules', '*', ['ORDER' => 'sequence']), 'dir');
         }
         $data_json = [];
         $mlite_disabled_menu = [];
@@ -49,7 +49,7 @@ class Admin extends AdminModule
             "aaData" => $this->core->db->select($slug['2'], '*', ['LIMIT' => '2'])
           );          
           $data_json = json_encode($response, JSON_PRETTY_PRINT);
-          $mlite_disabled_menu = $this->core->dbmlite->get('mlite_disabled_menu', '*', ['module' => $slug['2'], 'user' => $this->core->getUserInfo('username')]);
+          $mlite_disabled_menu = $this->core->db->get('mlite_disabled_menu', '*', ['module' => $slug['2'], 'user' => $this->core->getUserInfo('username')]);
           if($this->core->getUserInfo('role') == 'admin') {
             $mlite_disabled_menu = [
               'create' => 'false', 

@@ -587,7 +587,7 @@ class Admin extends AdminModule
 
     public function getCekPeserta($term, $type = '')
     {
-        $user = $this->core->dbmlite->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']]);
+        $user = $this->core->db->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']]);
         $tanggal = date('Y-m-d');
         $endpoint = 'getCekPeserta';
     

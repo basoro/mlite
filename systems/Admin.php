@@ -24,7 +24,7 @@ class Admin extends Main
         
         $id = isset_or($_SESSION['mlite_user'], '1');
   
-        if($this->dbmlite->has('mlite_users', '*', ['id' => $id])) {
+        if($this->db->has('mlite_users', '*', ['id' => $id])) {
           $username = $this->getUserInfo('fullname', $id, true);
           $access = $this->getUserInfo('access');
           $this->assign['fullname']     = !empty($username) ? $username : $this->getUserInfo('username');
@@ -129,7 +129,7 @@ class Admin extends Main
                 } else {
                     $moduleURL = $subnavURLs[0]['url'];
                 }
-                $hidden = $this->dbmlite->get('mlite_disabled_menu', 'hidden', ['module' => $dir, 'user' => $this->dbmlite->get('mlite_users', 'username', ['id' => $id])]);
+                $hidden = $this->db->get('mlite_disabled_menu', 'hidden', ['module' => $dir, 'user' => $this->db->get('mlite_users', 'username', ['id' => $id])]);
                 $nav[] = [
                     'dir'       => $dir,
                     'name'      => $details['name'],
@@ -179,11 +179,11 @@ class Admin extends Main
     public function login($username, $password, $remember_me = false)
     {
         // Check attempt
-        $attempt = $this->dbmlite->get('mlite_login_attempts', ['attempts', 'expires'],[ 'ip' => $_SERVER['REMOTE_ADDR']]);
+        $attempt = $this->db->get('mlite_login_attempts', ['attempts', 'expires'],[ 'ip' => $_SERVER['REMOTE_ADDR']]);
 
         // Create attempt if does not exist
         if (!$attempt) {
-            $this->dbmlite->insert("mlite_login_attempts", [
+            $this->db->insert("mlite_login_attempts", [
                 "ip" => $_SERVER['REMOTE_ADDR'],
                 "attempts" => 0
             ]);            
@@ -199,11 +199,11 @@ class Admin extends Main
             return false;
         }
 
-        $row = $this->dbmlite->get('mlite_users', '*', ['username' => $username]);
+        $row = $this->db->get('mlite_users', '*', ['username' => $username]);
 
         if ($row && password_verify(trim($password), $row['password'])) {
             // Reset fail attempts for this IP
-            $this->dbmlite->insert("mlite_login_attempts", [
+            $this->db->insert("mlite_login_attempts", [
                 "ip" => $_SERVER['REMOTE_ADDR'],
                 "attempts" => 0
             ]);            
@@ -216,7 +216,7 @@ class Admin extends Main
             if ($remember_me) {
                 $token = str_gen(64, "1234567890qwertyuiop[]asdfghjkl;zxcvbnm,./");
 
-                $this->dbmlite->insert("mlite_remember_me", [
+                $this->db->insert("mlite_remember_me", [
                     "user_id" =>  $row['id'],
                     "token" => $token, 
                     "expiry" => time()+60*60*24*30
@@ -227,7 +227,7 @@ class Admin extends Main
             return true;
         } else {
             // Increase attempt
-            $this->dbmlite->insert("mlite_login_attempts", [
+            $this->db->insert("mlite_login_attempts", [
                 "ip" => $_SERVER['REMOTE_ADDR'],
                 "attempts" => $attempt['attempts']+1
             ]);            
@@ -237,7 +237,7 @@ class Admin extends Main
             // ... and block if reached maximum attempts
             if ($attempt['attempts'] % 3 == 0) {
 
-                $this->dbmlite->update("mlite_login_attempts", [
+                $this->db->update("mlite_login_attempts", [
                     "expires" => strtotime('+10 minutes')
                 ],
                 [
@@ -262,7 +262,7 @@ class Admin extends Main
         // Delete remember_me token from database and cookie
         if (isset($_COOKIE['mlite_remember'])) {
             $token = explode(':', $_COOKIE['mlite_remember']);
-            $this->dbmlite->delete('mlite_remember_me', ['AND' => ['user_id' => $token[0], 'token' => $token[1]]]);
+            $this->db->delete('mlite_remember_me', ['AND' => ['user_id' => $token[0], 'token' => $token[1]]]);
             setcookie('mlite_remember', null, -1, '/');
         }
 

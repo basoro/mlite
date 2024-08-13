@@ -48,15 +48,15 @@ class Admin extends AdminModule
         }
 
         ## Total number of records without filtering
-        $totalRecords = $this->core->dbmlite->count('mlite_settings', '*');
+        $totalRecords = $this->core->db->count('mlite_settings', '*');
 
         ## Total number of records with filtering
-        $totalRecordwithFilter = $this->core->dbmlite->count('mlite_settings', '*', $where);
+        $totalRecordwithFilter = $this->core->db->count('mlite_settings', '*', $where);
 
         ## Fetch records
         $where['ORDER'] = [$columnName => strtoupper($columnSortOrder)];
         $where['LIMIT'] = [$row1, $rowperpage];
-        $result = $this->core->dbmlite->select('mlite_settings', '*', $where);
+        $result = $this->core->db->select('mlite_settings', '*', $where);
 
         $data = array();
         foreach($result as $row) {
@@ -112,7 +112,7 @@ class Admin extends AdminModule
             $value = $_POST['value'];
 
             
-            $result = $this->core->dbmlite->insert('mlite_settings', [
+            $result = $this->core->db->insert('mlite_settings', [
               'id'=>$id, 'module'=>$module, 'field'=>$field, 'value'=>$value
             ]);
 
@@ -158,7 +158,7 @@ class Admin extends AdminModule
             $value = $_POST['value'];
 
             // BUANG FIELD PERTAMA
-            $result = $this->core->dbmlite->update('mlite_settings', [
+            $result = $this->core->db->update('mlite_settings', [
               'module'=>$module, 'field'=>$field, 'value'=>$value
             ], [
               'id'=>$id
@@ -202,7 +202,7 @@ class Admin extends AdminModule
             }
 
             $id= $_POST['id'];
-            $result = $this->core->dbmlite->delete('mlite_settings', [
+            $result = $this->core->db->delete('mlite_settings', [
               'AND' => [
                 'id'=>$id
               ]
@@ -255,7 +255,7 @@ class Admin extends AdminModule
             }
 
             ## Fetch records
-            $result = $this->core->dbmlite->select('mlite_settings', '*', $where);
+            $result = $this->core->db->select('mlite_settings', '*', $where);
 
             $data = array();
             foreach($result as $row) {
@@ -290,7 +290,7 @@ class Admin extends AdminModule
           exit();
         }
 
-        $result =  $this->core->dbmlite->get('mlite_settings', '*', ['id' => $id]);
+        $result =  $this->core->db->get('mlite_settings', '*', ['id' => $id]);
 
         if (!empty($result)){
           http_response_code(200);
@@ -386,7 +386,7 @@ class Admin extends AdminModule
         $_POST['logo'] = $logo;
 
         foreach ($_POST as $field => $value) {
-            if (!$this->core->dbmlite->update('mlite_settings', ['value' => $value],['module' => 'settings', 'field' => $field])) {
+            if (!$this->core->db->update('mlite_settings', ['value' => $value],['module' => 'settings', 'field' => $field])) {
                 $errors++;
             }
         }

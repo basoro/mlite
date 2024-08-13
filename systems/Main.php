@@ -35,25 +35,12 @@ abstract class Main
             'error' => \PDO::ERRMODE_SILENT
         ]);
 
-        $this->dbmlite = new Medoo([
-            'type' => 'sqlite', /* For dev only */
-            'database' => BASE_DIR . '/systems/data/database.sdb' /* For dev onnly */
-            // 'type' => 'mysql',
-            // 'host' => DBHOST,
-            // 'port' => DBPORT, 
-            // 'database' => DBNAME,
-            // 'username' => DBUSER,
-            // 'password' => DBPASS,
-            // 'logging' => true,
-            // 'error' => \PDO::ERRMODE_SILENT
-        ]);
-
         $this->vclaim = [
-            'cons_id' => $this->dbmlite->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsConsID']),
-            'secret_key' => $this->dbmlite->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsSecretKey']),
-            'user_key' => $this->dbmlite->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsUserKey']),
-            'base_url' => $this->dbmlite->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsApiUrl']),
-            'service_name' => $this->dbmlite->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsServiceName'])
+            'cons_id' => $this->db->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsConsID']),
+            'secret_key' => $this->db->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsSecretKey']),
+            'user_key' => $this->db->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsUserKey']),
+            'base_url' => $this->db->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsApiUrl']),
+            'service_name' => $this->db->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsServiceName'])
         ];
 
         if (!is_dir(UPLOADS)) {
@@ -208,7 +195,7 @@ abstract class Main
         } elseif (isset($_COOKIE['mlite_remember'])) {
             $token = explode(":", $_COOKIE['mlite_remember']);
             if (count($token) == 2) {
-                $row = $this->dbmlite->get('mlite_users', [
+                $row = $this->db->get('mlite_users', [
                   '[>]mlite_remember_me' => ['id' => 'user_id']
                 ],[
                   'mlite_users.id', 'mlite_remember_me.expiry', 'mlite_remember_me.id(token_id)'
@@ -216,7 +203,7 @@ abstract class Main
           
                 if ($row) {
                     if (time() - $row['expiry'] > 0) {
-                        $this->dbmlite->delete('mlite_remember_me', [
+                        $this->db->delete('mlite_remember_me', [
                             'AND' => [
                                 'id' => $row['token_id']
                             ]
@@ -227,7 +214,7 @@ abstract class Main
                         $_SESSION['userAgent']  = $_SERVER['HTTP_USER_AGENT'];
                         $_SESSION['IPaddress']  = $_SERVER['REMOTE_ADDR'];
 
-                        $this->dbmlite->update('mlite_remember_me', [
+                        $this->db->update('mlite_remember_me', [
                             'expiry' => time()+60*60*24*30
                         ],[
                             'user_id' => $token[0], 
@@ -253,7 +240,7 @@ abstract class Main
         }
 
         if (empty(self::$userCache) || $refresh) {
-            self::$userCache = $this->dbmlite->get('mlite_users', '*', ['id' => $id]);
+            self::$userCache = $this->db->get('mlite_users', '*', ['id' => $id]);
         }
 
         return isset_or(self::$userCache[$field], false);
@@ -421,7 +408,7 @@ abstract class Main
 
     public function loadDisabledMenu($module)
     {
-        $disable_menu = $this->dbmlite->get('mlite_disabled_menu', ['create', 'read', 'update', 'delete'], ['user' => $this->getUserInfo('username', $_SESSION['mlite_user'], true), 'module' => $module]);
+        $disable_menu = $this->db->get('mlite_disabled_menu', ['create', 'read', 'update', 'delete'], ['user' => $this->getUserInfo('username', $_SESSION['mlite_user'], true), 'module' => $module]);
         if(!$disable_menu) {
             $disable_menu = array('create' => 'true', 'read' => 'true', 'update' => 'true', 'delete' => 'true');
         }
@@ -435,7 +422,7 @@ abstract class Main
     public function LogQuery($endpoint)
     {
 
-        $user = $this->dbmlite->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']]);
+        $user = $this->db->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']]);
         $tanggal = date('Y-m-d');
 
         $this->db->insert('mlite_log_query_database', [

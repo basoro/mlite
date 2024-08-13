@@ -66,15 +66,15 @@ class Admin extends AdminModule
         }
 
         ## Total number of records without filtering
-        $totalRecords = $this->core->dbmlite->count('mlite_users', '*');
+        $totalRecords = $this->core->db->count('mlite_users', '*');
 
         ## Total number of records with filtering
-        $totalRecordwithFilter = $this->core->dbmlite->count('mlite_users', '*', $where);
+        $totalRecordwithFilter = $this->core->db->count('mlite_users', '*', $where);
 
         ## Fetch records
         $where['ORDER'] = [$columnName => strtoupper($columnSortOrder)];
         $where['LIMIT'] = [$row1, $rowperpage];
-        $result = $this->core->dbmlite->select('mlite_users', '*', $where);
+        $result = $this->core->db->select('mlite_users', '*', $where);
 
         $data = array();
         foreach($result as $row) {
@@ -159,7 +159,7 @@ class Admin extends AdminModule
                 $avatar = uniqid('avatar').".".$img->getInfos('type');
             }
             
-            $result = $this->core->dbmlite->insert('mlite_users', [
+            $result = $this->core->db->insert('mlite_users', [
               'id'=>NULL, 'username'=>$username, 'fullname'=>$fullname, 'description'=>$description, 'password'=>$password, 'avatar'=>$avatar, 'email'=>$email, 'role'=>$role, 'cap'=>$cap, 'access'=>$access
             ]);
             
@@ -200,7 +200,7 @@ class Admin extends AdminModule
                 $access = 'all';
             }
 
-            $user = $this->core->dbmlite->get('mlite_users', '*', ['id' => $id]);
+            $user = $this->core->db->get('mlite_users', '*', ['id' => $id]);
 
             if(empty($_POST['password'])) {
                 $password = $user['password'];
@@ -226,7 +226,7 @@ class Admin extends AdminModule
             }
 
             // BUANG FIELD PERTAMA
-            $result = $this->core->dbmlite->update('mlite_users', ['username'=>$username, 'fullname'=>$fullname, 'description'=>$description, 'password'=>$password, 'avatar'=>$avatar, 'email'=>$email, 'role'=>$role, 'cap'=>$cap, 'access'=>$access
+            $result = $this->core->db->update('mlite_users', ['username'=>$username, 'fullname'=>$fullname, 'description'=>$description, 'password'=>$password, 'avatar'=>$avatar, 'email'=>$email, 'role'=>$role, 'cap'=>$cap, 'access'=>$access
             ], [
               'id'=>$id
             ]);
@@ -257,7 +257,7 @@ class Admin extends AdminModule
 
         if ($act=="del") {
             $id= $_POST['id'];
-            if($id == '1' || $this->core->dbmlite->get('mlite_users', 'role', ['id' => $id]) == 'admin') {
+            if($id == '1' || $this->core->db->get('mlite_users', 'role', ['id' => $id]) == 'admin') {
                 http_response_code(201);
                 $data = array(
                     'code' => '201', 
@@ -265,7 +265,7 @@ class Admin extends AdminModule
                     'msg' => 'Data tidak bisa dihapus'
                 );
             } else {
-                $result = $this->core->dbmlite->delete('mlite_users', [
+                $result = $this->core->db->delete('mlite_users', [
                 'AND' => [
                     'id'=>$id
                 ]
@@ -302,7 +302,7 @@ class Admin extends AdminModule
             }
 
             ## Fetch records
-            $result = $this->core->dbmlite->select('mlite_users', '*', $where);
+            $result = $this->core->db->select('mlite_users', '*', $where);
 
             $data = array();
             foreach($result as $row) {
@@ -343,7 +343,7 @@ class Admin extends AdminModule
           exit();
         }
 
-        $result =  $this->core->dbmlite->get('mlite_users', '*', ['id' => $id]);
+        $result =  $this->core->db->get('mlite_users', '*', ['id' => $id]);
 
         if (!empty($result)){
             http_response_code(200);
@@ -381,7 +381,7 @@ class Admin extends AdminModule
         $id = isset_or($jwt['user_id']);
  
         $result = [];
-        $mlite_disabled_menu = $this->core->dbmlite->select('mlite_disabled_menu', 'module', ['user' => $this->core->dbmlite->get('mlite_users', 'username', ['id' => $id]), 'hidden' => 'false']);
+        $mlite_disabled_menu = $this->core->db->select('mlite_disabled_menu', 'module', ['user' => $this->core->db->get('mlite_users', 'username', ['id' => $id]), 'hidden' => 'false']);
         foreach($mlite_disabled_menu as $row) {
             $files = [
                 'info'  => MODULES.'/'.$row.'/Info.php'
@@ -432,7 +432,7 @@ class Admin extends AdminModule
           exit();
         }
 
-        $detail = $this->core->dbmlite->get('mlite_users', '*', ['id' => $id]);
+        $detail = $this->core->db->get('mlite_users', '*', ['id' => $id]);
         if(!empty($detail['avatar'])) {
             $detail['avatar_img'] = base64_encode(file_get_contents(url().'/uploads/users/'.$detail['avatar']));
         } else {
@@ -455,14 +455,14 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $access = [];
-        $modules = explode(",",$this->core->dbmlite->get('mlite_users', 'access', ['id' => $id]));
+        $modules = explode(",",$this->core->db->get('mlite_users', 'access', ['id' => $id]));
         foreach($modules as $value) {
             $row['module'] = $value;
-            $row['create'] = $this->core->dbmlite->get('mlite_disabled_menu', 'create', ['user' => $this->core->getUserInfo('username', $id, true), 'module' => $value]);
-            $row['read'] = $this->core->dbmlite->get('mlite_disabled_menu', 'read', ['user' => $this->core->getUserInfo('username', $id, true), 'module' => $value]);
-            $row['update'] = $this->core->dbmlite->get('mlite_disabled_menu', 'update', ['user' => $this->core->getUserInfo('username', $id, true), 'module' => $value]);
-            $row['delete'] = $this->core->dbmlite->get('mlite_disabled_menu', 'delete', ['user' => $this->core->getUserInfo('username', $id, true), 'module' => $value]);    
-            $row['hidden'] = $this->core->dbmlite->get('mlite_disabled_menu', 'hidden', ['user' => $this->core->getUserInfo('username', $id, true), 'module' => $value]);    
+            $row['create'] = $this->core->db->get('mlite_disabled_menu', 'create', ['user' => $this->core->getUserInfo('username', $id, true), 'module' => $value]);
+            $row['read'] = $this->core->db->get('mlite_disabled_menu', 'read', ['user' => $this->core->getUserInfo('username', $id, true), 'module' => $value]);
+            $row['update'] = $this->core->db->get('mlite_disabled_menu', 'update', ['user' => $this->core->getUserInfo('username', $id, true), 'module' => $value]);
+            $row['delete'] = $this->core->db->get('mlite_disabled_menu', 'delete', ['user' => $this->core->getUserInfo('username', $id, true), 'module' => $value]);    
+            $row['hidden'] = $this->core->db->get('mlite_disabled_menu', 'hidden', ['user' => $this->core->getUserInfo('username', $id, true), 'module' => $value]);    
             $access[] = $row;
         }
         return $this->draw('menu.html', ['settings' => $this->settings('settings'), 'access' => $access, 'user' =>  $this->core->getUserInfo('username', $id, true), 'fullname' =>  $this->core->getUserInfo('fullname', $id, true)]);
@@ -473,7 +473,7 @@ class Admin extends AdminModule
         $user = $_POST['user'];
         $modules = $_POST['module'];
 
-        $this->core->dbmlite->delete('mlite_disabled_menu', ['user' => $user]);
+        $this->core->db->delete('mlite_disabled_menu', ['user' => $user]);
         
         foreach($modules as $module) {
             $create = 'false';
@@ -497,7 +497,7 @@ class Admin extends AdminModule
                 $hidden = 'true';
             }
 
-            $result = $this->core->dbmlite->insert('mlite_disabled_menu', [
+            $result = $this->core->db->insert('mlite_disabled_menu', [
                 'user' => $user, 
                 'module' => $module, 
                 'create' => $create, 
@@ -532,7 +532,7 @@ class Admin extends AdminModule
     public function postGetPengguna()
     {
         $username = $_POST['username'];
-        $rows = $this->core->dbmlite->get('mlite_users', '*', ['username' => $username]);
+        $rows = $this->core->db->get('mlite_users', '*', ['username' => $username]);
         echo json_encode($rows);
         exit();
     }    
@@ -578,7 +578,7 @@ class Admin extends AdminModule
     private function _getModules($access = null)
     {
         $result = [];
-        $rows = $this->core->dbmlite->select('mlite_modules', '*');
+        $rows = $this->core->db->select('mlite_modules', '*');
 
         if (!$access) {
             $accessArray = [];

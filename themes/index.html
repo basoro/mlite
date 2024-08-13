@@ -15,11 +15,11 @@
     <link rel="shortcut icon" href="{?=url()?}/{$mlite.logo}">
 
     <link rel="stylesheet" href="{?=url()?}/assets/fonts/remix/remixicon.css">
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="{?=url()?}/assets/css/main.css?v=6">
-    <link rel="stylesheet" href="{?=url()?}/themes/css/styles.css?v=3">
+    <link rel="stylesheet" href="{?=url()?}/assets/css/jquery-ui.css">
+    <link rel="stylesheet" href="{?=url()?}/assets/css/main.css">
+    <link rel="stylesheet" href="{?=url()?}/themes/css/styles.css">
     <script src="{?=url()?}/assets/js/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js"></script>
+    <script src="{?=url()?}/assets/js/jquery-ui.min.js"></script>
 
     <script>
       var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}"};
@@ -305,9 +305,6 @@
     </div>
 
     <!-- Required jQuery first, then Bootstrap Bundle JS -->
-    <!-- <script src="{?=url()?}/assets/js/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js"></script> -->
-
     <script src="{?=url()?}/assets/js/bootstrap.bundle.min.js"></script>
     <script src="{?=url()?}/assets/js/bootbox.min.js"></script>
     <script src="{?=url()?}/assets/js/moment.min.js"></script>
@@ -319,7 +316,7 @@
 
     <!-- Custom JS files -->
     <!-- <script src="{?=url()?}/assets/js/custom.js"></script> -->
-    <script src="{?=url()?}/themes/js/scripts.js?v=1"></script>
+    <script src="{?=url()?}/themes/js/scripts.js"></script>
     <script>
       $(function() {
           $( "#term" ).autocomplete({
@@ -331,7 +328,7 @@
           })
         .autocomplete("instance")._renderItem = function(ul, item) {
             return $("<li class='each'>")
-            .append("<div class='item'><a href='{?=url()?}/pasien/view/" + item.no_rkm_medis +"?t=" + mlite.token + "'><b>Nama : " +
+            .append("<div class='item'><a href='{?=url()?}/pasien/detail/" + item.no_rkm_medis +"?t=" + mlite.token + "' data-toggle='modal' data-bs-target='#myModal'><b>Nama : " +
                 item.nm_pasien + "</b><br><small>Nomor RM : " +        
                 item.no_rkm_medis + "</small></a><br></div>")
             .appendTo(ul);

@@ -123,7 +123,7 @@ class Api extends Main
 
     public function loginApi($username, $password)
     {
-        $mlite_users = $this->dbmlite->get('mlite_users', '*', ['username' => $username]);
+        $mlite_users = $this->db->get('mlite_users', '*', ['username' => $username]);
         $mlite_api_key = $this->db->get('mlite_api_key', '*', ['username' => $username]);
         $secretKey = isset_or($mlite_api_key['api_key']);
 

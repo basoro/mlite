@@ -9,7 +9,7 @@ class ModulesCollection
 
     public function __construct($core)
     {
-        $modules = array_column($core->dbmlite->select('mlite_modules', '*', ['ORDER' => 'sequence']), 'dir');
+        $modules = array_column($core->db->select('mlite_modules', '*', ['ORDER' => 'sequence']), 'dir');
 
         $clsName = 'Admin';
 

@@ -43,13 +43,13 @@ class Admin extends AdminModule
             $this->assign['salam']="Assalamualaikum....";
         }
 
-        $this->assign['user'] = $this->core->dbmlite->get('mlite_users', '*', ['id' => $_SESSION['mlite_user']]);
+        $this->assign['user'] = $this->core->db->get('mlite_users', '*', ['id' => $_SESSION['mlite_user']]);
 
         $this->core->addJS(url(['assets/vendor/apex/apexcharts.min.js']), 'footer');
-        if($this->core->dbmlite->get('mlite_users', 'role', ['id' => $_SESSION['mlite_user']]) == 'medis') {
+        if($this->core->db->get('mlite_users', 'role', ['id' => $_SESSION['mlite_user']]) == 'medis') {
 
-            $this->assign['count_reg_periksa'] = $this->core->db->count('reg_periksa', 'no_rawat', ['tgl_registrasi' => date('Y-m-d'), 'kd_dokter' => $this->core->dbmlite->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']])]);
-            $this->assign['count_booking_operasi'] = $this->core->db->count('booking_operasi', 'no_rawat', ['tanggal' => date('Y-m-d'), 'kd_dokter' => $this->core->dbmlite->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']])]);
+            $this->assign['count_reg_periksa'] = $this->core->db->count('reg_periksa', 'no_rawat', ['tgl_registrasi' => date('Y-m-d'), 'kd_dokter' => $this->core->db->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']])]);
+            $this->assign['count_booking_operasi'] = $this->core->db->count('booking_operasi', 'no_rawat', ['tanggal' => date('Y-m-d'), 'kd_dokter' => $this->core->db->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']])]);
             
             $this->assign['dokter'] = array_chunk($this->core->db->rand('dokter', [
                 '[>]pegawai' => ['kd_dokter' => 'nik']
@@ -78,7 +78,7 @@ class Admin extends AdminModule
                 'LIMIT' => 10
             ]), 2);
 
-            $cap = $this->core->dbmlite->get('mlite_users', 'cap', ['id' => $_SESSION['mlite_user']]);
+            $cap = $this->core->db->get('mlite_users', 'cap', ['id' => $_SESSION['mlite_user']]);
 
             $this->assign['pendaftaran_pasien'] = $this->core->db->select('reg_periksa', [
                 '[>]pasien' => ['no_rkm_medis' => 'no_rkm_medis'], 
@@ -197,7 +197,7 @@ class Admin extends AdminModule
     public function getTest()
     {
 
-        // $cap = $this->core->dbmlite->get('mlite_users', 'cap', ['id' => $_SESSION['mlite_user']]);
+        // $cap = $this->core->db->get('mlite_users', 'cap', ['id' => $_SESSION['mlite_user']]);
 
         // $this->assign['pendaftaran_pasien'] = $this->core->db->select('reg_periksa', [
         //     '[>]pasien' => ['no_rkm_medis' => 'no_rkm_medis'], 
