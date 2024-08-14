@@ -583,9 +583,9 @@ class Site extends SiteModule
                     $response = array(
                         'response' => array(
                             'namapoli' => $data['nm_poli'],
-                            'namadokter' => $data['nm_dokter'],
+                            'namadokter' => $kddokter['nm_dokter'],
                             'totalantrean' => $data['total_antrean'],
-                            'sisaantrean' => ($data['sisa_antrean']>0?$data['sisa_antrean']:0),
+                            'sisaantrean' => (int)$data['sisa_antrean'],
                             'antreanpanggil' => "A-".$max_antrian['no_reg'],
                             'sisakuotajkn' => ($kuota['kuota']-$data['total_antrean']),
                             'kuotajkn' => intval($kuota['kuota']),
@@ -601,12 +601,24 @@ class Site extends SiteModule
                     http_response_code(200);
                 } else {
                     $response = array(
+                        'response' => array(
+                            'namapoli' => $kdpoli['nm_poli_bpjs'],
+                            'namadokter' => $data['nm_dokter'],
+                            'totalantrean' => $data['total_antrean'],
+                            'sisaantrean' => (int)$data['sisa_antrean'],
+                            'antreanpanggil' => "A-0",
+                            'sisakuotajkn' => ($kuota['kuota']-$data['total_antrean']),
+                            'kuotajkn' => intval($kuota['kuota']),
+                            'sisakuotanonjkn' => ($kuota['kuota']-$data['total_antrean']),
+                            'kuotanonjkn' => intval($kuota['kuota']),
+                            'keterangan' => $data['keterangan']
+                        ),
                         'metadata' => array(
-                            'message' => 'Maaf belum ada antrian ditanggal ' . $decode['tanggalperiksa'],
-                             'code' => 201
+                            'message' => 'Ok',
+                            'code' => 200
                         )
                     );
-                    http_response_code(201);
+                    http_response_code(200);
                 }
             }
         } else {
@@ -1467,7 +1479,7 @@ class Site extends SiteModule
                     )
                 );
                 http_response_code(201);
-            }else if(empty($decode['rw'])) {
+            }else if(empty(isset($decode['rw']))) { 
                 $response = array(
                     'metadata' => array(
                         'message' => 'RW tidak boleh kosong',
@@ -1483,7 +1495,7 @@ class Site extends SiteModule
                     )
                 );
                 http_response_code(201);
-            }else if(empty($decode['rt'])) {
+            }else if(empty(isset($decode['rt']))) { 
                 $response = array(
                     'metadata' => array(
                         'message' => 'RT tidak boleh kosong',
@@ -1560,7 +1572,7 @@ class Site extends SiteModule
                             'norm' => $_POST['no_rkm_medis']
                         ),
                         'metadata' => array(
-                            'message' => 'Pasien berhasil mendapatkann nomor RM, silahkan lanjutkan ke booking. Pasien tidak perlu ke admisi.',
+                            'message' => 'Pasien berhasil mendapatkan nomor RM, silahkan lanjutkan ke booking. Pasien tidak perlu ke admisi.',
                             'code' => 200
                         )
                     );
