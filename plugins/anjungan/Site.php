@@ -2989,7 +2989,30 @@ class Site extends SiteModule
           $data = json_encode($data);
           $url = $this->api_url.'antrean/add';
           $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
-          // $data = json_decode($output, true);
+          $data = json_decode($output, true);
+          if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208) {
+            $this->db('mlite_antrian_referensi')->save([
+                'tanggal_periksa' => date('Y-m-d'),
+                'no_rkm_medis' => $reg_periksa['no_rkm_medis'],
+                'nomor_kartu' => $pasien['no_peserta'],
+                'nomor_referensi' => $nomorreferensi,
+                'kodebooking' => $kodebooking,
+                'jenis_kunjungan' => $_POST['tujuanKunj'],
+                'status_kirim' => 'Sudah',
+                'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
+            ]);
+          } else if ($data == null) {
+            $this->db('mlite_antrian_referensi')->save([
+              'tanggal_periksa' => date('Y-m-d'),
+              'no_rkm_medis' => $reg_periksa['no_rkm_medis'],
+              'nomor_kartu' => $pasien['no_peserta'],
+              'nomor_referensi' => $nomorreferensi,
+              'kodebooking' => $kodebooking,
+              'jenis_kunjungan' => $_POST['tujuanKunj'],
+              'status_kirim' => 'Sudah',
+              'keterangan' => $data['metadata']['code'].' null : null '.$data['metadata']['message']
+            ]);
+          }
         }
 
         $data = [
