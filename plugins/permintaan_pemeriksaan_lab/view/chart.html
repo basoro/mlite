@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Menampilkan Grafik Resep Dokter</title>
+	<title>Menampilkan Grafik Permintaan Pemeriksaan Lab</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
@@ -59,23 +59,23 @@
             <ul>
                 <li class="item {if: isset_or(parseUrl()[2], true) == '' || isset_or(parseUrl()[2], true) == 'pie'}active{/if}">
                     {if: isset_or(parseUrl()[3])} 
-                        <a href="{?=url(['resep_dokter','chart','pie', parseUrl()[3]])?}">Pie Chart</a>
+                        <a href="{?=url(['permintaan_pemeriksaan_lab','chart','pie', parseUrl()[3]])?}">Pie Chart</a>
                     {else}
-                        <a href="{?=url(['resep_dokter','chart','pie'])?}">Pie Chart</a>
+                        <a href="{?=url(['permintaan_pemeriksaan_lab','chart','pie'])?}">Pie Chart</a>
                     {/if}
                 </li>
                 <li class="item {if: isset_or(parseUrl()[2], false) == 'line'}active{/if}">
                     {if: isset_or(parseUrl()[3])} 
-                        <a href="{?=url(['resep_dokter','chart','line', parseUrl()[3]])?}">Line Chart</a>
+                        <a href="{?=url(['permintaan_pemeriksaan_lab','chart','line', parseUrl()[3]])?}">Line Chart</a>
                     {else}
-                        <a href="{?=url(['resep_dokter','chart','line'])?}">Line Chart</a>
+                        <a href="{?=url(['permintaan_pemeriksaan_lab','chart','line'])?}">Line Chart</a>
                     {/if}
                 </li>
                 <li class="item {if: isset_or(parseUrl()[2], false) == 'bar'}active{/if}">
                     {if: isset_or(parseUrl()[3])} 
-                        <a href="{?=url(['resep_dokter','chart','bar', parseUrl()[3]])?}">Bar Chart</a>
+                        <a href="{?=url(['permintaan_pemeriksaan_lab','chart','bar', parseUrl()[3]])?}">Bar Chart</a>
                     {else}
-                        <a href="{?=url(['resep_dokter','chart','bar'])?}">Bar Chart</a>
+                        <a href="{?=url(['permintaan_pemeriksaan_lab','chart','bar'])?}">Bar Chart</a>
                     {/if}
                 </li>
                 <li class="dropdown">
@@ -83,30 +83,30 @@
                     <div class="dropdown-content">
                         {loop: $column}
                             {if: isset_or(parseUrl()[3])} 
-                                <a href="{?=url(['resep_dokter','chart',parseUrl()[2], $value.COLUMN_NAME])?}">{$value.COLUMN_NAME}</a>
+                                <a href="{?=url(['permintaan_pemeriksaan_lab','chart',parseUrl()[2], $value.COLUMN_NAME])?}">{$value.COLUMN_NAME}</a>
                             {else}
-                                <a href="{?=url(['resep_dokter','chart','pie', $value.COLUMN_NAME])?}">{$value.COLUMN_NAME}</a>
+                                <a href="{?=url(['permintaan_pemeriksaan_lab','chart','pie', $value.COLUMN_NAME])?}">{$value.COLUMN_NAME}</a>
                             {/if}
                         {/loop}
                     </div>                    
                 </li>
             </ul>
         </div>
-		<h1>Menampilkan Grafik Resep Dokter</h1>
+		<h1>Menampilkan Grafik Permintaan Pemeriksaan Lab</h1>
 		<div class="chart-container" style="position: relative; height:70vh;">
-			<canvas id="resep_dokter_chart"></canvas>
+			<canvas id="permintaan_pemeriksaan_lab_chart"></canvas>
 		</div>
 	</div>
 </body>
 <script src="{?=url()?}/assets/js/chart.js"></script>
 <script>
-	const ctx = document.getElementById('resep_dokter_chart');
+	const ctx = document.getElementById('permintaan_pemeriksaan_lab_chart');
 	new Chart(ctx, {
 		type: '{$type}',
 		data: {
 			labels: {$labels},
 			datasets: [{
-				label: '# of {if: isset_or(parseUrl()[3])}{?=parseUrl()[3]?}{else}no_resep{/if}',
+				label: '# of {if: isset_or(parseUrl()[3])}{?=parseUrl()[3]?}{else}noorder{/if}',
 				data: {$datasets}
 			}]
 		},

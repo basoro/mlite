@@ -34,6 +34,14 @@ jQuery().ready(function () {
                 
             }
         },
+        "fnDrawCallback": function () {
+            $('#more_data_reg_periksa').on('click', function(e) {
+                e.preventDefault();
+                var clientX = e.originalEvent.clientX;
+                var clientY = e.originalEvent.clientY;
+                $('#tbl_reg_periksa tr').contextMenu({x: clientX, y: clientY});
+            });          
+        },
         "columns": [
             { 'data': 'no_reg' },
             { 'data': 'no_rawat' },
@@ -86,7 +94,7 @@ jQuery().ready(function () {
         // "scrollY": '48vh', 
         // "pageLength":'25', 
         "lengthChange": true,
-        "info": true, 
+        // "info": true, 
         "scrollX": true,
         dom: "<'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
     });
@@ -95,28 +103,32 @@ jQuery().ready(function () {
         selector: '#tbl_reg_periksa tr', 
         trigger: 'right',
         callback: function(key, options) {
-          var row = var_tbl_reg_periksa.rows({ selected: true }).data()[0];
-          var no_rkm_medis = row['no_rkm_medis'];
-          var no_rawat = row['no_rawat'];
-          switch (key) {
-            case 'detail' :
-              OpenModal(mlite.url + '/reg_periksa/detail/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
-              break;
-            case 'antrian' :
-              OpenModal(mlite.url + '/reg_periksa/antrian/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
-              break;
-            case 'pemeriksaan_layanan' :
-              window.location.href = mlite.url + '/reg_periksa/view/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token;
-            break;
-            case 'bridging-bpjs-cek-noka' :
-                OpenModal(mlite.url + '/pasien/cekpeserta/' + no_rkm_medis + '/noka?t=' + mlite.token);
+          var rowData = var_tbl_reg_periksa.rows({ selected: true }).data()[0];
+          if (rowData != null) {
+            var no_rkm_medis = rowData['no_rkm_medis'];
+            var no_rawat = rowData['no_rawat'];
+            switch (key) {
+                case 'detail' :
+                OpenModal(mlite.url + '/reg_periksa/detail/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
                 break;
-            case 'bridging-bpjs-cek-nik' :
-                OpenModal(mlite.url + '/pasien/cekpeserta/' + no_rkm_medis + '/nik?t=' + mlite.token);
+                case 'antrian' :
+                OpenModal(mlite.url + '/reg_periksa/antrian/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
                 break;
-            default :
-              break
-          } 
+                case 'pemeriksaan_layanan' :
+                window.location.href = mlite.url + '/reg_periksa/view/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token;
+                break;
+                case 'bridging-bpjs-cek-noka' :
+                    OpenModal(mlite.url + '/pasien/cekpeserta/' + no_rkm_medis + '/noka?t=' + mlite.token);
+                    break;
+                case 'bridging-bpjs-cek-nik' :
+                    OpenModal(mlite.url + '/pasien/cekpeserta/' + no_rkm_medis + '/nik?t=' + mlite.token);
+                    break;
+                default :
+                break
+            } 
+          } else {
+            bootbox.alert("Silakan pilih data atau klik baris data.");            
+          }           
         },
         items: {
             "detail": {name: "View Detail", "icon": "edit"},

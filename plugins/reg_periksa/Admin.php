@@ -53,8 +53,8 @@ class Admin extends AdminModule
       $searchByFromdate = isset_or($_POST['searchByFromdate'], date('Y-m-d'));
       $searchByTodate = isset_or($_POST['searchByTodate'], date('Y-m-d'));
     
-      $cap = $this->core->dbmlite->get('mlite_users', 'cap', ['id' => $_SESSION['mlite_user']]);
-      $role = $this->core->dbmlite->get('mlite_users', 'role', ['id' => $_SESSION['mlite_user']]);
+      $cap = $this->core->db->get('mlite_users', 'cap', ['id' => $_SESSION['mlite_user']]);
+      $role = $this->core->db->get('mlite_users', 'role', ['id' => $_SESSION['mlite_user']]);
 
       if ($search_text_reg_periksa != '') {
         $where[$search_field_reg_periksa.'[~]'] = $search_text_reg_periksa;
@@ -278,8 +278,8 @@ class Admin extends AdminModule
             $searchByFromdate = $_POST['searchByFromdate'];
             $searchByTodate = $_POST['searchByTodate'];
           
-            $cap = $this->core->dbmlite->get('mlite_users', 'cap', ['id' => $_SESSION['mlite_user']]);
-            $role = $this->core->dbmlite->get('mlite_users', 'role', ['id' => $_SESSION['mlite_user']]);
+            $cap = $this->core->db->get('mlite_users', 'cap', ['id' => $_SESSION['mlite_user']]);
+            $role = $this->core->db->get('mlite_users', 'role', ['id' => $_SESSION['mlite_user']]);
       
             if ($search_text_reg_periksa != '') {
               $where[$search_field_reg_periksa.'[~]'] = $search_text_reg_periksa;
@@ -382,8 +382,8 @@ class Admin extends AdminModule
       foreach ($disabled_menu['pemeriksaan_ralan'] as &$row) { 
         if ($row == "true" ) $row = "disabled"; 
       } 
-      $disabled_menu['tindakan_ralan_dokter'] = $this->core->loadDisabledMenu('tindakan_ralan_dokter'); 
-      foreach ($disabled_menu['tindakan_ralan_dokter'] as &$row) { 
+      $disabled_menu['rawat_jl_dr'] = $this->core->loadDisabledMenu('rawat_jl_dr'); 
+      foreach ($disabled_menu['rawat_jl_dr'] as &$row) { 
         if ($row == "true" ) $row = "disabled"; 
       } 
       $disabled_menu['tindakan_ralan_perawat'] = $this->core->loadDisabledMenu('tindakan_ralan_perawat'); 
@@ -406,9 +406,13 @@ class Admin extends AdminModule
       foreach ($disabled_menu['permintaan_lab'] as &$row) { 
         if ($row == "true" ) $row = "disabled"; 
       } 
+      $disabled_menu['permintaan_radiologi'] = $this->core->loadDisabledMenu('permintaan_radiologi'); 
+      foreach ($disabled_menu['permintaan_radiologi'] as &$row) { 
+        if ($row == "true" ) $row = "disabled"; 
+      } 
       unset($row);
       $this->assign = [];
-      $this->assign['user'] = $this->core->dbmlite->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']]);
+      $this->assign['user'] = $this->core->db->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']]);
       $this->assign['pegawai'] = $this->core->db->select('pegawai', '*');
       $this->assign['dokter'] = $this->core->db->select('dokter', '*');
       $this->assign['petugas'] = $this->core->db->select('petugas', '*');

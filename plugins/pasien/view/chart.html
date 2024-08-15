@@ -57,21 +57,21 @@
 	<div class="container pt-5">	
         <div class="nav">
             <ul>
-                <li class="item {if: parseUrl()[2] == '' || parseUrl()[2] == 'pie'}active{/if}">
+                <li class="item {if: isset_or(parseUrl()[2], true) == '' || isset_or(parseUrl()[2], true) == 'pie'}active{/if}">
                     {if: isset_or(parseUrl()[3])} 
                         <a href="{?=url(['pasien','chart','pie', parseUrl()[3]])?}">Pie Chart</a>
                     {else}
                         <a href="{?=url(['pasien','chart','pie'])?}">Pie Chart</a>
                     {/if}
                 </li>
-                <li class="item {if: parseUrl()[2] == 'line'}active{/if}">
+                <li class="item {if: isset_or(parseUrl()[2], false) == 'line'}active{/if}">
                     {if: isset_or(parseUrl()[3])} 
                         <a href="{?=url(['pasien','chart','line', parseUrl()[3]])?}">Line Chart</a>
                     {else}
                         <a href="{?=url(['pasien','chart','line'])?}">Line Chart</a>
                     {/if}
                 </li>
-                <li class="item {if: parseUrl()[2] == 'bar'}active{/if}">
+                <li class="item {if: isset_or(parseUrl()[2], false) == 'bar'}active{/if}">
                     {if: isset_or(parseUrl()[3])} 
                         <a href="{?=url(['pasien','chart','bar', parseUrl()[3]])?}">Bar Chart</a>
                     {else}

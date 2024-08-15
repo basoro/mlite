@@ -23,6 +23,14 @@ jQuery().ready(function () {
                 
             }
         },
+        "fnDrawCallback": function () {
+            $('#more_data_bangsal').on('click', function(e) {
+                e.preventDefault();
+                var clientX = e.originalEvent.clientX;
+                var clientY = e.originalEvent.clientY;
+                $('#tbl_bangsal tr').contextMenu({x: clientX, y: clientY});
+            });          
+        },        
         "columns": [
             { 'data': 'kd_bangsal' },
             { 'data': 'nm_bangsal' },
