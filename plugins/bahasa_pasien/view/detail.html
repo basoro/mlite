@@ -19,9 +19,10 @@ $(document).ready(function() {
         dataType: 'json',
         success: function (res) {
             var eTable = "<div class='table-responsive'><table id='tbl_detail_bahasa_pasien' class='table display dataTable' style='width:100%'><thead></thead>";
-                eTable += '<tr><td>Id</td><td>' + res.msg['id'] + '</td><tr>';
-                eTable += '<tr><td>Nama Bahasa</td><td>' + res.msg['nama_bahasa'] + '</td><tr>';
-                eTable += "</tbody></table></div>";
+eTable += '<tr><td>Id</td><td>' + res.msg['id'] + '</td><tr>';
+eTable += '<tr><td>Nama Bahasa</td><td>' + res.msg['nama_bahasa'] + '</td><tr>';
+
+            eTable += "</tbody></table></div>";
             $('#detail_bahasa_pasien').html(eTable);
         }
     });

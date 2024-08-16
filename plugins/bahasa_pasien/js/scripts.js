@@ -125,12 +125,17 @@ formData.append('typeact', typeact); // tambahan
                             bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                         }    
                     }
-ß                    var_tbl_bahasa_pasien.draw();
+                    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+                        let payload = {
+                            'action' : typeact
+                        }
+                        ws.send(JSON.stringify(payload));
+                    } 
+                    var_tbl_bahasa_pasien.draw();
                 }
             })
         }
     });
-
 
     if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
         ws.onmessage = function(response){
@@ -150,7 +155,6 @@ formData.append('typeact', typeact); // tambahan
             }
         }
     }
-
 
     // ==============================================================
     // KETIKA TOMBOL SEARCH DITEKAN
@@ -211,7 +215,13 @@ var id = rowData['id'];
                                 bootbox.alert('<span class="text-success">' + data.msg + '</span>');
                             } else {
                                 bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
-                            }    
+                            } 
+                            if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+                                let payload = {
+                                    'action' : 'del'
+                                }
+                                ws.send(JSON.stringify(payload));
+                            }
                             var_tbl_bahasa_pasien.draw();
                         }
                     })    
