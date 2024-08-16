@@ -1,0 +1,416 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Paket Operasi</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class='col-md-6 text-left mb-3'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_paket_operasi' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_paket_operasi' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_paket_operasi' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_paket_operasi' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                          <button id='more_data_paket_operasi' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='More Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-arrow-down-s-line' style='font-size: 15px;'></i><span class="hidden-xs"> More</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right mb-3'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-select" id='search_field_paket_operasi' name='search_field_paket_operasi' style="margin: 0 !important;"> 
+                              <option value='kode_paket'>Kode Paket</option>
+<option value='nm_perawatan'>Nm Perawatan</option>
+<option value='kategori'>Kategori</option>
+<option value='operator1'>Operator1</option>
+<option value='operator2'>Operator2</option>
+<option value='operator3'>Operator3</option>
+<option value='asisten_operator1'>Asisten Operator1</option>
+<option value='asisten_operator2'>Asisten Operator2</option>
+<option value='asisten_operator3'>Asisten Operator3</option>
+<option value='instrumen'>Instrumen</option>
+<option value='dokter_anak'>Dokter Anak</option>
+<option value='perawaat_resusitas'>Perawaat Resusitas</option>
+<option value='dokter_anestesi'>Dokter Anestesi</option>
+<option value='asisten_anestesi'>Asisten Anestesi</option>
+<option value='asisten_anestesi2'>Asisten Anestesi2</option>
+<option value='bidan'>Bidan</option>
+<option value='bidan2'>Bidan2</option>
+<option value='bidan3'>Bidan3</option>
+<option value='perawat_luar'>Perawat Luar</option>
+<option value='sewa_ok'>Sewa Ok</option>
+<option value='alat'>Alat</option>
+<option value='akomodasi'>Akomodasi</option>
+<option value='bagian_rs'>Bagian Rs</option>
+<option value='omloop'>Omloop</option>
+<option value='omloop2'>Omloop2</option>
+<option value='omloop3'>Omloop3</option>
+<option value='omloop4'>Omloop4</option>
+<option value='omloop5'>Omloop5</option>
+<option value='sarpras'>Sarpras</option>
+<option value='dokter_pjanak'>Dokter Pjanak</option>
+<option value='dokter_umum'>Dokter Umum</option>
+<option value='kd_pj'>Kd Pj</option>
+<option value='status'>Status</option>
+<option value='kelas'>Kelas</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_paket_operasi' id='search_text_paket_operasi' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-text" id='filter_search_paket_operasi' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_paket_operasi" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>Kode Paket</th>
+<th>Nm Perawatan</th>
+<th>Kategori</th>
+<th>Operator1</th>
+<th>Operator2</th>
+<th>Operator3</th>
+<th>Asisten Operator1</th>
+<th>Asisten Operator2</th>
+<th>Asisten Operator3</th>
+<th>Instrumen</th>
+<th>Dokter Anak</th>
+<th>Perawaat Resusitas</th>
+<th>Dokter Anestesi</th>
+<th>Asisten Anestesi</th>
+<th>Asisten Anestesi2</th>
+<th>Bidan</th>
+<th>Bidan2</th>
+<th>Bidan3</th>
+<th>Perawat Luar</th>
+<th>Sewa Ok</th>
+<th>Alat</th>
+<th>Akomodasi</th>
+<th>Bagian Rs</th>
+<th>Omloop</th>
+<th>Omloop2</th>
+<th>Omloop3</th>
+<th>Omloop4</th>
+<th>Omloop5</th>
+<th>Sarpras</th>
+<th>Dokter Pjanak</th>
+<th>Dokter Umum</th>
+<th>Kd Pj</th>
+<th>Status</th>
+<th>Kelas</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_paket_operasi" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Paket Operasi</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_paket_operasi">
+          <input type="hidden" class="form-control" id="typeact" /> 
+          <div class='row gx-3'>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kode_paket'>Kode Paket</label>
+      <input type='text' class='form-control' id='kode_paket' name='kode_paket' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nm_perawatan'>Nm Perawatan</label>
+      <input type='text' class='form-control' id='nm_perawatan' name='nm_perawatan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kategori'>Kategori</label>
+      <input type='text' class='form-control' id='kategori' name='kategori' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='operator1'>Operator1</label>
+      <input type='text' class='form-control' id='operator1' name='operator1' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='operator2'>Operator2</label>
+      <input type='text' class='form-control' id='operator2' name='operator2' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='operator3'>Operator3</label>
+      <input type='text' class='form-control' id='operator3' name='operator3' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='asisten_operator1'>Asisten Operator1</label>
+      <input type='text' class='form-control' id='asisten_operator1' name='asisten_operator1' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='asisten_operator2'>Asisten Operator2</label>
+      <input type='text' class='form-control' id='asisten_operator2' name='asisten_operator2' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='asisten_operator3'>Asisten Operator3</label>
+      <input type='text' class='form-control' id='asisten_operator3' name='asisten_operator3' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='instrumen'>Instrumen</label>
+      <input type='text' class='form-control' id='instrumen' name='instrumen' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='dokter_anak'>Dokter Anak</label>
+      <input type='text' class='form-control' id='dokter_anak' name='dokter_anak' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='perawaat_resusitas'>Perawaat Resusitas</label>
+      <input type='text' class='form-control' id='perawaat_resusitas' name='perawaat_resusitas' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='dokter_anestesi'>Dokter Anestesi</label>
+      <input type='text' class='form-control' id='dokter_anestesi' name='dokter_anestesi' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='asisten_anestesi'>Asisten Anestesi</label>
+      <input type='text' class='form-control' id='asisten_anestesi' name='asisten_anestesi' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='asisten_anestesi2'>Asisten Anestesi2</label>
+      <input type='text' class='form-control' id='asisten_anestesi2' name='asisten_anestesi2' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='bidan'>Bidan</label>
+      <input type='text' class='form-control' id='bidan' name='bidan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='bidan2'>Bidan2</label>
+      <input type='text' class='form-control' id='bidan2' name='bidan2' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='bidan3'>Bidan3</label>
+      <input type='text' class='form-control' id='bidan3' name='bidan3' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='perawat_luar'>Perawat Luar</label>
+      <input type='text' class='form-control' id='perawat_luar' name='perawat_luar' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='sewa_ok'>Sewa Ok</label>
+      <input type='text' class='form-control' id='sewa_ok' name='sewa_ok' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='alat'>Alat</label>
+      <input type='text' class='form-control' id='alat' name='alat' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='akomodasi'>Akomodasi</label>
+      <input type='text' class='form-control' id='akomodasi' name='akomodasi' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='bagian_rs'>Bagian Rs</label>
+      <input type='text' class='form-control' id='bagian_rs' name='bagian_rs' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='omloop'>Omloop</label>
+      <input type='text' class='form-control' id='omloop' name='omloop' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='omloop2'>Omloop2</label>
+      <input type='text' class='form-control' id='omloop2' name='omloop2' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='omloop3'>Omloop3</label>
+      <input type='text' class='form-control' id='omloop3' name='omloop3' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='omloop4'>Omloop4</label>
+      <input type='text' class='form-control' id='omloop4' name='omloop4' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='omloop5'>Omloop5</label>
+      <input type='text' class='form-control' id='omloop5' name='omloop5' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='sarpras'>Sarpras</label>
+      <input type='text' class='form-control' id='sarpras' name='sarpras' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='dokter_pjanak'>Dokter Pjanak</label>
+      <input type='text' class='form-control' id='dokter_pjanak' name='dokter_pjanak' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='dokter_umum'>Dokter Umum</label>
+      <input type='text' class='form-control' id='dokter_umum' name='dokter_umum' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kd_pj'>Kd Pj</label>
+      <input type='text' class='form-control' id='kd_pj' name='kd_pj' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='status'>Status</label>
+      <input type='text' class='form-control' id='status' name='status' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kelas'>Kelas</label>
+      <input type='text' class='form-control' id='kelas' name='kelas' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_paket_operasi" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_paket_operasi" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Paket Operasi</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_paket_operasi"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_paket_operasi" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

@@ -1,0 +1,115 @@
+<div class="modal-header">
+    <h4 class="modal-title">Detail Resume Pasien Ranap</h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div id="detail_resume_pasien_ranap"></div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup</button>
+    <button type="submit" id="export_pdf_detail" class="btn btn-danger"><i class="ri-file-pdf-2-line"></i> PDF</button>
+</div>
+<script>
+$(document).ready(function() {
+
+    $.ajax({
+        url: "{?=url(['resume_pasien_ranap','read', $no_rawat])?}",
+        method: "GET",
+        data: {},
+        dataType: 'json',
+        success: function (res) {
+            var eTable = "<div class='table-responsive'><table id='tbl_detail_resume_pasien_ranap' class='table display dataTable' style='width:100%'><thead></thead>";
+eTable += '<tr><td>No Rawat</td><td>' + res.msg['no_rawat'] + '</td><tr>';
+eTable += '<tr><td>Kd Dokter</td><td>' + res.msg['kd_dokter'] + '</td><tr>';
+eTable += '<tr><td>Diagnosa Awal</td><td>' + res.msg['diagnosa_awal'] + '</td><tr>';
+eTable += '<tr><td>Alasan</td><td>' + res.msg['alasan'] + '</td><tr>';
+eTable += '<tr><td>Keluhan Utama</td><td>' + res.msg['keluhan_utama'] + '</td><tr>';
+eTable += '<tr><td>Pemeriksaan Fisik</td><td>' + res.msg['pemeriksaan_fisik'] + '</td><tr>';
+eTable += '<tr><td>Jalannya Penyakit</td><td>' + res.msg['jalannya_penyakit'] + '</td><tr>';
+eTable += '<tr><td>Pemeriksaan Penunjang</td><td>' + res.msg['pemeriksaan_penunjang'] + '</td><tr>';
+eTable += '<tr><td>Hasil Laborat</td><td>' + res.msg['hasil_laborat'] + '</td><tr>';
+eTable += '<tr><td>Tindakan Dan Operasi</td><td>' + res.msg['tindakan_dan_operasi'] + '</td><tr>';
+eTable += '<tr><td>Obat Di Rs</td><td>' + res.msg['obat_di_rs'] + '</td><tr>';
+eTable += '<tr><td>Diagnosa Utama</td><td>' + res.msg['diagnosa_utama'] + '</td><tr>';
+eTable += '<tr><td>Kd Diagnosa Utama</td><td>' + res.msg['kd_diagnosa_utama'] + '</td><tr>';
+eTable += '<tr><td>Diagnosa Sekunder</td><td>' + res.msg['diagnosa_sekunder'] + '</td><tr>';
+eTable += '<tr><td>Kd Diagnosa Sekunder</td><td>' + res.msg['kd_diagnosa_sekunder'] + '</td><tr>';
+eTable += '<tr><td>Diagnosa Sekunder2</td><td>' + res.msg['diagnosa_sekunder2'] + '</td><tr>';
+eTable += '<tr><td>Kd Diagnosa Sekunder2</td><td>' + res.msg['kd_diagnosa_sekunder2'] + '</td><tr>';
+eTable += '<tr><td>Diagnosa Sekunder3</td><td>' + res.msg['diagnosa_sekunder3'] + '</td><tr>';
+eTable += '<tr><td>Kd Diagnosa Sekunder3</td><td>' + res.msg['kd_diagnosa_sekunder3'] + '</td><tr>';
+eTable += '<tr><td>Diagnosa Sekunder4</td><td>' + res.msg['diagnosa_sekunder4'] + '</td><tr>';
+eTable += '<tr><td>Kd Diagnosa Sekunder4</td><td>' + res.msg['kd_diagnosa_sekunder4'] + '</td><tr>';
+eTable += '<tr><td>Prosedur Utama</td><td>' + res.msg['prosedur_utama'] + '</td><tr>';
+eTable += '<tr><td>Kd Prosedur Utama</td><td>' + res.msg['kd_prosedur_utama'] + '</td><tr>';
+eTable += '<tr><td>Prosedur Sekunder</td><td>' + res.msg['prosedur_sekunder'] + '</td><tr>';
+eTable += '<tr><td>Kd Prosedur Sekunder</td><td>' + res.msg['kd_prosedur_sekunder'] + '</td><tr>';
+eTable += '<tr><td>Prosedur Sekunder2</td><td>' + res.msg['prosedur_sekunder2'] + '</td><tr>';
+eTable += '<tr><td>Kd Prosedur Sekunder2</td><td>' + res.msg['kd_prosedur_sekunder2'] + '</td><tr>';
+eTable += '<tr><td>Prosedur Sekunder3</td><td>' + res.msg['prosedur_sekunder3'] + '</td><tr>';
+eTable += '<tr><td>Kd Prosedur Sekunder3</td><td>' + res.msg['kd_prosedur_sekunder3'] + '</td><tr>';
+eTable += '<tr><td>Alergi</td><td>' + res.msg['alergi'] + '</td><tr>';
+eTable += '<tr><td>Diet</td><td>' + res.msg['diet'] + '</td><tr>';
+eTable += '<tr><td>Lab Belum</td><td>' + res.msg['lab_belum'] + '</td><tr>';
+eTable += '<tr><td>Edukasi</td><td>' + res.msg['edukasi'] + '</td><tr>';
+eTable += '<tr><td>Cara Keluar</td><td>' + res.msg['cara_keluar'] + '</td><tr>';
+eTable += '<tr><td>Ket Keluar</td><td>' + res.msg['ket_keluar'] + '</td><tr>';
+eTable += '<tr><td>Keadaan</td><td>' + res.msg['keadaan'] + '</td><tr>';
+eTable += '<tr><td>Ket Keadaan</td><td>' + res.msg['ket_keadaan'] + '</td><tr>';
+eTable += '<tr><td>Dilanjutkan</td><td>' + res.msg['dilanjutkan'] + '</td><tr>';
+eTable += '<tr><td>Ket Dilanjutkan</td><td>' + res.msg['ket_dilanjutkan'] + '</td><tr>';
+eTable += '<tr><td>Kontrol</td><td>' + res.msg['kontrol'] + '</td><tr>';
+eTable += '<tr><td>Obat Pulang</td><td>' + res.msg['obat_pulang'] + '</td><tr>';
+
+            eTable += "</tbody></table></div>";
+            $('#detail_resume_pasien_ranap').html(eTable);
+        }
+    });
+
+    // ===========================================
+    // Ketika tombol export pdf di tekan
+    // ===========================================
+    $("#export_pdf_detail").click(function () {
+        var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
+        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        doc.addImage(img, 'JPEG', 20, 10, 50, 50);
+        doc.setFontSize(20);
+        doc.text("{$settings.nama_instansi}", 80, 35, null, null, null);
+        doc.setFontSize(10);
+        doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
+        doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
+        doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
+        doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
+        doc.setFontSize(14);
+        doc.text("Data Detail", 20, 95, null, null, null);
+        const totalPagesExp = "{total_pages_count_string}";        
+        doc.autoTable({
+            html: '#tbl_detail_resume_pasien_ranap',
+            startY: 105,
+            margin: {
+                left: 20, 
+                right: 20
+            }, 
+            styles: {
+                fontSize: 10,
+                cellPadding: 5
+            }, 
+            didDrawPage: data => {
+                let footerStr = "Page " + doc.internal.getNumberOfPages();
+                if (typeof doc.putTotalPages === 'function') {
+                footerStr = footerStr + " of " + totalPagesExp;
+                }
+                doc.setFontSize(10);
+                doc.text(`© ${new Date().getFullYear()} {$settings.nama_instansi}.`, data.settings.margin.left, doc.internal.pageSize.height - 10);                
+                doc.text(footerStr, data.settings.margin.left + 480, doc.internal.pageSize.height - 10);
+           }
+        });
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPagesExp);
+        }
+        // doc.save('detail_data_resume_pasien_ranap.pdf')
+        window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+              
+    }) 
+}); 
+</script>

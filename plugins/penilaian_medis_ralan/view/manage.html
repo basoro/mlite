@@ -1,0 +1,425 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Penilaian Medis Ralan</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class='col-md-6 text-left mb-3'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_penilaian_medis_ralan' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_penilaian_medis_ralan' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_penilaian_medis_ralan' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_penilaian_medis_ralan' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                          <button id='more_data_penilaian_medis_ralan' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='More Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-arrow-down-s-line' style='font-size: 15px;'></i><span class="hidden-xs"> More</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right mb-3'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-select" id='search_field_penilaian_medis_ralan' name='search_field_penilaian_medis_ralan' style="margin: 0 !important;"> 
+                              <option value='no_rawat'>No Rawat</option>
+<option value='tanggal'>Tanggal</option>
+<option value='kd_dokter'>Kd Dokter</option>
+<option value='anamnesis'>Anamnesis</option>
+<option value='hubungan'>Hubungan</option>
+<option value='keluhan_utama'>Keluhan Utama</option>
+<option value='rps'>Rps</option>
+<option value='rpd'>Rpd</option>
+<option value='rpk'>Rpk</option>
+<option value='rpo'>Rpo</option>
+<option value='alergi'>Alergi</option>
+<option value='keadaan'>Keadaan</option>
+<option value='gcs'>Gcs</option>
+<option value='kesadaran'>Kesadaran</option>
+<option value='td'>Td</option>
+<option value='nadi'>Nadi</option>
+<option value='rr'>Rr</option>
+<option value='suhu'>Suhu</option>
+<option value='spo'>Spo</option>
+<option value='bb'>Bb</option>
+<option value='tb'>Tb</option>
+<option value='kepala'>Kepala</option>
+<option value='gigi'>Gigi</option>
+<option value='tht'>Tht</option>
+<option value='thoraks'>Thoraks</option>
+<option value='abdomen'>Abdomen</option>
+<option value='genital'>Genital</option>
+<option value='ekstremitas'>Ekstremitas</option>
+<option value='kulit'>Kulit</option>
+<option value='ket_fisik'>Ket Fisik</option>
+<option value='ket_lokalis'>Ket Lokalis</option>
+<option value='penunjang'>Penunjang</option>
+<option value='diagnosis'>Diagnosis</option>
+<option value='tata'>Tata</option>
+<option value='konsulrujuk'>Konsulrujuk</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_penilaian_medis_ralan' id='search_text_penilaian_medis_ralan' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-text" id='filter_search_penilaian_medis_ralan' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_penilaian_medis_ralan" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>No Rawat</th>
+<th>Tanggal</th>
+<th>Kd Dokter</th>
+<th>Anamnesis</th>
+<th>Hubungan</th>
+<th>Keluhan Utama</th>
+<th>Rps</th>
+<th>Rpd</th>
+<th>Rpk</th>
+<th>Rpo</th>
+<th>Alergi</th>
+<th>Keadaan</th>
+<th>Gcs</th>
+<th>Kesadaran</th>
+<th>Td</th>
+<th>Nadi</th>
+<th>Rr</th>
+<th>Suhu</th>
+<th>Spo</th>
+<th>Bb</th>
+<th>Tb</th>
+<th>Kepala</th>
+<th>Gigi</th>
+<th>Tht</th>
+<th>Thoraks</th>
+<th>Abdomen</th>
+<th>Genital</th>
+<th>Ekstremitas</th>
+<th>Kulit</th>
+<th>Ket Fisik</th>
+<th>Ket Lokalis</th>
+<th>Penunjang</th>
+<th>Diagnosis</th>
+<th>Tata</th>
+<th>Konsulrujuk</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_penilaian_medis_ralan" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Penilaian Medis Ralan</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_penilaian_medis_ralan">
+          <input type="hidden" class="form-control" id="typeact" /> 
+          <div class='row gx-3'>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='no_rawat'>No Rawat</label>
+      <input type='text' class='form-control' id='no_rawat' name='no_rawat' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tanggal'>Tanggal</label>
+      <input type='text' class='form-control' id='tanggal' name='tanggal' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kd_dokter'>Kd Dokter</label>
+      <input type='text' class='form-control' id='kd_dokter' name='kd_dokter' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='anamnesis'>Anamnesis</label>
+      <input type='text' class='form-control' id='anamnesis' name='anamnesis' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='hubungan'>Hubungan</label>
+      <input type='text' class='form-control' id='hubungan' name='hubungan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='keluhan_utama'>Keluhan Utama</label>
+      <input type='text' class='form-control' id='keluhan_utama' name='keluhan_utama' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='rps'>Rps</label>
+      <input type='text' class='form-control' id='rps' name='rps' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='rpd'>Rpd</label>
+      <input type='text' class='form-control' id='rpd' name='rpd' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='rpk'>Rpk</label>
+      <input type='text' class='form-control' id='rpk' name='rpk' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='rpo'>Rpo</label>
+      <input type='text' class='form-control' id='rpo' name='rpo' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='alergi'>Alergi</label>
+      <input type='text' class='form-control' id='alergi' name='alergi' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='keadaan'>Keadaan</label>
+      <input type='text' class='form-control' id='keadaan' name='keadaan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='gcs'>Gcs</label>
+      <input type='text' class='form-control' id='gcs' name='gcs' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kesadaran'>Kesadaran</label>
+      <input type='text' class='form-control' id='kesadaran' name='kesadaran' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='td'>Td</label>
+      <input type='text' class='form-control' id='td' name='td' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nadi'>Nadi</label>
+      <input type='text' class='form-control' id='nadi' name='nadi' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='rr'>Rr</label>
+      <input type='text' class='form-control' id='rr' name='rr' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='suhu'>Suhu</label>
+      <input type='text' class='form-control' id='suhu' name='suhu' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='spo'>Spo</label>
+      <input type='text' class='form-control' id='spo' name='spo' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='bb'>Bb</label>
+      <input type='text' class='form-control' id='bb' name='bb' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tb'>Tb</label>
+      <input type='text' class='form-control' id='tb' name='tb' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kepala'>Kepala</label>
+      <input type='text' class='form-control' id='kepala' name='kepala' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='gigi'>Gigi</label>
+      <input type='text' class='form-control' id='gigi' name='gigi' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tht'>Tht</label>
+      <input type='text' class='form-control' id='tht' name='tht' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='thoraks'>Thoraks</label>
+      <input type='text' class='form-control' id='thoraks' name='thoraks' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='abdomen'>Abdomen</label>
+      <input type='text' class='form-control' id='abdomen' name='abdomen' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='genital'>Genital</label>
+      <input type='text' class='form-control' id='genital' name='genital' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='ekstremitas'>Ekstremitas</label>
+      <input type='text' class='form-control' id='ekstremitas' name='ekstremitas' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kulit'>Kulit</label>
+      <input type='text' class='form-control' id='kulit' name='kulit' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='ket_fisik'>Ket Fisik</label>
+      <input type='text' class='form-control' id='ket_fisik' name='ket_fisik' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='ket_lokalis'>Ket Lokalis</label>
+      <input type='text' class='form-control' id='ket_lokalis' name='ket_lokalis' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='penunjang'>Penunjang</label>
+      <input type='text' class='form-control' id='penunjang' name='penunjang' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='diagnosis'>Diagnosis</label>
+      <input type='text' class='form-control' id='diagnosis' name='diagnosis' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tata'>Tata</label>
+      <input type='text' class='form-control' id='tata' name='tata' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='konsulrujuk'>Konsulrujuk</label>
+      <input type='text' class='form-control' id='konsulrujuk' name='konsulrujuk' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_penilaian_medis_ralan" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_penilaian_medis_ralan" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Penilaian Medis Ralan</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_penilaian_medis_ralan"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_penilaian_medis_ralan" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

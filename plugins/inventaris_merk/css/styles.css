@@ -1,0 +1,21 @@
+#tbl_inventaris_merk th, #tbl_inventaris_merk td, #forTable_inventaris_merk th, #forTable_inventaris_merk td {
+  white-space: nowrap; 
+}
+.dataTables_wrapper th, .dataTables_wrapper td {
+  white-space: nowrap; 
+}
+.pmd-datatable-pagination {
+  padding-top: 10px !important;
+}
+.dt-length {
+  display: inline;
+}
+.dt-paging {
+  display: inline;
+  float: right;
+}
+@media (max-width:767px) {
+  .dt-length{
+    display: none !important;
+  }
+}

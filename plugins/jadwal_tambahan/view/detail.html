@@ -1,0 +1,108 @@
+<div class="modal-header">
+    <h4 class="modal-title">Detail Jadwal Tambahan</h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div id="detail_jadwal_tambahan"></div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup</button>
+    <button type="submit" id="export_pdf_detail" class="btn btn-danger"><i class="ri-file-pdf-2-line"></i> PDF</button>
+</div>
+<script>
+$(document).ready(function() {
+
+    $.ajax({
+        url: "{?=url(['jadwal_tambahan','read', $id])?}",
+        method: "GET",
+        data: {},
+        dataType: 'json',
+        success: function (res) {
+            var eTable = "<div class='table-responsive'><table id='tbl_detail_jadwal_tambahan' class='table display dataTable' style='width:100%'><thead></thead>";
+eTable += '<tr><td>Id</td><td>' + res.msg['id'] + '</td><tr>';
+eTable += '<tr><td>Tahun</td><td>' + res.msg['tahun'] + '</td><tr>';
+eTable += '<tr><td>Bulan</td><td>' + res.msg['bulan'] + '</td><tr>';
+eTable += '<tr><td>H1</td><td>' + res.msg['h1'] + '</td><tr>';
+eTable += '<tr><td>H2</td><td>' + res.msg['h2'] + '</td><tr>';
+eTable += '<tr><td>H3</td><td>' + res.msg['h3'] + '</td><tr>';
+eTable += '<tr><td>H4</td><td>' + res.msg['h4'] + '</td><tr>';
+eTable += '<tr><td>H5</td><td>' + res.msg['h5'] + '</td><tr>';
+eTable += '<tr><td>H6</td><td>' + res.msg['h6'] + '</td><tr>';
+eTable += '<tr><td>H7</td><td>' + res.msg['h7'] + '</td><tr>';
+eTable += '<tr><td>H8</td><td>' + res.msg['h8'] + '</td><tr>';
+eTable += '<tr><td>H9</td><td>' + res.msg['h9'] + '</td><tr>';
+eTable += '<tr><td>H10</td><td>' + res.msg['h10'] + '</td><tr>';
+eTable += '<tr><td>H11</td><td>' + res.msg['h11'] + '</td><tr>';
+eTable += '<tr><td>H12</td><td>' + res.msg['h12'] + '</td><tr>';
+eTable += '<tr><td>H13</td><td>' + res.msg['h13'] + '</td><tr>';
+eTable += '<tr><td>H14</td><td>' + res.msg['h14'] + '</td><tr>';
+eTable += '<tr><td>H15</td><td>' + res.msg['h15'] + '</td><tr>';
+eTable += '<tr><td>H16</td><td>' + res.msg['h16'] + '</td><tr>';
+eTable += '<tr><td>H17</td><td>' + res.msg['h17'] + '</td><tr>';
+eTable += '<tr><td>H18</td><td>' + res.msg['h18'] + '</td><tr>';
+eTable += '<tr><td>H19</td><td>' + res.msg['h19'] + '</td><tr>';
+eTable += '<tr><td>H20</td><td>' + res.msg['h20'] + '</td><tr>';
+eTable += '<tr><td>H21</td><td>' + res.msg['h21'] + '</td><tr>';
+eTable += '<tr><td>H22</td><td>' + res.msg['h22'] + '</td><tr>';
+eTable += '<tr><td>H23</td><td>' + res.msg['h23'] + '</td><tr>';
+eTable += '<tr><td>H24</td><td>' + res.msg['h24'] + '</td><tr>';
+eTable += '<tr><td>H25</td><td>' + res.msg['h25'] + '</td><tr>';
+eTable += '<tr><td>H26</td><td>' + res.msg['h26'] + '</td><tr>';
+eTable += '<tr><td>H27</td><td>' + res.msg['h27'] + '</td><tr>';
+eTable += '<tr><td>H28</td><td>' + res.msg['h28'] + '</td><tr>';
+eTable += '<tr><td>H29</td><td>' + res.msg['h29'] + '</td><tr>';
+eTable += '<tr><td>H30</td><td>' + res.msg['h30'] + '</td><tr>';
+eTable += '<tr><td>H31</td><td>' + res.msg['h31'] + '</td><tr>';
+
+            eTable += "</tbody></table></div>";
+            $('#detail_jadwal_tambahan').html(eTable);
+        }
+    });
+
+    // ===========================================
+    // Ketika tombol export pdf di tekan
+    // ===========================================
+    $("#export_pdf_detail").click(function () {
+        var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
+        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        doc.addImage(img, 'JPEG', 20, 10, 50, 50);
+        doc.setFontSize(20);
+        doc.text("{$settings.nama_instansi}", 80, 35, null, null, null);
+        doc.setFontSize(10);
+        doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
+        doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
+        doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
+        doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
+        doc.setFontSize(14);
+        doc.text("Data Detail", 20, 95, null, null, null);
+        const totalPagesExp = "{total_pages_count_string}";        
+        doc.autoTable({
+            html: '#tbl_detail_jadwal_tambahan',
+            startY: 105,
+            margin: {
+                left: 20, 
+                right: 20
+            }, 
+            styles: {
+                fontSize: 10,
+                cellPadding: 5
+            }, 
+            didDrawPage: data => {
+                let footerStr = "Page " + doc.internal.getNumberOfPages();
+                if (typeof doc.putTotalPages === 'function') {
+                footerStr = footerStr + " of " + totalPagesExp;
+                }
+                doc.setFontSize(10);
+                doc.text(`© ${new Date().getFullYear()} {$settings.nama_instansi}.`, data.settings.margin.left, doc.internal.pageSize.height - 10);                
+                doc.text(footerStr, data.settings.margin.left + 480, doc.internal.pageSize.height - 10);
+           }
+        });
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPagesExp);
+        }
+        // doc.save('detail_data_jadwal_tambahan.pdf')
+        window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+              
+    }) 
+}); 
+</script>

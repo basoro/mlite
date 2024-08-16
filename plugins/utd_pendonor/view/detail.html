@@ -1,0 +1,88 @@
+<div class="modal-header">
+    <h4 class="modal-title">Detail Utd Pendonor</h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div id="detail_utd_pendonor"></div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup</button>
+    <button type="submit" id="export_pdf_detail" class="btn btn-danger"><i class="ri-file-pdf-2-line"></i> PDF</button>
+</div>
+<script>
+$(document).ready(function() {
+
+    $.ajax({
+        url: "{?=url(['utd_pendonor','read', $no_pendonor])?}",
+        method: "GET",
+        data: {},
+        dataType: 'json',
+        success: function (res) {
+            var eTable = "<div class='table-responsive'><table id='tbl_detail_utd_pendonor' class='table display dataTable' style='width:100%'><thead></thead>";
+eTable += '<tr><td>No Pendonor</td><td>' + res.msg['no_pendonor'] + '</td><tr>';
+eTable += '<tr><td>Nama</td><td>' + res.msg['nama'] + '</td><tr>';
+eTable += '<tr><td>No Ktp</td><td>' + res.msg['no_ktp'] + '</td><tr>';
+eTable += '<tr><td>Jk</td><td>' + res.msg['jk'] + '</td><tr>';
+eTable += '<tr><td>Tmp Lahir</td><td>' + res.msg['tmp_lahir'] + '</td><tr>';
+eTable += '<tr><td>Tgl Lahir</td><td>' + res.msg['tgl_lahir'] + '</td><tr>';
+eTable += '<tr><td>Alamat</td><td>' + res.msg['alamat'] + '</td><tr>';
+eTable += '<tr><td>Kd Kel</td><td>' + res.msg['kd_kel'] + '</td><tr>';
+eTable += '<tr><td>Kd Kec</td><td>' + res.msg['kd_kec'] + '</td><tr>';
+eTable += '<tr><td>Kd Kab</td><td>' + res.msg['kd_kab'] + '</td><tr>';
+eTable += '<tr><td>Kd Prop</td><td>' + res.msg['kd_prop'] + '</td><tr>';
+eTable += '<tr><td>Golongan Darah</td><td>' + res.msg['golongan_darah'] + '</td><tr>';
+eTable += '<tr><td>Resus</td><td>' + res.msg['resus'] + '</td><tr>';
+eTable += '<tr><td>No Telp</td><td>' + res.msg['no_telp'] + '</td><tr>';
+
+            eTable += "</tbody></table></div>";
+            $('#detail_utd_pendonor').html(eTable);
+        }
+    });
+
+    // ===========================================
+    // Ketika tombol export pdf di tekan
+    // ===========================================
+    $("#export_pdf_detail").click(function () {
+        var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
+        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        doc.addImage(img, 'JPEG', 20, 10, 50, 50);
+        doc.setFontSize(20);
+        doc.text("{$settings.nama_instansi}", 80, 35, null, null, null);
+        doc.setFontSize(10);
+        doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
+        doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
+        doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
+        doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
+        doc.setFontSize(14);
+        doc.text("Data Detail", 20, 95, null, null, null);
+        const totalPagesExp = "{total_pages_count_string}";        
+        doc.autoTable({
+            html: '#tbl_detail_utd_pendonor',
+            startY: 105,
+            margin: {
+                left: 20, 
+                right: 20
+            }, 
+            styles: {
+                fontSize: 10,
+                cellPadding: 5
+            }, 
+            didDrawPage: data => {
+                let footerStr = "Page " + doc.internal.getNumberOfPages();
+                if (typeof doc.putTotalPages === 'function') {
+                footerStr = footerStr + " of " + totalPagesExp;
+                }
+                doc.setFontSize(10);
+                doc.text(`© ${new Date().getFullYear()} {$settings.nama_instansi}.`, data.settings.margin.left, doc.internal.pageSize.height - 10);                
+                doc.text(footerStr, data.settings.margin.left + 480, doc.internal.pageSize.height - 10);
+           }
+        });
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPagesExp);
+        }
+        // doc.save('detail_data_utd_pendonor.pdf')
+        window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+              
+    }) 
+}); 
+</script>

@@ -1,0 +1,263 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Utd Donor</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class='col-md-6 text-left mb-3'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_utd_donor' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_utd_donor' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_utd_donor' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_utd_donor' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                          <button id='more_data_utd_donor' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='More Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-arrow-down-s-line' style='font-size: 15px;'></i><span class="hidden-xs"> More</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right mb-3'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-select" id='search_field_utd_donor' name='search_field_utd_donor' style="margin: 0 !important;"> 
+                              <option value='no_donor'>No Donor</option>
+<option value='no_pendonor'>No Pendonor</option>
+<option value='tanggal'>Tanggal</option>
+<option value='dinas'>Dinas</option>
+<option value='tensi'>Tensi</option>
+<option value='no_bag'>No Bag</option>
+<option value='jenis_bag'>Jenis Bag</option>
+<option value='jenis_donor'>Jenis Donor</option>
+<option value='tempat_aftap'>Tempat Aftap</option>
+<option value='petugas_aftap'>Petugas Aftap</option>
+<option value='hbsag'>Hbsag</option>
+<option value='hcv'>Hcv</option>
+<option value='hiv'>Hiv</option>
+<option value='spilis'>Spilis</option>
+<option value='malaria'>Malaria</option>
+<option value='petugas_u_saring'>Petugas U Saring</option>
+<option value='status'>Status</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_utd_donor' id='search_text_utd_donor' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-text" id='filter_search_utd_donor' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_utd_donor" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>No Donor</th>
+<th>No Pendonor</th>
+<th>Tanggal</th>
+<th>Dinas</th>
+<th>Tensi</th>
+<th>No Bag</th>
+<th>Jenis Bag</th>
+<th>Jenis Donor</th>
+<th>Tempat Aftap</th>
+<th>Petugas Aftap</th>
+<th>Hbsag</th>
+<th>Hcv</th>
+<th>Hiv</th>
+<th>Spilis</th>
+<th>Malaria</th>
+<th>Petugas U Saring</th>
+<th>Status</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_utd_donor" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Utd Donor</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_utd_donor">
+          <input type="hidden" class="form-control" id="typeact" /> 
+          <div class='row gx-3'>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='no_donor'>No Donor</label>
+      <input type='text' class='form-control' id='no_donor' name='no_donor' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='no_pendonor'>No Pendonor</label>
+      <input type='text' class='form-control' id='no_pendonor' name='no_pendonor' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tanggal'>Tanggal</label>
+      <input type='text' class='form-control' id='tanggal' name='tanggal' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='dinas'>Dinas</label>
+      <input type='text' class='form-control' id='dinas' name='dinas' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tensi'>Tensi</label>
+      <input type='text' class='form-control' id='tensi' name='tensi' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='no_bag'>No Bag</label>
+      <input type='text' class='form-control' id='no_bag' name='no_bag' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='jenis_bag'>Jenis Bag</label>
+      <input type='text' class='form-control' id='jenis_bag' name='jenis_bag' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='jenis_donor'>Jenis Donor</label>
+      <input type='text' class='form-control' id='jenis_donor' name='jenis_donor' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tempat_aftap'>Tempat Aftap</label>
+      <input type='text' class='form-control' id='tempat_aftap' name='tempat_aftap' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='petugas_aftap'>Petugas Aftap</label>
+      <input type='text' class='form-control' id='petugas_aftap' name='petugas_aftap' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='hbsag'>Hbsag</label>
+      <input type='text' class='form-control' id='hbsag' name='hbsag' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='hcv'>Hcv</label>
+      <input type='text' class='form-control' id='hcv' name='hcv' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='hiv'>Hiv</label>
+      <input type='text' class='form-control' id='hiv' name='hiv' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='spilis'>Spilis</label>
+      <input type='text' class='form-control' id='spilis' name='spilis' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='malaria'>Malaria</label>
+      <input type='text' class='form-control' id='malaria' name='malaria' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='petugas_u_saring'>Petugas U Saring</label>
+      <input type='text' class='form-control' id='petugas_u_saring' name='petugas_u_saring' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='status'>Status</label>
+      <input type='text' class='form-control' id='status' name='status' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_utd_donor" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_utd_donor" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Utd Donor</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_utd_donor"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_utd_donor" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

@@ -1,0 +1,416 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Jadwal Pegawai</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class='col-md-6 text-left mb-3'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_jadwal_pegawai' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_jadwal_pegawai' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_jadwal_pegawai' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_jadwal_pegawai' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                          <button id='more_data_jadwal_pegawai' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='More Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-arrow-down-s-line' style='font-size: 15px;'></i><span class="hidden-xs"> More</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right mb-3'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-select" id='search_field_jadwal_pegawai' name='search_field_jadwal_pegawai' style="margin: 0 !important;"> 
+                              <option value='id'>Id</option>
+<option value='tahun'>Tahun</option>
+<option value='bulan'>Bulan</option>
+<option value='h1'>H1</option>
+<option value='h2'>H2</option>
+<option value='h3'>H3</option>
+<option value='h4'>H4</option>
+<option value='h5'>H5</option>
+<option value='h6'>H6</option>
+<option value='h7'>H7</option>
+<option value='h8'>H8</option>
+<option value='h9'>H9</option>
+<option value='h10'>H10</option>
+<option value='h11'>H11</option>
+<option value='h12'>H12</option>
+<option value='h13'>H13</option>
+<option value='h14'>H14</option>
+<option value='h15'>H15</option>
+<option value='h16'>H16</option>
+<option value='h17'>H17</option>
+<option value='h18'>H18</option>
+<option value='h19'>H19</option>
+<option value='h20'>H20</option>
+<option value='h21'>H21</option>
+<option value='h22'>H22</option>
+<option value='h23'>H23</option>
+<option value='h24'>H24</option>
+<option value='h25'>H25</option>
+<option value='h26'>H26</option>
+<option value='h27'>H27</option>
+<option value='h28'>H28</option>
+<option value='h29'>H29</option>
+<option value='h30'>H30</option>
+<option value='h31'>H31</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_jadwal_pegawai' id='search_text_jadwal_pegawai' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-text" id='filter_search_jadwal_pegawai' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_jadwal_pegawai" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>Id</th>
+<th>Tahun</th>
+<th>Bulan</th>
+<th>H1</th>
+<th>H2</th>
+<th>H3</th>
+<th>H4</th>
+<th>H5</th>
+<th>H6</th>
+<th>H7</th>
+<th>H8</th>
+<th>H9</th>
+<th>H10</th>
+<th>H11</th>
+<th>H12</th>
+<th>H13</th>
+<th>H14</th>
+<th>H15</th>
+<th>H16</th>
+<th>H17</th>
+<th>H18</th>
+<th>H19</th>
+<th>H20</th>
+<th>H21</th>
+<th>H22</th>
+<th>H23</th>
+<th>H24</th>
+<th>H25</th>
+<th>H26</th>
+<th>H27</th>
+<th>H28</th>
+<th>H29</th>
+<th>H30</th>
+<th>H31</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_jadwal_pegawai" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Jadwal Pegawai</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_jadwal_pegawai">
+          <input type="hidden" class="form-control" id="typeact" /> 
+          <div class='row gx-3'>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='id'>Id</label>
+      <input type='text' class='form-control' id='id' name='id' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tahun'>Tahun</label>
+      <input type='text' class='form-control' id='tahun' name='tahun' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='bulan'>Bulan</label>
+      <input type='text' class='form-control' id='bulan' name='bulan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h1'>H1</label>
+      <input type='text' class='form-control' id='h1' name='h1' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h2'>H2</label>
+      <input type='text' class='form-control' id='h2' name='h2' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h3'>H3</label>
+      <input type='text' class='form-control' id='h3' name='h3' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h4'>H4</label>
+      <input type='text' class='form-control' id='h4' name='h4' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h5'>H5</label>
+      <input type='text' class='form-control' id='h5' name='h5' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h6'>H6</label>
+      <input type='text' class='form-control' id='h6' name='h6' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h7'>H7</label>
+      <input type='text' class='form-control' id='h7' name='h7' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h8'>H8</label>
+      <input type='text' class='form-control' id='h8' name='h8' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h9'>H9</label>
+      <input type='text' class='form-control' id='h9' name='h9' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h10'>H10</label>
+      <input type='text' class='form-control' id='h10' name='h10' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h11'>H11</label>
+      <input type='text' class='form-control' id='h11' name='h11' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h12'>H12</label>
+      <input type='text' class='form-control' id='h12' name='h12' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h13'>H13</label>
+      <input type='text' class='form-control' id='h13' name='h13' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h14'>H14</label>
+      <input type='text' class='form-control' id='h14' name='h14' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h15'>H15</label>
+      <input type='text' class='form-control' id='h15' name='h15' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h16'>H16</label>
+      <input type='text' class='form-control' id='h16' name='h16' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h17'>H17</label>
+      <input type='text' class='form-control' id='h17' name='h17' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h18'>H18</label>
+      <input type='text' class='form-control' id='h18' name='h18' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h19'>H19</label>
+      <input type='text' class='form-control' id='h19' name='h19' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h20'>H20</label>
+      <input type='text' class='form-control' id='h20' name='h20' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h21'>H21</label>
+      <input type='text' class='form-control' id='h21' name='h21' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h22'>H22</label>
+      <input type='text' class='form-control' id='h22' name='h22' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h23'>H23</label>
+      <input type='text' class='form-control' id='h23' name='h23' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h24'>H24</label>
+      <input type='text' class='form-control' id='h24' name='h24' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h25'>H25</label>
+      <input type='text' class='form-control' id='h25' name='h25' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h26'>H26</label>
+      <input type='text' class='form-control' id='h26' name='h26' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h27'>H27</label>
+      <input type='text' class='form-control' id='h27' name='h27' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h28'>H28</label>
+      <input type='text' class='form-control' id='h28' name='h28' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h29'>H29</label>
+      <input type='text' class='form-control' id='h29' name='h29' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h30'>H30</label>
+      <input type='text' class='form-control' id='h30' name='h30' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='h31'>H31</label>
+      <input type='text' class='form-control' id='h31' name='h31' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_jadwal_pegawai" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_jadwal_pegawai" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Jadwal Pegawai</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_jadwal_pegawai"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_jadwal_pegawai" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

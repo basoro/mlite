@@ -1,0 +1,182 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Utd Stok Darah</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class='col-md-6 text-left mb-3'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_utd_stok_darah' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_utd_stok_darah' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_utd_stok_darah' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_utd_stok_darah' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                          <button id='more_data_utd_stok_darah' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='More Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-arrow-down-s-line' style='font-size: 15px;'></i><span class="hidden-xs"> More</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right mb-3'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-select" id='search_field_utd_stok_darah' name='search_field_utd_stok_darah' style="margin: 0 !important;"> 
+                              <option value='no_kantong'>No Kantong</option>
+<option value='kode_komponen'>Kode Komponen</option>
+<option value='golongan_darah'>Golongan Darah</option>
+<option value='resus'>Resus</option>
+<option value='tanggal_aftap'>Tanggal Aftap</option>
+<option value='tanggal_kadaluarsa'>Tanggal Kadaluarsa</option>
+<option value='asal_darah'>Asal Darah</option>
+<option value='status'>Status</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_utd_stok_darah' id='search_text_utd_stok_darah' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-text" id='filter_search_utd_stok_darah' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_utd_stok_darah" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>No Kantong</th>
+<th>Kode Komponen</th>
+<th>Golongan Darah</th>
+<th>Resus</th>
+<th>Tanggal Aftap</th>
+<th>Tanggal Kadaluarsa</th>
+<th>Asal Darah</th>
+<th>Status</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_utd_stok_darah" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Utd Stok Darah</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_utd_stok_darah">
+          <input type="hidden" class="form-control" id="typeact" /> 
+          <div class='row gx-3'>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='no_kantong'>No Kantong</label>
+      <input type='text' class='form-control' id='no_kantong' name='no_kantong' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kode_komponen'>Kode Komponen</label>
+      <input type='text' class='form-control' id='kode_komponen' name='kode_komponen' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='golongan_darah'>Golongan Darah</label>
+      <input type='text' class='form-control' id='golongan_darah' name='golongan_darah' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='resus'>Resus</label>
+      <input type='text' class='form-control' id='resus' name='resus' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tanggal_aftap'>Tanggal Aftap</label>
+      <input type='text' class='form-control' id='tanggal_aftap' name='tanggal_aftap' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tanggal_kadaluarsa'>Tanggal Kadaluarsa</label>
+      <input type='text' class='form-control' id='tanggal_kadaluarsa' name='tanggal_kadaluarsa' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='asal_darah'>Asal Darah</label>
+      <input type='text' class='form-control' id='asal_darah' name='asal_darah' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='status'>Status</label>
+      <input type='text' class='form-control' id='status' name='status' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_utd_stok_darah" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_utd_stok_darah" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Utd Stok Darah</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_utd_stok_darah"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_utd_stok_darah" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>
