@@ -62,7 +62,8 @@ class Admin extends AdminModule
         foreach($result as $row) {
             $data[] = array(
                 'id'=>$row['id'],
-                'nama_bahasa'=>$row['nama_bahasa']
+'nama_bahasa'=>$row['nama_bahasa']
+
             );
         }
 
@@ -104,11 +105,12 @@ class Admin extends AdminModule
               exit();
             }
 
-            $id = $_POST['id'];
-            $nama_bahasa = $_POST['nama_bahasa'];
+        $id = $_POST['id'];
+$nama_bahasa = $_POST['nama_bahasa'];
+
             
             $result = $this->core->db->insert('bahasa_pasien', [
-              'id'=>$id, 'nama_bahasa'=>$nama_bahasa
+'id'=>$id, 'nama_bahasa'=>$nama_bahasa
             ]);
 
 
@@ -147,13 +149,14 @@ class Admin extends AdminModule
               exit();
             }
 
-            $id = $_POST['id'];
-            $nama_bahasa = $_POST['nama_bahasa'];
+        $id = $_POST['id'];
+$nama_bahasa = $_POST['nama_bahasa'];
 
-            // BUANG FIELD PERTAMA
+
+        // BUANG FIELD PERTAMA
 
             $result = $this->core->db->update('bahasa_pasien', [
-              'nama_bahasa'=>$nama_bahasa
+'id'=>$id, 'nama_bahasa'=>$nama_bahasa
             ], [
               'id'=>$id
             ]);
@@ -255,7 +258,7 @@ class Admin extends AdminModule
             foreach($result as $row) {
                 $data[] = array(
                     'id'=>$row['id'],
-                    'nama_bahasa'=>$row['nama_bahasa']
+'nama_bahasa'=>$row['nama_bahasa']
                 );
             }
 

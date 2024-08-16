@@ -1,0 +1,254 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Detail Periksa Lab</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class='col-md-6 text-left mb-3'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_detail_periksa_lab' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_detail_periksa_lab' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_detail_periksa_lab' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_detail_periksa_lab' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                          <button id='more_data_detail_periksa_lab' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='More Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-arrow-down-s-line' style='font-size: 15px;'></i><span class="hidden-xs"> More</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right mb-3'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-select" id='search_field_detail_periksa_lab' name='search_field_detail_periksa_lab' style="margin: 0 !important;"> 
+                              <option value='no_rawat'>No Rawat</option>
+<option value='kd_jenis_prw'>Kd Jenis Prw</option>
+<option value='tgl_periksa'>Tgl Periksa</option>
+<option value='jam'>Jam</option>
+<option value='id_template'>Id Template</option>
+<option value='nilai'>Nilai</option>
+<option value='nilai_rujukan'>Nilai Rujukan</option>
+<option value='keterangan'>Keterangan</option>
+<option value='bagian_rs'>Bagian Rs</option>
+<option value='bhp'>Bhp</option>
+<option value='bagian_perujuk'>Bagian Perujuk</option>
+<option value='bagian_dokter'>Bagian Dokter</option>
+<option value='bagian_laborat'>Bagian Laborat</option>
+<option value='kso'>Kso</option>
+<option value='menejemen'>Menejemen</option>
+<option value='biaya_item'>Biaya Item</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_detail_periksa_lab' id='search_text_detail_periksa_lab' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-text" id='filter_search_detail_periksa_lab' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_detail_periksa_lab" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>No Rawat</th>
+<th>Kd Jenis Prw</th>
+<th>Tgl Periksa</th>
+<th>Jam</th>
+<th>Id Template</th>
+<th>Nilai</th>
+<th>Nilai Rujukan</th>
+<th>Keterangan</th>
+<th>Bagian Rs</th>
+<th>Bhp</th>
+<th>Bagian Perujuk</th>
+<th>Bagian Dokter</th>
+<th>Bagian Laborat</th>
+<th>Kso</th>
+<th>Menejemen</th>
+<th>Biaya Item</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_detail_periksa_lab" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Detail Periksa Lab</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_detail_periksa_lab">
+          <input type="hidden" class="form-control" id="typeact" /> 
+          <div class='row gx-3'>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='no_rawat'>No Rawat</label>
+      <input type='text' class='form-control' id='no_rawat' name='no_rawat' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kd_jenis_prw'>Kd Jenis Prw</label>
+      <input type='text' class='form-control' id='kd_jenis_prw' name='kd_jenis_prw' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tgl_periksa'>Tgl Periksa</label>
+      <input type='text' class='form-control' id='tgl_periksa' name='tgl_periksa' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='jam'>Jam</label>
+      <input type='text' class='form-control' id='jam' name='jam' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='id_template'>Id Template</label>
+      <input type='text' class='form-control' id='id_template' name='id_template' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nilai'>Nilai</label>
+      <input type='text' class='form-control' id='nilai' name='nilai' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nilai_rujukan'>Nilai Rujukan</label>
+      <input type='text' class='form-control' id='nilai_rujukan' name='nilai_rujukan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='keterangan'>Keterangan</label>
+      <input type='text' class='form-control' id='keterangan' name='keterangan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='bagian_rs'>Bagian Rs</label>
+      <input type='text' class='form-control' id='bagian_rs' name='bagian_rs' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='bhp'>Bhp</label>
+      <input type='text' class='form-control' id='bhp' name='bhp' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='bagian_perujuk'>Bagian Perujuk</label>
+      <input type='text' class='form-control' id='bagian_perujuk' name='bagian_perujuk' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='bagian_dokter'>Bagian Dokter</label>
+      <input type='text' class='form-control' id='bagian_dokter' name='bagian_dokter' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='bagian_laborat'>Bagian Laborat</label>
+      <input type='text' class='form-control' id='bagian_laborat' name='bagian_laborat' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kso'>Kso</label>
+      <input type='text' class='form-control' id='kso' name='kso' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='menejemen'>Menejemen</label>
+      <input type='text' class='form-control' id='menejemen' name='menejemen' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='biaya_item'>Biaya Item</label>
+      <input type='text' class='form-control' id='biaya_item' name='biaya_item' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_detail_periksa_lab" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_detail_periksa_lab" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Detail Periksa Lab</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_detail_periksa_lab"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_detail_periksa_lab" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

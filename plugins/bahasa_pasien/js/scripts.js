@@ -23,13 +23,23 @@ jQuery().ready(function () {
                 
             }
         },
+        "fnDrawCallback": function () {
+            $('#more_data_bahasa_pasien').on('click', function(e) {
+                e.preventDefault();
+                var clientX = e.originalEvent.clientX;
+                var clientY = e.originalEvent.clientY;
+                $('#tbl_bahasa_pasien tr').contextMenu({x: clientX, y: clientY});
+            });          
+        }, 
         "columns": [
-            { 'data': 'id' },
-            { 'data': 'nama_bahasa' }
+{ 'data': 'id' },
+{ 'data': 'nama_bahasa' }
+
         ],
         "columnDefs": [
-            { 'targets': 0},
-            { 'targets': 1}
+{ 'targets': 0},
+{ 'targets': 1}
+
         ],
         order: [[1, 'DESC']], 
         buttons: [],
@@ -48,7 +58,7 @@ jQuery().ready(function () {
         callback: function(key, options) {
           var rowData = var_tbl_bahasa_pasien.rows({ selected: true }).data()[0];
           if (rowData != null) {
-            var id = rowData['id'];
+var id = rowData['id'];
             switch (key) {
                 case 'detail' :
                     OpenModal(mlite.url + '/bahasa_pasien/detail/' + id + '?t=' + mlite.token);
@@ -71,21 +81,23 @@ jQuery().ready(function () {
 
     $("form[name='form_bahasa_pasien']").validate({
         rules: {
-            id: 'required',
-            nama_bahasa: 'required'
+id: 'required',
+nama_bahasa: 'required'
+
         },
         messages: {
-            id:'Id tidak boleh kosong!',
-            nama_bahasa:'Nama Bahasa tidak boleh kosong!'
+id:'Id tidak boleh kosong!',
+nama_bahasa:'Nama Bahasa tidak boleh kosong!'
+
         },
         submitHandler: function (form) {
-            var id= $('#id').val();
-            var nama_bahasa= $('#nama_bahasa').val();
+var id= $('#id').val();
+var nama_bahasa= $('#nama_bahasa').val();
 
-            var typeact = $('#typeact').val();
+var typeact = $('#typeact').val();
 
-            var formData = new FormData(form); // tambahan
-            formData.append('typeact', typeact); // tambahan
+var formData = new FormData(form); // tambahan
+formData.append('typeact', typeact); // tambahan
 
             $.ajax({
                 url: "{?=url(['bahasa_pasien','aksi'])?}",
@@ -113,11 +125,32 @@ jQuery().ready(function () {
                             bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                         }    
                     }
-                    var_tbl_bahasa_pasien.draw();
+ß                    var_tbl_bahasa_pasien.draw();
                 }
             })
         }
     });
+
+
+    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+        ws.onmessage = function(response){
+            try{
+                output = JSON.parse(response.data);
+                if(output['action'] == 'add'){
+                    var_tbl_bahasa_pasien.draw();
+                }
+                if(output['action'] == 'edit'){
+                    var_tbl_bahasa_pasien.draw();
+                }
+                if(output['action'] == 'del'){
+                    var_tbl_bahasa_pasien.draw();
+                }
+            }catch(e){
+                console.log(e);
+            }
+        }
+    }
+
 
     // ==============================================================
     // KETIKA TOMBOL SEARCH DITEKAN
@@ -135,12 +168,12 @@ jQuery().ready(function () {
         if (rowData != null) {
 
             var id = rowData['id'];
-            var nama_bahasa = rowData['nama_bahasa'];
+var nama_bahasa = rowData['nama_bahasa'];
 
             $("#typeact").val("edit");
   
             $('#id').val(id);
-            $('#nama_bahasa').val(nama_bahasa);
+$('#nama_bahasa').val(nama_bahasa);
 
             $("#id").prop('readonly', true); // GA BISA DIEDIT KALI READONLY
             $('#modal-title').text("Edit Data Bahasa Pasien");
@@ -160,7 +193,7 @@ jQuery().ready(function () {
 
 
         if (rowData) {
-            var id = rowData['id'];
+var id = rowData['id'];
             bootbox.confirm('Anda yakin akan menghapus data dengan id="' + id, function(result) {
                 if(result) {
                     $.ajax({
@@ -197,7 +230,7 @@ jQuery().ready(function () {
     jQuery("#tambah_data_bahasa_pasien").click(function () {
 
         $('#id').val('');
-        $('#nama_bahasa').val('');
+$('#nama_bahasa').val('');
 
         $("#typeact").val("add");
         $("#id").prop('readonly', false);
@@ -228,7 +261,7 @@ jQuery().ready(function () {
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     eTable += '<td>' + res[i]['id'] + '</td>';
-                    eTable += '<td>' + res[i]['nama_bahasa'] + '</td>';
+eTable += '<td>' + res[i]['nama_bahasa'] + '</td>';
                     eTable += "</tr>";
                 }
                 eTable += "</tbody></table></div>";

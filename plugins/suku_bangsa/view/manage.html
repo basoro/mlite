@@ -5,8 +5,8 @@
                 <h5 class="card-title">Kelola Suku Bangsa</h5>
             </div>
             <div class="card-body">
-                <div class="row" style="padding-bottom: 10px;">
-                    <div class='col-md-6 text-left'>
+                <div class="row">
+                    <div class='col-md-6 text-left mb-3'>
                       <div class="btn-group" role="group" aria-label="Toolbar">
                           <button id='lihat_data_suku_bangsa' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
                           <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
@@ -20,9 +20,12 @@
                           <button id='hapus_data_suku_bangsa' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
                           <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
                           </button>
+                          <button id='more_data_suku_bangsa' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='More Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-arrow-down-s-line' style='font-size: 15px;'></i><span class="hidden-xs"> More</span>
+                          </button>
                       </div>
                     </div>
-                    <div class='col-md-6 text-right'>
+                    <div class='col-md-6 text-right mb-3'>
                       <div class="input-group" style="width:100%">
                           <span class="input-group-text">Cari</span>
                           <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">

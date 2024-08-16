@@ -19,10 +19,11 @@ $(document).ready(function() {
         dataType: 'json',
         success: function (res) {
             var eTable = "<div class='table-responsive'><table id='tbl_detail_bangsal' class='table display dataTable' style='width:100%'><thead></thead>";
-                eTable += '<tr><td>Kd Bangsal</td><td>' + res.msg['kd_bangsal'] + '</td><tr>';
-                eTable += '<tr><td>Nm Bangsal</td><td>' + res.msg['nm_bangsal'] + '</td><tr>';
-                eTable += '<tr><td>Status</td><td>' + res.msg['status'] + '</td><tr>';
-                eTable += "</tbody></table></div>";
+eTable += '<tr><td>Kd Bangsal</td><td>' + res.msg['kd_bangsal'] + '</td><tr>';
+eTable += '<tr><td>Nm Bangsal</td><td>' + res.msg['nm_bangsal'] + '</td><tr>';
+eTable += '<tr><td>Status</td><td>' + res.msg['status'] + '</td><tr>';
+
+            eTable += "</tbody></table></div>";
             $('#detail_bangsal').html(eTable);
         }
     });
@@ -68,7 +69,7 @@ $(document).ready(function() {
         if (typeof doc.putTotalPages === 'function') {
             doc.putTotalPages(totalPagesExp);
         }
-        // doc.save('table_data_propinsi.pdf')
+        // doc.save('detail_data_bangsal.pdf')
         window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
               
     }) 

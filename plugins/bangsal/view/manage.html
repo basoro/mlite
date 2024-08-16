@@ -5,8 +5,8 @@
                 <h5 class="card-title">Kelola Bangsal</h5>
             </div>
             <div class="card-body">
-                <div class="row" style="padding-bottom: 10px;">
-                    <div class='col-md-6 text-left'>
+                <div class="row">
+                    <div class='col-md-6 text-left mb-3'>
                       <div class="btn-group" role="group" aria-label="Toolbar">
                           <button id='lihat_data_bangsal' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
                           <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
@@ -20,12 +20,12 @@
                           <button id='hapus_data_bangsal' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
                           <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
                           </button>
-                          <button id='more_data_bangsal' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='Menu Data' {?=isset_or($disabled_menu.read)?}>
+                          <button id='more_data_bangsal' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='More Data' {?=isset_or($disabled_menu.read)?}>
                           <i class='ri-arrow-down-s-line' style='font-size: 15px;'></i><span class="hidden-xs"> More</span>
                           </button>
                       </div>
                     </div>
-                    <div class='col-md-6 text-right'>
+                    <div class='col-md-6 text-right mb-3'>
                       <div class="input-group" style="width:100%">
                           <span class="input-group-text">Cari</span>
                           <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
@@ -68,34 +68,30 @@
       </div>
       <div class="modal-body">
         <form name="form_bangsal">
-          <input type="hidden" class="form-control" id="typeact" /> 
-          <div class='row gx-3'>
-            <div class='col-xxl-4 col-lg-4 col-sm-6'>
-              <div class='mb-3'>
-                <label class='form-label' for='kd_bangsal'>Kd Bangsal</label>
-                <input type='text' class='form-control' id='kd_bangsal' name='kd_bangsal' />
-              <div class='invalid-feedback error'></div>
-              </div>
-            </div>
-            <div class='col-xxl-4 col-lg-4 col-sm-6'>
-              <div class='mb-3'>
-                <label class='form-label' for='nm_bangsal'>Nm Bangsal</label>
-                <input type='text' class='form-control' id='nm_bangsal' name='nm_bangsal' />
-              <div class='invalid-feedback error'></div>
-              </div>
-            </div>
-            <div class='col-xxl-4 col-lg-4 col-sm-6'>
-              <div class='mb-3'>
-                <label class='form-label' for='status'>Status</label>
-                <select name="status" id="status" class="form-select">
-                  <option value="">Select</option>
-                  <option value="1">Aktif</option>
-                  <option value="0">Tidak Aktif</option>
-                </select>
-              <div class='invalid-feedback error'></div>
-              </div>
+        <input type="hidden" class="form-control" id="typeact" /> 
+        <div class='row gx-3'>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_bangsal'>Kd Bangsal</label>
+              <input type='text' class='form-control' id='kd_bangsal' name='kd_bangsal' />
+            <div class='invalid-feedback error'></div>
             </div>
           </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='nm_bangsal'>Nm Bangsal</label>
+              <input type='text' class='form-control' id='nm_bangsal' name='nm_bangsal' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='status'>Status</label>
+              <input type='text' class='form-control' id='status' name='status' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>

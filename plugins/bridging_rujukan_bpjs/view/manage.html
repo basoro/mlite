@@ -1,0 +1,236 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Bridging Rujukan Bpjs</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class='col-md-6 text-left mb-3'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_bridging_rujukan_bpjs' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_bridging_rujukan_bpjs' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_bridging_rujukan_bpjs' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_bridging_rujukan_bpjs' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                          <button id='more_data_bridging_rujukan_bpjs' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='More Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-arrow-down-s-line' style='font-size: 15px;'></i><span class="hidden-xs"> More</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right mb-3'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-select" id='search_field_bridging_rujukan_bpjs' name='search_field_bridging_rujukan_bpjs' style="margin: 0 !important;"> 
+                              <option value='no_sep'>No Sep</option>
+<option value='tglRujukan'>Tglrujukan</option>
+<option value='tglRencanaKunjungan'>Tglrencanakunjungan</option>
+<option value='ppkDirujuk'>Ppkdirujuk</option>
+<option value='nm_ppkDirujuk'>Nm Ppkdirujuk</option>
+<option value='jnsPelayanan'>Jnspelayanan</option>
+<option value='catatan'>Catatan</option>
+<option value='diagRujukan'>Diagrujukan</option>
+<option value='nama_diagRujukan'>Nama Diagrujukan</option>
+<option value='tipeRujukan'>Tiperujukan</option>
+<option value='poliRujukan'>Polirujukan</option>
+<option value='nama_poliRujukan'>Nama Polirujukan</option>
+<option value='no_rujukan'>No Rujukan</option>
+<option value='user'>User</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_bridging_rujukan_bpjs' id='search_text_bridging_rujukan_bpjs' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-text" id='filter_search_bridging_rujukan_bpjs' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_bridging_rujukan_bpjs" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>No Sep</th>
+<th>Tglrujukan</th>
+<th>Tglrencanakunjungan</th>
+<th>Ppkdirujuk</th>
+<th>Nm Ppkdirujuk</th>
+<th>Jnspelayanan</th>
+<th>Catatan</th>
+<th>Diagrujukan</th>
+<th>Nama Diagrujukan</th>
+<th>Tiperujukan</th>
+<th>Polirujukan</th>
+<th>Nama Polirujukan</th>
+<th>No Rujukan</th>
+<th>User</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_bridging_rujukan_bpjs" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Bridging Rujukan Bpjs</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_bridging_rujukan_bpjs">
+          <input type="hidden" class="form-control" id="typeact" /> 
+          <div class='row gx-3'>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='no_sep'>No Sep</label>
+      <input type='text' class='form-control' id='no_sep' name='no_sep' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tglRujukan'>Tglrujukan</label>
+      <input type='text' class='form-control' id='tglRujukan' name='tglRujukan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tglRencanaKunjungan'>Tglrencanakunjungan</label>
+      <input type='text' class='form-control' id='tglRencanaKunjungan' name='tglRencanaKunjungan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='ppkDirujuk'>Ppkdirujuk</label>
+      <input type='text' class='form-control' id='ppkDirujuk' name='ppkDirujuk' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nm_ppkDirujuk'>Nm Ppkdirujuk</label>
+      <input type='text' class='form-control' id='nm_ppkDirujuk' name='nm_ppkDirujuk' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='jnsPelayanan'>Jnspelayanan</label>
+      <input type='text' class='form-control' id='jnsPelayanan' name='jnsPelayanan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='catatan'>Catatan</label>
+      <input type='text' class='form-control' id='catatan' name='catatan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='diagRujukan'>Diagrujukan</label>
+      <input type='text' class='form-control' id='diagRujukan' name='diagRujukan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nama_diagRujukan'>Nama Diagrujukan</label>
+      <input type='text' class='form-control' id='nama_diagRujukan' name='nama_diagRujukan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tipeRujukan'>Tiperujukan</label>
+      <input type='text' class='form-control' id='tipeRujukan' name='tipeRujukan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='poliRujukan'>Polirujukan</label>
+      <input type='text' class='form-control' id='poliRujukan' name='poliRujukan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nama_poliRujukan'>Nama Polirujukan</label>
+      <input type='text' class='form-control' id='nama_poliRujukan' name='nama_poliRujukan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='no_rujukan'>No Rujukan</label>
+      <input type='text' class='form-control' id='no_rujukan' name='no_rujukan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='user'>User</label>
+      <input type='text' class='form-control' id='user' name='user' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_bridging_rujukan_bpjs" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_bridging_rujukan_bpjs" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Bridging Rujukan Bpjs</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_bridging_rujukan_bpjs"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_bridging_rujukan_bpjs" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

@@ -221,21 +221,41 @@ class Admin extends AdminModule
         // ]);
 
 
-        $this->assign['dokter'] = $this->core->db->rand('dokter', [
-            '[>]pegawai' => ['kd_dokter' => 'nik']
-        ], [
-            'kd_dokter', 
-            'nm_dokter', 
-            'bidang', 
-            'photo'
-        ], [
-            'pegawai.stts_aktif' => 'Aktif', 
-            'LIMIT' => 4
-        ]);
+        // $this->assign['dokter'] = $this->core->db->rand('dokter', [
+        //     '[>]pegawai' => ['kd_dokter' => 'nik']
+        // ], [
+        //     'kd_dokter', 
+        //     'nm_dokter', 
+        //     'bidang', 
+        //     'photo'
+        // ], [
+        //     'pegawai.stts_aktif' => 'Aktif', 
+        //     'LIMIT' => 4
+        // ]);
 
-        $array_chunk = array_chunk($this->assign['dokter'], 2);
+        // $array_chunk = array_chunk($this->assign['dokter'], 2);
 
-        echo json_encode($array_chunk, JSON_PRETTY_PRINT);        
+        // echo json_encode($array_chunk, JSON_PRETTY_PRINT);        
+        
+        $result = [];
+        foreach (glob(MODULES.'/*', GLOB_ONLYDIR) as $dir) {
+            $dir = basename($dir);
+            $result[] = $dir;
+        }
+
+        $dbModules = array_column($this->core->db->select('mlite_modules', '*', [
+            "AND" => [
+                "dir[!]" => $result,
+            ]            
+        ]), 'dir');
+
+        $dir = implode("','",$result);
+        $get_table = $this->core->db->pdo->prepare("SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='mlite.io' AND TABLE_NAME NOT IN ('$dir')");
+	    $get_table->execute();
+	    $result = $get_table->fetchAll();
+
+        echo count($result);
+        // echo json_encode($result, JSON_PRETTY_PRINT);        
         exit();
     }
 

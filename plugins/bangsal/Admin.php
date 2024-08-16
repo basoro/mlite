@@ -105,13 +105,13 @@ class Admin extends AdminModule
               exit();
             }
 
-        $kd_bangsal = $_POST['kd_bangsal'];
-$nm_bangsal = $_POST['nm_bangsal'];
-$status = $_POST['status'];
+            $kd_bangsal = $_POST['kd_bangsal'];
+            $nm_bangsal = $_POST['nm_bangsal'];
+            $status = $_POST['status'];
 
             
             $result = $this->core->db->insert('bangsal', [
-'kd_bangsal'=>$kd_bangsal, 'nm_bangsal'=>$nm_bangsal, 'status'=>$status
+              'kd_bangsal'=>$kd_bangsal, 'nm_bangsal'=>$nm_bangsal, 'status'=>$status
             ]);
 
 
@@ -150,15 +150,14 @@ $status = $_POST['status'];
               exit();
             }
 
-        $kd_bangsal = $_POST['kd_bangsal'];
-$nm_bangsal = $_POST['nm_bangsal'];
-$status = $_POST['status'];
+            $kd_bangsal = $_POST['kd_bangsal'];
+            $nm_bangsal = $_POST['nm_bangsal'];
+            $status = $_POST['status'];
 
-
-        // BUANG FIELD PERTAMA
+            // BUANG FIELD PERTAMA
 
             $result = $this->core->db->update('bangsal', [
-'kd_bangsal'=>$kd_bangsal, 'nm_bangsal'=>$nm_bangsal, 'status'=>$status
+              'nm_bangsal'=>$nm_bangsal, 'status'=>$status
             ], [
               'kd_bangsal'=>$kd_bangsal
             ]);
@@ -260,8 +259,8 @@ $status = $_POST['status'];
             foreach($result as $row) {
                 $data[] = array(
                     'kd_bangsal'=>$row['kd_bangsal'],
-'nm_bangsal'=>$row['nm_bangsal'],
-'status'=>$row['status']
+                    'nm_bangsal'=>$row['nm_bangsal'],
+                    'status'=>$row['status']
                 );
             }
 
@@ -344,8 +343,8 @@ $status = $_POST['status'];
         $type = 'pie';
       }
 
-      $labels = $this->core->db->select('bangsal', 'status', ['GROUP' => 'status']);
-      $datasets = $this->core->db->select('bangsal', ['count' => \Medoo\Medoo::raw('COUNT(<status>)')], ['GROUP' => 'status']);
+      $labels = $this->core->db->select('bangsal', 'kd_bangsal', ['GROUP' => 'kd_bangsal']);
+      $datasets = $this->core->db->select('bangsal', ['count' => \Medoo\Medoo::raw('COUNT(<kd_bangsal>)')], ['GROUP' => 'kd_bangsal']);
 
       if(isset_or($column)) {
         $labels = $this->core->db->select('bangsal', ''.$column.'', ['GROUP' => ''.$column.'']);

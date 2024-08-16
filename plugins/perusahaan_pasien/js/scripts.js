@@ -23,6 +23,14 @@ jQuery().ready(function () {
                 
             }
         },
+        "fnDrawCallback": function () {
+            $('#more_data_perusahaan_pasien').on('click', function(e) {
+                e.preventDefault();
+                var clientX = e.originalEvent.clientX;
+                var clientY = e.originalEvent.clientY;
+                $('#tbl_perusahaan_pasien tr').contextMenu({x: clientX, y: clientY});
+            });          
+        },        
         "columns": [
             { 'data': 'kode_perusahaan' },
             { 'data': 'nama_perusahaan' },
@@ -128,11 +136,37 @@ jQuery().ready(function () {
                             bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                         }    
                     }
+                    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+                        let payload = {
+                            'action' : typeact
+                        }
+                        ws.send(JSON.stringify(payload));
+                    } 
                     var_tbl_perusahaan_pasien.draw();
                 }
             })
         }
     });
+
+
+    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+        ws.onmessage = function(response){
+            try{
+                output = JSON.parse(response.data);
+                if(output['action'] == 'add'){
+                    var_tbl_perusahaan_pasien.draw();
+                }
+                if(output['action'] == 'edit'){
+                    var_tbl_perusahaan_pasien.draw();
+                }
+                if(output['action'] == 'del'){
+                    var_tbl_perusahaan_pasien.draw();
+                }
+            }catch(e){
+                console.log(e);
+            }
+        }
+    }
 
     // ==============================================================
     // KETIKA TOMBOL SEARCH DITEKAN

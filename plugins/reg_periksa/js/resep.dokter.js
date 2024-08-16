@@ -336,8 +336,6 @@ $('#status').val('ralan').change();
 $('#tgl_penyerahan').val('');
 $('#jam_penyerahan').val('');
 
-// alert($('#no_rawat').val().replace(/\//g,'-'));
-
 $("#refresh_no_resep").on("click", function() {
     var tgl_peresepan = $('#tgl_peresepan').val();
     var no_rawat = $('#no_rawat_resep_dokter').val();

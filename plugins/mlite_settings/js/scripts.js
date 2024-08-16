@@ -23,6 +23,14 @@ jQuery().ready(function () {
                 
             }
         },
+        "fnDrawCallback": function () {
+            $('#more_data_mlite_settings').on('click', function(e) {
+                e.preventDefault();
+                var clientX = e.originalEvent.clientX;
+                var clientY = e.originalEvent.clientY;
+                $('#tbl_mlite_settings tr').contextMenu({x: clientX, y: clientY});
+            });          
+        },        
         "columns": [
 { 'data': 'id' },
 { 'data': 'module' },
@@ -67,21 +75,7 @@ var id = rowData['id'];
           }          
         },
         items: {
-            "detail": {name: "View Detail", "icon": "edit", disabled:  {$disabled_menu.read}},
-            // "sep1": "---------",
-            // "fold1": {
-            //     "name": "Sub group", 
-            //     "items": {
-            //         "fold1-key1": {"name": "Foo bar"},
-            //         "fold2": {
-            //             "name": "Sub group 2", 
-            //             "items": {
-            //                 "fold2-key1": {"name": "alpha"},
-            //                 "fold2-key2": {"name": "bravo"}
-            //             }
-            //         }
-            //     }
-            // }
+            "detail": {name: "View Detail", "icon": "edit", disabled:  {$disabled_menu.read}}
         }
     });
 
@@ -140,11 +134,37 @@ var value= $('#value').val();
                         }    
                     }
                     $("#modal_mlite_settings").modal('hide');
+                    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+                        let payload = {
+                            'action' : typeact
+                        }
+                        ws.send(JSON.stringify(payload));
+                    } 
                     var_tbl_mlite_settings.draw();
                 }
             })
         }
     });
+
+
+    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+        ws.onmessage = function(response){
+            try{
+                output = JSON.parse(response.data);
+                if(output['action'] == 'add'){
+                    var_tbl_permintaan_lab.draw();
+                }
+                if(output['action'] == 'edit'){
+                    var_tbl_permintaan_lab.draw();
+                }
+                if(output['action'] == 'del'){
+                    var_tbl_permintaan_lab.draw();
+                }
+            }catch(e){
+                console.log(e);
+            }
+        }
+    }
 
     // ==============================================================
     // KETIKA TOMBOL SEARCH DITEKAN

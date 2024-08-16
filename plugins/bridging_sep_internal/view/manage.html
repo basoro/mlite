@@ -1,0 +1,578 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Kelola Bridging Sep Internal</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class='col-md-6 text-left mb-3'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_bridging_sep_internal' class='btn btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Lihat Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-eye-line' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
+                          <button id='tambah_data_bridging_sep_internal' class='btn btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.create)?}>
+                          <i class='ri-add-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_bridging_sep_internal' class='btn btn-primary' data-bs-toggle='tooltip' data-bs-placement='top' title='Edit Data' {?=isset_or($disabled_menu.update)?}>
+                          <i class='ri-edit-circle-line' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_bridging_sep_internal' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                          <button id='more_data_bridging_sep_internal' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='More Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-arrow-down-s-line' style='font-size: 15px;'></i><span class="hidden-xs"> More</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right mb-3'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-text">Cari</span>
+                          <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-select" id='search_field_bridging_sep_internal' name='search_field_bridging_sep_internal' style="margin: 0 !important;"> 
+                              <option value='no_sep'>No Sep</option>
+<option value='no_rawat'>No Rawat</option>
+<option value='tglsep'>Tglsep</option>
+<option value='tglrujukan'>Tglrujukan</option>
+<option value='no_rujukan'>No Rujukan</option>
+<option value='kdppkrujukan'>Kdppkrujukan</option>
+<option value='nmppkrujukan'>Nmppkrujukan</option>
+<option value='kdppkpelayanan'>Kdppkpelayanan</option>
+<option value='nmppkpelayanan'>Nmppkpelayanan</option>
+<option value='jnspelayanan'>Jnspelayanan</option>
+<option value='catatan'>Catatan</option>
+<option value='diagawal'>Diagawal</option>
+<option value='nmdiagnosaawal'>Nmdiagnosaawal</option>
+<option value='kdpolitujuan'>Kdpolitujuan</option>
+<option value='nmpolitujuan'>Nmpolitujuan</option>
+<option value='klsrawat'>Klsrawat</option>
+<option value='klsnaik'>Klsnaik</option>
+<option value='pembiayaan'>Pembiayaan</option>
+<option value='pjnaikkelas'>Pjnaikkelas</option>
+<option value='lakalantas'>Lakalantas</option>
+<option value='user'>User</option>
+<option value='nomr'>Nomr</option>
+<option value='nama_pasien'>Nama Pasien</option>
+<option value='tanggal_lahir'>Tanggal Lahir</option>
+<option value='peserta'>Peserta</option>
+<option value='jkel'>Jkel</option>
+<option value='no_kartu'>No Kartu</option>
+<option value='tglpulang'>Tglpulang</option>
+<option value='asal_rujukan'>Asal Rujukan</option>
+<option value='eksekutif'>Eksekutif</option>
+<option value='cob'>Cob</option>
+<option value='notelep'>Notelep</option>
+<option value='katarak'>Katarak</option>
+<option value='tglkkl'>Tglkkl</option>
+<option value='keterangankkl'>Keterangankkl</option>
+<option value='suplesi'>Suplesi</option>
+<option value='no_sep_suplesi'>No Sep Suplesi</option>
+<option value='kdprop'>Kdprop</option>
+<option value='nmprop'>Nmprop</option>
+<option value='kdkab'>Kdkab</option>
+<option value='nmkab'>Nmkab</option>
+<option value='kdkec'>Kdkec</option>
+<option value='nmkec'>Nmkec</option>
+<option value='noskdp'>Noskdp</option>
+<option value='kddpjp'>Kddpjp</option>
+<option value='nmdpdjp'>Nmdpdjp</option>
+<option value='tujuankunjungan'>Tujuankunjungan</option>
+<option value='flagprosedur'>Flagprosedur</option>
+<option value='penunjang'>Penunjang</option>
+<option value='asesmenpelayanan'>Asesmenpelayanan</option>
+<option value='kddpjplayanan'>Kddpjplayanan</option>
+<option value='nmdpjplayanan'>Nmdpjplayanan</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_bridging_sep_internal' id='search_text_bridging_sep_internal' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-text" id='filter_search_bridging_sep_internal' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_bridging_sep_internal" class="table table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>No Sep</th>
+<th>No Rawat</th>
+<th>Tglsep</th>
+<th>Tglrujukan</th>
+<th>No Rujukan</th>
+<th>Kdppkrujukan</th>
+<th>Nmppkrujukan</th>
+<th>Kdppkpelayanan</th>
+<th>Nmppkpelayanan</th>
+<th>Jnspelayanan</th>
+<th>Catatan</th>
+<th>Diagawal</th>
+<th>Nmdiagnosaawal</th>
+<th>Kdpolitujuan</th>
+<th>Nmpolitujuan</th>
+<th>Klsrawat</th>
+<th>Klsnaik</th>
+<th>Pembiayaan</th>
+<th>Pjnaikkelas</th>
+<th>Lakalantas</th>
+<th>User</th>
+<th>Nomr</th>
+<th>Nama Pasien</th>
+<th>Tanggal Lahir</th>
+<th>Peserta</th>
+<th>Jkel</th>
+<th>No Kartu</th>
+<th>Tglpulang</th>
+<th>Asal Rujukan</th>
+<th>Eksekutif</th>
+<th>Cob</th>
+<th>Notelep</th>
+<th>Katarak</th>
+<th>Tglkkl</th>
+<th>Keterangankkl</th>
+<th>Suplesi</th>
+<th>No Sep Suplesi</th>
+<th>Kdprop</th>
+<th>Nmprop</th>
+<th>Kdkab</th>
+<th>Nmkab</th>
+<th>Kdkec</th>
+<th>Nmkec</th>
+<th>Noskdp</th>
+<th>Kddpjp</th>
+<th>Nmdpdjp</th>
+<th>Tujuankunjungan</th>
+<th>Flagprosedur</th>
+<th>Penunjang</th>
+<th>Asesmenpelayanan</th>
+<th>Kddpjplayanan</th>
+<th>Nmdpjplayanan</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_bridging_sep_internal" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Bridging Sep Internal</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="form_bridging_sep_internal">
+          <input type="hidden" class="form-control" id="typeact" /> 
+          <div class='row gx-3'>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='no_sep'>No Sep</label>
+      <input type='text' class='form-control' id='no_sep' name='no_sep' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='no_rawat'>No Rawat</label>
+      <input type='text' class='form-control' id='no_rawat' name='no_rawat' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tglsep'>Tglsep</label>
+      <input type='text' class='form-control' id='tglsep' name='tglsep' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tglrujukan'>Tglrujukan</label>
+      <input type='text' class='form-control' id='tglrujukan' name='tglrujukan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='no_rujukan'>No Rujukan</label>
+      <input type='text' class='form-control' id='no_rujukan' name='no_rujukan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kdppkrujukan'>Kdppkrujukan</label>
+      <input type='text' class='form-control' id='kdppkrujukan' name='kdppkrujukan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nmppkrujukan'>Nmppkrujukan</label>
+      <input type='text' class='form-control' id='nmppkrujukan' name='nmppkrujukan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kdppkpelayanan'>Kdppkpelayanan</label>
+      <input type='text' class='form-control' id='kdppkpelayanan' name='kdppkpelayanan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nmppkpelayanan'>Nmppkpelayanan</label>
+      <input type='text' class='form-control' id='nmppkpelayanan' name='nmppkpelayanan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='jnspelayanan'>Jnspelayanan</label>
+      <input type='text' class='form-control' id='jnspelayanan' name='jnspelayanan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='catatan'>Catatan</label>
+      <input type='text' class='form-control' id='catatan' name='catatan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='diagawal'>Diagawal</label>
+      <input type='text' class='form-control' id='diagawal' name='diagawal' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nmdiagnosaawal'>Nmdiagnosaawal</label>
+      <input type='text' class='form-control' id='nmdiagnosaawal' name='nmdiagnosaawal' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kdpolitujuan'>Kdpolitujuan</label>
+      <input type='text' class='form-control' id='kdpolitujuan' name='kdpolitujuan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nmpolitujuan'>Nmpolitujuan</label>
+      <input type='text' class='form-control' id='nmpolitujuan' name='nmpolitujuan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='klsrawat'>Klsrawat</label>
+      <input type='text' class='form-control' id='klsrawat' name='klsrawat' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='klsnaik'>Klsnaik</label>
+      <input type='text' class='form-control' id='klsnaik' name='klsnaik' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='pembiayaan'>Pembiayaan</label>
+      <input type='text' class='form-control' id='pembiayaan' name='pembiayaan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='pjnaikkelas'>Pjnaikkelas</label>
+      <input type='text' class='form-control' id='pjnaikkelas' name='pjnaikkelas' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='lakalantas'>Lakalantas</label>
+      <input type='text' class='form-control' id='lakalantas' name='lakalantas' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='user'>User</label>
+      <input type='text' class='form-control' id='user' name='user' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nomr'>Nomr</label>
+      <input type='text' class='form-control' id='nomr' name='nomr' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nama_pasien'>Nama Pasien</label>
+      <input type='text' class='form-control' id='nama_pasien' name='nama_pasien' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tanggal_lahir'>Tanggal Lahir</label>
+      <input type='text' class='form-control' id='tanggal_lahir' name='tanggal_lahir' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='peserta'>Peserta</label>
+      <input type='text' class='form-control' id='peserta' name='peserta' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='jkel'>Jkel</label>
+      <input type='text' class='form-control' id='jkel' name='jkel' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='no_kartu'>No Kartu</label>
+      <input type='text' class='form-control' id='no_kartu' name='no_kartu' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tglpulang'>Tglpulang</label>
+      <input type='text' class='form-control' id='tglpulang' name='tglpulang' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='asal_rujukan'>Asal Rujukan</label>
+      <input type='text' class='form-control' id='asal_rujukan' name='asal_rujukan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='eksekutif'>Eksekutif</label>
+      <input type='text' class='form-control' id='eksekutif' name='eksekutif' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='cob'>Cob</label>
+      <input type='text' class='form-control' id='cob' name='cob' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='notelep'>Notelep</label>
+      <input type='text' class='form-control' id='notelep' name='notelep' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='katarak'>Katarak</label>
+      <input type='text' class='form-control' id='katarak' name='katarak' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tglkkl'>Tglkkl</label>
+      <input type='text' class='form-control' id='tglkkl' name='tglkkl' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='keterangankkl'>Keterangankkl</label>
+      <input type='text' class='form-control' id='keterangankkl' name='keterangankkl' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='suplesi'>Suplesi</label>
+      <input type='text' class='form-control' id='suplesi' name='suplesi' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='no_sep_suplesi'>No Sep Suplesi</label>
+      <input type='text' class='form-control' id='no_sep_suplesi' name='no_sep_suplesi' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kdprop'>Kdprop</label>
+      <input type='text' class='form-control' id='kdprop' name='kdprop' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nmprop'>Nmprop</label>
+      <input type='text' class='form-control' id='nmprop' name='nmprop' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kdkab'>Kdkab</label>
+      <input type='text' class='form-control' id='kdkab' name='kdkab' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nmkab'>Nmkab</label>
+      <input type='text' class='form-control' id='nmkab' name='nmkab' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kdkec'>Kdkec</label>
+      <input type='text' class='form-control' id='kdkec' name='kdkec' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nmkec'>Nmkec</label>
+      <input type='text' class='form-control' id='nmkec' name='nmkec' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='noskdp'>Noskdp</label>
+      <input type='text' class='form-control' id='noskdp' name='noskdp' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kddpjp'>Kddpjp</label>
+      <input type='text' class='form-control' id='kddpjp' name='kddpjp' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nmdpdjp'>Nmdpdjp</label>
+      <input type='text' class='form-control' id='nmdpdjp' name='nmdpdjp' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='tujuankunjungan'>Tujuankunjungan</label>
+      <input type='text' class='form-control' id='tujuankunjungan' name='tujuankunjungan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='flagprosedur'>Flagprosedur</label>
+      <input type='text' class='form-control' id='flagprosedur' name='flagprosedur' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='penunjang'>Penunjang</label>
+      <input type='text' class='form-control' id='penunjang' name='penunjang' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='asesmenpelayanan'>Asesmenpelayanan</label>
+      <input type='text' class='form-control' id='asesmenpelayanan' name='asesmenpelayanan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='kddpjplayanan'>Kddpjplayanan</label>
+      <input type='text' class='form-control' id='kddpjplayanan' name='kddpjplayanan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+    <div class='mb-3'>
+      <label class='form-label' for='nmdpjplayanan'>Nmdpjplayanan</label>
+      <input type='text' class='form-control' id='nmdpjplayanan' name='nmdpjplayanan' />
+    <div class='invalid-feedback error'></div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+        <button type="submit" id="simpan_data_bridging_sep_internal" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_bridging_sep_internal" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Bridging Sep Internal</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_bridging_sep_internal"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="ri-bar-chart-2-line"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-danger">
+          <i class="ri-file-pdf-2-line"></i> PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-success">
+          <i class="ri-file-excel-2-line"></i> XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_bridging_sep_internal" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

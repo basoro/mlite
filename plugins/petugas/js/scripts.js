@@ -23,6 +23,14 @@ jQuery().ready(function () {
                 
             }
         },
+        "fnDrawCallback": function () {
+            $('#more_data_petugas').on('click', function(e) {
+                e.preventDefault();
+                var clientX = e.originalEvent.clientX;
+                var clientY = e.originalEvent.clientY;
+                $('#tbl_petugas tr').contextMenu({x: clientX, y: clientY});
+            });          
+        },        
         "columns": [
             { 'data': 'nip' },
             { 'data': 'nama' },
@@ -173,11 +181,37 @@ jQuery().ready(function () {
                             bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                         }    
                     }
+                    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+                        let payload = {
+                            'action' : typeact
+                        }
+                        ws.send(JSON.stringify(payload));
+                    } 
                     var_tbl_petugas.draw();
                 }
             })
         }
     });
+
+
+    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+        ws.onmessage = function(response){
+            try{
+                output = JSON.parse(response.data);
+                if(output['action'] == 'add'){
+                    var_tbl_petugas.draw();
+                }
+                if(output['action'] == 'edit'){
+                    var_tbl_petugas.draw();
+                }
+                if(output['action'] == 'del'){
+                    var_tbl_petugas.draw();
+                }
+            }catch(e){
+                console.log(e);
+            }
+        }
+    }
 
     // ==============================================================
     // KETIKA TOMBOL SEARCH DITEKAN

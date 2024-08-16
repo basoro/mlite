@@ -23,8 +23,8 @@
 
     <script>
       var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}"};
-      // let URL_WEBSOCKET = "ws://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
-      // let ws = new WebSocket(URL_WEBSOCKET);
+      let URL_WEBSOCKET = "ws://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
+      let ws = new WebSocket(URL_WEBSOCKET);
       if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
         ws.onclose = function(){
           // Jika terputus dari websocket server, maka mencoba terhubung kembali.

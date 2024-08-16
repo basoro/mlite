@@ -1,0 +1,21 @@
+#tbl_bridging_surat_pri_bpjs th, #tbl_bridging_surat_pri_bpjs td, #forTable_bridging_surat_pri_bpjs th, #forTable_bridging_surat_pri_bpjs td {
+  white-space: nowrap; 
+}
+.dataTables_wrapper th, .dataTables_wrapper td {
+  white-space: nowrap; 
+}
+.pmd-datatable-pagination {
+  padding-top: 10px !important;
+}
+.dt-length {
+  display: inline;
+}
+.dt-paging {
+  display: inline;
+  float: right;
+}
+@media (max-width:767px) {
+  .dt-length{
+    display: none !important;
+  }
+}

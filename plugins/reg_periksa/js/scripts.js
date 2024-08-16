@@ -247,11 +247,36 @@ jQuery().ready(function () {
                             bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                         }    
                     }
+                    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+                        let payload = {
+                            'action' : typeact
+                        }
+                        ws.send(JSON.stringify(payload));
+                    } 
                     var_tbl_reg_periksa.draw();
                 }
             })
         }
     });
+
+    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+        ws.onmessage = function(response){
+            try{
+                output = JSON.parse(response.data);
+                if(output['action'] == 'add'){
+                    var_tbl_reg_periksa.draw();
+                }
+                if(output['action'] == 'edit'){
+                    var_tbl_reg_periksa.draw();
+                }
+                if(output['action'] == 'del'){
+                    var_tbl_reg_periksa.draw();
+                }
+            }catch(e){
+                console.log(e);
+            }
+        }
+    }
 
     // ==============================================================
     // KETIKA MENGETIK DI INPUT SEARCH
@@ -473,10 +498,16 @@ jQuery().ready(function () {
                                 bootbox.alert('<span class="text-success">' + data.msg + '</span>');
                             } else {
                                 bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
-                            }    
+                            }
+                            if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+                                let payload = {
+                                    'action' : 'del'
+                                }
+                                ws.send(JSON.stringify(payload));
+                            }         
                             var_tbl_reg_periksa.draw();
                         }
-                    })    
+                    })   
                 }
             });
 

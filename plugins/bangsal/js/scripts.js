@@ -34,16 +34,7 @@ jQuery().ready(function () {
         "columns": [
             { 'data': 'kd_bangsal' },
             { 'data': 'nm_bangsal' },
-            { 'data': 'status', 
-                "render": function (data) {
-                    if(data == '1') {
-                        var status = 'Aktif';
-                    } else {
-                        var status = 'Tidak Aktif';
-                    }
-                    return status;
-                }      
-            }
+            { 'data': 'status' }
         ],
         "columnDefs": [
             { 'targets': 0},
@@ -135,11 +126,37 @@ jQuery().ready(function () {
                             bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                         }    
                     }
+                    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+                        let payload = {
+                            'action' : typeact
+                        }
+                        ws.send(JSON.stringify(payload));
+                    } 
                     var_tbl_bangsal.draw();
                 }
             })
         }
     });
+
+
+    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+        ws.onmessage = function(response){
+            try{
+                output = JSON.parse(response.data);
+                if(output['action'] == 'add'){
+                    var_tbl_bangsal.draw();
+                }
+                if(output['action'] == 'edit'){
+                    var_tbl_bangsal.draw();
+                }
+                if(output['action'] == 'del'){
+                    var_tbl_bangsal.draw();
+                }
+            }catch(e){
+                console.log(e);
+            }
+        }
+    }
 
     // ==============================================================
     // KETIKA TOMBOL SEARCH DITEKAN
@@ -164,7 +181,7 @@ jQuery().ready(function () {
   
             $('#kd_bangsal').val(kd_bangsal);
             $('#nm_bangsal').val(nm_bangsal);
-            $('#status').val(status).change();
+            $('#status').val(status);
 
             $("#kd_bangsal").prop('readonly', true); // GA BISA DIEDIT KALI READONLY
             $('#modal-title').text("Edit Data Bangsal");
@@ -222,10 +239,10 @@ jQuery().ready(function () {
 
         $('#kd_bangsal').val('');
         $('#nm_bangsal').val('');
-        $('#status').val('').change();
+        $('#status').val('');
 
         $("#typeact").val("add");
-        $("#kd_bangsal").prop('disabled', false);
+        $("#kd_bangsal").prop('readonly', false);
         
         $('#modal-title').text("Tambah Data Bangsal");
         $("#modal_bangsal").modal('show');
@@ -308,7 +325,7 @@ jQuery().ready(function () {
         if (typeof doc.putTotalPages === 'function') {
             doc.putTotalPages(totalPagesExp);
         }
-        // doc.save('table_data_bangsal.pdf')
+        // doc.save('table_data_bangsal.pdf');
         window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
               
     })

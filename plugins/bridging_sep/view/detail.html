@@ -1,0 +1,126 @@
+<div class="modal-header">
+    <h4 class="modal-title">Detail Bridging Sep</h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div id="detail_bridging_sep"></div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup</button>
+    <button type="submit" id="export_pdf_detail" class="btn btn-danger"><i class="ri-file-pdf-2-line"></i> PDF</button>
+</div>
+<script>
+$(document).ready(function() {
+
+    $.ajax({
+        url: "{?=url(['bridging_sep','read', $no_sep])?}",
+        method: "GET",
+        data: {},
+        dataType: 'json',
+        success: function (res) {
+            var eTable = "<div class='table-responsive'><table id='tbl_detail_bridging_sep' class='table display dataTable' style='width:100%'><thead></thead>";
+eTable += '<tr><td>No Sep</td><td>' + res.msg['no_sep'] + '</td><tr>';
+eTable += '<tr><td>No Rawat</td><td>' + res.msg['no_rawat'] + '</td><tr>';
+eTable += '<tr><td>Tglsep</td><td>' + res.msg['tglsep'] + '</td><tr>';
+eTable += '<tr><td>Tglrujukan</td><td>' + res.msg['tglrujukan'] + '</td><tr>';
+eTable += '<tr><td>No Rujukan</td><td>' + res.msg['no_rujukan'] + '</td><tr>';
+eTable += '<tr><td>Kdppkrujukan</td><td>' + res.msg['kdppkrujukan'] + '</td><tr>';
+eTable += '<tr><td>Nmppkrujukan</td><td>' + res.msg['nmppkrujukan'] + '</td><tr>';
+eTable += '<tr><td>Kdppkpelayanan</td><td>' + res.msg['kdppkpelayanan'] + '</td><tr>';
+eTable += '<tr><td>Nmppkpelayanan</td><td>' + res.msg['nmppkpelayanan'] + '</td><tr>';
+eTable += '<tr><td>Jnspelayanan</td><td>' + res.msg['jnspelayanan'] + '</td><tr>';
+eTable += '<tr><td>Catatan</td><td>' + res.msg['catatan'] + '</td><tr>';
+eTable += '<tr><td>Diagawal</td><td>' + res.msg['diagawal'] + '</td><tr>';
+eTable += '<tr><td>Nmdiagnosaawal</td><td>' + res.msg['nmdiagnosaawal'] + '</td><tr>';
+eTable += '<tr><td>Kdpolitujuan</td><td>' + res.msg['kdpolitujuan'] + '</td><tr>';
+eTable += '<tr><td>Nmpolitujuan</td><td>' + res.msg['nmpolitujuan'] + '</td><tr>';
+eTable += '<tr><td>Klsrawat</td><td>' + res.msg['klsrawat'] + '</td><tr>';
+eTable += '<tr><td>Klsnaik</td><td>' + res.msg['klsnaik'] + '</td><tr>';
+eTable += '<tr><td>Pembiayaan</td><td>' + res.msg['pembiayaan'] + '</td><tr>';
+eTable += '<tr><td>Pjnaikkelas</td><td>' + res.msg['pjnaikkelas'] + '</td><tr>';
+eTable += '<tr><td>Lakalantas</td><td>' + res.msg['lakalantas'] + '</td><tr>';
+eTable += '<tr><td>User</td><td>' + res.msg['user'] + '</td><tr>';
+eTable += '<tr><td>Nomr</td><td>' + res.msg['nomr'] + '</td><tr>';
+eTable += '<tr><td>Nama Pasien</td><td>' + res.msg['nama_pasien'] + '</td><tr>';
+eTable += '<tr><td>Tanggal Lahir</td><td>' + res.msg['tanggal_lahir'] + '</td><tr>';
+eTable += '<tr><td>Peserta</td><td>' + res.msg['peserta'] + '</td><tr>';
+eTable += '<tr><td>Jkel</td><td>' + res.msg['jkel'] + '</td><tr>';
+eTable += '<tr><td>No Kartu</td><td>' + res.msg['no_kartu'] + '</td><tr>';
+eTable += '<tr><td>Tglpulang</td><td>' + res.msg['tglpulang'] + '</td><tr>';
+eTable += '<tr><td>Asal Rujukan</td><td>' + res.msg['asal_rujukan'] + '</td><tr>';
+eTable += '<tr><td>Eksekutif</td><td>' + res.msg['eksekutif'] + '</td><tr>';
+eTable += '<tr><td>Cob</td><td>' + res.msg['cob'] + '</td><tr>';
+eTable += '<tr><td>Notelep</td><td>' + res.msg['notelep'] + '</td><tr>';
+eTable += '<tr><td>Katarak</td><td>' + res.msg['katarak'] + '</td><tr>';
+eTable += '<tr><td>Tglkkl</td><td>' + res.msg['tglkkl'] + '</td><tr>';
+eTable += '<tr><td>Keterangankkl</td><td>' + res.msg['keterangankkl'] + '</td><tr>';
+eTable += '<tr><td>Suplesi</td><td>' + res.msg['suplesi'] + '</td><tr>';
+eTable += '<tr><td>No Sep Suplesi</td><td>' + res.msg['no_sep_suplesi'] + '</td><tr>';
+eTable += '<tr><td>Kdprop</td><td>' + res.msg['kdprop'] + '</td><tr>';
+eTable += '<tr><td>Nmprop</td><td>' + res.msg['nmprop'] + '</td><tr>';
+eTable += '<tr><td>Kdkab</td><td>' + res.msg['kdkab'] + '</td><tr>';
+eTable += '<tr><td>Nmkab</td><td>' + res.msg['nmkab'] + '</td><tr>';
+eTable += '<tr><td>Kdkec</td><td>' + res.msg['kdkec'] + '</td><tr>';
+eTable += '<tr><td>Nmkec</td><td>' + res.msg['nmkec'] + '</td><tr>';
+eTable += '<tr><td>Noskdp</td><td>' + res.msg['noskdp'] + '</td><tr>';
+eTable += '<tr><td>Kddpjp</td><td>' + res.msg['kddpjp'] + '</td><tr>';
+eTable += '<tr><td>Nmdpdjp</td><td>' + res.msg['nmdpdjp'] + '</td><tr>';
+eTable += '<tr><td>Tujuankunjungan</td><td>' + res.msg['tujuankunjungan'] + '</td><tr>';
+eTable += '<tr><td>Flagprosedur</td><td>' + res.msg['flagprosedur'] + '</td><tr>';
+eTable += '<tr><td>Penunjang</td><td>' + res.msg['penunjang'] + '</td><tr>';
+eTable += '<tr><td>Asesmenpelayanan</td><td>' + res.msg['asesmenpelayanan'] + '</td><tr>';
+eTable += '<tr><td>Kddpjplayanan</td><td>' + res.msg['kddpjplayanan'] + '</td><tr>';
+eTable += '<tr><td>Nmdpjplayanan</td><td>' + res.msg['nmdpjplayanan'] + '</td><tr>';
+
+            eTable += "</tbody></table></div>";
+            $('#detail_bridging_sep').html(eTable);
+        }
+    });
+
+    // ===========================================
+    // Ketika tombol export pdf di tekan
+    // ===========================================
+    $("#export_pdf_detail").click(function () {
+        var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
+        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        doc.addImage(img, 'JPEG', 20, 10, 50, 50);
+        doc.setFontSize(20);
+        doc.text("{$settings.nama_instansi}", 80, 35, null, null, null);
+        doc.setFontSize(10);
+        doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
+        doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
+        doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
+        doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
+        doc.setFontSize(14);
+        doc.text("Data Detail", 20, 95, null, null, null);
+        const totalPagesExp = "{total_pages_count_string}";        
+        doc.autoTable({
+            html: '#tbl_detail_bridging_sep',
+            startY: 105,
+            margin: {
+                left: 20, 
+                right: 20
+            }, 
+            styles: {
+                fontSize: 10,
+                cellPadding: 5
+            }, 
+            didDrawPage: data => {
+                let footerStr = "Page " + doc.internal.getNumberOfPages();
+                if (typeof doc.putTotalPages === 'function') {
+                footerStr = footerStr + " of " + totalPagesExp;
+                }
+                doc.setFontSize(10);
+                doc.text(`© ${new Date().getFullYear()} {$settings.nama_instansi}.`, data.settings.margin.left, doc.internal.pageSize.height - 10);                
+                doc.text(footerStr, data.settings.margin.left + 480, doc.internal.pageSize.height - 10);
+           }
+        });
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPagesExp);
+        }
+        // doc.save('detail_data_bridging_sep.pdf')
+        window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+              
+    }) 
+}); 
+</script>
