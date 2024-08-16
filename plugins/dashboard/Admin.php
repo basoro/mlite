@@ -10,11 +10,11 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Manajemen'   => 'main'
+            'Manage'   => 'manage'
         ];
     }
 
-    public function getMain(){ 
+    public function getManage(){ 
 
         $waktu = gmdate("H:i",time()+8*3600);
         $t = explode(":",$waktu);

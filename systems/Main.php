@@ -180,7 +180,7 @@ abstract class Main
             }
 
             if (empty(parseURL(1))) {
-                redirect(url(['dashboard', 'main']));
+                redirect(url(['dashboard', 'manage']));
             } elseif (!isset($_GET['t']) || ($_SESSION['token'] != @$_GET['t'])) {
                 return false;
             }
@@ -221,7 +221,7 @@ abstract class Main
                             'token' => $token[1]
                         ]);                    
                         
-                        redirect(url(['dashboard', 'main']));
+                        redirect(url(['dashboard', 'manage']));
 
                         return true;
                     }

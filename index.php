@@ -39,7 +39,7 @@ if ($core->loginCheck()) {
                 $url = array_merge($arrayURL);
                 redirect(url($url));
             }
-            redirect(url(['dashboard', 'main']));
+            redirect(url(['dashboard', 'manage']));
         }
     }
     $core->drawTheme('login.html');
