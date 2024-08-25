@@ -1,0 +1,125 @@
+<style>
+.pasien-info {
+    background-color: #eeeeee;
+    border: 1px #ddd solid;
+}
+.pasien-info th, .pasien-info td {
+    padding: 6px;
+}
+.pasien-info span {
+    width: 100px;
+    display: inline-block;
+}        
+</style>
+<div class="modal-header">
+    <h4 class="modal-title">Data Riwayat Perawatan</h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <table id="tbl_riwayat_perawatan" class="table table-striped pasien-info" width="100%">
+        <thead>
+            <tr>
+                <th colspan="2"><span>Nama Pasien</span>: <b>{$riwayat.pasien.nm_pasien}</b></th>
+                <th><span>Nomor RM </span>: <b>{$riwayat.pasien.no_rkm_medis}</b></th>
+                <th><span>Alamat </span>: <b>{$riwayat.pasien.alamat}</b></b></th>
+            </tr>
+            <tr>
+                <th colspan="2"><span>Tanggal Lahir</span>: <b>{$riwayat.pasien.tgl_lahir}</b></th>
+                <th><span>Umur </span>: <b>{$riwayat.pasien.umur}</th>
+                <th><span>Nomor HP </span>: <b>{$riwayat.pasien.no_tlp}</b></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="font-size: 18px;">
+                <th>No.</th>
+                <th>Detail Kunjungan</th>
+                <th colspan="2">S O A P I E</th>
+            </tr> 
+            {loop: $riwayat.reg_periksa}
+            <tr class="{if: $value.kd_dokter == 'DR001'}text-danger{/if}">
+                <td>{$value.nomor}</td>
+                <td>
+                    {$value.tgl_registrasi} {$value.jam_reg}<br>
+                    <b>{if: $value.status_lanjut == 'Ralan'}Rawat Jalan{else}Rawat Inap{/if}</b><br>
+                    {$value.kd_poli} - {$value.nm_poli}<br>
+                    {$value.kd_dokter} - {$value.nm_dokter}<br>
+                    {$value.kd_pj} - {$value.png_jawab}
+                </td>
+                <td colspan="2">
+                    {loop: $value.pemeriksaan_ralan as $value2}
+                    {$value2.tgl_perawatan} {$value2.jam_rawat}<br>
+                    <b>Subyketif:</b><br>
+                    &nbsp;&nbsp;TTV : {if: isset_or($value2.suhu_tubuh)}Suhu Tubuh : {$value2.suhu_tubuh}{/if}, {if: isset_or($value2.tensi)}Tensi : {$value2.tensi}{/if}<br>
+                    &nbsp;&nbsp;{if: isset_or($value2.keluhan)}Keluhan : {$value2.keluhan}{/if}<br>
+                    <b>Obyektif:</b><br>
+                    &nbsp;&nbsp;{if: isset_or($value2.pemeriksaan)}{$value2.pemeriksaan}{/if}<br>
+                    <b>Assement:</b><br>
+                    &nbsp;&nbsp;{if: isset_or($value2.penilaian)}{$value2.penilaian}{/if}<br>
+                    <b>Plan:</b><br>
+                    &nbsp;&nbsp;{if: isset_or($value2.rtl)}{$value2.rtl}{/if}<br>
+                    <b>Instruction:</b><br>
+                    &nbsp;&nbsp;{if: isset_or($value2.instruksi)}{$value2.instruksi}{/if}<br>
+                    <b>Evaluation:</b><br>
+                    &nbsp;&nbsp;{if: isset_or($value2.evaluasi)}{$value2.evaluasi}{/if}<br>
+                    {/loop}
+                </td>
+            </tr>
+            {/loop}
+        </tbody>        
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+    <button type="submit" id="export_pdf_detail" class="btn btn-danger"><i class="ri-file-pdf-2-line"></i> PDF</button>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Ketika tombol export pdf di tekan
+        // ===========================================
+        $("#export_pdf_detail").click(function () {
+            var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
+            var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+            let base64Image = $('#qr_code img').attr('src');
+            doc.addImage(img, 'JPEG', 20, 10, 50, 50);
+            doc.setFontSize(20);
+            doc.text("{$settings.nama_instansi}", 80, 35, null, null, null);
+            doc.setFontSize(10);
+            doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
+            doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
+            doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
+            doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
+            doc.setFontSize(14);
+            doc.text("Data Riwayat Perawatan", 20, 95, null, null, null);
+            const totalPagesExp = "{total_pages_count_string}";        
+            doc.autoTable({
+                html: '#tbl_riwayat_perawatan',
+                startY: 105,
+                margin: {
+                    left: 20, 
+                    right: 20
+                }, 
+                styles: {
+                    fontSize: 10,
+                    cellPadding: 5
+                }, 
+                didDrawPage: data => {
+                    let footerStr = "Page " + doc.internal.getNumberOfPages();
+                    if (typeof doc.putTotalPages === 'function') {
+                    footerStr = footerStr + " of " + totalPagesExp;
+                    }
+                    doc.setFontSize(10);
+                    doc.text(`© ${new Date().getFullYear()} {$settings.nama_instansi}.`, data.settings.margin.left, doc.internal.pageSize.height - 10);                
+                    doc.text(footerStr, data.settings.margin.left + 480, doc.internal.pageSize.height - 10);
+               }
+            });
+            if (typeof doc.putTotalPages === 'function') {
+                doc.putTotalPages(totalPagesExp);
+            }
+            // doc.save('table_data_propinsi.pdf')
+            window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+                  
+        })   
+        
+    })
+    </script>

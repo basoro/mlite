@@ -163,6 +163,9 @@ var no_sep = rowData['no_sep'];
                 case 'detail' :
                     OpenModal(mlite.url + '/bridging_sep/detail/' + no_sep + '?t=' + mlite.token);
                 break;
+                case 'sep' :
+                    OpenModal(mlite.url + '/bridging_sep/sep/' + no_sep + '?t=' + mlite.token);
+                break;
                 default :
                 break
             } 
@@ -171,7 +174,8 @@ var no_sep = rowData['no_sep'];
           }          
         },
         items: {
-            "detail": {name: "View Detail", "icon": "edit", disabled:  {$disabled_menu.read}}
+            "detail": {name: "View Detail", "icon": "edit", disabled:  {$disabled_menu.read}}, 
+            "sep": {name: "Create SEP", "icon": "edit", disabled:  {$disabled_menu.create}}
         }
     });
 

@@ -4,7 +4,8 @@ composer.lock
 vendor/
 tmp/
 uploads/
-plugins/crud_generator
+jasper/
+# plugins/crud_generator
 # plugins/pemeriksaan_ralan
 # plugins/rawat_jl_dr
 # plugins/rawat_jl_pr

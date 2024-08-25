@@ -16,12 +16,16 @@ class Admin extends AdminModule
     public function getManage()
     {
         $this->_addHeaderFiles();
+        $this->assign['dokter'] = $this->core->db->select('dokter', '*');
+        $this->assign['petugas'] = $this->core->db->select('petugas', '*');
+        $this->assign['jns_perawatan_lab'] = $this->core->db->select('jns_perawatan_lab', '*');
+
         $disabled_menu = $this->core->loadDisabledMenu('periksa_lab'); 
         foreach ($disabled_menu as &$row) { 
           if ($row == "true" ) $row = "disabled"; 
         } 
         unset($row);
-        return $this->draw('manage.html', ['disabled_menu' => $disabled_menu]);
+        return $this->draw('manage.html', ['periksalab' => $this->assign, 'disabled_menu' => $disabled_menu]);
     }
 
     public function postData()
@@ -139,12 +143,43 @@ $status = $_POST['status'];
 $kategori = $_POST['kategori'];
 
             
+$id_template = $_POST['id_template'];
+$nilai = $_POST['nilai'];
+$keterangan = $_POST['keterangan'];
+            
+
             $result = $this->core->db->insert('periksa_lab', [
-'no_rawat'=>$no_rawat, 'nip'=>$nip, 'kd_jenis_prw'=>$kd_jenis_prw, 'tgl_periksa'=>$tgl_periksa, 'jam'=>$jam, 'dokter_perujuk'=>$dokter_perujuk, 'bagian_rs'=>$bagian_rs, 'bhp'=>$bhp, 'tarif_perujuk'=>$tarif_perujuk, 'tarif_tindakan_dokter'=>$tarif_tindakan_dokter, 'tarif_tindakan_petugas'=>$tarif_tindakan_petugas, 'kso'=>$kso, 'menejemen'=>$menejemen, 'biaya'=>$biaya, 'kd_dokter'=>$kd_dokter, 'status'=>$status, 'kategori'=>$kategori
+              'no_rawat'=>$no_rawat, 'nip'=>$nip, 'kd_jenis_prw'=>$kd_jenis_prw, 'tgl_periksa'=>$tgl_periksa, 'jam'=>$jam, 'dokter_perujuk'=>$dokter_perujuk, 'bagian_rs'=>$bagian_rs, 'bhp'=>$bhp, 'tarif_perujuk'=>$tarif_perujuk, 'tarif_tindakan_dokter'=>$tarif_tindakan_dokter, 'tarif_tindakan_petugas'=>$tarif_tindakan_petugas, 'kso'=>$kso, 'menejemen'=>$menejemen, 'biaya'=>$biaya, 'kd_dokter'=>$kd_dokter, 'status'=>$status, 'kategori'=>$kategori
             ]);
 
 
             if (!empty($result)){
+
+              for($l=0; $l < count($id_template); $l++){
+                $template_laboratorium = $this->core->db->get('template_laboratorium', '*', ['id_template' => $id_template[$l]]);
+                if($_POST['jk'] == 'L' && $_POST['umur'] == 'D') {
+                  $nilai_rujukan = $template_laboratorium['nilai_rujukan_ld'];  
+                }
+                if($_POST['jk'] == 'L' && $_POST['umur'] == 'A') {
+                  $nilai_rujukan = $template_laboratorium['nilai_rujukan_la'];  
+                }
+                if($_POST['jk'] == 'P' && $_POST['umur'] == 'D') {
+                  $nilai_rujukan = $template_laboratorium['nilai_rujukan_pd'];                    
+                }
+                if($_POST['jk'] == 'P' && $_POST['umur'] == 'A') {
+                  $nilai_rujukan = $template_laboratorium['nilai_rujukan_pa'];                    
+                }
+                $detail_periksa_lab = $this->core->db->insert('detail_periksa_lab', [
+                  'no_rawat'=>$no_rawat, 'kd_jenis_prw'=>$kd_jenis_prw, 'tgl_periksa'=>$tgl_periksa, 'jam'=>$jam, 'id_template'=>$id_template[$l], 'nilai'=>$nilai[$l], 'nilai_rujukan'=>$nilai_rujukan, 'keterangan'=>$keterangan[$l], 'bagian_rs'=>$template_laboratorium['bagian_rs'], 'bhp'=>$template_laboratorium['bhp'], 'bagian_perujuk'=>$template_laboratorium['bagian_perujuk'], 'bagian_dokter'=>$template_laboratorium['bagian_dokter'], 'bagian_laborat'=>$template_laboratorium['bagian_laborat'], 'kso'=>$template_laboratorium['kso'], 'menejemen'=>$template_laboratorium['menejemen'], 'biaya_item'=>$template_laboratorium['biaya_item']
+                ]);
+                if(!$detail_periksa_lab) {
+                  $data = array(
+                    'status' => 'error', 
+                    'msg' => $this->core->db->errorInfo[2]
+                  );    
+                }
+              }
+
               http_response_code(200);
               $data = array(
                 'code' => '200', 
@@ -431,6 +466,35 @@ $kategori = $_POST['kategori'];
         exit();
     }
 
+    public function getManageRegPeriksa()
+    {
+        echo $this->draw('manage.reg.periksa.html');
+        exit();
+    }
+
+    public function getCetakPeriksaLab($no_rawat)
+    {
+      if($this->core->loadDisabledMenu('periksa_lab')['read'] == 'true') {
+        http_response_code(403);
+        $data = array(
+          'code' => '403', 
+          'status' => 'error', 
+          'msg' => 'Maaf, akses dibatasi!'
+        );
+        echo json_encode($data);    
+        exit();
+      }
+
+      $settings =  $this->settings('settings');
+
+      if($this->settings('settings', 'logquery') == true) {
+        $this->core->LogQuery('periksa_lab => getDetail');
+      }
+
+      echo $this->draw('detail.html', ['settings' => $settings, 'no_rawat' => $no_rawat]);
+      exit();      
+    }
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');
@@ -442,12 +506,14 @@ $kategori = $_POST['kategori'];
     private function _addHeaderFiles()
     {
         $this->core->addCSS(url('assets/vendor/datatables/datatables.min.css'));
+        $this->core->addCSS(url('assets/vendor/daterange/daterange.css'));
         $this->core->addCSS(url('assets/css/jquery.contextMenu.css'));
         $this->core->addJS(url('assets/js/jqueryvalidation.js'), 'footer');
         $this->core->addJS(url('assets/vendor/jspdf/xlsx.js'), 'footer');
         $this->core->addJS(url('assets/vendor/jspdf/jspdf.min.js'), 'footer');
         $this->core->addJS(url('assets/vendor/jspdf/jspdf.plugin.autotable.min.js'), 'footer');
         $this->core->addJS(url('assets/vendor/datatables/datatables.min.js'), 'footer');
+        $this->core->addJS(url('assets/vendor/daterange/daterange.js'), 'footer');
         $this->core->addJS(url('assets/js/jquery.contextMenu.js'), 'footer');
 
         $this->core->addCSS(url([ 'periksa_lab', 'css']));

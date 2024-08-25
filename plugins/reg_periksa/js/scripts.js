@@ -109,13 +109,22 @@ jQuery().ready(function () {
             var no_rawat = rowData['no_rawat'];
             switch (key) {
                 case 'detail' :
-                OpenModal(mlite.url + '/reg_periksa/detail/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
+                    OpenModal(mlite.url + '/reg_periksa/detail/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
                 break;
                 case 'antrian' :
-                OpenModal(mlite.url + '/reg_periksa/antrian/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
+                    OpenModal(mlite.url + '/reg_periksa/antrian/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
+                break;
+                case 'antrian-2' :
+                    OpenPDF(mlite.url + '/reg_periksa/buktiregister/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
                 break;
                 case 'pemeriksaan_layanan' :
-                window.location.href = mlite.url + '/reg_periksa/view/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token;
+                    window.location.href = mlite.url + '/reg_periksa/view/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token;
+                break;
+                case 'periksa_lab' :
+                    OpenModal(mlite.url + '/reg_periksa/periksalab/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
+                break;
+                case 'pasien_riwayat' :
+                    OpenModal(mlite.url + '/pasien/riwayat/' + no_rkm_medis + '?t=' + mlite.token);
                 break;
                 case 'bridging-bpjs-cek-noka' :
                     OpenModal(mlite.url + '/pasien/cekpeserta/' + no_rkm_medis + '/noka?t=' + mlite.token);
@@ -123,6 +132,12 @@ jQuery().ready(function () {
                 case 'bridging-bpjs-cek-nik' :
                     OpenModal(mlite.url + '/pasien/cekpeserta/' + no_rkm_medis + '/nik?t=' + mlite.token);
                     break;
+                case 'bridging-bpjs-cetak-sep' :
+                    OpenPDF(mlite.url + '/reg_periksa/cetaksep/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
+                break;
+                case 'bridging-bpjs-sep' :
+                    OpenModal(mlite.url + '/reg_periksa/sep/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
+                break;
                 default :
                 break
             } 
@@ -132,8 +147,10 @@ jQuery().ready(function () {
         },
         items: {
             "detail": {name: "View Detail", "icon": "edit"},
-            "antrian": {name: "Cetak Nomor Antrian", "icon": "edit"},
+            "antrian": {name: "Cetak Nomor Antrian 1", "icon": "edit"},
+            "antrian-2": {name: "Cetak Nomor Antrian 2", "icon": "edit"},
             "pemeriksaan_layanan": {name: "Pemeriksaan dan Layanan", "icon": "edit"},
+            "periksa_lab": {name: "Periksa Laboratorium", "icon": "edit"},
             "sep1": "---------",
             "bridging-bpjs": {
                 "name": "Bridging BPJS", 
@@ -148,9 +165,12 @@ jQuery().ready(function () {
                             "bridging-bpjs-referensi-faskes": {"name": "Fasiltas Kesehatan"}
                         }
                     },
-                    "bridging-bpjs-cek-sep": {"name": "Cek SEP"}
+                    "bridging-bpjs-cek-sep": {"name": "Cek SEP", disabled:  {$disabled_menu.create}},
+                    "bridging-bpjs-cetak-sep": {"name": "Cetak SEP", disabled:  {$disabled_menu.create}},
+                    "bridging-bpjs-sep": {"name": "Cetak SEP 2", disabled:  {$disabled_menu.delete}}
                 }
-            }
+            }, 
+            "pasien_riwayat": {name: "Riwayat Perawatan", "icon": "edit"},
         }
     });
 
@@ -293,7 +313,7 @@ jQuery().ready(function () {
         if ($(this).val() == 'kd_dokter'){
           $('#tempat_pilih').empty();
           $('#search_text_reg_periksa').remove();
-          $('#tempat_pilih').append('<select class="form-select" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;">' +
+          $('#tempat_pilih').append('<select class="form-select" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;width:260px !important;">' +
             '<option value="">Semua</option>' +
             {loop: $reg_periksa.dokter}
             '<option value="{$value.kd_dokter}">{$value.nm_dokter}</option>' +
@@ -306,7 +326,7 @@ jQuery().ready(function () {
         } else if ($(this).val() == 'kd_poli'){
             $('#tempat_pilih').empty();
             $('#search_text_reg_periksa').remove();
-            $('#tempat_pilih').append('<select class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;">' +
+            $('#tempat_pilih').append('<select class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;width:260px !important;">' +
               '<option value="">Semua</option>' +
               {loop: $reg_periksa.poliklinik}
               '<option value="{$value.kd_poli}">{$value.nm_poli}</option>' +
@@ -319,7 +339,7 @@ jQuery().ready(function () {
         } else if ($(this).val() == 'kd_pj'){
             $('#tempat_pilih').empty();
             $('#search_text_reg_periksa').remove();
-            $('#tempat_pilih').append('<select class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;">' +
+            $('#tempat_pilih').append('<select class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;width:260px !important;">' +
               '<option value="">Semua</option>' +
               {loop: $reg_periksa.penjab}
               '<option value="{$value.kd_pj}">{$value.png_jawab}</option>' +
@@ -332,7 +352,7 @@ jQuery().ready(function () {
         } else if ($(this).val() == 'stts'){
             $('#tempat_pilih').empty();
             $('#search_text_reg_periksa').remove();
-            $('#tempat_pilih').append('<select class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;">' +
+            $('#tempat_pilih').append('<select class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;width:260px !important;">' +
               '<option value="">Semua</option>' +
               {loop: $reg_periksa.stts}
               '<option value="{$value}">{$value}</option>' +
@@ -345,7 +365,7 @@ jQuery().ready(function () {
         } else if ($(this).val() == 'stts_daftar'){
             $('#tempat_pilih').empty();
             $('#search_text_reg_periksa').remove();
-            $('#tempat_pilih').append('<select class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;">' +
+            $('#tempat_pilih').append('<select class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;width:260px !important;">' +
               '<option value="">Semua</option>' +
               {loop: $reg_periksa.stts_daftar}
               '<option value="{$value}">{$value}</option>' +
@@ -358,7 +378,7 @@ jQuery().ready(function () {
         } else if ($(this).val() == 'status_lanjut'){
             $('#tempat_pilih').empty();
             $('#search_text_reg_periksa').remove();
-            $('#tempat_pilih').append('<select class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;">' +
+            $('#tempat_pilih').append('<select class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;width:260px !important;">' +
               '<option value="">Semua</option>' +
               {loop: $reg_periksa.status_lanjut}
               '<option value="{$value}">{$value}</option>' +
@@ -371,7 +391,7 @@ jQuery().ready(function () {
         } else if ($(this).val() == 'status_bayar'){
             $('#tempat_pilih').empty();
             $('#search_text_reg_periksa').remove();
-            $('#tempat_pilih').append('<select class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;">' +
+            $('#tempat_pilih').append('<select class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;width:260px !important;">' +
               '<option value="">Semua</option>' +
               {loop: $reg_periksa.status_bayar}
               '<option value="{$value}">{$value}</option>' +
@@ -384,7 +404,7 @@ jQuery().ready(function () {
         } else if ($(this).val() == 'status_poli'){
             $('#tempat_pilih').empty();
             $('#search_text_reg_periksa').remove();
-            $('#tempat_pilih').append('<select class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;">' +
+            $('#tempat_pilih').append('<select class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" style="text-align:left !important;width:260px !important;">' +
               '<option value="">Semua</option>' +
               {loop: $reg_periksa.status_poli}
               '<option value="{$value}">{$value}</option>' +
@@ -397,7 +417,7 @@ jQuery().ready(function () {
         } else {
           $('#tempat_pilih').empty();
           $('#search_text_reg_periksa').remove();
-          $('#tempat_pilih').append('<input class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" type="search" placeholder="Masukkan Kata Kunci Pencarian" style="border-radius: 0 !important;padding: 8px;" />');
+          $('#tempat_pilih').append('<input class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" type="search" placeholder="Masukkan Kata Kunci Pencarian" style="border-radius: 0 !important;padding: 8px;width:260px !important;" />');
           $('#search_text_reg_periksa').keyup(function () {
             // var_tbl_reg_periksa.draw();
           });

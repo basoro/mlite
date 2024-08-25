@@ -563,6 +563,12 @@ $nmdpjplayanan = $_POST['nmdpjplayanan'];
       echo $this->draw('chart.html', ['type' => $type, 'column' => $result, 'labels' => json_encode($labels), 'datasets' => json_encode(array_column($datasets, 'count'))]);
       exit();
     }
+    
+    public function getSep()
+    {
+      echo $this->draw('sep.html');
+      exit();
+    }
 
     public function getCss()
     {

@@ -1,6 +1,4 @@
-#tbl_reg_periksa th, 
-#tbl_reg_periksa td, 
-#tbl_periksa_lab th, #tbl_periksa_lab td, #forTable_periksa_lab th, #forTable_periksa_lab td {
+#tbl_NAMA_TABLE th, #tbl_NAMA_TABLE td, #forTable_NAMA_TABLE th, #forTable_NAMA_TABLE td {
   white-space: nowrap; 
 }
 .dataTables_wrapper th, .dataTables_wrapper td {

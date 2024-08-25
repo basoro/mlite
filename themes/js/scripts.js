@@ -152,7 +152,7 @@ $(function () {
 });
 
 if (typeof $.fn.slimScroll != 'undefined') {
-    var height = ($(window).height() - 310);
+    var height = ($(window).height() - 210);
     var $el = $('.sidebar-menu');
 
     $el.slimscroll({
@@ -260,6 +260,12 @@ function OpenModal(loadURL)
         modalContent.load(loadURL);
     }).modal('show');
     return false;
+}
+
+function OpenPDF(loadURL)
+{
+  window.open(loadURL, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");
+  return false;
 }
 
 $("#myInput").on("keyup", function() {

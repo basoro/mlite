@@ -1,0 +1,190 @@
+<div class="modal-header">
+    <h4 class="modal-title"><span id="modal-title">Edit Data Periksa Lab</span></h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class='col-md-12 text-right mb-3'>
+        <div class="input-group" style="width:100%">
+            <span class="input-group-text">Cari</span>
+            <span style="width:130px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+            <select class="form-select" id='search_field_reg_periksa' name='search_field_reg_periksa' style="margin: 0 !important;"> 
+                <option value='no_reg'>No Reg</option>
+                <option value='no_rawat'>No Rawat</option>
+                <option value='tgl_registrasi'>Tgl Registrasi</option>
+                <option value='jam_reg'>Jam Reg</option>
+                <option value='kd_dokter'>Dokter</option>
+                <option value='no_rkm_medis'>No Rkm Medis</option>
+                <option value='nm_pasien'>Nama Pasien</option>
+                <option value='kd_poli'>Poliklinik</option>
+                <option value='p_jawab'>P Jawab</option>
+                <option value='almt_pj'>Alamat PJ</option>
+                <option value='hubunganpj'>Hubungan PJ</option>
+                <option value='biaya_reg'>Biaya Reg</option>
+                <option value='stts'>Status</option>
+                <option value='stts_daftar'>Stts Daftar</option>
+                <option value='status_lanjut'>Status Lanjut</option>
+                <option value='kd_pj'>Cara Bayar</option>
+                <option value='status_bayar'>Status Bayar</option>
+                <option value='status_poli'>Status Poli</option>
+            </select>
+            </span>
+            <span id="tempat_pilih"></span>
+            <input class="form-control" name="search_text_reg_periksa" id="search_text_reg_periksa" type="search" placeholder="Masukkan Kata Kunci Pencarian" />  
+            <input type="hidden" class="form-control d-none d-xxl-block d-xl-block d-lg-block" id="tanggal_awal" placeholder="Tanggal Awal"> 
+            <input type="hidden" class="form-control d-none d-xxl-block d-xl-block d-lg-block" id="tanggal_akhir" placeholder="Tanggal Akhir">                   
+            <input type="text" class="form-control daterange d-none d-xxl-block d-xl-block d-lg-block" placeholder="Range Tanggal"> 
+            <span class="input-group-text" id='filter_search' data-toggle='tooltip' data-placement='top' title='Filter Tanggal'><i class="ri-search-line"></i></span>
+        </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table id="tbl_reg_periksa" class="table table-striped display dataTable" style="width:100%">
+            <thead>
+            <tr> 
+                <th>No Rawat</th>
+                <th>Tgl Registrasi</th>
+                <th>Jam Reg</th>
+                <th>No Reg</th>
+                <th>Kd Dokter</th>
+                <th>Nama Dokter</th>
+                <th>No Rkm Medis</th>
+                <th>Nama Pasien</th>
+                <th>Kd Poli</th>
+                <th>Nama Poli</th>
+                <th>P Jawab</th>
+                <th>Almt Pj</th>
+                <th>Hubunganpj</th>
+                <th>Biaya Reg</th>
+                <th>Stts</th>
+                <th>Stts Daftar</th>
+                <th>Status Lanjut</th>
+                <th>Kd Pj</th>
+                <th>Png Jawab</th>
+                <th>Status Bayar</th>
+                <th>Status Poli</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+</div>
+
+<script>
+    $('select').selectator();
+    var var_tbl_reg_periksa = $('#tbl_reg_periksa').DataTable({
+        'processing': true,
+        'serverSide': true,
+        'serverMethod': 'post',
+        'dom': 'Bfrtip',
+        'searching': false,
+        'select': true,
+        'colReorder': true,
+        "bInfo" : false,
+        "language": {
+            "lengthMenu": '_MENU_', 
+            "info": 'Page _PAGE_ of _PAGES_', 
+            "infoFiltered": 'from _MAX_ records'
+        },         
+        "ajax": {
+            "url": "{?=url(['reg_periksa','data'])?}",
+            "dataType": "json",
+            "type": "POST",
+            "data": function (data) {
+
+                // Read values
+                var search_field_reg_periksa = $('#search_field_reg_periksa').val();
+                var search_text_reg_periksa = $('#search_text_reg_periksa').val();
+                
+                data.search_field_reg_periksa = search_field_reg_periksa;
+                data.search_text_reg_periksa = search_text_reg_periksa;
+
+                var from_date = $('#tanggal_awal').val();
+                var to_date = $('#tanggal_akhir').val();
+                
+                data.searchByFromdate = from_date;
+                data.searchByTodate = to_date;
+                
+            }
+        },
+        "fnDrawCallback": function () {
+            $('#more_data_reg_periksa').on('click', function(e) {
+                e.preventDefault();
+                var clientX = e.originalEvent.clientX;
+                var clientY = e.originalEvent.clientY;
+                $('#tbl_reg_periksa tr').contextMenu({x: clientX, y: clientY});
+            });          
+        },
+        "columns": [
+            { 'data': 'no_reg' },
+            { 'data': 'no_rawat' },
+            { 'data': 'tgl_registrasi' },
+            { 'data': 'jam_reg' },
+            { 'data': 'kd_dokter' },
+            { 'data': 'nm_dokter' },
+            { 'data': 'no_rkm_medis' },
+            { 'data': 'nm_pasien' },
+            { 'data': 'kd_poli' },
+            { 'data': 'nm_poli' },
+            { 'data': 'p_jawab' },
+            { 'data': 'almt_pj' },
+            { 'data': 'hubunganpj' },
+            { 'data': 'biaya_reg' },
+            { 'data': 'stts' },
+            { 'data': 'stts_daftar' },
+            { 'data': 'status_lanjut' },
+            { 'data': 'kd_pj' },
+            { 'data': 'png_jawab' },
+            { 'data': 'status_bayar' },
+            { 'data': 'status_poli' }
+        ],
+        "columnDefs": [
+            { 'targets': 0},
+            { 'targets': 1},
+            { 'targets': 2},
+            { 'targets': 3},
+            { 'targets': 4},
+            { 'targets': 5},
+            { 'targets': 6},
+            { 'targets': 7},
+            { 'targets': 8},
+            { 'targets': 9},
+            { 'targets': 10},
+            { 'targets': 11},
+            { 'targets': 12},
+            { 'targets': 13},
+            { 'targets': 14},
+            { 'targets': 15},
+            { 'targets': 16},
+            { 'targets': 17},
+            { 'targets': 18},
+            { 'targets': 19},
+            { 'targets': 20}
+        ],
+        order: [[1, 'DESC']], 
+        buttons: [],
+        "scrollCollapse": true,
+        // "scrollY": '48vh', 
+        // "pageLength":'25', 
+        "lengthChange": true,
+        // "info": true, 
+        "scrollX": true,
+        dom: "<'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+    });
+
+    $('#filter_search').click(function () {
+        var_tbl_reg_periksa.draw();
+    });
+
+    $('#tbl_reg_periksa').on( 'select.dt', function ( e, dt, type, indexes ) {
+        var rowData = var_tbl_reg_periksa.rows({ selected: true }).data()[0];
+        $('#no_rawat').val(rowData['no_rawat']);
+        
+        $("#myModalFull").modal('hide');
+    } ); 
+         
+</script>

@@ -180,6 +180,9 @@ jQuery().ready(function () {
             case 'detail' :
               OpenModal(mlite.url + '/pasien/detail/' + no_rkm_medis + '?t=' + mlite.token);
               break;
+            case 'cover-rm' :
+                OpenPDF(mlite.url + '/pasien/coverrm/' + no_rkm_medis + '?t=' + mlite.token);
+            break;
             case 'cek_noka' :
                 OpenModal(mlite.url + '/pasien/cekpeserta/' + no_rkm_medis + '/noka?t=' + mlite.token);
                 break;
@@ -192,6 +195,7 @@ jQuery().ready(function () {
         },
         items: {
             "detail": {name: "View Detail", "icon": "edit"},
+            "cover-rm": {name: "Cover Rekam Medik", "icon": "edit"},
             "cek_noka": {name: "[BPJS] Cek Peserta ByNoKartu", icon: "delete", disabled:  {$disabled_menu.create}},
             "cek_nik": {name: "[BPJS] Cek Peserta ByNik", icon: "delete", disabled:  {$disabled_menu.create}},
         }

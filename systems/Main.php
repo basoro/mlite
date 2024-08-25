@@ -406,6 +406,52 @@ abstract class Main
         return $next;
     }
 
+    public function JasperPrint($report='', $query='', $type='')
+    {
+        $settings = array_column($this->db->select('mlite_settings', '*', ['module' => 'settings']), 'value', 'field');
+        $time = time();
+
+        $jasper = new \JasperPHP\JasperPHP;
+        // if (DEV_MODE) {
+        //     $jasper->compile(BASE_DIR.'/jasper/' . $report . '.jrxml')->execute();
+        // }
+        $jasper->process(
+            BASE_DIR . '/jasper/' . $report . '.jasper',
+            BASE_DIR . '/uploads/report/' . $report . '_' . $time,
+            ['pdf'],
+            [
+                'namars' => $settings['nama_instansi'],
+                'alamatrs' => $settings['alamat'],
+                'kotars' => $settings['kota'],
+                'propinsirs' => $settings['propinsi'],
+                'kontakrs' => $settings['nomor_telepon'],
+                'emailrs' => $settings['email'],
+                'logo' => url([$settings['logo']]),
+                'query' => $query
+            ],
+            [
+                'driver' => 'mysql',
+                'username' => DBUSER,
+                'password' => DBPASS,
+                'host' => DBHOST,
+                'database' => DBNAME,
+                'port' => DBPORT  
+            ]
+        )->execute();
+
+        $file = BASE_DIR . '/uploads/report/' . $report . '_' . $time . '.pdf';
+        $filename = $report . '_' . $time . '.pdf';
+
+        header('Content-type: application/pdf');
+        header('Content-Disposition: inline; filename="' . $filename . '"');
+        header('Content-Transfer-Encoding: binary');
+        header('Accept-Ranges: bytes');
+        // Read the file
+        @readfile($file);
+
+        return false;        
+    }
+
     public function loadDisabledMenu($module)
     {
         $disable_menu = $this->db->get('mlite_disabled_menu', ['create', 'read', 'update', 'delete'], ['user' => $this->getUserInfo('username', $_SESSION['mlite_user'], true), 'module' => $module]);

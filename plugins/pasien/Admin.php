@@ -652,6 +652,45 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function getRiwayat($no_rkm_medis)
+    {
+      $this->assign['pasien'] = $this->core->db->get('pasien', '*', ['no_rkm_medis' => $no_rkm_medis]);
+      $reg_periksa = $this->core->db->select('reg_periksa', [
+        '[>]poliklinik' => ['kd_poli' => 'kd_poli'], 
+        '[>]dokter' => ['kd_dokter' => 'kd_dokter'], 
+        '[>]penjab' => ['kd_pj' => 'kd_pj']        
+      ], '*', ['no_rkm_medis' => $no_rkm_medis, 'ORDER' => ['tgl_registrasi' => 'ASC']]);
+
+      $this->assign['reg_periksa'] = [];
+      $i = 1;
+      foreach($reg_periksa as $row) {
+        $row['nomor'] = $i++;
+        $row['pemeriksaan_ralan'] = $this->core->db->select('pemeriksaan_ralan', '*', ['no_rawat' => $row['no_rawat']]);
+        $this->assign['reg_periksa'][] = $row;
+      }
+      $settings = $this->settings('settings');
+      echo $this->draw('riwayat.perawatan.html', ['settings' => $settings, 'riwayat' => $this->assign]);
+      exit();
+    }
+
+    public function getCoverRM($no_rkm_medis)
+    {
+
+      
+        $query = "select pasien.no_rkm_medis, pasien.nm_pasien, pasien.no_ktp, pasien.jk,
+        pasien.tmp_lahir, pasien.tgl_lahir,pasien.nm_ibu, concat(pasien.alamat,', ',kelurahan.nm_kel,', ',kecamatan.nm_kec,', ',kabupaten.nm_kab) as alamat, pasien.gol_darah, pasien.pekerjaan,
+        pasien.stts_nikah,pasien.agama,pasien.tgl_daftar,pasien.no_tlp,pasien.umur,
+        pasien.pnd, pasien.keluarga, pasien.namakeluarga,penjab.png_jawab,pasien.pekerjaanpj,
+        concat(pasien.alamatpj,', ',pasien.kelurahanpj,', ',pasien.kecamatanpj,', ',pasien.kabupatenpj) as alamatpj from pasien
+        inner join kelurahan inner join kecamatan inner join kabupaten
+        inner join penjab on pasien.kd_pj=penjab.kd_pj and pasien.kd_kel=kelurahan.kd_kel
+        and pasien.kd_kec=kecamatan.kd_kec and pasien.kd_kab=kabupaten.kd_kab where pasien.no_rkm_medis=$no_rkm_medis";
+
+        $this->core->JasperPrint('rptCoverMap', $query);
+
+        exit();
+    }
+
     public function getCss()
     {
         header('Content-type: text/css');

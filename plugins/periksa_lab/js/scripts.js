@@ -105,6 +105,105 @@ var no_rawat = rowData['no_rawat'];
         }
     });
 
+
+    $('#kd_jenis_prw_lab').on('change', function() {
+        var kd_jnis_prw = $('#kd_jenis_prw_lab option:selected').val();
+        var api = mlite.url + '/reg_periksa/jnsperawatanlab/' + kd_jnis_prw + '?t=' + mlite.token;
+        $.ajax({
+        url:api,
+        method:'GET',
+        cache:false,
+        type:"text/json"
+    })
+    .always(function(){
+        $('#loading').html('Load Data Template Perawtan Lab...');
+    })
+    .done(function(evt) {
+        // Set timeout for lazy loading
+        setTimeout(function(){
+            var result = JSON.parse(evt);
+            $('#bagian_rs').val(result.bagian_rs);
+            $('#bhp').val(result.bhp);
+            $('#tarif_perujuk').val(result.tarif_perujuk);
+            $('#tarif_tindakan_dokter').val(result.tarif_tindakan_dokter);
+            $('#tarif_tindakan_petugas').val(result.tarif_tindakan_petugas);
+            $('#menejemen').val(result.menejemen);
+            $('#kso').val(result.kso);
+            $('#biaya').val(result.total_byr);
+            var result = result.template_laboratorium;
+            // console.log(result.bagian_rs);
+            var html = '';
+            html += '<div class="tables-template-lab-content">';
+            if(result.length > 0) {  
+                html +='<table class="table table-striped table-hover">'
+                        +'<thead>'
+                        +'<tr>'
+                        +'<th><input class="form-check-input" type="checkbox" id="id_template_all"></th>'
+                        // +'<th>Kd Jenis Prw</th>'
+                        // +'<th>ID Template</th>'
+                        +'<th>Pemeriksaan</th>'
+                        +'<th>Satuan</th>'
+                        +'<th>Nilai</th>'
+                        +'<th>Keterangan</th>'
+                        +'</tr>'
+                        +'</thead>'
+                        +'<tbody>';
+                    for(var i=0;i < result.length; i++) {
+                        html +='<tr>'
+                            +'<td><input class="form-check-input" type="checkbox" name="id_template[]" id="id_template" value="'+result[i].id_template+'"></td>'
+                            // +'<td>'+result[i].kd_jenis_prw+'</td>'
+                            // +'<td>'+result[i].id_template+'</td>'
+                            +'<td>'+result[i].Pemeriksaan+'</td>'
+                            +'<td>'+result[i].satuan+'</td>'
+                            +'<td><input class="form-control" name="nilai[]"></td>'
+                            +'<td><input class="form-control" name="keterangan[]"></td>'
+                            +'</tr>';
+                    }
+                html +='</tbody></table>';
+            } else {
+                html += '<div>Tidak ada data template perawatan lab...</div>';
+            }
+
+            html +='</div>';
+
+            // Set all content
+            $('.tables-template-lab').html(html);
+
+            $('#id_template_all').click(function() {
+                if(this.checked) {
+                    $('table').find('input:checkbox').prop('checked',true); 
+                }
+                else {
+                    $('table').find('input:checkbox').prop('checked',false); 
+                }
+            });
+            
+            $('input:checkbox:not(#id_template_all)').click(function() {
+                if(!this.checked) {
+                    $('#id_template_all').prop('checked',false); 
+                }
+                else {
+                    var numChecked = $('input:checkbox:checked:not(#id_template_all)').length;
+                    var numTotal = $('input:checkbox:not(#id_template_all)').length;
+                    if(numTotal == numChecked) {
+                        $('input[type=checkbox]').prop('checked',true); 
+                    }
+                }
+            });        
+
+        },1000); 
+    })
+    .fail(function() {
+        alert('Error : Failed to reach API Url or check your connection');
+    })
+    .then(function(evt){
+        setTimeout(function(){        
+            $('#loading').hide();          
+        },1000);
+    });
+
+    }); 
+
     // ==============================================================
     // FORM VALIDASI
     // ==============================================================
@@ -347,8 +446,8 @@ var no_rawat = rowData['no_rawat'];
         $('#no_rawat').val('');
 $('#nip').val('');
 $('#kd_jenis_prw').val('');
-$('#tgl_periksa').val('');
-$('#jam').val('');
+// $('#tgl_periksa').val('');
+// $('#jam').val('');
 $('#dokter_perujuk').val('');
 $('#bagian_rs').val('');
 $('#bhp').val('');
@@ -391,22 +490,22 @@ $('#kategori').val('');
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     eTable += '<td>' + res[i]['no_rawat'] + '</td>';
-eTable += '<td>' + res[i]['nip'] + '</td>';
-eTable += '<td>' + res[i]['kd_jenis_prw'] + '</td>';
-eTable += '<td>' + res[i]['tgl_periksa'] + '</td>';
-eTable += '<td>' + res[i]['jam'] + '</td>';
-eTable += '<td>' + res[i]['dokter_perujuk'] + '</td>';
-eTable += '<td>' + res[i]['bagian_rs'] + '</td>';
-eTable += '<td>' + res[i]['bhp'] + '</td>';
-eTable += '<td>' + res[i]['tarif_perujuk'] + '</td>';
-eTable += '<td>' + res[i]['tarif_tindakan_dokter'] + '</td>';
-eTable += '<td>' + res[i]['tarif_tindakan_petugas'] + '</td>';
-eTable += '<td>' + res[i]['kso'] + '</td>';
-eTable += '<td>' + res[i]['menejemen'] + '</td>';
-eTable += '<td>' + res[i]['biaya'] + '</td>';
-eTable += '<td>' + res[i]['kd_dokter'] + '</td>';
-eTable += '<td>' + res[i]['status'] + '</td>';
-eTable += '<td>' + res[i]['kategori'] + '</td>';
+                    eTable += '<td>' + res[i]['nip'] + '</td>';
+                    eTable += '<td>' + res[i]['kd_jenis_prw'] + '</td>';
+                    eTable += '<td>' + res[i]['tgl_periksa'] + '</td>';
+                    eTable += '<td>' + res[i]['jam'] + '</td>';
+                    eTable += '<td>' + res[i]['dokter_perujuk'] + '</td>';
+                    eTable += '<td>' + res[i]['bagian_rs'] + '</td>';
+                    eTable += '<td>' + res[i]['bhp'] + '</td>';
+                    eTable += '<td>' + res[i]['tarif_perujuk'] + '</td>';
+                    eTable += '<td>' + res[i]['tarif_tindakan_dokter'] + '</td>';
+                    eTable += '<td>' + res[i]['tarif_tindakan_petugas'] + '</td>';
+                    eTable += '<td>' + res[i]['kso'] + '</td>';
+                    eTable += '<td>' + res[i]['menejemen'] + '</td>';
+                    eTable += '<td>' + res[i]['biaya'] + '</td>';
+                    eTable += '<td>' + res[i]['kd_dokter'] + '</td>';
+                    eTable += '<td>' + res[i]['status'] + '</td>';
+                    eTable += '<td>' + res[i]['kategori'] + '</td>';
                     eTable += "</tr>";
                 }
                 eTable += "</tbody></table></div>";
@@ -481,5 +580,45 @@ eTable += '<td>' + res[i]['kategori'] + '</td>';
     $("#view_chart").click(function () {
         window.open(mlite.url + '/periksa_lab/chart?t=' + mlite.token, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
     })   
+
+    $("#cari_no_rawat").click(function (event) {
+        // $(".modal-content").modal("show");
+        event.preventDefault();
+        var loadURL =  mlite.url + '/periksa_lab/manageregperiksa?t=' + mlite.token;;
+    
+        var modal = $('#myModalFull');
+        var modalContent = $('#myModalFull .modal-content');
+        // alert(modal);
+    
+        modal.off('show.bs.modal');
+        modal.on('show.bs.modal', function () {
+            modalContent.load(loadURL);
+        }).modal('show');
+        
+        return false;
+
+    })
+
+    $(".datepicker").daterangepicker({
+        singleDatePicker: true,
+        showDropdowns: true,
+        locale: {
+            format: "YYYY-MM-DD",
+        },
+    });
+    
+    $(".timepicker").daterangepicker({
+            timePicker : true,
+            singleDatePicker:true,
+            timePicker24Hour : true,
+            timePickerIncrement : 1,
+            timePickerSeconds : true,
+            startDate: moment().format('HH:mm:ss'),
+            locale : {
+                format : 'HH:mm:ss'
+            }
+        }).on('show.daterangepicker', function(ev, picker){
+            picker.container.find(".calendar-table").hide()
+    });
 
 });

@@ -53,11 +53,18 @@ class Admin extends AdminModule
       $searchByFromdate = isset_or($_POST['searchByFromdate'], date('Y-m-d'));
       $searchByTodate = isset_or($_POST['searchByTodate'], date('Y-m-d'));
     
+      $searchNmPasien = isset_or($_POST['nm_pasien'], '');
+
       $cap = $this->core->db->get('mlite_users', 'cap', ['id' => $_SESSION['mlite_user']]);
       $role = $this->core->db->get('mlite_users', 'role', ['id' => $_SESSION['mlite_user']]);
 
+
       if ($search_text_reg_periksa != '') {
-        $where[$search_field_reg_periksa.'[~]'] = $search_text_reg_periksa;
+        if ($_POST['search_field_reg_periksa'] == 'nm_pasien') {
+          $where['no_rkm_medis'] = $this->core->db->select('pasien', 'no_rkm_medis', ['nm_pasien[~]' => $search_text_reg_periksa]);
+        } else {
+          $where[$search_field_reg_periksa.'[~]'] = $search_text_reg_periksa;
+        }
         if($role !='admin') {
           $where['kd_poli'] = explode(',', $cap);
         }
@@ -1250,7 +1257,14 @@ class Admin extends AdminModule
 
     public function getJnsPerawatanLab($kd_jenis_prw)
     {
-      echo json_encode($this->core->db->select('template_laboratorium', '*', ['kd_jenis_prw' => $kd_jenis_prw]));
+      $jns_perawatan_lab = $this->core->db->get('jns_perawatan_lab', '*', ['kd_jenis_prw' => $kd_jenis_prw]);
+      // $result = [];
+      // foreach($jns_perawatan_lab as $row) {
+        $jns_perawatan_lab['template_laboratorium'] = $this->core->db->select('template_laboratorium', '*', ['kd_jenis_prw' => $kd_jenis_prw]);
+        // $result[] = $row;
+      // }
+      // echo json_encode($this->core->db->select('template_laboratorium', '*', ['kd_jenis_prw' => $kd_jenis_prw]));
+      echo json_encode($jns_perawatan_lab);
       exit();
     }
 
@@ -1477,10 +1491,91 @@ class Admin extends AdminModule
       exit();
     }    
     
-    public function postSocket()
+    public function getPeriksaLab($no_rawat)
     {
-      $rows = [];
-      echo json_encode($rows);
+      $this->assign['dokter'] = $this->core->db->select('dokter', '*');
+      $this->assign['petugas'] = $this->core->db->select('petugas', '*');
+      $this->assign['jns_perawatan_lab'] = $this->core->db->select('jns_perawatan_lab', '*');
+      $this->assign['reg_periksa'] = $this->core->db->get('reg_periksa', '*', ['no_rawat' => revertNoRawat($no_rawat)]);
+      $this->assign['pasien'] = $this->core->db->get('pasien', '*', ['no_rkm_medis' => $this->assign['reg_periksa']['no_rkm_medis']]);
+
+      echo $this->draw('periksa.lab.html', ['periksalab' => $this->assign]);
+      exit();
+    }
+
+    public function getBuktiRegister($no_rawat)
+    {
+      $no_rawat = revertNoRawat($no_rawat);
+      $query = "select reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.jam_reg,pasien.no_tlp, reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.no_rkm_medis,pasien.nm_pasien,pasien.jk,pasien.umur,poliklinik.nm_poli,
+      reg_periksa.p_jawab,reg_periksa.almt_pj,reg_periksa.hubunganpj,reg_periksa.biaya_reg,
+      reg_periksa.stts_daftar,penjab.png_jawab 
+      from reg_periksa inner join dokter inner join pasien inner join poliklinik inner join penjab
+      on reg_periksa.kd_dokter=dokter.kd_dokter and reg_periksa.no_rkm_medis=pasien.no_rkm_medis and reg_periksa.kd_pj=penjab.kd_pj and reg_periksa.kd_poli=poliklinik.kd_poli and reg_periksa.no_rawat='$no_rawat'";
+      
+      $this->core->JasperPrint('rptBuktiRegister', $query);
+      exit();
+    }
+
+    public function getCetakSEP($no_rawat)
+    {
+      $no_rawat = revertNoRawat($no_rawat);
+      $query = "select bridging_sep.no_sep, bridging_sep.no_rawat,bridging_sep.nomr,bridging_sep.nama_pasien,bridging_sep.tglsep,
+      bridging_sep.tglrujukan,bridging_sep.no_rujukan,bridging_sep.kdppkrujukan,
+      bridging_sep.nmppkrujukan,bridging_sep.kdppkpelayanan,bridging_sep.nmppkpelayanan,
+      if(bridging_sep.jnspelayanan='1','Rawat Inap','Rawat Jalan'),bridging_sep.catatan,bridging_sep.diagawal,
+      bridging_sep.nmdiagnosaawal,bridging_sep.kdpolitujuan,bridging_sep.nmpolitujuan,
+      if(bridging_sep.klsrawat='1','Kelas 1',if(bridging_sep.klsrawat='2','Kelas 2','Kelas 3')),
+      if(bridging_sep.lakalantas='0','Kasus Kecelakaan','Bukan Kasus Kecelakaan'),
+      concat(bridging_sep.nmkec,', ',bridging_sep.nmkab,', ',bridging_sep.nmprop) as lokasilaka,bridging_sep.user, 
+      bridging_sep.tanggal_lahir,bridging_sep.peserta,bridging_sep.jkel,bridging_sep.no_kartu,
+      bridging_sep.asal_rujukan,bridging_sep.eksekutif,bridging_sep.cob,bridging_sep.notelep,
+      bridging_sep.tujuankunjungan,bridging_sep.flagprosedur,bridging_sep.klsnaik,bridging_sep.pembiayaan,
+      bridging_sep.nmdpdjp,bridging_sep.lakalantas from bridging_sep where no_rawat = '$no_rawat'";
+      
+      $prb = $this->core->db->get('bpjs_prb', 'prb', ['no_sep' => $this->core->db->get('bridging_sep', 'no_sep', ['no_rawat' => $no_rawat])]);
+      // $this->core->JasperPrint('rptBridgingSEP', $query, 'bpjs');
+
+      $settings = array_column($this->core->db->select('mlite_settings', '*', ['module' => 'settings']), 'value', 'field');
+      $report = 'rptBridgingSEP';
+      $time = time();
+
+      $jasper = new \JasperPHP\JasperPHP;
+      // $jasper->compile(BASE_DIR.'/jasper/' . $report . '.jrxml')->execute();
+      $jasper->process(
+          BASE_DIR . '/jasper/' . $report . '.jasper',
+          BASE_DIR . '/uploads/report/' . $report . '_' . $time,
+          ['pdf'],
+          [
+              'namars' => $settings['nama_instansi'],
+              'alamatrs' => $settings['alamat'],
+              'kotars' => $settings['kota'],
+              'propinsirs' => $settings['propinsi'],
+              'kontakrs' => $settings['nomor_telepon'],
+              'emailrs' => $settings['email'],
+              'logo' => url('assets/images/logo/logo_bpjs.jpg'),
+              'prb' => isset_or($prb, ''), 
+              'query' => $query
+          ],
+          [
+              'driver' => 'mysql',
+              'username' => DBUSER,
+              'password' => DBPASS,
+              'host' => DBHOST,
+              'database' => DBNAME,
+              'port' => DBPORT  
+          ]
+      )->execute();
+
+      $file = BASE_DIR . '/uploads/report/' . $report . '_' . $time . '.pdf';
+      $filename = $report . '_' . $time . '.pdf';
+
+      header('Content-type: application/pdf');
+      header('Content-Disposition: inline; filename="' . $filename . '"');
+      header('Content-Transfer-Encoding: binary');
+      header('Accept-Ranges: bytes');
+      // Read the file
+      @readfile($file);
+
       exit();
     }
 
