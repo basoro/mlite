@@ -115,26 +115,44 @@ class Admin extends AdminModule
               exit();
             }
 
-        $noorder = $_POST['noorder'];
-$no_rawat = $_POST['no_rawat'];
-$tgl_permintaan = $_POST['tgl_permintaan'];
-$jam_permintaan = $_POST['jam_permintaan'];
-$tgl_sampel = $_POST['tgl_sampel'];
-$jam_sampel = $_POST['jam_sampel'];
-$tgl_hasil = $_POST['tgl_hasil'];
-$jam_hasil = $_POST['jam_hasil'];
-$dokter_perujuk = $_POST['dokter_perujuk'];
-$status = $_POST['status'];
-$informasi_tambahan = $_POST['informasi_tambahan'];
-$diagnosa_klinis = $_POST['diagnosa_klinis'];
+            $noorder = $_POST['noorder'];
+            $no_rawat = $_POST['no_rawat'];
+            $tgl_permintaan = $_POST['tgl_permintaan'];
+            $jam_permintaan = $_POST['jam_permintaan'];
+            $tgl_sampel = $_POST['tgl_sampel'];
+            $jam_sampel = $_POST['jam_sampel'];
+            $tgl_hasil = $_POST['tgl_hasil'];
+            $jam_hasil = $_POST['jam_hasil'];
+            $dokter_perujuk = $_POST['dokter_perujuk'];
+            $status = $_POST['status'];
+            $informasi_tambahan = $_POST['informasi_tambahan'];
+            $diagnosa_klinis = $_POST['diagnosa_klinis'];
+            $kd_jenis_prw = $_POST['kd_jenis_prw'];
+            $id_template = $_POST['id_template'];
+            $stts_bayar = 'Belum';            
 
-            
             $result = $this->core->db->insert('permintaan_lab', [
-'noorder'=>$noorder, 'no_rawat'=>$no_rawat, 'tgl_permintaan'=>$tgl_permintaan, 'jam_permintaan'=>$jam_permintaan, 'tgl_sampel'=>$tgl_sampel, 'jam_sampel'=>$jam_sampel, 'tgl_hasil'=>$tgl_hasil, 'jam_hasil'=>$jam_hasil, 'dokter_perujuk'=>$dokter_perujuk, 'status'=>$status, 'informasi_tambahan'=>$informasi_tambahan, 'diagnosa_klinis'=>$diagnosa_klinis
+                'noorder'=>$noorder, 'no_rawat'=>$no_rawat, 'tgl_permintaan'=>$tgl_permintaan, 'jam_permintaan'=>$jam_permintaan, 'tgl_sampel'=>$tgl_sampel, 'jam_sampel'=>$jam_sampel, 'tgl_hasil'=>$tgl_hasil, 'jam_hasil'=>$jam_hasil, 'dokter_perujuk'=>$dokter_perujuk, 'status'=>$status, 'informasi_tambahan'=>$informasi_tambahan, 'diagnosa_klinis'=>$diagnosa_klinis
             ]);
-
-
+                        
+            $result = $this->core->db->insert('permintaan_pemeriksaan_lab', [
+                'noorder'=>$noorder, 'kd_jenis_prw'=>$kd_jenis_prw, 'stts_bayar'=>$stts_bayar
+            ]);
+            
             if (!empty($result)){
+
+              for($l=0; $l < count($id_template); $l++){
+                $permintaan_detail_permintaan_lab = $this->core->db->insert('permintaan_detail_permintaan_lab', [
+                    'noorder'=>$noorder, 'kd_jenis_prw'=>$kd_jenis_prw, 'id_template'=>$id_template[$l], 'stts_bayar'=>$stts_bayar
+                ]);
+                if(!$permintaan_detail_permintaan_lab) {
+                  $data = array(
+                    'status' => 'error', 
+                    'msg' => $this->core->db->errorInfo[2]
+                  );    
+                }
+              }
+  
               http_response_code(200);
               $data = array(
                 'code' => '200', 

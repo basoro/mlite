@@ -22,9 +22,9 @@ class Admin extends AdminModule
         $this->assign['pnd'] = $this->core->getEnum('pasien', 'pnd');
         $this->assign['keluarga'] = $this->core->getEnum('pasien', 'keluarga');
         $this->assign['penjab'] = $this->core->db->select('penjab', '*', ['status' => '1']);
-        $this->assign['kelurahan'] = $this->core->db->select('kelurahan', '*');
-        $this->assign['kecamatan'] = $this->core->db->select('kecamatan', '*');
-        $this->assign['kabupaten'] = $this->core->db->select('kabupaten', '*');
+        // $this->assign['kelurahan'] = [];
+        // $this->assign['kecamatan'] = [];
+        // $this->assign['kabupaten'] = [];
         $this->assign['propinsi'] = $this->core->db->select('propinsi', '*');
         $this->assign['perusahaan_pasien'] = $this->core->db->select('perusahaan_pasien', '*');
         $this->assign['suku_bangsa'] = $this->core->db->select('suku_bangsa', '*');
@@ -601,12 +601,19 @@ class Admin extends AdminModule
           ]
         ]);
         if($cek_log) {
-          
-          echo '<pre class="text-info">'.$this->core->db->get('mlite_log_api_vclaim', 'result', [
-            'tanggal' => $tanggal, 
-            'endpoint' => $endpoint, 
-            'result[~]' => ['"noKartu": "'.$pasien['no_peserta'].'"', '"nik": "'.$pasien['no_ktp'].'"', ]
-          ]).'</pre>';
+          if($type == 'noka' || $type == 'nik') { 
+            echo '<pre class="text-info">'.$this->core->db->get('mlite_log_api_vclaim', 'result', [
+              'tanggal' => $tanggal, 
+              'endpoint' => $endpoint, 
+              'result[~]' => ['"noKartu": "'.$pasien['no_peserta'].'"', '"nik": "'.$pasien['no_ktp'].'"', ]
+            ]).'</pre>';
+          } else {
+            echo $this->core->db->get('mlite_log_api_vclaim', 'result', [
+              'tanggal' => $tanggal, 
+              'endpoint' => $endpoint, 
+              'result[~]' => ['"noKartu": "'.$pasien['no_peserta'].'"', '"nik": "'.$pasien['no_ktp'].'"', ]
+            ]);  
+          }
           
         } else {
           
@@ -689,6 +696,12 @@ class Admin extends AdminModule
         $this->core->JasperPrint('rptCoverMap', $query);
 
         exit();
+    }
+
+    public function getPropinsi()
+    {
+      
+      exit();
     }
 
     public function getCss()

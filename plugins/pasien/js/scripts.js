@@ -467,9 +467,6 @@ jQuery().ready(function () {
             $('#namakeluarga').val(namakeluarga);
             $('#kd_pj').val(kd_pj).change();
             $('#no_peserta').val(no_peserta);
-            $('#kd_kel').val(kd_kel).change();
-            $('#kd_kec').val(kd_kec).change();
-            $('#kd_kab').val(kd_kab).change();
             $('#pekerjaanpj').val(pekerjaanpj);
             $('#alamatpj').val(alamatpj);
             $('#kelurahanpj').val(kelurahanpj).change();
@@ -481,42 +478,48 @@ jQuery().ready(function () {
             $('#cacat_fisik').val(cacat_fisik).change();
             $('#email').val(email);
             $('#nip').val(nip);
-            $('#kd_prop').val(kd_prop).change();
-            $('#propinsipj').val(propinsipj).change();
-    
+
             if($('#kd_prop').selectator() !== undefined) {
                 $('#kd_prop').selectator('destroy');
             }
 
             $.ajax({
-                url: "https://basoro.id/api-wilayah-indonesia/api/provinces.json",
-                method: "GET",
+                url: "{?=url(['propinsi', 'data'])?}",
+                method: "POST",
                 data: {
                 },
                 success: function (data) {
-                    var options = data.map(function(val, ind){
-                        return $("<option></option>").val(val.id).html(val.name);
+                    var data = JSON.parse(data);
+                    var options = data.aaData.map(function(val, ind){
+                        return $("<option></option>").val(val.kd_prop).html(val.nm_prop);
                     });
                     $('#kd_prop').append(options);
+                    $('#kd_prop').val(kd_prop).change();
                     $('#kd_prop').selectator();
                 }
             })
-    
+
+            $('#propinsipj').val(propinsipj).change();
+        
             $("#kd_prop").on("change", function() {
                 if($('#kd_kab').selectator() !== undefined) {
                     $('#kd_kab').selectator('destroy');
                 }
                 var kd_prop = $('#kd_prop').find(':selected').val();
                 $.ajax({
-                    url: "https://basoro.id/api-wilayah-indonesia/api/regencies/" + kd_prop +".json",
-                    method: "GET",
+                    url: "{?=url(['kabupaten', 'data'])?}",
+                    method: "POST",
                     data: {
+                        search_field_kabupaten: 'kd_kab', 
+                        search_text_kabupaten: kd_prop
                     },
                     success: function (data) {
-                        var options = data.map(function(val, ind){
-                            return $("<option></option>").val(val.id).html(val.name);
+                        var data = JSON.parse(data);
+                        var options = data.aaData.map(function(val, ind){
+                            return $("<option></option>").val(val.kd_kab).html(val.nm_kab);
                         });
                         $('#kd_kab').append(options);
+                        $('#kd_kab').val(kd_kab).change();
                         $('#kd_kab').selectator();
                     }
                 })
@@ -528,15 +531,19 @@ jQuery().ready(function () {
                 }
                 var kd_kab = $('#kd_kab').find(':selected').val();
                 $.ajax({
-                    url: "https://basoro.id/api-wilayah-indonesia/api/districts/" + kd_kab +".json",
-                    method: "GET",
+                    url: "{?=url(['kecamatan', 'data'])?}",
+                    method: "POST",
                     data: {
+                        search_field_kecamatan: 'kd_kec', 
+                        search_text_kecamatan: kd_kab
                     },
                     success: function (data) {
-                        var options = data.map(function(val, ind){
-                            return $("<option></option>").val(val.id).html(val.name);
+                        var data = JSON.parse(data);
+                        var options = data.aaData.map(function(val, ind){
+                            return $("<option></option>").val(val.kd_kec).html(val.nm_kec);
                         });
                         $('#kd_kec').append(options);
+                        $('#kd_kec').val(kd_kec).change();
                         $('#kd_kec').selectator();
                     }
                 })
@@ -548,15 +555,19 @@ jQuery().ready(function () {
                 }
                 var kd_kec = $('#kd_kec').find(':selected').val();
                 $.ajax({
-                    url: "https://basoro.id/api-wilayah-indonesia/api/villages/" + kd_kec +".json",
-                    method: "GET",
+                    url: "{?=url(['kelurahan', 'data'])?}",
+                    method: "POST",
                     data: {
+                        search_field_kelurahan: 'kd_kel', 
+                        search_text_kelurahan: kd_kec
                     },
                     success: function (data) {
-                        var options = data.map(function(val, ind){
-                            return $("<option></option>").val(val.id).html(val.name);
+                        var data = JSON.parse(data);
+                        var options = data.aaData.map(function(val, ind){
+                            return $("<option></option>").val(val.kd_kel).html(val.nm_kel);
                         });
                         $('#kd_kel').append(options);
+                        $('#kd_kel').val(kd_kel).change();
                         $('#kd_kel').selectator();
                     }
                 })
@@ -654,13 +665,14 @@ jQuery().ready(function () {
         }
 
         $.ajax({
-            url: "https://basoro.id/api-wilayah-indonesia/api/provinces.json",
-            method: "GET",
+            url: "{?=url(['propinsi', 'data'])?}",
+            method: "POST",
             data: {
             },
             success: function (data) {
-                var options = data.map(function(val, ind){
-                    return $("<option></option>").val(val.id).html(val.name);
+                var data = JSON.parse(data);
+                var options = data.aaData.map(function(val, ind){
+                    return $("<option></option>").val(val.kd_prop).html(val.nm_prop);
                 });
                 $('#kd_prop').append(options);
                 $('#kd_prop').selectator();
@@ -673,13 +685,16 @@ jQuery().ready(function () {
             }
             var kd_prop = $('#kd_prop').find(':selected').val();
             $.ajax({
-                url: "https://basoro.id/api-wilayah-indonesia/api/regencies/" + kd_prop +".json",
-                method: "GET",
+                url: "{?=url(['kabupaten', 'data'])?}",
+                method: "POST",
                 data: {
+                    search_field_kabupaten: 'kd_kab', 
+                    search_text_kabupaten: kd_prop
                 },
                 success: function (data) {
-                    var options = data.map(function(val, ind){
-                        return $("<option></option>").val(val.id).html(val.name);
+                    var data = JSON.parse(data);
+                    var options = data.aaData.map(function(val, ind){
+                        return $("<option></option>").val(val.kd_kab).html(val.nm_kab);
                     });
                     $('#kd_kab').append(options);
                     $('#kd_kab').selectator();
@@ -693,13 +708,16 @@ jQuery().ready(function () {
             }
             var kd_kab = $('#kd_kab').find(':selected').val();
             $.ajax({
-                url: "https://basoro.id/api-wilayah-indonesia/api/districts/" + kd_kab +".json",
-                method: "GET",
+                url: "{?=url(['kecamatan', 'data'])?}",
+                method: "POST",
                 data: {
+                    search_field_kecamatan: 'kd_kec', 
+                    search_text_kecamatan: kd_kab
                 },
                 success: function (data) {
-                    var options = data.map(function(val, ind){
-                        return $("<option></option>").val(val.id).html(val.name);
+                    var data = JSON.parse(data);
+                    var options = data.aaData.map(function(val, ind){
+                        return $("<option></option>").val(val.kd_kec).html(val.nm_kec);
                     });
                     $('#kd_kec').append(options);
                     $('#kd_kec').selectator();
@@ -713,13 +731,16 @@ jQuery().ready(function () {
             }
             var kd_kec = $('#kd_kec').find(':selected').val();
             $.ajax({
-                url: "https://basoro.id/api-wilayah-indonesia/api/villages/" + kd_kec +".json",
-                method: "GET",
+                url: "{?=url(['kelurahan', 'data'])?}",
+                method: "POST",
                 data: {
+                    search_field_kelurahan: 'kd_kel', 
+                    search_text_kelurahan: kd_kec
                 },
                 success: function (data) {
-                    var options = data.map(function(val, ind){
-                        return $("<option></option>").val(val.id).html(val.name);
+                    var data = JSON.parse(data);
+                    var options = data.aaData.map(function(val, ind){
+                        return $("<option></option>").val(val.kd_kel).html(val.nm_kel);
                     });
                     $('#kd_kel').append(options);
                     $('#kd_kel').selectator();

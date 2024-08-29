@@ -115,26 +115,40 @@ class Admin extends AdminModule
               exit();
             }
 
-        $noorder = $_POST['noorder'];
-$no_rawat = $_POST['no_rawat'];
-$tgl_permintaan = $_POST['tgl_permintaan'];
-$jam_permintaan = $_POST['jam_permintaan'];
-$tgl_sampel = $_POST['tgl_sampel'];
-$jam_sampel = $_POST['jam_sampel'];
-$tgl_hasil = $_POST['tgl_hasil'];
-$jam_hasil = $_POST['jam_hasil'];
-$dokter_perujuk = $_POST['dokter_perujuk'];
-$status = $_POST['status'];
-$informasi_tambahan = $_POST['informasi_tambahan'];
-$diagnosa_klinis = $_POST['diagnosa_klinis'];
+            $noorder = $_POST['noorder'];
+            $no_rawat = $_POST['no_rawat'];
+            $tgl_permintaan = $_POST['tgl_permintaan'];
+            $jam_permintaan = $_POST['jam_permintaan'];
+            $tgl_sampel = $_POST['tgl_sampel'];
+            $jam_sampel = $_POST['jam_sampel'];
+            $tgl_hasil = $_POST['tgl_hasil'];
+            $jam_hasil = $_POST['jam_hasil'];
+            $dokter_perujuk = $_POST['dokter_perujuk'];
+            $status = $_POST['status'];
+            $informasi_tambahan = $_POST['informasi_tambahan'];
+            $diagnosa_klinis = $_POST['diagnosa_klinis'];
 
+            $kd_jenis_prw = $_POST['kd_jenis_prw'];
             
             $result = $this->core->db->insert('permintaan_radiologi', [
-'noorder'=>$noorder, 'no_rawat'=>$no_rawat, 'tgl_permintaan'=>$tgl_permintaan, 'jam_permintaan'=>$jam_permintaan, 'tgl_sampel'=>$tgl_sampel, 'jam_sampel'=>$jam_sampel, 'tgl_hasil'=>$tgl_hasil, 'jam_hasil'=>$jam_hasil, 'dokter_perujuk'=>$dokter_perujuk, 'status'=>$status, 'informasi_tambahan'=>$informasi_tambahan, 'diagnosa_klinis'=>$diagnosa_klinis
+              'noorder'=>$noorder, 'no_rawat'=>$no_rawat, 'tgl_permintaan'=>$tgl_permintaan, 'jam_permintaan'=>$jam_permintaan, 'tgl_sampel'=>$tgl_sampel, 'jam_sampel'=>$jam_sampel, 'tgl_hasil'=>$tgl_hasil, 'jam_hasil'=>$jam_hasil, 'dokter_perujuk'=>$dokter_perujuk, 'status'=>$status, 'informasi_tambahan'=>$informasi_tambahan, 'diagnosa_klinis'=>$diagnosa_klinis
             ]);
 
 
             if (!empty($result)){
+
+              for($l=0; $l < count($kd_jenis_prw); $l++){
+                $permintaan_pemeriksaan_radiologi = $this->core->db->insert('permintaan_pemeriksaan_radiologi', [
+                    'noorder'=>$noorder, 'kd_jenis_prw'=>$kd_jenis_prw[$l], 'stts_bayar'=>'Belum'
+                ]);
+                if(!$permintaan_pemeriksaan_radiologi) {
+                  $data = array(
+                    'status' => 'error', 
+                    'msg' => $this->core->db->errorInfo[2]
+                  );    
+                }
+              }
+
               http_response_code(200);
               $data = array(
                 'code' => '200', 
