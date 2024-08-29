@@ -103,6 +103,7 @@
                     fontSize: 10,
                     cellPadding: 5
                 }, 
+                showHead: 'firstPage', 
                 didDrawPage: data => {
                     let footerStr = "Page " + doc.internal.getNumberOfPages();
                     if (typeof doc.putTotalPages === 'function') {
