@@ -19,10 +19,9 @@ $(document).ready(function() {
         dataType: 'json',
         success: function (res) {
             var eTable = "<div class='table-responsive'><table id='tbl_detail_kecamatan' class='table display dataTable' style='width:100%'><thead></thead>";
-eTable += '<tr><td>Kd Kec</td><td>' + res.msg['kd_kec'] + '</td><tr>';
-eTable += '<tr><td>Nm Kec</td><td>' + res.msg['nm_kec'] + '</td><tr>';
-
-            eTable += "</tbody></table></div>";
+                eTable += '<tr><td>Kode Kecamatan</td><td>' + res.msg['kd_kec'] + '</td><tr>';
+                eTable += '<tr><td>Nama Kecamatan</td><td>' + res.msg['nm_kec'] + '</td><tr>';
+                eTable += "</tbody></table></div>";
             $('#detail_kecamatan').html(eTable);
         }
     });

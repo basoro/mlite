@@ -24,11 +24,9 @@ jQuery().ready(function () {
             }
         },
         "fnDrawCallback": function () {
-            $('#more_data_kelurahan').on('click', function(e) {
+            $('#import_data_kelurahan').on('click', function(e) {
                 e.preventDefault();
-                var clientX = e.originalEvent.clientX;
-                var clientY = e.originalEvent.clientY;
-                $('#tbl_kelurahan tr').contextMenu({x: clientX, y: clientY});
+                OpenModal(mlite.url + '/kelurahan/import?t=' + mlite.token);
             });          
         }, 
         "columns": [

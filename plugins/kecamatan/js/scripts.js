@@ -24,24 +24,20 @@ jQuery().ready(function () {
             }
         },
         "fnDrawCallback": function () {
-            $('#more_data_kecamatan').on('click', function(e) {
+            $('#import_data_kecamatan').on('click', function(e) {
                 e.preventDefault();
-                var clientX = e.originalEvent.clientX;
-                var clientY = e.originalEvent.clientY;
-                $('#tbl_kecamatan tr').contextMenu({x: clientX, y: clientY});
+                OpenModal(mlite.url + '/kecamatan/import?t=' + mlite.token);
             });          
         }, 
         "columns": [
-{ 'data': 'kd_kec' },
-{ 'data': 'nm_kec' }
-
+            { 'data': 'kd_kec' },
+            { 'data': 'nm_kec' }
         ],
         "columnDefs": [
-{ 'targets': 0},
-{ 'targets': 1}
-
+            { 'targets': 0},
+            { 'targets': 1}
         ],
-        order: [[1, 'DESC']], 
+        order: [[0, 'DESC']], 
         buttons: [],
         "scrollCollapse": true,
         // "scrollY": '48vh', 
@@ -58,7 +54,7 @@ jQuery().ready(function () {
         callback: function(key, options) {
           var rowData = var_tbl_kecamatan.rows({ selected: true }).data()[0];
           if (rowData != null) {
-var kd_kec = rowData['kd_kec'];
+            var kd_kec = rowData['kd_kec'];
             switch (key) {
                 case 'detail' :
                     OpenModal(mlite.url + '/kecamatan/detail/' + kd_kec + '?t=' + mlite.token);
@@ -81,23 +77,22 @@ var kd_kec = rowData['kd_kec'];
 
     $("form[name='form_kecamatan']").validate({
         rules: {
-kd_kec: 'required',
-nm_kec: 'required'
+            kd_kec: 'required',
+            nm_kec: 'required'
 
         },
         messages: {
-kd_kec:'Kd Kec tidak boleh kosong!',
-nm_kec:'Nm Kec tidak boleh kosong!'
-
+            kd_kec:'Kode Kecamatan tidak boleh kosong!',
+            nm_kec:'Nama Kecamatan tidak boleh kosong!'
         },
         submitHandler: function (form) {
-var kd_kec= $('#kd_kec').val();
-var nm_kec= $('#nm_kec').val();
+            var kd_kec= $('#kd_kec').val();
+            var nm_kec= $('#nm_kec').val();
 
-var typeact = $('#typeact').val();
+            var typeact = $('#typeact').val();
 
-var formData = new FormData(form); // tambahan
-formData.append('typeact', typeact); // tambahan
+            var formData = new FormData(form); // tambahan
+            formData.append('typeact', typeact); // tambahan
 
             $.ajax({
                 url: "{?=url(['kecamatan','aksi'])?}",
@@ -172,12 +167,12 @@ formData.append('typeact', typeact); // tambahan
         if (rowData != null) {
 
             var kd_kec = rowData['kd_kec'];
-var nm_kec = rowData['nm_kec'];
+            var nm_kec = rowData['nm_kec'];
 
             $("#typeact").val("edit");
   
             $('#kd_kec').val(kd_kec);
-$('#nm_kec').val(nm_kec);
+            $('#nm_kec').val(nm_kec);
 
             $("#kd_kec").prop('readonly', true); // GA BISA DIEDIT KALI READONLY
             $('#modal-title').text("Edit Data Kecamatan");
@@ -197,7 +192,7 @@ $('#nm_kec').val(nm_kec);
 
 
         if (rowData) {
-var kd_kec = rowData['kd_kec'];
+            var kd_kec = rowData['kd_kec'];
             bootbox.confirm('Anda yakin akan menghapus data dengan kd_kec="' + kd_kec, function(result) {
                 if(result) {
                     $.ajax({
@@ -240,7 +235,7 @@ var kd_kec = rowData['kd_kec'];
     jQuery("#tambah_data_kecamatan").click(function () {
 
         $('#kd_kec').val('');
-$('#nm_kec').val('');
+        $('#nm_kec').val('');
 
         $("#typeact").val("add");
         $("#kd_kec").prop('readonly', false);
@@ -267,11 +262,11 @@ $('#nm_kec').val('');
             },
             dataType: 'json',
             success: function (res) {
-                var eTable = "<div class='table-responsive'><table id='tbl_lihat_kecamatan' class='table display dataTable' style='width:100%'><thead><th>Kd Kec</th><th>Nm Kec</th></thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_kecamatan' class='table display dataTable' style='width:100%'><thead><th>Kodw Kecamatan</th><th>Nama Kecamatan</th></thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     eTable += '<td>' + res[i]['kd_kec'] + '</td>';
-eTable += '<td>' + res[i]['nm_kec'] + '</td>';
+                    eTable += '<td>' + res[i]['nm_kec'] + '</td>';
                     eTable += "</tr>";
                 }
                 eTable += "</tbody></table></div>";

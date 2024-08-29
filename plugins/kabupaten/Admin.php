@@ -364,6 +364,44 @@ $nm_kab = $_POST['nm_kab'];
       exit();
     }
 
+    public function getImport()
+    {
+
+      $fileName = 'https://basoro.id/downloads/regencies.csv';
+      echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
+
+      $csvData = file_get_contents($fileName);
+      if($csvData) {
+        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] File '.$filename.' tidak ditemukan'."<br>";
+        exit();
+      }
+
+      $lines = explode(PHP_EOL, $csvData);
+      $array = array();
+      foreach ($lines as $line) {
+          $array[] = str_getcsv($line);
+      }
+
+      foreach ($array as $data){   
+        $kode = $data[0];
+        $nama = $data[2];
+        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."')";
+      }
+      $str = implode(",", $value_query);
+      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
+      $result = $this->core->db->query("INSERT INTO kabupaten (kd_kab, nm_kab) VALUES $str ON DUPLICATE KEY UPDATE kd_kab=VALUES(kd_kab)");
+      if($result) {
+        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
+        exit();
+      }
+
+      exit();
+    }
+    
     public function getCss()
     {
         header('Content-type: text/css');

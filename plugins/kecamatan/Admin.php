@@ -62,8 +62,7 @@ class Admin extends AdminModule
         foreach($result as $row) {
             $data[] = array(
                 'kd_kec'=>$row['kd_kec'],
-'nm_kec'=>$row['nm_kec']
-
+                'nm_kec'=>$row['nm_kec']
             );
         }
 
@@ -364,6 +363,44 @@ $nm_kec = $_POST['nm_kec'];
       exit();
     }
 
+    public function getImport()
+    {
+
+      $fileName = 'https://basoro.id/downloads/districts.csv';
+      echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
+
+      $csvData = file_get_contents($fileName);
+      if($csvData) {
+        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] File '.$filename.' tidak ditemukan'."<br>";
+        exit();
+      }
+
+      $lines = explode(PHP_EOL, $csvData);
+      $array = array();
+      foreach ($lines as $line) {
+          $array[] = str_getcsv($line);
+      }
+
+      foreach ($array as $data){   
+        $kode = $data[0];
+        $nama = $data[2];
+        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."')";
+      }
+      $str = implode(",", $value_query);
+      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
+      $result = $this->core->db->query("INSERT INTO kecamatan (kd_kec, nm_kec) VALUES $str ON DUPLICATE KEY UPDATE kd_kec=VALUES(kd_kec)");
+      if($result) {
+        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
+        exit();
+      }
+
+      exit();
+    }
+    
     public function getCss()
     {
         header('Content-type: text/css');

@@ -24,24 +24,20 @@ jQuery().ready(function () {
             }
         },
         "fnDrawCallback": function () {
-            $('#more_data_propinsi').on('click', function(e) {
+            $('#import_data_propinsi').on('click', function(e) {
                 e.preventDefault();
-                var clientX = e.originalEvent.clientX;
-                var clientY = e.originalEvent.clientY;
-                $('#tbl_propinsi tr').contextMenu({x: clientX, y: clientY});
-            });          
+                OpenModal(mlite.url + '/propinsi/import?t=' + mlite.token);
+            }); 
         }, 
         "columns": [
-{ 'data': 'kd_prop' },
-{ 'data': 'nm_prop' }
-
+            { 'data': 'kd_prop' },
+            { 'data': 'nm_prop' }
         ],
         "columnDefs": [
-{ 'targets': 0},
-{ 'targets': 1}
-
+            { 'targets': 0},
+            { 'targets': 1}
         ],
-        order: [[1, 'DESC']], 
+        order: [[0, 'DESC']], 
         buttons: [],
         "scrollCollapse": true,
         // "scrollY": '48vh', 
@@ -58,7 +54,7 @@ jQuery().ready(function () {
         callback: function(key, options) {
           var rowData = var_tbl_propinsi.rows({ selected: true }).data()[0];
           if (rowData != null) {
-var kd_prop = rowData['kd_prop'];
+            var kd_prop = rowData['kd_prop'];
             switch (key) {
                 case 'detail' :
                     OpenModal(mlite.url + '/propinsi/detail/' + kd_prop + '?t=' + mlite.token);
@@ -81,23 +77,21 @@ var kd_prop = rowData['kd_prop'];
 
     $("form[name='form_propinsi']").validate({
         rules: {
-kd_prop: 'required',
-nm_prop: 'required'
-
+            kd_prop: 'required',
+            nm_prop: 'required'
         },
         messages: {
-kd_prop:'Kd Prop tidak boleh kosong!',
-nm_prop:'Nm Prop tidak boleh kosong!'
-
+            kd_prop:'Kode Propinsi tidak boleh kosong!',
+            nm_prop:'Nama Propinsi tidak boleh kosong!'
         },
         submitHandler: function (form) {
-var kd_prop= $('#kd_prop').val();
-var nm_prop= $('#nm_prop').val();
+            var kd_prop= $('#kd_prop').val();
+            var nm_prop= $('#nm_prop').val();
 
-var typeact = $('#typeact').val();
+            var typeact = $('#typeact').val();
 
-var formData = new FormData(form); // tambahan
-formData.append('typeact', typeact); // tambahan
+            var formData = new FormData(form); // tambahan
+            formData.append('typeact', typeact); // tambahan
 
             $.ajax({
                 url: "{?=url(['propinsi','aksi'])?}",
@@ -172,12 +166,12 @@ formData.append('typeact', typeact); // tambahan
         if (rowData != null) {
 
             var kd_prop = rowData['kd_prop'];
-var nm_prop = rowData['nm_prop'];
+            var nm_prop = rowData['nm_prop'];
 
             $("#typeact").val("edit");
   
             $('#kd_prop').val(kd_prop);
-$('#nm_prop').val(nm_prop);
+            $('#nm_prop').val(nm_prop);
 
             $("#kd_prop").prop('readonly', true); // GA BISA DIEDIT KALI READONLY
             $('#modal-title').text("Edit Data Propinsi");
@@ -197,7 +191,7 @@ $('#nm_prop').val(nm_prop);
 
 
         if (rowData) {
-var kd_prop = rowData['kd_prop'];
+            var kd_prop = rowData['kd_prop'];
             bootbox.confirm('Anda yakin akan menghapus data dengan kd_prop="' + kd_prop, function(result) {
                 if(result) {
                     $.ajax({
@@ -240,7 +234,7 @@ var kd_prop = rowData['kd_prop'];
     jQuery("#tambah_data_propinsi").click(function () {
 
         $('#kd_prop').val('');
-$('#nm_prop').val('');
+        $('#nm_prop').val('');
 
         $("#typeact").val("add");
         $("#kd_prop").prop('readonly', false);
@@ -267,11 +261,11 @@ $('#nm_prop').val('');
             },
             dataType: 'json',
             success: function (res) {
-                var eTable = "<div class='table-responsive'><table id='tbl_lihat_propinsi' class='table display dataTable' style='width:100%'><thead><th>Kd Prop</th><th>Nm Prop</th></thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_propinsi' class='table display dataTable' style='width:100%'><thead><th>Kode Propinsi</th><th>Nama Propinsi</th></thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     eTable += '<td>' + res[i]['kd_prop'] + '</td>';
-eTable += '<td>' + res[i]['nm_prop'] + '</td>';
+                    eTable += '<td>' + res[i]['nm_prop'] + '</td>';
                     eTable += "</tr>";
                 }
                 eTable += "</tbody></table></div>";

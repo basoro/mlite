@@ -20,8 +20,8 @@
                           <button id='hapus_data_kabupaten' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
                           <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
                           </button>
-                          <button id='more_data_kabupaten' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='More Data' {?=isset_or($disabled_menu.read)?}>
-                          <i class='ri-arrow-down-s-line' style='font-size: 15px;'></i><span class="hidden-xs"> More</span>
+                          <button id='import_data_kabupaten' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='Import Data' {?=isset_or($disabled_menu.read)?}>
+                          <i class='ri-arrow-down-s-line' style='font-size: 15px;'></i><span class="hidden-xs"> Import</span>
                           </button>
                       </div>
                     </div>
@@ -30,9 +30,8 @@
                           <span class="input-group-text">Cari</span>
                           <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
                           <select class="form-select" id='search_field_kabupaten' name='search_field_kabupaten' style="margin: 0 !important;"> 
-                              <option value='kd_kab'>Kd Kab</option>
-<option value='nm_kab'>Nm Kab</option>
-
+                              <option value='kd_kab'>Kode Kabupaten</option>
+                              <option value='nm_kab'>Nama Kabupaten</option>
                           </select>
                           </span>
                           <input class='form-control' name='search_text_kabupaten' id='search_text_kabupaten' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
@@ -44,9 +43,8 @@
                     <table id="tbl_kabupaten" class="table table-striped display dataTable" style="width:100%">
                         <thead>
                         <tr> 
-                            <th>Kd Kab</th>
-<th>Nm Kab</th>
-
+                            <th>Kode Kabupaten</th>
+                            <th>Nama Kabupaten</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -68,24 +66,23 @@
       </div>
       <div class="modal-body">
         <form name="form_kabupaten">
-          <input type="hidden" class="form-control" id="typeact" /> 
-          <div class='row gx-3'>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='kd_kab'>Kd Kab</label>
-      <input type='text' class='form-control' id='kd_kab' name='kd_kab' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='nm_kab'>Nm Kab</label>
-      <input type='text' class='form-control' id='nm_kab' name='nm_kab' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-</div>
-
+        <input type="hidden" class="form-control" id="typeact" /> 
+        <div class='row gx-3'>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_kab'>Kode Kabupaten</label>
+              <input type='text' class='form-control' id='kd_kab' name='kd_kab' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-9 col-lg-8 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='nm_kab'>Nama Kabupaten</label>
+              <input type='text' class='form-control' id='nm_kab' name='nm_kab' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>

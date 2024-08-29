@@ -19,10 +19,9 @@ $(document).ready(function() {
         dataType: 'json',
         success: function (res) {
             var eTable = "<div class='table-responsive'><table id='tbl_detail_propinsi' class='table display dataTable' style='width:100%'><thead></thead>";
-eTable += '<tr><td>Kd Prop</td><td>' + res.msg['kd_prop'] + '</td><tr>';
-eTable += '<tr><td>Nm Prop</td><td>' + res.msg['nm_prop'] + '</td><tr>';
-
-            eTable += "</tbody></table></div>";
+                eTable += '<tr><td>Kode Propinsi</td><td>' + res.msg['kd_prop'] + '</td><tr>';
+                eTable += '<tr><td>Nama Propinsi</td><td>' + res.msg['nm_prop'] + '</td><tr>';
+                eTable += "</tbody></table></div>";
             $('#detail_propinsi').html(eTable);
         }
     });

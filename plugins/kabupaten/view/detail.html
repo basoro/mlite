@@ -19,10 +19,9 @@ $(document).ready(function() {
         dataType: 'json',
         success: function (res) {
             var eTable = "<div class='table-responsive'><table id='tbl_detail_kabupaten' class='table display dataTable' style='width:100%'><thead></thead>";
-eTable += '<tr><td>Kd Kab</td><td>' + res.msg['kd_kab'] + '</td><tr>';
-eTable += '<tr><td>Nm Kab</td><td>' + res.msg['nm_kab'] + '</td><tr>';
-
-            eTable += "</tbody></table></div>";
+                eTable += '<tr><td>Kode Kabupaten</td><td>' + res.msg['kd_kab'] + '</td><tr>';
+                eTable += '<tr><td>Nama Kabupaten</td><td>' + res.msg['nm_kab'] + '</td><tr>';
+                eTable += "</tbody></table></div>";
             $('#detail_kabupaten').html(eTable);
         }
     });

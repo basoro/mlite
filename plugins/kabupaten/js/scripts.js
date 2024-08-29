@@ -24,24 +24,20 @@ jQuery().ready(function () {
             }
         },
         "fnDrawCallback": function () {
-            $('#more_data_kabupaten').on('click', function(e) {
+            $('#import_data_kabupaten').on('click', function(e) {
                 e.preventDefault();
-                var clientX = e.originalEvent.clientX;
-                var clientY = e.originalEvent.clientY;
-                $('#tbl_kabupaten tr').contextMenu({x: clientX, y: clientY});
-            });          
+                OpenModal(mlite.url + '/kabupaten/import?t=' + mlite.token);
+            });
         }, 
         "columns": [
-{ 'data': 'kd_kab' },
-{ 'data': 'nm_kab' }
-
+            { 'data': 'kd_kab' },
+            { 'data': 'nm_kab' }
         ],
         "columnDefs": [
-{ 'targets': 0},
-{ 'targets': 1}
-
+            { 'targets': 0},
+            { 'targets': 1}
         ],
-        order: [[1, 'DESC']], 
+        order: [[0, 'DESC']], 
         buttons: [],
         "scrollCollapse": true,
         // "scrollY": '48vh', 
@@ -58,7 +54,7 @@ jQuery().ready(function () {
         callback: function(key, options) {
           var rowData = var_tbl_kabupaten.rows({ selected: true }).data()[0];
           if (rowData != null) {
-var kd_kab = rowData['kd_kab'];
+            var kd_kab = rowData['kd_kab'];
             switch (key) {
                 case 'detail' :
                     OpenModal(mlite.url + '/kabupaten/detail/' + kd_kab + '?t=' + mlite.token);
@@ -81,23 +77,23 @@ var kd_kab = rowData['kd_kab'];
 
     $("form[name='form_kabupaten']").validate({
         rules: {
-kd_kab: 'required',
-nm_kab: 'required'
+            kd_kab: 'required',
+            nm_kab: 'required'
 
         },
         messages: {
-kd_kab:'Kd Kab tidak boleh kosong!',
-nm_kab:'Nm Kab tidak boleh kosong!'
+            kd_kab:'Kode Kabupaten tidak boleh kosong!',
+            nm_kab:'Nama Kabupaten tidak boleh kosong!'
 
         },
         submitHandler: function (form) {
-var kd_kab= $('#kd_kab').val();
-var nm_kab= $('#nm_kab').val();
+            var kd_kab= $('#kd_kab').val();
+            var nm_kab= $('#nm_kab').val();
 
-var typeact = $('#typeact').val();
+            var typeact = $('#typeact').val();
 
-var formData = new FormData(form); // tambahan
-formData.append('typeact', typeact); // tambahan
+            var formData = new FormData(form); // tambahan
+            formData.append('typeact', typeact); // tambahan
 
             $.ajax({
                 url: "{?=url(['kabupaten','aksi'])?}",
@@ -172,12 +168,12 @@ formData.append('typeact', typeact); // tambahan
         if (rowData != null) {
 
             var kd_kab = rowData['kd_kab'];
-var nm_kab = rowData['nm_kab'];
+            var nm_kab = rowData['nm_kab'];
 
             $("#typeact").val("edit");
   
             $('#kd_kab').val(kd_kab);
-$('#nm_kab').val(nm_kab);
+            $('#nm_kab').val(nm_kab);
 
             $("#kd_kab").prop('readonly', true); // GA BISA DIEDIT KALI READONLY
             $('#modal-title').text("Edit Data Kabupaten");
@@ -197,7 +193,7 @@ $('#nm_kab').val(nm_kab);
 
 
         if (rowData) {
-var kd_kab = rowData['kd_kab'];
+            var kd_kab = rowData['kd_kab'];
             bootbox.confirm('Anda yakin akan menghapus data dengan kd_kab="' + kd_kab, function(result) {
                 if(result) {
                     $.ajax({
@@ -240,7 +236,7 @@ var kd_kab = rowData['kd_kab'];
     jQuery("#tambah_data_kabupaten").click(function () {
 
         $('#kd_kab').val('');
-$('#nm_kab').val('');
+        $('#nm_kab').val('');
 
         $("#typeact").val("add");
         $("#kd_kab").prop('readonly', false);
@@ -267,11 +263,11 @@ $('#nm_kab').val('');
             },
             dataType: 'json',
             success: function (res) {
-                var eTable = "<div class='table-responsive'><table id='tbl_lihat_kabupaten' class='table display dataTable' style='width:100%'><thead><th>Kd Kab</th><th>Nm Kab</th></thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_kabupaten' class='table display dataTable' style='width:100%'><thead><th>Kode Kabupaten</th><th>Nama Kabupaten</th></thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     eTable += '<td>' + res[i]['kd_kab'] + '</td>';
-eTable += '<td>' + res[i]['nm_kab'] + '</td>';
+                    eTable += '<td>' + res[i]['nm_kab'] + '</td>';
                     eTable += "</tr>";
                 }
                 eTable += "</tbody></table></div>";
