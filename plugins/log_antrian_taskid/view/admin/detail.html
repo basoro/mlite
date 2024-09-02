@@ -1,0 +1,24 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Detail mlite_antrian_referensi_taskid</h4>
+</div>
+<div class="modal-body">
+    <table id="tbl_detail_mlite_antrian_referensi_taskid" class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        </thead>
+        <tbody>
+            {loop: $detail}
+            <tr><td>Tanggal Periksa</td><td>{$value.tanggal_periksa}</td><tr>
+<tr><td>Nomor Referensi</td><td>{$value.nomor_referensi}</td><tr>
+<tr><td>Taskid</td><td>{$value.taskid}</td><tr>
+<tr><td>Waktu</td><td>{$value.waktu}</td><tr>
+<tr><td>Status</td><td>{$value.status}</td><tr>
+<tr><td>Keterangan</td><td>{$value.keterangan}</td><tr>
+
+            {/loop}
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
