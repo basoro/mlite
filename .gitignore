@@ -38,7 +38,7 @@ plugins/khanza.zip
 plugins/website_ausy
 plugins/khanza
 plugins/pasien_galleries
-plugins/log_antrian_taskid
+# plugins/log_antrian_taskid
 
 
 .env
