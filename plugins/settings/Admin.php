@@ -92,6 +92,7 @@ class Admin extends AdminModule
 
         $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
         $this->tpl->set('url', url([ADMIN, 'settings', 's']));
+        $this->tpl->set('set_no_rkm_medis', $this->db('set_no_rkm_medis')->oneArray());
 
         return $this->draw('general.html');
     }
@@ -144,6 +145,11 @@ class Admin extends AdminModule
             }
         }
 
+        if($_POST['set_no_rkm_medis']) {
+            $this->db('set_no_rkm_medis')->delete();
+            $this->db('set_no_rkm_medis')->save(['no_rkm_medis' => $_POST['set_no_rkm_medis']]);
+        }
+        
         if (!$errors) {
 
             $url = "https://mlite.id/datars/save";
