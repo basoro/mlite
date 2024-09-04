@@ -182,7 +182,7 @@ var nm_poli_bpjs = rowData['nm_poli_bpjs'];
 
             $("#typeact").val("edit");
   
-            $('#kd_poli_rs').val(kd_poli_rs);
+            $('#kd_poli_rs').val(kd_poli_rs).change();
 $('#kd_poli_bpjs').val(kd_poli_bpjs);
 $('#nm_poli_bpjs').val(nm_poli_bpjs);
 
@@ -356,4 +356,55 @@ eTable += '<td>' + res[i]['nm_poli_bpjs'] + '</td>';
         window.open(mlite.url + '/maping_poli_bpjs/chart?t=' + mlite.token, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
     })   
 
+    $('#cari_referensi_poli').click(function() {
+        
+        var cari_referensi_poli = $('#nm_poli_bpjs').val();
+
+        $.ajax({
+            url: "{?=url(['bridging_sep','referensipoli'])?}",
+            method: "POST",
+            data: {
+                cari_referensi_poli: cari_referensi_poli
+            },
+            success: function (data) {
+                var data = JSON.parse(data);
+                console.log(data);
+                if(data.metaData.code == '200') {
+                    var data = data.response.poli;                    
+                } else {
+                    var data = [];
+                }
+                let table = '<table id="tbl_cari_referensi_poli" class="table table-stripped" width="100%"><thead>';
+                    table += '<tr>';
+                    table += '<th>Kode Poli BPJS</th>';
+                    table += '<th>Nama Poli BPJS</th>';
+                    table += '</tr>';
+                    table += '</thead><tbody>';
+                data.forEach(function(d){
+                    table += '<tr>';
+                    table += '<td>'+d.kode+'</td>';
+                    table += '<td>'+d.nama+'</td>';
+
+                    table += '</tr>';
+                })
+                table += '</tbody></table>';
+                $('#forTable_referensi_poli').empty().html(table);
+
+                var var_tbl_cari_referensi_poli = $('#tbl_cari_referensi_poli').DataTable({
+                    'select': true
+                });
+                $('#tbl_cari_referensi_poli').on('select.dt', function ( e, dt, type, indexes ) {
+                    var rowData = var_tbl_cari_referensi_poli.rows({ selected: true }).data()[0];
+                    console.log(rowData);
+                    $('#kd_poli_bpjs').val(rowData['0']);
+                    $('#nm_poli_bpjs').val(rowData['1']);
+                    $("#modal_cari_referensi_poli").modal('hide');
+                });
+        
+            }
+        });
+
+        $('#modal-title').text("Lihat Data");
+        $("#modal_cari_referensi_poli").modal('show');        
+    })
 });

@@ -24,30 +24,26 @@ jQuery().ready(function () {
             }
         },
         "fnDrawCallback": function () {
-            $('#more_data_penyakit').on('click', function(e) {
+            $('#import_data_penyakit').on('click', function(e) {
                 e.preventDefault();
-                var clientX = e.originalEvent.clientX;
-                var clientY = e.originalEvent.clientY;
-                $('#tbl_penyakit tr').contextMenu({x: clientX, y: clientY});
+                OpenModal(mlite.url + '/penyakit/import?t=' + mlite.token);
             });          
         }, 
         "columns": [
-{ 'data': 'kd_penyakit' },
-{ 'data': 'nm_penyakit' },
-{ 'data': 'ciri_ciri' },
-{ 'data': 'keterangan' },
-{ 'data': 'kd_ktg' },
-{ 'data': 'status' }
-
+            { 'data': 'kd_penyakit' },
+            { 'data': 'nm_penyakit' },
+            { 'data': 'ciri_ciri' },
+            { 'data': 'keterangan' },
+            { 'data': 'kd_ktg' },
+            { 'data': 'status' }
         ],
         "columnDefs": [
-{ 'targets': 0},
-{ 'targets': 1},
-{ 'targets': 2},
-{ 'targets': 3},
-{ 'targets': 4},
-{ 'targets': 5}
-
+            { 'targets': 0},
+            { 'targets': 1},
+            { 'targets': 2},
+            { 'targets': 3},
+            { 'targets': 4},
+            { 'targets': 5}
         ],
         order: [[1, 'DESC']], 
         buttons: [],
@@ -66,7 +62,7 @@ jQuery().ready(function () {
         callback: function(key, options) {
           var rowData = var_tbl_penyakit.rows({ selected: true }).data()[0];
           if (rowData != null) {
-var kd_penyakit = rowData['kd_penyakit'];
+            var kd_penyakit = rowData['kd_penyakit'];
             switch (key) {
                 case 'detail' :
                     OpenModal(mlite.url + '/penyakit/detail/' + kd_penyakit + '?t=' + mlite.token);
@@ -89,35 +85,34 @@ var kd_penyakit = rowData['kd_penyakit'];
 
     $("form[name='form_penyakit']").validate({
         rules: {
-kd_penyakit: 'required',
-nm_penyakit: 'required',
-ciri_ciri: 'required',
-keterangan: 'required',
-kd_ktg: 'required',
-status: 'required'
-
+            kd_penyakit: 'required',
+            nm_penyakit: 'required',
+            ciri_ciri: 'required',
+            keterangan: 'required',
+            kd_ktg: 'required',
+            status: 'required'
         },
         messages: {
-kd_penyakit:'Kd Penyakit tidak boleh kosong!',
-nm_penyakit:'Nm Penyakit tidak boleh kosong!',
-ciri_ciri:'Ciri Ciri tidak boleh kosong!',
-keterangan:'Keterangan tidak boleh kosong!',
-kd_ktg:'Kd Ktg tidak boleh kosong!',
-status:'Status tidak boleh kosong!'
+            kd_penyakit:'Kode Penyakit tidak boleh kosong!',
+            nm_penyakit:'Nama Penyakit tidak boleh kosong!',
+            ciri_ciri:'Ciri Ciri tidak boleh kosong!',
+            keterangan:'Keterangan tidak boleh kosong!',
+            kd_ktg:'Kode keterangan tidak boleh kosong!',
+            status:'Status tidak boleh kosong!'
 
         },
         submitHandler: function (form) {
-var kd_penyakit= $('#kd_penyakit').val();
-var nm_penyakit= $('#nm_penyakit').val();
-var ciri_ciri= $('#ciri_ciri').val();
-var keterangan= $('#keterangan').val();
-var kd_ktg= $('#kd_ktg').val();
-var status= $('#status').val();
+            var kd_penyakit= $('#kd_penyakit').val();
+            var nm_penyakit= $('#nm_penyakit').val();
+            var ciri_ciri= $('#ciri_ciri').val();
+            var keterangan= $('#keterangan').val();
+            var kd_ktg= $('#kd_ktg').val();
+            var status= $('#status').val();
 
-var typeact = $('#typeact').val();
+            var typeact = $('#typeact').val();
 
-var formData = new FormData(form); // tambahan
-formData.append('typeact', typeact); // tambahan
+            var formData = new FormData(form); // tambahan
+            formData.append('typeact', typeact); // tambahan
 
             $.ajax({
                 url: "{?=url(['penyakit','aksi'])?}",
@@ -192,20 +187,20 @@ formData.append('typeact', typeact); // tambahan
         if (rowData != null) {
 
             var kd_penyakit = rowData['kd_penyakit'];
-var nm_penyakit = rowData['nm_penyakit'];
-var ciri_ciri = rowData['ciri_ciri'];
-var keterangan = rowData['keterangan'];
-var kd_ktg = rowData['kd_ktg'];
-var status = rowData['status'];
+            var nm_penyakit = rowData['nm_penyakit'];
+            var ciri_ciri = rowData['ciri_ciri'];
+            var keterangan = rowData['keterangan'];
+            var kd_ktg = rowData['kd_ktg'];
+            var status = rowData['status'];
 
             $("#typeact").val("edit");
   
             $('#kd_penyakit').val(kd_penyakit);
-$('#nm_penyakit').val(nm_penyakit);
-$('#ciri_ciri').val(ciri_ciri);
-$('#keterangan').val(keterangan);
-$('#kd_ktg').val(kd_ktg);
-$('#status').val(status);
+            $('#nm_penyakit').val(nm_penyakit);
+            $('#ciri_ciri').val(ciri_ciri);
+            $('#keterangan').val(keterangan);
+            $('#kd_ktg').val(kd_ktg);
+            $('#status').val(status);
 
             $("#kd_penyakit").prop('readonly', true); // GA BISA DIEDIT KALI READONLY
             $('#modal-title').text("Edit Data Penyakit");
@@ -225,7 +220,7 @@ $('#status').val(status);
 
 
         if (rowData) {
-var kd_penyakit = rowData['kd_penyakit'];
+            var kd_penyakit = rowData['kd_penyakit'];
             bootbox.confirm('Anda yakin akan menghapus data dengan kd_penyakit="' + kd_penyakit, function(result) {
                 if(result) {
                     $.ajax({
@@ -268,11 +263,11 @@ var kd_penyakit = rowData['kd_penyakit'];
     jQuery("#tambah_data_penyakit").click(function () {
 
         $('#kd_penyakit').val('');
-$('#nm_penyakit').val('');
-$('#ciri_ciri').val('');
-$('#keterangan').val('');
-$('#kd_ktg').val('');
-$('#status').val('');
+        $('#nm_penyakit').val('');
+        $('#ciri_ciri').val('');
+        $('#keterangan').val('');
+        $('#kd_ktg').val('');
+        $('#status').val('');
 
         $("#typeact").val("add");
         $("#kd_penyakit").prop('readonly', false);
@@ -299,15 +294,15 @@ $('#status').val('');
             },
             dataType: 'json',
             success: function (res) {
-                var eTable = "<div class='table-responsive'><table id='tbl_lihat_penyakit' class='table display dataTable' style='width:100%'><thead><th>Kd Penyakit</th><th>Nm Penyakit</th><th>Ciri Ciri</th><th>Keterangan</th><th>Kd Ktg</th><th>Status</th></thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_penyakit' class='table display dataTable' style='width:100%'><thead><th>Kode Penyakit</th><th>Nama Penyakit</th><th>Ciri Ciri</th><th>Keterangan</th><th>Kode Keterangan</th><th>Status</th></thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     eTable += '<td>' + res[i]['kd_penyakit'] + '</td>';
-eTable += '<td>' + res[i]['nm_penyakit'] + '</td>';
-eTable += '<td>' + res[i]['ciri_ciri'] + '</td>';
-eTable += '<td>' + res[i]['keterangan'] + '</td>';
-eTable += '<td>' + res[i]['kd_ktg'] + '</td>';
-eTable += '<td>' + res[i]['status'] + '</td>';
+                    eTable += '<td>' + res[i]['nm_penyakit'] + '</td>';
+                    eTable += '<td>' + res[i]['ciri_ciri'] + '</td>';
+                    eTable += '<td>' + res[i]['keterangan'] + '</td>';
+                    eTable += '<td>' + res[i]['kd_ktg'] + '</td>';
+                    eTable += '<td>' + res[i]['status'] + '</td>';
                     eTable += "</tr>";
                 }
                 eTable += "</tbody></table></div>";

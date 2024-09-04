@@ -1,0 +1,523 @@
+<div class="modal-header">
+  <h4 class="modal-title"><span id="modal-title">Data Bridging Sep</span></h4>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+  <form name="form_bridging_sep">
+  <input type="hidden" class="form-control" id="typeact" /> 
+  <div class='row gx-3'>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='no_rawat'>No Rawat</label>
+        <input type='text' class='form-control' id='no_rawat_sep' name='no_rawat'/>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='no_reg'>No Antrian</label>
+        <input type='text' class='form-control' id='no_reg_sep' name='no_reg'/>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 d-none'>
+      <div class='mb-3'>
+        <label class='form-label' for='no_sep'>No Sep</label>
+        <input type='text' class='form-control' id='no_sep' name='no_sep' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 d-none'>
+      <div class='mb-3'>
+        <label class='form-label' for='tglsep'>Tglsep</label>
+        <input type='text' class='form-control datepicker' id='tglsep' name='tglsep' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='asal_rujukan'>Asal Rujukan</label>
+        <select name="asal_rujukan" id="asal_rujukan" class="form-select">
+          <option value="">Select</option>
+          <option value="1">1. Faskes 1</option>
+          <option value="2">2. Faskes 2(RS)</option>
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='no_rujukan'>No Rujukan</label>
+        <div class="input-group">
+          <input type='text' class='form-control' id='no_rujukan' name='no_rujukan' />
+          <button type="button" id="cari_rujukan" class="btn btn-primary">+</button>
+        </div>
+        <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='tglrujukan'>Tglrujukan</label>
+        <input type='text' class='form-control' id='tglrujukan' name='tglrujukan' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='kdppkrujukan'>Kdppkrujukan</label>
+        <input type='text' class='form-control' id='kdppkrujukan' name='kdppkrujukan' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='nmppkrujukan'>Nmppkrujukan</label>
+        <input type='text' class='form-control' id='nmppkrujukan' name='nmppkrujukan' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='kdppkpelayanan'>Kdppkpelayanan</label>
+        <input type='text' class='form-control' id='kdppkpelayanan' name='kdppkpelayanan' value="{$reg_periksa.settings.ppk_bpjs}" />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='nmppkpelayanan'>Nmppkpelayanan</label>
+        <input type='text' class='form-control' id='nmppkpelayanan' name='nmppkpelayanan' value="{$reg_periksa.settings.nama_instansi}" />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='jnspelayanan'>Jnspelayanan</label>
+        <select name="jnspelayanan" id="jnspelayanan" class="form-select">
+          <option value="">Select</option>
+          <option value="1">1. Rawat Inap</option>
+          <option value="2">2. Rawat Jalan</option>
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='diagawal'>Diagawal</label>
+        <input type='text' class='form-control' id='diagawal' name='diagawal' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='nmdiagnosaawal'>Nmdiagnosaawal</label>
+        <input type='text' class='form-control' id='nmdiagnosaawal' name='nmdiagnosaawal' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='noskdp'>Noskdp</label>
+        <div class="input-group">
+          <input type='text' class='form-control' id='noskdp' name='noskdp' />
+          <button type="button" id="cari_surat_kontrol" class="btn btn-primary">+</button>
+        </div>
+        <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='kdpolitujuan'>Kdpolitujuan</label>
+        <select name="kdpolitujuan" id="kdpolitujuan" class="form-select">
+          <option value="">Select</option>
+          {loop: $reg_periksa.maping_poli_bpjs} 
+          <option value="{$value.kd_poli_bpjs}">{$value.nm_poli_bpjs}</option>
+          {/loop}
+        </select>
+        <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='kddpjp'>Kddpjp</label>
+        <select name="kddpjp" id="kddpjp" class="form-select">
+          <option value="">Select</option>
+          {loop: $reg_periksa.maping_dokter_dpjpvclaim} 
+          <option value="{$value.kd_dokter_bpjs}">{$value.nm_dokter_bpjs}</option>
+          {/loop}
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>    
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='kddpjplayanan'>Kddpjplayanan</label>
+        <select name="kddpjplayanan" id="kddpjplayanan" class="form-select">
+          <option value="">Select</option>
+          {loop: $reg_periksa.maping_dokter_dpjpvclaim} 
+          <option value="{$value.kd_dokter_bpjs}">{$value.nm_dokter_bpjs}</option>
+          {/loop}
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='klsrawat'>Klsrawat</label>
+        <select name="klsrawat" id="klsrawat" class="form-select">
+          <option value="">Select</option>
+          <option value="1">Kelas 1</option>
+          <option value="2">Kelas 2</option>
+          <option value="3">Kelas 3</option>
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='klsnaik'>Klsnaik</label>
+        <select name="klsnaik" id="klsnaik" class="form-select">
+          <option value="">Select</option>
+          <option value="1">VVIP</option>
+          <option value="2">VIP</option>
+          <option value="3">Kelas 1</option>
+          <option value="4">Kelas 2</option>
+          <option value="5">Kelas 3</option>
+          <option value="6">ICCU</option>
+          <option value="7">ICU</option>
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 naikkelas'>
+      <div class='mb-3'>
+        <label class='form-label' for='pembiayaan'>Pembiayaan</label>
+        <select name="pembiayaan" id="pembiayaan" class="form-select">
+          <option value="">Select</option>
+          <option value="1">Pribadi</option>
+          <option value="2">Pemberi Kerja</option>
+          <option value="3">Asuransi Tambahan</option>
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 naikkelas'>
+      <div class='mb-3'>
+        <label class='form-label' for='pjnaikkelas'>Pjnaikkelas</label>
+        <input type='text' class='form-control' id='pjnaikkelas' name='pjnaikkelas' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='lakalantas'>Lakalantas</label>
+        <select name="lakalantas" id="lakalantas" class="form-select">
+          <option value="">Select</option>
+          <option value="0">Tidak</option>
+          <option value="1">Ya</option>
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='nomr'>Nomr</label>
+        <input type='text' class='form-control' id='nomr' name='nomr' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='nama_pasien'>Nama Pasien</label>
+        <input type='text' class='form-control' id='nama_pasien' name='nama_pasien' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='tanggal_lahir'>Tanggal Lahir</label>
+        <input type='text' class='form-control' id='tanggal_lahir' name='tanggal_lahir' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='peserta'>Peserta</label>
+        <input type='text' class='form-control' id='peserta' name='peserta' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='jkel'>Jkel</label>
+        <select name="jkel" id="jkel" class="form-select">
+          <option value="">Select</option>
+          <option value="L">Laki-Laki</option>
+          <option value="P">Perempuan</option>
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='no_ktp'>No KTP</label>
+        <input type='text' class='form-control' id='no_ktp' name='no_ktp' />
+        <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='no_kartu'>No Kartu</label>
+        <input type='text' class='form-control' id='no_kartu' name='no_kartu' />
+        <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='notelep'>Notelep</label>
+        <input type='text' class='form-control' id='notelep' name='notelep' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>    
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='tglpulang'>Tglpulang</label>
+        <input type='text' class='form-control datepicker' id='tglpulang' name='tglpulang' />
+        <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='eksekutif'>Eksekutif</label>
+        <select name="eksekutif" id="eksekutif" class="form-select">
+          <option value="">Select</option>
+          <option value="0">Tidak</option>
+          <option value="1">Ya</option>
+        </select>
+        <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='cob'>Cob</label>
+        <select name="cob" id="cob" class="form-select">
+          <option value="">Select</option>
+          <option value="0">Tidak</option>
+          <option value="1">Ya</option>
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='katarak'>Katarak</label>
+        <select name="katarak" id="katarak" class="form-select">
+          <option value="">Select</option>
+          <option value="0">Tidak</option>
+          <option value="1">Ya</option>
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+
+    <div class='col-xxl-3 col-lg-3 col-sm-6 kecelakaan'>
+      <div class='mb-3'>
+        <label class='form-label' for='tglkkl'>Tglkkl</label>
+        <input type='text' class='form-control' id='tglkkl' name='tglkkl' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 kecelakaan'>
+      <div class='mb-3'>
+        <label class='form-label' for='nolp'>Nolp</label>
+        <input type='text' class='form-control' id='nolp' name='nolp' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 kecelakaan'>
+      <div class='mb-3'>
+        <label class='form-label' for='keterangankkl'>Keterangankkl</label>
+        <input type='text' class='form-control' id='keterangankkl' name='keterangankkl' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 kecelakaan'>
+      <div class='mb-3'>
+        <label class='form-label' for='suplesi'>Suplesi</label>
+        <input type='text' class='form-control' id='suplesi' name='suplesi' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 kecelakaan'>
+      <div class='mb-3'>
+        <label class='form-label' for='no_sep_suplesi'>No Sep Suplesi</label>
+        <input type='text' class='form-control' id='no_sep_suplesi' name='no_sep_suplesi' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 kecelakaan'>
+      <div class='mb-3'>
+        <label class='form-label' for='kdprop'>Kdprop</label>
+        <input type='text' class='form-control' id='kdprop' name='kdprop' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 kecelakaan'>
+      <div class='mb-3'>
+        <label class='form-label' for='nmprop'>Nmprop</label>
+        <input type='text' class='form-control' id='nmprop' name='nmprop' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 kecelakaan'>
+      <div class='mb-3'>
+        <label class='form-label' for='kdkab'>Kdkab</label>
+        <input type='text' class='form-control' id='kdkab' name='kdkab' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 kecelakaan'>
+      <div class='mb-3'>
+        <label class='form-label' for='nmkab'>Nmkab</label>
+        <input type='text' class='form-control' id='nmkab' name='nmkab' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 kecelakaan'>
+      <div class='mb-3'>
+        <label class='form-label' for='kdkec'>Kdkec</label>
+        <input type='text' class='form-control' id='kdkec' name='kdkec' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 kecelakaan'>
+      <div class='mb-3'>
+        <label class='form-label' for='nmkec'>Nmkec</label>
+        <input type='text' class='form-control' id='nmkec' name='nmkec' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='tujuankunjungan'>Tujuankunjungan</label>
+        <select name="tujuankunjungan" id="tujuankunjungan" class="form-select">
+          <option value="">Select</option>
+          <option value="0">Normal</option>
+          <option value="1">Prosedur</option>
+          <option value="2">Konsul Dokter</option>
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 tujuankunjungan'>
+      <div class='mb-3'>
+        <label class='form-label' for='flagprosedur'>Flagprosedur</label>
+        <select name="flagprosedur" id="flagprosedur" class="form-select">
+          <option value="">Select</option>
+          <option value="0">Prosedur Tidak Berkelanjutan</option>
+          <option value="1">Prosedur dan Terapi Berkelanjutan</option>
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 tujuankunjungan'>
+      <div class='mb-3'>
+        <label class='form-label' for='penunjang'>Penunjang</label>
+        <select name="penunjang" id="penunjang" class="form-select">
+          <option value="">Select</option>
+          <option value="1">Radioterapi</option>
+          <option value="2">Kemoterapi</option>
+          <option value="3">Rehabilitasi Medik</option>
+          <option value="4">Rehabilitasi Psikososial</option>
+          <option value="5">Transfusi Darah</option>
+          <option value="6">Pelayanan Gigi</option>
+          <option value="7">Laboratorium</option>
+          <option value="8">USG</option>
+          <option value="9">Farmasi</option>
+          <option value="10">Lain-Lain</option>
+          <option value="11">MRI</option>
+          <option value="12">HEMODIALISA</option>
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6 tujuankunjungan2'>
+      <div class='mb-3'>
+        <label class='form-label' for='asesmenpelayanan'>Asesmenpelayanan</label>
+        <select name="asesmenpelayanan" id="asesmenpelayanan" class="form-select">
+          <option value="">Select</option>
+          <option value="1">Poli spesialis tidak tersedia pada hari sebelumnya</option>
+          <option value="2">Jam Poli telah berakhir pada hari sebelumnya</option>
+          <option value="3">Dokter Spesialis yang dimaksud tidak praktek pada hari sebelumnya</option>
+          <option value="4">Atas Instruksi RS</option>
+          <option value="5">Tujuan Kontrol</option>
+        </select>
+        <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='catatan'>Catatan</label>
+        <input type='text' class='form-control' id='catatan' name='catatan' value="-" />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='user'>User</label>
+        <input type='text' class='form-control' id='user' name='user' value="{?=$this->core->db->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']])?}" />
+        <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer justify-content-between">
+  <div>
+    <button type="button" id="finger_data_bridging_sep" class="btn btn-outline-primary"><i class="ri-checkbox-line"></i> Finger </button>
+    <button type="button" id="aproval_data_bridging_sep" class="btn btn-outline-primary"><i class="ri-checkbox-line"></i> Aproval </button>
+    <button type="button" id="antrol_data_bridging_sep" class="btn btn-outline-primary"><i class="ri-checkbox-line"></i> Antrian</button>
+    <button type="button" id="kontrol_data_bridging_sep" class="btn btn-outline-primary"><i class="ri-checkbox-line"></i> Kontrol </button>
+    <button type="button" id="spri_data_bridging_sep" class="btn btn-outline-primary"><i class="ri-checkbox-line"></i> SPRI </button>
+    <button type="button" id="rujuk_data_bridging_sep" class="btn btn-outline-primary"><i class="ri-checkbox-line"></i> Rujuk </button>
+    <button type="button" id="prb_data_bridging_sep" class="btn btn-outline-primary"><i class="ri-checkbox-line"></i> PRB </button>
+  </div>
+  <div>
+    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+    <button type="submit" id="simpan_data_bridging_sep" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>  
+  </div>
+  </form>
+</div>
+
+<div id="modal_cari_rujukan" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-fullscreen modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Riwayat Rujukan</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_rujukan"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_cari_surat_kontrol" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-fullscreen modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Riwayat Surat Kontrol</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_surat_kontrol"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+      </div>
+    </div>
+  </div>
+</div>

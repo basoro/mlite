@@ -104,11 +104,11 @@ class Admin extends AdminModule
               exit();
             }
 
-        $no_rkm_medis = $_POST['no_rkm_medis'];
+            $no_rkm_medis = $_POST['no_rkm_medis'];
 
             
             $result = $this->core->db->insert('set_no_rkm_medis', [
-'no_rkm_medis'=>$no_rkm_medis
+              'no_rkm_medis'=>$no_rkm_medis
             ]);
 
 
@@ -147,13 +147,13 @@ class Admin extends AdminModule
               exit();
             }
 
-        $no_rkm_medis = $_POST['no_rkm_medis'];
+            $no_rkm_medis = $_POST['no_rkm_medis'];
 
 
-        // BUANG FIELD PERTAMA
+            // BUANG FIELD PERTAMA
 
             $result = $this->core->db->update('set_no_rkm_medis', [
-'no_rkm_medis'=>$no_rkm_medis
+              'no_rkm_medis'=>$no_rkm_medis
             ], [
               'no_rkm_medis'=>$no_rkm_medis
             ]);

@@ -1,0 +1,114 @@
+<div class="modal-header">
+    <h4 class="modal-title"><span id="modal-title">Input Surat Kontrol dan Booking</span></h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+  <form name="form_booking_registrasi">
+  <input type="hidden" class="form-control" id="typeact" /> 
+  <div class='row gx-3'>
+    <div class='col-xxl-3 col-lg-4 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='no_rawat_booking'>Nomor Rawat</label>
+        <input type='text' class='form-control' id='no_rawat_booking' name='no_rawat_booking' />
+        <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-4 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='tanggal_booking'>Tanggal Booking</label>
+        <input type='text' class='form-control datepicker' id='tanggal_booking' name='tanggal_booking' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-4 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='jam_booking'>Jam Booking</label>
+        <input type='text' class='form-control timepicker' id='jam_booking' name='jam_booking' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-4 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='no_rkm_medis_booking'>No Rkm Medis</label>
+        <input type='text' class='form-control' id='no_rkm_medis_booking' name='no_rkm_medis' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-4 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='tanggal_periksa'>Tanggal Periksa</label>
+        <input type='text' class='form-control datepicker' id='tanggal_periksa' name='tanggal_periksa' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-4 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='kd_dokter'>Kd Dokter</label>
+        <select name="kd_dokter" id="kd_dokter_booking" class="form-select">
+            <option value="">Select</option>
+            {loop: $reg_periksa.dokter} 
+            <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+            {/loop}
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-4 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='kd_poli'>Kd Poli</label>
+        <select name="kd_poli" id="kd_poli_booking" class="form-select">
+            <option value="">Select</option>
+            {loop: $reg_periksa.poliklinik} 
+            <option value="{$value.kd_poli}">{$value.nm_poli}</option>
+            {/loop}
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-4 col-sm-6 d-none'>
+      <div class='mb-3'>
+        <label class='form-label' for='no_reg'>No Reg</label>
+        <input type='text' class='form-control' id='no_reg' name='no_reg' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-4 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='kd_pj'>Kd Pj</label>
+        <select name="kd_pj" id="kd_pj_booking" class="form-select">
+            <option value="">Select</option>
+            {loop: $reg_periksa.penjab} 
+            <option value="{$value.kd_pj}">{$value.png_jawab}</option>
+            {/loop}
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-4 col-sm-6 d-none'>
+      <div class='mb-3'>
+        <label class='form-label' for='limit_reg'>Limit Reg</label>
+        <input type='text' class='form-control' id='limit_reg' name='limit_reg' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-4 col-sm-6 d-none'>
+      <div class='mb-3'>
+        <label class='form-label' for='waktu_kunjungan'>Waktu Kunjungan</label>
+        <input type='text' class='form-control' id='waktu_kunjungan' name='waktu_kunjungan' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-4 col-sm-6 d-none'>
+      <div class='mb-3'>
+        <label class='form-label' for='status'>Status</label>
+        <input type='text' class='form-control' id='status' name='status' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+    <button type="submit" id="simpan_data_bridging_sep" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>  
+    </form>
+</div>

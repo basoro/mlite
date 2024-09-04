@@ -19,8 +19,8 @@ $(document).ready(function() {
         dataType: 'json',
         success: function (res) {
             var eTable = "<div class='table-responsive'><table id='tbl_detail_stts_wp' class='table display dataTable' style='width:100%'><thead></thead>";
-            eTable += '<tr><td>Stts</td><td>' + res.msg['stts'] + '</td><tr>';
-            eTable += '<tr><td>Ktg</td><td>' + res.msg['ktg'] + '</td><tr>';
+            eTable += '<tr><td>Status</td><td>' + res.msg['stts'] + '</td><tr>';
+            eTable += '<tr><td>Keterangan</td><td>' + res.msg['ktg'] + '</td><tr>';
             eTable += "</tbody></table></div>";
             $('#detail_stts_wp').html(eTable);
         }
@@ -41,7 +41,7 @@ $(document).ready(function() {
         doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
         doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
         doc.setFontSize(14);
-        doc.text("Data Detail", 20, 95, null, null, null);
+        doc.text("Data Detail Status Wajib Pajak", 20, 95, null, null, null);
         const totalPagesExp = "{total_pages_count_string}";        
         doc.autoTable({
             html: '#tbl_detail_stts_wp',

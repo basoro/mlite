@@ -1,0 +1,56 @@
+<div class="modal-header">
+    <h4 class="modal-title"><span id="modal-title">Input Aproval SEP</span></h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+  <div id="form_aproval_sep" class='row gx-3'>
+    <div class='col-xxl-3 col-lg-4 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='no_kartu_aproval'>Nomor Kartu</label>
+        <input type='text' class='form-control' id='no_kartu_aproval' name='no_kartu_aproval' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-4 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='tgl_sep_aproval'>Tanggal SEP</label>
+        <input type='text' class='form-control datepicker' id='tgl_sep_aproval' name='tgl_sep_aproval' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-4 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='jns_pelayanan_aproval'>Jenis Pelayanan</label>
+        <select name="jns_pelayanan_aproval" id="jns_pelayanan_aproval" class="form-select">
+            <option value="">Select</option>
+            <option value="1">1. Rawat Inap</option>
+            <option value="2">2. Rawat Jalan</option>
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-3 col-lg-4 col-sm-6'>
+      <div class='mb-3'>
+        <label class='form-label' for='jns_pengajuan_aproval'>Jenis Pengajuan</label>
+        <select name="jns_pengajuan_aproval" id="jns_pengajuan_aproval" class="form-select">
+            <option value="">Select</option>
+            <option value="1">1. Backdate</option>
+            <option value="2">2. Finger Print</option>
+        </select>
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+    <div class='col-xxl-12 col-lg-12 col-sm-12'>
+      <div class='mb-3'>
+        <label class='form-label' for='keterangan_aproval'>Keterangan</label>
+        <input type='text' class='form-control' id='keterangan_aproval' name='keterangan_aproval' />
+      <div class='invalid-feedback error'></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+    <button type="button" id="simpan_data_aproval_sep" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>  
+    </form>
+</div>

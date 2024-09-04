@@ -385,7 +385,7 @@ $nm_prop = $_POST['nm_prop'];
 
       foreach ($array as $data){   
         $kode = $data[0];
-        $nama = $data[1];
+        $nama = isset_or($data[1], '');
         $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."')";
       }
       $str = implode(",", $value_query);

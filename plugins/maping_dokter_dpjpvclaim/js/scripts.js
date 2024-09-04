@@ -356,4 +356,56 @@ eTable += '<td>' + res[i]['nm_dokter_bpjs'] + '</td>';
         window.open(mlite.url + '/maping_dokter_dpjpvclaim/chart?t=' + mlite.token, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
     })   
 
+    $('#cari_referensi_dpjp').click(function() {
+        
+        var poli_bpjs = $('#poli_bpjs').find(':selected').val();
+
+        $.ajax({
+            url: "{?=url(['bridging_sep','referensidpjp'])?}",
+            method: "POST",
+            data: {
+                poli_bpjs: poli_bpjs
+            },
+            success: function (data) {
+                var data = JSON.parse(data);
+                console.log(data);
+                if(data.metaData.code == '200') {
+                    var data = data.response.list;                    
+                } else {
+                    var data = [];
+                }
+                let table = '<table id="tbl_cari_referensi_dpjp" class="table table-stripped" width="100%"><thead>';
+                    table += '<tr>';
+                    table += '<th>Kode Dokter BPJS</th>';
+                    table += '<th>Nama Dokter BPJS</th>';
+                    table += '</tr>';
+                    table += '</thead><tbody>';
+                data.forEach(function(d){
+                    table += '<tr>';
+                    table += '<td>'+d.kode+'</td>';
+                    table += '<td>'+d.nama+'</td>';
+
+                    table += '</tr>';
+                })
+                table += '</tbody></table>';
+                $('#forTable_referensi_dpjp').empty().html(table);
+
+                var var_tbl_cari_referensi_dpjp = $('#tbl_cari_referensi_dpjp').DataTable({
+                    'select': true
+                });
+                $('#tbl_cari_referensi_dpjp').on('select.dt', function ( e, dt, type, indexes ) {
+                    var rowData = var_tbl_cari_referensi_dpjp.rows({ selected: true }).data()[0];
+                    console.log(rowData);
+                    $('#kd_dokter_bpjs').val(rowData['0']);
+                    $('#nm_dokter_bpjs').val(rowData['1']);
+                    $("#modal_cari_referensi_dpjp").modal('hide');
+                });
+        
+            }
+        });
+
+        $('#modal-title').text("Lihat Data");
+        $("#modal_cari_referensi_dpjp").modal('show');        
+    })
+
 });

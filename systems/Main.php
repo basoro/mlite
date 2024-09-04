@@ -43,6 +43,14 @@ abstract class Main
             'service_name' => $this->db->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsServiceName'])
         ];
 
+        $this->antrean = [
+            'cons_id' => $this->db->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsConsID']),
+            'secret_key' => $this->db->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsSecretKey']),
+            'user_key' => $this->db->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsUserKey']),
+            'base_url' => $this->db->get('mlite_settings', 'value', ['module' => 'settings', 'field' => 'BpjsApiUrl']),
+            'service_name' => 'antreanrs'
+        ];
+
         if (!is_dir(UPLOADS)) {
             mkdir(UPLOADS, 0777);
         }
@@ -293,6 +301,23 @@ abstract class Main
   
         return $next_no_reg;
     }
+
+    public function setNoBooking($kd_dokter, $date, $kd_poli = null)
+    {
+        $last_no_reg = $this->db->pdo->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE kd_poli = '$kd_poli' AND tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        // if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+        //   $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        // }
+        $last_no_reg->execute();
+        $last_no_reg = $last_no_reg->fetch();
+        if(empty($last_no_reg[0])) {
+          $last_no_reg[0] = '000';
+        }
+        $next_no_reg = sprintf('%03s', ($last_no_reg[0] + 1));
+
+        return $next_no_reg;
+    }
+
 
     public function setNoResep($date)
     {

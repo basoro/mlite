@@ -573,6 +573,62 @@ jQuery().ready(function () {
                 })
             });            
     
+            $('#cari-nik-bpjs').on('click', function() {
+                var no_ktp = $('#no_ktp').val();
+                if(no_ktp == '') {
+                    bootbox.alert('Nomor KTP masih kosong!');  
+                } else {
+                    $.ajax({
+                        url: "{?=url()?}/pasien/cekpeserta/" + no_ktp + "/2?t=" + mlite.token,
+                        method: "GET",
+                        data: {},
+                        success: function (data) {
+                            console.log(data);
+                            data = JSON.parse(data);
+                            if(data.metaData.code !='200') {
+                                bootbox.alert(data.metaData.message);                        
+                            } else {
+                                $('#nm_pasien').val(data.response.peserta.nama);
+                                $('#no_peserta').val(data.response.peserta.noKartu);
+                                var dateAr = data.response.peserta.tglLahir.split('-');
+                                var newDate = dateAr[1] + '-' + dateAr[2] + '-' + dateAr[0];
+                                $('#tgl_lahir').val(data.response.peserta.tglLahir);
+                                $('#umur').val(umurDaftar(newDate));
+                                $('#jk').val(data.response.peserta.sex).change();
+                            }
+                        }
+                    })    
+                }
+            });        
+    
+            $('#cari-noka-bpjs').on('click', function() {
+                var noka = $('#no_peserta').val();
+                if(noka == '') {
+                    bootbox.alert('Nomor Peserta masih kosong!');  
+                } else {
+                    $.ajax({
+                        url: "{?=url()?}/pasien/cekpeserta/" + noka + "/1?t=" + mlite.token,
+                        method: "GET",
+                        data: {},
+                        success: function (data) {
+                            console.log(data);
+                            data = JSON.parse(data);
+                            if(data.metaData.code !='200') {
+                                bootbox.alert(data.metaData.message);                        
+                            } else {
+                                $('#nm_pasien').val(data.response.peserta.nama);
+                                $('#no_ktp').val(data.response.peserta.nik);
+                                var dateAr = data.response.peserta.tglLahir.split('-');
+                                var newDate = dateAr[1] + '-' + dateAr[2] + '-' + dateAr[0];
+                                $('#tgl_lahir').val(data.response.peserta.tglLahir);
+                                $('#umur').val(umurDaftar(newDate));
+                                $('#jk').val(data.response.peserta.sex).change();
+                            }
+                        }
+                    })
+                }
+            });
+                        
             $("#no_rkm_medis").prop('readonly', true); // GA BISA DIEDIT KALI DISABLE
             $('#modal-title').text("Edit Data Pasien");
             $("#modal_pasien").modal('show');
@@ -816,12 +872,18 @@ jQuery().ready(function () {
                     method: "GET",
                     data: {},
                     success: function (data) {
-                        // console.log(data);
+                        console.log(data);
                         data = JSON.parse(data);
                         if(data.metaData.code !='200') {
                             bootbox.alert(data.metaData.message);                        
                         } else {
                             $('#nm_pasien').val(data.response.peserta.nama);
+                            $('#no_ktp').val(data.response.peserta.nik);
+                            var dateAr = data.response.peserta.tglLahir.split('-');
+                            var newDate = dateAr[1] + '-' + dateAr[2] + '-' + dateAr[0];
+                            $('#tgl_lahir').val(data.response.peserta.tglLahir);
+                            $('#umur').val(umurDaftar(newDate));
+                            $('#jk').val(data.response.peserta.sex).change();
                         }
                     }
                 })

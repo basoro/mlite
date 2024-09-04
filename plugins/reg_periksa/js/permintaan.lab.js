@@ -208,6 +208,7 @@ var diagnosa_klinis= $('#diagnosa_klinis').val();
 
  var formData = new FormData(form); // tambahan
  formData.append('typeact', typeact); // tambahan
+ console.log(JSON.stringify(Object.fromEntries(formData)));
 
             $.ajax({
                 url: "{?=url(['permintaan_lab','aksi'])?}",
@@ -369,6 +370,8 @@ $('#kd_jenis_prw_lab').on('change', function() {
       // Set timeout for lazy loading
       setTimeout(function(){
          var result = JSON.parse(evt);
+         console.log(result);
+         var result = result.template_laboratorium;
          var html = '';
          html += '<div class="tables-template-lab-content">';
          if(result.length > 0) {  

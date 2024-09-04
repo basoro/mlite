@@ -51,6 +51,8 @@ jQuery().ready(function () {
             { 'data': 'nm_dokter' },
             { 'data': 'no_rkm_medis' },
             { 'data': 'nm_pasien' },
+            { 'data': 'no_ktp' },
+            { 'data': 'no_peserta' },
             { 'data': 'kd_poli' },
             { 'data': 'nm_poli' },
             { 'data': 'p_jawab' },
@@ -86,7 +88,9 @@ jQuery().ready(function () {
             { 'targets': 17},
             { 'targets': 18},
             { 'targets': 19},
-            { 'targets': 20}
+            { 'targets': 20},
+            { 'targets': 21},
+            { 'targets': 22}
         ],
         order: [[1, 'DESC']], 
         buttons: [],
@@ -106,7 +110,12 @@ jQuery().ready(function () {
           var rowData = var_tbl_reg_periksa.rows({ selected: true }).data()[0];
           if (rowData != null) {
             var no_rkm_medis = rowData['no_rkm_medis'];
+            var nama_pasien = rowData['nm_pasien'];
             var no_rawat = rowData['no_rawat'];
+            var no_reg = rowData['no_reg'];
+            var no_ktp = rowData['no_ktp'];
+            var no_peserta = rowData['no_peserta'];
+            var kd_pj = rowData['kd_pj'];
             switch (key) {
                 case 'detail' :
                     OpenModal(mlite.url + '/reg_periksa/detail/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
@@ -136,7 +145,30 @@ jQuery().ready(function () {
                     OpenPDF(mlite.url + '/reg_periksa/cetaksep/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
                 break;
                 case 'bridging-bpjs-sep' :
-                    OpenModal(mlite.url + '/reg_periksa/sep/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
+                    $('#no_rawat_sep').val(no_rawat); 
+                    $('#no_reg_sep').val(no_reg); 
+                    $('#nomr').val(no_rkm_medis); 
+                    $('#nama_pasien').val(nama_pasien); 
+                    $('#no_kartu').val(no_peserta); 
+                    $('#no_ktp').val(no_ktp); 
+                    $('#asal_rujukan').val('1').change(); 
+                    $('#lakalantas').val('0').change(); 
+                    $('#cob').val('0').change(); 
+                    $('#eksekutif').val('0').change(); 
+                    $('#katarak').val('0').change(); 
+                    $("#modal_form_sep").modal('show');
+                break;
+                case 'bridging-bpjs-surat-kontrol' :
+                    $('#no_rawat_booking').val(no_rawat); 
+                    $('#no_rkm_medis_booking').val(no_rkm_medis); 
+                    $('#kd_pj_booking').val(kd_pj).change(); 
+                    $("#modal_form_surat_kontrol_bpjs").modal('show');
+                break;
+                case 'surat-kontrol' :
+                    $('#no_rawat_booking').val(no_rawat); 
+                    $('#no_rkm_medis_booking').val(no_rkm_medis); 
+                    $('#kd_pj_booking').val(kd_pj).change(); 
+                    $("#modal_form_surat_kontrol_bpjs").modal('show');
                 break;
                 default :
                 break
@@ -151,12 +183,14 @@ jQuery().ready(function () {
             "antrian-2": {name: "Cetak Nomor Antrian 2", "icon": "edit"},
             "pemeriksaan_layanan": {name: "Pemeriksaan dan Layanan", "icon": "edit"},
             "periksa_lab": {name: "Periksa Laboratorium", "icon": "edit"},
+            "surat-kontrol": {"name": "Surat Kontrol dan Booking", disabled:  {$disabled_menu.create}},
             "sep1": "---------",
             "bridging-bpjs": {
                 "name": "Bridging BPJS", 
                 "items": {
                     "bridging-bpjs-cek-noka": {name: "[BPJS] Cek Peserta ByNoKartu",disabled:  {$disabled_menu.create}},
                     "bridging-bpjs-cek-nik": {name: "[BPJS] Cek Peserta ByNik", disabled:  {$disabled_menu.create}},
+                    "bridging-bpjs-surat-kontrol": {"name": "Surat Kontrol BPJS", disabled:  {$disabled_menu.create}},
                     "bridging-bpjs-referensi": {
                         "name": "Cek Referensi", 
                         "items": {
@@ -165,9 +199,8 @@ jQuery().ready(function () {
                             "bridging-bpjs-referensi-faskes": {"name": "Fasiltas Kesehatan"}
                         }
                     },
-                    "bridging-bpjs-cek-sep": {"name": "Cek SEP", disabled:  {$disabled_menu.create}},
-                    "bridging-bpjs-cetak-sep": {"name": "Cetak SEP", disabled:  {$disabled_menu.create}},
-                    "bridging-bpjs-sep": {"name": "Cetak SEP 2", disabled:  {$disabled_menu.delete}}
+                    "bridging-bpjs-sep": {"name": "Pembuatan SEP", disabled:  {$disabled_menu.create}},
+                    "bridging-bpjs-cetak-sep": {"name": "Cetak SEP", disabled:  {$disabled_menu.create}}
                 }
             }, 
             "pasien_riwayat": {name: "Riwayat Perawatan", "icon": "edit"},
@@ -1383,6 +1416,706 @@ jQuery().ready(function () {
         $("#no_rawat_permintaan_lab").val($("a.active").attr('data-no_rawat'));
         $("#no_rawat_permintaan_radiologi").val($("a.active").attr('data-no_rawat'));
 
+    });
+
+    $('#cari_rujukan').on('click', function() {
+        var searchBy = $('#asal_rujukan').find(':selected').val();
+        console.log(searchBy);
+        var keyword = $('#no_kartu').val();
+        console.log(keyword);
+        $.ajax({
+            url: "{?=url(['bridging_sep','cekrujukan'])?}",
+            method: "POST",
+            data: {
+                searchBy: searchBy, 
+                keyword: keyword, 
+                multi: 'true'
+            },
+            success: function (data) {
+                var data = JSON.parse(data);
+                console.log(data);
+                if(data.metaData.code == '200') {
+                    var data = data.response.rujukan;                    
+                } else {
+                    var data = [];
+                }
+                let table = '<table id="tbl_cari_rujukan" class="table table-stripped" width="100%"><thead>';
+                    table += '<tr>';
+                    table += '<th>Tanggal</th>';
+                    table += '<th>Nomor rujukan</th>';
+                    table += '<th>Nama Pasien</th>';
+                    table += '<th>Tangal Lahir</th>';
+                    table += '<th>Jenis Kelamin</th>';
+                    table += '<th>Nomor Telepon</th>';
+                    table += '<th>Kode PPK Rujukan</th>';
+                    table += '<th>Nama PPK Rujukan</th>';
+                    table += '<th>Kode Pelayanan</th>';
+                    table += '<th>Jenis Pelayanan</th>';
+                    table += '<th>Kode Diagnosa</th>';
+                    table += '<th>Nama Diagnosa</th>';
+                    table += '<th>Kode Poli Tujuan</th>';
+                    table += '<th>Nama Poli Tujuan</th>';
+                    table += '<th>Kode Kelas</th>';
+                    table += '<th>Nama Kelas</th>';
+                    table += '<th>Peserta</th>';
+                    table += '</tr>';
+                    table += '</thead><tbody>';
+                data.forEach(function(d){
+                    table += '<tr>';
+                    table += '<td>'+d.tglKunjungan+'</td>';
+                    table += '<td>'+d.noKunjungan+'</td>';
+                    table += '<td>'+d.peserta.nama+'</td>';
+                    table += '<td>'+d.peserta.tglLahir+'</td>';
+                    table += '<td>'+d.peserta.sex+'</td>';
+                    table += '<td>'+d.peserta.mr.noTelepon+'</td>';
+                    table += '<td>'+d.provPerujuk.kode+'</td>';
+                    table += '<td>'+d.provPerujuk.nama+'</td>';
+                    table += '<td>'+d.pelayanan.kode+'</td>';
+                    table += '<td>'+d.pelayanan.nama+'</td>';
+                    table += '<td>'+d.diagnosa.kode+'</td>';
+                    table += '<td>'+d.diagnosa.nama+'</td>';
+                    table += '<td>'+d.poliRujukan.kode+'</td>';
+                    table += '<td>'+d.poliRujukan.nama+'</td>';
+                    table += '<td>'+d.peserta.hakKelas.kode+'</td>';
+                    table += '<td>'+d.peserta.hakKelas.keterangan+'</td>';
+                    table += '<td>'+d.peserta.jenisPeserta.keterangan+'</td>';
+                    table += '</tr>';
+                })
+                table += '</tbody></table>';
+                // setTimeout(function(){
+                    $('#forTable_rujukan').empty().html(table);
+                // },1000); 
+
+                var var_tbl_cari_rujukan = $('#tbl_cari_rujukan').DataTable({
+                    'select': true
+                });
+                $('#tbl_cari_rujukan').on('select.dt', function ( e, dt, type, indexes ) {
+                    var rowData = var_tbl_cari_rujukan.rows({ selected: true }).data()[0];
+                    console.log(rowData);
+                    $('#tglrujukan').val(rowData['0']);
+                    $('#no_rujukan').val(rowData['1']);
+                    $('#noskdp').val(rowData['1']);
+                    $('#nama_pasien').val(rowData['2']);
+                    $('#tanggal_lahir').val(rowData['3']);
+                    $('#jkel').val(rowData['4']).change();
+                    $('#notelep').val(rowData['5']);
+                    $('#kdppkrujukan').val(rowData['6']);
+                    $('#nmppkrujukan').val(rowData['7']);
+                    $('#jnspelayanan').val(rowData['8']).change();
+                    // $('#nmjnspelayanan').val(rowData['9']);
+                    $('#diagawal').val(rowData['10']);
+                    $('#nmdiagnosaawal').val(rowData['11']);
+                    $('#kdpolitujuan').val(rowData['12']).change();
+                    $('#nmpolitujuan').val(rowData['13']);
+                    $('#klsrawat').val(rowData['14']).change();
+                    // $('#namaklsrawat').val(rowData['15']);
+                    $('#peserta').val(rowData['16']);   
+
+                    $("#modal_cari_rujukan").modal('hide');
+                });
+        
+            }
+        });
+
+        $('#modal-title').text("Lihat Data");
+        $("#modal_cari_rujukan").modal('show');
+    });
+
+    $('#cari_surat_kontrol').on('click', function() {
+        // var searchBy = $('#asal_rujukan').find(':selected').val();
+        // console.log(searchBy);
+        var nokartu = $('#no_kartu').val();
+        $.ajax({
+            url: "{?=url(['bridging_sep','rencanakontrol'])?}",
+            method: "POST",
+            data: {
+                bulan: '{?=date("m")?}', 
+                tahun: '{?=date("Y")?}',
+                nokartu: nokartu, 
+                filter: '2'
+            },
+            success: function (data) {
+                var data = JSON.parse(data);
+                console.log(data);
+                if(data.metaData.code == '200') {
+                    var data = data.response.list;                    
+                } else {
+                    var data = [];
+                }
+                let table = '<table id="tbl_cari_surat_kontrol" class="table table-stripped" width="100%"><thead>';
+                    table += '<tr>';
+                    table += '<th>Tanggal Kontrol</th>';
+                    table += '<th>Tanggal Surat Kontol</th>';
+                    table += '<th>Nomor Surat Kontrol</th>';
+                    table += '<th>Nama Pasien</th>';
+                    table += '<th>Nama Dokter</th>';
+                    table += '<th>Jenis Kontrol</th>';
+                    table += '<th>Jenis Pelayanan</th>';
+                    table += '<th>Nama Jenis Kontrol</th>';
+                    table += '<th>Nama Poli Asal</th>';
+                    table += '<th>Nama Poli Tujuan</th>';
+                    table += '<th>Nomor Kartu</th>';
+                    table += '<th>Nomor SEP Asal Kontrol</th>';
+                    table += '<th>Tanggal SEP</th>';
+                    table += '<th>Poli Asal</th>';
+                    table += '<th>Poli Tujuan</th>';
+                    table += '<th>Terbit SEP</th>';
+                    table += '</tr>';
+                    table += '</thead><tbody>';
+                data.forEach(function(d){
+                    table += '<tr>';
+                    table += '<td>'+d.tglRencanaKontrol+'</td>';
+                    table += '<td>'+d.tglTerbitKontrol+'</td>';
+                    table += '<td>'+d.noSuratKontrol+'</td>';
+                    table += '<td>'+d.nama+'</td>';
+                    table += '<td>'+d.namaDokter+'</td>';
+                    table += '<td>'+d.jnsKontrol+'</td>';
+                    table += '<td>'+d.jnsPelayanan+'</td>';
+                    table += '<td>'+d.namaJnsKontrol+'</td>';
+                    table += '<td>'+d.namaPoliAsal+'</td>';
+                    table += '<td>'+d.namaPoliTujuan+'</td>';
+                    table += '<td>'+d.noKartu+'</td>';
+                    table += '<td>'+d.noSepAsalKontrol+'</td>';
+                    table += '<td>'+d.tglSEP+'</td>';
+                    table += '<td>'+d.poliAsal+'</td>';
+                    table += '<td>'+d.poliTujuan+'</td>';
+                    table += '<td>'+d.terbitSEP+'</td>';
+                    table += '</tr>';
+                })
+                table += '</tbody></table>';
+                // setTimeout(function(){
+                    $('#forTable_surat_kontrol').empty().html(table);
+                // },1000); 
+
+                var var_tbl_cari_surat_kontrol = $('#tbl_cari_surat_kontrol').DataTable({
+                    'select': true
+                });
+                $('#tbl_cari_surat_kontrol').on('select.dt', function ( e, dt, type, indexes ) {
+                    var rowData = var_tbl_cari_surat_kontrol.rows({ selected: true }).data()[0];
+                    console.log(rowData);
+                    $('#noskdp').val(rowData['2']);
+                    $("#modal_cari_surat_kontrol").modal('hide');
+                });
+        
+            }
+        });
+
+        $('#modal-title').text("Lihat Data");
+        $("#modal_cari_surat_kontrol").modal('show');
+    });
+
+    $(".datepicker").daterangepicker({
+        singleDatePicker: true,
+        showDropdowns: true,
+        locale: {
+            format: "YYYY-MM-DD",
+        },
+    });
+
+    $('.kecelakaan').hide(); 
+    $('#lakalantas').change(function(){
+        if($('#lakalantas').val() == '1') {
+            $('.kecelakaan').show(); 
+        } else {
+            $('.kecelakaan').hide(); 
+        } 
+    });
+
+    $('.naikkelas').hide(); 
+    $('#klsnaik').change(function(){
+        $('.naikkelas').show(); 
+    });
+
+    $('.tujuankunjungan').hide(); 
+    $('#tujuankunjungan').change(function(){
+        if($('#tujuankunjungan').val() == '1') {
+            $('.tujuankunjungan').show(); 
+        } else {
+            $('.tujuankunjungan').hide(); 
+        } 
+    });
+
+    $('.tujuankunjungan2').hide(); 
+    $('#tujuankunjungan').change(function(){
+        if($('#tujuankunjungan').val() !== '1') {
+            $('.tujuankunjungan2').show(); 
+        } else {
+            $('.tujuankunjungan2').hide(); 
+        } 
+    });
+
+    $('#antrol_data_bridging_sep').on('click', function() {
+        if($('#kddpjp').val() == '') {
+            alert('Dokter masih kosong');
+        }
+        if($('#asal_rujukan').find(':selected').val() == '1'  && $('#noskdp').val() == $('#no_rujukan').val() && $('#kddpjp').find(':selected').val() == $('#kddpjplayanan').find(':selected').val()) {
+            alert('Rujukan FKTP');
+            var jenis_kunjungan = '1';
+        } else if ($('#asal_rujukan').find(':selected').val() == '2') {
+            alert('Rujukan RS');
+            var jenis_kunjungan = '4';
+        } else if ($('#asal_rujukan').find(':selected').val() == '1' && $('#noskdp').val() != $('#no_rujukan').val()) {
+            alert('Kontrol');
+            var jenis_kunjungan = '3';
+        } else if ($('#kddpjp').find(':selected').val() != $('#kddpjplayanan').find(':selected').val()) {
+            alert('Rujukan internal');
+            var jenis_kunjungan = '2';
+        } else {
+            bootbox.alert('Syarat antrian tidak terpenuhi. Cek lagi asal rujukan, nomor rujukan dan nomor surat kontrol!');
+        }
+
+        var tanggal_periksa= '{?=date("Y-m-d")?}';
+        var no_rkm_medis= $('#nomr').val();
+        var nomor_kartu= $('#no_kartu').val();
+        var nomor_referensi= $('#no_rujukan').val();
+        if(jenis_kunjungan == '3') {
+            var nomor_referensi= $('#noskdp').val();
+        }
+        var ppk_bpjs = $('#kdppkpelayanan').val();
+        var no_rawat = $('#no_rawat_sep').val();
+        var no_rawat_convert = no_rawat.replace(/\//g,'');
+        var kd_poli_bpjs = $('#kdpolitujuan').find(':selected').val();
+        var no_reg = $('#no_reg_sep').val();
+        var kodebooking= ppk_bpjs+no_rawat_convert+kd_poli_bpjs+no_reg;
+
+        var jenispasien = 'JKN';
+        var nik = $('#no_ktp').val();
+        var nohp = $('#notelep').val();
+        var kodepoli = $('#kdpolitujuan').find(':selected').val();
+        var namapoli = $('#kdpolitujuan').find(':selected').text();
+        var pasienbaru = '0';
+        var kodedokter = $('#kddpjplayanan').find(':selected').val();
+        var namadokter = $('#kddpjplayanan').find(':selected').text();
+        var jampraktek = '';
+        var nomorantrean = kd_poli_bpjs+'-'+no_reg;
+        var estimasidilayani = '';
+        var sisakuotajkn = '';
+        var kuotajkn = '';
+        var sisakuotanonjkn = '';
+        var kuotanonjkn = '';
+        
+        $.ajax({
+            url: "{?=url(['bridging_sep','addantrian'])?}",
+            method: "POST",
+            data: {
+                kodebooking: kodebooking, 
+                jenispasien: jenispasien, 
+                nomorkartu: nomor_kartu, 
+                nik: nik, 
+                nohp: nohp, 
+                kodepoli: kodepoli, 
+                namapoli: namapoli, 
+                pasienbaru: pasienbaru, 
+                norm: no_rkm_medis, 
+                tanggalperiksa: tanggal_periksa, 
+                kodedokter: kodedokter, 
+                namadokter: namadokter, 
+                jampraktek: jampraktek, 
+                jeniskunjungan: jenis_kunjungan, 
+                nomorreferensi: nomor_referensi, 
+                nomorantrean: nomorantrean, 
+                angkaantrean: no_reg, 
+                estimasidilayani: estimasidilayani, 
+                sisakuotajkn: sisakuotajkn, 
+                kuotajkn: kuotajkn, 
+                sisakuotanonjkn: sisakuotanonjkn, 
+                kuotanonjkn: kuotanonjkn
+            },
+            success: function (data) {
+                console.log(data);
+                data = JSON.parse(data);
+                if(data.metadata.code == '200') {
+                    var status_kirim = 'Sudah';
+                    var keterangan = data.metadata.message;
+                    
+                    var typeact = 'add';
+                    
+                    $.ajax({
+                        url: "{?=url(['mlite_antrian_referensi','aksi'])?}",
+                        method: "POST",
+                        data: {
+                            tanggal_periksa: tanggal_periksa, 
+                            no_rkm_medis: no_rkm_medis, 
+                            nomor_kartu: nomor_kartu, 
+                            nomor_referensi: nomor_referensi, 
+                            kodebooking: kodebooking, 
+                            jenis_kunjungan: jenis_kunjungan, 
+                            status_kirim: status_kirim, 
+                            keterangan: keterangan, 
+                            typeact: typeact
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            data = JSON.parse(data);
+                            var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
+                            audio.play();
+                            if (typeact == "add") {
+                                if(data.status === 'success') {
+                                    bootbox.alert('<span class="text-success">' + data.msg + '</span>');
+                                    $("#modal_bridging_sep").modal('hide');
+                                } else {
+                                    bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
+                                }    
+                            }
+                        }
+                    })
+                } else {
+                    var message = data.metadata.message;
+                    if(data.metadata.message == 'Waktu estimasi dilayani tidak valid'){
+                       var message = data.metadata.message + '. Sesuaikan jadwal SIMRS dengan HFIS, atau cek maping dokter.';
+                    }
+                    bootbox.alert('<span class="text-danger">' + message + '</span>');
+                    var audio = new Audio('{?=url()?}/assets/sound/error.mp3');
+                    audio.play();
+                }
+            }
+        }) 
+
+    });
+    
+    $('#aproval_data_bridging_sep').on('click', function() {
+        $('#no_kartu_aproval').val($('#no_kartu').val());
+        $('#modal_form_aproval_sep').modal('show');
+        $('#simpan_data_aproval_sep').on('click', function() {
+            var no_kartu_aproval = $('#no_kartu_aproval').val();
+            var tgl_sep_aproval = $('#tgl_sep_aproval').val();
+            var jns_pelayanan_aproval = $('#jns_pelayanan_aproval').find(':selected').val();
+            var jns_pengajuan_aproval = $('#jns_pengajuan_aproval').find(':selected').val();
+            var keterangan_aproval = $('#keterangan_aproval').val();
+            $.ajax({
+                url: "{?=url(['bridging_sep','pengajuanaprovalsep'])?}",
+                method: "POST",
+                data: {
+                    no_kartu_aproval: no_kartu_aproval, 
+                    tgl_sep_aproval: tgl_sep_aproval, 
+                    jns_pelayanan_aproval: jns_pelayanan_aproval, 
+                    jns_pengajuan_aproval: jns_pengajuan_aproval, 
+                    keterangan_aproval: keterangan_aproval
+                },
+                success: function (data) {
+                    data = JSON.parse(data);
+                    if(data.metaData.code == '200') {
+                        $.ajax({
+                            url: "{?=url(['bridging_sep','aprovalsep'])?}",
+                            method: "POST",
+                            data: {
+                                no_kartu_aproval: no_kartu_aproval, 
+                                tgl_sep_aproval: tgl_sep_aproval, 
+                                jns_pelayanan_aproval: jns_pelayanan_aproval, 
+                                jns_pengajuan_aproval: jns_pengajuan_aproval, 
+                                keterangan_aproval: keterangan_aproval
+                            },
+                            success: function (data) {
+                                data = JSON.parse(data);
+                                var audio = new Audio('{?=url()?}/assets/sound/success.mp3');
+                                audio.play();
+                                bootbox.alert('<span class="text-success">' + data.metaData.message + '</span>');
+                                $('#modal_form_aproval_sep').modal('hide');
+                            }
+                        })
+                    } else {
+                        var audio = new Audio('{?=url()?}/assets/sound/error.mp3');
+                        audio.play();
+                        bootbox.alert('<span class="text-danger">' + data.metaData.message + '</span>');
+                    }
+                }
+            });
+        });        
+    });
+
+    $("form[name='form_bridging_sep']").validate({
+        rules: {
+            no_sep: 'required',
+            no_rawat: 'required',
+            tglsep: 'required',
+            tglrujukan: 'required',
+            no_rujukan: 'required',
+            kdppkrujukan: 'required',
+            nmppkrujukan: 'required',
+            kdppkpelayanan: 'required',
+            nmppkpelayanan: 'required',
+            jnspelayanan: 'required',
+            catatan: 'required',
+            diagawal: 'required',
+            nmdiagnosaawal: 'required',
+            kdpolitujuan: 'required',
+            nmpolitujuan: 'required',
+            klsrawat: 'required',
+            klsnaik: 'required',
+            pembiayaan: 'required',
+            pjnaikkelas: 'required',
+            lakalantas: 'required',
+            user: 'required',
+            nomr: 'required',
+            nama_pasien: 'required',
+            tanggal_lahir: 'required',
+            peserta: 'required',
+            jkel: 'required',
+            no_kartu: 'required',
+            tglpulang: 'required',
+            asal_rujukan: 'required',
+            eksekutif: 'required',
+            cob: 'required',
+            notelep: 'required',
+            katarak: 'required',
+            tglkkl: 'required',
+            keterangankkl: 'required',
+            suplesi: 'required',
+            no_sep_suplesi: 'required',
+            kdprop: 'required',
+            nmprop: 'required',
+            kdkab: 'required',
+            nmkab: 'required',
+            kdkec: 'required',
+            nmkec: 'required',
+            noskdp: 'required',
+            kddpjp: 'required',
+            nmdpdjp: 'required',
+            tujuankunjungan: 'required',
+            flagprosedur: 'required',
+            penunjang: 'required',
+            asesmenpelayanan: 'required',
+            kddpjplayanan: 'required',
+            nmdpjplayanan: 'required'
+
+        },
+        messages: {
+            no_sep:'No Sep tidak boleh kosong!',
+            no_rawat:'No Rawat tidak boleh kosong!',
+            tglsep:'Tglsep tidak boleh kosong!',
+            tglrujukan:'Tglrujukan tidak boleh kosong!',
+            no_rujukan:'No Rujukan tidak boleh kosong!',
+            kdppkrujukan:'Kdppkrujukan tidak boleh kosong!',
+            nmppkrujukan:'Nmppkrujukan tidak boleh kosong!',
+            kdppkpelayanan:'Kdppkpelayanan tidak boleh kosong!',
+            nmppkpelayanan:'Nmppkpelayanan tidak boleh kosong!',
+            jnspelayanan:'Jnspelayanan tidak boleh kosong!',
+            // catatan:'Catatan tidak boleh kosong!',
+            diagawal:'Diagawal tidak boleh kosong!',
+            nmdiagnosaawal:'Nmdiagnosaawal tidak boleh kosong!',
+            kdpolitujuan:'Kdpolitujuan tidak boleh kosong!',
+            nmpolitujuan:'Nmpolitujuan tidak boleh kosong!',
+            klsrawat:'Klsrawat tidak boleh kosong!',
+            klsnaik:'Klsnaik tidak boleh kosong!',
+            pembiayaan:'Pembiayaan tidak boleh kosong!',
+            pjnaikkelas:'Pjnaikkelas tidak boleh kosong!',
+            lakalantas:'Lakalantas tidak boleh kosong!',
+            user:'User tidak boleh kosong!',
+            nomr:'Nomr tidak boleh kosong!',
+            nama_pasien:'Nama Pasien tidak boleh kosong!',
+            tanggal_lahir:'Tanggal Lahir tidak boleh kosong!',
+            peserta:'Peserta tidak boleh kosong!',
+            jkel:'Jkel tidak boleh kosong!',
+            no_kartu:'No Kartu tidak boleh kosong!',
+            tglpulang:'Tglpulang tidak boleh kosong!',
+            asal_rujukan:'Asal Rujukan tidak boleh kosong!',
+            eksekutif:'Eksekutif tidak boleh kosong!',
+            cob:'Cob tidak boleh kosong!',
+            notelep:'Notelep tidak boleh kosong!',
+            katarak:'Katarak tidak boleh kosong!',
+            tglkkl:'Tglkkl tidak boleh kosong!',
+            keterangankkl:'Keterangankkl tidak boleh kosong!',
+            suplesi:'Suplesi tidak boleh kosong!',
+            no_sep_suplesi:'No Sep Suplesi tidak boleh kosong!',
+            kdprop:'Kdprop tidak boleh kosong!',
+            nmprop:'Nmprop tidak boleh kosong!',
+            kdkab:'Kdkab tidak boleh kosong!',
+            nmkab:'Nmkab tidak boleh kosong!',
+            kdkec:'Kdkec tidak boleh kosong!',
+            nmkec:'Nmkec tidak boleh kosong!',
+            noskdp:'Noskdp tidak boleh kosong!',
+            kddpjp:'Kddpjp tidak boleh kosong!',
+            nmdpdjp:'Nmdpdjp tidak boleh kosong!',
+            tujuankunjungan:'Tujuankunjungan tidak boleh kosong!',
+            flagprosedur:'Flagprosedur tidak boleh kosong!',
+            penunjang:'Penunjang tidak boleh kosong!',
+            asesmenpelayanan:'Asesmenpelayanan tidak boleh kosong!',
+            kddpjplayanan:'Kddpjplayanan tidak boleh kosong!',
+            nmdpjplayanan:'Nmdpjplayanan tidak boleh kosong!'
+
+        },
+        submitHandler: function (form) {
+            var no_sep= $('#no_sep').val();
+            var no_rawat= $('#no_rawat').val();
+            var tglsep= $('#tglsep').val();
+            var tglrujukan= $('#tglrujukan').val();
+            var no_rujukan= $('#no_rujukan').val();
+            var kdppkrujukan= $('#kdppkrujukan').val();
+            var nmppkrujukan= $('#nmppkrujukan').val();
+            var kdppkpelayanan= $('#kdppkpelayanan').val();
+            var nmppkpelayanan= $('#nmppkpelayanan').val();
+            var jnspelayanan= $('#jnspelayanan').val();
+            var catatan= $('#catatan').val();
+            var diagawal= $('#diagawal').val();
+            var nmdiagnosaawal= $('#nmdiagnosaawal').val();
+            var kdpolitujuan= $('#kdpolitujuan').val();
+            var nmpolitujuan= $('#kdpolitujuan').find(':selected').text();
+            var klsrawat= $('#klsrawat').val();
+            var klsnaik= $('#klsnaik').val();
+            var pembiayaan= $('#pembiayaan').val();
+            var pjnaikkelas= $('#pjnaikkelas').val();
+            var lakalantas= $('#lakalantas').val();
+            var user= $('#user').val();
+            var nomr= $('#nomr').val();
+            var nama_pasien= $('#nama_pasien').val();
+            var tanggal_lahir= $('#tanggal_lahir').val();
+            var peserta= $('#peserta').val();
+            var jkel= $('#jkel').val();
+            var no_kartu= $('#no_kartu').val();
+            var tglpulang= $('#tglpulang').val();
+            var asal_rujukan= $('#asal_rujukan').val();
+            var eksekutif= $('#eksekutif').val();
+            var cob= $('#cob').val();
+            var notelep= $('#notelep').val();
+            var katarak= $('#katarak').val();
+            var tglkkl= $('#tglkkl').val();
+            var nolp= $('#nolp').val();
+            var keterangankkl= $('#keterangankkl').val();
+            var suplesi= $('#suplesi').val();
+            var no_sep_suplesi= $('#no_sep_suplesi').val();
+            var kdprop= $('#kdprop').val();
+            var nmprop= $('#nmprop').val();
+            var kdkab= $('#kdkab').val();
+            var nmkab= $('#nmkab').val();
+            var kdkec= $('#kdkec').val();
+            var nmkec= $('#nmkec').val();
+            var noskdp= $('#noskdp').val();
+            var kddpjp= $('#kddpjp').val();
+            var nmdpdjp= $('#kddpjp').find(':selected').text();
+            var tujuankunjungan= $('#tujuankunjungan').val();
+            var flagprosedur= $('#flagprosedur').val();
+            var penunjang= $('#penunjang').val();
+            var asesmenpelayanan= $('#asesmenpelayanan').val();
+            var kddpjplayanan= $('#kddpjplayanan').val();
+            var nmdpjplayanan= $('#kddpjplayanan').find(':selected').text();
+
+            var typeact = 'add';
+
+            var formData = new FormData(form); // tambahan
+            formData.append('typeact', typeact); // tambahan
+            formData.append('nmpolitujuan', nmpolitujuan); // tambahan
+            formData.append('nmdpdjp', nmdpdjp); // tambahan
+            formData.append('nmdpjplayanan', nmdpjplayanan); // tambahan
+            console.log(JSON.stringify(Object.fromEntries(formData)));
+
+            $.ajax({
+                url: "{?=url(['bridging_sep','aksi'])?}",
+                method: "POST",
+                contentType: false, // tambahan
+                processData: false, // tambahan
+                data: formData,
+                success: function (data) {
+                    console.log(data);
+                    data = JSON.parse(data);
+                    var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
+                    audio.play();
+                    if (typeact == "add") {
+                        if(data.status === 'success') {
+                            bootbox.alert('<span class="text-success">' + data.msg + '</span>');
+                            $("#modal_bridging_sep").modal('hide');
+                        } else {
+                            bootbox.alert('<span class="text-danger">' + JSON.stringify(data.msg) + '</span>');
+                        }    
+                    }
+                }
+            })
+        }
+    });
+
+    $('#kddpjp').on('change', function(){
+        $('#kddpjplayanan').val($('#kddpjp').val()).change();
+    })
+
+    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+        ws.onmessage = function(response){
+            try{
+                output = JSON.parse(response.data);
+                if(output['action'] == 'add'){
+                    var_tbl_bridging_sep.draw();
+                }
+                if(output['action'] == 'edit'){
+                    var_tbl_bridging_sep.draw();
+                }
+                if(output['action'] == 'del'){
+                    var_tbl_bridging_sep.draw();
+                }
+            }catch(e){
+                console.log(e);
+            }
+        }
+    }
+
+    $("form[name='form_booking_registrasi']").validate({
+        rules: {
+            tanggal_booking: 'required',
+            jam_booking: 'required',
+            no_rkm_medis: 'required',
+            tanggal_periksa: 'required',
+            kd_dokter: 'required',
+            kd_poli: 'required',
+            no_reg: 'required',
+            kd_pj: 'required',
+            limit_reg: 'required',
+            waktu_kunjungan: 'required',
+            status: 'required'
+
+        },
+        messages: {
+            tanggal_booking:'Tanggal Booking tidak boleh kosong!',
+            jam_booking:'Jam Booking tidak boleh kosong!',
+            no_rkm_medis:'No Rkm Medis tidak boleh kosong!',
+            tanggal_periksa:'Tanggal Periksa tidak boleh kosong!',
+            kd_dokter:'Kd Dokter tidak boleh kosong!',
+            kd_poli:'Kd Poli tidak boleh kosong!',
+            no_reg:'No Reg tidak boleh kosong!',
+            kd_pj:'Kd Pj tidak boleh kosong!',
+            limit_reg:'Limit Reg tidak boleh kosong!',
+            waktu_kunjungan:'Waktu Kunjungan tidak boleh kosong!',
+            status:'Status tidak boleh kosong!'
+
+        },
+        submitHandler: function (form) {
+            var tanggal_booking= $('#tanggal_booking').val();
+            var jam_booking= $('#jam_booking').val();
+            var no_rkm_medis= $('#no_rkm_medis').val();
+            var tanggal_periksa= $('#tanggal_periksa').val();
+            var kd_dokter= $('#kd_dokter').val();
+            var kd_poli= $('#kd_poli').val();
+            var no_reg= $('#no_reg').val();
+            var kd_pj= $('#kd_pj').val();
+            var limit_reg= $('#limit_reg').val('0');
+            var waktu_kunjungan= tanggal_periksa + ' ' + jam_booking;
+            var status= $('#status').val('Belum');
+
+            var typeact = 'add';
+
+            var formData = new FormData(form); // tambahan
+            formData.append('typeact', typeact); // tambahan
+            formData.append('limit_reg', limit_reg); // tambahan
+            formData.append('waktu_kunjungan', waktu_kunjungan); // tambahan
+            formData.append('status', status); // tambahan
+
+            $.ajax({
+                url: "{?=url(['booking_registrasi','aksi'])?}",
+                method: "POST",
+                contentType: false, // tambahan
+                processData: false, // tambahan
+                data: formData,
+                success: function (data) {
+                    data = JSON.parse(data);
+                    var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
+                    audio.play();
+                    if (typeact == "add") {
+                        if(data.status === 'success') {
+                            bootbox.alert('<span class="text-success">' + data.msg + '</span>');
+                            $("#modal_booking_registrasi").modal('hide');
+                        } else {
+                            bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
+                        }    
+                    }
+                }
+            })
+        }
     });
 
 });

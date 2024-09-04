@@ -1,12 +1,12 @@
 <?php
 
     return [
-        'name'          =>  'Status Kerja',
-        'description'   =>  'Modul status kerja untuk mLITE',
+        'name'          =>  'Mlite Antrian Referensi',
+        'description'   =>  'Modul mlite antrian referensi untuk mLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '4.0.*',
-        'icon'          =>  'corner-down-right-fill',
+        'icon'          =>  'send-plane-2-line',
         'help'          =>  '',
         'install'       =>  function () use ($core) {
         },

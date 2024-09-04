@@ -99,50 +99,50 @@ var tanggal_booking = rowData['tanggal_booking'];
 
     $("form[name='form_booking_registrasi']").validate({
         rules: {
-tanggal_booking: 'required',
-jam_booking: 'required',
-no_rkm_medis: 'required',
-tanggal_periksa: 'required',
-kd_dokter: 'required',
-kd_poli: 'required',
-no_reg: 'required',
-kd_pj: 'required',
-limit_reg: 'required',
-waktu_kunjungan: 'required',
-status: 'required'
+            tanggal_booking: 'required',
+            jam_booking: 'required',
+            no_rkm_medis: 'required',
+            tanggal_periksa: 'required',
+            kd_dokter: 'required',
+            kd_poli: 'required',
+            no_reg: 'required',
+            kd_pj: 'required',
+            limit_reg: 'required',
+            waktu_kunjungan: 'required',
+            status: 'required'
 
         },
         messages: {
-tanggal_booking:'Tanggal Booking tidak boleh kosong!',
-jam_booking:'Jam Booking tidak boleh kosong!',
-no_rkm_medis:'No Rkm Medis tidak boleh kosong!',
-tanggal_periksa:'Tanggal Periksa tidak boleh kosong!',
-kd_dokter:'Kd Dokter tidak boleh kosong!',
-kd_poli:'Kd Poli tidak boleh kosong!',
-no_reg:'No Reg tidak boleh kosong!',
-kd_pj:'Kd Pj tidak boleh kosong!',
-limit_reg:'Limit Reg tidak boleh kosong!',
-waktu_kunjungan:'Waktu Kunjungan tidak boleh kosong!',
-status:'Status tidak boleh kosong!'
+            tanggal_booking:'Tanggal Booking tidak boleh kosong!',
+            jam_booking:'Jam Booking tidak boleh kosong!',
+            no_rkm_medis:'No Rkm Medis tidak boleh kosong!',
+            tanggal_periksa:'Tanggal Periksa tidak boleh kosong!',
+            kd_dokter:'Kd Dokter tidak boleh kosong!',
+            kd_poli:'Kd Poli tidak boleh kosong!',
+            no_reg:'No Reg tidak boleh kosong!',
+            kd_pj:'Kd Pj tidak boleh kosong!',
+            limit_reg:'Limit Reg tidak boleh kosong!',
+            waktu_kunjungan:'Waktu Kunjungan tidak boleh kosong!',
+            status:'Status tidak boleh kosong!'
 
         },
         submitHandler: function (form) {
-var tanggal_booking= $('#tanggal_booking').val();
-var jam_booking= $('#jam_booking').val();
-var no_rkm_medis= $('#no_rkm_medis').val();
-var tanggal_periksa= $('#tanggal_periksa').val();
-var kd_dokter= $('#kd_dokter').val();
-var kd_poli= $('#kd_poli').val();
-var no_reg= $('#no_reg').val();
-var kd_pj= $('#kd_pj').val();
-var limit_reg= $('#limit_reg').val();
-var waktu_kunjungan= $('#waktu_kunjungan').val();
-var status= $('#status').val();
+            var tanggal_booking= $('#tanggal_booking').val();
+            var jam_booking= $('#jam_booking').val();
+            var no_rkm_medis= $('#no_rkm_medis').val();
+            var tanggal_periksa= $('#tanggal_periksa').val();
+            var kd_dokter= $('#kd_dokter').val();
+            var kd_poli= $('#kd_poli').val();
+            var no_reg= $('#no_reg').val();
+            var kd_pj= $('#kd_pj').val();
+            var limit_reg= $('#limit_reg').val();
+            var waktu_kunjungan= $('#waktu_kunjungan').val();
+            var status= $('#status').val();
 
-var typeact = $('#typeact').val();
+            var typeact = $('#typeact').val();
 
-var formData = new FormData(form); // tambahan
-formData.append('typeact', typeact); // tambahan
+            var formData = new FormData(form); // tambahan
+            formData.append('typeact', typeact); // tambahan
 
             $.ajax({
                 url: "{?=url(['booking_registrasi','aksi'])?}",

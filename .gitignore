@@ -5,7 +5,7 @@ vendor/
 tmp/
 uploads/
 jasper/
-# plugins/crud_generator
+plugins/bridging_bpjs
 # plugins/pemeriksaan_ralan
 # plugins/rawat_jl_dr
 # plugins/rawat_jl_pr

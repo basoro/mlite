@@ -17,6 +17,7 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $this->assing = [];
+        $this->assign['settings'] = $this->settings('settings');
         $this->assign['pasien'] = $this->core->db->select('pasien', ['no_rkm_medis','nm_pasien'], ['LIMIT' => 10]);
         $this->assign['poliklinik'] = $this->core->db->select('poliklinik', ['kd_poli', 'nm_poli'], ['status' => '1']);
         $this->assign['dokter'] = $this->core->db->select('dokter', ['kd_dokter', 'nm_dokter'], ['status' => '1']);
@@ -27,6 +28,8 @@ class Admin extends AdminModule
         $this->assign['sttsumur'] = $this->core->getEnum('reg_periksa', 'sttsumur');
         $this->assign['status_bayar'] = $this->core->getEnum('reg_periksa', 'status_bayar');
         $this->assign['status_poli'] = $this->core->getEnum('reg_periksa', 'status_poli');
+        $this->assign['maping_poli_bpjs'] = $this->core->db->select('maping_poli_bpjs', '*');
+        $this->assign['maping_dokter_dpjpvclaim'] = $this->core->db->select('maping_dokter_dpjpvclaim', '*');
         $disabled_menu = $this->core->loadDisabledMenu('reg_periksa'); 
         foreach ($disabled_menu as &$row) { 
           if ($row == "true" ) $row = "disabled"; 
@@ -109,6 +112,8 @@ class Admin extends AdminModule
             'nm_dokter'=>$this->core->db->get('dokter', 'nm_dokter', ['kd_dokter' => $row['kd_dokter']]),
             'no_rkm_medis'=>$row['no_rkm_medis'],
             'nm_pasien'=>$this->core->db->get('pasien', 'nm_pasien', ['no_rkm_medis' => $row['no_rkm_medis']]),
+            'no_ktp'=>$this->core->db->get('pasien', 'no_ktp', ['no_rkm_medis' => $row['no_rkm_medis']]),
+            'no_peserta'=>$this->core->db->get('pasien', 'no_peserta', ['no_rkm_medis' => $row['no_rkm_medis']]),
             'kd_poli'=>$row['kd_poli'],
             'nm_poli'=>$this->core->db->get('poliklinik', 'nm_poli', ['kd_poli' => $row['kd_poli']]),
             'p_jawab'=>$row['p_jawab'],
@@ -661,13 +666,17 @@ class Admin extends AdminModule
         exit();
     }
 
-    public function getSep($no_rawat)
+    public function getSEP($no_rawat)
     {
-        $row = $this->core->db->get('reg_periksa', '*', ['no_rawat' => revertNoRawat($no_rawat)]);
+        $this->_addHeaderFiles();
+        $this->assign['reg_periksa'] = $this->core->db->get('reg_periksa', [
+          '[>]pasien' => ['no_rkm_medis' => 'no_rkm_medis']
+        ], '*', ['no_rawat' => revertNoRawat($no_rawat)]);
+        
         if($this->settings('settings', 'logquery') == true) {
           $this->core->LogQuery('reg_periksa => getSep');
         }
-        echo $this->draw('sep.html', ['settings' => $this->settings('settings'), 'sep' => $row]);
+        echo $this->draw('sep.html', ['settings' => $this->settings('settings'), 'sep' => $this->assign]);
         exit();
     }
 
@@ -1382,7 +1391,7 @@ class Admin extends AdminModule
 
     public function postGetPermintaanRadiologi()
     {
-      // $_POST['noorder'] = 'PL202407140002';
+      $_POST['noorder'] = 'PR202408290001';
       $permintaan_pemeriksaan_radiologi = $this->core->db->select('permintaan_pemeriksaan_radiologi', '*', ['noorder' => $_POST['noorder']]);
       $permintaan_radiologi = [];
       $nomor = '1';
@@ -1579,6 +1588,12 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function getSuratKontrol($no_rawat)
+    {
+      echo $this->draw('surat.kontrol.html');
+      exit();
+    }
+
     public function getCss()
     {
         header('Content-type: text/css');
@@ -1688,6 +1703,25 @@ class Admin extends AdminModule
 
         $this->core->addCSS(url([ 'reg_periksa', 'css']));
         $this->core->addJS(url([ 'reg_periksa', 'javascript']), 'footer');
+    }
+
+    public function getTest()
+    {
+      $_POST['noorder'] = 'PR202408120001';
+      $permintaan_pemeriksaan_radiologi = $this->core->db->select('permintaan_pemeriksaan_radiologi', '*', ['noorder' => $_POST['noorder']]);
+      $permintaan_radiologi = [];
+      $nomor = '1';
+      foreach($permintaan_pemeriksaan_radiologi as $row) {
+        $row['nomor'] = $nomor++;
+        $permintaan_radiologi[] = $row;
+      }
+
+      if($this->settings('settings', 'logquery') == true) {
+        $this->core->LogQuery('reg_periksa => postGetPermintaanRadiologi');
+      }
+
+      echo json_encode($permintaan_radiologi);
+      exit();
     }
 
 }

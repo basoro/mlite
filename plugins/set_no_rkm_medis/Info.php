@@ -1,8 +1,8 @@
 <?php
 
     return [
-        'name'          =>  'Set No Rkm Medis',
-        'description'   =>  'Modul set no rkm medis untuk mLITE',
+        'name'          =>  'Set Nomor Rekam Medis',
+        'description'   =>  'Modul set nomor rakam medis untuk mLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '4.0.*',

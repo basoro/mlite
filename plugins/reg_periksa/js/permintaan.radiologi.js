@@ -220,11 +220,14 @@ var status= $('#status').val();
 var informasi_tambahan= $('#informasi_tambahan').val();
 var diagnosa_klinis= $('#diagnosa_klinis').val();
 
+var kd_jenis_prw= $('#kd_jenis_prw').val();
+var stts_bayar= $('#stts_bayar').val();
+
  var typeact = $('#typeact').val();
 
  var formData = new FormData(form); // tambahan
  formData.append('typeact', typeact); // tambahan
-
+console.log(JSON.stringify(Object.fromEntries(formData)));
             $.ajax({
                 url: "{?=url(['permintaan_radiologi','aksi'])?}",
                 method: "POST",

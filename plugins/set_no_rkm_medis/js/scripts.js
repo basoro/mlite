@@ -32,12 +32,10 @@ jQuery().ready(function () {
             });          
         }, 
         "columns": [
-{ 'data': 'no_rkm_medis' }
-
+            { 'data': 'no_rkm_medis' }
         ],
         "columnDefs": [
-{ 'targets': 0}
-
+            { 'targets': 0}
         ],
         order: [[1, 'DESC']], 
         buttons: [],
@@ -56,7 +54,7 @@ jQuery().ready(function () {
         callback: function(key, options) {
           var rowData = var_tbl_set_no_rkm_medis.rows({ selected: true }).data()[0];
           if (rowData != null) {
-var no_rkm_medis = rowData['no_rkm_medis'];
+            var no_rkm_medis = rowData['no_rkm_medis'];
             switch (key) {
                 case 'detail' :
                     OpenModal(mlite.url + '/set_no_rkm_medis/detail/' + no_rkm_medis + '?t=' + mlite.token);
@@ -79,20 +77,18 @@ var no_rkm_medis = rowData['no_rkm_medis'];
 
     $("form[name='form_set_no_rkm_medis']").validate({
         rules: {
-no_rkm_medis: 'required'
-
+            no_rkm_medis: 'required'
         },
         messages: {
-no_rkm_medis:'No Rkm Medis tidak boleh kosong!'
-
+            no_rkm_medis:'No Rekam Medis tidak boleh kosong!'
         },
         submitHandler: function (form) {
-var no_rkm_medis= $('#no_rkm_medis').val();
+            var no_rkm_medis= $('#no_rkm_medis').val();
 
-var typeact = $('#typeact').val();
+            var typeact = $('#typeact').val();
 
-var formData = new FormData(form); // tambahan
-formData.append('typeact', typeact); // tambahan
+            var formData = new FormData(form); // tambahan
+            formData.append('typeact', typeact); // tambahan
 
             $.ajax({
                 url: "{?=url(['set_no_rkm_medis','aksi'])?}",
@@ -190,7 +186,7 @@ formData.append('typeact', typeact); // tambahan
 
 
         if (rowData) {
-var no_rkm_medis = rowData['no_rkm_medis'];
+            var no_rkm_medis = rowData['no_rkm_medis'];
             bootbox.confirm('Anda yakin akan menghapus data dengan no_rkm_medis="' + no_rkm_medis, function(result) {
                 if(result) {
                     $.ajax({
@@ -259,7 +255,7 @@ var no_rkm_medis = rowData['no_rkm_medis'];
             },
             dataType: 'json',
             success: function (res) {
-                var eTable = "<div class='table-responsive'><table id='tbl_lihat_set_no_rkm_medis' class='table display dataTable' style='width:100%'><thead><th>No Rkm Medis</th></thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_set_no_rkm_medis' class='table display dataTable' style='width:100%'><thead><th>No Rekam Medis</th></thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     eTable += '<td>' + res[i]['no_rkm_medis'] + '</td>';
@@ -290,7 +286,7 @@ var no_rkm_medis = rowData['no_rkm_medis'];
         doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
         doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
         doc.setFontSize(14);
-        doc.text("Tabel Data Set No Rkm Medis", 20, 95, null, null, null);
+        doc.text("Tabel Data Set No Rekam Medis", 20, 95, null, null, null);
         const totalPagesExp = "{total_pages_count_string}";        
         doc.autoTable({
             html: '#tbl_lihat_set_no_rkm_medis',

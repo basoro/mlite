@@ -2,7 +2,7 @@
     <div class="col-xxl-12 col-sm-12">
         <div class="card mb-3">
             <div class="card-header">
-                <h5 class="card-title">Kelola Stts Kerja</h5>
+                <h5 class="card-title">Kelola Status Kerja</h5>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -30,10 +30,9 @@
                           <span class="input-group-text">Cari</span>
                           <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
                           <select class="form-select" id='search_field_stts_kerja' name='search_field_stts_kerja' style="margin: 0 !important;"> 
-                              <option value='stts'>Stts</option>
-<option value='ktg'>Ktg</option>
-<option value='indek'>Indek</option>
-
+                              <option value='stts'>Status</option>
+                              <option value='ktg'>Keterangan</option>
+                              <option value='indek'>Indek</option>
                           </select>
                           </span>
                           <input class='form-control' name='search_text_stts_kerja' id='search_text_stts_kerja' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
@@ -45,10 +44,9 @@
                     <table id="tbl_stts_kerja" class="table table-striped display dataTable" style="width:100%">
                         <thead>
                         <tr> 
-                            <th>Stts</th>
-<th>Ktg</th>
-<th>Indek</th>
-
+                            <th>Status</th>
+                            <th>Keterangan</th>
+                            <th>Indek</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -72,29 +70,28 @@
         <form name="form_stts_kerja">
           <input type="hidden" class="form-control" id="typeact" /> 
           <div class='row gx-3'>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='stts'>Stts</label>
-      <input type='text' class='form-control' id='stts' name='stts' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='ktg'>Ktg</label>
-      <input type='text' class='form-control' id='ktg' name='ktg' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='indek'>Indek</label>
-      <input type='text' class='form-control' id='indek' name='indek' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-</div>
-
+            <div class='col-xxl-3 col-lg-4 col-sm-6'>
+              <div class='mb-3'>
+                <label class='form-label' for='stts'>Status</label>
+                <input type='text' class='form-control' id='stts' name='stts' />
+              <div class='invalid-feedback error'></div>
+              </div>
+            </div>
+            <div class='col-xxl-3 col-lg-4 col-sm-6'>
+              <div class='mb-3'>
+                <label class='form-label' for='ktg'>Keterangan</label>
+                <input type='text' class='form-control' id='ktg' name='ktg' />
+              <div class='invalid-feedback error'></div>
+              </div>
+            </div>
+            <div class='col-xxl-3 col-lg-4 col-sm-6'>
+              <div class='mb-3'>
+                <label class='form-label' for='indek'>Indek</label>
+                <input type='text' class='form-control' id='indek' name='indek' />
+              <div class='invalid-feedback error'></div>
+              </div>
+            </div>
+          </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
@@ -109,7 +106,7 @@
   <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title"><span id="modal-title">Lihat Data Stts Kerja</span></h4>
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Status Kerja</span></h4>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">

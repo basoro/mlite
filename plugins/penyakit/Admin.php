@@ -62,12 +62,11 @@ class Admin extends AdminModule
         foreach($result as $row) {
             $data[] = array(
                 'kd_penyakit'=>$row['kd_penyakit'],
-'nm_penyakit'=>$row['nm_penyakit'],
-'ciri_ciri'=>$row['ciri_ciri'],
-'keterangan'=>$row['keterangan'],
-'kd_ktg'=>$row['kd_ktg'],
-'status'=>$row['status']
-
+                'nm_penyakit'=>$row['nm_penyakit'],
+                'ciri_ciri'=>$row['ciri_ciri'],
+                'keterangan'=>$row['keterangan'],
+                'kd_ktg'=>$row['kd_ktg'],
+                'status'=>$row['status']
             );
         }
 
@@ -109,16 +108,15 @@ class Admin extends AdminModule
               exit();
             }
 
-        $kd_penyakit = $_POST['kd_penyakit'];
-$nm_penyakit = $_POST['nm_penyakit'];
-$ciri_ciri = $_POST['ciri_ciri'];
-$keterangan = $_POST['keterangan'];
-$kd_ktg = $_POST['kd_ktg'];
-$status = $_POST['status'];
-
+            $kd_penyakit = $_POST['kd_penyakit'];
+            $nm_penyakit = $_POST['nm_penyakit'];
+            $ciri_ciri = $_POST['ciri_ciri'];
+            $keterangan = $_POST['keterangan'];
+            $kd_ktg = $_POST['kd_ktg'];
+            $status = $_POST['status'];
             
             $result = $this->core->db->insert('penyakit', [
-'kd_penyakit'=>$kd_penyakit, 'nm_penyakit'=>$nm_penyakit, 'ciri_ciri'=>$ciri_ciri, 'keterangan'=>$keterangan, 'kd_ktg'=>$kd_ktg, 'status'=>$status
+              'kd_penyakit'=>$kd_penyakit, 'nm_penyakit'=>$nm_penyakit, 'ciri_ciri'=>$ciri_ciri, 'keterangan'=>$keterangan, 'kd_ktg'=>$kd_ktg, 'status'=>$status
             ]);
 
 
@@ -157,18 +155,18 @@ $status = $_POST['status'];
               exit();
             }
 
-        $kd_penyakit = $_POST['kd_penyakit'];
-$nm_penyakit = $_POST['nm_penyakit'];
-$ciri_ciri = $_POST['ciri_ciri'];
-$keterangan = $_POST['keterangan'];
-$kd_ktg = $_POST['kd_ktg'];
-$status = $_POST['status'];
+            $kd_penyakit = $_POST['kd_penyakit'];
+            $nm_penyakit = $_POST['nm_penyakit'];
+            $ciri_ciri = $_POST['ciri_ciri'];
+            $keterangan = $_POST['keterangan'];
+            $kd_ktg = $_POST['kd_ktg'];
+            $status = $_POST['status'];
 
 
-        // BUANG FIELD PERTAMA
+            // BUANG FIELD PERTAMA
 
             $result = $this->core->db->update('penyakit', [
-'kd_penyakit'=>$kd_penyakit, 'nm_penyakit'=>$nm_penyakit, 'ciri_ciri'=>$ciri_ciri, 'keterangan'=>$keterangan, 'kd_ktg'=>$kd_ktg, 'status'=>$status
+              'nm_penyakit'=>$nm_penyakit, 'ciri_ciri'=>$ciri_ciri, 'keterangan'=>$keterangan, 'kd_ktg'=>$kd_ktg, 'status'=>$status
             ], [
               'kd_penyakit'=>$kd_penyakit
             ]);
@@ -270,11 +268,11 @@ $status = $_POST['status'];
             foreach($result as $row) {
                 $data[] = array(
                     'kd_penyakit'=>$row['kd_penyakit'],
-'nm_penyakit'=>$row['nm_penyakit'],
-'ciri_ciri'=>$row['ciri_ciri'],
-'keterangan'=>$row['keterangan'],
-'kd_ktg'=>$row['kd_ktg'],
-'status'=>$row['status']
+                    'nm_penyakit'=>$row['nm_penyakit'],
+                    'ciri_ciri'=>$row['ciri_ciri'],
+                    'keterangan'=>$row['keterangan'],
+                    'kd_ktg'=>$row['kd_ktg'],
+                    'status'=>$row['status']
                 );
             }
 
@@ -377,6 +375,44 @@ $status = $_POST['status'];
       }
 
       echo $this->draw('chart.html', ['type' => $type, 'column' => $result, 'labels' => json_encode($labels), 'datasets' => json_encode(array_column($datasets, 'count'))]);
+      exit();
+    }
+
+    public function getImport()
+    {
+      $fileName = 'https://basoro.id/downloads/icd10.csv';
+      echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
+
+      $csvData = file_get_contents($fileName);
+      if($csvData) {
+        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] File '.$filename.' tidak ditemukan'."<br>";
+        exit();
+      }
+
+      $lines = explode(PHP_EOL, $csvData);
+      $array = array();
+      foreach ($lines as $line) {
+          $array[] = str_getcsv($line);
+      }
+
+      foreach ($array as $data){   
+        $kode = $data[0];
+        $nama = isset_or($data[1], '');
+        $nama = str_replace('"','',$nama);
+        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."','','','-','Tidak Menular')";
+      }
+      $str = implode(",", $value_query);
+      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
+      $result = $this->core->db->query("INSERT INTO penyakit (kd_penyakit, nm_penyakit, ciri_ciri, keterangan, kd_ktg, status) VALUES $str ON DUPLICATE KEY UPDATE kd_penyakit=VALUES(kd_penyakit)");
+      if($result) {
+        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
+        exit();
+      }
+      
       exit();
     }
 

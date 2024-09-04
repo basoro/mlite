@@ -120,33 +120,87 @@ $no_rkm_medis = $_POST['no_rkm_medis'];
 $tanggal_periksa = $_POST['tanggal_periksa'];
 $kd_dokter = $_POST['kd_dokter'];
 $kd_poli = $_POST['kd_poli'];
-$no_reg = $_POST['no_reg'];
+$no_reg = $this->core->setNoBooking($kd_dokter, $tanggal_periksa, $kd_poli);
 $kd_pj = $_POST['kd_pj'];
 $limit_reg = $_POST['limit_reg'];
 $waktu_kunjungan = $_POST['waktu_kunjungan'];
 $status = $_POST['status'];
 
             
-            $result = $this->core->db->insert('booking_registrasi', [
-'tanggal_booking'=>$tanggal_booking, 'jam_booking'=>$jam_booking, 'no_rkm_medis'=>$no_rkm_medis, 'tanggal_periksa'=>$tanggal_periksa, 'kd_dokter'=>$kd_dokter, 'kd_poli'=>$kd_poli, 'no_reg'=>$no_reg, 'kd_pj'=>$kd_pj, 'limit_reg'=>$limit_reg, 'waktu_kunjungan'=>$waktu_kunjungan, 'status'=>$status
-            ]);
+            if($kd_pj = 'BPJ') {
 
+              $no_sep = $this->core->db->get('bridging_sep', 'no_sep', ['no_rawat' => $_POST['no_rawat_booking']]);
+              $kd_dokter_bpjs = $this->core->db->get('maping_dokter_dpjpvclaim', 'kd_dokter_bpjs', ['kd_dokter' => $kd_dokter]);
+              $kd_poli_bpjs = $this->core->db->get('maping_poli_bpjs', 'kd_poli_bpjs', ['kd_poli_rs' => $kd_poli]);
+              
+              $data = [
+                'request' => [
+                  'noSEP' => $no_sep,
+                  'kodeDokter' => $kd_dokter_bpjs,
+                  'poliKontrol' => $kd_poli_bpjs,
+                  'tglRencanaKontrol' => $tanggal_periksa,
+                  'user' => $this->core->db->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']])
+                ]
+              ];            
 
-            if (!empty($result)){
-              http_response_code(200);
-              $data = array(
-                'code' => '200', 
-                'status' => 'success', 
-                'msg' => 'Data telah ditambah'
-              );
+              $query = new \Bridging\Bpjs\Vclaim\RencanaKontrol($this->core->vclaim);
+              $array = $query->insertRencanaKontrol($data);
+  
+              if($array['metaData']['code'] == '200') {
+
+                $result = $this->core->db->insert('booking_registrasi', [
+                  'tanggal_booking'=>$tanggal_booking, 'jam_booking'=>$jam_booking, 'no_rkm_medis'=>$no_rkm_medis, 'tanggal_periksa'=>$tanggal_periksa, 'kd_dokter'=>$kd_dokter, 'kd_poli'=>$kd_poli, 'no_reg'=>$no_reg, 'kd_pj'=>$kd_pj, 'limit_reg'=>$limit_reg, 'waktu_kunjungan'=>$waktu_kunjungan, 'status'=>$status
+                ]);
+    
+    
+                if (!empty($result)){
+                  http_response_code(200);
+                  $data = array(
+                    'code' => '200', 
+                    'status' => 'success', 
+                    'msg' => 'Data telah ditambah'
+                  );
+                } else {
+                  http_response_code(201);
+                  $data = array(
+                    'code' => '201', 
+                    'status' => 'error', 
+                    'msg' => $this->core->db->errorInfo[2]
+                  );
+                }    
+              } else {
+                http_response_code(201);
+                $data = array(
+                  'code' => '201', 
+                  'status' => 'error', 
+                  'msg' => json_encode($array)
+                );
+              }
+
             } else {
-              http_response_code(201);
-              $data = array(
-                'code' => '201', 
-                'status' => 'error', 
-                'msg' => $this->core->db->errorInfo[2]
-              );
-            }
+
+              $result = $this->core->db->insert('booking_registrasi', [
+                'tanggal_booking'=>$tanggal_booking, 'jam_booking'=>$jam_booking, 'no_rkm_medis'=>$no_rkm_medis, 'tanggal_periksa'=>$tanggal_periksa, 'kd_dokter'=>$kd_dokter, 'kd_poli'=>$kd_poli, 'no_reg'=>$no_reg, 'kd_pj'=>$kd_pj, 'limit_reg'=>$limit_reg, 'waktu_kunjungan'=>$waktu_kunjungan, 'status'=>$status
+              ]);
+  
+  
+              if (!empty($result)){
+                http_response_code(200);
+                $data = array(
+                  'code' => '200', 
+                  'status' => 'success', 
+                  'msg' => 'Data telah ditambah'
+                );
+              } else {
+                http_response_code(201);
+                $data = array(
+                  'code' => '201', 
+                  'status' => 'error', 
+                  'msg' => $this->core->db->errorInfo[2]
+                );
+              }
+  
+            } 
 
             if($this->settings('settings', 'logquery') == true) {
               $this->core->LogQuery('booking_registrasi => postAksi => add');

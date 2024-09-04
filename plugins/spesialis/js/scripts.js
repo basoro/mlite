@@ -86,8 +86,8 @@ jQuery().ready(function () {
 
         },
         messages: {
-            kd_sps:'Kd Sps tidak boleh kosong!',
-            nm_sps:'Nm Sps tidak boleh kosong!'
+            kd_sps:'Kode Spesialis tidak boleh kosong!',
+            nm_sps:'Nama Spesialis tidak boleh kosong!'
 
         },
         submitHandler: function (form) {
@@ -261,7 +261,7 @@ jQuery().ready(function () {
             },
             dataType: 'json',
             success: function (res) {
-                var eTable = "<div class='table-responsive'><table id='tbl_lihat_spesialis' class='table display dataTable' style='width:100%'><thead><th>Kd Sps</th><th>Nm Sps</th></thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_spesialis' class='table display dataTable' style='width:100%'><thead><th>Kode Spesialis</th><th>Nama Spesialis</th></thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     eTable += '<td>' + res[i]['kd_sps'] + '</td>';

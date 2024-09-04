@@ -20,7 +20,7 @@
                           <button id='hapus_data_reg_periksa' class='btn btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
                           <i class='ri-delete-bin-line' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
                           </button>
-                          <button id='more_data_reg_periksa' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.delete)?}>
+                          <button id='more_data_reg_periksa' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='top' title='More Data' {?=isset_or($disabled_menu.read)?}>
                           <i class='ri-arrow-down-s-line' style='font-size: 15px;'></i><span class="hidden-xs"> More</span>
                           </button>
                         </div>
@@ -71,6 +71,8 @@
                             <th>Nama Dokter</th>
                             <th>No Rkm Medis</th>
                             <th>Nama Pasien</th>
+                            <th>Nomor KTP</th>
+                            <th>Nomor Asuransi</th>
                             <th>Kd Poli</th>
                             <th>Nama Poli</th>
                             <th>P Jawab</th>
@@ -314,6 +316,30 @@
   <div class="modal-dialog modal-fullscreen modal-dialog-centered modal-dialog-scrollable" role="document">
     <div class="modal-content">
       ...
+    </div>
+  </div>
+</div>
+
+<div id="modal_form_sep" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      {include: plugins/reg_periksa/view/form.sep.html}
+    </div>
+  </div>
+</div>
+
+<div id="modal_form_surat_kontrol_bpjs" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      {include: plugins/reg_periksa/view/surat.kontrol.html}
+    </div>
+  </div>
+</div>
+
+<div id="modal_form_aproval_sep" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      {include: plugins/reg_periksa/view/aproval.sep.html}
     </div>
   </div>
 </div>

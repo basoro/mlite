@@ -70,31 +70,50 @@
       </div>
       <div class="modal-body">
         <form name="form_maping_dokter_dpjpvclaim">
-          <input type="hidden" class="form-control" id="typeact" /> 
-          <div class='row gx-3'>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='kd_dokter'>Kd Dokter</label>
-      <input type='text' class='form-control' id='kd_dokter' name='kd_dokter' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='kd_dokter_bpjs'>Kd Dokter Bpjs</label>
-      <input type='text' class='form-control' id='kd_dokter_bpjs' name='kd_dokter_bpjs' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='nm_dokter_bpjs'>Nm Dokter Bpjs</label>
-      <input type='text' class='form-control' id='nm_dokter_bpjs' name='nm_dokter_bpjs' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-</div>
-
+        <input type="hidden" class="form-control" id="typeact" /> 
+        <div class='row gx-3'>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_dokter'>Kd Dokter</label>
+              <select name="kd_dokter" id="kd_dokter" class="form-select">
+                <option value="">Select</option>
+                {loop: $maping_dokter_dpjpvclaim.dokter} 
+                <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='poli_bpjs'>Poli BPJS</label>
+                <select name="poli_bpjs" id="poli_bpjs" class="form-select">
+                  <option value="">Select</option>
+                  {loop: $maping_dokter_dpjpvclaim.maping_poli_bpjs} 
+                  <option value="{$value.kd_poli_bpjs}">{$value.nm_poli_bpjs}</option>
+                  {/loop}
+                </select>
+                <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_dokter_bpjs'>Kd Dokter Bpjs</label>
+              <input type='text' class='form-control' id='kd_dokter_bpjs' name='kd_dokter_bpjs' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='nm_dokter_bpjs'>Nm Dokter Bpjs</label>
+              <div class="input-group">
+                <input type='text' class='form-control' id='nm_dokter_bpjs' name='nm_dokter_bpjs' />
+                <button type="button" id="cari_referensi_dpjp" class="btn btn-primary"><i class="ri-refresh-line"></i></button>
+              </div>
+              <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
@@ -132,6 +151,23 @@
   <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
     <div class="modal-content">
       ...
+    </div>
+  </div>
+</div>
+
+<div id="modal_cari_referensi_dpjp" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_referensi_dpjp"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+      </div>
     </div>
   </div>
 </div>

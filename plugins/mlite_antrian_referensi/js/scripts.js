@@ -1,5 +1,5 @@
 jQuery().ready(function () {
-    var var_tbl_stts_wp = $('#tbl_stts_wp').DataTable({
+    var var_tbl_mlite_antrian_referensi = $('#tbl_mlite_antrian_referensi').DataTable({
         'processing': true,
         'serverSide': true,
         'serverMethod': 'post',
@@ -9,35 +9,41 @@ jQuery().ready(function () {
         'colReorder': true,
         "bInfo" : false,
         "ajax": {
-            "url": "{?=url(['stts_wp','data'])?}",
+            "url": "{?=url(['mlite_antrian_referensi','data'])?}",
             "dataType": "json",
             "type": "POST",
             "data": function (data) {
 
                 // Read values
-                var search_field_stts_wp = $('#search_field_stts_wp').val();
-                var search_text_stts_wp = $('#search_text_stts_wp').val();
+                var search_field_mlite_antrian_referensi = $('#search_field_mlite_antrian_referensi').val();
+                var search_text_mlite_antrian_referensi = $('#search_text_mlite_antrian_referensi').val();
                 
-                data.search_field_stts_wp = search_field_stts_wp;
-                data.search_text_stts_wp = search_text_stts_wp;
+                data.search_field_mlite_antrian_referensi = search_field_mlite_antrian_referensi;
+                data.search_text_mlite_antrian_referensi = search_text_mlite_antrian_referensi;
                 
             }
         },
-        "fnDrawCallback": function () {
-            $('#more_data_stts_wp').on('click', function(e) {
-                e.preventDefault();
-                var clientX = e.originalEvent.clientX;
-                var clientY = e.originalEvent.clientY;
-                $('#tbl_stts_wp tr').contextMenu({x: clientX, y: clientY});
-            });          
-        },        
         "columns": [
-            { 'data': 'stts' },
-            { 'data': 'ktg' }
+{ 'data': 'tanggal_periksa' },
+{ 'data': 'no_rkm_medis' },
+{ 'data': 'nomor_kartu' },
+{ 'data': 'nomor_referensi' },
+{ 'data': 'kodebooking' },
+{ 'data': 'jenis_kunjungan' },
+{ 'data': 'status_kirim' },
+{ 'data': 'keterangan' }
+
         ],
         "columnDefs": [
-            { 'targets': 0},
-            { 'targets': 1}
+{ 'targets': 0},
+{ 'targets': 1},
+{ 'targets': 2},
+{ 'targets': 3},
+{ 'targets': 4},
+{ 'targets': 5},
+{ 'targets': 6},
+{ 'targets': 7}
+
         ],
         order: [[1, 'DESC']], 
         buttons: [],
@@ -51,15 +57,15 @@ jQuery().ready(function () {
 
 
     $.contextMenu({
-        selector: '#tbl_stts_wp tr', 
+        selector: '#tbl_mlite_antrian_referensi tr', 
         trigger: 'right',
         callback: function(key, options) {
-          var rowData = var_tbl_stts_wp.rows({ selected: true }).data()[0];
+          var rowData = var_tbl_mlite_antrian_referensi.rows({ selected: true }).data()[0];
           if (rowData != null) {
-            var stts = rowData['stts'];
+var tanggal_periksa = rowData['tanggal_periksa'];
             switch (key) {
                 case 'detail' :
-                    OpenModal(mlite.url + '/stts_wp/detail/' + stts + '?t=' + mlite.token);
+                    OpenModal(mlite.url + '/mlite_antrian_referensi/detail/' + tanggal_periksa + '?t=' + mlite.token);
                 break;
                 default :
                 break
@@ -77,26 +83,46 @@ jQuery().ready(function () {
     // FORM VALIDASI
     // ==============================================================
 
-    $("form[name='form_stts_wp']").validate({
+    $("form[name='form_mlite_antrian_referensi']").validate({
         rules: {
-            stts: 'required',
-            ktg: 'required'
+tanggal_periksa: 'required',
+no_rkm_medis: 'required',
+nomor_kartu: 'required',
+nomor_referensi: 'required',
+kodebooking: 'required',
+jenis_kunjungan: 'required',
+status_kirim: 'required',
+keterangan: 'required'
+
         },
         messages: {
-            stts:'Stts tidak boleh kosong!',
-            ktg:'Ktg tidak boleh kosong!'
+tanggal_periksa:'Tanggal Periksa tidak boleh kosong!',
+no_rkm_medis:'No Rkm Medis tidak boleh kosong!',
+nomor_kartu:'Nomor Kartu tidak boleh kosong!',
+nomor_referensi:'Nomor Referensi tidak boleh kosong!',
+kodebooking:'Kodebooking tidak boleh kosong!',
+jenis_kunjungan:'Jenis Kunjungan tidak boleh kosong!',
+status_kirim:'Status Kirim tidak boleh kosong!',
+keterangan:'Keterangan tidak boleh kosong!'
+
         },
         submitHandler: function (form) {
-            var stts= $('#stts').val();
-            var ktg= $('#ktg').val();
+var tanggal_periksa= $('#tanggal_periksa').val();
+var no_rkm_medis= $('#no_rkm_medis').val();
+var nomor_kartu= $('#nomor_kartu').val();
+var nomor_referensi= $('#nomor_referensi').val();
+var kodebooking= $('#kodebooking').val();
+var jenis_kunjungan= $('#jenis_kunjungan').val();
+var status_kirim= $('#status_kirim').val();
+var keterangan= $('#keterangan').val();
 
-            var typeact = $('#typeact').val();
+var typeact = $('#typeact').val();
 
-            var formData = new FormData(form); // tambahan
-            formData.append('typeact', typeact); // tambahan
+var formData = new FormData(form); // tambahan
+formData.append('typeact', typeact); // tambahan
 
             $.ajax({
-                url: "{?=url(['stts_wp','aksi'])?}",
+                url: "{?=url(['mlite_antrian_referensi','aksi'])?}",
                 method: "POST",
                 contentType: false, // tambahan
                 processData: false, // tambahan
@@ -108,7 +134,7 @@ jQuery().ready(function () {
                     if (typeact == "add") {
                         if(data.status === 'success') {
                             bootbox.alert('<span class="text-success">' + data.msg + '</span>');
-                            $("#modal_stts_wp").modal('hide');
+                            $("#modal_mlite_antrian_referensi").modal('hide');
                         } else {
                             bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                         }    
@@ -116,69 +142,55 @@ jQuery().ready(function () {
                     else if (typeact == "edit") {
                         if(data.status === 'success') {
                             bootbox.alert('<span class="text-success">' + data.msg + '</span>');
-                            $("#modal_stts_wp").modal('hide');
+                            $("#modal_mlite_antrian_referensi").modal('hide');
                         } else {
                             bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                         }    
                     }
-                    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
-                        let payload = {
-                            'action' : typeact
-                        }
-                        ws.send(JSON.stringify(payload));
-                    } 
-                    var_tbl_stts_wp.draw();
+                    var_tbl_mlite_antrian_referensi.draw();
                 }
             })
         }
     });
 
-
-    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
-        ws.onmessage = function(response){
-            try{
-                output = JSON.parse(response.data);
-                if(output['action'] == 'add'){
-                    var_tbl_stts_wp.draw();
-                }
-                if(output['action'] == 'edit'){
-                    var_tbl_stts_wp.draw();
-                }
-                if(output['action'] == 'del'){
-                    var_tbl_stts_wp.draw();
-                }
-            }catch(e){
-                console.log(e);
-            }
-        }
-    }
-
     // ==============================================================
     // KETIKA TOMBOL SEARCH DITEKAN
     // ==============================================================
-    $('#filter_search_stts_wp').click(function () {
-        var_tbl_stts_wp.draw();
+    $('#filter_search_mlite_antrian_referensi').click(function () {
+        var_tbl_mlite_antrian_referensi.draw();
     });
 
     // ===========================================
     // KETIKA TOMBOL EDIT DITEKAN
     // ===========================================
 
-    $("#edit_data_stts_wp").click(function () {
-        var rowData = var_tbl_stts_wp.rows({ selected: true }).data()[0];
+    $("#edit_data_mlite_antrian_referensi").click(function () {
+        var rowData = var_tbl_mlite_antrian_referensi.rows({ selected: true }).data()[0];
         if (rowData != null) {
 
-            var stts = rowData['stts'];
-            var ktg = rowData['ktg'];
+            var tanggal_periksa = rowData['tanggal_periksa'];
+var no_rkm_medis = rowData['no_rkm_medis'];
+var nomor_kartu = rowData['nomor_kartu'];
+var nomor_referensi = rowData['nomor_referensi'];
+var kodebooking = rowData['kodebooking'];
+var jenis_kunjungan = rowData['jenis_kunjungan'];
+var status_kirim = rowData['status_kirim'];
+var keterangan = rowData['keterangan'];
 
             $("#typeact").val("edit");
   
-            $('#stts').val(stts);
-            $('#ktg').val(ktg);
+            $('#tanggal_periksa').val(tanggal_periksa);
+$('#no_rkm_medis').val(no_rkm_medis);
+$('#nomor_kartu').val(nomor_kartu);
+$('#nomor_referensi').val(nomor_referensi);
+$('#kodebooking').val(kodebooking);
+$('#jenis_kunjungan').val(jenis_kunjungan);
+$('#status_kirim').val(status_kirim);
+$('#keterangan').val(keterangan);
 
-            $("#stts").prop('readonly', true); // GA BISA DIEDIT KALI READONLY
-            $('#modal-title').text("Edit Data Stts Wp");
-            $("#modal_stts_wp").modal('show');
+            $("#tanggal_periksa").prop('readonly', true); // GA BISA DIEDIT KALI READONLY
+            $('#modal-title').text("Edit Data Mlite Antrian Referensi");
+            $("#modal_mlite_antrian_referensi").modal('show');
         }
         else {
             bootbox.alert("Silakan pilih data yang akan di edit.");
@@ -189,19 +201,19 @@ jQuery().ready(function () {
     // ==============================================================
     // TOMBOL  DELETE DI CLICK
     // ==============================================================
-    jQuery("#hapus_data_stts_wp").click(function () {
-        var rowData = var_tbl_stts_wp.rows({ selected: true }).data()[0];
+    jQuery("#hapus_data_mlite_antrian_referensi").click(function () {
+        var rowData = var_tbl_mlite_antrian_referensi.rows({ selected: true }).data()[0];
 
 
         if (rowData) {
-            var stts = rowData['stts'];
-            bootbox.confirm('Anda yakin akan menghapus data dengan stts="' + stts, function(result) {
+var tanggal_periksa = rowData['tanggal_periksa'];
+            bootbox.confirm('Anda yakin akan menghapus data dengan tanggal_periksa="' + tanggal_periksa, function(result) {
                 if(result) {
                     $.ajax({
-                        url: "{?=url(['stts_wp','aksi'])?}",
+                        url: "{?=url(['mlite_antrian_referensi','aksi'])?}",
                         method: "POST",
                         data: {
-                            stts: stts,
+                            tanggal_periksa: tanggal_periksa,
                             typeact: 'del'
                         },
                         success: function (data) {
@@ -213,7 +225,7 @@ jQuery().ready(function () {
                             } else {
                                 bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                             }    
-                            var_tbl_stts_wp.draw();
+                            var_tbl_mlite_antrian_referensi.draw();
                         }
                     })    
                 }
@@ -228,50 +240,62 @@ jQuery().ready(function () {
     // ==============================================================
     // TOMBOL TAMBAH DATA DI CLICK
     // ==============================================================
-    jQuery("#tambah_data_stts_wp").click(function () {
+    jQuery("#tambah_data_mlite_antrian_referensi").click(function () {
 
-        $('#stts').val('');
-        $('#ktg').val('');
+        $('#tanggal_periksa').val('');
+$('#no_rkm_medis').val('');
+$('#nomor_kartu').val('');
+$('#nomor_referensi').val('');
+$('#kodebooking').val('');
+$('#jenis_kunjungan').val('');
+$('#status_kirim').val('');
+$('#keterangan').val('');
 
         $("#typeact").val("add");
-        $("#stts").prop('readonly', false);
+        $("#tanggal_periksa").prop('readonly', false);
         
-        $('#modal-title').text("Tambah Data Stts Wp");
-        $("#modal_stts_wp").modal('show');
+        $('#modal-title').text("Tambah Data Mlite Antrian Referensi");
+        $("#modal_mlite_antrian_referensi").modal('show');
     });
 
     // ===========================================
     // Ketika tombol lihat data di tekan
     // ===========================================
-    $("#lihat_data_stts_wp").click(function () {
+    $("#lihat_data_mlite_antrian_referensi").click(function () {
 
-        var search_field_stts_wp = $('#search_field_stts_wp').val();
-        var search_text_stts_wp = $('#search_text_stts_wp').val();
+        var search_field_mlite_antrian_referensi = $('#search_field_mlite_antrian_referensi').val();
+        var search_text_mlite_antrian_referensi = $('#search_text_mlite_antrian_referensi').val();
 
         $.ajax({
-            url: "{?=url(['stts_wp','aksi'])?}",
+            url: "{?=url(['mlite_antrian_referensi','aksi'])?}",
             method: "POST",
             data: {
                 typeact: 'lihat', 
-                search_field_stts_wp: search_field_stts_wp, 
-                search_text_stts_wp: search_text_stts_wp
+                search_field_mlite_antrian_referensi: search_field_mlite_antrian_referensi, 
+                search_text_mlite_antrian_referensi: search_text_mlite_antrian_referensi
             },
             dataType: 'json',
             success: function (res) {
-                var eTable = "<div class='table-responsive'><table id='tbl_lihat_stts_wp' class='table display dataTable' style='width:100%'><thead><th>Status</th><th>Keterangan</th></thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_mlite_antrian_referensi' class='table display dataTable' style='width:100%'><thead><th>Tanggal Periksa</th><th>No Rkm Medis</th><th>Nomor Kartu</th><th>Nomor Referensi</th><th>Kodebooking</th><th>Jenis Kunjungan</th><th>Status Kirim</th><th>Keterangan</th></thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
-                    eTable += '<td>' + res[i]['stts'] + '</td>';
-                    eTable += '<td>' + res[i]['ktg'] + '</td>';
+                    eTable += '<td>' + res[i]['tanggal_periksa'] + '</td>';
+eTable += '<td>' + res[i]['no_rkm_medis'] + '</td>';
+eTable += '<td>' + res[i]['nomor_kartu'] + '</td>';
+eTable += '<td>' + res[i]['nomor_referensi'] + '</td>';
+eTable += '<td>' + res[i]['kodebooking'] + '</td>';
+eTable += '<td>' + res[i]['jenis_kunjungan'] + '</td>';
+eTable += '<td>' + res[i]['status_kirim'] + '</td>';
+eTable += '<td>' + res[i]['keterangan'] + '</td>';
                     eTable += "</tr>";
                 }
                 eTable += "</tbody></table></div>";
-                $('#forTable_stts_wp').html(eTable);
+                $('#forTable_mlite_antrian_referensi').html(eTable);
             }
         });
 
         $('#modal-title').text("Lihat Data");
-        $("#modal_lihat_stts_wp").modal('show');
+        $("#modal_lihat_mlite_antrian_referensi").modal('show');
     });
         
     // ===========================================
@@ -290,10 +314,10 @@ jQuery().ready(function () {
         doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
         doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
         doc.setFontSize(14);
-        doc.text("Tabel Data Status Wajib Pajak", 20, 95, null, null, null);
+        doc.text("Tabel Data Mlite Antrian Referensi", 20, 95, null, null, null);
         const totalPagesExp = "{total_pages_count_string}";        
         doc.autoTable({
-            html: '#tbl_lihat_stts_wp',
+            html: '#tbl_lihat_mlite_antrian_referensi',
             startY: 105,
             margin: {
                 left: 20, 
@@ -316,7 +340,7 @@ jQuery().ready(function () {
         if (typeof doc.putTotalPages === 'function') {
             doc.putTotalPages(totalPagesExp);
         }
-        // doc.save('table_data_stts_wp.pdf');
+        // doc.save('table_data_mlite_antrian_referensi.pdf');
         window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
               
     })
@@ -325,17 +349,17 @@ jQuery().ready(function () {
     // Ketika tombol export xlsx di tekan
     // ===========================================
     $("#export_xlsx").click(function () {
-        let tbl1 = document.getElementById("tbl_lihat_stts_wp");
+        let tbl1 = document.getElementById("tbl_lihat_mlite_antrian_referensi");
         let worksheet_tmp1 = XLSX.utils.table_to_sheet(tbl1);
         let a = XLSX.utils.sheet_to_json(worksheet_tmp1, { header: 1 });
         let worksheet1 = XLSX.utils.json_to_sheet(a, { skipHeader: true });
         const new_workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(new_workbook, worksheet1, "Data stts_wp");
+        XLSX.utils.book_append_sheet(new_workbook, worksheet1, "Data mlite_antrian_referensi");
         XLSX.writeFile(new_workbook, 'tmp_file.xls');
     })
 
     $("#view_chart").click(function () {
-        window.open(mlite.url + '/stts_wp/chart?t=' + mlite.token, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+        window.open(mlite.url + '/mlite_antrian_referensi/chart?t=' + mlite.token, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
     })   
 
 });

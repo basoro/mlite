@@ -75,7 +75,12 @@
   <div class='col-xxl-3 col-lg-4 col-sm-6'>
     <div class='mb-3'>
       <label class='form-label' for='kd_poli_rs'>Kd Poli Rs</label>
-      <input type='text' class='form-control' id='kd_poli_rs' name='kd_poli_rs' />
+      <select name="kd_poli_rs" id="kd_poli_rs" class="form-select">
+        <option value="">Select</option>
+        {loop: $maping_poli_bpjs.poliklinik} 
+        <option value="{$value.kd_poli}">{$value.nm_poli}</option>
+        {/loop}
+      </select>
     <div class='invalid-feedback error'></div>
     </div>
   </div>
@@ -89,7 +94,10 @@
   <div class='col-xxl-3 col-lg-4 col-sm-6'>
     <div class='mb-3'>
       <label class='form-label' for='nm_poli_bpjs'>Nm Poli Bpjs</label>
-      <input type='text' class='form-control' id='nm_poli_bpjs' name='nm_poli_bpjs' />
+      <div class="input-group">
+        <input type='text' class='form-control' id='nm_poli_bpjs' name='nm_poli_bpjs' />
+        <button type="button" id="cari_referensi_poli" class="btn btn-primary"><i class="ri-refresh-line"></i></button>
+      </div>
     <div class='invalid-feedback error'></div>
     </div>
   </div>
@@ -132,6 +140,23 @@
   <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
     <div class="modal-content">
       ...
+    </div>
+  </div>
+</div>
+
+<div id="modal_cari_referensi_poli" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Maping Poli Bpjs</span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_referensi_poli"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup </button>
+      </div>
     </div>
   </div>
 </div>

@@ -24,12 +24,10 @@ jQuery().ready(function () {
             }
         },
         "fnDrawCallback": function () {
-            $('#more_data_icd9').on('click', function(e) {
+            $('#import_data_icd9').on('click', function(e) {
                 e.preventDefault();
-                var clientX = e.originalEvent.clientX;
-                var clientY = e.originalEvent.clientY;
-                $('#tbl_icd9 tr').contextMenu({x: clientX, y: clientY});
-            });          
+                OpenModal(mlite.url + '/icd9/import?t=' + mlite.token);
+            }); 
         }, 
         "columns": [
 { 'data': 'kode' },

@@ -1,5 +1,5 @@
 <div class="modal-header">
-    <h4 class="modal-title">Detail Set No Rkm Medis</h4>
+    <h4 class="modal-title">Detail Set No Rekam Medis</h4>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
@@ -19,8 +19,7 @@ $(document).ready(function() {
         dataType: 'json',
         success: function (res) {
             var eTable = "<div class='table-responsive'><table id='tbl_detail_set_no_rkm_medis' class='table display dataTable' style='width:100%'><thead></thead>";
-eTable += '<tr><td>No Rkm Medis</td><td>' + res.msg['no_rkm_medis'] + '</td><tr>';
-
+            eTable += '<tr><td>No Rekam Medis</td><td>' + res.msg['no_rkm_medis'] + '</td><tr>';
             eTable += "</tbody></table></div>";
             $('#detail_set_no_rkm_medis').html(eTable);
         }

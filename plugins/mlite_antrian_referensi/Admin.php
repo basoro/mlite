@@ -1,5 +1,5 @@
 <?php
-namespace Plugins\Maping_Dokter_Dpjpvclaim;
+namespace Plugins\Mlite_Antrian_Referensi;
 
 use Systems\AdminModule;
 
@@ -16,19 +16,17 @@ class Admin extends AdminModule
     public function getManage()
     {
         $this->_addHeaderFiles();
-        $this->assign['dokter'] = $this->core->db->select('dokter', '*', ['status' => '1']);
-        $this->assign['maping_poli_bpjs'] = $this->core->db->select('maping_poli_bpjs', '*');
-        $disabled_menu = $this->core->loadDisabledMenu('maping_dokter_dpjpvclaim'); 
+        $disabled_menu = $this->core->loadDisabledMenu('mlite_antrian_referensi'); 
         foreach ($disabled_menu as &$row) { 
           if ($row == "true" ) $row = "disabled"; 
         } 
         unset($row);
-        return $this->draw('manage.html', ['disabled_menu' => $disabled_menu, 'maping_dokter_dpjpvclaim' => $this->assign]);
+        return $this->draw('manage.html', ['disabled_menu' => $disabled_menu]);
     }
 
     public function postData()
     {
-        $column_name = isset_or($_POST['column_name'], 'kd_dokter');
+        $column_name = isset_or($_POST['column_name'], 'tanggal_periksa');
         $column_order = isset_or($_POST['column_order'], 'asc');
         $draw = isset_or($_POST['draw'], '0');
         $row1 = isset_or($_POST['start'], '0');
@@ -39,33 +37,38 @@ class Admin extends AdminModule
         $searchValue = isset_or($_POST['search']['value']); // Search value
 
         ## Custom Field value
-        $search_field_maping_dokter_dpjpvclaim= isset_or($_POST['search_field_maping_dokter_dpjpvclaim']);
-        $search_text_maping_dokter_dpjpvclaim = isset_or($_POST['search_text_maping_dokter_dpjpvclaim']);
+        $search_field_mlite_antrian_referensi= isset_or($_POST['search_field_mlite_antrian_referensi']);
+        $search_text_mlite_antrian_referensi = isset_or($_POST['search_text_mlite_antrian_referensi']);
 
-        if ($search_text_maping_dokter_dpjpvclaim != '') {
-          $where[$search_field_maping_dokter_dpjpvclaim.'[~]'] = $search_text_maping_dokter_dpjpvclaim;
+        if ($search_text_mlite_antrian_referensi != '') {
+          $where[$search_field_mlite_antrian_referensi.'[~]'] = $search_text_mlite_antrian_referensi;
           $where = ["AND" => $where];
         } else {
           $where = [];
         }
 
         ## Total number of records without filtering
-        $totalRecords = $this->core->db->count('maping_dokter_dpjpvclaim', '*');
+        $totalRecords = $this->core->db->count('mlite_antrian_referensi', '*');
 
         ## Total number of records with filtering
-        $totalRecordwithFilter = $this->core->db->count('maping_dokter_dpjpvclaim', '*', $where);
+        $totalRecordwithFilter = $this->core->db->count('mlite_antrian_referensi', '*', $where);
 
         ## Fetch records
         $where['ORDER'] = [$columnName => strtoupper($columnSortOrder)];
         $where['LIMIT'] = [$row1, $rowperpage];
-        $result = $this->core->db->select('maping_dokter_dpjpvclaim', '*', $where);
+        $result = $this->core->db->select('mlite_antrian_referensi', '*', $where);
 
         $data = array();
         foreach($result as $row) {
             $data[] = array(
-                'kd_dokter'=>$row['kd_dokter'],
-'kd_dokter_bpjs'=>$row['kd_dokter_bpjs'],
-'nm_dokter_bpjs'=>$row['nm_dokter_bpjs']
+                'tanggal_periksa'=>$row['tanggal_periksa'],
+'no_rkm_medis'=>$row['no_rkm_medis'],
+'nomor_kartu'=>$row['nomor_kartu'],
+'nomor_referensi'=>$row['nomor_referensi'],
+'kodebooking'=>$row['kodebooking'],
+'jenis_kunjungan'=>$row['jenis_kunjungan'],
+'status_kirim'=>$row['status_kirim'],
+'keterangan'=>$row['keterangan']
 
             );
         }
@@ -80,7 +83,7 @@ class Admin extends AdminModule
         );
 
         if($this->settings('settings', 'logquery') == true) {
-          $this->core->LogQuery('maping_dokter_dpjpvclaim => postData');
+          $this->core->LogQuery('mlite_antrian_referensi => postData');
         }
 
         echo json_encode($response);
@@ -97,7 +100,7 @@ class Admin extends AdminModule
 
         if ($act=='add') {
 
-            if($this->core->loadDisabledMenu('maping_dokter_dpjpvclaim')['create'] == 'true') {
+            if($this->core->loadDisabledMenu('mlite_antrian_referensi')['create'] == 'true') {
               http_response_code(403);
               $data = array(
                 'code' => '403', 
@@ -108,13 +111,18 @@ class Admin extends AdminModule
               exit();
             }
 
-        $kd_dokter = $_POST['kd_dokter'];
-$kd_dokter_bpjs = $_POST['kd_dokter_bpjs'];
-$nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
+        $tanggal_periksa = $_POST['tanggal_periksa'];
+$no_rkm_medis = $_POST['no_rkm_medis'];
+$nomor_kartu = $_POST['nomor_kartu'];
+$nomor_referensi = $_POST['nomor_referensi'];
+$kodebooking = $_POST['kodebooking'];
+$jenis_kunjungan = $_POST['jenis_kunjungan'];
+$status_kirim = $_POST['status_kirim'];
+$keterangan = $_POST['keterangan'];
 
             
-            $result = $this->core->db->insert('maping_dokter_dpjpvclaim', [
-'kd_dokter'=>$kd_dokter, 'kd_dokter_bpjs'=>$kd_dokter_bpjs, 'nm_dokter_bpjs'=>$nm_dokter_bpjs
+            $result = $this->core->db->insert('mlite_antrian_referensi', [
+'tanggal_periksa'=>$tanggal_periksa, 'no_rkm_medis'=>$no_rkm_medis, 'nomor_kartu'=>$nomor_kartu, 'nomor_referensi'=>$nomor_referensi, 'kodebooking'=>$kodebooking, 'jenis_kunjungan'=>$jenis_kunjungan, 'status_kirim'=>$status_kirim, 'keterangan'=>$keterangan
             ]);
 
 
@@ -135,14 +143,14 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
             }
 
             if($this->settings('settings', 'logquery') == true) {
-              $this->core->LogQuery('maping_dokter_dpjpvclaim => postAksi => add');
+              $this->core->LogQuery('mlite_antrian_referensi => postAksi => add');
             }
 
             echo json_encode($data);    
         }
         if ($act=="edit") {
 
-            if($this->core->loadDisabledMenu('maping_dokter_dpjpvclaim')['update'] == 'true') {
+            if($this->core->loadDisabledMenu('mlite_antrian_referensi')['update'] == 'true') {
               http_response_code(403);
               $data = array(
                 'code' => '403', 
@@ -153,17 +161,22 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
               exit();
             }
 
-        $kd_dokter = $_POST['kd_dokter'];
-$kd_dokter_bpjs = $_POST['kd_dokter_bpjs'];
-$nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
+        $tanggal_periksa = $_POST['tanggal_periksa'];
+$no_rkm_medis = $_POST['no_rkm_medis'];
+$nomor_kartu = $_POST['nomor_kartu'];
+$nomor_referensi = $_POST['nomor_referensi'];
+$kodebooking = $_POST['kodebooking'];
+$jenis_kunjungan = $_POST['jenis_kunjungan'];
+$status_kirim = $_POST['status_kirim'];
+$keterangan = $_POST['keterangan'];
 
 
         // BUANG FIELD PERTAMA
 
-            $result = $this->core->db->update('maping_dokter_dpjpvclaim', [
-'kd_dokter'=>$kd_dokter, 'kd_dokter_bpjs'=>$kd_dokter_bpjs, 'nm_dokter_bpjs'=>$nm_dokter_bpjs
+            $result = $this->core->db->update('mlite_antrian_referensi', [
+'tanggal_periksa'=>$tanggal_periksa, 'no_rkm_medis'=>$no_rkm_medis, 'nomor_kartu'=>$nomor_kartu, 'nomor_referensi'=>$nomor_referensi, 'kodebooking'=>$kodebooking, 'jenis_kunjungan'=>$jenis_kunjungan, 'status_kirim'=>$status_kirim, 'keterangan'=>$keterangan
             ], [
-              'kd_dokter'=>$kd_dokter
+              'tanggal_periksa'=>$tanggal_periksa
             ]);
 
 
@@ -184,7 +197,7 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
             }
 
             if($this->settings('settings', 'logquery') == true) {
-              $this->core->LogQuery('maping_dokter_dpjpvclaim => postAksi => edit');
+              $this->core->LogQuery('mlite_antrian_referensi => postAksi => edit');
             }
 
             echo json_encode($data);             
@@ -192,7 +205,7 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
 
         if ($act=="del") {
 
-            if($this->core->loadDisabledMenu('maping_dokter_dpjpvclaim')['delete'] == 'true') {
+            if($this->core->loadDisabledMenu('mlite_antrian_referensi')['delete'] == 'true') {
               http_response_code(403);
               $data = array(
                 'code' => '403', 
@@ -203,10 +216,10 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
               exit();
             }
 
-            $kd_dokter= $_POST['kd_dokter'];
-            $result = $this->core->db->delete('maping_dokter_dpjpvclaim', [
+            $kodebooking= $_POST['kodebooking'];
+            $result = $this->core->db->delete('mlite_antrian_referensi', [
               'AND' => [
-                'kd_dokter'=>$kd_dokter
+                'kodebooking'=>$kodebooking
               ]
             ]);
 
@@ -227,7 +240,7 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
             }
 
             if($this->settings('settings', 'logquery') == true) {
-              $this->core->LogQuery('maping_dokter_dpjpvclaim => postAksi => del');
+              $this->core->LogQuery('mlite_antrian_referensi => postAksi => del');
             }
 
             echo json_encode($data);                    
@@ -235,7 +248,7 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
 
         if ($act=="lihat") {
 
-            if($this->core->loadDisabledMenu('maping_dokter_dpjpvclaim')['read'] == 'true') {
+            if($this->core->loadDisabledMenu('mlite_antrian_referensi')['read'] == 'true') {
               http_response_code(403);
               $data = array(
                 'code' => '403', 
@@ -246,30 +259,35 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
               exit();
             }
 
-            $search_field_maping_dokter_dpjpvclaim= $_POST['search_field_maping_dokter_dpjpvclaim'];
-            $search_text_maping_dokter_dpjpvclaim = $_POST['search_text_maping_dokter_dpjpvclaim'];
+            $search_field_mlite_antrian_referensi= $_POST['search_field_mlite_antrian_referensi'];
+            $search_text_mlite_antrian_referensi = $_POST['search_text_mlite_antrian_referensi'];
 
-            if ($search_text_maping_dokter_dpjpvclaim != '') {
-              $where[$search_field_maping_dokter_dpjpvclaim.'[~]'] = $search_text_maping_dokter_dpjpvclaim;
+            if ($search_text_mlite_antrian_referensi != '') {
+              $where[$search_field_mlite_antrian_referensi.'[~]'] = $search_text_mlite_antrian_referensi;
               $where = ["AND" => $where];
             } else {
               $where = [];
             }
 
             ## Fetch records
-            $result = $this->core->db->select('maping_dokter_dpjpvclaim', '*', $where);
+            $result = $this->core->db->select('mlite_antrian_referensi', '*', $where);
 
             $data = array();
             foreach($result as $row) {
                 $data[] = array(
-                    'kd_dokter'=>$row['kd_dokter'],
-'kd_dokter_bpjs'=>$row['kd_dokter_bpjs'],
-'nm_dokter_bpjs'=>$row['nm_dokter_bpjs']
+                    'tanggal_periksa'=>$row['tanggal_periksa'],
+'no_rkm_medis'=>$row['no_rkm_medis'],
+'nomor_kartu'=>$row['nomor_kartu'],
+'nomor_referensi'=>$row['nomor_referensi'],
+'kodebooking'=>$row['kodebooking'],
+'jenis_kunjungan'=>$row['jenis_kunjungan'],
+'status_kirim'=>$row['status_kirim'],
+'keterangan'=>$row['keterangan']
                 );
             }
 
             if($this->settings('settings', 'logquery') == true) {
-              $this->core->LogQuery('maping_dokter_dpjpvclaim => postAksi => lihat');
+              $this->core->LogQuery('mlite_antrian_referensi => postAksi => lihat');
             }
             
             echo json_encode($data);
@@ -277,10 +295,10 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
         exit();
     }
 
-    public function getRead($kd_dokter)
+    public function getRead($tanggal_periksa)
     {
 
-        if($this->core->loadDisabledMenu('maping_dokter_dpjpvclaim')['read'] == 'true') {
+        if($this->core->loadDisabledMenu('mlite_antrian_referensi')['read'] == 'true') {
           http_response_code(403);
           $data = array(
             'code' => '403', 
@@ -291,7 +309,7 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
           exit();
         }
 
-        $result =  $this->core->db->get('maping_dokter_dpjpvclaim', '*', ['kd_dokter' => $kd_dokter]);
+        $result =  $this->core->db->get('mlite_antrian_referensi', '*', ['tanggal_periksa' => $tanggal_periksa]);
 
         if (!empty($result)){
           http_response_code(200);
@@ -310,17 +328,17 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
         }
 
         if($this->settings('settings', 'logquery') == true) {
-          $this->core->LogQuery('maping_dokter_dpjpvclaim => getRead');
+          $this->core->LogQuery('mlite_antrian_referensi => getRead');
         }
 
         echo json_encode($data);        
         exit();
     }
 
-    public function getDetail($kd_dokter)
+    public function getDetail($tanggal_periksa)
     {
 
-        if($this->core->loadDisabledMenu('maping_dokter_dpjpvclaim')['read'] == 'true') {
+        if($this->core->loadDisabledMenu('mlite_antrian_referensi')['read'] == 'true') {
           http_response_code(403);
           $data = array(
             'code' => '403', 
@@ -334,10 +352,10 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
         $settings =  $this->settings('settings');
 
         if($this->settings('settings', 'logquery') == true) {
-          $this->core->LogQuery('maping_dokter_dpjpvclaim => getDetail');
+          $this->core->LogQuery('mlite_antrian_referensi => getDetail');
         }
 
-        echo $this->draw('detail.html', ['settings' => $settings, 'kd_dokter' => $kd_dokter]);
+        echo $this->draw('detail.html', ['settings' => $settings, 'tanggal_periksa' => $tanggal_periksa]);
         exit();
     }
 
@@ -347,23 +365,23 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
         $type = 'pie';
       }
 
-      $labels = $this->core->db->select('maping_dokter_dpjpvclaim', 'kd_dokter_bpjs', ['GROUP' => 'kd_dokter_bpjs']);
-      $datasets = $this->core->db->select('maping_dokter_dpjpvclaim', ['count' => \Medoo\Medoo::raw('COUNT(<kd_dokter_bpjs>)')], ['GROUP' => 'kd_dokter_bpjs']);
+      $labels = $this->core->db->select('mlite_antrian_referensi', 'jenis_kunjungan', ['GROUP' => 'jenis_kunjungan']);
+      $datasets = $this->core->db->select('mlite_antrian_referensi', ['count' => \Medoo\Medoo::raw('COUNT(<jenis_kunjungan>)')], ['GROUP' => 'jenis_kunjungan']);
 
       if(isset_or($column)) {
-        $labels = $this->core->db->select('maping_dokter_dpjpvclaim', ''.$column.'', ['GROUP' => ''.$column.'']);
-        $datasets = $this->core->db->select('maping_dokter_dpjpvclaim', ['count' => \Medoo\Medoo::raw('COUNT(<'.$column.'>)')], ['GROUP' => ''.$column.'']);          
+        $labels = $this->core->db->select('mlite_antrian_referensi', ''.$column.'', ['GROUP' => ''.$column.'']);
+        $datasets = $this->core->db->select('mlite_antrian_referensi', ['count' => \Medoo\Medoo::raw('COUNT(<'.$column.'>)')], ['GROUP' => ''.$column.'']);          
       }
 
       $database = DBNAME;
-      $nama_table = 'maping_dokter_dpjpvclaim';
+      $nama_table = 'mlite_antrian_referensi';
 
       $get_table = $this->core->db->pdo->prepare("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='$database' AND TABLE_NAME='$nama_table'");
 	    $get_table->execute();
 	    $result = $get_table->fetchAll();
 
       if($this->settings('settings', 'logquery') == true) {
-        $this->core->LogQuery('maping_dokter_dpjpvclaim => getChart');
+        $this->core->LogQuery('mlite_antrian_referensi => getChart');
       }
 
       echo $this->draw('chart.html', ['type' => $type, 'column' => $result, 'labels' => json_encode($labels), 'datasets' => json_encode(array_column($datasets, 'count'))]);
@@ -373,7 +391,7 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
     public function getCss()
     {
         header('Content-type: text/css');
-        echo $this->draw(MODULES.'/maping_dokter_dpjpvclaim/css/styles.css');
+        echo $this->draw(MODULES.'/mlite_antrian_referensi/css/styles.css');
         exit();
     }
 
@@ -381,7 +399,7 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
     {
         header('Content-type: text/javascript');
         $settings = $this->settings('settings');
-        echo $this->draw(MODULES.'/maping_dokter_dpjpvclaim/js/scripts.js', ['settings' => $settings, 'disabled_menu' => $this->core->loadDisabledMenu('maping_dokter_dpjpvclaim')]);
+        echo $this->draw(MODULES.'/mlite_antrian_referensi/js/scripts.js', ['settings' => $settings, 'disabled_menu' => $this->core->loadDisabledMenu('mlite_antrian_referensi')]);
         exit();
     }
 
@@ -396,8 +414,8 @@ $nm_dokter_bpjs = $_POST['nm_dokter_bpjs'];
         $this->core->addJS(url('assets/vendor/datatables/datatables.min.js'), 'footer');
         $this->core->addJS(url('assets/js/jquery.contextMenu.js'), 'footer');
 
-        $this->core->addCSS(url([ 'maping_dokter_dpjpvclaim', 'css']));
-        $this->core->addJS(url([ 'maping_dokter_dpjpvclaim', 'javascript']), 'footer');
+        $this->core->addCSS(url([ 'mlite_antrian_referensi', 'css']));
+        $this->core->addJS(url([ 'mlite_antrian_referensi', 'javascript']), 'footer');
     }
 
 }

@@ -62,9 +62,8 @@ class Admin extends AdminModule
         foreach($result as $row) {
             $data[] = array(
                 'stts'=>$row['stts'],
-'ktg'=>$row['ktg'],
-'indek'=>$row['indek']
-
+                'ktg'=>$row['ktg'],
+                'indek'=>$row['indek']
             );
         }
 
@@ -106,13 +105,13 @@ class Admin extends AdminModule
               exit();
             }
 
-        $stts = $_POST['stts'];
-$ktg = $_POST['ktg'];
-$indek = $_POST['indek'];
+            $stts = $_POST['stts'];
+            $ktg = $_POST['ktg'];
+            $indek = $_POST['indek'];
 
             
             $result = $this->core->db->insert('stts_kerja', [
-'stts'=>$stts, 'ktg'=>$ktg, 'indek'=>$indek
+              'stts'=>$stts, 'ktg'=>$ktg, 'indek'=>$indek
             ]);
 
 
@@ -151,15 +150,15 @@ $indek = $_POST['indek'];
               exit();
             }
 
-        $stts = $_POST['stts'];
-$ktg = $_POST['ktg'];
-$indek = $_POST['indek'];
+            $stts = $_POST['stts'];
+            $ktg = $_POST['ktg'];
+            $indek = $_POST['indek'];
 
 
-        // BUANG FIELD PERTAMA
+            // BUANG FIELD PERTAMA
 
             $result = $this->core->db->update('stts_kerja', [
-'stts'=>$stts, 'ktg'=>$ktg, 'indek'=>$indek
+              'ktg'=>$ktg, 'indek'=>$indek
             ], [
               'stts'=>$stts
             ]);
@@ -261,8 +260,8 @@ $indek = $_POST['indek'];
             foreach($result as $row) {
                 $data[] = array(
                     'stts'=>$row['stts'],
-'ktg'=>$row['ktg'],
-'indek'=>$row['indek']
+                    'ktg'=>$row['ktg'],
+                    'indek'=>$row['indek']
                 );
             }
 
