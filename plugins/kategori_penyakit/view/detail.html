@@ -19,10 +19,9 @@ $(document).ready(function() {
         dataType: 'json',
         success: function (res) {
             var eTable = "<div class='table-responsive'><table id='tbl_detail_kategori_penyakit' class='table display dataTable' style='width:100%'><thead></thead>";
-eTable += '<tr><td>Kd Ktg</td><td>' + res.msg['kd_ktg'] + '</td><tr>';
-eTable += '<tr><td>Nm Kategori</td><td>' + res.msg['nm_kategori'] + '</td><tr>';
-eTable += '<tr><td>Ciri Umum</td><td>' + res.msg['ciri_umum'] + '</td><tr>';
-
+            eTable += '<tr><td>Kode Kategori</td><td>' + res.msg['kd_ktg'] + '</td><tr>';
+            eTable += '<tr><td>Nama Kategori</td><td>' + res.msg['nm_kategori'] + '</td><tr>';
+            eTable += '<tr><td>Ciri Umum</td><td>' + res.msg['ciri_umum'] + '</td><tr>';
             eTable += "</tbody></table></div>";
             $('#detail_kategori_penyakit').html(eTable);
         }

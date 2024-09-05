@@ -19,10 +19,9 @@ $(document).ready(function() {
         dataType: 'json',
         success: function (res) {
             var eTable = "<div class='table-responsive'><table id='tbl_detail_icd9' class='table display dataTable' style='width:100%'><thead></thead>";
-eTable += '<tr><td>Kode</td><td>' + res.msg['kode'] + '</td><tr>';
-eTable += '<tr><td>Deskripsi Panjang</td><td>' + res.msg['deskripsi_panjang'] + '</td><tr>';
-eTable += '<tr><td>Deskripsi Pendek</td><td>' + res.msg['deskripsi_pendek'] + '</td><tr>';
-
+            eTable += '<tr><td>Kode</td><td>' + res.msg['kode'] + '</td><tr>';
+            eTable += '<tr><td>Deskripsi Panjang</td><td>' + res.msg['deskripsi_panjang'] + '</td><tr>';
+            eTable += '<tr><td>Deskripsi Pendek</td><td>' + res.msg['deskripsi_pendek'] + '</td><tr>';
             eTable += "</tbody></table></div>";
             $('#detail_icd9').html(eTable);
         }

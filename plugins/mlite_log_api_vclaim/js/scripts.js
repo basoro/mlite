@@ -1,5 +1,5 @@
 jQuery().ready(function () {
-    var var_tbl_penyakit = $('#tbl_penyakit').DataTable({
+    var var_tbl_mlite_log_api_vclaim = $('#tbl_mlite_log_api_vclaim').DataTable({
         'processing': true,
         'serverSide': true,
         'serverMethod': 'post',
@@ -9,41 +9,35 @@ jQuery().ready(function () {
         'colReorder': true,
         "bInfo" : false,
         "ajax": {
-            "url": "{?=url(['penyakit','data'])?}",
+            "url": "{?=url(['mlite_log_api_vclaim','data'])?}",
             "dataType": "json",
             "type": "POST",
             "data": function (data) {
 
                 // Read values
-                var search_field_penyakit = $('#search_field_penyakit').val();
-                var search_text_penyakit = $('#search_text_penyakit').val();
+                var search_field_mlite_log_api_vclaim = $('#search_field_mlite_log_api_vclaim').val();
+                var search_text_mlite_log_api_vclaim = $('#search_text_mlite_log_api_vclaim').val();
                 
-                data.search_field_penyakit = search_field_penyakit;
-                data.search_text_penyakit = search_text_penyakit;
+                data.search_field_mlite_log_api_vclaim = search_field_mlite_log_api_vclaim;
+                data.search_text_mlite_log_api_vclaim = search_text_mlite_log_api_vclaim;
                 
             }
         },
-        "fnDrawCallback": function () {
-            $('#import_data_penyakit').on('click', function(e) {
-                e.preventDefault();
-                OpenModal(mlite.url + '/penyakit/import?t=' + mlite.token);
-            });          
-        }, 
         "columns": [
-            { 'data': 'kd_penyakit' },
-            { 'data': 'nm_penyakit' },
-            { 'data': 'ciri_ciri' },
-            { 'data': 'keterangan' },
-            { 'data': 'kd_ktg' },
-            { 'data': 'status' }
+{ 'data': 'id' },
+{ 'data': 'user' },
+{ 'data': 'tanggal' },
+{ 'data': 'endpoint' },
+{ 'data': 'result' }
+
         ],
         "columnDefs": [
-            { 'targets': 0},
-            { 'targets': 1},
-            { 'targets': 2},
-            { 'targets': 3},
-            { 'targets': 4},
-            { 'targets': 5}
+{ 'targets': 0},
+{ 'targets': 1},
+{ 'targets': 2},
+{ 'targets': 3},
+{ 'targets': 4}
+
         ],
         order: [[1, 'DESC']], 
         buttons: [],
@@ -57,15 +51,15 @@ jQuery().ready(function () {
 
 
     $.contextMenu({
-        selector: '#tbl_penyakit tr', 
+        selector: '#tbl_mlite_log_api_vclaim tr', 
         trigger: 'right',
         callback: function(key, options) {
-          var rowData = var_tbl_penyakit.rows({ selected: true }).data()[0];
+          var rowData = var_tbl_mlite_log_api_vclaim.rows({ selected: true }).data()[0];
           if (rowData != null) {
-            var kd_penyakit = rowData['kd_penyakit'];
+var id = rowData['id'];
             switch (key) {
                 case 'detail' :
-                    OpenModal(mlite.url + '/penyakit/detail/' + kd_penyakit + '?t=' + mlite.token);
+                    OpenModal(mlite.url + '/mlite_log_api_vclaim/detail/' + id + '?t=' + mlite.token);
                 break;
                 default :
                 break
@@ -83,39 +77,37 @@ jQuery().ready(function () {
     // FORM VALIDASI
     // ==============================================================
 
-    $("form[name='form_penyakit']").validate({
+    $("form[name='form_mlite_log_api_vclaim']").validate({
         rules: {
-            kd_penyakit: 'required',
-            nm_penyakit: 'required',
-            ciri_ciri: 'required',
-            keterangan: 'required',
-            kd_ktg: 'required',
-            status: 'required'
+id: 'required',
+user: 'required',
+tanggal: 'required',
+endpoint: 'required',
+result: 'required'
+
         },
         messages: {
-            kd_penyakit:'Kode Penyakit tidak boleh kosong!',
-            nm_penyakit:'Nama Penyakit tidak boleh kosong!',
-            ciri_ciri:'Ciri Ciri tidak boleh kosong!',
-            keterangan:'Keterangan tidak boleh kosong!',
-            kd_ktg:'Kategori tidak boleh kosong!',
-            status:'Status tidak boleh kosong!'
+id:'Id tidak boleh kosong!',
+user:'User tidak boleh kosong!',
+tanggal:'Tanggal tidak boleh kosong!',
+endpoint:'Endpoint tidak boleh kosong!',
+result:'Result tidak boleh kosong!'
 
         },
         submitHandler: function (form) {
-            var kd_penyakit= $('#kd_penyakit').val();
-            var nm_penyakit= $('#nm_penyakit').val();
-            var ciri_ciri= $('#ciri_ciri').val();
-            var keterangan= $('#keterangan').val();
-            var kd_ktg= $('#kd_ktg').val();
-            var status= $('#status').val();
+var id= $('#id').val();
+var user= $('#user').val();
+var tanggal= $('#tanggal').val();
+var endpoint= $('#endpoint').val();
+var result= $('#result').val();
 
-            var typeact = $('#typeact').val();
+var typeact = $('#typeact').val();
 
-            var formData = new FormData(form); // tambahan
-            formData.append('typeact', typeact); // tambahan
+var formData = new FormData(form); // tambahan
+formData.append('typeact', typeact); // tambahan
 
             $.ajax({
-                url: "{?=url(['penyakit','aksi'])?}",
+                url: "{?=url(['mlite_log_api_vclaim','aksi'])?}",
                 method: "POST",
                 contentType: false, // tambahan
                 processData: false, // tambahan
@@ -127,7 +119,7 @@ jQuery().ready(function () {
                     if (typeact == "add") {
                         if(data.status === 'success') {
                             bootbox.alert('<span class="text-success">' + data.msg + '</span>');
-                            $("#modal_penyakit").modal('hide');
+                            $("#modal_mlite_log_api_vclaim").modal('hide');
                         } else {
                             bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                         }    
@@ -135,76 +127,49 @@ jQuery().ready(function () {
                     else if (typeact == "edit") {
                         if(data.status === 'success') {
                             bootbox.alert('<span class="text-success">' + data.msg + '</span>');
-                            $("#modal_penyakit").modal('hide');
+                            $("#modal_mlite_log_api_vclaim").modal('hide');
                         } else {
                             bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                         }    
                     }
-                    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
-                        let payload = {
-                            'action' : typeact
-                        }
-                        ws.send(JSON.stringify(payload));
-                    } 
-                    var_tbl_penyakit.draw();
+                    var_tbl_mlite_log_api_vclaim.draw();
                 }
             })
         }
     });
 
-    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
-        ws.onmessage = function(response){
-            try{
-                output = JSON.parse(response.data);
-                if(output['action'] == 'add'){
-                    var_tbl_penyakit.draw();
-                }
-                if(output['action'] == 'edit'){
-                    var_tbl_penyakit.draw();
-                }
-                if(output['action'] == 'del'){
-                    var_tbl_penyakit.draw();
-                }
-            }catch(e){
-                console.log(e);
-            }
-        }
-    }
-
     // ==============================================================
     // KETIKA TOMBOL SEARCH DITEKAN
     // ==============================================================
-    $('#filter_search_penyakit').click(function () {
-        var_tbl_penyakit.draw();
+    $('#filter_search_mlite_log_api_vclaim').click(function () {
+        var_tbl_mlite_log_api_vclaim.draw();
     });
 
     // ===========================================
     // KETIKA TOMBOL EDIT DITEKAN
     // ===========================================
 
-    $("#edit_data_penyakit").click(function () {
-        var rowData = var_tbl_penyakit.rows({ selected: true }).data()[0];
+    $("#edit_data_mlite_log_api_vclaim").click(function () {
+        var rowData = var_tbl_mlite_log_api_vclaim.rows({ selected: true }).data()[0];
         if (rowData != null) {
 
-            var kd_penyakit = rowData['kd_penyakit'];
-            var nm_penyakit = rowData['nm_penyakit'];
-            var ciri_ciri = rowData['ciri_ciri'];
-            var keterangan = rowData['keterangan'];
-            var kd_ktg = rowData['kd_ktg'];
-            var status = rowData['status'];
+            var id = rowData['id'];
+var user = rowData['user'];
+var tanggal = rowData['tanggal'];
+var endpoint = rowData['endpoint'];
+var result = rowData['result'];
 
             $("#typeact").val("edit");
   
-            $('#kd_penyakit').val(kd_penyakit);
-            $('#nm_penyakit').val(nm_penyakit);
-            $('#ciri_ciri').val(ciri_ciri);
-            $('#keterangan').val(keterangan);
-            $('#kd_ktg').val(kd_ktg).change();
-            $('#status').val(status).change();
+            $('#id').val(id);
+$('#user').val(user);
+$('#tanggal').val(tanggal);
+$('#endpoint').val(endpoint);
+$('#result').val(result);
 
-            $("#kd_penyakit").prop('readonly', true); // GA BISA DIEDIT KALI READONLY
-            $('#modal-title').text("Edit Data Penyakit");
-            $("#modal_penyakit").modal('show');
+            $("#id").prop('readonly', true); // GA BISA DIEDIT KALI READONLY
+            $('#modal-title').text("Edit Data Mlite Log Api Vclaim");
+            $("#modal_mlite_log_api_vclaim").modal('show');
         }
         else {
             bootbox.alert("Silakan pilih data yang akan di edit.");
@@ -215,19 +180,19 @@ jQuery().ready(function () {
     // ==============================================================
     // TOMBOL  DELETE DI CLICK
     // ==============================================================
-    jQuery("#hapus_data_penyakit").click(function () {
-        var rowData = var_tbl_penyakit.rows({ selected: true }).data()[0];
+    jQuery("#hapus_data_mlite_log_api_vclaim").click(function () {
+        var rowData = var_tbl_mlite_log_api_vclaim.rows({ selected: true }).data()[0];
 
 
         if (rowData) {
-            var kd_penyakit = rowData['kd_penyakit'];
-            bootbox.confirm('Anda yakin akan menghapus data dengan kd_penyakit="' + kd_penyakit, function(result) {
+var id = rowData['id'];
+            bootbox.confirm('Anda yakin akan menghapus data dengan id="' + id, function(result) {
                 if(result) {
                     $.ajax({
-                        url: "{?=url(['penyakit','aksi'])?}",
+                        url: "{?=url(['mlite_log_api_vclaim','aksi'])?}",
                         method: "POST",
                         data: {
-                            kd_penyakit: kd_penyakit,
+                            id: id,
                             typeact: 'del'
                         },
                         success: function (data) {
@@ -238,14 +203,8 @@ jQuery().ready(function () {
                                 bootbox.alert('<span class="text-success">' + data.msg + '</span>');
                             } else {
                                 bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
-                            } 
-                            if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
-                                let payload = {
-                                    'action' : 'del'
-                                }
-                                ws.send(JSON.stringify(payload));
-                            }
-                            var_tbl_penyakit.draw();
+                            }    
+                            var_tbl_mlite_log_api_vclaim.draw();
                         }
                     })    
                 }
@@ -260,58 +219,56 @@ jQuery().ready(function () {
     // ==============================================================
     // TOMBOL TAMBAH DATA DI CLICK
     // ==============================================================
-    jQuery("#tambah_data_penyakit").click(function () {
+    jQuery("#tambah_data_mlite_log_api_vclaim").click(function () {
 
-        $('#kd_penyakit').val('');
-        $('#nm_penyakit').val('');
-        $('#ciri_ciri').val('');
-        $('#keterangan').val('');
-        $('#kd_ktg').val('');
-        $('#status').val('');
+        $('#id').val('');
+$('#user').val('');
+$('#tanggal').val('');
+$('#endpoint').val('');
+$('#result').val('');
 
         $("#typeact").val("add");
-        $("#kd_penyakit").prop('readonly', false);
+        $("#id").prop('readonly', false);
         
-        $('#modal-title').text("Tambah Data Penyakit");
-        $("#modal_penyakit").modal('show');
+        $('#modal-title').text("Tambah Data Mlite Log Api Vclaim");
+        $("#modal_mlite_log_api_vclaim").modal('show');
     });
 
     // ===========================================
     // Ketika tombol lihat data di tekan
     // ===========================================
-    $("#lihat_data_penyakit").click(function () {
+    $("#lihat_data_mlite_log_api_vclaim").click(function () {
 
-        var search_field_penyakit = $('#search_field_penyakit').val();
-        var search_text_penyakit = $('#search_text_penyakit').val();
+        var search_field_mlite_log_api_vclaim = $('#search_field_mlite_log_api_vclaim').val();
+        var search_text_mlite_log_api_vclaim = $('#search_text_mlite_log_api_vclaim').val();
 
         $.ajax({
-            url: "{?=url(['penyakit','aksi'])?}",
+            url: "{?=url(['mlite_log_api_vclaim','aksi'])?}",
             method: "POST",
             data: {
                 typeact: 'lihat', 
-                search_field_penyakit: search_field_penyakit, 
-                search_text_penyakit: search_text_penyakit
+                search_field_mlite_log_api_vclaim: search_field_mlite_log_api_vclaim, 
+                search_text_mlite_log_api_vclaim: search_text_mlite_log_api_vclaim
             },
             dataType: 'json',
             success: function (res) {
-                var eTable = "<div class='table-responsive'><table id='tbl_lihat_penyakit' class='table display dataTable' style='width:100%'><thead><th>Kode Penyakit</th><th>Nama Penyakit</th><th>Ciri Ciri</th><th>Keterangan</th><th>Kategori</th><th>Status</th></thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_mlite_log_api_vclaim' class='table display dataTable' style='width:100%'><thead><th>Id</th><th>User</th><th>Tanggal</th><th>Endpoint</th><th>Result</th></thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
-                    eTable += '<td>' + res[i]['kd_penyakit'] + '</td>';
-                    eTable += '<td>' + res[i]['nm_penyakit'] + '</td>';
-                    eTable += '<td>' + res[i]['ciri_ciri'] + '</td>';
-                    eTable += '<td>' + res[i]['keterangan'] + '</td>';
-                    eTable += '<td>' + res[i]['kd_ktg'] + '</td>';
-                    eTable += '<td>' + res[i]['status'] + '</td>';
+                    eTable += '<td>' + res[i]['id'] + '</td>';
+eTable += '<td>' + res[i]['user'] + '</td>';
+eTable += '<td>' + res[i]['tanggal'] + '</td>';
+eTable += '<td>' + res[i]['endpoint'] + '</td>';
+eTable += '<td>' + res[i]['result'] + '</td>';
                     eTable += "</tr>";
                 }
                 eTable += "</tbody></table></div>";
-                $('#forTable_penyakit').html(eTable);
+                $('#forTable_mlite_log_api_vclaim').html(eTable);
             }
         });
 
         $('#modal-title').text("Lihat Data");
-        $("#modal_lihat_penyakit").modal('show');
+        $("#modal_lihat_mlite_log_api_vclaim").modal('show');
     });
         
     // ===========================================
@@ -330,10 +287,10 @@ jQuery().ready(function () {
         doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
         doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
         doc.setFontSize(14);
-        doc.text("Tabel Data Penyakit", 20, 95, null, null, null);
+        doc.text("Tabel Data Mlite Log Api Vclaim", 20, 95, null, null, null);
         const totalPagesExp = "{total_pages_count_string}";        
         doc.autoTable({
-            html: '#tbl_lihat_penyakit',
+            html: '#tbl_lihat_mlite_log_api_vclaim',
             startY: 105,
             margin: {
                 left: 20, 
@@ -356,7 +313,7 @@ jQuery().ready(function () {
         if (typeof doc.putTotalPages === 'function') {
             doc.putTotalPages(totalPagesExp);
         }
-        // doc.save('table_data_penyakit.pdf');
+        // doc.save('table_data_mlite_log_api_vclaim.pdf');
         window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
               
     })
@@ -365,17 +322,17 @@ jQuery().ready(function () {
     // Ketika tombol export xlsx di tekan
     // ===========================================
     $("#export_xlsx").click(function () {
-        let tbl1 = document.getElementById("tbl_lihat_penyakit");
+        let tbl1 = document.getElementById("tbl_lihat_mlite_log_api_vclaim");
         let worksheet_tmp1 = XLSX.utils.table_to_sheet(tbl1);
         let a = XLSX.utils.sheet_to_json(worksheet_tmp1, { header: 1 });
         let worksheet1 = XLSX.utils.json_to_sheet(a, { skipHeader: true });
         const new_workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(new_workbook, worksheet1, "Data penyakit");
+        XLSX.utils.book_append_sheet(new_workbook, worksheet1, "Data mlite_log_api_vclaim");
         XLSX.writeFile(new_workbook, 'tmp_file.xls');
     })
 
     $("#view_chart").click(function () {
-        window.open(mlite.url + '/penyakit/chart?t=' + mlite.token, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+        window.open(mlite.url + '/mlite_log_api_vclaim/chart?t=' + mlite.token, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
     })   
 
 });

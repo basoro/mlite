@@ -30,10 +30,9 @@
                           <span class="input-group-text">Cari</span>
                           <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
                           <select class="form-select" id='search_field_kategori_penyakit' name='search_field_kategori_penyakit' style="margin: 0 !important;"> 
-                              <option value='kd_ktg'>Kd Ktg</option>
-<option value='nm_kategori'>Nm Kategori</option>
-<option value='ciri_umum'>Ciri Umum</option>
-
+                              <option value='kd_ktg'>Kode Kategori</option>
+                              <option value='nm_kategori'>Nama Kategori</option>
+                              <option value='ciri_umum'>Ciri Umum</option>
                           </select>
                           </span>
                           <input class='form-control' name='search_text_kategori_penyakit' id='search_text_kategori_penyakit' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
@@ -45,10 +44,9 @@
                     <table id="tbl_kategori_penyakit" class="table table-striped display dataTable" style="width:100%">
                         <thead>
                         <tr> 
-                            <th>Kd Ktg</th>
-<th>Nm Kategori</th>
-<th>Ciri Umum</th>
-
+                            <th>Kode Kategori</th>
+                            <th>Nama Kategori</th>
+                            <th>Ciri Umum</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -70,31 +68,30 @@
       </div>
       <div class="modal-body">
         <form name="form_kategori_penyakit">
-          <input type="hidden" class="form-control" id="typeact" /> 
-          <div class='row gx-3'>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='kd_ktg'>Kd Ktg</label>
-      <input type='text' class='form-control' id='kd_ktg' name='kd_ktg' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='nm_kategori'>Nm Kategori</label>
-      <input type='text' class='form-control' id='nm_kategori' name='nm_kategori' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='ciri_umum'>Ciri Umum</label>
-      <input type='text' class='form-control' id='ciri_umum' name='ciri_umum' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-</div>
-
+        <input type="hidden" class="form-control" id="typeact" /> 
+        <div class='row gx-3'>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_ktg'>Kode Kategori</label>
+              <input type='text' class='form-control' id='kd_ktg' name='kd_ktg' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='nm_kategori'>Nama Kategori</label>
+              <input type='text' class='form-control' id='nm_kategori' name='nm_kategori' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='ciri_umum'>Ciri Umum</label>
+              <input type='text' class='form-control' id='ciri_umum' name='ciri_umum' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>

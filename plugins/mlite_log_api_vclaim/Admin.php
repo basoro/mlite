@@ -1,5 +1,5 @@
 <?php
-namespace Plugins\Kategori_Penyakit;
+namespace Plugins\Mlite_Log_Api_Vclaim;
 
 use Systems\AdminModule;
 
@@ -16,7 +16,7 @@ class Admin extends AdminModule
     public function getManage()
     {
         $this->_addHeaderFiles();
-        $disabled_menu = $this->core->loadDisabledMenu('kategori_penyakit'); 
+        $disabled_menu = $this->core->loadDisabledMenu('mlite_log_api_vclaim'); 
         foreach ($disabled_menu as &$row) { 
           if ($row == "true" ) $row = "disabled"; 
         } 
@@ -26,7 +26,7 @@ class Admin extends AdminModule
 
     public function postData()
     {
-        $column_name = isset_or($_POST['column_name'], 'kd_ktg');
+        $column_name = isset_or($_POST['column_name'], 'id');
         $column_order = isset_or($_POST['column_order'], 'asc');
         $draw = isset_or($_POST['draw'], '0');
         $row1 = isset_or($_POST['start'], '0');
@@ -37,33 +37,36 @@ class Admin extends AdminModule
         $searchValue = isset_or($_POST['search']['value']); // Search value
 
         ## Custom Field value
-        $search_field_kategori_penyakit= isset_or($_POST['search_field_kategori_penyakit']);
-        $search_text_kategori_penyakit = isset_or($_POST['search_text_kategori_penyakit']);
+        $search_field_mlite_log_api_vclaim= isset_or($_POST['search_field_mlite_log_api_vclaim']);
+        $search_text_mlite_log_api_vclaim = isset_or($_POST['search_text_mlite_log_api_vclaim']);
 
-        if ($search_text_kategori_penyakit != '') {
-          $where[$search_field_kategori_penyakit.'[~]'] = $search_text_kategori_penyakit;
+        if ($search_text_mlite_log_api_vclaim != '') {
+          $where[$search_field_mlite_log_api_vclaim.'[~]'] = $search_text_mlite_log_api_vclaim;
           $where = ["AND" => $where];
         } else {
           $where = [];
         }
 
         ## Total number of records without filtering
-        $totalRecords = $this->core->db->count('kategori_penyakit', '*');
+        $totalRecords = $this->core->db->count('mlite_log_api_vclaim', '*');
 
         ## Total number of records with filtering
-        $totalRecordwithFilter = $this->core->db->count('kategori_penyakit', '*', $where);
+        $totalRecordwithFilter = $this->core->db->count('mlite_log_api_vclaim', '*', $where);
 
         ## Fetch records
         $where['ORDER'] = [$columnName => strtoupper($columnSortOrder)];
         $where['LIMIT'] = [$row1, $rowperpage];
-        $result = $this->core->db->select('kategori_penyakit', '*', $where);
+        $result = $this->core->db->select('mlite_log_api_vclaim', '*', $where);
 
         $data = array();
         foreach($result as $row) {
             $data[] = array(
-                'kd_ktg'=>$row['kd_ktg'],
-                'nm_kategori'=>$row['nm_kategori'],
-                'ciri_umum'=>$row['ciri_umum']
+                'id'=>$row['id'],
+'user'=>$row['user'],
+'tanggal'=>$row['tanggal'],
+'endpoint'=>$row['endpoint'],
+'result'=>$row['result']
+
             );
         }
 
@@ -77,7 +80,7 @@ class Admin extends AdminModule
         );
 
         if($this->settings('settings', 'logquery') == true) {
-          $this->core->LogQuery('kategori_penyakit => postData');
+          $this->core->LogQuery('mlite_log_api_vclaim => postData');
         }
 
         echo json_encode($response);
@@ -94,7 +97,7 @@ class Admin extends AdminModule
 
         if ($act=='add') {
 
-            if($this->core->loadDisabledMenu('kategori_penyakit')['create'] == 'true') {
+            if($this->core->loadDisabledMenu('mlite_log_api_vclaim')['create'] == 'true') {
               http_response_code(403);
               $data = array(
                 'code' => '403', 
@@ -105,13 +108,15 @@ class Admin extends AdminModule
               exit();
             }
 
-            $kd_ktg = $_POST['kd_ktg'];
-            $nm_kategori = $_POST['nm_kategori'];
-            $ciri_umum = $_POST['ciri_umum'];
+        $id = $_POST['id'];
+$user = $_POST['user'];
+$tanggal = $_POST['tanggal'];
+$endpoint = $_POST['endpoint'];
+$result = $_POST['result'];
 
             
-            $result = $this->core->db->insert('kategori_penyakit', [
-              'kd_ktg'=>$kd_ktg, 'nm_kategori'=>$nm_kategori, 'ciri_umum'=>$ciri_umum
+            $result = $this->core->db->insert('mlite_log_api_vclaim', [
+'id'=>$id, 'user'=>$user, 'tanggal'=>$tanggal, 'endpoint'=>$endpoint, 'result'=>$result
             ]);
 
 
@@ -132,14 +137,14 @@ class Admin extends AdminModule
             }
 
             if($this->settings('settings', 'logquery') == true) {
-              $this->core->LogQuery('kategori_penyakit => postAksi => add');
+              $this->core->LogQuery('mlite_log_api_vclaim => postAksi => add');
             }
 
             echo json_encode($data);    
         }
         if ($act=="edit") {
 
-            if($this->core->loadDisabledMenu('kategori_penyakit')['update'] == 'true') {
+            if($this->core->loadDisabledMenu('mlite_log_api_vclaim')['update'] == 'true') {
               http_response_code(403);
               $data = array(
                 'code' => '403', 
@@ -150,16 +155,19 @@ class Admin extends AdminModule
               exit();
             }
 
-            $kd_ktg = $_POST['kd_ktg'];
-            $nm_kategori = $_POST['nm_kategori'];
-            $ciri_umum = $_POST['ciri_umum'];
+        $id = $_POST['id'];
+$user = $_POST['user'];
+$tanggal = $_POST['tanggal'];
+$endpoint = $_POST['endpoint'];
+$result = $_POST['result'];
 
-            // BUANG FIELD PERTAMA
 
-            $result = $this->core->db->update('kategori_penyakit', [
-              'nm_kategori'=>$nm_kategori, 'ciri_umum'=>$ciri_umum
+        // BUANG FIELD PERTAMA
+
+            $result = $this->core->db->update('mlite_log_api_vclaim', [
+'id'=>$id, 'user'=>$user, 'tanggal'=>$tanggal, 'endpoint'=>$endpoint, 'result'=>$result
             ], [
-              'kd_ktg'=>$kd_ktg
+              'id'=>$id
             ]);
 
 
@@ -180,7 +188,7 @@ class Admin extends AdminModule
             }
 
             if($this->settings('settings', 'logquery') == true) {
-              $this->core->LogQuery('kategori_penyakit => postAksi => edit');
+              $this->core->LogQuery('mlite_log_api_vclaim => postAksi => edit');
             }
 
             echo json_encode($data);             
@@ -188,7 +196,7 @@ class Admin extends AdminModule
 
         if ($act=="del") {
 
-            if($this->core->loadDisabledMenu('kategori_penyakit')['delete'] == 'true') {
+            if($this->core->loadDisabledMenu('mlite_log_api_vclaim')['delete'] == 'true') {
               http_response_code(403);
               $data = array(
                 'code' => '403', 
@@ -199,10 +207,10 @@ class Admin extends AdminModule
               exit();
             }
 
-            $kd_ktg= $_POST['kd_ktg'];
-            $result = $this->core->db->delete('kategori_penyakit', [
+            $id= $_POST['id'];
+            $result = $this->core->db->delete('mlite_log_api_vclaim', [
               'AND' => [
-                'kd_ktg'=>$kd_ktg
+                'id'=>$id
               ]
             ]);
 
@@ -223,7 +231,7 @@ class Admin extends AdminModule
             }
 
             if($this->settings('settings', 'logquery') == true) {
-              $this->core->LogQuery('kategori_penyakit => postAksi => del');
+              $this->core->LogQuery('mlite_log_api_vclaim => postAksi => del');
             }
 
             echo json_encode($data);                    
@@ -231,7 +239,7 @@ class Admin extends AdminModule
 
         if ($act=="lihat") {
 
-            if($this->core->loadDisabledMenu('kategori_penyakit')['read'] == 'true') {
+            if($this->core->loadDisabledMenu('mlite_log_api_vclaim')['read'] == 'true') {
               http_response_code(403);
               $data = array(
                 'code' => '403', 
@@ -242,30 +250,32 @@ class Admin extends AdminModule
               exit();
             }
 
-            $search_field_kategori_penyakit= $_POST['search_field_kategori_penyakit'];
-            $search_text_kategori_penyakit = $_POST['search_text_kategori_penyakit'];
+            $search_field_mlite_log_api_vclaim= $_POST['search_field_mlite_log_api_vclaim'];
+            $search_text_mlite_log_api_vclaim = $_POST['search_text_mlite_log_api_vclaim'];
 
-            if ($search_text_kategori_penyakit != '') {
-              $where[$search_field_kategori_penyakit.'[~]'] = $search_text_kategori_penyakit;
+            if ($search_text_mlite_log_api_vclaim != '') {
+              $where[$search_field_mlite_log_api_vclaim.'[~]'] = $search_text_mlite_log_api_vclaim;
               $where = ["AND" => $where];
             } else {
               $where = [];
             }
 
             ## Fetch records
-            $result = $this->core->db->select('kategori_penyakit', '*', $where);
+            $result = $this->core->db->select('mlite_log_api_vclaim', '*', $where);
 
             $data = array();
             foreach($result as $row) {
                 $data[] = array(
-                    'kd_ktg'=>$row['kd_ktg'],
-                    'nm_kategori'=>$row['nm_kategori'],
-                    'ciri_umum'=>$row['ciri_umum']
+                    'id'=>$row['id'],
+'user'=>$row['user'],
+'tanggal'=>$row['tanggal'],
+'endpoint'=>$row['endpoint'],
+'result'=>$row['result']
                 );
             }
 
             if($this->settings('settings', 'logquery') == true) {
-              $this->core->LogQuery('kategori_penyakit => postAksi => lihat');
+              $this->core->LogQuery('mlite_log_api_vclaim => postAksi => lihat');
             }
             
             echo json_encode($data);
@@ -273,10 +283,10 @@ class Admin extends AdminModule
         exit();
     }
 
-    public function getRead($kd_ktg)
+    public function getRead($id)
     {
 
-        if($this->core->loadDisabledMenu('kategori_penyakit')['read'] == 'true') {
+        if($this->core->loadDisabledMenu('mlite_log_api_vclaim')['read'] == 'true') {
           http_response_code(403);
           $data = array(
             'code' => '403', 
@@ -287,7 +297,7 @@ class Admin extends AdminModule
           exit();
         }
 
-        $result =  $this->core->db->get('kategori_penyakit', '*', ['kd_ktg' => $kd_ktg]);
+        $result =  $this->core->db->get('mlite_log_api_vclaim', '*', ['id' => $id]);
 
         if (!empty($result)){
           http_response_code(200);
@@ -306,17 +316,17 @@ class Admin extends AdminModule
         }
 
         if($this->settings('settings', 'logquery') == true) {
-          $this->core->LogQuery('kategori_penyakit => getRead');
+          $this->core->LogQuery('mlite_log_api_vclaim => getRead');
         }
 
         echo json_encode($data);        
         exit();
     }
 
-    public function getDetail($kd_ktg)
+    public function getDetail($id)
     {
 
-        if($this->core->loadDisabledMenu('kategori_penyakit')['read'] == 'true') {
+        if($this->core->loadDisabledMenu('mlite_log_api_vclaim')['read'] == 'true') {
           http_response_code(403);
           $data = array(
             'code' => '403', 
@@ -330,10 +340,10 @@ class Admin extends AdminModule
         $settings =  $this->settings('settings');
 
         if($this->settings('settings', 'logquery') == true) {
-          $this->core->LogQuery('kategori_penyakit => getDetail');
+          $this->core->LogQuery('mlite_log_api_vclaim => getDetail');
         }
 
-        echo $this->draw('detail.html', ['settings' => $settings, 'kd_ktg' => $kd_ktg]);
+        echo $this->draw('detail.html', ['settings' => $settings, 'id' => $id]);
         exit();
     }
 
@@ -343,23 +353,23 @@ class Admin extends AdminModule
         $type = 'pie';
       }
 
-      $labels = $this->core->db->select('kategori_penyakit', 'ciri_umum', ['GROUP' => 'ciri_umum']);
-      $datasets = $this->core->db->select('kategori_penyakit', ['count' => \Medoo\Medoo::raw('COUNT(<ciri_umum>)')], ['GROUP' => 'ciri_umum']);
+      $labels = $this->core->db->select('mlite_log_api_vclaim', 'endpoint', ['GROUP' => 'endpoint']);
+      $datasets = $this->core->db->select('mlite_log_api_vclaim', ['count' => \Medoo\Medoo::raw('COUNT(<endpoint>)')], ['GROUP' => 'endpoint']);
 
       if(isset_or($column)) {
-        $labels = $this->core->db->select('kategori_penyakit', ''.$column.'', ['GROUP' => ''.$column.'']);
-        $datasets = $this->core->db->select('kategori_penyakit', ['count' => \Medoo\Medoo::raw('COUNT(<'.$column.'>)')], ['GROUP' => ''.$column.'']);          
+        $labels = $this->core->db->select('mlite_log_api_vclaim', ''.$column.'', ['GROUP' => ''.$column.'']);
+        $datasets = $this->core->db->select('mlite_log_api_vclaim', ['count' => \Medoo\Medoo::raw('COUNT(<'.$column.'>)')], ['GROUP' => ''.$column.'']);          
       }
 
       $database = DBNAME;
-      $nama_table = 'kategori_penyakit';
+      $nama_table = 'mlite_log_api_vclaim';
 
       $get_table = $this->core->db->pdo->prepare("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='$database' AND TABLE_NAME='$nama_table'");
 	    $get_table->execute();
 	    $result = $get_table->fetchAll();
 
       if($this->settings('settings', 'logquery') == true) {
-        $this->core->LogQuery('kategori_penyakit => getChart');
+        $this->core->LogQuery('mlite_log_api_vclaim => getChart');
       }
 
       echo $this->draw('chart.html', ['type' => $type, 'column' => $result, 'labels' => json_encode($labels), 'datasets' => json_encode(array_column($datasets, 'count'))]);
@@ -369,7 +379,7 @@ class Admin extends AdminModule
     public function getCss()
     {
         header('Content-type: text/css');
-        echo $this->draw(MODULES.'/kategori_penyakit/css/styles.css');
+        echo $this->draw(MODULES.'/mlite_log_api_vclaim/css/styles.css');
         exit();
     }
 
@@ -377,7 +387,7 @@ class Admin extends AdminModule
     {
         header('Content-type: text/javascript');
         $settings = $this->settings('settings');
-        echo $this->draw(MODULES.'/kategori_penyakit/js/scripts.js', ['settings' => $settings, 'disabled_menu' => $this->core->loadDisabledMenu('kategori_penyakit')]);
+        echo $this->draw(MODULES.'/mlite_log_api_vclaim/js/scripts.js', ['settings' => $settings, 'disabled_menu' => $this->core->loadDisabledMenu('mlite_log_api_vclaim')]);
         exit();
     }
 
@@ -392,8 +402,8 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/vendor/datatables/datatables.min.js'), 'footer');
         $this->core->addJS(url('assets/js/jquery.contextMenu.js'), 'footer');
 
-        $this->core->addCSS(url([ 'kategori_penyakit', 'css']));
-        $this->core->addJS(url([ 'kategori_penyakit', 'javascript']), 'footer');
+        $this->core->addCSS(url([ 'mlite_log_api_vclaim', 'css']));
+        $this->core->addJS(url([ 'mlite_log_api_vclaim', 'javascript']), 'footer');
     }
 
 }

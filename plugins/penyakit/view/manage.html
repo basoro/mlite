@@ -30,13 +30,12 @@
                           <span class="input-group-text">Cari</span>
                           <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
                           <select class="form-select" id='search_field_penyakit' name='search_field_penyakit' style="margin: 0 !important;"> 
-                              <option value='kd_penyakit'>Kd Penyakit</option>
-<option value='nm_penyakit'>Nm Penyakit</option>
-<option value='ciri_ciri'>Ciri Ciri</option>
-<option value='keterangan'>Keterangan</option>
-<option value='kd_ktg'>Kd Ktg</option>
-<option value='status'>Status</option>
-
+                              <option value='kd_penyakit'>Kode Penyakit</option>
+                              <option value='nm_penyakit'>Nama Penyakit</option>
+                              <option value='ciri_ciri'>Ciri Ciri</option>
+                              <option value='keterangan'>Keterangan</option>
+                              <option value='kd_ktg'>Kategori</option>
+                              <option value='status'>Status</option>
                           </select>
                           </span>
                           <input class='form-control' name='search_text_penyakit' id='search_text_penyakit' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
@@ -48,13 +47,12 @@
                     <table id="tbl_penyakit" class="table table-striped display dataTable" style="width:100%">
                         <thead>
                         <tr> 
-                            <th>Kd Penyakit</th>
-<th>Nm Penyakit</th>
-<th>Ciri Ciri</th>
-<th>Keterangan</th>
-<th>Kd Ktg</th>
-<th>Status</th>
-
+                            <th>Kode Penyakit</th>
+                            <th>Nama Penyakit</th>
+                            <th>Ciri Ciri</th>
+                            <th>Keterangan</th>
+                            <th>Kategori</th>
+                            <th>Status</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -76,51 +74,60 @@
       </div>
       <div class="modal-body">
         <form name="form_penyakit">
-          <input type="hidden" class="form-control" id="typeact" /> 
-          <div class='row gx-3'>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='kd_penyakit'>Kd Penyakit</label>
-      <input type='text' class='form-control' id='kd_penyakit' name='kd_penyakit' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='nm_penyakit'>Nm Penyakit</label>
-      <input type='text' class='form-control' id='nm_penyakit' name='nm_penyakit' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='ciri_ciri'>Ciri Ciri</label>
-      <input type='text' class='form-control' id='ciri_ciri' name='ciri_ciri' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='keterangan'>Keterangan</label>
-      <input type='text' class='form-control' id='keterangan' name='keterangan' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='kd_ktg'>Kd Ktg</label>
-      <input type='text' class='form-control' id='kd_ktg' name='kd_ktg' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-  <div class='col-xxl-3 col-lg-4 col-sm-6'>
-    <div class='mb-3'>
-      <label class='form-label' for='status'>Status</label>
-      <input type='text' class='form-control' id='status' name='status' />
-    <div class='invalid-feedback error'></div>
-    </div>
-  </div>
-</div>
+        <input type="hidden" class="form-control" id="typeact" /> 
+        <div class='row gx-3'>
+          <div class='col-xxl-4 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_penyakit'>Kode Penyakit</label>
+              <input type='text' class='form-control' id='kd_penyakit' name='kd_penyakit' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-4 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='nm_penyakit'>Nama Penyakit</label>
+              <input type='text' class='form-control' id='nm_penyakit' name='nm_penyakit' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-4 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='ciri_ciri'>Ciri Ciri</label>
+              <input type='text' class='form-control' id='ciri_ciri' name='ciri_ciri' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-4 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='keterangan'>Keterangan</label>
+              <input type='text' class='form-control' id='keterangan' name='keterangan' />
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-4 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='kd_ktg'>Keterangan</label>
+              <select name="kd_ktg" id="kd_ktg" class="form-select">
+                <option value="">Select</option>
+                {loop: $penyakit.kategori_penyakit} 
+                <option value="{$value.kd_ktg}">{$value.nm_kategori}</option>
+                {/loop}
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-4 col-lg-4 col-sm-6'>
+            <div class='mb-3'>
+              <label class='form-label' for='status'>Status</label>
+              <select name="status" id="status" class="form-select">
+                <option value="">Select</option>
+                <option value="Menular">Menular</option>
+                <option value="Tidak Menular">Tidak Menular</option>
+              </select>
+            <div class='invalid-feedback error'></div>
+            </div>
+          </div>
+        </div>
 
       </div>
       <div class="modal-footer">

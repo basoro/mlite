@@ -30,16 +30,14 @@ jQuery().ready(function () {
             }); 
         }, 
         "columns": [
-{ 'data': 'kode' },
-{ 'data': 'deskripsi_panjang' },
-{ 'data': 'deskripsi_pendek' }
-
+            { 'data': 'kode' },
+            { 'data': 'deskripsi_panjang' },
+            { 'data': 'deskripsi_pendek' }
         ],
         "columnDefs": [
-{ 'targets': 0},
-{ 'targets': 1},
-{ 'targets': 2}
-
+            { 'targets': 0},
+            { 'targets': 1},
+            { 'targets': 2}
         ],
         order: [[1, 'DESC']], 
         buttons: [],
@@ -58,7 +56,7 @@ jQuery().ready(function () {
         callback: function(key, options) {
           var rowData = var_tbl_icd9.rows({ selected: true }).data()[0];
           if (rowData != null) {
-var kode = rowData['kode'];
+            var kode = rowData['kode'];
             switch (key) {
                 case 'detail' :
                     OpenModal(mlite.url + '/icd9/detail/' + kode + '?t=' + mlite.token);
@@ -81,26 +79,24 @@ var kode = rowData['kode'];
 
     $("form[name='form_icd9']").validate({
         rules: {
-kode: 'required',
-deskripsi_panjang: 'required',
-deskripsi_pendek: 'required'
-
+            kode: 'required',
+            deskripsi_panjang: 'required',
+            deskripsi_pendek: 'required'
         },
         messages: {
-kode:'Kode tidak boleh kosong!',
-deskripsi_panjang:'Deskripsi Panjang tidak boleh kosong!',
-deskripsi_pendek:'Deskripsi Pendek tidak boleh kosong!'
-
+            kode:'Kode tidak boleh kosong!',
+            deskripsi_panjang:'Deskripsi Panjang tidak boleh kosong!',
+            deskripsi_pendek:'Deskripsi Pendek tidak boleh kosong!'
         },
         submitHandler: function (form) {
-var kode= $('#kode').val();
-var deskripsi_panjang= $('#deskripsi_panjang').val();
-var deskripsi_pendek= $('#deskripsi_pendek').val();
+            var kode= $('#kode').val();
+            var deskripsi_panjang= $('#deskripsi_panjang').val();
+            var deskripsi_pendek= $('#deskripsi_pendek').val();
 
-var typeact = $('#typeact').val();
+            var typeact = $('#typeact').val();
 
-var formData = new FormData(form); // tambahan
-formData.append('typeact', typeact); // tambahan
+            var formData = new FormData(form); // tambahan
+            formData.append('typeact', typeact); // tambahan
 
             $.ajax({
                 url: "{?=url(['icd9','aksi'])?}",
@@ -175,14 +171,14 @@ formData.append('typeact', typeact); // tambahan
         if (rowData != null) {
 
             var kode = rowData['kode'];
-var deskripsi_panjang = rowData['deskripsi_panjang'];
-var deskripsi_pendek = rowData['deskripsi_pendek'];
+            var deskripsi_panjang = rowData['deskripsi_panjang'];
+            var deskripsi_pendek = rowData['deskripsi_pendek'];
 
             $("#typeact").val("edit");
   
             $('#kode').val(kode);
-$('#deskripsi_panjang').val(deskripsi_panjang);
-$('#deskripsi_pendek').val(deskripsi_pendek);
+            $('#deskripsi_panjang').val(deskripsi_panjang);
+            $('#deskripsi_pendek').val(deskripsi_pendek);
 
             $("#kode").prop('readonly', true); // GA BISA DIEDIT KALI READONLY
             $('#modal-title').text("Edit Data Icd9");
@@ -202,7 +198,7 @@ $('#deskripsi_pendek').val(deskripsi_pendek);
 
 
         if (rowData) {
-var kode = rowData['kode'];
+            var kode = rowData['kode'];
             bootbox.confirm('Anda yakin akan menghapus data dengan kode="' + kode, function(result) {
                 if(result) {
                     $.ajax({
@@ -245,8 +241,8 @@ var kode = rowData['kode'];
     jQuery("#tambah_data_icd9").click(function () {
 
         $('#kode').val('');
-$('#deskripsi_panjang').val('');
-$('#deskripsi_pendek').val('');
+        $('#deskripsi_panjang').val('');
+        $('#deskripsi_pendek').val('');
 
         $("#typeact").val("add");
         $("#kode").prop('readonly', false);
@@ -277,8 +273,8 @@ $('#deskripsi_pendek').val('');
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     eTable += '<td>' + res[i]['kode'] + '</td>';
-eTable += '<td>' + res[i]['deskripsi_panjang'] + '</td>';
-eTable += '<td>' + res[i]['deskripsi_pendek'] + '</td>';
+                    eTable += '<td>' + res[i]['deskripsi_panjang'] + '</td>';
+                    eTable += '<td>' + res[i]['deskripsi_pendek'] + '</td>';
                     eTable += "</tr>";
                 }
                 eTable += "</tbody></table></div>";

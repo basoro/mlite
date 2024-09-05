@@ -1,9 +1,9 @@
 <div class="modal-header">
-    <h4 class="modal-title">Detail Penyakit</h4>
+    <h4 class="modal-title">Detail Mlite Log Api Vclaim</h4>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <div id="detail_penyakit"></div>
+    <div id="detail_mlite_log_api_vclaim"></div>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="ri-close-line"></i> Tutup</button>
@@ -13,20 +13,20 @@
 $(document).ready(function() {
 
     $.ajax({
-        url: "{?=url(['penyakit','read', $kd_penyakit])?}",
+        url: "{?=url(['mlite_log_api_vclaim','read', $id])?}",
         method: "GET",
         data: {},
         dataType: 'json',
         success: function (res) {
-            var eTable = "<div class='table-responsive'><table id='tbl_detail_penyakit' class='table display dataTable' style='width:100%'><thead></thead>";
-            eTable += '<tr><td>Kode Penyakit</td><td>' + res.msg['kd_penyakit'] + '</td><tr>';
-            eTable += '<tr><td>Nama Penyakit</td><td>' + res.msg['nm_penyakit'] + '</td><tr>';
-            eTable += '<tr><td>Ciri Ciri</td><td>' + res.msg['ciri_ciri'] + '</td><tr>';
-            eTable += '<tr><td>Keterangan</td><td>' + res.msg['keterangan'] + '</td><tr>';
-            eTable += '<tr><td>Kategori</td><td>' + res.msg['kd_ktg'] + '</td><tr>';
-            eTable += '<tr><td>Status</td><td>' + res.msg['status'] + '</td><tr>';
+            var eTable = "<div class='table-responsive'><table id='tbl_detail_mlite_log_api_vclaim' class='table display dataTable' style='width:100%'><thead></thead>";
+eTable += '<tr><td>Id</td><td>' + res.msg['id'] + '</td><tr>';
+eTable += '<tr><td>User</td><td>' + res.msg['user'] + '</td><tr>';
+eTable += '<tr><td>Tanggal</td><td>' + res.msg['tanggal'] + '</td><tr>';
+eTable += '<tr><td>Endpoint</td><td>' + res.msg['endpoint'] + '</td><tr>';
+eTable += '<tr><td>Result</td><td>' + res.msg['result'] + '</td><tr>';
+
             eTable += "</tbody></table></div>";
-            $('#detail_penyakit').html(eTable);
+            $('#detail_mlite_log_api_vclaim').html(eTable);
         }
     });
 
@@ -48,7 +48,7 @@ $(document).ready(function() {
         doc.text("Data Detail", 20, 95, null, null, null);
         const totalPagesExp = "{total_pages_count_string}";        
         doc.autoTable({
-            html: '#tbl_detail_penyakit',
+            html: '#tbl_detail_mlite_log_api_vclaim',
             startY: 105,
             margin: {
                 left: 20, 
@@ -71,7 +71,7 @@ $(document).ready(function() {
         if (typeof doc.putTotalPages === 'function') {
             doc.putTotalPages(totalPagesExp);
         }
-        // doc.save('detail_data_penyakit.pdf')
+        // doc.save('detail_data_mlite_log_api_vclaim.pdf')
         window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
               
     }) 

@@ -16,12 +16,13 @@ class Admin extends AdminModule
     public function getManage()
     {
         $this->_addHeaderFiles();
+        $this->assign['kategori_penyakit'] = $this->core->db->select('kategori_penyakit', '*');
         $disabled_menu = $this->core->loadDisabledMenu('penyakit'); 
         foreach ($disabled_menu as &$row) { 
           if ($row == "true" ) $row = "disabled"; 
         } 
         unset($row);
-        return $this->draw('manage.html', ['disabled_menu' => $disabled_menu]);
+        return $this->draw('manage.html', ['disabled_menu' => $disabled_menu, 'penyakit' => $this->assign]);
     }
 
     public function postData()

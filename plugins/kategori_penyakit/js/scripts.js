@@ -32,16 +32,14 @@ jQuery().ready(function () {
             });          
         }, 
         "columns": [
-{ 'data': 'kd_ktg' },
-{ 'data': 'nm_kategori' },
-{ 'data': 'ciri_umum' }
-
+            { 'data': 'kd_ktg' },
+            { 'data': 'nm_kategori' },
+            { 'data': 'ciri_umum' }
         ],
         "columnDefs": [
-{ 'targets': 0},
-{ 'targets': 1},
-{ 'targets': 2}
-
+            { 'targets': 0},
+            { 'targets': 1},
+            { 'targets': 2}
         ],
         order: [[1, 'DESC']], 
         buttons: [],
@@ -60,7 +58,7 @@ jQuery().ready(function () {
         callback: function(key, options) {
           var rowData = var_tbl_kategori_penyakit.rows({ selected: true }).data()[0];
           if (rowData != null) {
-var kd_ktg = rowData['kd_ktg'];
+            var kd_ktg = rowData['kd_ktg'];
             switch (key) {
                 case 'detail' :
                     OpenModal(mlite.url + '/kategori_penyakit/detail/' + kd_ktg + '?t=' + mlite.token);
@@ -83,26 +81,24 @@ var kd_ktg = rowData['kd_ktg'];
 
     $("form[name='form_kategori_penyakit']").validate({
         rules: {
-kd_ktg: 'required',
-nm_kategori: 'required',
-ciri_umum: 'required'
-
+            kd_ktg: 'required',
+            nm_kategori: 'required',
+            ciri_umum: 'required'
         },
         messages: {
-kd_ktg:'Kd Ktg tidak boleh kosong!',
-nm_kategori:'Nm Kategori tidak boleh kosong!',
-ciri_umum:'Ciri Umum tidak boleh kosong!'
-
+            kd_ktg:'Kd Ktg tidak boleh kosong!',
+            nm_kategori:'Nm Kategori tidak boleh kosong!',
+            ciri_umum:'Ciri Umum tidak boleh kosong!'
         },
         submitHandler: function (form) {
-var kd_ktg= $('#kd_ktg').val();
-var nm_kategori= $('#nm_kategori').val();
-var ciri_umum= $('#ciri_umum').val();
+            var kd_ktg= $('#kd_ktg').val();
+            var nm_kategori= $('#nm_kategori').val();
+            var ciri_umum= $('#ciri_umum').val();
 
-var typeact = $('#typeact').val();
+            var typeact = $('#typeact').val();
 
-var formData = new FormData(form); // tambahan
-formData.append('typeact', typeact); // tambahan
+            var formData = new FormData(form); // tambahan
+            formData.append('typeact', typeact); // tambahan
 
             $.ajax({
                 url: "{?=url(['kategori_penyakit','aksi'])?}",
@@ -177,14 +173,14 @@ formData.append('typeact', typeact); // tambahan
         if (rowData != null) {
 
             var kd_ktg = rowData['kd_ktg'];
-var nm_kategori = rowData['nm_kategori'];
-var ciri_umum = rowData['ciri_umum'];
+            var nm_kategori = rowData['nm_kategori'];
+            var ciri_umum = rowData['ciri_umum'];
 
             $("#typeact").val("edit");
   
             $('#kd_ktg').val(kd_ktg);
-$('#nm_kategori').val(nm_kategori);
-$('#ciri_umum').val(ciri_umum);
+            $('#nm_kategori').val(nm_kategori);
+            $('#ciri_umum').val(ciri_umum);
 
             $("#kd_ktg").prop('readonly', true); // GA BISA DIEDIT KALI READONLY
             $('#modal-title').text("Edit Data Kategori Penyakit");
@@ -204,7 +200,7 @@ $('#ciri_umum').val(ciri_umum);
 
 
         if (rowData) {
-var kd_ktg = rowData['kd_ktg'];
+            var kd_ktg = rowData['kd_ktg'];
             bootbox.confirm('Anda yakin akan menghapus data dengan kd_ktg="' + kd_ktg, function(result) {
                 if(result) {
                     $.ajax({
@@ -247,8 +243,8 @@ var kd_ktg = rowData['kd_ktg'];
     jQuery("#tambah_data_kategori_penyakit").click(function () {
 
         $('#kd_ktg').val('');
-$('#nm_kategori').val('');
-$('#ciri_umum').val('');
+        $('#nm_kategori').val('');
+        $('#ciri_umum').val('');
 
         $("#typeact").val("add");
         $("#kd_ktg").prop('readonly', false);
@@ -275,12 +271,12 @@ $('#ciri_umum').val('');
             },
             dataType: 'json',
             success: function (res) {
-                var eTable = "<div class='table-responsive'><table id='tbl_lihat_kategori_penyakit' class='table display dataTable' style='width:100%'><thead><th>Kd Ktg</th><th>Nm Kategori</th><th>Ciri Umum</th></thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_kategori_penyakit' class='table display dataTable' style='width:100%'><thead><th>Kode Kategori</th><th>Nama Kategori</th><th>Ciri Umum</th></thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     eTable += '<td>' + res[i]['kd_ktg'] + '</td>';
-eTable += '<td>' + res[i]['nm_kategori'] + '</td>';
-eTable += '<td>' + res[i]['ciri_umum'] + '</td>';
+                    eTable += '<td>' + res[i]['nm_kategori'] + '</td>';
+                    eTable += '<td>' + res[i]['ciri_umum'] + '</td>';
                     eTable += "</tr>";
                 }
                 eTable += "</tbody></table></div>";

@@ -1,6 +1,4 @@
-#tbl_reg_periksa th, 
-#tbl_reg_periksa td, 
-#tbl_rawat_inap_dr th, #tbl_rawat_inap_dr td, #forTable_rawat_inap_dr th, #forTable_rawat_inap_dr td {
+#tbl_mlite_log_api_vclaim th, #tbl_mlite_log_api_vclaim td, #forTable_mlite_log_api_vclaim th, #forTable_mlite_log_api_vclaim td {
   white-space: nowrap; 
 }
 .dataTables_wrapper th, .dataTables_wrapper td {

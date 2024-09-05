@@ -428,4 +428,22 @@ eTable += '<td>' + res[i]['biaya_rawat'] + '</td>';
         window.open(mlite.url + '/rawat_inap_dr/chart?t=' + mlite.token, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
     })   
 
+    $("#cari_no_rawat").click(function (event) {
+        // $(".modal-content").modal("show");
+        event.preventDefault();
+        var loadURL =  mlite.url + '/periksa_lab/manageregperiksa?t=' + mlite.token;;
+    
+        var modal = $('#myModalFull');
+        var modalContent = $('#myModalFull .modal-content');
+        // alert(modal);
+    
+        modal.off('show.bs.modal');
+        modal.on('show.bs.modal', function () {
+            modalContent.load(loadURL);
+        }).modal('show');
+        
+        return false;
+
+    })
+
 });
