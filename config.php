@@ -3,11 +3,11 @@ if (!version_compare(PHP_VERSION, '7.0.0', '>=')) {
     exit("mLITE requires at least <b>PHP 7.0</b>");
 }
 
-define('DBHOST', 'localhost');
+define('DBHOST', '100.10.1.2');
 define('DBPORT', '3306');
 define('DBUSER', 'root');
-define('DBPASS', '');
-define('DBNAME', 'mlite');
+define('DBPASS', 'RotiBakar69');
+define('DBNAME', 'sik');
 
 // URL Webapps
 define('WEBAPPS_URL', 'http://localhost/mlite/uploads');
