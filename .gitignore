@@ -45,3 +45,4 @@ plugins/pasien_galleries
 logs/
 config.php
 workerman.php
+composer.lock
