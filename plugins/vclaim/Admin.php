@@ -2891,6 +2891,8 @@ class Admin extends AdminModule
       ->join('bridging_sep', 'bridging_sep.no_sep=bridging_surat_kontrol_bpjs.no_sep')
       ->where('bridging_sep.no_kartu', $no_kartu)
       ->toArray();
+    $sep = $this->db('bridging_sep')->where('no_kartu',$no_kartu)->desc('tglsep')->oneArray();
+    $this->tpl->set('no_sep',$sep['no_sep']);
     $this->tpl->set('kontrol', $this->tpl->noParse_array(htmlspecialchars_array($bridging_surat_kontrol_bpjs)));
     $this->tpl->set('maping_dokter_dpjpvclaim', $this->tpl->noParse_array(htmlspecialchars_array($maping_dokter_dpjpvclaim)));
     $this->tpl->set('maping_poli_bpjs', $this->tpl->noParse_array(htmlspecialchars_array($maping_poli_bpjs)));
