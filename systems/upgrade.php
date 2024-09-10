@@ -49,5 +49,7 @@ switch ($version) {
         $return = '4.1.2';
     case '4.1.2':
         $return = '4.1.3';        
+    case '4.1.3':
+        $return = '4.1.4';        
     }
 return $return;
