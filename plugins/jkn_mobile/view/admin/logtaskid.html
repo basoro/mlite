@@ -1,0 +1,68 @@
+<style media="screen">
+  th,
+  td {
+    white-space: nowrap;
+    vertical-align: top !important;
+  }
+</style>
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="btn-group pull-right" style="margin-top:-8px;">
+          <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Antrol</span>
+          </span>
+          <ul class="dropdown-menu dropdown-menu-left">
+            <form class="" action="{?=url([ADMIN,'jkn_mobile','logtaskid'])?}" method="POST">
+              <li style="padding-left:5px;padding-right:5px;">
+                <input type="text" id="periode_antrol" class="form-control periode_antrol" name="periode_antrol"
+                  required>
+              </li>
+              <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                <input type="submit" name="" class="btn btn-primary btn-block" value="Submit">
+              </li>
+            </form>
+          </ul>
+        </div>
+        <h3 class="panel-title">Dashboard Log Antrian Online Local JKN Mobile {$tgl}</h3>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive no-margin">
+          <table class="table table-striped table-condensed no-margin display no-wrap" width="100%">
+            <thead>
+              <tr>
+                <th>Jumlah</th>
+                <th>Keterangan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $taskid}
+              <tr>
+                <td>{$value.jumlah}</td>
+                <td>{$value.keterangan}</td>
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
+<div class="modal fade" id="asuransiModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $(function () {
+    $('.periode_antrol').datetimepicker({
+      defaultDate: "{?=date('Y-m')?}",
+      format: 'YYYY-MM',
+      locale: 'id'
+    });
+  });
+</script>

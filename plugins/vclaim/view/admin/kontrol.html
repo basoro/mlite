@@ -12,7 +12,7 @@
               <div class="col-md-12">
                   <div class="form-group">
                       <label>Nomor SEP</label>
-                      <input type="text" name="no_sep" id="no_sep" class="form-control" />
+                      <input type="text" name="no_sep" id="no_sep" class="form-control" value="{$no_sep}"/>
                       <input type="text" style="display: none;" name="no_surkon" id="no_surkon" class="form-control" />
                   </div>
               </div>
@@ -149,7 +149,6 @@
   $("#kontroldisplay").on("click", ".pilih_nosurat", function(event){
     var no_surat = $(this).attr("data-no_surat");
     $('input:text[name=sep_nomor_skdp]').val(no_surat);
-    $('input:text[name=sep_nomor_rujukan]').val(no_surat);
     $('#kontrolModal').modal('hide');
   });
 
