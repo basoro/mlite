@@ -227,7 +227,7 @@ abstract class Main
         } elseif (isset($_COOKIE['mlite_remember'])) {
             $token = explode(":", $_COOKIE['mlite_remember']);
             if (count($token) == 2) {
-                $row = $this->db('mlite_users')->leftJoin('remember_me', 'remember_me.user_id = mlite_users.id')->where('mlite_users.id', $token[0])->where('remember_me.token', $token[1])->select(['mlite_users.*', 'remember_me.expiry', 'token_id' => 'remember_me.id'])->oneArray();
+                $row = $this->db('mlite_users')->leftJoin('mlite_remember_me', 'mlite_remember_me.user_id = mlite_users.id')->where('mlite_users.id', $token[0])->where('mlite_remember_me.token', $token[1])->select(['mlite_users.*', 'mlite_remember_me.expiry', 'token_id' => 'mlite_remember_me.id'])->oneArray();
 
                 if ($row) {
                     if (time() - $row['expiry'] > 0) {
@@ -238,7 +238,7 @@ abstract class Main
                         $_SESSION['userAgent']  = $_SERVER['HTTP_USER_AGENT'];
                         $_SESSION['IPaddress']  = $_SERVER['REMOTE_ADDR'];
 
-                        $this->db('mlite_remember_me')->where('remember_me.user_id', $token[0])->where('remember_me.token', $token[1])->save(['expiry' => time()+60*60*24*30]);
+                        $this->db('mlite_remember_me')->where('mlite_remember_me.user_id', $token[0])->where('mlite_remember_me.token', $token[1])->save(['expiry' => time()+60*60*24*30]);
 
                         if (strpos($_SERVER['SCRIPT_NAME'], '/'.ADMIN.'/') !== false) {
                             if(MULTI_APP) {
