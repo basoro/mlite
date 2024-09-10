@@ -36,25 +36,20 @@ class Admin extends AdminModule
             $searchQuery .= " and (".$search_field_mlite_antrian_referensi_taskid." like '%".$search_text_mlite_antrian_referensi_taskid."%' ) ";
         }
 
-        $conn = new \PDO("mysql:host=192.168.0.2;port=3306;dbname=rshd_sik", "rshd_sik", "Murakata04");
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        // $this->db()->pdo() = $conn;
-
         ## Total number of records without filtering
-        $sel = $conn->prepare("select count(*) as allcount from mlite_antrian_referensi_taskid");
+        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from mlite_antrian_referensi_taskid");
         $sel->execute();
         $records = $sel->fetch();
         $totalRecords = $records['allcount'];
 
         ## Total number of records with filtering
-        $sel = $conn->prepare("select count(*) as allcount from mlite_antrian_referensi_taskid WHERE 1 ".$searchQuery);
+        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from mlite_antrian_referensi_taskid WHERE 1 ".$searchQuery);
         $sel->execute();
         $records = $sel->fetch();
         $totalRecordwithFilter = $records['allcount'];
 
         ## Fetch records
-        $sel = $conn->prepare("select * from mlite_antrian_referensi_taskid WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row1.",".$rowperpage);
+        $sel = $this->db()->pdo()->prepare("select * from mlite_antrian_referensi_taskid WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row1.",".$rowperpage);
         $sel->execute();
         $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
 
