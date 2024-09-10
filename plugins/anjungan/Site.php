@@ -2954,10 +2954,11 @@ class Site extends SiteModule
           $cek_kuota['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
 
           $kodebooking = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($reg_periksa['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
-
+          $jenisKunjungan = '1';
           $nomorreferensi = $_POST['norujukan'];
-          if(isset($_POST['tujuanKunj']) == '3') {
+          if(isset($_POST['tujuanKunj']) == '2') {
             $nomorreferensi = $_POST['noskdp'];
+            $jenisKunjungan = '3';
           }
           $data = [
               'kodebooking' => $kodebooking,
@@ -2973,7 +2974,7 @@ class Site extends SiteModule
               'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
               'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
               'jampraktek' => substr($jadwaldokter['jam_mulai'],0,5).'-'.substr($jadwaldokter['jam_selesai'],0,5),
-              'jeniskunjungan' => $_POST['tujuanKunj'],
+              'jeniskunjungan' => $jenisKunjungan,
               'nomorreferensi' => $nomorreferensi,
               'nomorantrean' => $maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
               'angkaantrean' => $reg_periksa['no_reg'],
@@ -2997,7 +2998,7 @@ class Site extends SiteModule
                 'nomor_kartu' => $pasien['no_peserta'],
                 'nomor_referensi' => $nomorreferensi,
                 'kodebooking' => $kodebooking,
-                'jenis_kunjungan' => $_POST['tujuanKunj'],
+                'jenis_kunjungan' => $jenisKunjungan,
                 'status_kirim' => 'Sudah',
                 'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
             ]);
@@ -3008,7 +3009,7 @@ class Site extends SiteModule
               'nomor_kartu' => $pasien['no_peserta'],
               'nomor_referensi' => $nomorreferensi,
               'kodebooking' => $kodebooking,
-              'jenis_kunjungan' => $_POST['tujuanKunj'],
+              'jenis_kunjungan' => $jenisKunjungan,
               'status_kirim' => 'Sudah',
               'keterangan' => $data['metadata']['code'].' null : null '.$data['metadata']['message']
             ]);

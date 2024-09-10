@@ -53,6 +53,7 @@ class Admin extends AdminModule
         ['name' => 'Jadwal Dokter HFIS', 'url' => url([ADMIN, 'jkn_mobile', 'jadwaldokter']), 'icon' => 'tasks', 'desc' => 'Jadwal Dokter HFIS JKN Mobile'],
         ['name' => 'Data Booking Antrol', 'url' => url([ADMIN, 'jkn_mobile', 'bookingantrol']), 'icon' => 'list', 'desc' => 'Booking Antrol JKN Mobile'],
         ['name' => 'Task ID', 'url' => url([ADMIN, 'jkn_mobile', 'taskid']), 'icon' => 'tasks', 'desc' => 'Task ID JKN Mobile'],
+        ['name' => 'Log Task ID', 'url' => url([ADMIN, 'jkn_mobile', 'logtaskid']), 'icon' => 'tasks', 'desc' => 'Log Task ID JKN Mobile'],
         ['name' => 'Quality Rate', 'url' => url([ADMIN, 'jkn_mobile', 'qrantrol']), 'icon' => 'tasks', 'desc' => 'Quality Rate Antrian Online BPJS'],
         ['name' => 'Dashboard Antrol BPJS', 'url' => url([ADMIN, 'jkn_mobile', 'antrol']), 'icon' => 'tasks', 'desc' => 'Antrian Online BPJS'],
         ['name' => 'Dashboard Antrol Local BPJS', 'url' => url([ADMIN, 'jkn_mobile_v2', 'antrollocal']), 'icon' => 'tasks', 'desc' => 'Antrian Online Local BPJS'],
@@ -327,7 +328,7 @@ class Admin extends AdminModule
           $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
           $resep_obat2 = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
 
-          $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('postdate', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+          $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('postdate', $date)->where('type','Loket')->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
           $task1 = '';
           $task2 = '';
           if($mlite_antrian_loket) {
@@ -481,19 +482,19 @@ class Admin extends AdminModule
         $taskid['2'] = isset_or($mlite_antrian_loket['postdate'], $pasien['tgl_registrasi']).' '.isset_or($mlite_antrian_loket['end_time'], $pasien['jam_reg']);
       }
       if($taskid3['waktu'] == '') {
-        $taskid['3'] = isset_or($berkas_dikirim['dikirim'], $datetime_reg_periksa);
+        $taskid['3'] = isset_or($berkas_dikirim['dikirim'], '');
       }
       if($taskid4['waktu'] == '') {
-        $taskid['4'] = isset_or($berkas_diterima['diterima'], $datetime_reg_periksa);
+        $taskid['4'] = isset_or($berkas_diterima['diterima'], '');
       }
       if($taskid5['waktu'] == '') {
-        $taskid['5'] = isset_or($pemeriksaan_ralan['datajam'], $datetime_reg_periksa);
+        $taskid['5'] = isset_or($pemeriksaan_ralan['datajam'], '');
       }
       if($taskid6['waktu'] == '') {
-        $taskid['6'] = isset_or($resep_obat['datajam'], $datetime_reg_periksa);
+        $taskid['6'] = isset_or($resep_obat['datajam'], '');
       }
       if($taskid7['waktu'] == '') {
-        $taskid['7'] = isset_or($resep_obat['datajam2'], $datetime_reg_periksa);
+        $taskid['7'] = isset_or($resep_obat['datajam2'], '');
       }
       if($taskid99['waktu'] == '') {
         $taskid['99'] = '';
@@ -523,87 +524,101 @@ class Admin extends AdminModule
           ]);
       } else {
         if(!empty($_POST['taskid1'])) {
-          $this->db('mlite_antrian_referensi_taskid')
-          ->save([
-            'tanggal_periksa' => $_POST['tgl_registrasi'],
-            'nomor_referensi' => $_POST['nomor_referensi'],
-            'taskid' => 1,
-            'waktu' => strtotime($_POST['taskid1']) * 1000,
-            'status' => 'Belum',
-            'keterangan' => ''
-          ]);
+          if(!$this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $_POST['nomor_referensi'])->where('taskid','1')->where('status','Sudah')->oneArray()){
+            $this->db('mlite_antrian_referensi_taskid')
+            ->save([
+              'tanggal_periksa' => $_POST['tgl_registrasi'],
+              'nomor_referensi' => $_POST['nomor_referensi'],
+              'taskid' => 1,
+              'waktu' => strtotime($_POST['taskid1']) * 1000,
+              'status' => 'Belum',
+              'keterangan' => ''
+            ]);
+          }
         }
   
         if(!empty($_POST['taskid2'])) {
-          $this->db('mlite_antrian_referensi_taskid')
-          ->save([
-            'tanggal_periksa' => $_POST['tgl_registrasi'],
-            'nomor_referensi' => $_POST['nomor_referensi'],
-            'taskid' => 2,
-            'waktu' => strtotime($_POST['taskid2']) * 1000,
-            'status' => 'Belum',
-            'keterangan' => ''
-          ]);
+          if(!$this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $_POST['nomor_referensi'])->where('taskid','2')->where('status','Sudah')->oneArray()){
+            $this->db('mlite_antrian_referensi_taskid')
+            ->save([
+              'tanggal_periksa' => $_POST['tgl_registrasi'],
+              'nomor_referensi' => $_POST['nomor_referensi'],
+              'taskid' => 2,
+              'waktu' => strtotime($_POST['taskid2']) * 1000,
+              'status' => 'Belum',
+              'keterangan' => ''
+            ]);
+          }
         }
   
         if(!empty($_POST['taskid3'])) {
-          $this->db('mlite_antrian_referensi_taskid')
-          ->save([
-            'tanggal_periksa' => $_POST['tgl_registrasi'],
-            'nomor_referensi' => $_POST['nomor_referensi'],
-            'taskid' => 3,
-            'waktu' => strtotime($_POST['taskid3']) * 1000,
-            'status' => 'Belum',
-            'keterangan' => ''
-          ]);
+          if(!$this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $_POST['nomor_referensi'])->where('taskid','3')->where('status','Sudah')->oneArray()){
+            $this->db('mlite_antrian_referensi_taskid')
+            ->save([
+              'tanggal_periksa' => $_POST['tgl_registrasi'],
+              'nomor_referensi' => $_POST['nomor_referensi'],
+              'taskid' => 3,
+              'waktu' => strtotime($_POST['taskid3']) * 1000,
+              'status' => 'Belum',
+              'keterangan' => ''
+            ]);
+          }
         }
   
         if(!empty($_POST['taskid4'])) {
-          $this->db('mlite_antrian_referensi_taskid')
-          ->save([
-            'tanggal_periksa' => $_POST['tgl_registrasi'],
-            'nomor_referensi' => $_POST['nomor_referensi'],
-            'taskid' => 4,
-            'waktu' => strtotime($_POST['taskid4']) * 1000,
-            'status' => 'Belum',
-            'keterangan' => ''
-          ]);
+          if(!$this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $_POST['nomor_referensi'])->where('taskid','4')->where('status','Sudah')->oneArray()){
+            $this->db('mlite_antrian_referensi_taskid')
+            ->save([
+              'tanggal_periksa' => $_POST['tgl_registrasi'],
+              'nomor_referensi' => $_POST['nomor_referensi'],
+              'taskid' => 4,
+              'waktu' => strtotime($_POST['taskid4']) * 1000,
+              'status' => 'Belum',
+              'keterangan' => ''
+            ]);
+          }
         }
   
         if(!empty($_POST['taskid5'])) {
-          $this->db('mlite_antrian_referensi_taskid')
-          ->save([
-            'tanggal_periksa' => $_POST['tgl_registrasi'],
-            'nomor_referensi' => $_POST['nomor_referensi'],
-            'taskid' => 5,
-            'waktu' => strtotime($_POST['taskid5']) * 1000,
-            'status' => 'Belum',
-            'keterangan' => ''
-          ]);
+          if(!$this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $_POST['nomor_referensi'])->where('taskid','5')->where('status','Sudah')->oneArray()){
+            $this->db('mlite_antrian_referensi_taskid')
+            ->save([
+              'tanggal_periksa' => $_POST['tgl_registrasi'],
+              'nomor_referensi' => $_POST['nomor_referensi'],
+              'taskid' => 5,
+              'waktu' => strtotime($_POST['taskid5']) * 1000,
+              'status' => 'Belum',
+              'keterangan' => ''
+            ]);
+          }
         }
   
         if(!empty($_POST['taskid6'])) {
-          $this->db('mlite_antrian_referensi_taskid')
-          ->save([
-            'tanggal_periksa' => $_POST['tgl_registrasi'],
-            'nomor_referensi' => $_POST['nomor_referensi'],
-            'taskid' => 6,
-            'waktu' => strtotime($_POST['taskid6']) * 1000,
-            'status' => 'Belum',
-            'keterangan' => ''
-          ]);
+          if(!$this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $_POST['nomor_referensi'])->where('taskid','6')->where('status','Sudah')->oneArray()){
+            $this->db('mlite_antrian_referensi_taskid')
+            ->save([
+              'tanggal_periksa' => $_POST['tgl_registrasi'],
+              'nomor_referensi' => $_POST['nomor_referensi'],
+              'taskid' => 6,
+              'waktu' => strtotime($_POST['taskid6']) * 1000,
+              'status' => 'Belum',
+              'keterangan' => ''
+            ]);
+          }
         }
   
         if(!empty($_POST['taskid7'])) {
-          $this->db('mlite_antrian_referensi_taskid')
-          ->save([
-            'tanggal_periksa' => $_POST['tgl_registrasi'],
-            'nomor_referensi' => $_POST['nomor_referensi'],
-            'taskid' => 7,
-            'waktu' => strtotime($_POST['taskid7']) * 1000,
-            'status' => 'Belum',
-            'keterangan' => ''
-          ]);
+          if(!$this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $_POST['nomor_referensi'])->where('taskid','7')->where('status','Sudah')->oneArray()){
+            $this->db('mlite_antrian_referensi_taskid')
+            ->save([
+              'tanggal_periksa' => $_POST['tgl_registrasi'],
+              'nomor_referensi' => $_POST['nomor_referensi'],
+              'taskid' => 7,
+              'waktu' => strtotime($_POST['taskid7']) * 1000,
+              'status' => 'Belum',
+              'keterangan' => ''
+            ]);
+          }
         }
       }
 
@@ -746,14 +761,14 @@ class Admin extends AdminModule
         }
       }
 
-      $taskid1 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '1')->oneArray();
-      $taskid2 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '2')->oneArray();
-      $taskid3 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '3')->oneArray();
-      $taskid4 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '4')->oneArray();
-      $taskid5 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '5')->oneArray();
-      $taskid6 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '6')->oneArray();
-      $taskid7 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '7')->oneArray();
-      $taskid99 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '99')->oneArray();
+      $taskid1 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '1')->where('status','Belum')->oneArray();
+      $taskid2 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '2')->where('status','Belum')->oneArray();
+      $taskid3 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '3')->where('status','Belum')->oneArray();
+      $taskid4 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '4')->where('status','Belum')->oneArray();
+      $taskid5 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '5')->where('status','Belum')->oneArray();
+      $taskid6 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '6')->where('status','Belum')->oneArray();
+      $taskid7 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '7')->where('status','Belum')->oneArray();
+      $taskid99 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '99')->where('status','Belum')->oneArray();
 
       if ($versi == 'batal') {
         $data1 = [
@@ -792,20 +807,11 @@ class Admin extends AdminModule
         echo 'Menjalankan WS taskid (1) mulai tunggu admisi<br>';
         echo '-------------------------------------<br>';
         $data = [];
-        if($versi == 'v2') {
-          $data1 = [
-              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-              'taskid' => 1,
-              'waktu' => $taskid1['waktu']
-          ];
-        }
-        if($versi == 'v3') {
-          $data1 = [
-              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-              'taskid' => 1,
-              'waktu' => $taskid1['waktu'],
-          ];
-        }
+        $data1 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 1,
+            'waktu' => $taskid1['waktu'],
+        ];
         $data1 = json_encode($data1);
         echo 'Request:<br>';
         echo $data1;
@@ -836,20 +842,11 @@ class Admin extends AdminModule
         echo 'Menjalankan WS taskid (2) mulai pelayanan admisi<br>';
         echo '-------------------------------------<br>';
         $data = [];
-        if($versi == 'v2') {
-          $data2 = [
-              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-              'taskid' => 2,
-              'waktu' => $taskid2['waktu']
-          ];
-        }
-        if($versi == 'v3') {
-          $data2 = [
-              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-              'taskid' => 2,
-              'waktu' => $taskid2['waktu'],
-          ];
-        }
+        $data2 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 2,
+            'waktu' => $taskid2['waktu'],
+        ];
         $data2 = json_encode($data2);
         echo 'Request:<br>';
         echo $data2;
@@ -865,7 +862,7 @@ class Admin extends AdminModule
           ->where('taskid', 2)
           ->save([
             'status' => 'Sudah',
-            'keterangan' => $json1['metadata']['message']
+            'keterangan' => $json2['metadata']['message']
           ]);
         } else {
           $this->db('mlite_antrian_referensi_taskid')
@@ -880,20 +877,11 @@ class Admin extends AdminModule
         echo 'Menjalankan WS taskid (3) mulai tunggu poli<br>';
         echo '-------------------------------------<br>';
         $data = [];
-        if($versi == 'v2') {
-          $data3 = [
-              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-              'taskid' => 3,
-              'waktu' => $taskid3['waktu']
-          ];
-        }
-        if($versi == 'v3') {
-          $data3 = [
-              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-              'taskid' => 3,
-              'waktu' => $taskid3['waktu'],
-          ];
-        }
+        $data3 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 3,
+            'waktu' => $taskid3['waktu'],
+        ];
         $data3 = json_encode($data3);
         echo 'Request:<br>';
         echo $data3;
@@ -909,7 +897,7 @@ class Admin extends AdminModule
           ->where('taskid', 3)
           ->save([
             'status' => 'Sudah',
-            'keterangan' => $json1['metadata']['message']
+            'keterangan' => $json3['metadata']['message']
           ]);
         } else {
           $this->db('mlite_antrian_referensi_taskid')
@@ -924,20 +912,11 @@ class Admin extends AdminModule
         echo 'Menjalankan WS taskid (4) mulai pelayanan poli<br>';
         echo '-------------------------------------<br>';
         $data = [];
-        if($versi == 'v2') {
-          $data4 = [
-              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-              'taskid' => 4,
-              'waktu' => $taskid4['waktu']
-          ];
-        }
-        if($versi == 'v3') {
-          $data4 = [
-              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-              'taskid' => 4,
-              'waktu' => $taskid4['waktu'],
-          ];
-        }
+        $data4 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 4,
+            'waktu' => $taskid4['waktu'],
+        ];
         $data4 = json_encode($data4);
         echo 'Request:<br>';
         echo $data4;
@@ -953,7 +932,7 @@ class Admin extends AdminModule
           ->where('taskid', 4)
           ->save([
             'status' => 'Sudah',
-            'keterangan' => $json1['metadata']['message']
+            'keterangan' => $json4['metadata']['message']
           ]);
         } else {
           $this->db('mlite_antrian_referensi_taskid')
@@ -998,7 +977,7 @@ class Admin extends AdminModule
           ->where('taskid', 5)
           ->save([
             'status' => 'Sudah',
-            'keterangan' => $json1['metadata']['message']
+            'keterangan' => $json5['metadata']['message']
           ]);
         } else {
           $this->db('mlite_antrian_referensi_taskid')
@@ -1013,20 +992,11 @@ class Admin extends AdminModule
         echo 'Menjalankan WS taskid (6) permintaan resep apotek<br>';
         echo '-------------------------------------<br>';
         $data = [];
-        if($versi == 'v2') {
-          $data6 = [
-              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-              'taskid' => 6,
-              'waktu' => $taskid6['waktu']
-          ];
-        }
-        if($versi == 'v3') {
-          $data6 = [
-              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-              'taskid' => 6,
-              'waktu' => $taskid6['waktu'],
-          ];
-        }
+        $data6 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 6,
+            'waktu' => $taskid6['waktu'],
+        ];
         $data6 = json_encode($data6);
         echo 'Request:<br>';
         echo $data6;
@@ -1042,7 +1012,7 @@ class Admin extends AdminModule
           ->where('taskid', 6)
           ->save([
             'status' => 'Sudah',
-            'keterangan' => $json1['metadata']['message']
+            'keterangan' => $json6['metadata']['message']
           ]);
         } else {
           $this->db('mlite_antrian_referensi_taskid')
@@ -1057,20 +1027,11 @@ class Admin extends AdminModule
         echo 'Menjalankan WS taskid (7) selesai pelayanan apotek<br>';
         echo '-------------------------------------<br>';
         $data = [];
-        if($versi == 'v2') {
-          $data7 = [
-              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-              'taskid' => 7,
-              'waktu' => $taskid7['waktu']
-          ];
-        }
-        if($versi == 'v3') {
-          $data7 = [
-              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-              'taskid' => 7,
-              'waktu' => $taskid7['waktu'],
-          ];
-        }
+        $data7 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 7,
+            'waktu' => $taskid7['waktu'],
+        ];
         $data7 = json_encode($data7);
         echo 'Request:<br>';
         echo $data7;
@@ -1086,7 +1047,7 @@ class Admin extends AdminModule
           ->where('taskid', 7)
           ->save([
             'status' => 'Sudah',
-            'keterangan' => $json1['metadata']['message']
+            'keterangan' => $json7['metadata']['message']
           ]);
         } else {
           $this->db('mlite_antrian_referensi_taskid')
@@ -1100,6 +1061,40 @@ class Admin extends AdminModule
       }
       
       exit();
+    }
+
+    public function anyLogTaskID()
+    {
+      $this->_addHeaderFiles();
+      $this->getCssCard();
+      $date = date('Y-m');
+      if(isset($_POST['periode_antrol']) && $_POST['periode_antrol'] !='')
+        $date = $_POST['periode_antrol'];
+      $query = $this->db()->pdo()->prepare("SELECT COUNT(*) as jumlah, keterangan FROM mlite_antrian_referensi WHERE tanggal_periksa LIKE '$date%' GROUP BY keterangan");
+      $query->execute();
+      $query = $query->fetchAll(\PDO::FETCH_ASSOC);
+
+      $rows = [];
+      $a = [];
+      $a['jumlah'] = 0;
+      foreach ($query as $q) {
+        if (strpos($q['keterangan'], 'Rujukan nomor ') !== false) {
+          $s = explode(" ", $q['keterangan']);
+          unset($s[2]);
+          $s = implode(" ", $s);
+          $a['keterangan'] = $s;
+          $a['jumlah'] = $a['jumlah'] + 1;
+        } else if ($q['keterangan'] == null){
+          $q['keterangan'] = 'NULL';
+          $rows[] = $q;
+        } else {
+          $rows[] = $q;
+        }
+      }
+      $rows[] = $a;
+
+      $taskid = $rows;
+      return $this->draw('logtaskid.html', ['taskid' => $taskid,'tgl'=>$date]);
     }
 
     public function anyAntrolLocal()
