@@ -390,7 +390,7 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/vendor/jspdf/jspdf.plugin.autotable.min.js'), 'footer');
         $this->core->addJS(url('assets/vendor/datatables/datatables.min.js'), 'footer');
         $this->core->addJS(url('assets/js/jquery.contextMenu.js'), 'footer');
-        $this->core->addJS(url('plugins/mlite_api_tools/js/prism.min.js'), 'footer');
+        $this->core->addJS(url('assets/js/prism.js'), 'footer');
         $this->core->addJS(url('assets/vendor/daterange/daterange.js'), 'footer');
 
         $this->core->addCSS(url([ 'mlite_api_tools', 'css']));

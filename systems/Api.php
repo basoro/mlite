@@ -34,6 +34,7 @@ class Api extends Main
     public function loginCheckApi()
     {
         $secretKey = trim(isset_or($this->requestHeaders['X-Api-Key'], ''));
+        $token = trim(isset_or($this->requestHeaders['X-Access-Token'], '...'));
         $mlite_api_key = $this->db->get('mlite_api_key', '*', ['api_key' => $secretKey]);
 
         $whitelist = explode(',', isset_or($mlite_api_key['ip_range'], ''));
@@ -63,7 +64,7 @@ class Api extends Main
         // Create an instance of JwtManager
         $jwtManager = new JwtManager($secretKey);
         // Validate and decode the JWT
-        if (!$jwtManager->validateToken(trim($this->requestHeaders['X-Access-Token']))) {
+        if (!$jwtManager->validateToken(trim($token))) {
             http_response_code(403);
             $data = array(
                 'code' => '403', 
@@ -127,7 +128,7 @@ class Api extends Main
         $mlite_api_key = $this->db->get('mlite_api_key', '*', ['username' => $username]);
         $secretKey = isset_or($mlite_api_key['api_key']);
 
-        if ($mlite_users && password_verify(trim($password), isset_or($mlite_users['password']))) {
+        if ($mlite_users && $secretKey && password_verify(trim($password), isset_or($mlite_users['password']))) {
             // Create an instance of JwtManager
             $jwtManager = new JwtManager($secretKey);
             // Create a JWT

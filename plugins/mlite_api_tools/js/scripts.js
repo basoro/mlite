@@ -436,4 +436,26 @@ jQuery().ready(function () {
         }
     });      
 
+    if (typeof $.fn.slimScroll != 'undefined') {
+        var height = ($(window).height() - 140);
+        var $el = $('.sidebar-api');
+    
+        $el.slimscroll({
+            height: height + "px",
+            color: 'rgba(0,0,0,0.5)',
+            size: '4px',
+            alwaysVisible: false,
+            borderRadius: '0',
+            railBorderRadius: '0'
+        });
+    
+        //Scroll active menu item when page load, if option set = true
+        var item = $('.sidebarApiMenuScroll .sidebar-api li.active-api')[0];
+        // console.log(item);
+        if (item) {
+            var activeItemOffsetTop = item.offsetTop;
+            if (activeItemOffsetTop > 50) $el.slimscroll({ scrollTo: activeItemOffsetTop + 'px' });
+        }
+    }
+
 });

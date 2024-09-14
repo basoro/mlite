@@ -1,61 +1,22 @@
-<style>
-.sidebar-api {
-     list-style-type: none;
-     margin: 0;
-     padding: 0
- }
- 
- .sidebar-api>li {
-     position: relative;
-     margin: 0 0 1px 0
- }
- 
- .sidebar-api>li>a {
-     padding: 7px 25px 7px 15px;
-     display: flex;
-     align-items: center;
-     border-left: 3px solid rgba(0, 0, 0, 0);
-     color: #000;
-     white-space: nowrap;
-     font-size: .95rem
- }
- 
- .sidebar-api>li>a>i {
-     font-size: 1.15rem;
-     flex-shrink: 0;
-     background: #e9f2ff;
-     width: 36px;
-     height: 36px;
-     margin-right: 15px;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     -webkit-border-radius: 10px;
-     -moz-border-radius: 10px;
-     border-radius: 10px
- }
- .sidebar-api>li.active-api>a {
-     color: #000;
-     font-weight: 600;
-     border-left: #0665e9 3px solid;
-     background: #e9f2ff
- }    
+<style> 
 </style>
 <div class="container-fluid py-3">
     <div class="row">
         <div class="col-md-3">
-            <ul class="sidebar-api">
-                <li class="{if: empty($slug[2])}active-api{/if}"><a href="{?=url(['mlite_api_tools', 'documentations'])?}">Memulai</a></li>
-                {loop: $modules}
-                   {if: !in_array($value, array('dashboard','crud_generator','mlite_api_tools'))}
-                        {if: $this->core->getUserInfo('role') == 'admin'}
-                            <li class="{if: $slug[2] == $value}active-api{/if}"><a href="{?=url(['mlite_api_tools', 'documentations', $value])?}">{?=$this->core->getModuleInfo($value)['name']?}</a></li>
-                        {else}
-                            <li class="{if: $slug[2] == $value}active-api{/if}"><a href="{?=url(['mlite_api_tools', 'documentations', $value])?}">{?=$this->core->getModuleInfo($value)['name']?}</a></li>
+            <div class="sidebarApiMenuScroll">
+                <ul class="sidebar-api">
+                    <li class="{if: empty($slug[2])}active-api{/if}"><a href="{?=url(['mlite_api_tools', 'documentations'])?}">Memulai</a></li>
+                    {loop: $modules}
+                    {if: !in_array($value, array('dashboard','crud_generator','mlite_api_tools'))}
+                            {if: $this->core->getUserInfo('role') == 'admin'}
+                                <li class="{if: $slug[2] == $value}active-api{/if}"><a href="{?=url(['mlite_api_tools', 'documentations', $value])?}">{?=$this->core->getModuleInfo($value)['name']?}</a></li>
+                            {else}
+                                <li class="{if: $slug[2] == $value}active-api{/if}"><a href="{?=url(['mlite_api_tools', 'documentations', $value])?}">{?=$this->core->getModuleInfo($value)['name']?}</a></li>
+                            {/if}
                         {/if}
-                    {/if}
-                {/loop}
-            </ul>
+                    {/loop}
+                </ul>
+            </div>
         </div>
         <div class="col-md-9">
                 {if: isset($slug[2]) && $slug[2] !=''}
