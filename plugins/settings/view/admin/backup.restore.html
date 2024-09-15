@@ -1,0 +1,93 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Backup Database</h3>
+            </div>
+            <div class="panel-body">
+                <pre style="height: 400px;">
+{loop: $databases}
+    {$value.TABLE_NAME}<br>
+{/loop}
+    ===============================
+    Total : {?=count($databases)?} tabel
+                </pre>
+            </div>
+            <div class="panel-footer">
+                <a href="{?=url([ADMIN, 'settings', 'backupdatabase'])?}" data-toggle="modal" data-target="#backupModal" class="btn btn-primary">Go Backup</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Restore Database</h3>
+            </div>
+            <div class="panel-body">
+                <p>
+                    Silahkan pilih file database yang mau dihapus. Tindakan ini bersifat permanen. 
+                </p>
+                <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                {loop: $files} 
+                    <input type="radio" name="files" value="{?=pathinfo($value)['basename']?}" /> {?=pathinfo($value)['basename']?}<br />
+                {/loop}
+            </div>
+            <div class="panel-footer">
+                <button type="button" id="restore_database" class="btn btn-primary">Restore</button>
+                <button type="button" id="download_database" class="btn btn-warning">Download</button>
+                <button type="button" id="delete_database" class="btn btn-danger">Delete</button>
+            </div>                        
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="backupModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Bantuan mLITE</h4>
+            </div>
+            <div class="modal-body">
+                loading ......
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var baseURL = mlite.url + '/' + mlite.admin;
+    $('#restore_database').on('click', function(event) {
+        var file_name = $('input[name="files"]:checked').val();
+        event.preventDefault();
+        var loadURL =  baseURL + '/settings/restoredatabase?t=' + mlite.token + '&filename=' + file_name;
+
+        var modal = $('#backupModal');
+        var modalContent = $('#backupModal .modal-content');
+
+        modal.off('show.bs.modal');
+        modal.on('show.bs.modal', function () {
+            modalContent.load(loadURL);
+        }).modal();
+    });
+    $('#download_database').on('click', function(event) {
+        var file_name = $('input[name="files"]:checked').val();
+        event.preventDefault();
+        window.open(mlite.url + '/backups/' + file_name, file_name);
+    });
+    $('#delete_database').on('click', function(event) {
+        var file_name = $('input[name="files"]:checked').val();
+        event.preventDefault();
+        bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+            // ketika ditekan tombol ok
+            if (result){
+                $.get(baseURL + '/settings/deletedatabase?t=' + mlite.token + '&filename=' + file_name,function(data) {
+                    location.reload();
+                });
+            }
+        }); 
+    });
+
+</script>
