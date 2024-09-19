@@ -18,7 +18,7 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table id="tbl_resep_dokter" class="table table-striped display dataTable" style="width:100%">
+                    <table id="tbl_resep_dokter" class="table table-striped table-hover display dataTable" style="width:100%">
                         <thead>
                         <tr> 
                             <th>[]</th>
@@ -45,7 +45,7 @@
 
 <!-- Modal -->
 <div id="modal_resep_dokter" class="modal fade" role="dialog" tabindex="-1">
-  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title"><span id="modal-title">Edit Data Resep Obat</span></h4>
@@ -109,39 +109,37 @@
                 <div class='invalid-feedback error'></div>
                 </div>
             </div>
-            <div id="repeat-div">
-              <div class="outer row">
-                <div class='col-xxl-4 col-lg-4 col-sm-6'>
-                    <div class='mb-3'>
-                    <label class='form-label' for='kode_brng'>Kode Brng</label>
-                    <select class="form-select" name="kode_brng[]" id="kode_brng">
-                      <option value="">Select</option>
-                      {loop: $view.databarang}
-                      <option value="{$value.kode_brng}" data-subtitle="{$value.h_beli}" data-right="{$value.kapasitas}">{$value.nama_brng}</option>
-                      {/loop}
-                    </select>
-                    <div class='invalid-feedback error'></div>
-                    </div>
-                </div>
-                <div class='col-xxl-4 col-lg-4 col-sm-6'>
-                    <div class='mb-3'>
-                    <label class='form-label' for='aturan_pakai'>Aturan Pakai</label>
-                    <input type='text' class='form-control' id='aturan_pakai' name='aturan_pakai[]' />
-                    <div class='invalid-feedback error'></div>
-                    </div>
-                </div>
-                <div class='col-xxl-4 col-lg-4 col-sm-6'>
-                    <div class='mb-3'>
-                    <label class='form-label' for='jml'>Jml</label>
-                    <div class="input-group">
-                      <input type='text' class='form-control' id='jml' name='jml[]' />
-                      <button class="btn btn-success btn-add" type="button"><i class="ri-add-line"></i></button>                  
-                    </div>
-                    <div class='invalid-feedback error'></div>
-                    </div>
-                </div>
-              </div>
-            </div>
+            <div class="table-responsive">
+              <table id="tbl_reg_periksa_databarang" class="table table-striped table-hover" width="100%">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th width="200">Nama Obat</th>
+                      <th>Jumlah</th>
+                      <th>Harga Dasar</th>
+                      <th>Harga Beli</th>
+                      <th>Expire</th>
+                      <th>Kapasitas</th>
+                      <th>Aturan Pakai</th>        
+                    </tr>
+                  </thead>
+                
+                  <tbody>
+                    {loop: $view.databarang}
+                    <tr>
+                      <td data-order="0"><input class="form-check-input" type="checkbox" name="kode_brng[]" id="kode_brng" value="{$value.kode_brng}"></td>
+                      <td>{$value.nama_brng}</td>
+                      <td><input type="text" name="jml[]" id="jml" class="form-control" style="margin: 0px !important;"></td>
+                      <td>{$value.dasar}</td>
+                      <td>{$value.h_beli}</td>
+                      <th>{$value.expire}</th>
+                      <td>{$value.kapasitas}</td>
+                      <td><input type="text" name="aturan_pakai[]" id="aturan_pakai" class="form-control" style="margin: 0px !important;"></td>
+                    </tr>
+                    {/loop}
+                  </tbody>
+              </table>
+            </div> 
         </div>
       </div>
       <div class="modal-footer">

@@ -1,0 +1,94 @@
+<div class="container-fluid py-3">
+    <form action="" method="POST" class="--api-debug no-ajax">
+        <div class="row --apply-increase-one border-bottom">
+            <div class="col-md-12">
+                <div class="input-group mb-3">
+                    <div style="width:100px;">
+                        <select name="method" class="form-control">
+                            <option value="GET">
+                                GET
+                            </option>
+                            <option value="POST">
+                                POST
+                            </option>
+                            <option value="DELETE">
+                                DELETE
+                            </option>
+                        </select>
+                    </div>
+                    <input type="text" name="url" class="form-control" placeholder="Enter service URL" />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ri-send-plane-line"></i>
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div style="margin-right:-1rem; margin-left:-1rem">
+            <nav class="--apply-increase-two" style="margin-top:-1px">
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link rounded-0" data-bs-toggle="tab" href="#params-headers" role="tab" style="border-left:0">
+                        Request Header
+                    </a>
+                    <a class="nav-item nav-link rounded-0" data-bs-toggle="tab" href="#params-body" role="tab">
+                        Request Body
+                    </a>
+                    <a class="nav-item nav-link rounded-0 active response-result" data-bs-toggle="tab" href="#results-pretty" role="tab">
+                       Response
+                    </a>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent1" style="margin-top:-1px">
+                <div class="tab-pane border-bottom p-3" id="params-headers" role="tabpanel">
+                    <div class="row">
+                        <div class="col-6 col-md-4 text-muted">
+                            <div class="mb-3">
+                                <input type="text" name="header_key[]" class="form-control form-control-sm param-header-key" placeholder="Key" />
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-6 ps-0 text-muted">
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <input type="text" name="header_value[]" class="form-control form-control-sm param-header-value" placeholder="Value" />
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="$(this).closest('.row').remove()">
+                                        <i class="ri-close-line"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm --add-parameter" data-parameter="header">
+                        <i class="ri-add-line"></i>
+                        Add Parameter
+                    </button>
+                </div>
+                <div class="tab-pane border-bottom p-3" id="params-body" role="tabpanel">
+                    <div class="row">
+                        <div class="col-6 col-md-4 text-muted">
+                            <div class="mb-3">
+                                <input type="text" name="body_key[]" class="form-control form-control-sm param-body-key" placeholder="Key" />
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-6 ps-0 text-muted">
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <input type="text" name="body_value[]" class="form-control form-control-sm param-body-value" placeholder="Value" />
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="$(this).closest('.row').remove()">
+                                        <i class="ri-close-line"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm --add-parameter" data-parameter="body">
+                        <i class="ri-add-line"></i>
+                        Add Parameter
+                    </button>
+                </div>
+                <div class="tab-pane border-bottom p-3 p-3 show active" id="results-pretty" role="tabpanel">
+                    <pre class="rounded mt-0 mb-0 language-javascript"><code>{}</code></pre>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

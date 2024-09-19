@@ -506,14 +506,12 @@ $kategori = $_POST['kategori'];
     private function _addHeaderFiles()
     {
         $this->core->addCSS(url('assets/vendor/datatables/datatables.min.css'));
-        $this->core->addCSS(url('assets/vendor/daterange/daterange.css'));
         $this->core->addCSS(url('assets/css/jquery.contextMenu.css'));
         $this->core->addJS(url('assets/js/jqueryvalidation.js'), 'footer');
         $this->core->addJS(url('assets/vendor/jspdf/xlsx.js'), 'footer');
         $this->core->addJS(url('assets/vendor/jspdf/jspdf.min.js'), 'footer');
         $this->core->addJS(url('assets/vendor/jspdf/jspdf.plugin.autotable.min.js'), 'footer');
         $this->core->addJS(url('assets/vendor/datatables/datatables.min.js'), 'footer');
-        $this->core->addJS(url('assets/vendor/daterange/daterange.js'), 'footer');
         $this->core->addJS(url('assets/js/jquery.contextMenu.js'), 'footer');
 
         $this->core->addCSS(url([ 'periksa_lab', 'css']));

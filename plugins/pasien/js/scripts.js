@@ -1042,14 +1042,6 @@ jQuery().ready(function () {
         window.open(mlite.url + '/pasien/chart?t=' + mlite.token, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
     })   
 
-    $(".datepicker").daterangepicker({
-        singleDatePicker: true,
-        showDropdowns: true,
-        locale: {
-            format: "YYYY-MM-DD",
-        },
-    });
-
     $('.daterange').daterangepicker({
         opens: 'left'
     }, function(start, end, label) {

@@ -135,6 +135,29 @@ jQuery().ready(function () {
         }
     });    
 
+
+    var tbl_reg_periksa_databarang = $("#tbl_reg_periksa_databarang").DataTable({
+        "responsive": true, 
+        "order": [1, "asc"]
+    });
+    
+      // Listen to change event from checkbox to trigger re-sorting
+    $('#tbl_reg_periksa_databarang input[type="checkbox"]').on('change', function() {
+        // Update data-sort on closest <td>
+        $(this).closest('td').attr('data-order', this.checked ? 1 : 0);
+        
+        // Store row reference so we can reset its data
+        var $tr = $(this).closest('tr');
+        
+        // Force resorting
+        tbl_reg_periksa_databarang
+          .row($tr)
+          .invalidate()
+          .responsive()
+          .order([ 0, 'desc' ])
+          .draw();
+    });
+
     // ==============================================================
     // FORM VALIDASI
     // ==============================================================
@@ -196,6 +219,7 @@ var aturan_pakai= $('#aturan_pakai').val();
  var formData = new FormData(form); // tambahan
  formData.append('typeact', typeact); // tambahan
 //  formData.append('data', dataRepeater); // tambahan
+console.log(JSON.stringify(Object.fromEntries(formData)));
 
             $.ajax({
                 url: "{?=url(['resep_dokter','aksi'])?}",
@@ -373,9 +397,9 @@ $("#status").on("change", function() {
 });
 
 
-$('#kode_brng').val('');
-$('#jml').val('');
-$('#aturan_pakai').val('');
+// $('#kode_brng').val('');
+// $('#jml').val('');
+// $('#aturan_pakai').val('');
 
         $("#typeact").val("add");
         $("#no_resep").prop('disabled', false);

@@ -1,0 +1,136 @@
+<style>
+    .sidebar-api {
+         list-style-type: none;
+         margin: 0;
+         padding: 0
+     }
+     
+     .sidebar-api>li {
+         position: relative;
+         margin: 0 0 1px 0
+     }
+     
+     .sidebar-api>li>a {
+         padding: 7px 25px 7px 15px;
+         display: flex;
+         align-items: center;
+         border-left: 3px solid rgba(0, 0, 0, 0);
+         color: #000;
+         white-space: nowrap;
+         font-size: .95rem
+     }
+     
+     .sidebar-api>li>a>i {
+         font-size: 1.15rem;
+         flex-shrink: 0;
+         background: #e9f2ff;
+         width: 36px;
+         height: 36px;
+         margin-right: 15px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         -webkit-border-radius: 10px;
+         -moz-border-radius: 10px;
+         border-radius: 10px
+     }
+     .sidebar-api>li.active-api>a {
+         color: #000;
+         font-weight: 600;
+         border-left: #0665e9 3px solid;
+         background: #e9f2ff
+     }    
+  
+   .sidebar-api li.active-api>.treeview-menu {
+       display: block
+   }
+   
+   .sidebar-api>li.current-page>a {
+       color: #116aef
+   }
+   
+   .sidebar-api>li.current-page>a:hover {
+       color: #116aef
+   }
+   
+   .sidebar-api>li.current-page>a i {
+       background-color: #116aef;
+       color: #fff
+   }
+   
+   .sidebar-api .treeview-menu {
+       display: none;
+       list-style: none;
+       margin: 0;
+       padding: 0 0 0 5px
+   }
+   
+   .sidebar-api .treeview-menu .treeview-menu {
+       padding-left: 20px
+   }
+   
+   .sidebar-api .treeview-menu>li {
+       margin: 0
+   }
+   
+   .sidebar-api .treeview-menu>li>a {
+       padding: 10px 15px 10px 27px;
+       display: block;
+       color: #000;
+       white-space: nowrap
+   }
+   
+   .sidebar-api .treeview-menu>li>a .ri-arrow-right-s-line {
+       float: right;
+       transition: all .5s;
+       transform: rotate(0deg);
+       font-size: 1rem
+   }
+   
+   .sidebar-api .treeview-menu>li>a:hover {
+       color: #116aef
+   }
+   
+   .sidebar-api .treeview-menu>li>a.active-sub {
+       position: relative;
+       color: #116aef
+   }
+   
+   .sidebar-api .treeview-menu>li>a.active-sub:hover {
+       color: #116aef
+   }
+   
+   .sidebar-api .treeview-menu>li.active-api>a .ri-arrow-right-s-line {
+       transform: rotate(-90deg)
+   }
+   
+   
+    </style>
+    <div class="container-fluid py-3">
+        <div class="row">
+            <div class="col-md-3">
+                <ul class="sidebar-api">
+                    <li class="{if: parseUrl()[1] == 'manage'}active-api{/if}"><a href="{?=url(['bridging_bpjs', 'manage'])?}">Memulai</a></li>
+                    <li class="treeview {if: parseUrl()[1] == 'peserta'}active-api{/if}">
+                      <a href="{?=url(['bridging_vclaim_bpjs', 'peserta'])?}"><span class="menu-text">Peserta</span></a>
+                      <ul class="treeview-menu">
+                        <li><a href="{?=url(['bridging_vclaim_bpjs', 'vclaim', 'peserta', '0000976392055'])?}" data-toggle="modal" data-bs-target="#myModal" class="">Peserta</a></li>
+                        <li><a href="#" class="">Referensi</a></li>
+                        <li><a href="#" class="">Rujukan</a></li>
+                      </ul>
+                    </li>                  
+                </ul>
+            </div>
+            <div class="col-md-9">
+                {if: parseUrl()[1] == 'peserta'} 
+                <h4 class="mb-3">
+                    Ini Peserta
+                </h4>
+                {include: tools.html}
+                {/if}
+                {if: parseUrl()[1] == 'vclaim' && isset_or(parseUrl()[2]) == 'peserta'} 
+                    Ini Referensi
+                {/if}
+            </div>
+        </div>
+    </div>

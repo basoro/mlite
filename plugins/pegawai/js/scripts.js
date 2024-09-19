@@ -642,12 +642,4 @@ var id = rowData['id'];
 		reader.readAsDataURL(this.files[0]);
 	});
 
-    $(".datepicker").daterangepicker({
-        singleDatePicker: true,
-        showDropdowns: true,
-        locale: {
-            format: "YYYY-MM-DD",
-        },
-    });
-
 });

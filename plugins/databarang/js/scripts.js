@@ -571,14 +571,6 @@ jQuery().ready(function () {
         window.open(mlite.url + '/databarang/chart?t=' + mlite.token, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
     })   
 
-    $(".datepicker").daterangepicker({
-        singleDatePicker: true,
-        showDropdowns: true,
-        locale: {
-            format: "YYYY-MM-DD",
-        },
-    });
-
     $('#dasar').on('keyup', function() {
         var dasar = $('#dasar').val();
         $('#h_beli').val(dasar);

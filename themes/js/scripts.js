@@ -274,3 +274,36 @@ $("#myInput").on("keyup", function() {
     return $(this).text().toLowerCase().trim().indexOf(value) == -1;
   }).hide();
 });
+
+$(".datepicker").daterangepicker({
+  singleDatePicker: true,
+  showDropdowns: true,
+  locale: {
+      format: "YYYY-MM-DD",
+  },
+});
+
+$(".datetimepicker").daterangepicker({
+  timePicker: true,
+  use24hours: true,
+  showMeridian: false, 
+  singleDatePicker: true,
+  showDropdowns: true,
+  locale: {
+      format: "YYYY-MM-DD hh:mm:ss",
+  }
+});      
+
+$(".timepicker").daterangepicker({
+  timePicker : true,
+  singleDatePicker:true,
+  timePicker24Hour : true,
+  timePickerIncrement : 1,
+  timePickerSeconds : true,
+  startDate: moment().format('HH:mm:ss'),
+  locale : {
+      format : 'HH:mm:ss'
+  }
+}).on('show.daterangepicker', function(ev, picker){
+  picker.container.find(".calendar-table").hide()
+});

@@ -137,12 +137,15 @@ jQuery().ready(function () {
                 break;
                 case 'bridging-bpjs-cek-noka' :
                     OpenModal(mlite.url + '/pasien/cekpeserta/' + no_rkm_medis + '/noka?t=' + mlite.token);
-                    break;
+                break;
                 case 'bridging-bpjs-cek-nik' :
                     OpenModal(mlite.url + '/pasien/cekpeserta/' + no_rkm_medis + '/nik?t=' + mlite.token);
-                    break;
+                break;
                 case 'bridging-bpjs-cetak-sep' :
                     OpenPDF(mlite.url + '/reg_periksa/cetaksep/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
+                break;
+                case 'bridging-bpjs-cari-sep' :
+                    OpenModal(mlite.url + '/bridgin_sep/carisep?t=' + mlite.token);
                 break;
                 case 'bridging-bpjs-sep' :
                     $('#no_rawat_sep').val(no_rawat); 
@@ -200,6 +203,7 @@ jQuery().ready(function () {
                         }
                     },
                     "bridging-bpjs-sep": {"name": "Pembuatan SEP", disabled:  {$disabled_menu.create}},
+                    "bridging-bpjs-cari-sep": {"name": "Cari SEP", disabled:  {$disabled_menu.create}}, 
                     "bridging-bpjs-cetak-sep": {"name": "Cetak SEP", disabled:  {$disabled_menu.create}}
                 }
             }, 
@@ -878,34 +882,12 @@ jQuery().ready(function () {
         window.open(mlite.url + '/reg_periksa/chart?t=' + mlite.token, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
     })   
 
-    $(".datepicker").daterangepicker({
-        singleDatePicker: true,
-        showDropdowns: true,
-        locale: {
-            format: "YYYY-MM-DD",
-        },
-    });
 
     $('.daterange').daterangepicker({
         opens: 'left'
     }, function(start, end, label) {
         $('#tanggal_awal').val(start.format('YYYY-MM-DD'));
         $('#tanggal_akhir').val(end.format('YYYY-MM-DD'));
-    });
-
-    $(".timepicker").daterangepicker({
-            timePicker : true,
-            singleDatePicker:true,
-            timePicker24Hour : true,
-            timePickerIncrement : 1,
-            timePickerSeconds : true,
-            startDate: moment().format('HH:mm:ss'),
-            // endDate: moment().startOf('hour').add(32, 'hour'),            
-            locale : {
-                format : 'HH:mm:ss'
-            }
-        }).on('show.daterangepicker', function(ev, picker){
-            picker.container.find(".calendar-table").hide()
     });
 
     $("#nm_pasien").click(function (event) {
@@ -1385,28 +1367,6 @@ jQuery().ready(function () {
           .columns.adjust()
           .responsive.recalc();
 
-        $(".datepicker").daterangepicker({
-            singleDatePicker: true,
-            showDropdowns: true,
-            locale: {
-                format: "YYYY-MM-DD",
-            },
-        });
-        
-        $(".timepicker").daterangepicker({
-                timePicker : true,
-                singleDatePicker:true,
-                timePicker24Hour : true,
-                timePickerIncrement : 1,
-                timePickerSeconds : true,
-                startDate: moment().format('HH:mm:ss'),
-                locale : {
-                    format : 'HH:mm:ss'
-                }
-            }).on('show.daterangepicker', function(ev, picker){
-                picker.container.find(".calendar-table").hide()
-        });
-
         $("#no_rawat_pemeriksaan_ralan").val($("a.active").attr('data-no_rawat'));
         $("#no_rawat_rawat_jl_dr").val($("a.active").attr('data-no_rawat'));
         $("#no_rawat_rawat_jl_pr").val($("a.active").attr('data-no_rawat'));
@@ -1602,14 +1562,6 @@ jQuery().ready(function () {
 
         $('#modal-title').text("Lihat Data");
         $("#modal_cari_surat_kontrol").modal('show');
-    });
-
-    $(".datepicker").daterangepicker({
-        singleDatePicker: true,
-        showDropdowns: true,
-        locale: {
-            format: "YYYY-MM-DD",
-        },
     });
 
     $('.kecelakaan').hide(); 

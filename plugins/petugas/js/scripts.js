@@ -461,12 +461,4 @@ jQuery().ready(function () {
         }
     })
 
-    $(".datepicker").daterangepicker({
-        singleDatePicker: true,
-        showDropdowns: true,
-        locale: {
-            format: "YYYY-MM-DD",
-        },
-    });
-
 });
