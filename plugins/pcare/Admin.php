@@ -2053,8 +2053,8 @@ class Admin extends AdminModule
         "alergiUdara"=> "00",
         "alergiObat"=> "00",
         "kdPrognosa"=> "01",
-        "terapiObat"=> $_POST['terapi'],
-        "terapiNonObat"=> "",
+        "terapiObat"=> "",
+        "terapiNonObat"=> $_POST['terapi'],
         "bmhp"=> "",
         "suhu"=> $_POST['suhu_tubuh']
       ];
@@ -2149,8 +2149,8 @@ class Admin extends AdminModule
         "alergiUdara"=> "00",
         "alergiObat"=> "00",
         "kdPrognosa"=> "01",
-        "terapiObat"=> $_POST['terapi'],
-        "terapiNonObat"=> "",
+        "terapiObat"=> "",
+        "terapiNonObat"=> $_POST['terapi'],
         "bmhp"=> "",
         "suhu"=> $_POST['suhu_tubuh']
       ];
@@ -2238,8 +2238,8 @@ class Admin extends AdminModule
         "alergiUdara"=> "00",
         "alergiObat"=> "00",
         "kdPrognosa"=> "01",
-        "terapiObat"=> $_POST['terapi'],
-        "terapiNonObat"=> "",
+        "terapiObat"=> "",
+        "terapiNonObat"=> $_POST['terapi'],
         "bmhp"=> "",
         "suhu"=> $_POST['suhu_tubuh']
       ];

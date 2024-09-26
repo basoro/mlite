@@ -1776,6 +1776,17 @@ CREATE TABLE `maping_poliklinik_pcare` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 
+# Dump of table maping_dokter_pcare
+# ------------------------------------------------------------
+
+CREATE TABLE `maping_dokter_pcare` (
+  `kd_dokter` varchar(20) NOT NULL,
+  `kd_dokter_pcare` varchar(20) DEFAULT NULL,
+  `nm_dokter_pcare` varchar(50) DEFAULT NULL, 
+  PRIMARY KEY (`kd_dokter`) USING BTREE,
+  CONSTRAINT `maping_dokter_pcare_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+
 
 # Dump of table master_aturan_pakai
 # ------------------------------------------------------------

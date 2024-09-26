@@ -1,63 +1,156 @@
-
-<!DOCTYPE html>
-<html>
-<head>
+<!doctype html>
+<html lang="en">
+  <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{$title} - {$settings.nama_instansi}</title>
-    <link rel="icon" href="{$opensimrs.path}/favicon.png" type="image/x-icon">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Display Antrian Loket</title>
+    <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
+    <!-- Bootstrap -->
     <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
-    <link href="{?=url()?}/assets/css/font-awesome.css?v={$opensimrs.version}" rel="stylesheet">
+    <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
     <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
     <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
-    <script src="{?=url(THEMES)?}/js/theme.js"></script>
-    <style media="screen">
+    <style>
       body {
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
         color: #fff;
-      	background: #0264d6; /* Old browsers */
-      	background: -moz-radial-gradient(center, ellipse cover,  #0264d6 1%, #1c2b5a 100%); /* FF3.6+ */
-      	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(1%,#0264d6), color-stop(100%,#1c2b5a)); /* Chrome,Safari4+ */
-      	background: -webkit-radial-gradient(center, ellipse cover,  #0264d6 1%,#1c2b5a 100%); /* Chrome10+,Safari5.1+ */
-      	background: -o-radial-gradient(center, ellipse cover,  #0264d6 1%,#1c2b5a 100%); /* Opera 12+ */
-      	background: -ms-radial-gradient(center, ellipse cover,  #0264d6 1%,#1c2b5a 100%); /* IE10+ */
-      	background: radial-gradient(ellipse at center,  #0264d6 1%,#1c2b5a 100%); /* W3C */
-      	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0264d6', endColorstr='#1c2b5a',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-      	height:calc(100vh);
-      	width:100%;
+        background: #0264d6;
+        height:calc(90vh);
+        width:100%;
+        margin:0;
+        padding:0;
+      }
+      :fullscreen, ::backdrop {
+          background-color: #0264d6;
+      }
+      *:fullscreen
+      *:-ms-fullscreen,
+      *:-webkit-full-screen,
+      *:-moz-full-screen {
+        overflow: auto !important;
+      }
+      .antrian-judul {
+        font-size:56px;
+        margin-bottom: 60px;
+      }
+      .panel-title.marquee {
+         font-size:36px;
+         padding-top: 10px;
+         padding-bottom: 0px;
+         margin-top: 10px;
+         margin-bottom: 10px;
+         color: #FF0000;
+         background-color: #fff;
+      }
+      footer {
+          position: fixed;
+          right: 0px;
+          bottom: 0px;
+          height: 40px;
+          width: calc(100% - 0px);
+          font-size: 14px;
+          color: #fff;
+      }
+      footer a, footer a:hover {
+        color: #fff;
       }
     </style>
-</head>
-<body>
-<div class="container-fluid">
-<h1 class="display-3 text-center text-white m-3">Antrian Poliklinik {$settings.nama_instansi}</h1>
-<table class="table table-bordered table-striped lead text-primary">
-  <thead class="bg-primary">
-    <tr>
-      <th>Dokter/Klinik</th>
-      <th>Dalam Pemeriksaan</th>
-      <th>Nomor Urut Berikutnya</th>
-    </tr>
-  </thead>
-  <tbody>
-    {loop: $display}
-    <tr>
-      <th>{$value.nm_dokter}<small> - {$value.nm_poli}</small><br><small>[ Antrian: {$value.dalam_antrian.jumlah} - Terlayani: {$value.sudah_dilayani.jumlah} ]</small></th>
-      <td>{if: empty($value.dalam_pemeriksaan)}Kosong{else}{$value.dalam_pemeriksaan.no_reg} - {$value.dalam_pemeriksaan.nm_pasien}{/if}</td>
-      <td>
-        <marquee scrollamount="3">
-          {if: !empty($value.selanjutnya)}
-            {loop: $value.selanjutnya as $data}
-              - {$data.nm_pasien} (<strong>{$data.no_reg} - {$value.jam_mulai_selanjutnya}</strong>)
-            {/loop}
-          {/if}
-        </marquee>
-      </td>
-    </tr>
-    {/loop}
-  </tbody>
-</table>
-</div>
-</body>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <h1 class="text-center text-white antrian-judul"><img class="logo" src="{?=url()?}/{$settings.logo}" alt="" width="80px"> Faskes Tingkat I {$fktp} <span class="pull-right" style="font-size: 16px;"><i class="fa fa-expand" onclick="toggleFullScreen(document.body)"></i>&nbsp&nbsp</span></h1>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="panel panel-default text-center" style="border-radius:0 !important;">
+                    <div class="panel-heading">
+                        <h1 class="panel-title" style="font-size:36px;">Antrian Dipanggil</h1>
+                    </div>
+                    <div class="panel-body" style="color:#000;padding:0;margin:0;">
+                      <div class="bg-info" style="font-size:240px;">
+                        {$antrean}
+                      </div>
+                    </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="panel panel-default text-center" style="border-radius:0 !important;">
+                      <div class="panel-heading">
+                        <h1 class="panel-title" style="font-size:32px;">Sisa Antrean</h1>
+                      </div>
+                      <div class="panel-body text-center bg-success" style="color: #000; font-size: 150px;">
+                        {$sisa_antrean}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="panel panel-default text-center" style="border-radius:0 !important;">
+                      <div class="panel-heading">
+                        <h1 class="panel-title" style="font-size:32px;">Total Antrean</h1>
+                      </div>
+                      <div class="panel-body text-center bg-danger" style="color: #000; font-size: 150px;">
+                        {$total_antrean}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="panel panel-default" style="border-radius:0 !important;">
+                    <div class="panel-body text-center bg-warning" style="padding:0;margin:0;">
+                      <div class="embed-responsive embed-responsive-4by3">
+                        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/{$vidio_anjungan}?rel=0&modestbranding=1&autohide=1&mute=0&showinfo=0&controls=1&loop=1&autoplay=1" allowfullscreen></iframe>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="panel-title marquee">
+          <marquee>{$running_text}</marquee>
+        </div>
+      </div>
+    </div>
+    <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
+        <p class="pull-right">
+          Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
+          {$powered}.
+        </p>
+    </footer>
+  </body>
+  <script>
+    function toggleFullScreen(elem) {
+        // ## The below if statement seems to work better ## if ((document.fullScreenElement && document.fullScreenElement !== null) || (document.msfullscreenElement && document.msfullscreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+        if ((document.fullScreenElement !== undefined && document.fullScreenElement === null) || (document.msFullscreenElement !== undefined && document.msFullscreenElement === null) || (document.mozFullScreen !== undefined && !document.mozFullScreen) || (document.webkitIsFullScreen !== undefined && !document.webkitIsFullScreen)) {
+            if (elem.requestFullScreen) {
+                elem.requestFullScreen();
+            } else if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullScreen) {
+                elem.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        } else {
+            if (document.cancelFullScreen) {
+                document.cancelFullScreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitCancelFullScreen) {
+                document.webkitCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+    }    
+  </script>
 </html>

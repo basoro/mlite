@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Display Anjungan Pasien Mandiri</title>
+    <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
+    <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
+    <link href="{?=url()?}/assets/css/jquery.keypad.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.13.2/dist/sweetalert2.min.css">
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+    <script src="{?=url()?}/assets/jscripts/jquery.keypad.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.13.2/dist/sweetalert2.all.min.js"></script>
+    <style>
+      body {
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        color: #fff;
+        background: #0264d6;
+        height:calc(90vh);
+        width:100%;
+        margin:0;
+        padding:0;
+      }
+      :fullscreen, ::backdrop {
+          background-color: #0264d6;
+      }
+      *:fullscreen
+      *:-ms-fullscreen,
+      *:-webkit-full-screen,
+      *:-moz-full-screen {
+        overflow: auto !important;
+      }
+      .antrian-judul {
+        font-size:48px;
+        margin-bottom: 0px;
+      }
+      .antrian-fktp {
+        font-size:42px;
+        margin-bottom: 0px;
+      }
+      .lead { font-size: 1.5rem; font-weight: 300; }
+      .container { margin: 0px auto; padding-bottom: 50px; max-width: 960px; }
+      #keypad {
+          margin: 0 auto;
+          width: 420px;
+          height: 560px;
+          color: #000000;
+      }
+      input.keypad {
+          color: black !important;
+          background: white;
+          text-align: center;
+          margin: 10px auto 20px;
+          font-size: 3em;
+          display: block;
+          width: 400px;
+          border-radius: 6px;
+          border: 2px solid black;
+      }
+      select.kd_poli {
+          color: black !important;
+          background: white;
+          text-align: center;
+          margin: 30px auto 20px;
+          font-size: 3em;
+          display: block;
+          width: 400px;
+          border-radius: 6px;
+          border: 2px solid black;
+      }
+      select.kd_pj {
+          color: black !important;
+          background: white;
+          text-align: center;
+          margin: 10px auto 20px;
+          font-size: 3em;
+          display: block;
+          width: 400px;
+          border-radius: 6px;
+          border: 2px solid black;
+      }      
+      .panel-title.marquee {
+         font-size:36px;
+         padding-top: 5px;
+         padding-bottom: 0px;
+         margin-top: 10px;
+         margin-bottom: 10px;
+         color: #FF0000;
+         background-color: #fff;
+      }
+      footer {
+          position: fixed;
+          right: 0px;
+          bottom: 0px;
+          height: 40px;
+          width: calc(100% - 0px);
+          font-size: 14px;
+          color: #fff;
+      }
+      footer a, footer a:hover {
+        color: #fff;
+      }
+      .swal2-popup {
+          font-size: 16px !important;
+      }
+      .swal2-styled {
+          padding: 10px 32px 10px 32px !important;
+          margin: 20px 10px 0px 10px !important;
+          width: 170px;
+          height: 45px;
+      }      
+    </style>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <h1 class="text-center text-white antrian-judul"><img class="logo" src="{?=url()?}/{$settings.logo}" alt="" width="80px"><span class="pull-right" style="font-size: 16px;"><i class="fa fa-expand" onclick="toggleFullScreen(document.body)"></i>&nbsp&nbsp</span></h1>
+    <h1 class="text-center text-white antrian-fktp">Anjungan Pasien Mandiri {$fktp}</h1>
+    <div class="container-fluid">
+        <div class="row">
+          <div class="container">
+          <form>
+            <select class="kd_poli">
+              <option value="UMU">Poli Umum</option>
+              <option value="GIG">Poli Gigi</option>
+            </select>
+            <select class="kd_pj">
+              <option value="BPJ">BPJS</option>
+              <option value="UMU">Umum</option>
+            </select>
+            <input type="text" class="keypad" disabled="disabled" />
+          </form>
+          <div id="keypad"></div>
+          </div>          
+        </div>
+    </div>
+
+    <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
+        <p class="pull-right">
+          Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
+          {$powered}.
+        </p>
+    </footer>
+  </body>
+  <script>
+      var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}", admin:"{?=ADMIN?}"};
+  </script>
+  <script>
+    $(document).ready(function() {
+        $('#keypad').keypad();
+        $('form').submit(function(e) {
+            e.preventDefault();
+            var norm = $('input.keypad').val();
+            var kd_poli = $('select.kd_poli').find(':selected').val();
+            var kd_pj = $('select.kd_pj').find(':selected').val();
+            var token = 'rahasia';
+
+            $.ajax({
+                url: mlite.url + '/jknmobilefktp/api/', 
+                method: "POST",
+                data: {
+                    token: token, 
+                    action: 'simpanpendaftaran', 
+                    norm: norm, 
+                    kd_poli: kd_poli, 
+                    kd_pj: kd_pj
+                },
+                success: function (data) {
+                    var data = JSON.parse(data);
+                    if(data.state == 'sukses') {
+                        Swal.fire({
+                          title: data.metaData.code,
+                          text: data.metaData.message,
+                          icon: "success"                
+                        });
+                    } else if(data.state == 'gagal') {
+                        Swal.fire({
+                          title: data.metaData.code,
+                          text: data.metaData.message,
+                          icon: "error"                
+                        });
+                    } else if(data.state == 'success') {
+                        Swal.fire({
+                          title: 'Succes',
+                          text: 'Data pendaftaran telah disimpan',
+                          icon: "success"                
+                        });                      
+                    } else {
+                        Swal.fire({
+                          title: 'Error',
+                          text: 'Gagal menyimpan data',
+                          icon: "error"                
+                        });                      
+                    }
+                }
+            })
+                        
+        });
+    });    
+    function toggleFullScreen(elem) {
+        // ## The below if statement seems to work better ## if ((document.fullScreenElement && document.fullScreenElement !== null) || (document.msfullscreenElement && document.msfullscreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+        if ((document.fullScreenElement !== undefined && document.fullScreenElement === null) || (document.msFullscreenElement !== undefined && document.msFullscreenElement === null) || (document.mozFullScreen !== undefined && !document.mozFullScreen) || (document.webkitIsFullScreen !== undefined && !document.webkitIsFullScreen)) {
+            if (elem.requestFullScreen) {
+                elem.requestFullScreen();
+            } else if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullScreen) {
+                elem.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        } else {
+            if (document.cancelFullScreen) {
+                document.cancelFullScreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitCancelFullScreen) {
+                document.webkitCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+    }    
+  </script>
+</html>
