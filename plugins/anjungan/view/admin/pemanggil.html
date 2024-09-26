@@ -22,9 +22,8 @@
       .panel-body .no_antrian {
         font-size:90px;
         font-weight:lighter;
-        padding:0;
-        margin-top:-45px;
-        margin-bottom:-45px;
+        padding:0px;
+        margin: 0;
       }
       .panel-footer .no_loket {
         font-size:40px;
@@ -56,6 +55,9 @@
          color: #FF0000;
          background-color: #fff;
       }
+      .card-deck {
+        margin-top: 20px;
+      }
       footer {
           position: fixed;
           right: 0px;
@@ -74,37 +76,37 @@
   <div class="container-fluid">
   <div class="col-md-4">
     <a href="{?=url(ADMIN.'/anjungan/pemanggil/?show=panggil_loket')?}">
-      <div class="panel border-success">
-        <div class="panel-body text-success">
-          <div class="no_antrian">A<span class="antrian_Loket"><span></div>
-        </div>
+      <div class="panel border-success text-center">
         <div class="panel-footer bg-transparent border-success">
           <div class="no_loket">Konter <span class="get_Loket"><span></div>
+        </div>
+        <div class="panel-body text-success">
+          <div class="no_antrian">A<span class="antrian_Loket"><span></div>
         </div>
       </div>
     </a>  
   </div>
   <div class="col-md-4">
     <a href="{?=url(ADMIN.'/anjungan/pemanggil/?show=panggil_cs')?}">
-      <div class="panel border-success">
+      <div class="panel border-success text-center">
+        <div class="panel-footer bg-transparent border-success">
+          <div class="no_loket">Konter <span class="get_CS"><span></div>
+        </div>
         <div class="panel-body text-success">
           <div class="no_antrian">B<span class="antrian_CS"><span></div>
         </div>
-        <div class="panel-footer bg-transparent border-success">
-          <div class="no_loket">Konter <span class="get_CS"><span></div>
-          </div>
       </div>
     </a>  
   </div>
   <div class="col-md-4">
     <a href="{?=url(ADMIN.'/anjungan/pemanggil/?show=panggil_apotek')?}">
-      <div class="panel border-success">
+      <div class="panel border-success text-center">
+        <div class="panel-footer bg-transparent border-success">
+          <div class="no_loket">Konter <span class="get_Apotek"><span></div>
+        </div>
         <div class="panel-body text-success">
           <div class="no_antrian">F<span class="antrian_Apotek"><span></div>
         </div>
-        <div class="panel-footer bg-transparent border-success">
-          <div class="no_loket">Konter <span class="get_Apotek"><span></div>
-          </div>
       </div>
     </a>  
   </div>
