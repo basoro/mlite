@@ -1776,6 +1776,17 @@ CREATE TABLE `maping_poliklinik_pcare` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 
+# Dump of table maping_dokter_pcare
+# ------------------------------------------------------------
+
+CREATE TABLE `maping_dokter_pcare` (
+  `kd_dokter` varchar(20) NOT NULL,
+  `kd_dokter_pcare` varchar(20) DEFAULT NULL,
+  `nm_dokter_pcare` varchar(50) DEFAULT NULL, 
+  PRIMARY KEY (`kd_dokter`) USING BTREE,
+  CONSTRAINT `maping_dokter_pcare_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+
 
 # Dump of table master_aturan_pakai
 # ------------------------------------------------------------
@@ -2469,7 +2480,7 @@ VALUES
 	(31,'settings','admin_mode','complex'),
 	(32,'settings','input_kasir','tidak'),
 	(33,'settings','editor','wysiwyg'),
-	(34,'settings','version','4.1.4'),
+	(34,'settings','version','4.1.5'),
 	(35,'settings','update_check','0'),
 	(36,'settings','update_changelog',''),
 	(37,'settings','update_version','0'),

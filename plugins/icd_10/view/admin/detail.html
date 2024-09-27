@@ -1,0 +1,24 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Detail penyakit</h4>
+</div>
+<div class="modal-body">
+    <table id="tbl_detail_penyakit" class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        </thead>
+        <tbody>
+            {loop: $detail}
+            <tr><td>Kd Penyakit</td><td>{$value.kd_penyakit}</td><tr>
+<tr><td>Nm Penyakit</td><td>{$value.nm_penyakit}</td><tr>
+<tr><td>Ciri Ciri</td><td>{$value.ciri_ciri}</td><tr>
+<tr><td>Keterangan</td><td>{$value.keterangan}</td><tr>
+<tr><td>Kd Ktg</td><td>{$value.kd_ktg}</td><tr>
+<tr><td>Status</td><td>{$value.status}</td><tr>
+
+            {/loop}
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>

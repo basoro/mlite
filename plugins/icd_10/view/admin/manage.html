@@ -1,0 +1,131 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-6 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_penyakit' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Lihat Data penyakit' style='color:white;'>
+                          <i class='fa fa-eye' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> </button>
+                          <button id='tambah_data_penyakit' class='btn btn-success' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                          <i class='fa fa-plus-square' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_penyakit' class='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                          <i class='fa fa-edit' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_penyakit' class='btn btn-danger' data-toggle='tooltip' data-placement='top' title='Hapus Data'>
+                          <i class='fa fa-trash' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                          <a href="{?=url([ADMIN,'icd_10', 'import'])?}" class='btn btn-default' data-toggle="modal" data-target="#moduleModal" data-toggle='tooltip' data-placement='top' title='Hapus Data'>
+                          <i class='fa fa-download' style='font-size: 15px;'></i><span class="hidden-xs"> Import</span>
+                          </a>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-addon">Cari :</span>
+                          <span class="input-group-addon" style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-control" id='search_field_penyakit' name='search_field_penyakit' style="margin: 0 !important;"> 
+                              <option value='kd_penyakit'>Kd Penyakit</option>
+<option value='nm_penyakit'>Nm Penyakit</option>
+<option value='ciri_ciri'>Ciri Ciri</option>
+<option value='keterangan'>Keterangan</option>
+<option value='kd_ktg'>Kd Ktg</option>
+<option value='status'>Status</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_penyakit' id='search_text_penyakit' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-addon">
+                          <span id='searchclear_penyakit' data-toggle='tooltip' data-placement='top' title='Clear'><i class="fa fa-times text-danger"></i></span>
+                          </span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_penyakit" class="table table-bordered table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>Kd Penyakit</th>
+<th>Nm Penyakit</th>
+<th>Ciri Ciri</th>
+<th>Keterangan</th>
+<th>Kd Ktg</th>
+<th>Status</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>        
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- Modal -->
+<div id="modal_penyakit" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data ICD 10</span>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <form name="form_penyakit">
+          <input type="hidden" class="form-control" id="typeact" /> 
+          <label>Kd Penyakit<br /></label><input type='text' class='form-control' id='kd_penyakit' name='kd_penyakit' /><div><span class='error'></span></div>
+<label>Nm Penyakit<br /></label><input type='text' class='form-control' id='nm_penyakit' name='nm_penyakit' /><div><span class='error'></span></div>
+<label>Ciri Ciri<br /></label><input type='text' class='form-control' id='ciri_ciri' name='ciri_ciri' /><div><span class='error'></span></div>
+<label>Keterangan<br /></label><input type='text' class='form-control' id='keterangan' name='keterangan' /><div><span class='error'></span></div>
+<label>Kd Ktg<br /></label><input type='text' class='form-control' id='kd_ktg' name='kd_ktg' /><div><span class='error'></span></div>
+<label>Status<br /></label><input type='text' class='form-control' id='status' name='status' /><div><span class='error'></span></div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+        <button type="submit" id="simpan_data_penyakit" class="btn btn-primary">Simpan Data</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_penyakit" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data ICD 10</span>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_penyakit"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+        <button type="submit" id="export_pdf" class="btn btn-primary">
+          <i class="fa fa-file-pdf-o"></i>&nbsp;PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-primary">
+          <i class="fa fa-file-excel-o"></i>&nbsp;XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_penyakit" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

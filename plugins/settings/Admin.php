@@ -11,17 +11,12 @@ use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use FilesystemIterator;
 use Plugins\Settings\Inc\RecursiveDotFilterIterator;
+use Plugins\Settings\Inc\Backup_Database;
+use Plugins\Settings\Inc\Restore_Database;
 
 class Admin extends AdminModule
 {
     private $assign = [];
-
-    public function init()
-    {
-        if (file_exists(BASE_DIR.'/inc/engine')) {
-            deleteDir(BASE_DIR.'/inc/engine');
-        }
-    }
 
     public function navigation()
     {
@@ -30,6 +25,7 @@ class Admin extends AdminModule
             'Umum'          => 'general',
             'Tema' => 'theme',
             'Pembaruan'          => 'updates',
+            'Backup & Restore'   => 'backuprestore',
         ];
     }
 
@@ -39,6 +35,7 @@ class Admin extends AdminModule
         ['name' => 'Pengaturan Umum', 'url' => url([ADMIN, 'settings', 'general']), 'icon' => 'wrench', 'desc' => 'Pengaturan umum mLITE'],
         ['name' => 'Tema Publik', 'url' => url([ADMIN, 'settings', 'theme']), 'icon' => 'cubes', 'desc' => 'Pengaturan tema tampilan publik'],
         ['name' => 'Pembaruan Sistem', 'url' => url([ADMIN, 'settings', 'updates']), 'icon' => 'cubes', 'desc' => 'Pembaruan sistem'],
+        ['name' => 'Backup & Restore', 'url' => url([ADMIN, 'settings', 'backuprestore']), 'icon' => 'database', 'desc' => 'Backup dan restore database'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
@@ -581,6 +578,87 @@ class Admin extends AdminModule
         }
       }
       return $this->draw('cek.daftar.html');
+    }
+
+    public function getBackupRestore()
+    {
+        $database = DBNAME;
+        $get_table = $this->db()->pdo()->prepare("SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='$database'");
+	    $get_table->execute();
+	    $result = $get_table->fetchAll();
+
+        $backup_files = glob('../backups/*.sql.gz');
+        // $backup_files = pathinfo($backup_files);
+        return $this->draw('backup.restore.html', ['databases' => $result, 'files' => $backup_files]);
+    }
+
+    public function getBackupDatabase()
+    {
+        // Report all errors
+        error_reporting(E_ALL);
+        // Set script max execution time
+        set_time_limit(9000); // 15 minutes
+
+        if (php_sapi_name() != "cli") {
+            echo '<div style="font-family: monospace;padding:10px;">';
+        }
+
+        $backupDatabase = new Backup_Database(DBHOST, DBUSER, DBPASS, DBNAME, CHARSET);
+
+        // Option-1: Backup tables already defined above
+        $result = $backupDatabase->backupTables(TABLES) ? 'OK' : 'KO';
+
+        // Option-2: Backup changed tables only - uncomment block below
+        /*
+        $since = '1 day';
+        $changed = $backupDatabase->getChangedTables($since);
+        if(!$changed){
+        $backupDatabase->obfPrint('No tables modified since last ' . $since . '! Quitting..', 1);
+        die();
+        }
+        $result = $backupDatabase->backupTables($changed) ? 'OK' : 'KO';
+        */
+
+        $backupDatabase->obfPrint('Backup result: ' . $result, 1);
+
+        // Use $output variable for further processing, for example to send it by email
+        $output = $backupDatabase->getOutput();
+
+        if (php_sapi_name() != "cli") {
+            echo '</div>';
+        }        
+        exit();
+    }
+
+    public function getRestoreDatabase()
+    {
+        $file_name = $_GET['filename'];
+
+        define("BACKUP_FILE", $file_name); // Script will autodetect if backup file is gzipped based on .gz extension
+        // Report all errors
+        error_reporting(E_ALL);
+        // Set script max execution time
+        set_time_limit(900); // 15 minutes
+
+        if (php_sapi_name() != "cli") {
+            echo '<div style="font-family: monospace;padding:10px;">';
+        }
+
+        $restoreDatabase = new Restore_Database(DBHOST, DBUSER, DBPASS, DBNAME);
+        $result = $restoreDatabase->restoreDb(BACKUP_DIR, BACKUP_FILE) ? 'OK' : 'KO';
+        $restoreDatabase->obfPrint("Restoration result: ".$result, 1);
+
+        if (php_sapi_name() != "cli") {
+            echo '</div>';
+        }        
+        exit();
+    }
+
+    public function getDeleteDatabase()
+    {
+        $file_name = $_GET['filename'];
+        unlink('../backups/' . $file_name);
+        exit();
     }
 
     private function _addHeaderFiles()
