@@ -283,6 +283,12 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postMaxid()
+    {
+      echo $this->core->setNoRM();
+      exit();
+    }
+
     public function postSave()
     {
       $_POST['tgl_daftar'] = date('Y-m-d H:i', strtotime($_POST['tgl_daftar']));

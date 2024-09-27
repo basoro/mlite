@@ -20,8 +20,13 @@ $("#index").on('click', '#tutupform', function(){
 
 // ketika inputbox no_rm_medis diklik
 $("#form").on("click","#no_rkm_medis", function(event){
-  var no_rkm_medis_baru = $("#no_rkm_medis_baru").val();
-  $("#no_rkm_medis").val(no_rkm_medis_baru);
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/pasien/maxid?t=' + mlite.token;
+  $.post(url, {
+  } ,function(data) {
+    $("#no_rkm_medis").val(data);
+  });
 });
 
 // tombol batal diklik
