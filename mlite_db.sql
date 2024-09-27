@@ -3106,7 +3106,7 @@ CREATE TABLE `pasien` (
   `namakeluarga` varchar(50) NOT NULL,
   `kd_pj` char(3) NOT NULL,
   `no_peserta` varchar(25) DEFAULT NULL,
-  `kd_kel` int(11) NOT NULL,
+  `kd_kel` varchar(100) NOT NULL,
   `kd_kec` int(11) NOT NULL,
   `kd_kab` int(11) NOT NULL,
   `pekerjaanpj` varchar(35) NOT NULL,
