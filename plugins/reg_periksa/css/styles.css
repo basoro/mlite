@@ -12,6 +12,8 @@
 #tbl_resep_dokter_racikan th, #tbl_resep_dokter_racikan td, #forTable_resep_dokter_racikan th, #forTable_resep_dokter_racikan td, 
 #tbl_permintaan_lab th, #tbl_permintaan_lab td, #forTable_permintaan_lab th, #forTable_permintaan_lab td, 
 #tbl_reg_periksa_databarang th, #tbl_reg_periksa_databarang td, #tbl_reg_periksa_databarang th, #tbl_reg_periksa_databarang td, 
+#tbl_reg_periksa_jns_perawatan th, #tbl_reg_periksa_jns_perawatan td, #tbl_reg_periksa_jns_perawatan th, #tbl_reg_periksa_jns_perawatan td, 
+#tbl_reg_periksa_jns_perawatan_drpr th, #tbl_reg_periksa_jns_perawatan_drpr td, #tbl_reg_periksa_jns_perawatan_drpr th, #tbl_reg_periksa_jns_perawatan_drpr td, 
 #tbl_jns_perawatan_radiologi th, #tbl_jns_perawatan_radiologi td, #forTable_jns_perawatan_radiologi th, #forTable_jns_perawatan_radiologi td, 
 #tbl_permintaan_radiologi th, #tbl_permintaan_radiologi td, #forTable_permintaan_radiologi th, #forTable_permintaan_radiologi td {
   white-space: nowrap; 

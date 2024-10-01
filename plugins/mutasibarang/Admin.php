@@ -1,5 +1,5 @@
 <?php
-namespace Plugins\Resep_Dokter;
+namespace Plugins\Mutasibarang;
 
 use Systems\AdminModule;
 
@@ -16,7 +16,7 @@ class Admin extends AdminModule
     public function getManage()
     {
         $this->_addHeaderFiles();
-        $disabled_menu = $this->core->loadDisabledMenu('resep_dokter'); 
+        $disabled_menu = $this->core->loadDisabledMenu('mutasibarang'); 
         foreach ($disabled_menu as &$row) { 
           if ($row == "true" ) $row = "disabled"; 
         } 
@@ -26,7 +26,7 @@ class Admin extends AdminModule
 
     public function postData()
     {
-        $column_name = isset_or($_POST['column_name'], 'no_resep');
+        $column_name = isset_or($_POST['column_name'], 'kode_brng');
         $column_order = isset_or($_POST['column_order'], 'asc');
         $draw = isset_or($_POST['draw'], '0');
         $row1 = isset_or($_POST['start'], '0');
@@ -37,34 +37,39 @@ class Admin extends AdminModule
         $searchValue = isset_or($_POST['search']['value']); // Search value
 
         ## Custom Field value
-        $search_field_resep_dokter= isset_or($_POST['search_field_resep_dokter']);
-        $search_text_resep_dokter = isset_or($_POST['search_text_resep_dokter']);
+        $search_field_mutasibarang= isset_or($_POST['search_field_mutasibarang']);
+        $search_text_mutasibarang = isset_or($_POST['search_text_mutasibarang']);
 
-        if ($search_text_resep_dokter != '') {
-          $where[$search_field_resep_dokter.'[~]'] = $search_text_resep_dokter;
+        if ($search_text_mutasibarang != '') {
+          $where[$search_field_mutasibarang.'[~]'] = $search_text_mutasibarang;
           $where = ["AND" => $where];
         } else {
           $where = [];
         }
 
         ## Total number of records without filtering
-        $totalRecords = $this->core->db->count('resep_dokter', '*');
+        $totalRecords = $this->core->db->count('mutasibarang', '*');
 
         ## Total number of records with filtering
-        $totalRecordwithFilter = $this->core->db->count('resep_dokter', '*', $where);
+        $totalRecordwithFilter = $this->core->db->count('mutasibarang', '*', $where);
 
         ## Fetch records
         $where['ORDER'] = [$columnName => strtoupper($columnSortOrder)];
         $where['LIMIT'] = [$row1, $rowperpage];
-        $result = $this->core->db->select('resep_dokter', '*', $where);
+        $result = $this->core->db->select('mutasibarang', '*', $where);
 
         $data = array();
         foreach($result as $row) {
             $data[] = array(
-                'no_resep'=>$row['no_resep'],
-'kode_brng'=>$row['kode_brng'],
+                'kode_brng'=>$row['kode_brng'],
 'jml'=>$row['jml'],
-'aturan_pakai'=>$row['aturan_pakai']
+'harga'=>$row['harga'],
+'kd_bangsaldari'=>$row['kd_bangsaldari'],
+'kd_bangsalke'=>$row['kd_bangsalke'],
+'tanggal'=>$row['tanggal'],
+'keterangan'=>$row['keterangan'],
+'no_batch'=>$row['no_batch'],
+'no_faktur'=>$row['no_faktur']
 
             );
         }
@@ -79,7 +84,7 @@ class Admin extends AdminModule
         );
 
         if($this->settings('settings', 'logquery') == true) {
-          $this->core->LogQuery('resep_dokter => postData');
+          $this->core->LogQuery('mutasibarang => postData');
         }
 
         echo json_encode($response);
@@ -96,7 +101,7 @@ class Admin extends AdminModule
 
         if ($act=='add') {
 
-            if($this->core->loadDisabledMenu('resep_dokter')['create'] == 'true') {
+            if($this->core->loadDisabledMenu('mutasibarang')['create'] == 'true') {
               http_response_code(403);
               $data = array(
                 'code' => '403', 
@@ -107,49 +112,23 @@ class Admin extends AdminModule
               exit();
             }
 
-            $no_resep = $_POST['no_resep'];
-            $tgl_perawatan = $this->core->db->get('reg_periksa', 'tgl_registrasi', [
-              'no_rawat' => $_POST['no_rawat']
-            ]);
-            $jam = $this->core->db->get('reg_periksa', 'jam_reg', [
-              'no_rawat' => $_POST['no_rawat']
-            ]);
-            $no_rawat = $_POST['no_rawat'];
-            $kd_dokter = $_POST['kd_dokter'];
-            $tgl_peresepan = $_POST['tgl_peresepan'];
-            $jam_peresepan = $_POST['jam_peresepan'];
-            $status = $_POST['status'];
-            $tgl_penyerahan = isset_or($_POST['tgl_penyerahan'], '0000-00-00');
-            $jam_penyerahan = isset_or($_POST['jam_penyerahan'], '00:00:00');
-                            
-            $kode_brng = $_POST['kode_brng'];
-            $jml = $_POST['jml'];
-            $aturan_pakai = $_POST['aturan_pakai'];
+        $kode_brng = $_POST['kode_brng'];
+$jml = $_POST['jml'];
+$harga = $_POST['harga'];
+$kd_bangsaldari = $_POST['kd_bangsaldari'];
+$kd_bangsalke = $_POST['kd_bangsalke'];
+$tanggal = $_POST['tanggal'];
+$keterangan = $_POST['keterangan'];
+$no_batch = $_POST['no_batch'];
+$no_faktur = $_POST['no_faktur'];
 
+            
+            $result = $this->core->db->insert('mutasibarang', [
+'kode_brng'=>$kode_brng, 'jml'=>$jml, 'harga'=>$harga, 'kd_bangsaldari'=>$kd_bangsaldari, 'kd_bangsalke'=>$kd_bangsalke, 'tanggal'=>$tanggal, 'keterangan'=>$keterangan, 'no_batch'=>$no_batch, 'no_faktur'=>$no_faktur
+            ]);
 
-            $isNoResep = $this->core->db->has('resep_obat', ['no_resep' => $no_resep]);
-            if($isNoResep) {
-              $result = true;
-            } else {
-              $result = $this->core->db->insert('resep_obat', [
-                'no_resep'=>$no_resep, 'tgl_perawatan'=>$tgl_perawatan, 'jam'=>$jam, 'no_rawat'=>$no_rawat, 'kd_dokter'=>$kd_dokter, 'tgl_peresepan'=>$tgl_peresepan, 'jam_peresepan'=>$jam_peresepan, 'status'=>$status, 'tgl_penyerahan'=>$tgl_penyerahan, 'jam_penyerahan'=>$jam_penyerahan
-              ]);                
-            }
 
             if (!empty($result)){
-
-              for($l=0; $l < count($kode_brng); $l++){
-                $resep_dokter = $this->core->db->insert('resep_dokter', [
-                  'no_resep' => $no_resep, 'kode_brng' => $kode_brng[$l], 'jml' =>$jml[$l], 'aturan_pakai'=>$aturan_pakai[$l]
-                ]); 
-                if(!$resep_dokter) {
-                  $data = array(
-                    'status' => 'error', 
-                    'msg' => $this->core->db->errorInfo[2]
-                  );    
-                }
-              }
-
               http_response_code(200);
               $data = array(
                 'code' => '200', 
@@ -166,14 +145,14 @@ class Admin extends AdminModule
             }
 
             if($this->settings('settings', 'logquery') == true) {
-              $this->core->LogQuery('resep_dokter => postAksi => add');
+              $this->core->LogQuery('mutasibarang => postAksi => add');
             }
 
             echo json_encode($data);    
         }
         if ($act=="edit") {
 
-            if($this->core->loadDisabledMenu('resep_dokter')['update'] == 'true') {
+            if($this->core->loadDisabledMenu('mutasibarang')['update'] == 'true') {
               http_response_code(403);
               $data = array(
                 'code' => '403', 
@@ -184,24 +163,27 @@ class Admin extends AdminModule
               exit();
             }
 
-            $no_resep = $_POST['no_resep'];
-            $kode_brng = $_POST['kode_brng'];
-            $jml = $_POST['jml'];
-            $aturan_pakai = $_POST['aturan_pakai'];
+        $kode_brng = $_POST['kode_brng'];
+$jml = $_POST['jml'];
+$harga = $_POST['harga'];
+$kd_bangsaldari = $_POST['kd_bangsaldari'];
+$kd_bangsalke = $_POST['kd_bangsalke'];
+$tanggal = $_POST['tanggal'];
+$keterangan = $_POST['keterangan'];
+$no_batch = $_POST['no_batch'];
+$no_faktur = $_POST['no_faktur'];
 
 
         // BUANG FIELD PERTAMA
 
-            for($l=0; $l < count($kode_brng); $l++){
-              $resep_dokter = $this->core->db->update('resep_dokter', [
-                'jml'=>$jml[$l], 'aturan_pakai'=>$aturan_pakai[$l]
-              ], [
-                'no_resep'=>$no_resep, 'kode_brng'=>$kode_brng[$l]
-                // 'no_resep' => $no_resep, 'kode_brng' => $kode_brng[$l], 'jml' =>$jml[$l], 'aturan_pakai'=>$aturan_pakai[$l]
-              ]); 
-            }
+            $result = $this->core->db->update('mutasibarang', [
+'kode_brng'=>$kode_brng, 'jml'=>$jml, 'harga'=>$harga, 'kd_bangsaldari'=>$kd_bangsaldari, 'kd_bangsalke'=>$kd_bangsalke, 'tanggal'=>$tanggal, 'keterangan'=>$keterangan, 'no_batch'=>$no_batch, 'no_faktur'=>$no_faktur
+            ], [
+              'kode_brng'=>$kode_brng
+            ]);
 
-            if (!empty($resep_dokter)){
+
+            if (!empty($result)){
               http_response_code(200);
               $data = array(
                 'code' => '200', 
@@ -218,7 +200,7 @@ class Admin extends AdminModule
             }
 
             if($this->settings('settings', 'logquery') == true) {
-              $this->core->LogQuery('resep_dokter => postAksi => edit');
+              $this->core->LogQuery('mutasibarang => postAksi => edit');
             }
 
             echo json_encode($data);             
@@ -226,7 +208,7 @@ class Admin extends AdminModule
 
         if ($act=="del") {
 
-            if($this->core->loadDisabledMenu('resep_dokter')['delete'] == 'true') {
+            if($this->core->loadDisabledMenu('mutasibarang')['delete'] == 'true') {
               http_response_code(403);
               $data = array(
                 'code' => '403', 
@@ -237,10 +219,10 @@ class Admin extends AdminModule
               exit();
             }
 
-            $no_resep= $_POST['no_resep'];
-            $result = $this->core->db->delete('resep_dokter', [
+            $kode_brng= $_POST['kode_brng'];
+            $result = $this->core->db->delete('mutasibarang', [
               'AND' => [
-                'no_resep'=>$no_resep
+                'kode_brng'=>$kode_brng
               ]
             ]);
 
@@ -261,7 +243,7 @@ class Admin extends AdminModule
             }
 
             if($this->settings('settings', 'logquery') == true) {
-              $this->core->LogQuery('resep_dokter => postAksi => del');
+              $this->core->LogQuery('mutasibarang => postAksi => del');
             }
 
             echo json_encode($data);                    
@@ -269,7 +251,7 @@ class Admin extends AdminModule
 
         if ($act=="lihat") {
 
-            if($this->core->loadDisabledMenu('resep_dokter')['read'] == 'true') {
+            if($this->core->loadDisabledMenu('mutasibarang')['read'] == 'true') {
               http_response_code(403);
               $data = array(
                 'code' => '403', 
@@ -280,32 +262,36 @@ class Admin extends AdminModule
               exit();
             }
 
-            $search_field_resep_dokter= $_POST['search_field_resep_dokter'];
-            $search_text_resep_dokter = $_POST['search_text_resep_dokter'];
+            $search_field_mutasibarang= $_POST['search_field_mutasibarang'];
+            $search_text_mutasibarang = $_POST['search_text_mutasibarang'];
 
-            if ($search_text_resep_dokter != '') {
-              $where[$search_field_resep_dokter.'[~]'] = $search_text_resep_dokter;
+            if ($search_text_mutasibarang != '') {
+              $where[$search_field_mutasibarang.'[~]'] = $search_text_mutasibarang;
               $where = ["AND" => $where];
             } else {
               $where = [];
             }
 
             ## Fetch records
-            $result = $this->core->db->select('resep_dokter', '*', $where);
+            $result = $this->core->db->select('mutasibarang', '*', $where);
 
             $data = array();
             foreach($result as $row) {
                 $data[] = array(
-                    'no_resep'=>$row['no_resep'],
                     'kode_brng'=>$row['kode_brng'],
-                    'nama_brng'=>$this->core->db->get('databarang', 'nama_brng', ['kode_brng' => $row['kode_brng']]),
-                    'jml'=>$row['jml'],
-                    'aturan_pakai'=>$row['aturan_pakai']
+'jml'=>$row['jml'],
+'harga'=>$row['harga'],
+'kd_bangsaldari'=>$row['kd_bangsaldari'],
+'kd_bangsalke'=>$row['kd_bangsalke'],
+'tanggal'=>$row['tanggal'],
+'keterangan'=>$row['keterangan'],
+'no_batch'=>$row['no_batch'],
+'no_faktur'=>$row['no_faktur']
                 );
             }
 
             if($this->settings('settings', 'logquery') == true) {
-              $this->core->LogQuery('resep_dokter => postAksi => lihat');
+              $this->core->LogQuery('mutasibarang => postAksi => lihat');
             }
             
             echo json_encode($data);
@@ -313,10 +299,10 @@ class Admin extends AdminModule
         exit();
     }
 
-    public function getRead($no_resep)
+    public function getRead($kode_brng)
     {
 
-        if($this->core->loadDisabledMenu('resep_dokter')['read'] == 'true') {
+        if($this->core->loadDisabledMenu('mutasibarang')['read'] == 'true') {
           http_response_code(403);
           $data = array(
             'code' => '403', 
@@ -327,7 +313,7 @@ class Admin extends AdminModule
           exit();
         }
 
-        $result =  $this->core->db->get('resep_dokter', '*', ['no_resep' => $no_resep]);
+        $result =  $this->core->db->get('mutasibarang', '*', ['kode_brng' => $kode_brng]);
 
         if (!empty($result)){
           http_response_code(200);
@@ -346,17 +332,17 @@ class Admin extends AdminModule
         }
 
         if($this->settings('settings', 'logquery') == true) {
-          $this->core->LogQuery('resep_dokter => getRead');
+          $this->core->LogQuery('mutasibarang => getRead');
         }
 
         echo json_encode($data);        
         exit();
     }
 
-    public function getDetail($no_resep)
+    public function getDetail($kode_brng)
     {
 
-        if($this->core->loadDisabledMenu('resep_dokter')['read'] == 'true') {
+        if($this->core->loadDisabledMenu('mutasibarang')['read'] == 'true') {
           http_response_code(403);
           $data = array(
             'code' => '403', 
@@ -370,10 +356,10 @@ class Admin extends AdminModule
         $settings =  $this->settings('settings');
 
         if($this->settings('settings', 'logquery') == true) {
-          $this->core->LogQuery('resep_dokter => getDetail');
+          $this->core->LogQuery('mutasibarang => getDetail');
         }
 
-        echo $this->draw('detail.html', ['settings' => $settings, 'no_resep' => $no_resep]);
+        echo $this->draw('detail.html', ['settings' => $settings, 'kode_brng' => $kode_brng]);
         exit();
     }
 
@@ -383,23 +369,23 @@ class Admin extends AdminModule
         $type = 'pie';
       }
 
-      $labels = $this->core->db->select('resep_dokter', 'no_resep', ['GROUP' => 'no_resep']);
-      $datasets = $this->core->db->select('resep_dokter', ['count' => \Medoo\Medoo::raw('COUNT(<no_resep>)')], ['GROUP' => 'no_resep']);
+      $labels = $this->core->db->select('mutasibarang', 'kd_bangsaldari', ['GROUP' => 'kd_bangsaldari']);
+      $datasets = $this->core->db->select('mutasibarang', ['count' => \Medoo\Medoo::raw('COUNT(<kd_bangsaldari>)')], ['GROUP' => 'kd_bangsaldari']);
 
       if(isset_or($column)) {
-        $labels = $this->core->db->select('resep_dokter', ''.$column.'', ['GROUP' => ''.$column.'']);
-        $datasets = $this->core->db->select('resep_dokter', ['count' => \Medoo\Medoo::raw('COUNT(<'.$column.'>)')], ['GROUP' => ''.$column.'']);          
+        $labels = $this->core->db->select('mutasibarang', ''.$column.'', ['GROUP' => ''.$column.'']);
+        $datasets = $this->core->db->select('mutasibarang', ['count' => \Medoo\Medoo::raw('COUNT(<'.$column.'>)')], ['GROUP' => ''.$column.'']);          
       }
 
       $database = DBNAME;
-      $nama_table = 'resep_dokter';
+      $nama_table = 'mutasibarang';
 
       $get_table = $this->core->db->pdo->prepare("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='$database' AND TABLE_NAME='$nama_table'");
 	    $get_table->execute();
 	    $result = $get_table->fetchAll();
 
       if($this->settings('settings', 'logquery') == true) {
-        $this->core->LogQuery('resep_dokter => getChart');
+        $this->core->LogQuery('mutasibarang => getChart');
       }
 
       echo $this->draw('chart.html', ['type' => $type, 'column' => $result, 'labels' => json_encode($labels), 'datasets' => json_encode(array_column($datasets, 'count'))]);
@@ -409,7 +395,7 @@ class Admin extends AdminModule
     public function getCss()
     {
         header('Content-type: text/css');
-        echo $this->draw(MODULES.'/resep_dokter/css/styles.css');
+        echo $this->draw(MODULES.'/mutasibarang/css/styles.css');
         exit();
     }
 
@@ -417,7 +403,7 @@ class Admin extends AdminModule
     {
         header('Content-type: text/javascript');
         $settings = $this->settings('settings');
-        echo $this->draw(MODULES.'/resep_dokter/js/scripts.js', ['settings' => $settings, 'disabled_menu' => $this->core->loadDisabledMenu('resep_dokter')]);
+        echo $this->draw(MODULES.'/mutasibarang/js/scripts.js', ['settings' => $settings, 'disabled_menu' => $this->core->loadDisabledMenu('mutasibarang')]);
         exit();
     }
 
@@ -432,8 +418,8 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/vendor/datatables/datatables.min.js'), 'footer');
         $this->core->addJS(url('assets/js/jquery.contextMenu.js'), 'footer');
 
-        $this->core->addCSS(url([ 'resep_dokter', 'css']));
-        $this->core->addJS(url([ 'resep_dokter', 'javascript']), 'footer');
+        $this->core->addCSS(url([ 'mutasibarang', 'css']));
+        $this->core->addJS(url([ 'mutasibarang', 'javascript']), 'footer');
     }
 
 }

@@ -147,29 +147,21 @@ var noorder = rowData['noorder'];
                 }
             })
         }
-    });   
+    }); 
 
-    var tbl_jns_perawatan_radiologi = $("#tbl_jns_perawatan_radiologi").DataTable({
-        "responsive": true, 
-        "order": [1, "asc"]
-      });
-    
-      // Listen to change event from checkbox to trigger re-sorting
-      $('#tbl_jns_perawatan_radiologi input[type="checkbox"]').on('change', function() {
-        // Update data-sort on closest <td>
-        $(this).closest('td').attr('data-order', this.checked ? 1 : 0);
-        
-        // Store row reference so we can reset its data
-        var $tr = $(this).closest('tr');
-        
-        // Force resorting
-        tbl_jns_perawatan_radiologi
-          .row($tr)
-          .invalidate()
-          .responsive()
-          .order([ 0, 'desc' ])
-          .draw();
-    });
+    var tbl_jns_perawatan_radiologi = $('#tbl_jns_perawatan_radiologi').DataTable({
+        columnDefs: [
+          { targets: 0, visible: false }
+        ],
+        orderFixed: [0, 'desc']
+    })  
+     
+    $('#tbl_jns_perawatan_radiologi').on('click', 'input[type="checkbox"]', function() {
+        var row =  tbl_jns_perawatan_radiologi.row($(this).closest('tr'));
+        tbl_jns_perawatan_radiologi.cell({ row: row.index(), column: 0 } ).data( this.checked ? 1 : 0 )
+        row.invalidate().draw()
+    })    
+
 
     // ==============================================================
     // FORM VALIDASI

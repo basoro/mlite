@@ -31,19 +31,21 @@
                           <span style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
                           <select class="form-select" id='search_field_resep_obat' name='search_field_resep_obat' style="margin: 0 !important;"> 
                               <option value='no_resep'>No Resep</option>
-<option value='tgl_perawatan'>Tgl Perawatan</option>
-<option value='jam'>Jam</option>
-<option value='no_rawat'>No Rawat</option>
-<option value='kd_dokter'>Kd Dokter</option>
-<option value='tgl_peresepan'>Tgl Peresepan</option>
-<option value='jam_peresepan'>Jam Peresepan</option>
-<option value='status'>Status</option>
-<option value='tgl_penyerahan'>Tgl Penyerahan</option>
-<option value='jam_penyerahan'>Jam Penyerahan</option>
-
+                              <option value='tgl_perawatan'>Tgl Perawatan</option>
+                              <option value='jam'>Jam</option>
+                              <option value='no_rawat'>No Rawat</option>
+                              <option value='kd_dokter'>Kd Dokter</option>
+                              <option value='tgl_peresepan'>Tgl Peresepan</option>
+                              <option value='jam_peresepan'>Jam Peresepan</option>
+                              <option value='status'>Status</option>
+                              <option value='tgl_penyerahan'>Tgl Penyerahan</option>
+                              <option value='jam_penyerahan'>Jam Penyerahan</option>
                           </select>
                           </span>
                           <input class='form-control' name='search_text_resep_obat' id='search_text_resep_obat' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <input type="hidden" class="form-control d-none d-xxl-block d-xl-block d-lg-block" id="tanggal_awal" placeholder="Tanggal Awal"> 
+                          <input type="hidden" class="form-control d-none d-xxl-block d-xl-block d-lg-block" id="tanggal_akhir" placeholder="Tanggal Akhir"> 
+                          <input type="text" class="form-control daterange d-none d-xxl-block d-xl-block d-lg-block daterange" placeholder="Range Tanggal"> 
                           <span class="input-group-text" id='filter_search_resep_obat' data-toggle='tooltip' data-placement='top' title='Filter Pencarian'><i class="ri-search-line"></i></span>
                       </div>
                     </div>
@@ -53,16 +55,15 @@
                         <thead>
                         <tr> 
                             <th>No Resep</th>
-<th>Tgl Perawatan</th>
-<th>Jam</th>
-<th>No Rawat</th>
-<th>Kd Dokter</th>
-<th>Tgl Peresepan</th>
-<th>Jam Peresepan</th>
-<th>Status</th>
-<th>Tgl Penyerahan</th>
-<th>Jam Penyerahan</th>
-
+                            <th>Tgl Perawatan</th>
+                            <th>Jam</th>
+                            <th>No Rawat</th>
+                            <th>Kd Dokter</th>
+                            <th>Tgl Peresepan</th>
+                            <th>Jam Peresepan</th>
+                            <th>Status</th>
+                            <th>Tgl Penyerahan</th>
+                            <th>Jam Penyerahan</th>
                         </tr>
                         </thead>
                         <tbody>

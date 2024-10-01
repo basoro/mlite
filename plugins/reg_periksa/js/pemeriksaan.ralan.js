@@ -40,7 +40,8 @@ jQuery().ready(function () {
             { 'data': 'penilaian' },
             { 'data': 'instruksi' },
             { 'data': 'evaluasi' },
-            { 'data': 'nip' }
+            { 'data': 'nip' },
+            { 'data': 'nama' }
         ],
         "columnDefs": [
             { 'targets': 0},
@@ -63,7 +64,8 @@ jQuery().ready(function () {
             { 'targets': 17},
             { 'targets': 18},
             { 'targets': 19},
-            { 'targets': 20}
+            { 'targets': 20},
+            { 'targets': 21}
         ],
         order: [[1, 'DESC']], 
         buttons: [],

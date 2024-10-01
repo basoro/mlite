@@ -23,8 +23,11 @@
                       <tr> 
                           <th>No Rawat</th>
                           <th>Kd Jenis Prw</th>
+                          <th>Nm Perawatan</th>
                           <th>Kd Dokter</th>
+                          <th>Nm Dokter</th>
                           <th>Nip</th>
+                          <th>Nama Petugas</th>
                           <th>Tgl Perawatan</th>
                           <th>Jam Rawat</th>
                           <th>Material</th>
@@ -56,127 +59,302 @@
     </div>
     <div class="modal-body">
       <form name="form_rawat_jl_drpr">
-        <input type="hidden" class="form-control" id="typeact" /> 
-        <div class='row gx-3'>
-<div class='col-xxl-3 col-lg-4 col-sm-6'>
-  <div class='mb-3'>
-    <label class='form-label' for='no_rawat'>No Rawat</label>
-    <input type='text' class='form-control' id='no_rawat_rawat_jl_drpr' name='no_rawat' />
-  <div class='invalid-feedback error'></div>
-  </div>
-</div>
-<div class='col-xxl-3 col-lg-4 col-sm-6'>
-  <div class='mb-3'>
-    <label class='form-label' for='kd_dokter'>Kd Dokter</label>
-    <select class="form-select" name="kd_dokter" id="kd_dokter">
-      <option value="">Select</option>
-      {loop: $view.dokter}
-      <option value="{$value.kd_dokter}" {if: $value.kd_dokter == $view.user}selected{/if}>{$value.nm_dokter}</option>
-      {/loop}
-    </select>
-    <div class='invalid-feedback error'></div>
-  </div>
-</div>
-<div class='col-xxl-3 col-lg-4 col-sm-6'>
-  <div class='mb-3'>
-    <label class='form-label' for='nip'>Nip</label>
-    <select class="form-select" name="nip" id="nip">
-      <option value="">Select</option>
-      {loop: $view.petugas}
-      <option value="{$value.nip}" {if: $value.nip == $view.user}selected{/if}>{$value.nama}</option>
-      {/loop}
-    </select>
-    <div class='invalid-feedback error'></div>
-  </div>
-</div>
-<div class='col-xxl-3 col-lg-4 col-sm-6'>
-  <div class='mb-3'>
-    <label class='form-label' for='tgl_perawatan'>Tgl Perawatan</label>
-    <input type='text' class='form-control datepicker' id='tgl_perawatan' name='tgl_perawatan' />
-  <div class='invalid-feedback error'></div>
-  </div>
-</div>
-<div class='col-xxl-3 col-lg-4 col-sm-6'>
-  <div class='mb-3'>
-    <label class='form-label' for='jam_rawat'>Jam Rawat</label>
-    <input type='text' class='form-control timepicker' id='jam_rawat' name='jam_rawat' />
-  <div class='invalid-feedback error'></div>
-  </div>
-</div>
-<div class='col-xxl-3 col-lg-4 col-sm-6'>
-  <div class='mb-3'>
-    <label class='form-label' for='kd_jenis_prw'>Kd Jenis Prw</label>
-    <select class="form-select" name="kd_jenis_prw" id="kd_jenis_prw">
-      <option value="">Select</option>
-      {loop: $view.jns_perawatan}
-      <option value="{$value.kd_jenis_prw}">{$value.nm_perawatan}</option>
-      {/loop}
-    </select>
-    <div class='invalid-feedback error'></div>
-  </div>
-</div>
-<div class='col-xxl-3 col-lg-4 col-sm-6'>
-  <div class='mb-3'>
-    <label class='form-label' for='material'>Material</label>
-    <input type='text' class='form-control' id='material' name='material' />
-  <div class='invalid-feedback error'></div>
-  </div>
-</div>
-<div class='col-xxl-3 col-lg-4 col-sm-6'>
-  <div class='mb-3'>
-    <label class='form-label' for='bhp'>Bhp</label>
-    <input type='text' class='form-control' id='bhp' name='bhp' />
-  <div class='invalid-feedback error'></div>
-  </div>
-</div>
-<div class='col-xxl-3 col-lg-4 col-sm-6'>
-  <div class='mb-3'>
-    <label class='form-label' for='tarif_tindakandr'>Tarif Tindakandr</label>
-    <input type='text' class='form-control' id='tarif_tindakandr' name='tarif_tindakandr' />
-  <div class='invalid-feedback error'></div>
-  </div>
-</div>
-<div class='col-xxl-3 col-lg-4 col-sm-6'>
-  <div class='mb-3'>
-    <label class='form-label' for='tarif_tindakanpr'>Tarif Tindakanpr</label>
-    <input type='text' class='form-control' id='tarif_tindakanpr' name='tarif_tindakanpr' />
-  <div class='invalid-feedback error'></div>
-  </div>
-</div>
-<div class='col-xxl-3 col-lg-4 col-sm-6'>
-  <div class='mb-3'>
-    <label class='form-label' for='kso'>Kso</label>
-    <input type='text' class='form-control' id='kso' name='kso' />
-  <div class='invalid-feedback error'></div>
-  </div>
-</div>
-<div class='col-xxl-3 col-lg-4 col-sm-6'>
-  <div class='mb-3'>
-    <label class='form-label' for='menejemen'>Menejemen</label>
-    <input type='text' class='form-control' id='menejemen' name='menejemen' />
-  <div class='invalid-feedback error'></div>
-  </div>
-</div>
-<div class='col-xxl-3 col-lg-4 col-sm-6'>
-  <div class='mb-3'>
-    <label class='form-label' for='biaya_rawat'>Biaya Rawat</label>
-    <input type='text' class='form-control' id='biaya_rawat' name='biaya_rawat' />
-  <div class='invalid-feedback error'></div>
-  </div>
-</div>
-<div class='col-xxl-3 col-lg-4 col-sm-6'>
-  <div class='mb-3'>
-    <label class='form-label' for='stts_bayar'>Stts Bayar</label>
-    <select class="form-select" name="stts_bayar" id="stts_bayar">
-      <option value="">Select</option>
-      <option value="Belum">Belum</option>
-      <option value="Sudah">Sudah</option>
-    </select>
-    <div class='invalid-feedback error'></div>
+      <input type="hidden" class="form-control" id="typeact" /> 
+      <input type="hidden" name="stts_bayar" value="Belum">
+      <div class='row gx-3'>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='no_rawat'>No Rawat</label>
+            <input type='text' class='form-control' id='no_rawat_rawat_jl_drpr' name='no_rawat' />
+          <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='kd_dokter'>Kd Dokter</label>
+            <select class="form-select" name="kd_dokter" id="kd_dokter">
+              <option value="">Select</option>
+              {loop: $view.dokter}
+              <option value="{$value.kd_dokter}" {if: $value.kd_dokter == $view.user}selected{/if}>{$value.nm_dokter}</option>
+              {/loop}
+            </select>
+            <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='nip'>Nip</label>
+            <select class="form-select" name="nip" id="nip">
+              <option value="">Select</option>
+              {loop: $view.petugas}
+              <option value="{$value.nip}" {if: $value.nip == $view.user}selected{/if}>{$value.nama}</option>
+              {/loop}
+            </select>
+            <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='tgl_perawatan'>Tanggal dan Jam Rawat</label>
+            <div class="input-group">
+              <input type='text' class='form-control datepicker' id='tgl_perawatan' name='tgl_perawatan' />
+              <input type='text' class='form-control timepicker' id='jam_rawat' name='jam_rawat' />
+            </div>
+          <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='mb-3'>
+          <label class='form-label' for='kd_jenis_prw'>Kd Jenis Prw</label>
+          <select class="form-select" name="kd_jenis_prw" id="kd_jenis_prw">
+            <option value="">Select</option>
+            {loop: $view.jns_perawatan}
+            <option value="{$value.kd_jenis_prw}">{$value.nm_perawatan}</option>
+            {/loop}
+          </select>
+          <div class='invalid-feedback error'></div>
+        </div>
+      </div>
+      <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='mb-3'>
+          <label class='form-label' for='material'>Material</label>
+          <input type='text' class='form-control' id='material' name='material' />
+        <div class='invalid-feedback error'></div>
+        </div>
+      </div>
+      <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='mb-3'>
+          <label class='form-label' for='bhp'>Bhp</label>
+          <input type='text' class='form-control' id='bhp' name='bhp' />
+        <div class='invalid-feedback error'></div>
+        </div>
+      </div>
+      <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='mb-3'>
+          <label class='form-label' for='tarif_tindakandr'>Tarif Tindakandr</label>
+          <input type='text' class='form-control' id='tarif_tindakandr' name='tarif_tindakandr' />
+        <div class='invalid-feedback error'></div>
+        </div>
+      </div>
+      <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='mb-3'>
+          <label class='form-label' for='tarif_tindakanpr'>Tarif Tindakanpr</label>
+          <input type='text' class='form-control' id='tarif_tindakanpr' name='tarif_tindakanpr' />
+        <div class='invalid-feedback error'></div>
+        </div>
+      </div>
+      <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='mb-3'>
+          <label class='form-label' for='kso'>Kso</label>
+          <input type='text' class='form-control' id='kso' name='kso' />
+        <div class='invalid-feedback error'></div>
+        </div>
+      </div>
+      <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='mb-3'>
+          <label class='form-label' for='menejemen'>Menejemen</label>
+          <input type='text' class='form-control' id='menejemen' name='menejemen' />
+        <div class='invalid-feedback error'></div>
+        </div>
+      </div>
+      <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='mb-3'>
+          <label class='form-label' for='biaya_rawat'>Biaya Rawat</label>
+          <input type='text' class='form-control' id='biaya_rawat' name='biaya_rawat' />
+        <div class='invalid-feedback error'></div>
+        </div>
+      </div>
+      <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='mb-3'>
+          <label class='form-label' for='stts_bayar'>Stts Bayar</label>
+          <select class="form-select" name="stts_bayar" id="stts_bayar">
+            <option value="">Select</option>
+            <option value="Belum">Belum</option>
+            <option value="Sudah">Sudah</option>
+          </select>
+          <div class='invalid-feedback error'></div>
+        </div>
+      </div> -->
+
+      <div class="table-responsive">
+        <table id="tbl_reg_periksa_jns_perawatan_drpr" class="table table-striped table-hover" width="100%">
+            <thead>
+              <tr>
+                <th></th>
+                <th>#</th>
+                <th width="200">Nama Perawatan</th>
+                <th>Material</th>
+                <th>Bhp</th>
+                <th>Kso</th>
+                <th>Menejemen</th>
+                <th>Tarif Tindakandr</th>
+                <th>Tarif Tindakanpr</th>
+                <th>Biaya Rawat</th>
+              </tr>
+            </thead>
+          
+            <tbody>
+              {loop: $view.jns_perawatan}
+              <tr>
+                <td></td>
+                <td><input id="{$value.kd_jenis_prw}" class="form-check-input" type="checkbox" name="kd_jenis_prw[]" id="kd_jenis_prw" value="{$value.kd_jenis_prw}"></td>
+                <td>{$value.nm_perawatan}</td>
+                <td>{$value.material}<input type="hidden" name="material[]" value="{$value.material}"></td>
+                <td>{$value.bhp}<input type="hidden" name="bhp[]" value="{$value.bhp}"></td>
+                <td>{$value.kso}<input type="hidden" name="kso[]" value="{$value.kso}"></td>
+                <td>{$value.menejemen}<input type="hidden" name="menejemen[]" value="{$value.menejemen}"></td>
+                <td>{$value.total_byrdr}<input type="hidden" name="tarif_tindakandr[]" value="{$value.total_byrdr}"></td>
+                <td>{$value.total_byrpr}<input type="hidden" name="tarif_tindakanpr[]" value="{$value.total_byrpr}"></td>
+                <td>{$value.total_byrdrpr}<input type="hidden" name="biaya_rawat[]" value="{$value.total_byrdrpr}"></td>
+              </tr>
+              {/loop}
+            </tbody>
+        </table>
+      </div>  
+            
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+      <button type="submit" id="simpan_data_rawat_jl_drpr" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+      </form>
+    </div>
   </div>
 </div>
 </div>
 
+<!-- Modal -->
+<div id="modal_rawat_jl_drpr_edit" class="modal fade" role="dialog" tabindex="-1">
+<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title"><span id="modal-title">Edit Data Tindakan Ralan Dokter Perawat</span></h4>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <form name="form_rawat_jl_drpr_edit">
+      <input type="hidden" class="form-control" id="typeact" /> 
+      <input type="hidden" name="stts_bayar" value="Belum">
+      <div class='row gx-3'>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='no_rawat'>No Rawat</label>
+            <input type='text' class='form-control' id='no_rawat_rawat_jl_drpr_edit' name='no_rawat' />
+          <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='kd_dokter'>Kd Dokter</label>
+            <select class="form-select" name="kd_dokter" id="kd_dokter">
+              <option value="">Select</option>
+              {loop: $view.dokter}
+              <option value="{$value.kd_dokter}" {if: $value.kd_dokter == $view.user}selected{/if}>{$value.nm_dokter}</option>
+              {/loop}
+            </select>
+            <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='nip'>Nip</label>
+            <select class="form-select" name="nip" id="nip">
+              <option value="">Select</option>
+              {loop: $view.petugas}
+              <option value="{$value.nip}" {if: $value.nip == $view.user}selected{/if}>{$value.nama}</option>
+              {/loop}
+            </select>
+            <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='tgl_perawatan'>Tanggal Peraawatan</label>
+            <div class="input-group">
+              <input type='text' class='form-control' id='tgl_perawatan' name='tgl_perawatan' />
+            </div>
+          <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='tgl_perawatan'>Jam Rawat</label>
+            <div class="input-group">
+              <input type='text' class='form-control' id='jam_rawat' name='jam_rawat' />
+            </div>
+          <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='kd_jenis_prw'>Kd Jenis Prw</label>
+            <input type='text' class='form-control' id='kd_jenis_prw' name='kd_jenis_prw' />
+            <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='material'>Material</label>
+            <input type='text' class='form-control' id='material' name='material' />
+          <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='bhp'>Bhp</label>
+            <input type='text' class='form-control' id='bhp' name='bhp' />
+          <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='tarif_tindakandr'>Tarif Tindakandr</label>
+            <input type='text' class='form-control' id='tarif_tindakandr' name='tarif_tindakandr' />
+          <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='tarif_tindakanpr'>Tarif Tindakanpr</label>
+            <input type='text' class='form-control' id='tarif_tindakanpr' name='tarif_tindakanpr' />
+          <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='kso'>Kso</label>
+            <input type='text' class='form-control' id='kso' name='kso' />
+          <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='menejemen'>Menejemen</label>
+            <input type='text' class='form-control' id='menejemen' name='menejemen' />
+          <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='biaya_rawat'>Biaya Rawat</label>
+            <input type='text' class='form-control' id='biaya_rawat' name='biaya_rawat' />
+          <div class='invalid-feedback error'></div>
+          </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+          <div class='mb-3'>
+            <label class='form-label' for='stts_bayar'>Stts Bayar</label>
+            <select class="form-select" name="stts_bayar" id="stts_bayar">
+              <option value="">Select</option>
+              <option value="Belum">Belum</option>
+              <option value="Sudah">Sudah</option>
+            </select>
+            <div class='invalid-feedback error'></div>
+          </div>
+        </div>        
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>

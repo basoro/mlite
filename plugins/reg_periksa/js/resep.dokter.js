@@ -30,6 +30,7 @@ jQuery().ready(function () {
 { 'data': 'jam' },
 { 'data': 'no_rawat' },
 { 'data': 'kd_dokter' },
+{ 'data': 'nm_dokter' },
 { 'data': 'tgl_peresepan' },
 { 'data': 'jam_peresepan' },
 { 'data': 'status' },
@@ -48,7 +49,8 @@ jQuery().ready(function () {
 { 'targets': 7},
 { 'targets': 8},
 { 'targets': 9},
-{ 'targets': 10}
+{ 'targets': 10},
+{ 'targets': 11}
 
         ],
         order: [[1, 'DESC']], 
@@ -135,28 +137,19 @@ jQuery().ready(function () {
         }
     });    
 
+    var tbl_reg_periksa_databarang = $('#tbl_reg_periksa_databarang').DataTable({
+        columnDefs: [
+          { targets: 0, visible: false }
+        ],
+        orderFixed: [0, 'desc']
+    })  
+     
+    $('#tbl_reg_periksa_databarang').on('click', 'input[type="checkbox"]', function() {
+        var row =  tbl_reg_periksa_databarang.row($(this).closest('tr'));
+        tbl_reg_periksa_databarang.cell({ row: row.index(), column: 0 } ).data( this.checked ? 1 : 0 )
+        row.invalidate().draw()
+    })    
 
-    var tbl_reg_periksa_databarang = $("#tbl_reg_periksa_databarang").DataTable({
-        "responsive": true, 
-        "order": [1, "asc"]
-    });
-    
-      // Listen to change event from checkbox to trigger re-sorting
-    $('#tbl_reg_periksa_databarang input[type="checkbox"]').on('change', function() {
-        // Update data-sort on closest <td>
-        $(this).closest('td').attr('data-order', this.checked ? 1 : 0);
-        
-        // Store row reference so we can reset its data
-        var $tr = $(this).closest('tr');
-        
-        // Force resorting
-        tbl_reg_periksa_databarang
-          .row($tr)
-          .invalidate()
-          .responsive()
-          .order([ 0, 'desc' ])
-          .draw();
-    });
 
     // ==============================================================
     // FORM VALIDASI
@@ -246,12 +239,120 @@ console.log(JSON.stringify(Object.fromEntries(formData)));
                             bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                         }    
                     }
+
+                    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+                        let payload = {
+                            'action' : typeact
+                        }
+                        ws.send(JSON.stringify(payload));
+                    } 
+
                     $("#modal_resep_dokter").modal('hide');
                     var_tbl_resep_dokter.draw();
                 }
             })
         }
     });
+
+    $("form[name='form_resep_dokter_edit']").validate({
+        rules: {
+no_resep: 'required',
+tgl_perawatan: 'required',
+jam: 'required',
+no_rawat: 'required',
+kd_dokter: 'required',
+tgl_peresepan: 'required',
+jam_peresepan: 'required',
+status: 'required',
+tgl_penyerahan: 'required',
+jam_penyerahan: 'required',
+kode_brng: 'required',
+jml: 'required',
+aturan_pakai: 'required'
+
+        },
+        messages: {
+no_resep:'No Resep tidak boleh kosong!',
+tgl_perawatan:'Tgl Perawatan tidak boleh kosong!',
+jam:'Jam tidak boleh kosong!',
+no_rawat:'No Rawat tidak boleh kosong!',
+kd_dokter:'Kd Dokter tidak boleh kosong!',
+tgl_peresepan:'Tgl Peresepan tidak boleh kosong!',
+jam_peresepan:'Jam Peresepan tidak boleh kosong!',
+status:'Status tidak boleh kosong!',
+tgl_penyerahan:'Tgl Penyerahan tidak boleh kosong!',
+jam_penyerahan:'Jam Penyerahan tidak boleh kosong!',
+kode_brng:'Kode Brng tidak boleh kosong!',
+jml:'Jml tidak boleh kosong!',
+aturan_pakai:'Aturan Pakai tidak boleh kosong!'
+
+        },
+        submitHandler: function (form) {
+var no_resep= $('#no_resep').val();
+var tgl_perawatan= $('#tgl_perawatan').val();
+var jam= $('#jam').val();
+var no_rawat= $('#no_rawat').val();
+var kd_dokter= $('#kd_dokter').val();
+var tgl_peresepan= $('#tgl_peresepan').val();
+var jam_peresepan= $('#jam_peresepan').val();
+var status= $('#status').val();
+var tgl_penyerahan= $('#tgl_penyerahan').val();
+var jam_penyerahan= $('#jam_penyerahan').val();
+
+var kode_brng= $('#kode_brng').val();
+var jml= $('#jml').val();
+var aturan_pakai= $('#aturan_pakai').val();
+
+ var typeact = $('#typeact').val();
+//  var dataRepeater = $('.repeater-default').repeaterVal();
+
+//  console.log(dataRepeater);
+
+ var formData = new FormData(form); // tambahan
+ formData.append('typeact', typeact); // tambahan
+//  formData.append('data', dataRepeater); // tambahan
+console.log(JSON.stringify(Object.fromEntries(formData)));
+
+            $.ajax({
+                url: "{?=url(['resep_dokter','aksi'])?}",
+                method: "POST",
+                contentType: false, // tambahan
+                processData: false, // tambahan
+                data: formData,
+                success: function (data) {
+                    console.log(data);
+                    data = JSON.parse(data);
+                    var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
+                    audio.play();
+                    if (typeact == "add") {
+                        if(data.status === 'success') {
+                            bootbox.alert('<span class="text-success">' + data.msg + '</span>');
+                        } else {
+                            bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
+                        }    
+                    }
+                    else if (typeact == "edit") {
+                        if(data.status === 'success') {
+                            bootbox.alert('<span class="text-success">' + data.msg + '</span>');
+                        } else {
+                            bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
+                        }    
+                    }
+
+                    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+                        let payload = {
+                            'action' : typeact
+                        }
+                        ws.send(JSON.stringify(payload));
+                    } 
+
+                    $("#modal_resep_dokter").modal('hide');
+                    var_tbl_resep_dokter.draw();
+                }
+            })
+        }
+    });
+
 
     // ==============================================================
     // KETIKA TOMBOL SEARCH DITEKAN
@@ -267,7 +368,6 @@ console.log(JSON.stringify(Object.fromEntries(formData)));
     $("#edit_data_resep_dokter").click(function () {
         var rowData = var_tbl_resep_dokter.rows({ selected: true }).data()[0];
         if (rowData != null) {
-            // OpenModal(mlite.url + '/resep_dokter/edit/' + rowData['no_resep'] + '?t=' + mlite.token);
 
             var no_resep = rowData['no_resep'];
 var tgl_perawatan = rowData['tgl_perawatan'];
@@ -284,14 +384,14 @@ var jam_penyerahan = rowData['jam_penyerahan'];
 
             $("#typeact").val("edit");
   
-            $('#no_resep').val(no_resep);
+            $('#no_resep_edit').val(no_resep);
 $('#tgl_perawatan').val(tgl_perawatan);
 $('#jam').val(jam);
 $('#no_rawat').val(no_rawat);
 $('#kd_dokter').val(kd_dokter);
 $('#tgl_peresepan').val(tgl_peresepan);
 $('#jam_peresepan').val(jam_peresepan);
-$('#status').val(status);
+$('#status_edit').val(status).change();
 $('#tgl_penyerahan').val(tgl_penyerahan);
 $('#jam_penyerahan').val(jam_penyerahan);
 
@@ -332,6 +432,14 @@ var no_resep = rowData['no_resep'];
                             } else {
                                 bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                             }    
+
+                            if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+                                let payload = {
+                                    'action' : typeact
+                                }
+                                ws.send(JSON.stringify(payload));
+                            } 
+                            
                             var_tbl_resep_dokter.draw();
                         }
                     })    

@@ -51,33 +51,6 @@ class Admin extends AdminModule
             $this->assign['count_reg_periksa'] = $this->core->db->count('reg_periksa', 'no_rawat', ['tgl_registrasi' => date('Y-m-d'), 'kd_dokter' => $this->core->db->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']])]);
             $this->assign['count_booking_operasi'] = $this->core->db->count('booking_operasi', 'no_rawat', ['tanggal' => date('Y-m-d'), 'kd_dokter' => $this->core->db->get('mlite_users', 'username', ['id' => $_SESSION['mlite_user']])]);
             
-            $this->assign['dokter'] = array_chunk($this->core->db->rand('dokter', [
-                '[>]pegawai' => ['kd_dokter' => 'nik']
-            ], [
-                'kd_dokter', 
-                'nm_dokter', 
-                'bidang', 
-                'photo'
-            ], [
-                'pegawai.stts_aktif' => 'Aktif', 
-                'LIMIT' => 10
-            ]), 2);
-
-            $this->assign['booking_operasi'] = array_chunk($this->core->db->rand('booking_operasi', [
-                '[>]reg_periksa' => ['no_rawat' => 'no_rawat'], 
-                '[>]pasien' => ['reg_periksa.no_rkm_medis' => 'no_rkm_medis'], 
-                '[>]paket_operasi' => ['kode_paket' => 'kode_paket']
-            ], [
-                'pasien.nm_pasien', 
-                'paket_operasi.nm_perawatan', 
-                'tanggal', 
-                'jam_mulai', 
-                'jam_selesai'
-            ], [
-                'booking_operasi.status[!]' => 'Selesai', 
-                'LIMIT' => 10
-            ]), 2);
-
             $cap = $this->core->db->get('mlite_users', 'cap', ['id' => $_SESSION['mlite_user']]);
 
             $this->assign['pendaftaran_pasien'] = $this->core->db->select('reg_periksa', [

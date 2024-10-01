@@ -1,6 +1,7 @@
 <?php
 namespace Plugins\Reg_Periksa;
 
+use Medoo\Medoo;
 use Systems\AdminModule;
 
 class Admin extends AdminModule
@@ -353,7 +354,7 @@ class Admin extends AdminModule
         }
         exit();
     }
-
+    
     public function getView($no_rawat)
     {
       $this->_addHeaderFiles();
@@ -369,6 +370,12 @@ class Admin extends AdminModule
       $this->core->addJS(url('assets/vendor/jquery.pan/jquery.pan.min.js'), 'footer');
 
       $date = $this->core->db->get('reg_periksa', 'tgl_registrasi', ['no_rawat' => revertNoRawat($no_rawat)]);
+      $role = $this->core->db->get('mlite_users', 'role', ['id' => $_SESSION['mlite_user']]);
+      $cap = $this->core->db->get('mlite_users', 'cap', ['id' => $_SESSION['mlite_user']]);
+      $poli = explode(',', $cap);
+      if($role == 'admin') {
+        $poli = $this->core->db->select('poliklinik', 'kd_poli', ['status' => '1']);
+      }
       $rows = $this->core->db->select('reg_periksa', [
         "[>]pasien" => ["no_rkm_medis" => "no_rkm_medis"]
       ], [
@@ -380,7 +387,8 @@ class Admin extends AdminModule
         'reg_periksa.stts',
         'reg_periksa.status_bayar'
       ], [
-        'tgl_registrasi' => $date
+        'tgl_registrasi' => $date, 
+        'kd_poli' => $poli
       ]);
       $reg_periksa = [];
       foreach($rows as $row) {
@@ -440,7 +448,7 @@ class Admin extends AdminModule
       }
 
       return $this->draw('view.html', [
-        'reg_periksa' => $reg_periksa, 
+        'reg_periksa' => isset_or($reg_periksa), 
         'view' => $this->assign, 
         'parseUrl' => parseUrl()[2], 
         'disabled_menu' => $disabled_menu
@@ -710,17 +718,17 @@ class Admin extends AdminModule
               'no_rawat'=>$row['no_rawat'],
               'tgl_registrasi'=>$row['tgl_registrasi'],
               'jam_reg'=>$row['jam_reg'],
-              'kd_dokter'=>$row['kd_dokter'],
-              'no_rkm_medis'=>$row['no_rkm_medis'],
-              'kd_poli'=>$row['kd_poli'],
-              'p_jawab'=>$row['p_jawab'],
-              'almt_pj'=>$row['almt_pj'],
-              'hubunganpj'=>$row['hubunganpj'],
-              'biaya_reg'=>$row['biaya_reg'],
-              'stts'=>$row['stts'],
-              'stts_daftar'=>$row['stts_daftar'],
+              'kd_dokter'=>$this->core->db->get('dokter', 'nm_dokter', ['kd_dokter' => $row['kd_dokter']]).' ('.$row['kd_dokter'].')',
+              // 'no_rkm_medis'=>$row['no_rkm_medis'],
+              'kd_poli'=>$this->core->db->get('poliklinik', 'nm_poli', ['kd_poli' => $row['kd_poli']]).' ('.$row['kd_poli'].')',
+              // 'p_jawab'=>$row['p_jawab'],
+              // 'almt_pj'=>$row['almt_pj'],
+              // 'hubunganpj'=>$row['hubunganpj'],
+              // 'biaya_reg'=>$row['biaya_reg'],
+              // 'stts'=>$row['stts'],
+              // 'stts_daftar'=>$row['stts_daftar'],
               'status_lanjut'=>$row['status_lanjut'],
-              'kd_pj'=>$row['kd_pj'],
+              'kd_pj'=>$this->core->db->get('penjab', 'png_jawab', ['kd_pj' => $row['kd_pj']]).' ('.$row['kd_pj'].')',
               'status_bayar'=>$row['status_bayar'],
               'status_poli'=>$row['status_poli']
           );
@@ -793,7 +801,8 @@ class Admin extends AdminModule
                 'penilaian'=>$row['penilaian'],
                 'instruksi'=>$row['instruksi'],
                 'evaluasi'=>$row['evaluasi'],
-                'nip'=>$row['nip']
+                'nip'=>$row['nip'], 
+                'nama'=>$this->core->db->get('pegawai', 'nama', ['nik' => $row['nip']])
             );
         }
 
@@ -847,7 +856,9 @@ class Admin extends AdminModule
             $data[] = array(
                 'no_rawat'=>$row['no_rawat'],
                 'kd_jenis_prw'=>$row['kd_jenis_prw'],
+                'nm_perawatan'=>$this->core->db->get('jns_perawatan', 'nm_perawatan', ['kd_jenis_prw' => $row['kd_jenis_prw']]), 
                 'kd_dokter'=>$row['kd_dokter'],
+                'nm_dokter'=>$this->core->db->get('dokter', 'nm_dokter', ['kd_dokter' => $row['kd_dokter']]), 
                 'tgl_perawatan'=>$row['tgl_perawatan'],
                 'jam_rawat'=>$row['jam_rawat'],
                 'material'=>$row['material'],
@@ -909,7 +920,9 @@ class Admin extends AdminModule
             $data[] = array(
                 'no_rawat'=>$row['no_rawat'],
                 'kd_jenis_prw'=>$row['kd_jenis_prw'],
+                'nm_perawatan'=>$this->core->db->get('jns_perawatan', 'nm_perawatan', ['kd_jenis_prw' => $row['kd_jenis_prw']]), 
                 'nip'=>$row['nip'],
+                'nama'=>$this->core->db->get('pegawai', 'nama', ['nik' => $row['nip']]), 
                 'tgl_perawatan'=>$row['tgl_perawatan'],
                 'jam_rawat'=>$row['jam_rawat'],
                 'material'=>$row['material'],
@@ -971,8 +984,11 @@ class Admin extends AdminModule
             $data[] = array(
                 'no_rawat'=>$row['no_rawat'],
                 'kd_jenis_prw'=>$row['kd_jenis_prw'],
+                'nm_perawatan'=>$this->core->db->get('jns_perawatan', 'nm_perawatan', ['kd_jenis_prw' => $row['kd_jenis_prw']]), 
                 'kd_dokter'=>$row['kd_dokter'],
+                'nm_dokter'=>$this->core->db->get('dokter', 'nm_dokter', ['kd_dokter' => $row['kd_dokter']]), 
                 'nip'=>$row['nip'],
+                'nama'=>$this->core->db->get('pegawai', 'nama', ['nik' => $row['nip']]), 
                 'tgl_perawatan'=>$row['tgl_perawatan'],
                 'jam_rawat'=>$row['jam_rawat'],
                 'material'=>$row['material'],
@@ -1041,6 +1057,7 @@ class Admin extends AdminModule
                   'jam'=>$row['jam'],
                   'no_rawat'=>$row['no_rawat'],
                   'kd_dokter'=>$row['kd_dokter'],
+                  'nm_dokter'=>$this->core->db->get('dokter', 'nm_dokter', ['kd_dokter' => $row['kd_dokter']]), 
                   'tgl_peresepan'=>$row['tgl_peresepan'],
                   'jam_peresepan'=>$row['jam_peresepan'],
                   'status'=>$row['status'],
@@ -1499,6 +1516,54 @@ class Admin extends AdminModule
       echo $this->draw('chart.html', ['type' => $type, 'column' => $result, 'labels' => json_encode($labels), 'datasets' => json_encode(array_column($datasets, 'count'))]);
       exit();
     }    
+
+    public function getBillingRalan($no_rawat)
+    {
+      $this->assign['settings'] = $this->settings('settings');
+      $this->assign['reg_periksa'] = $this->core->db->get('reg_periksa', '*', ['no_rawat' => revertNoRawat($no_rawat)]);
+      $this->assign['pasien'] = $this->core->db->get('pasien', [
+        '[>]propinsi' => ['kd_prop' => 'kd_prop'],    
+        '[>]kabupaten' => ['kd_kab' => 'kd_kab'],        
+        '[>]kecamatan' => ['kd_kec' => 'kd_kec'],       
+        '[>]kelurahan' => ['kd_kel' => 'kd_kel']        
+      ], '*', ['no_rkm_medis' => $this->assign['reg_periksa']['no_rkm_medis']]);
+      $this->assign['poliklinik'] = $this->core->db->get('poliklinik', '*', ['kd_poli' => $this->assign['reg_periksa']['kd_poli']]);
+      $this->assign['rawat_jl_dr'] = $this->core->db->select('rawat_jl_dr', [
+        '[>]jns_perawatan' => ['kd_jenis_prw' => 'kd_jenis_prw']        
+      ], [
+        'nm_perawatan', 
+        'rawat_jl_dr.kd_jenis_prw', 
+        'biaya_rawat', 
+        'jumlah' => Medoo::raw('COUNT(rawat_jl_dr.kd_jenis_prw)')
+      ], [
+        'no_rawat' => revertNoRawat($no_rawat), 
+        'GROUP' => 'rawat_jl_dr.kd_jenis_prw'
+      ]);
+      $this->assign['rawat_jl_pr'] = $this->core->db->select('rawat_jl_pr', '*', ['no_rawat' => revertNoRawat($no_rawat)]);
+      $this->assign['rawat_jl_drpr'] = $this->core->db->select('rawat_jl_drpr', '*', ['no_rawat' => revertNoRawat($no_rawat)]);
+      $this->assign['detail_pemberian_obat'] = $this->core->db->select('detail_pemberian_obat', '*', ['status' => 'Ralan', 'no_rawat' => revertNoRawat($no_rawat)]);
+
+      $this->assign['periksa_lab'] = $this->core->db->select('periksa_lab', [
+        '[>]jns_perawatan_lab' => ['kd_jenis_prw' => 'kd_jenis_prw']        
+      ], [
+        'nm_perawatan', 
+        'periksa_lab.kd_jenis_prw', 
+        'biaya', 
+        'jumlah' => Medoo::raw('COUNT(periksa_lab.kd_jenis_prw)')
+      ], [
+        'periksa_lab.status' => 'Ralan', 
+        'no_rawat' => revertNoRawat($no_rawat), 
+        'GROUP' => 'periksa_lab.kd_jenis_prw'
+      ]);
+      
+      $this->assign['periksa_radiologi'] = $this->core->db->select('periksa_radiologi', '*', ['status' => 'Ralan', 'no_rawat' => revertNoRawat($no_rawat)]);
+      $this->assign['operasi'] = $this->core->db->select('operasi', '*', ['status' => 'Ralan', 'no_rawat' => revertNoRawat($no_rawat)]);
+      $this->assign['beri_obat_operasi'] = $this->core->db->select('beri_obat_operasi', '*', ['no_rawat' => revertNoRawat($no_rawat)]);
+
+      // echo json_encode($this->assign);
+      echo $this->draw('billing.ralan.html', ['billing' => $this->assign]);
+      exit();
+    }
     
     public function getPeriksaLab($no_rawat)
     {

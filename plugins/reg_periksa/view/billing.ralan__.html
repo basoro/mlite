@@ -1,0 +1,304 @@
+<div class="modal-header">
+  <h4 class="modal-title"><span id="modal-title">Billing Rawat Jalan</span></h4>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <!-- Row start -->
+    <div class="row">
+      <div class="col-xl-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="create-invoice-wrapper">
+              <!-- Row start -->
+              <div class="row">
+                <div class="col-sm-6 col-12">
+                  <!-- Row start -->
+                  <div class="row">
+                    <div class="col-sm-6 col-12">
+                      <!-- Form group start -->
+                      <div class="mb-3">
+                        <label for="customerName" class="form-label">Customer Name</label>
+                        <input type="text" id="customerName" class="form-control" name="nm_pasien" value="{$billing.pasien.nm_pasien}" placeholder="Enter Customer Name">
+                      </div>
+                      <!-- Form group end -->
+                    </div>
+                    <div class="col-sm-6 col-12">
+                      <!-- Form group start -->
+                      <div class="mb-3">
+                        <label for="no_rawat" class="form-label">Nomor Rawat</label>
+                        <input type="text" id="no_rawat" class="form-control" name="no_rawat" value="{$billing.reg_periksa.no_rawat}" placeholder="Enter Nomor Rawat">
+                      </div>
+                      <!-- Form group end -->
+                    </div>
+                    <div class="col-sm-6 col-12">
+                      <!-- Form group start -->
+                      <div class="mb-3">
+                        <label for="invNumber" class="form-label">Invoice Number</label>
+                        <input type="text" id="invNumber" class="form-control" placeholder="Enter Invoice Number">
+                      </div>
+                      <!-- Form group end -->
+                    </div>
+                    <div class="col-sm-6 col-12">
+                      <!-- Form group start -->
+                      <div class="mb-3">
+                        <label for="dueDate" class="form-label">Due Date</label>
+                        <div class="input-group">
+                          <input type="text" class="form-control datepicker" id="dueDate" name="tgl_billing" value="{?=date('Y-m-d')?}" placeholder="DD/MM/YYYY">
+                        </div>
+                      </div>
+                      <!-- Form group end -->
+                    </div>
+                    <div class="col-sm-12 col-12">
+                      <!-- Form group start -->
+                      <div class="mb-2">
+                        <label for="msgCustomer" class="form-label">Message</label>
+                        <textarea rows="3" id="msgCustomer" class="form-control"></textarea>
+                      </div>
+                      <!-- Form group end -->
+                    </div>
+                  </div>
+                  <!-- Row end -->
+                </div>
+              </div>
+              <!-- Row end -->
+            </div>
+
+            <!-- Row start -->
+            <div class="row">
+              <div class="col-12">
+                <div class="table-outer">
+                  <table class="table m-0 align-middle">
+                    <thead>
+                      <tr>
+                        <th colspan="7" class="pt-3 pb-3">
+                          Items/Products
+                        </th>
+                      </tr>
+                      <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                        <th>Price</th>
+                        <th>VAT</th>
+                        <th>Amount (Net)</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <!-- Form group start -->
+                          <select class="form-select" id="prd">
+                            <option>Select Product</option>
+                            <option>Mobiles</option>
+                            <option>Books</option>
+                          </select>
+                          <!-- Form group end -->
+                        </td>
+                        <td>
+                          <!-- Form group start -->
+                          <div class="m-0">
+                            <input type="number" class="form-control" id="qty">
+                          </div>
+                          <!-- Form group end -->
+                        </td>
+                        <td>
+                          <!-- Form group start -->
+                          <div class="m-0">
+                            <input type="text" class="form-control" id="unit">
+                          </div>
+                          <!-- Form group end -->
+                        </td>
+                        <td>
+                          <!-- Form group start -->
+                          <div class="input-group m-0">
+                            <input type="text" class="form-control" id="price">
+                            <span class="input-group-text">
+                              <i class="ri-money-dollar-circle-line"></i>
+                            </span>
+                          </div>
+                          <!-- Form group end -->
+                        </td>
+                        <td>
+                          <!-- Form group start -->
+                          <div class="input-group m-0">
+                            <input type="text" class="form-control" id="vat">
+                            <span class="input-group-text">%</span>
+                          </div>
+                          <!-- Form group end -->
+                        </td>
+                        <td>
+                          <!-- Form group start -->
+                          <div class="input-group m-0">
+                            <input type="text" class="form-control" id="amt">
+                            <span class="input-group-text">
+                              <i class="ri-money-dollar-circle-line"></i>
+                            </span>
+                          </div>
+                          <!-- Form group end -->
+                        </td>
+                        <td>
+                          <div class="d-inline-flex gap-1">
+                            <button class="btn btn-outline-danger">
+                              <i class="ri-delete-bin-line"></i>
+                            </button>
+                            <button class="btn btn-outline-success">
+                              <i class="ri-edit-box-line"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <!-- Form group start -->
+                          <select class="form-select" id="prd2">
+                            <option>Select Product</option>
+                            <option>Mobiles</option>
+                            <option>Books</option>
+                          </select>
+                          <!-- Form group end -->
+                        </td>
+                        <td>
+                          <!-- Form group start -->
+                          <div class="m-0">
+                            <input type="number" class="form-control" id="qty2">
+                          </div>
+                          <!-- Form group end -->
+                        </td>
+                        <td>
+                          <!-- Form group start -->
+                          <div class="m-0">
+                            <input type="text" class="form-control" id="unit2">
+                          </div>
+                          <!-- Form group end -->
+                        </td>
+                        <td>
+                          <!-- Form group start -->
+                          <div class="input-group m-0">
+                            <input type="text" class="form-control" id="price2">
+                            <span class="input-group-text">
+                              <i class="ri-money-dollar-circle-line"></i>
+                            </span>
+                          </div>
+                          <!-- Form group end -->
+                        </td>
+                        <td>
+                          <!-- Form group start -->
+                          <div class="input-group m-0">
+                            <input type="text" class="form-control" id="vat2">
+                            <span class="input-group-text">%</span>
+                          </div>
+                          <!-- Form group end -->
+                        </td>
+                        <td>
+                          <!-- Form group start -->
+                          <div class="input-group m-0">
+                            <input type="text" class="form-control" id="amt2">
+                            <span class="input-group-text">
+                              <i class="ri-money-dollar-circle-line"></i>
+                            </span>
+                          </div>
+                          <!-- Form group end -->
+                        </td>
+                        <td>
+                          <div class="d-inline-flex gap-1">
+                            <button class="btn btn-outline-danger">
+                              <i class="ri-delete-bin-line"></i>
+                            </button>
+                            <button class="btn btn-outline-success">
+                              <i class="ri-edit-box-line"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <button class="btn btn-outline-primary text-nowrap">
+                            Add New Row
+                          </button>
+                        </td>
+                        <td colspan="6">
+                          <div class="row justify-content-end">
+                            <div class="col-auto">
+                              <label class="col-form-label" for="disc">Discount % of Total Amount</label>
+                            </div>
+                            <div class="col-auto">
+                              <input type="text" class="form-control" id="disc" placeholder="0%">
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="5">&nbsp;</td>
+                        <td>
+                          <p>Subtotal</p>
+                          <p>Discount</p>
+                          <p>VAT</p>
+                          <h5 class="mt-2 text-primary">Total USD</h5>
+                        </td>
+                        <td>
+                          <p>$0.00</p>
+                          <p>$0.00</p>
+                          <p>$0.00</p>
+                          <h5 class="mt-2 text-primary">$0.00</h5>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="d-flex justify-content-end gap-2 mt-2">
+                  <button class="btn btn-outline-secondary">
+                    Save as Draft
+                  </button>
+                  <a href="invoice-list.html" class="btn btn-success">Create Invoice</a>
+                </div>
+              </div>
+            </div>
+            <!-- Row end -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Row end -->
+</div>
+<script>
+$('#form_billing_ralan').submit(function (e) {
+    e.preventDefault();
+    var formData = $(this).serialize();
+    console.log(formData);
+    $.ajax({
+        url: "{?=url(['mlite_billing', 'aksi'])?}",
+        type: "POST",
+        data: formData,
+        success: function (data) {
+            data = JSON.parse(data);
+            var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
+            audio.play();
+            if(data.status === 'success') {
+                bootbox.alert('<span class="text-success">' + data.msg + '</span>');
+                $("#modal_periksa_lab").modal('hide');
+            } else {
+                bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
+            }    
+            if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+                let payload = {
+                    'action' : typeact
+                }
+                ws.send(JSON.stringify(payload));
+            } 
+            // var_tbl_periksa_lab.draw();
+        }
+    });
+});  
+</script>
+<script>
+$(".datepicker").daterangepicker({
+  singleDatePicker: true,
+  showDropdowns: true,
+  locale: {
+      format: "YYYY-MM-DD",
+  },
+});
+</script>

@@ -40,11 +40,22 @@ class Admin extends AdminModule
         $search_field_resep_obat= isset_or($_POST['search_field_resep_obat']);
         $search_text_resep_obat = isset_or($_POST['search_text_resep_obat']);
 
+        $searchByFromdate = isset_or($_POST['searchByFromdate'], date('Y-m-d'));
+        $searchByTodate = isset_or($_POST['searchByTodate'], date('Y-m-d'));
+  
         if ($search_text_resep_obat != '') {
           $where[$search_field_resep_obat.'[~]'] = $search_text_resep_obat;
           $where = ["AND" => $where];
         } else {
           $where = [];
+        }
+
+        if ($searchByFromdate != '') {
+          $where['tgl_perawatan[<>]'] = [$searchByFromdate,$searchByTodate];
+          $where = ["AND" => $where];
+        } else {
+          $where['tgl_perawatan[<>]'] = [date('Y-m-d'),date('Y-m-d')];
+          $where = ["AND" => $where];
         }
 
         ## Total number of records without filtering
@@ -62,16 +73,15 @@ class Admin extends AdminModule
         foreach($result as $row) {
             $data[] = array(
                 'no_resep'=>$row['no_resep'],
-'tgl_perawatan'=>$row['tgl_perawatan'],
-'jam'=>$row['jam'],
-'no_rawat'=>$row['no_rawat'],
-'kd_dokter'=>$row['kd_dokter'],
-'tgl_peresepan'=>$row['tgl_peresepan'],
-'jam_peresepan'=>$row['jam_peresepan'],
-'status'=>$row['status'],
-'tgl_penyerahan'=>$row['tgl_penyerahan'],
-'jam_penyerahan'=>$row['jam_penyerahan']
-
+                'tgl_perawatan'=>$row['tgl_perawatan'],
+                'jam'=>$row['jam'],
+                'no_rawat'=>$row['no_rawat'],
+                'kd_dokter'=>$row['kd_dokter'],
+                'tgl_peresepan'=>$row['tgl_peresepan'],
+                'jam_peresepan'=>$row['jam_peresepan'],
+                'status'=>$row['status'],
+                'tgl_penyerahan'=>$row['tgl_penyerahan'],
+                'jam_penyerahan'=>$row['jam_penyerahan']
             );
         }
 

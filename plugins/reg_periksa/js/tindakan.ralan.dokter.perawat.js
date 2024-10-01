@@ -22,8 +22,11 @@ jQuery().ready(function () {
         "columns": [
             { 'data': 'no_rawat' },
             { 'data': 'kd_jenis_prw' },
+            { 'data': 'nm_perawatan' },
             { 'data': 'kd_dokter' },
+            { 'data': 'nm_dokter' },
             { 'data': 'nip' },
+            { 'data': 'nama' },
             { 'data': 'tgl_perawatan' },
             { 'data': 'jam_rawat' },
             { 'data': 'material' },
@@ -49,7 +52,10 @@ jQuery().ready(function () {
             { 'targets': 10},
             { 'targets': 11},
             { 'targets': 12},
-            { 'targets': 13}
+            { 'targets': 13},
+            { 'targets': 14},
+            { 'targets': 15},
+            { 'targets': 16}
         ],
         order: [[1, 'DESC']], 
         buttons: [],
@@ -190,6 +196,94 @@ var stts_bayar= $('#stts_bayar').val();
         }
     });
 
+    $("form[name='form_rawat_jl_drpr_edit']").validate({
+        rules: {
+no_rawat: 'required',
+kd_jenis_prw: 'required',
+kd_dokter: 'required',
+nip: 'required',
+tgl_perawatan: 'required',
+jam_rawat: 'required',
+material: 'required',
+bhp: 'required',
+tarif_tindakandr: 'required',
+tarif_tindakanpr: 'required',
+kso: 'required',
+menejemen: 'required',
+biaya_rawat: 'required',
+stts_bayar: 'required'
+
+        },
+        messages: {
+no_rawat:'No Rawat tidak boleh kosong!',
+kd_jenis_prw:'Kd Jenis Prw tidak boleh kosong!',
+kd_dokter:'Kd Dokter tidak boleh kosong!',
+nip:'Nip tidak boleh kosong!',
+tgl_perawatan:'Tgl Perawatan tidak boleh kosong!',
+jam_rawat:'Jam Rawat tidak boleh kosong!',
+material:'Material tidak boleh kosong!',
+bhp:'Bhp tidak boleh kosong!',
+tarif_tindakandr:'Tarif Tindakandr tidak boleh kosong!',
+tarif_tindakanpr:'Tarif Tindakanpr tidak boleh kosong!',
+kso:'Kso tidak boleh kosong!',
+menejemen:'Menejemen tidak boleh kosong!',
+biaya_rawat:'Biaya Rawat tidak boleh kosong!',
+stts_bayar:'Stts Bayar tidak boleh kosong!'
+
+        },
+        submitHandler: function (form) {
+ var no_rawat= $('#no_rawat').val();
+var kd_jenis_prw= $('#kd_jenis_prw').val();
+var kd_dokter= $('#kd_dokter').val();
+var nip= $('#nip').val();
+var tgl_perawatan= $('#tgl_perawatan').val();
+var jam_rawat= $('#jam_rawat').val();
+var material= $('#material').val();
+var bhp= $('#bhp').val();
+var tarif_tindakandr= $('#tarif_tindakandr').val();
+var tarif_tindakanpr= $('#tarif_tindakanpr').val();
+var kso= $('#kso').val();
+var menejemen= $('#menejemen').val();
+var biaya_rawat= $('#biaya_rawat').val();
+var stts_bayar= $('#stts_bayar').val();
+
+ var typeact = $('#typeact').val();
+
+ var formData = new FormData(form); // tambahan
+ formData.append('typeact', typeact); // tambahan
+
+            $.ajax({
+                url: "{?=url(['rawat_jl_drpr','aksi'])?}",
+                method: "POST",
+                contentType: false, // tambahan
+                processData: false, // tambahan
+                data: formData,
+                success: function (data) {
+                    data = JSON.parse(data);
+                    var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
+                    audio.play();
+                    if (typeact == "add") {
+                        if(data.status === 'success') {
+                            bootbox.alert('<span class="text-success">' + data.msg + '</span>');
+                        } else {
+                            bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
+                        }    
+                    }
+                    else if (typeact == "edit") {
+                        if(data.status === 'success') {
+                            bootbox.alert('<span class="text-success">' + data.msg + '</span>');
+                        } else {
+                            bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
+                        }    
+                    }
+                    $("#modal_rawat_jl_drpr").modal('hide');
+                    var_tbl_rawat_jl_drpr.draw();
+                }
+            })
+        }
+    });
+
+
     // ==============================================================
     // KETIKA TOMBOL SEARCH DITEKAN
     // ==============================================================
@@ -225,23 +319,33 @@ var stts_bayar = rowData['stts_bayar'];
             $("#typeact").val("edit");
   
             $('#no_rawat').val(no_rawat);
-$('#modal_rawat_jl_drpr #kd_jenis_prw').val(kd_jenis_prw).change();
-$('#modal_rawat_jl_drpr #kd_dokter').val(kd_dokter).change();
-$('#modal_rawat_jl_drpr #nip').val(nip).change();
-$('#modal_rawat_jl_drpr #tgl_perawatan').val(tgl_perawatan);
-$('#modal_rawat_jl_drpr #jam_rawat').val(jam_rawat);
-$('#modal_rawat_jl_drpr #material').val(material);
-$('#modal_rawat_jl_drpr #bhp').val(bhp);
-$('#modal_rawat_jl_drpr #tarif_tindakandr').val(tarif_tindakandr);
-$('#modal_rawat_jl_drpr #tarif_tindakanpr').val(tarif_tindakanpr);
-$('#modal_rawat_jl_drpr #kso').val(kso);
-$('#modal_rawat_jl_drpr #menejemen').val(menejemen);
-$('#modal_rawat_jl_drpr #biaya_rawat').val(biaya_rawat);
-$('#modal_rawat_jl_drpr #stts_bayar').val(stts_bayar).change();
+$('#modal_rawat_jl_drpr_edit #kd_jenis_prw').val(kd_jenis_prw).change();
+$('#modal_rawat_jl_drpr_edit #kd_dokter').val(kd_dokter).change();
+$('#modal_rawat_jl_drpr_edit #nip').val(nip).change();
+$('#modal_rawat_jl_drpr_edit #tgl_perawatan').val(tgl_perawatan);
+$('#modal_rawat_jl_drpr_edit #jam_rawat').val(jam_rawat);
+$('#modal_rawat_jl_drpr_edit #material').val(material);
+$('#modal_rawat_jl_drpr_edit #bhp').val(bhp);
+$('#modal_rawat_jl_drpr_edit #tarif_tindakandr').val(tarif_tindakandr);
+$('#modal_rawat_jl_drpr_edit #tarif_tindakanpr').val(tarif_tindakanpr);
+$('#modal_rawat_jl_drpr_edit #kso').val(kso);
+$('#modal_rawat_jl_drpr_edit #menejemen').val(menejemen);
+$('#modal_rawat_jl_drpr_edit #biaya_rawat').val(biaya_rawat);
+$('#modal_rawat_jl_drpr_edit #stts_bayar').val(stts_bayar).change();
 
-            //$("#no_rawat").prop('disabled', true); // GA BISA DIEDIT KALI DISABLE
+            $("#no_rawat_rawat_jl_drpr_edit").prop('readonly', true); // GA BISA DIEDIT KALI DISABLE
+            $("#modal_rawat_jl_drpr_edit #kd_jenis_prw").prop('readonly', true); // GA BISA DIEDIT KALI DISABLE
+            $("#modal_rawat_jl_drpr_edit #tgl_perawatan").prop('readonly', true); // GA BISA DIEDIT KALI DISABLE
+            $("#modal_rawat_jl_drpr_edit #jam_rawat").prop('readonly', true); // GA BISA DIEDIT KALI DISABLE
+            $("#modal_rawat_jl_drpr_edit #material").prop('readonly', true); // GA BISA DIEDIT KALI DISABLE
+            $("#modal_rawat_jl_drpr_edit #bhp").prop('readonly', true); // GA BISA DIEDIT KALI DISABLE
+            $("#modal_rawat_jl_drpr_edit #tarif_tindakandr").prop('readonly', true); // GA BISA DIEDIT KALI DISABLE
+            $("#modal_rawat_jl_drpr_edit #tarif_tindakanpr").prop('readonly', true); // GA BISA DIEDIT KALI DISABLE
+            $("#modal_rawat_jl_drpr_edit #kso").prop('readonly', true); // GA BISA DIEDIT KALI DISABLE
+            $("#modal_rawat_jl_drpr_edit #menejemen").prop('readonly', true); // GA BISA DIEDIT KALI DISABLE
+            $("#modal_rawat_jl_drpr_edit #biaya_rawat").prop('readonly', true); // GA BISA DIEDIT KALI DISABLE
             $('#modal-title').text("Edit Data Tindakan Ralan Dokter Perawat");
-            $("#modal_rawat_jl_drpr").modal('show');
+            $("#modal_rawat_jl_drpr_edit").modal('show');
         }
         else {
             bootbox.alert("Silakan pilih data yang akan di edit.");
@@ -257,7 +361,10 @@ $('#modal_rawat_jl_drpr #stts_bayar').val(stts_bayar).change();
 
 
         if (rowData) {
-var no_rawat = rowData['no_rawat'];
+            var no_rawat = rowData['no_rawat'];
+            var tgl_perawatan = rowData['tgl_perawatan'];
+            var jam_rawat = rowData['jam_rawat'];
+            var kd_jenis_prw = rowData['kd_jenis_prw'];
             bootbox.confirm('Anda yakin akan menghapus data dengan no_rawat="' + no_rawat, function(result) {
                 if(result) {
                     $.ajax({
@@ -265,6 +372,9 @@ var no_rawat = rowData['no_rawat'];
                         method: "POST",
                         data: {
                             no_rawat: no_rawat,
+                            tgl_perawatan: tgl_perawatan, 
+                            jam_rawat: jam_rawat, 
+                            kd_jenis_prw: kd_jenis_prw, 
                             typeact: 'del'
                         },
                         success: function (data) {
@@ -441,4 +551,18 @@ eTable += '<td>' + res[i]['stts_bayar'] + '</td>';
         XLSX.utils.book_append_sheet(new_workbook, worksheet1, "Data rawat_jl_drpr");
         XLSX.writeFile(new_workbook, 'tmp_file.xls');
     })
+
+    var tbl_reg_periksa_jns_perawatan_drpr = $('#tbl_reg_periksa_jns_perawatan_drpr').DataTable({
+        columnDefs: [
+          { targets: 0, visible: false }
+        ],
+        orderFixed: [0, 'desc']
+    })  
+     
+    $('#tbl_reg_periksa_jns_perawatan_drpr').on('click', 'input[type="checkbox"]', function() {
+        var row =  tbl_reg_periksa_jns_perawatan_drpr.row($(this).closest('tr'));
+        tbl_reg_periksa_jns_perawatan_drpr.cell({ row: row.index(), column: 0 } ).data( this.checked ? 1 : 0 )
+        row.invalidate().draw()
+    })   
+
 });

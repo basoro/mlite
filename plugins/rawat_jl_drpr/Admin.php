@@ -132,10 +132,12 @@ $menejemen = $_POST['menejemen'];
 $biaya_rawat = $_POST['biaya_rawat'];
 $stts_bayar = $_POST['stts_bayar'];
 
-            
-            $result = $this->core->db->insert('rawat_jl_drpr', [
-'no_rawat'=>$no_rawat, 'kd_jenis_prw'=>$kd_jenis_prw, 'kd_dokter'=>$kd_dokter, 'nip'=>$nip, 'tgl_perawatan'=>$tgl_perawatan, 'jam_rawat'=>$jam_rawat, 'material'=>$material, 'bhp'=>$bhp, 'tarif_tindakandr'=>$tarif_tindakandr, 'tarif_tindakanpr'=>$tarif_tindakanpr, 'kso'=>$kso, 'menejemen'=>$menejemen, 'biaya_rawat'=>$biaya_rawat, 'stts_bayar'=>$stts_bayar
-            ]);
+
+            for($l=0; $l < count($kd_jenis_prw); $l++){
+              $result = $this->core->db->insert('rawat_jl_drpr', [
+                'no_rawat'=>$no_rawat, 'kd_jenis_prw'=>$kd_jenis_prw[$l], 'kd_dokter'=>$kd_dokter, 'nip'=>$nip, 'tgl_perawatan'=>$tgl_perawatan, 'jam_rawat'=>$jam_rawat, 'material'=>$material[$l], 'bhp'=>$bhp[$l], 'tarif_tindakandr'=>$tarif_tindakandr[$l], 'tarif_tindakanpr'=>$tarif_tindakanpr[$l], 'kso'=>$kso[$l], 'menejemen'=>$menejemen[$l], 'biaya_rawat'=>$biaya_rawat[$l], 'stts_bayar'=>$stts_bayar
+              ]);
+            }
 
 
             if (!empty($result)){
@@ -192,9 +194,9 @@ $stts_bayar = $_POST['stts_bayar'];
         // BUANG FIELD PERTAMA
 
             $result = $this->core->db->update('rawat_jl_drpr', [
-'no_rawat'=>$no_rawat, 'kd_jenis_prw'=>$kd_jenis_prw, 'kd_dokter'=>$kd_dokter, 'nip'=>$nip, 'tgl_perawatan'=>$tgl_perawatan, 'jam_rawat'=>$jam_rawat, 'material'=>$material, 'bhp'=>$bhp, 'tarif_tindakandr'=>$tarif_tindakandr, 'tarif_tindakanpr'=>$tarif_tindakanpr, 'kso'=>$kso, 'menejemen'=>$menejemen, 'biaya_rawat'=>$biaya_rawat, 'stts_bayar'=>$stts_bayar
+              'kd_dokter'=>$kd_dokter, 'nip'=>$nip, 'stts_bayar'=>$stts_bayar
             ], [
-              'no_rawat'=>$no_rawat
+              'no_rawat'=>$no_rawat, 'kd_jenis_prw'=>$kd_jenis_prw, 'tgl_perawatan'=>$tgl_perawatan, 'jam_rawat'=>$jam_rawat
             ]);
 
 
@@ -235,9 +237,15 @@ $stts_bayar = $_POST['stts_bayar'];
             }
 
             $no_rawat= $_POST['no_rawat'];
+            $tgl_perawatan = $_POST['tgl_perawatan'];
+            $jam_rawat = $_POST['jam_rawat'];
+            $kd_jenis_prw = $_POST['kd_jenis_prw'];
             $result = $this->core->db->delete('rawat_jl_drpr', [
               'AND' => [
-                'no_rawat'=>$no_rawat
+                'no_rawat'=>$no_rawat, 
+                'tgl_perawatan'=>$tgl_perawatan, 
+                'jam_rawat'=>$jam_rawat, 
+                'kd_jenis_prw'=>$kd_jenis_prw
               ]
             ]);
 

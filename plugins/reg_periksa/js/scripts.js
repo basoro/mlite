@@ -129,6 +129,9 @@ jQuery().ready(function () {
                 case 'pemeriksaan_layanan' :
                     window.location.href = mlite.url + '/reg_periksa/view/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token;
                 break;
+                case 'billing_ralan' :
+                    OpenModal(mlite.url + '/reg_periksa/billingralan/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
+                break;
                 case 'periksa_lab' :
                     OpenModal(mlite.url + '/reg_periksa/periksalab/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token);
                 break;
@@ -181,33 +184,34 @@ jQuery().ready(function () {
           }           
         },
         items: {
-            "detail": {name: "View Detail", "icon": "edit"},
-            "antrian": {name: "Cetak Nomor Antrian 1", "icon": "edit"},
-            "antrian-2": {name: "Cetak Nomor Antrian 2", "icon": "edit"},
-            "pemeriksaan_layanan": {name: "Pemeriksaan dan Layanan", "icon": "edit"},
-            "periksa_lab": {name: "Periksa Laboratorium", "icon": "edit"},
+            "detail": {name: "View Detail", "icon": "edit", disabled:  {$disabled_menu.create}},
+            "antrian": {name: "Cetak Nomor Antrian 1", "icon": "edit", disabled:  {$disabled_menu.create}},
+            "antrian-2": {name: "Cetak Nomor Antrian 2", "icon": "edit", disabled:  {$disabled_menu.create}},
+            "pemeriksaan_layanan": {name: "Pemeriksaan dan Layanan", "icon": "edit", disabled:  {$disabled_menu.create}},
+            "billing_ralan": {name: "Billing Rawat Jalan", "icon": "edit", disabled:  {?=$this->core->loadDisabledMenu('mlite_billing')['create']?}},
+            "periksa_lab": {name: "Periksa Laboratorium", "icon": "edit", disabled:  {?=$this->core->loadDisabledMenu('periksa_lab')['create']?}},
             "surat-kontrol": {"name": "Surat Kontrol dan Booking", disabled:  {$disabled_menu.create}},
             "sep1": "---------",
             "bridging-bpjs": {
                 "name": "Bridging BPJS", 
                 "items": {
-                    "bridging-bpjs-cek-noka": {name: "[BPJS] Cek Peserta ByNoKartu",disabled:  {$disabled_menu.create}},
-                    "bridging-bpjs-cek-nik": {name: "[BPJS] Cek Peserta ByNik", disabled:  {$disabled_menu.create}},
-                    "bridging-bpjs-surat-kontrol": {"name": "Surat Kontrol BPJS", disabled:  {$disabled_menu.create}},
+                    "bridging-bpjs-cek-noka": {name: "[BPJS] Cek Peserta ByNoKartu", disabled:  {?=$this->core->loadDisabledMenu('bridging_sep')['create']?}},
+                    "bridging-bpjs-cek-nik": {name: "[BPJS] Cek Peserta ByNik", disabled:  {?=$this->core->loadDisabledMenu('bridging_sep')['create']?}},
+                    "bridging-bpjs-surat-kontrol": {"name": "Surat Kontrol BPJS", disabled:  {?=$this->core->loadDisabledMenu('bridging_sep')['create']?}},
                     "bridging-bpjs-referensi": {
                         "name": "Cek Referensi", 
                         "items": {
-                            "bridging-bpjs-referensi-diagnosa": {"name": "Diagnosa"},
-                            "bridging-bpjs-referensi-dokter": {"name": "Dokter"},
-                            "bridging-bpjs-referensi-faskes": {"name": "Fasiltas Kesehatan"}
+                            "bridging-bpjs-referensi-diagnosa": {"name": "Diagnosa", disabled:  {?=$this->core->loadDisabledMenu('bridging_sep')['create']?}},
+                            "bridging-bpjs-referensi-dokter": {"name": "Dokter", disabled:  {?=$this->core->loadDisabledMenu('bridging_sep')['create']?}},
+                            "bridging-bpjs-referensi-faskes": {"name": "Fasiltas Kesehatan", disabled:  {?=$this->core->loadDisabledMenu('bridging_sep')['create']?}}
                         }
                     },
-                    "bridging-bpjs-sep": {"name": "Pembuatan SEP", disabled:  {$disabled_menu.create}},
-                    "bridging-bpjs-cari-sep": {"name": "Cari SEP", disabled:  {$disabled_menu.create}}, 
-                    "bridging-bpjs-cetak-sep": {"name": "Cetak SEP", disabled:  {$disabled_menu.create}}
+                    "bridging-bpjs-sep": {"name": "Pembuatan SEP", disabled:  {?=$this->core->loadDisabledMenu('bridging_sep')['create']?}},
+                    "bridging-bpjs-cari-sep": {"name": "Cari SEP", disabled:  {?=$this->core->loadDisabledMenu('bridging_sep')['create']?}}, 
+                    "bridging-bpjs-cetak-sep": {"name": "Cetak SEP", disabled:  {?=$this->core->loadDisabledMenu('bridging_sep')['create']?}}
                 }
             }, 
-            "pasien_riwayat": {name: "Riwayat Perawatan", "icon": "edit"},
+            "pasien_riwayat": {name: "Riwayat Perawatan", "icon": "edit", disabled:  {$disabled_menu.create}},
         }
     });
 
@@ -882,14 +886,6 @@ jQuery().ready(function () {
         window.open(mlite.url + '/reg_periksa/chart?t=' + mlite.token, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
     })   
 
-
-    $('.daterange').daterangepicker({
-        opens: 'left'
-    }, function(start, end, label) {
-        $('#tanggal_awal').val(start.format('YYYY-MM-DD'));
-        $('#tanggal_akhir').val(end.format('YYYY-MM-DD'));
-    });
-
     $("#nm_pasien").click(function (event) {
         // $(".modal-content").modal("show");
         event.preventDefault();
@@ -1091,16 +1087,16 @@ jQuery().ready(function () {
             { 'data': 'tgl_registrasi' },
             { 'data': 'jam_reg' },
             { 'data': 'kd_dokter' },
-            { 'data': 'no_rkm_medis' },
+            // { 'data': 'no_rkm_medis' },
             { 'data': 'kd_poli' },
-            { 'data': 'p_jawab' },
-            { 'data': 'almt_pj' },
-            { 'data': 'hubunganpj' },
-            { 'data': 'biaya_reg' },
-            { 'data': 'stts' },
-            { 'data': 'stts_daftar' },
-            { 'data': 'status_lanjut' },
+            // { 'data': 'p_jawab' },
+            // { 'data': 'almt_pj' },
+            // { 'data': 'hubunganpj' },
+            // { 'data': 'biaya_reg' },
+            // { 'data': 'stts' },
+            // { 'data': 'stts_daftar' },
             { 'data': 'kd_pj' },
+            { 'data': 'status_lanjut' },
             { 'data': 'status_bayar' },
             { 'data': 'status_poli' }
         ],
@@ -1114,14 +1110,14 @@ jQuery().ready(function () {
             { 'targets': 6},
             { 'targets': 7},
             { 'targets': 8},
-            { 'targets': 9},
-            { 'targets': 10},
-            { 'targets': 11},
-            { 'targets': 12},
-            { 'targets': 13},
-            { 'targets': 14},
-            { 'targets': 15},
-            { 'targets': 16}
+            // { 'targets': 9},
+            // { 'targets': 10},
+            // { 'targets': 11},
+            // { 'targets': 12},
+            // { 'targets': 13},
+            // { 'targets': 14},
+            // { 'targets': 15},
+            // { 'targets': 16}
         ],
         order: [[1, 'DESC']], 
         buttons: [],
@@ -1369,9 +1365,13 @@ jQuery().ready(function () {
 
         $("#no_rawat_pemeriksaan_ralan").val($("a.active").attr('data-no_rawat'));
         $("#no_rawat_rawat_jl_dr").val($("a.active").attr('data-no_rawat'));
+        $("#no_rawat_rawat_jl_dr_edit").val($("a.active").attr('data-no_rawat'));
         $("#no_rawat_rawat_jl_pr").val($("a.active").attr('data-no_rawat'));
+        $("#no_rawat_rawat_jl_pr_edit").val($("a.active").attr('data-no_rawat'));
         $("#no_rawat_rawat_jl_drpr").val($("a.active").attr('data-no_rawat'));
+        $("#no_rawat_rawat_jl_drpr_edit").val($("a.active").attr('data-no_rawat'));
         $("#no_rawat_resep_dokter").val($("a.active").attr('data-no_rawat'));
+        $("#no_rawat_resep_dokter_edit").val($("a.active").attr('data-no_rawat'));
         $("#no_rawat_resep_dokter_racikan").val($("a.active").attr('data-no_rawat'));
         $("#no_rawat_permintaan_lab").val($("a.active").attr('data-no_rawat'));
         $("#no_rawat_permintaan_radiologi").val($("a.active").attr('data-no_rawat'));

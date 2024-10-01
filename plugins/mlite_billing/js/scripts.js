@@ -1,5 +1,5 @@
 jQuery().ready(function () {
-    var var_tbl_resep_obat = $('#tbl_resep_obat').DataTable({
+    var var_tbl_mlite_billing = $('#tbl_mlite_billing').DataTable({
         'processing': true,
         'serverSide': true,
         'serverMethod': 'post',
@@ -9,45 +9,32 @@ jQuery().ready(function () {
         'colReorder': true,
         "bInfo" : false,
         "ajax": {
-            "url": "{?=url(['resep_obat','data'])?}",
+            "url": "{?=url(['mlite_billing','data'])?}",
             "dataType": "json",
             "type": "POST",
             "data": function (data) {
 
                 // Read values
-                var search_field_resep_obat = $('#search_field_resep_obat').val();
-                var search_text_resep_obat = $('#search_text_resep_obat').val();
+                var search_field_mlite_billing = $('#search_field_mlite_billing').val();
+                var search_text_mlite_billing = $('#search_text_mlite_billing').val();
                 
-                data.search_field_resep_obat = search_field_resep_obat;
-                data.search_text_resep_obat = search_text_resep_obat;
+                data.search_field_mlite_billing = search_field_mlite_billing;
+                data.search_text_mlite_billing = search_text_mlite_billing;
                 
-                var from_date = $('#tanggal_awal').val();
-                var to_date = $('#tanggal_akhir').val();
-                
-                data.searchByFromdate = from_date;
-                data.searchByTodate = to_date;
-
             }
         },
-        "fnDrawCallback": function () {
-            $('#more_data_resep_obat').on('click', function(e) {
-                e.preventDefault();
-                var clientX = e.originalEvent.clientX;
-                var clientY = e.originalEvent.clientY;
-                $('#tbl_resep_obat tr').contextMenu({x: clientX, y: clientY});
-            });          
-        },        
         "columns": [
-{ 'data': 'no_resep' },
-{ 'data': 'tgl_perawatan' },
-{ 'data': 'jam' },
+{ 'data': 'id_billing' },
+{ 'data': 'kd_billing' },
 { 'data': 'no_rawat' },
-{ 'data': 'kd_dokter' },
-{ 'data': 'tgl_peresepan' },
-{ 'data': 'jam_peresepan' },
-{ 'data': 'status' },
-{ 'data': 'tgl_penyerahan' },
-{ 'data': 'jam_penyerahan' }
+{ 'data': 'jumlah_total' },
+{ 'data': 'potongan' },
+{ 'data': 'jumlah_harus_bayar' },
+{ 'data': 'jumlah_bayar' },
+{ 'data': 'tgl_billing' },
+{ 'data': 'jam_billing' },
+{ 'data': 'id_user' },
+{ 'data': 'keterangan' }
 
         ],
         "columnDefs": [
@@ -60,7 +47,8 @@ jQuery().ready(function () {
 { 'targets': 6},
 { 'targets': 7},
 { 'targets': 8},
-{ 'targets': 9}
+{ 'targets': 9},
+{ 'targets': 10}
 
         ],
         order: [[1, 'DESC']], 
@@ -75,15 +63,15 @@ jQuery().ready(function () {
 
 
     $.contextMenu({
-        selector: '#tbl_resep_obat tr', 
+        selector: '#tbl_mlite_billing tr', 
         trigger: 'right',
         callback: function(key, options) {
-          var rowData = var_tbl_resep_obat.rows({ selected: true }).data()[0];
+          var rowData = var_tbl_mlite_billing.rows({ selected: true }).data()[0];
           if (rowData != null) {
-var no_resep = rowData['no_resep'];
+var id_billing = rowData['id_billing'];
             switch (key) {
                 case 'detail' :
-                    OpenModal(mlite.url + '/resep_obat/detail/' + no_resep + '?t=' + mlite.token);
+                    OpenModal(mlite.url + '/mlite_billing/detail/' + id_billing + '?t=' + mlite.token);
                 break;
                 default :
                 break
@@ -101,44 +89,47 @@ var no_resep = rowData['no_resep'];
     // FORM VALIDASI
     // ==============================================================
 
-    $("form[name='form_resep_obat']").validate({
+    $("form[name='form_mlite_billing']").validate({
         rules: {
-no_resep: 'required',
-tgl_perawatan: 'required',
-jam: 'required',
+id_billing: 'required',
+kd_billing: 'required',
 no_rawat: 'required',
-kd_dokter: 'required',
-tgl_peresepan: 'required',
-jam_peresepan: 'required',
-status: 'required',
-tgl_penyerahan: 'required',
-jam_penyerahan: 'required'
+jumlah_total: 'required',
+potongan: 'required',
+jumlah_harus_bayar: 'required',
+jumlah_bayar: 'required',
+tgl_billing: 'required',
+jam_billing: 'required',
+id_user: 'required',
+keterangan: 'required'
 
         },
         messages: {
-no_resep:'No Resep tidak boleh kosong!',
-tgl_perawatan:'Tgl Perawatan tidak boleh kosong!',
-jam:'Jam tidak boleh kosong!',
+id_billing:'Id Billing tidak boleh kosong!',
+kd_billing:'Kd Billing tidak boleh kosong!',
 no_rawat:'No Rawat tidak boleh kosong!',
-kd_dokter:'Kd Dokter tidak boleh kosong!',
-tgl_peresepan:'Tgl Peresepan tidak boleh kosong!',
-jam_peresepan:'Jam Peresepan tidak boleh kosong!',
-status:'Status tidak boleh kosong!',
-tgl_penyerahan:'Tgl Penyerahan tidak boleh kosong!',
-jam_penyerahan:'Jam Penyerahan tidak boleh kosong!'
+jumlah_total:'Jumlah Total tidak boleh kosong!',
+potongan:'Potongan tidak boleh kosong!',
+jumlah_harus_bayar:'Jumlah Harus Bayar tidak boleh kosong!',
+jumlah_bayar:'Jumlah Bayar tidak boleh kosong!',
+tgl_billing:'Tgl Billing tidak boleh kosong!',
+jam_billing:'Jam Billing tidak boleh kosong!',
+id_user:'Id User tidak boleh kosong!',
+keterangan:'Keterangan tidak boleh kosong!'
 
         },
         submitHandler: function (form) {
-var no_resep= $('#no_resep').val();
-var tgl_perawatan= $('#tgl_perawatan').val();
-var jam= $('#jam').val();
+var id_billing= $('#id_billing').val();
+var kd_billing= $('#kd_billing').val();
 var no_rawat= $('#no_rawat').val();
-var kd_dokter= $('#kd_dokter').val();
-var tgl_peresepan= $('#tgl_peresepan').val();
-var jam_peresepan= $('#jam_peresepan').val();
-var status= $('#status').val();
-var tgl_penyerahan= $('#tgl_penyerahan').val();
-var jam_penyerahan= $('#jam_penyerahan').val();
+var jumlah_total= $('#jumlah_total').val();
+var potongan= $('#potongan').val();
+var jumlah_harus_bayar= $('#jumlah_harus_bayar').val();
+var jumlah_bayar= $('#jumlah_bayar').val();
+var tgl_billing= $('#tgl_billing').val();
+var jam_billing= $('#jam_billing').val();
+var id_user= $('#id_user').val();
+var keterangan= $('#keterangan').val();
 
 var typeact = $('#typeact').val();
 
@@ -146,7 +137,7 @@ var formData = new FormData(form); // tambahan
 formData.append('typeact', typeact); // tambahan
 
             $.ajax({
-                url: "{?=url(['resep_obat','aksi'])?}",
+                url: "{?=url(['mlite_billing','aksi'])?}",
                 method: "POST",
                 contentType: false, // tambahan
                 processData: false, // tambahan
@@ -158,7 +149,7 @@ formData.append('typeact', typeact); // tambahan
                     if (typeact == "add") {
                         if(data.status === 'success') {
                             bootbox.alert('<span class="text-success">' + data.msg + '</span>');
-                            $("#modal_resep_obat").modal('hide');
+                            $("#modal_mlite_billing").modal('hide');
                         } else {
                             bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                         }    
@@ -166,88 +157,61 @@ formData.append('typeact', typeact); // tambahan
                     else if (typeact == "edit") {
                         if(data.status === 'success') {
                             bootbox.alert('<span class="text-success">' + data.msg + '</span>');
-                            $("#modal_resep_obat").modal('hide');
+                            $("#modal_mlite_billing").modal('hide');
                         } else {
                             bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                         }    
                     }
-                    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
-                        let payload = {
-                            'action' : typeact
-                        }
-                        ws.send(JSON.stringify(payload));
-                    } 
-                    var_tbl_resep_obat.draw();
+                    var_tbl_mlite_billing.draw();
                 }
             })
         }
     });
 
-
-    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
-        ws.onmessage = function(response){
-            try{
-                output = JSON.parse(response.data);
-                if(output['action'] == 'add'){
-                    var audio = new Audio('{?=url()?}/assets/sound/error.mp3');
-                    audio.play();
-                    var_tbl_resep_obat.draw();
-                }
-                if(output['action'] == 'edit'){
-                    var_tbl_resep_obat.draw();
-                }
-                if(output['action'] == 'del'){
-                    console.log('Test hapus obat');
-                    var_tbl_resep_obat.draw();
-                }
-            }catch(e){
-                console.log(e);
-            }
-        }
-    }
-
     // ==============================================================
     // KETIKA TOMBOL SEARCH DITEKAN
     // ==============================================================
-    $('#filter_search_resep_obat').click(function () {
-        var_tbl_resep_obat.draw();
+    $('#filter_search_mlite_billing').click(function () {
+        var_tbl_mlite_billing.draw();
     });
 
     // ===========================================
     // KETIKA TOMBOL EDIT DITEKAN
     // ===========================================
 
-    $("#edit_data_resep_obat").click(function () {
-        var rowData = var_tbl_resep_obat.rows({ selected: true }).data()[0];
+    $("#edit_data_mlite_billing").click(function () {
+        var rowData = var_tbl_mlite_billing.rows({ selected: true }).data()[0];
         if (rowData != null) {
 
-            var no_resep = rowData['no_resep'];
-var tgl_perawatan = rowData['tgl_perawatan'];
-var jam = rowData['jam'];
+            var id_billing = rowData['id_billing'];
+var kd_billing = rowData['kd_billing'];
 var no_rawat = rowData['no_rawat'];
-var kd_dokter = rowData['kd_dokter'];
-var tgl_peresepan = rowData['tgl_peresepan'];
-var jam_peresepan = rowData['jam_peresepan'];
-var status = rowData['status'];
-var tgl_penyerahan = rowData['tgl_penyerahan'];
-var jam_penyerahan = rowData['jam_penyerahan'];
+var jumlah_total = rowData['jumlah_total'];
+var potongan = rowData['potongan'];
+var jumlah_harus_bayar = rowData['jumlah_harus_bayar'];
+var jumlah_bayar = rowData['jumlah_bayar'];
+var tgl_billing = rowData['tgl_billing'];
+var jam_billing = rowData['jam_billing'];
+var id_user = rowData['id_user'];
+var keterangan = rowData['keterangan'];
 
             $("#typeact").val("edit");
   
-            $('#no_resep').val(no_resep);
-$('#tgl_perawatan').val(tgl_perawatan);
-$('#jam').val(jam);
+            $('#id_billing').val(id_billing);
+$('#kd_billing').val(kd_billing);
 $('#no_rawat').val(no_rawat);
-$('#kd_dokter').val(kd_dokter);
-$('#tgl_peresepan').val(tgl_peresepan);
-$('#jam_peresepan').val(jam_peresepan);
-$('#status').val(status);
-$('#tgl_penyerahan').val(tgl_penyerahan);
-$('#jam_penyerahan').val(jam_penyerahan);
+$('#jumlah_total').val(jumlah_total);
+$('#potongan').val(potongan);
+$('#jumlah_harus_bayar').val(jumlah_harus_bayar);
+$('#jumlah_bayar').val(jumlah_bayar);
+$('#tgl_billing').val(tgl_billing);
+$('#jam_billing').val(jam_billing);
+$('#id_user').val(id_user);
+$('#keterangan').val(keterangan);
 
-            $("#no_resep").prop('readonly', true); // GA BISA DIEDIT KALI READONLY
-            $('#modal-title').text("Edit Data Resep Obat");
-            $("#modal_resep_obat").modal('show');
+            $("#id_billing").prop('readonly', true); // GA BISA DIEDIT KALI READONLY
+            $('#modal-title').text("Edit Data Mlite Billing");
+            $("#modal_mlite_billing").modal('show');
         }
         else {
             bootbox.alert("Silakan pilih data yang akan di edit.");
@@ -258,19 +222,19 @@ $('#jam_penyerahan').val(jam_penyerahan);
     // ==============================================================
     // TOMBOL  DELETE DI CLICK
     // ==============================================================
-    jQuery("#hapus_data_resep_obat").click(function () {
-        var rowData = var_tbl_resep_obat.rows({ selected: true }).data()[0];
+    jQuery("#hapus_data_mlite_billing").click(function () {
+        var rowData = var_tbl_mlite_billing.rows({ selected: true }).data()[0];
 
 
         if (rowData) {
-var no_resep = rowData['no_resep'];
-            bootbox.confirm('Anda yakin akan menghapus data dengan no_resep="' + no_resep, function(result) {
+var id_billing = rowData['id_billing'];
+            bootbox.confirm('Anda yakin akan menghapus data dengan id_billing="' + id_billing, function(result) {
                 if(result) {
                     $.ajax({
-                        url: "{?=url(['resep_obat','aksi'])?}",
+                        url: "{?=url(['mlite_billing','aksi'])?}",
                         method: "POST",
                         data: {
-                            no_resep: no_resep,
+                            id_billing: id_billing,
                             typeact: 'del'
                         },
                         success: function (data) {
@@ -282,7 +246,7 @@ var no_resep = rowData['no_resep'];
                             } else {
                                 bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
                             }    
-                            var_tbl_resep_obat.draw();
+                            var_tbl_mlite_billing.draw();
                         }
                     })    
                 }
@@ -297,71 +261,68 @@ var no_resep = rowData['no_resep'];
     // ==============================================================
     // TOMBOL TAMBAH DATA DI CLICK
     // ==============================================================
-    jQuery("#tambah_data_resep_obat").click(function () {
+    jQuery("#tambah_data_mlite_billing").click(function () {
 
-        $('#no_resep').val('');
-$('#tgl_perawatan').val('');
-$('#jam').val('');
+        $('#id_billing').val('');
+$('#kd_billing').val('');
 $('#no_rawat').val('');
-$('#kd_dokter').val('');
-$('#tgl_peresepan').val('');
-$('#jam_peresepan').val('');
-$('#status').val('');
-$('#tgl_penyerahan').val('');
-$('#jam_penyerahan').val('');
+$('#jumlah_total').val('');
+$('#potongan').val('');
+$('#jumlah_harus_bayar').val('');
+$('#jumlah_bayar').val('');
+$('#tgl_billing').val('');
+$('#jam_billing').val('');
+$('#id_user').val('');
+$('#keterangan').val('');
 
         $("#typeact").val("add");
-        $("#no_resep").prop('readonly', false);
+        $("#id_billing").prop('readonly', false);
         
-        $('#modal-title').text("Tambah Data Resep Obat");
-        $("#modal_resep_obat").modal('show');
+        $('#modal-title').text("Tambah Data Mlite Billing");
+        $("#modal_mlite_billing").modal('show');
     });
 
     // ===========================================
     // Ketika tombol lihat data di tekan
     // ===========================================
-    $("#lihat_data_resep_obat").click(function () {
+    $("#lihat_data_mlite_billing").click(function () {
 
-        var search_field_resep_obat = $('#search_field_resep_obat').val();
-        var search_text_resep_obat = $('#search_text_resep_obat').val();
-
-        var from_date = $('#tanggal_awal').val();
-        var to_date = $('#tanggal_akhir').val();        
+        var search_field_mlite_billing = $('#search_field_mlite_billing').val();
+        var search_text_mlite_billing = $('#search_text_mlite_billing').val();
 
         $.ajax({
-            url: "{?=url(['resep_obat','aksi'])?}",
+            url: "{?=url(['mlite_billing','aksi'])?}",
             method: "POST",
             data: {
                 typeact: 'lihat', 
-                search_field_resep_obat: search_field_resep_obat, 
-                search_text_resep_obat: search_text_resep_obat, 
-                searchByFromdate: from_date, 
-                searchByTodate: to_date
+                search_field_mlite_billing: search_field_mlite_billing, 
+                search_text_mlite_billing: search_text_mlite_billing
             },
             dataType: 'json',
             success: function (res) {
-                var eTable = "<div class='table-responsive'><table id='tbl_lihat_resep_obat' class='table display dataTable' style='width:100%'><thead><th>No Resep</th><th>Tgl Perawatan</th><th>Jam</th><th>No Rawat</th><th>Kd Dokter</th><th>Tgl Peresepan</th><th>Jam Peresepan</th><th>Status</th><th>Tgl Penyerahan</th><th>Jam Penyerahan</th></thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_mlite_billing' class='table display dataTable' style='width:100%'><thead><th>Id Billing</th><th>Kd Billing</th><th>No Rawat</th><th>Jumlah Total</th><th>Potongan</th><th>Jumlah Harus Bayar</th><th>Jumlah Bayar</th><th>Tgl Billing</th><th>Jam Billing</th><th>Id User</th><th>Keterangan</th></thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
-                    eTable += '<td>' + res[i]['no_resep'] + '</td>';
-eTable += '<td>' + res[i]['tgl_perawatan'] + '</td>';
-eTable += '<td>' + res[i]['jam'] + '</td>';
+                    eTable += '<td>' + res[i]['id_billing'] + '</td>';
+eTable += '<td>' + res[i]['kd_billing'] + '</td>';
 eTable += '<td>' + res[i]['no_rawat'] + '</td>';
-eTable += '<td>' + res[i]['kd_dokter'] + '</td>';
-eTable += '<td>' + res[i]['tgl_peresepan'] + '</td>';
-eTable += '<td>' + res[i]['jam_peresepan'] + '</td>';
-eTable += '<td>' + res[i]['status'] + '</td>';
-eTable += '<td>' + res[i]['tgl_penyerahan'] + '</td>';
-eTable += '<td>' + res[i]['jam_penyerahan'] + '</td>';
+eTable += '<td>' + res[i]['jumlah_total'] + '</td>';
+eTable += '<td>' + res[i]['potongan'] + '</td>';
+eTable += '<td>' + res[i]['jumlah_harus_bayar'] + '</td>';
+eTable += '<td>' + res[i]['jumlah_bayar'] + '</td>';
+eTable += '<td>' + res[i]['tgl_billing'] + '</td>';
+eTable += '<td>' + res[i]['jam_billing'] + '</td>';
+eTable += '<td>' + res[i]['id_user'] + '</td>';
+eTable += '<td>' + res[i]['keterangan'] + '</td>';
                     eTable += "</tr>";
                 }
                 eTable += "</tbody></table></div>";
-                $('#forTable_resep_obat').html(eTable);
+                $('#forTable_mlite_billing').html(eTable);
             }
         });
 
         $('#modal-title').text("Lihat Data");
-        $("#modal_lihat_resep_obat").modal('show');
+        $("#modal_lihat_mlite_billing").modal('show');
     });
         
     // ===========================================
@@ -380,10 +341,10 @@ eTable += '<td>' + res[i]['jam_penyerahan'] + '</td>';
         doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
         doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
         doc.setFontSize(14);
-        doc.text("Tabel Data Resep Obat", 20, 95, null, null, null);
+        doc.text("Tabel Data Mlite Billing", 20, 95, null, null, null);
         const totalPagesExp = "{total_pages_count_string}";        
         doc.autoTable({
-            html: '#tbl_lihat_resep_obat',
+            html: '#tbl_lihat_mlite_billing',
             startY: 105,
             margin: {
                 left: 20, 
@@ -406,7 +367,7 @@ eTable += '<td>' + res[i]['jam_penyerahan'] + '</td>';
         if (typeof doc.putTotalPages === 'function') {
             doc.putTotalPages(totalPagesExp);
         }
-        // doc.save('table_data_resep_obat.pdf');
+        // doc.save('table_data_mlite_billing.pdf');
         window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
               
     })
@@ -415,17 +376,17 @@ eTable += '<td>' + res[i]['jam_penyerahan'] + '</td>';
     // Ketika tombol export xlsx di tekan
     // ===========================================
     $("#export_xlsx").click(function () {
-        let tbl1 = document.getElementById("tbl_lihat_resep_obat");
+        let tbl1 = document.getElementById("tbl_lihat_mlite_billing");
         let worksheet_tmp1 = XLSX.utils.table_to_sheet(tbl1);
         let a = XLSX.utils.sheet_to_json(worksheet_tmp1, { header: 1 });
         let worksheet1 = XLSX.utils.json_to_sheet(a, { skipHeader: true });
         const new_workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(new_workbook, worksheet1, "Data resep_obat");
+        XLSX.utils.book_append_sheet(new_workbook, worksheet1, "Data mlite_billing");
         XLSX.writeFile(new_workbook, 'tmp_file.xls');
     })
 
     $("#view_chart").click(function () {
-        window.open(mlite.url + '/resep_obat/chart?t=' + mlite.token, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+        window.open(mlite.url + '/mlite_billing/chart?t=' + mlite.token, '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
     })   
 
 });

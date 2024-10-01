@@ -283,6 +283,13 @@ $(".datepicker").daterangepicker({
   },
 });
 
+$('.daterange').daterangepicker({
+  opens: 'left'
+}, function(start, end, label) {
+  $('#tanggal_awal').val(start.format('YYYY-MM-DD'));
+  $('#tanggal_akhir').val(end.format('YYYY-MM-DD'));
+});
+
 $(".datetimepicker").daterangepicker({
   timePicker: true,
   use24hours: true,

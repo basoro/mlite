@@ -1,0 +1,195 @@
+<div class="modal-header">
+  <h4 class="modal-title"><span id="modal-title">Billing Rawat Jalan</span></h4>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+  <!-- App body starts -->
+  <div class="app-body">
+
+    <!-- Row start -->
+    <div class="row">
+      <div class="col-xl-12">
+        <div class="card">
+          <div class="card-body">
+            <!-- Row start -->
+            <div class="row">
+              <div class="col-xxl-3 col-sm-3 col-12">
+                <img src="{?=url()?}/{$billing.settings.logo}" alt="{$billing.settings.nama_instansi}" height="100px"> 
+              </div>
+              <div class="col-sm-9 col-12">
+                <div class="text-end">
+                  <p class="mb-2">
+                    Invoice - <span class="text-danger">#009</span>
+                  </p>
+                  <p class="mb-2">{?=date('Y-m-d')?}</p>
+                  <span class="badge bg-danger">Overdue</span>
+                </div>
+              </div>
+              <div class="col-12 mb-5"></div>
+            </div>
+            <!-- Row end -->
+
+            <!-- Row start -->
+            <div class="row justify-content-between">
+              <div class="col-lg-6 col-12">
+                <h6 class="fw-semibold">Billed To :</h6>
+                <p class="m-0">
+                  {$billing.pasien.nm_pasien} - {$billing.pasien.no_rkm_medis},<br>
+                  {$billing.pasien.alamat}<br> 
+                  {$billing.pasien.nm_kel}, {$billing.pasien.nm_kec}<br>
+                  {$billing.pasien.nm_kab}, {$billing.pasien.nm_prop}
+                </p>
+              </div>
+              <div class="col-lg-6 col-12">
+                <div class="text-end">
+                  <h6 class="fw-semibold">Hospital Address :</h6>
+                  <p class="text-end m-0">
+                    {$billing.settings.nama_instansi} <br>
+                    {$billing.settings.alamat}, {$billing.settings.kota}<br>
+                    {$billing.settings.propinsi}<br>
+                    {$billing.settings.email}, {$billing.settings.nomor_telepon}
+                  </p>
+                </div>
+              </div>
+              <div class="col-12 mb-3"></div>
+            </div>
+            <!-- Row end -->
+
+            <form id="form_billing_ralan">
+            <input type="hidden" class="form-control" name="typeact" id="typeact" value="add" /> 
+            <input type="hidden" name="no_rawat" value="{$billing.reg_periksa.no_rawat}">
+            
+            <!-- Row start -->
+            <div class="row">
+              <div class="col-12">
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Nm Perawatan</th>
+                        <th>Biaya</th>
+                        <th>Jumlah</th>
+                        <th>Totalbiaya</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="4">Tindakan Dokter</td>
+                      </tr>
+                      {loop: $billing.rawat_jl_dr}
+                      <tr>
+                        <td><input type="checkbox" name="kd_jenis_prw_dr" value="{$value.kd_jenis_prw}" checked> {$value.nm_perawatan}</td>
+                        <td>{$value.biaya_rawat}</td>
+                        <td>{$value.jumlah}</td>
+                        <td>{?=$value.biaya_rawat*$value.jumlah?}</td>
+                      </tr>
+                      {/loop}
+                      <tr>
+                        <td colspan="4">Pemeriksaan Laboratorium</td>
+                      </tr>
+                      {loop: $billing.periksa_lab}
+                      <tr>
+                        <td><input type="checkbox" name="kd_jenis_prw_lab" value="{$value.kd_jenis_prw}" checked> {$value.nm_perawatan}</td>
+                        <td>{$value.biaya}</td>
+                        <td>{$value.jumlah}</td>
+                        <td>{?=$value.biaya*$value.jumlah?}</td>
+                      </tr>
+                      {/loop}
+                      <tr>
+                        <td colspan="2">&nbsp;</td>
+                        <td>
+                          <p>Subtotal</p>
+                          <p>Discount</p>
+                          <p>VAT</p>
+                          <h5 class="mt-4 text-primary">Total USD</h5>
+                        </td>
+                        <td>
+                          <p>$16890.00</p>
+                          <p>$60.00</p>
+                          <p>$95.00</p>
+                          <h5 class="mt-4 text-primary">$16725.00</h5>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="4">
+                          <h6 class="text-danger">NOTES</h6>
+                          <p class="small m-0">
+                            We really appreciate your business and if
+                            there’s anything else we can do, please
+                            let us know! Also, should you need us to
+                            add VAT or anything else to this order,
+                            it’s super easy since this is a template,
+                            so just ask!
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="6"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!-- Row end -->
+
+            <!-- Row start -->
+            <div class="row">
+              <div class="col-sm-12 col-12">
+                <div class="d-flex justify-content-end gap-2">
+                  <button class="btn btn-outline-secondary">
+                    Download
+                  </button>
+                  <button class="btn btn-outline-secondary">
+                    Print
+                  </button>
+                  <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"> 
+                    Batal 
+                  </button>
+                  <button type="submit" class="btn btn-primary"> 
+                    Bayar Sekarang 
+                  </button>                  
+                </div>
+              </div>
+            </div>
+            <!-- Row end -->
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Row end -->
+
+  </div>
+  <!-- App body ends -->
+</div>
+<script>
+$('#form_billing_ralan').submit(function (e) {
+    e.preventDefault();
+    var formData = $(this).serialize();
+    console.log(formData);
+    $.ajax({
+        url: "{?=url(['mlite_billing', 'aksi'])?}",
+        type: "POST",
+        data: formData,
+        success: function (data) {
+            data = JSON.parse(data);
+            var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
+            audio.play();
+            if(data.status === 'success') {
+                bootbox.alert('<span class="text-success">' + data.msg + '</span>');
+                $("#modal_periksa_lab").modal('hide');
+            } else {
+                bootbox.alert('<span class="text-danger">' + data.msg + '</span>');
+            }    
+            if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+                let payload = {
+                    'action' : typeact
+                }
+                ws.send(JSON.stringify(payload));
+            } 
+            // var_tbl_periksa_lab.draw();
+        }
+    });
+});  
+</script>
