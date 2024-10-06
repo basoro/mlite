@@ -149,4 +149,17 @@
 
 		return false;
   });
+  $("#btn_export_xls").click(function() {
+    alert('btn_export_xls');
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url    = baseURL + '/pasien/excel?t=' + mlite.token;
+    // var cari = $('input:text[name=cari]').val();
+
+    // $.post(url, {cari: cari} ,function(data) {
+    //   window.open(baseURL + '/pasien/excel?t=' + mlite.token);
+    // });
+    window.open(url);
+
+		return false;
+  });
 </script>

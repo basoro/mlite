@@ -2,13 +2,10 @@
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <div class="btn-group pull-right" style="margin-top:-8px;">
-          {if: $type == 'ranap'}
-          <a href="{?=url(ADMIN.'/laboratorium/manage')?}" class="btn btn-sm">
-            <i class="fa fa-hotel"></i><span class="hidden-xs"> Rawat Jalan</span>
-          </a>
+        {if: $type == 'ranap'}
+        <div class="btn-group pull-right" style="height: 38px;margin-top:-8px;background-color: #ffffff; border-left: 1px solid #dddddd;border-top: 1px solid #dddddd;border-right: 1px solid #dddddd;border-bottom: 1px solid #ffffff;">
           <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
-            <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Rawat Inap</span>
+            <i class="fa fa-calendar"></i><span class="hidden-xs" style="font-size: 14px;"> Periode Rawat Inap</span>
           </span>
           <ul class="dropdown-menu dropdown-menu-right">
             <li style="padding-left:5px;padding-right:5px;">
@@ -19,48 +16,57 @@
               <input type="text" id="periode_rawat_jalan_akhir" class="form-control periode_rawat_jalan" name="periode_rawat_jalan_akhir" required>
             </li>
             <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <div id="submit_periode_rawat_jalan" class="btn btn-primary btn-block">Semua</div>
+              <div id="submit_periode_rawat_jalan" class="btn btn-primary btn-block" style="text-align: left !important;">Semua</div>
             </li>
             <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <div id="belum_periode_rawat_jalan" class="btn btn-primary btn-block">Dirawat</div>
+              <div id="belum_periode_rawat_jalan" class="btn btn-primary btn-block" style="text-align: left !important;">Dirawat</div>
             </li>
             <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <div id="selesai_periode_rawat_jalan" class="btn btn-primary btn-block">Masuk</div>
+              <div id="selesai_periode_rawat_jalan" class="btn btn-primary btn-block" style="text-align: left !important;">Tanggal Masuk</div>
             </li>
             <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <div id="lunas_periode_rawat_jalan" class="btn btn-primary btn-block">Pulang</div>
+              <div id="lunas_periode_rawat_jalan" class="btn btn-primary btn-block" style="text-align: left !important;">Tanggal Pulang</div>
             </li>
           </ul>
-          {else}
-          <a href="{?=url(ADMIN.'/laboratorium/manage/ranap')?}" class="btn btn-sm">
-            <i class="fa fa-hotel"></i><span class="hidden-xs"> Rawat Inap</span>
-          </a>
-          <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
-            <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Rawat Jalan</span>
-          </span>
-          <ul class="dropdown-menu dropdown-menu-right">
-            <li style="padding-left:5px;padding-right:5px;">
-              <input type="hidden" name="status" value="{$type}">
-              <input type="text" id="periode_rawat_jalan" class="form-control periode_rawat_jalan" name="periode_rawat_jalan" required>
-            </li>
-            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <input type="text" id="periode_rawat_jalan_akhir" class="form-control periode_rawat_jalan" name="periode_rawat_jalan_akhir" required>
-            </li>
-            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <div id="submit_periode_rawat_jalan" class="btn btn-primary btn-block">Semua</div>
-            </li>
-            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <div id="belum_periode_rawat_jalan" class="btn btn-primary btn-block">Belum Diperiksa</div>
-            </li>
-            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <div id="selesai_periode_rawat_jalan" class="btn btn-primary btn-block">Selesai Diperiksa</div>
-            </li>
-            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <div id="lunas_periode_rawat_jalan" class="btn btn-primary btn-block">Sudah Bayar</div>
-            </li>
-          </ul>
-          {/if}
         </div>
+        <div class="btn-group pull-right" style="height: 38px;margin-top:-8px;margin-right: 5px;border-left: 1px solid #dddddd;border-top: 1px solid #dddddd;border-right: 1px solid #dddddd;border-bottom: 1px solid #dddddd;">
+          <span class="btn btn-sm">
+            <a href="{?=url([ADMIN,'laboratorium','manage'])?}"><i class="fa fa-wheelchair"></i><span class="hidden-xs" style="font-size: 14px;"> Rawat Jalan</span></a>
+          </span>
+        </div>
+        {else}
+        <div class="btn-group pull-right" style="height: 38px;margin-top:-8px;background-color: #ffffff; border-left: 1px solid #dddddd;border-top: 1px solid #dddddd;border-right: 1px solid #dddddd;border-bottom: 1px solid #ffffff;">
+          <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-calendar"></i><span class="hidden-xs" style="font-size: 14px;"> Periode Rawat Jalan</span>
+          </span>
+          <ul class="dropdown-menu dropdown-menu-right">
+            <li style="padding-left:5px;padding-right:5px;">
+              <input type="hidden" name="status" value="{$type}">
+              <input type="text" id="periode_rawat_jalan" class="form-control periode_rawat_jalan" name="periode_rawat_jalan" required>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <input type="text" id="periode_rawat_jalan_akhir" class="form-control periode_rawat_jalan" name="periode_rawat_jalan_akhir" required>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <div id="submit_periode_rawat_jalan" class="btn btn-primary btn-block" style="text-align: left !important;">Semua</div>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <div id="belum_periode_rawat_jalan" class="btn btn-primary btn-block" style="text-align: left !important;">Belum Diperiksa</div>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <div id="selesai_periode_rawat_jalan" class="btn btn-primary btn-block" style="text-align: left !important;">Selesai Diperiksa</div>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <div id="lunas_periode_rawat_jalan" class="btn btn-primary btn-block" style="text-align: left !important;">Sudah Bayar</div>
+            </li>
+          </ul>
+        </div>
+        <div class="btn-group pull-right" style="height: 38px;margin-top:-8px;margin-right: 5px;border-left: 1px solid #dddddd;border-top: 1px solid #dddddd;border-right: 1px solid #dddddd;border-bottom: 1px solid #dddddd;">
+          <span class="btn btn-sm">
+            <a href="{?=url([ADMIN,'laboratorium','manage','ranap'])?}"><i class="fa fa-hotel"></i><span class="hidden-xs" style="font-size: 14px;"> Rawat Inap</span></a>
+          </span>
+        </div>
+        {/if}
         <h3 class="panel-title">Kelola Pasien</h3>
       </div>
       <div class="panel-body">

@@ -2,11 +2,8 @@
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <div class="btn-group pull-right" style="margin-top:-8px;">
-          {if: $type == 'ranap'}
-          <a href="{?=url(ADMIN.'/radiologi/manage')?}" class="btn btn-sm">
-            <i class="fa fa-hotel"></i><span class="hidden-xs"> Rawat Jalan</span>
-          </a>
+        {if: $type == 'ranap'}
+        <div class="btn-group pull-right" style="height: 38px;margin-top:-8px;background-color: #ffffff; border-left: 1px solid #dddddd;border-top: 1px solid #dddddd;border-right: 1px solid #dddddd;border-bottom: 1px solid #ffffff;">
           <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Rawat Inap</span>
           </span>
@@ -31,10 +28,14 @@
               <div id="lunas_periode_rawat_jalan" class="btn btn-primary btn-block">Pulang</div>
             </li>
           </ul>
-          {else}
-          <a href="{?=url(ADMIN.'/radiologi/manage/ranap')?}" class="btn btn-sm">
-            <i class="fa fa-hotel"></i><span class="hidden-xs"> Rawat Inap</span>
-          </a>
+        </div>
+        <div class="btn-group pull-right" style="height: 38px;margin-top:-8px;margin-right: 5px;border-left: 1px solid #dddddd;border-top: 1px solid #dddddd;border-right: 1px solid #dddddd;border-bottom: 1px solid #dddddd;">
+          <span class="btn btn-sm">
+            <a href="{?=url([ADMIN,'radiologi','manage'])?}"><i class="fa fa-wheelchair"></i><span class="hidden-xs" style="font-size: 14px;"> Rawat Jalan</span></a>
+          </span>
+        </div>
+        {else}
+        <div class="btn-group pull-right" style="height: 38px;margin-top:-8px;background-color: #ffffff; border-left: 1px solid #dddddd;border-top: 1px solid #dddddd;border-right: 1px solid #dddddd;border-bottom: 1px solid #ffffff;">
           <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Rawat Jalan</span>
           </span>
@@ -59,8 +60,13 @@
               <div id="lunas_periode_rawat_jalan" class="btn btn-primary btn-block">Sudah Bayar</div>
             </li>
           </ul>
-          {/if}
         </div>
+        <div class="btn-group pull-right" style="height: 38px;margin-top:-8px;margin-right: 5px;border-left: 1px solid #dddddd;border-top: 1px solid #dddddd;border-right: 1px solid #dddddd;border-bottom: 1px solid #dddddd;">
+          <span class="btn btn-sm">
+            <a href="{?=url([ADMIN,'radiologi','manage','ranap'])?}"><i class="fa fa-hotel"></i><span class="hidden-xs" style="font-size: 14px;"> Rawat Inap</span></a>
+          </span>
+        </div>
+        {/if}
         <h3 class="panel-title">Kelola Pasien</h3>
       </div>
       <div class="panel-body">

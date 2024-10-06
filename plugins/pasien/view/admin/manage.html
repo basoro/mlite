@@ -2,13 +2,27 @@
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <div class="btn-group pull-right" style="margin-top:-8px;">
-          <span class="btn btn-sm" id="btn_cetak_pdf">
-            <i class="fa fa-print"></i><span class="hidden-xs"> Export PDF</span>
+        <div class="btn-group pull-right" style="height: 38px;margin-top:-8px;background-color: #ffffff; border-left: 1px solid #dddddd;border-top: 1px solid #dddddd;border-right: 1px solid #dddddd;border-bottom: 1px solid #ffffff;">
+          <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-calendar"></i><span class="hidden-xs" style="font-size: 14px;"> Periode Daftar</span>
           </span>
-          <span class="btn btn-sm">
-            <a href="{?=url([ADMIN,'pasien','excel'])?}" target="_blank"><i class="fa fa-file-excel-o"></i><span class="hidden-xs"> Export XLS</span></a>
-          </span>
+          <ul class="dropdown-menu dropdown-menu-right">
+            <li style="padding-left:5px;padding-right:5px;">
+              <input type="text" id="periode_rawat_jalan" class="form-control periode_rawat_jalan" name="periode_rawat_jalan" placeholder="Tanggal Daftar" required>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <input type="text" id="periode_rawat_jalan_akhir" class="form-control periode_rawat_jalan" name="periode_rawat_jalan_akhir" placeholder="Tanggal Daftar" required>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <div id="submit_periode_rawat_jalan" class="btn btn-primary btn-block" style="text-align: left !important;">Semua</div>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <div id="btn_cetak_pdf" class="btn btn-primary btn-block" style="text-align: left !important;">Export PDF</div>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <div id="btn_export_xls" class="btn btn-primary btn-block" style="text-align: left !important;">Export XLS</div>
+            </li>
+          </ul>
         </div>
         <h3 class="panel-title">Kelola Pasien</h3>
       </div>
