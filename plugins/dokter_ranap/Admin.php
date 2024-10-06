@@ -2,7 +2,6 @@
 namespace Plugins\Dokter_Ranap;
 
 use Systems\AdminModule;
-use Plugins\Icd\DB_ICD;
 
 class Admin extends AdminModule
 {
@@ -1205,11 +1204,6 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
         $this->core->addJS(url([ADMIN, 'dokter_ranap', 'javascript']), 'footer');
-    }
-
-    protected function data_icd($table)
-    {
-        return new DB_ICD($table);
     }
 
 }

@@ -2,7 +2,6 @@
 namespace Plugins\Rawat_Jalan;
 
 use Systems\AdminModule;
-use Plugins\Icd\DB_ICD;
 use Systems\Lib\BpjsService;
 use LZCompressor\LZString;
 
@@ -1610,11 +1609,6 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
         $this->core->addJS(url([ADMIN, 'rawat_jalan', 'javascript']), 'footer');
-    }
-
-    protected function data_icd($table)
-    {
-        return new DB_ICD($table);
     }
 
 }
