@@ -884,7 +884,7 @@ select[multiple].form-control {
       text-overflow: ellipsis;
     }
     #content-wrapper {
-      top:120px;
+      top:80px;
       margin-bottom: 80px;
     }
 }
