@@ -256,6 +256,28 @@ $status = $_POST['status'];
       exit();
     }
   
+    public function postICD10()
+    {
+  
+      if(isset($_POST["query"])){
+        $output = '';
+        $key = "%".$_POST["query"]."%";
+        $rows = $this->db('penyakit')->like('kd_penyakit', $key)->orLike('nm_penyakit', $key)->asc('kd_penyakit')->limit(10)->toArray();
+        $output = '';
+        if(count($rows)){
+          foreach ($rows as $row) {
+            $output .= '<li class="list-group-item link-class">'.$row["kd_penyakit"].': '.$row["nm_penyakit"].'</li>';
+          }
+        } else {
+          $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
+        }
+        echo $output;
+      }
+  
+      exit();
+  
+    }
+        
     public function getCss()
     {
         header('Content-type: text/css');

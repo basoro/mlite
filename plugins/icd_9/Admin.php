@@ -241,7 +241,29 @@ $deskripsi_pendek = $_POST['deskripsi_pendek'];
       $this->db('prosedur_pasien')->where('no_rawat', $_POST['no_rawat'])->where('prioritas', $_POST['prioritas'])->delete();
       exit();
     }
+
+    public function postICD9()
+    {
   
+      if(isset($_POST["query"])){
+        $output = '';
+        $key = "%".$_POST["query"]."%";
+        $rows = $this->db('icd9')->like('kode', $key)->orLike('deskripsi_panjang', $key)->asc('kode')->limit(10)->toArray();
+        $output = '';
+        if(count($rows)){
+          foreach ($rows as $row) {
+            $output .= '<li class="list-group-item link-class">'.$row["kode"].': '.$row["deskripsi_panjang"].'</li>';
+          }
+        } else {
+          $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
+        }
+        echo $output;
+      }
+  
+      exit();
+  
+    }
+        
     public function getCss()
     {
         header('Content-type: text/css');
