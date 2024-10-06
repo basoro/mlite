@@ -93,27 +93,27 @@
           "ajax": "{?=url([ADMIN,'icd','icd9'])?}",
           "columns": [
               { "data": "kode" },
-              { "data": "nama" }
+              { "data": "deskripsi_panjang" }
           ]
       } );
       var table_icd10 = $('#icd10_json').DataTable( {
           "processing": true,
           "ajax": "{?=url([ADMIN,'icd','icd10'])?}",
           "columns": [
-              { "data": "kode" },
-              { "data": "nama" }
+              { "data": "kd_penyakit" },
+              { "data": "nm_penyakit" }
           ]
       } );
       $('#icd9_json').on('click', 'tbody tr', function() {
         var row = table_icd9.row($(this)).data();
         $('input:text[name=kode_icd9]').val(row['kode']);
-        $('input:text[name=nama_icd9]').val(row['nama']);
+        $('input:text[name=nama_icd9]').val(row['deskripsi_panjang']);
         $('input:text[name=kode_icd9]').prop('readonly', true);
       })
       $('#icd10_json').on('click', 'tbody tr', function() {
         var row = table_icd10.row($(this)).data();
-        $('input:text[name=kode_icd10]').val(row['kode']);
-        $('input:text[name=nama_icd10]').val(row['nama']);
+        $('input:text[name=kode_icd10]').val(row['kd_penyakit']);
+        $('input:text[name=nama_icd10]').val(row['nm_penyakit']);
         $('input:text[name=kode_icd10]').prop('readonly', true);
       })
   } );

@@ -3,8 +3,6 @@ namespace Plugins\Icd;
 
 use Systems\AdminModule;
 
-use Plugins\Icd\DB_ICD;
-
 class Admin extends AdminModule
 {
 
@@ -26,7 +24,7 @@ class Admin extends AdminModule
 
   public function getICD10()
   {
-    $rows_icd10 = $this->data_icd('icd10')->toArray();
+    $rows_icd10 = $this->db('penyakit')->toArray();
     $return_array = array('data'=> $rows_icd10);
     echo json_encode($return_array);
     exit();
@@ -34,7 +32,7 @@ class Admin extends AdminModule
 
   public function getICD9()
   {
-    $rows_icd9 = $this->data_icd('icd9')->toArray();
+    $rows_icd9 = $this->db('icd9')->toArray();
     $return_array = array('data'=> $rows_icd9);
     echo json_encode($return_array);
     exit();
@@ -46,11 +44,11 @@ class Admin extends AdminModule
     if(isset($_POST["query"])){
       $output = '';
       $key = "%".$_POST["query"]."%";
-      $rows = $this->data_icd('icd9')->like('kode', $key)->orLike('nama', $key)->asc('nama')->limit(10)->toArray();
+      $rows = $this->db('icd9')->like('kode', $key)->orLike('deskripsi_panjang', $key)->asc('kode')->limit(10)->toArray();
       $output = '';
       if(count($rows)){
         foreach ($rows as $row) {
-          $output .= '<li class="list-group-item link-class">'.$row["kode"].': '.$row["nama"].'</li>';
+          $output .= '<li class="list-group-item link-class">'.$row["kode"].': '.$row["deskripsi_panjang"].'</li>';
         }
       } else {
         $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
@@ -68,11 +66,11 @@ class Admin extends AdminModule
     if(isset($_POST["query"])){
       $output = '';
       $key = "%".$_POST["query"]."%";
-      $rows = $this->data_icd('icd10')->like('kode', $key)->orLike('nama', $key)->asc('nama')->limit(10)->toArray();
+      $rows = $this->db('penyakit')->like('kd_penyakit', $key)->orLike('nm_penyakit', $key)->asc('kd_penyakit')->limit(10)->toArray();
       $output = '';
       if(count($rows)){
         foreach ($rows as $row) {
-          $output .= '<li class="list-group-item link-class">'.$row["kode"].': '.$row["nama"].'</li>';
+          $output .= '<li class="list-group-item link-class">'.$row["kd_penyakit"].': '.$row["nm_penyakit"].'</li>';
         }
       } else {
         $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
@@ -111,9 +109,6 @@ class Admin extends AdminModule
       ]);
     }
     $_POST['status_penyakit'] = 'Baru';
-    //if($this->db('diagnosa_pasien')->where('kd_penyakit', $_POST['kd_penyakit'])->oneArray()){
-    //  $_POST['status_penyakit'] = 'Lama';
-    //}
     unset($_POST['nama']);
     $this->db('diagnosa_pasien')->save($_POST);
     exit();
@@ -162,14 +157,12 @@ class Admin extends AdminModule
 
   public function postSimpan_ICD9()
   {
-    $dbFile = BASE_DIR.'/systems/data/icd.sdb';
-    $db = new \PDO('sqlite:'.$dbFile);
     if($_POST['simpan_icd9']) {
-      $cek = $this->data_icd('icd9')->where('kode', $_POST['kode_icd9'])->oneArray();
+      $cek = $this->db('icd9')->where('kode', $_POST['kode_icd9'])->oneArray();
       if(!$cek) {
-        $db->query("INSERT INTO icd9 (kode,nama) VALUES ('{$_POST['kode_icd9']}', '{$_POST['nama_icd9']}')");
+        $this->db()->pdo()->exec("INSERT INTO icd9 (kode,deskripsi_panjang) VALUES ('{$_POST['kode_icd9']}', '{$_POST['nama_icd9']}')");
       } else {
-        $db->query("UPDATE icd9 SET nama='{$_POST['nama_icd9']}' WHERE kode='{$_POST['kode_icd9']}'");
+        $this->db()->pdo()->exec("UPDATE icd9 SET deskripsi_panjang='{$_POST['nama_icd9']}' WHERE kode='{$_POST['kode_icd9']}'");
       }
       $this->notify('success', 'Data ICD telah disimpan');
     }
@@ -178,23 +171,16 @@ class Admin extends AdminModule
 
   public function postSimpan_ICD10()
   {
-    $dbFile = BASE_DIR.'/systems/data/icd.sdb';
-    $db = new \PDO('sqlite:'.$dbFile);
     if($_POST['simpan_icd10']) {
-      $cek = $this->data_icd('icd10')->where('kode', $_POST['kode_icd10'])->oneArray();
+      $cek = $this->db('penyakit')->where('kd_penyakit', $_POST['kode_icd10'])->oneArray();
       if(!$cek) {
-        $db->query("INSERT INTO icd10 (kode,nama) VALUES ('{$_POST['kode_icd10']}', '{$_POST['nama_icd10']}')");
+        $this->db()->pdo()->exec("INSERT INTO penyakit (kd_penyakit,nm_penyakit,ciri_ciri,keterangan,kd_ktg,status) VALUES ('{$_POST['kode_icd10']}', '{$_POST['nama_icd10']}','','','-','Tidak Menular')");
       } else {
-        $db->query("UPDATE icd10 SET nama='{$_POST['nama_icd10']}' WHERE kode='{$_POST['kode_icd10']}'");
+        $this->db()->pdo()->exec("UPDATE penyakit SET nm_penyakit='{$_POST['nama_icd10']}' WHERE kd_penyakit='{$_POST['kode_icd10']}'");
       }
       $this->notify('success', 'Data ICD telah disimpan');
     }
     redirect(url([ADMIN, 'icd', 'manage']));
-  }
-
-  protected function data_icd($table)
-  {
-      return new DB_ICD($table);
   }
 
 }
