@@ -2,7 +2,7 @@
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <span class="pull-right"><a href="{?=url(ADMIN.'/farmasi/index')?}" class="btn btn-xs btn-info" role="tab">Aktif</a> <a href="{?=url(ADMIN.'/farmasi/index/0')?}" class="btn btn-xs btn-info" role="tab">Tidak Aktif</a></span>
+                <span class="pull-right"><a href="{?=url(ADMIN.'/farmasi/mutasi')?}" class="btn btn-xs btn-info" role="tab">Aktif</a> <a href="{?=url(ADMIN.'/farmasi/mutasi/0')?}" class="btn btn-xs btn-info" role="tab">Tidak Aktif</a></span>
                 <h3 class="panel-title">{$databarang.title}</h3>
             </div>
             <div class="panel-body">
@@ -105,7 +105,7 @@
               stok: stok,
             } ,function(data) {
               alert('Set Stok telah disimpan!');
-              window.location.href = baseURL + '/farmasi/index?t=' + mlite.token;
+              window.location.href = baseURL + '/farmasi/mutasi?t=' + mlite.token;
             });
           }
         }
