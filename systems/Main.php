@@ -481,6 +481,13 @@ abstract class Main
         return $next_no_jurnal;
     }
 
+    public function AccesModule($module)
+    {
+        $access = $this->getUserInfo('access');
+        $accessmodule = ($access == 'all') || in_array($module, explode(',', $access)) ? true : false;
+        return $accessmodule;
+    }
+
     public function setPrintHeader()
     {
         $header = '

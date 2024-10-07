@@ -59,7 +59,7 @@
       <tr>
         <th>Nama Obat</th>
         <th>Jumlah</th>
-        <th>Aturan Pakai {if: $resep}<button type="button" class="btn btn-danger btn-xs cetak_etiket" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="nonracikan"><i class="fa fa-print"></i><span class="hidden-xs"> Etiket</span></button>{/if}</th>
+        <th>Aturan Pakai <!--{if: $resep}<button type="button" class="btn btn-danger btn-xs cetak_etiket" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="nonracikan"><i class="fa fa-print"></i><span class="hidden-xs"> Etiket</span></button>{/if}--></th>
         <th>Harga</th>
       </tr>
       {loop: $value.resep_dokter as $data}
