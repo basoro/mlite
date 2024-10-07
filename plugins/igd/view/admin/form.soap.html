@@ -268,7 +268,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: "{?=url([ADMIN, 'icd', 'icd9'])?}",
+                 url: "{?=url([ADMIN, 'icd_9', 'icd9'])?}",
                  method:"POST",
                  data:{query:query},
                  success:function(data)
@@ -293,7 +293,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: "{?=url([ADMIN, 'icd', 'icd10'])?}",
+                 url: "{?=url([ADMIN, 'icd_10', 'icd10'])?}",
                  method:"POST",
                  data:{query:query},
                  success:function(data)
@@ -323,7 +323,7 @@
     var kode = $('#kode_icd9').text();
     var status = $('input:hidden[name=status]').val();
 
-    var url = baseURL + '/icd/saveicd9?t=' + mlite.token;
+    var url = baseURL + '/icd_9/saveicd9?t=' + mlite.token;
 
     $.post(url,{
       no_rawat: no_rawat,
@@ -332,7 +332,7 @@
       status: status,
       kode: kode
     } ,function(data) {
-      $("#display_icd").show().load(baseURL + '/icd/display?no_rawat=' + no_rawat + '&t=' + mlite.token);
+      $("#display_icd").show().load(baseURL + '/icd_10/display?no_rawat=' + no_rawat + '&t=' + mlite.token);
       //bersih();
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data ICD 9 (Prosedur) pasien telah disimpan!"+
@@ -352,7 +352,7 @@
     var kode = $('#kode_icd10').text();
     var status = $('input:hidden[name=status]').val();
 
-    var url = baseURL + '/icd/saveicd10?t=' + mlite.token;
+    var url = baseURL + '/icd_10/saveicd10?t=' + mlite.token;
 
     $.post(url,{
       no_rawat: no_rawat,
@@ -361,7 +361,7 @@
       status: status,
       kd_penyakit: kode
     } ,function(data) {
-      $("#display_icd").show().load(baseURL + '/icd/display?no_rawat=' + no_rawat + '&t=' + mlite.token);
+      $("#display_icd").show().load(baseURL + '/icd_10/display?no_rawat=' + no_rawat + '&t=' + mlite.token);
       //bersih();
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data ICD 10 (Diagnosa) pasien telah disimpan!"+

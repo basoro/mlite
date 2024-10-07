@@ -131,7 +131,7 @@ input:focus {
     width: 100%;
     height: 100%;
     position: absolute;
-    padding: 60px 0px 0px 0px;
+    padding: 120px 0px 0px 0px;
     margin-bottom: 0px;
 }
 .content-title {
@@ -173,7 +173,7 @@ h3.panel-title {
     padding: 12px 30px;
     box-sizing: border-box;
     margin: 0;
-    top: 75px;
+    top: 125px;
     border-radius: 0;
 }
     #notify.alert-danger:before {
@@ -762,7 +762,7 @@ select[multiple].form-control {
 
     #notify {
         position: relative;
-        top: 55px;
+        top: 125px;
     }
 
     .panel-heading .tinynav {
@@ -775,7 +775,7 @@ select[multiple].form-control {
 @media(max-width: 1279px) {
   #content-wrapper {
       padding: 0;
-      top: 50px;
+      top: 120px;
       margin-bottom: 80px;
   }
   .profile-card {
@@ -884,7 +884,7 @@ select[multiple].form-control {
       text-overflow: ellipsis;
     }
     #content-wrapper {
-      top:70px;
+      top:80px;
       margin-bottom: 80px;
     }
 }

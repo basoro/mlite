@@ -2,7 +2,7 @@
 $("#notif").hide();
 
 // tombol buka form diklik
-$("#index").on('click', '#bukaform', function(){
+$("#index").on('click', '#bukaform', function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   $("#form").show().load(baseURL + '/pasien/form?t=' + mlite.token);

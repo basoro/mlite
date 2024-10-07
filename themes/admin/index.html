@@ -7,11 +7,97 @@
     <meta name="robots" content="noindex">
     <title>mLITE - {$module.name}</title>
     <link rel="icon" href="{?=url()?}/{$mlite.logo}" type="image/x-icon">
-    <link href="{$mlite.path}/assets/css/{$mlite.theme_admin}.min.css?v={$mlite.version}" rel="stylesheet">
+    <link href="{$mlite.path}/assets/css/{$mlite.theme_admin}.min.css?v=1211{$mlite.version}" rel="stylesheet">
     <link href="{$mlite.path}/assets/css/animate.min.css?v={$mlite.version}" rel="stylesheet">
-    <link href="{?=url(THEMES.'/admin/css/style.css?v='.$mlite.version)?}" rel="stylesheet">
+    <link href="{?=url(THEMES.'/admin/css/style.css?v=1122'.$mlite.version)?}" rel="stylesheet">
     <link href="{$mlite.path}/assets/css/font-awesome.css?v={$mlite.version}" rel="stylesheet">
-
+<style>
+.navbar li.menu-icon {
+  border: 2px solid #dddddd;
+  border-radius: 5px;
+  margin: 6px 3px;
+}
+.navbar-icon-top .navbar-nav>li>a>.fa, .navbar-icon-top .navbar-nav>li>a>.glyphicon {
+    position: relative;
+    width: 36px;
+    font-size: 24px;
+}
+.menu-top .navbar-nav>li>a {
+    font-size: 14px;
+}
+.menu-top .navbar-nav>li>a>.fa {
+    position: relative;
+    width: 10px !important;
+    font-size: 14px;
+}
+.navbar-icon-top .navbar-nav>li>a>.fa>.badge, .navbar-icon-top .navbar-nav>li>a>.glyphicon>.badge {
+    position: absolute;
+    right: 0;
+    font-family: sans-serif;
+}
+.navbar-icon-top .navbar-nav>li>a>.fa {
+    top: 3px;
+    line-height: 12px;
+}
+.navbar-icon-top .navbar-nav>li>a>.fa>.badge {
+    top: -10px;
+}
+.navbar-icon-top .navbar-nav>li>a>.glyphicon {
+    top: 6px;
+    line-height: 6px;
+}
+.navbar-icon-top .navbar-nav>li>a>.glyphicon>.badge {
+    top: -16px;
+}  
+@media (min-width: 768px) {
+    .navbar-icon-top .navbar-brand {
+        padding: 25px 15px;
+    }
+    .navbar-icon-top .navbar-text {
+        margin-top: 25px;
+        margin-bottom: 25px;
+    }
+    .navbar-icon-top .navbar-btn, .navbar-icon-top .navbar-form {
+        margin-top: 18px;
+        margin-bottom: 18px;
+    }
+    .navbar-icon-top .navbar-nav>li>a {
+        text-align: center;
+        display: table-cell;
+        height: 70px;
+        vertical-align: middle;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    .menu-top .navbar-nav>li>a {
+        text-align: center;
+        display: table-cell;
+        height: 34px;
+        vertical-align: middle;
+        padding-top: 0;
+        padding-bottom: 0;
+        color: #ffffff;
+      }
+    .menu-top .navbar-nav>li>a:hover {
+      border-radius: 5px;
+      background-color: #c4c4c4;
+      color: #000000;
+    }
+    .menu-top .navbar-nav>li>a:focus {
+      color: #efefef !important;
+    }
+    .navbar-icon-top .navbar-nav>li>a>.fa, .navbar-icon-top .navbar-nav>li>a>.glyphicon {
+        display: block;
+        width: 48px;
+        margin: 2px auto 4px auto;
+        top: 0;
+        line-height: 24px;
+    }
+    .navbar-icon-top .navbar-nav>li>a>.fa>.badge, .navbar-icon-top .navbar-nav>li>a>.glyphicon>.badge {
+        top: -7px;
+    }
+}
+</style>
     <!-- PWA Support -->
     <link rel="manifest" href="{$mlite.path}/manifest.json" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -68,71 +154,157 @@
             </nav>
         </div>
         <nav class="navbar navbar-inverse navbar-fixed-top visible-lg visible-md" style="margin-bottom:0;font-size:16px;">
-          <div class="container-fluid">
+          <div class="container-fluid bg-primary menu-top" style="margin: 0 !important;padding: 0 !important;border-bottom: #b6b6b6 2px solid;">
+            <div id="navbar" class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img src="{?=url()?}/favicon.png" height="20px"></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="#" data-toggle="modal" data-target="#tentangModal"> Tentang</a></li>
+                    <li><a href="{?=url([ADMIN,'dashboard', 'menu'])?}" data-toggle="modal" data-target="#menuModal"> Menu</a></li>
+                    <li><a href="{?=url(ADMIN.'/logout')?}"> Logout</a></li>
+                  </ul>  
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Layanan</a>
+                  <ul class="dropdown-menu">
+                    <li><a href="{?=url([ADMIN, 'igd', 'manage'])?}">IGD</a></li>
+                    <li><a href="{?=url([ADMIN, 'rawat_jalan', 'manage'])?}">Rawat Jalan</a></li>
+                    <li><a href="{?=url([ADMIN, 'rawat_inap', 'manage'])?}">Rawat Inap</a></li>
+                    <li><a href="{?=url([ADMIN, 'apotek_ralan', 'manage'])?}">Apotek</a></li>
+                    <li><a href="{?=url([ADMIN, 'laboratorium', 'manage'])?}">Laporatorium</a></li>
+                    <li><a href="{?=url([ADMIN, 'radiologi', 'manage'])?}">Radiologi</a></li>
+                  </ul>  
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manajemen</a>
+                  <ul class="dropdown-menu">
+                    <li><a href="{?=url([ADMIN, 'master', 'manage'])?}">Master Data</a></li>
+                    <li><a href="{?=url([ADMIN, 'kepegawaian', 'manage'])?}">Pegawai</a></li>
+                    <li><a href="{?=url([ADMIN, 'master', 'dokter'])?}">Dokter</a></li>
+                    <li><a href="{?=url([ADMIN, 'master', 'petugas'])?}">Petugas</a></li>
+                  </ul>  
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Farmasi</a>
+                  <ul class="dropdown-menu">
+                    <li><a href="{?=url([ADMIN, 'apotek_ralan', 'manage'])?}">Apotek Rawat Jalan</a></li>
+                    <li><a href="{?=url([ADMIN, 'apotek_ranap', 'manage'])?}">Apotek Rawat Inap</a></li>
+                    <li><a href="{?=url([ADMIN, 'master', 'databarang'])?}">Inventory Obat</a></li>
+                    <li><a href="{?=url([ADMIN, 'farmasi', 'opname'])?}">Stok Opname</a></li>
+                    <li><a href="{?=url([ADMIN, 'farmasi', 'mutasi'])?}">Mutasi Obat</a></li>
+                    <li><a href="#">Sirkulasi Obat</a></li>
+                    <li><a href="#">Riwayat Pemberian</a></li>
+                    <li><a href="#">Darurat Stok</a></li>
+                  </ul>  
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Bridging</a>
+                  <ul class="dropdown-menu">
+                    <li><a href="#">VClaim BPJS</a></li>
+                    <li><a href="#">Antrol BPJS</a></li>
+                    <li><a href="#">Aplicare BPJS</a></li>
+                    <li><a href="#">iCare BPJS</a></li>
+                    <li><a href="#">Siranap Kemkes</a></li>
+                    <li><a href="#">Satu Sehat Kemkes</a></li>
+                    <li><a href="#">Radiologi Orthanc</a></li>
+                    <li><a href="#">Laborarotium MyLIMS</a></li>
+                  </ul>  
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Laporan</a>
+                  <ul class="dropdown-menu">
+                    <li><a href="#">Penggunaan Obat</a></li>
+                    <li><a href="#">Jasa Medik</a></li>
+                    <li><a href="#">Pembayaran Rawat Jalan</a></li>
+                    <li><a href="#">Pembayaran Rawat Inap</a></li>
+                    <li><a href="#">Kunjungan Rawat Jalan</a></li>
+                    <li><a href="#">Kunjungan Rawat Inap</a></li>
+                    <li><a href="#">Sensus Harian</a></li>
+                  </ul>  
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Keuangan</a>
+                  <ul class="dropdown-menu">
+                    <li><a href="#">Pengeluaran Harian</a></li>
+                    <li><a href="#">Jurnal Harian</a></li>
+                    <li><a href="#">Posting Jurnal</a></li>
+                    <li><a href="#">Buku Besar</a></li>
+                    <li><a href="#">Cash Flow</a></li>
+                    <li><a href="#">Neraca Rugi Laba</a></li>
+                  </ul>  
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Anjungan</a>
+                  <ul class="dropdown-menu">
+                    {if: $mlite.presensi}
+                    <li><a href="{?=url()?}/anjungan/presensi" target="_blank">Presensi Pegawai</a></li>
+                    {/if}
+                    <li><a href="{?=url()?}/anjungan/bed" target="_blank">Ketersediaan Kamar</a></li>
+                    <li><a href="{?=url()?}/anjungan/pasien" target="_blank">Anjungan Pasien Mandiri</a></li>
+                    <li><a href="{?=url()?}/anjungan/sep" target="_blank">Anjungan Cetak SEP</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="{?=url()?}/anjungan/loket" target="_blank">Antrian Loket</a></li>
+                    <li><a href="{?=url()?}/anjungan/laboratorium" target="_blank">Antrian Laboratorium</a></li>
+                    <li><a href="{?=url()?}/anjungan/apotek" target="_blank">Antrian Apotek</a></li>
+                    <li><a href="{?=url()?}/anjungan/poli" target="_blank">Antrian Poliklinik</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="{?=url()?}/anjungan/poli/all" target="_blank">Antrian Poliklinik Alternatif</a></li>
+                    {loop: $mlite.poliklinik}
+                      {if: $value.attr == 'selected'}
+                        <li><a href="{?=url()?}/anjungan/poli/{$value.kd_poli}" target="_blank">Antrian {$value.nm_poli}</a></li>
+                      {/if}
+                    {/loop}  
+                  </ul>
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Bantuan</a>
+                  <ul class="dropdown-menu">
+                    <li><a href="#" data-toggle="modal" data-target="#bantuanModal"> Bantuan</a></li>
+                  </ul>  
+                </li>
+              </ul>
+            </div><!--/.nav-collapse -->
+          </div>          
+          <div class="container-fluid navbar-icon-top">
             <ul class="nav navbar-nav">
-              <li><a href="{?=url([ADMIN,'dashboard', 'menu'])?}" data-toggle="modal" data-target="#menuModal"><img class="img-responsive" src="{?= url('/assets/img/icon-home.png') ?}" style="display:inline-block;height:24px;margin-top:-2px;margin-right:5px;" alt=""> Menu</a></li>
+              <li class="menu-icon"><a href="{?=url([ADMIN,'dashboard', 'menu'])?}" data-toggle="modal" data-target="#menuModal" style="border-radius: 5px !important;"><i class="fa fa-home"></i> Menu</a></li>
               {if: $mlite.module_pasien}
-              <li><a href="{?=url([ADMIN, 'pasien', 'manage'])?}"{if: !$mlite.pasien_access || !$mlite.module_pasien} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-pasien.png') ?}" alt=""> Pasien</a></li>
+              <li class="menu-icon"><a href="{?=url([ADMIN, 'pasien', 'manage'])?}"{if: !$mlite.pasien_access || !$mlite.module_pasien} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-users"></i> Pasien</a></li>
               {/if}
               {if: $this->core->getUserInfo('role', !empty($_SESSION['mlite_user']) ? $_SESSION['mlite_user'] : 1) == 'medis'}
                 {if: $mlite.dokter_igd_access}
-                <li><a href="{?=url([ADMIN, 'dokter_igd', 'manage'])?}"{if: !$mlite.dokter_igd_access} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-igd.png') ?}" alt=""> Dokter IGD</a></li>
+                <li class="menu-icon"><a href="{?=url([ADMIN, 'dokter_igd', 'manage'])?}"{if: !$mlite.dokter_igd_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-ambulance"></i> Dokter IGD</a></li>
                 {/if}
                 {if: $mlite.dokter_ralan_access}
-                <li><a href="{?=url([ADMIN, 'dokter_ralan', 'manage'])?}"{if: !$mlite.dokter_ralan_access} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ralan.png') ?}" alt=""> Dokter Ralan</a></li>
+                <li class="menu-icon"><a href="{?=url([ADMIN, 'dokter_ralan', 'manage'])?}"{if: !$mlite.dokter_ralan_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-wheelchair"></i> Dokter Ralan</a></li>
                 {/if} 
                 {if: $mlite.dokter_ranap_access}
-                <li><a href="{?=url([ADMIN, 'dokter_ranap', 'manage'])?}"{if: !$mlite.dokter_ranap_access} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ranap.png') ?}" alt=""> Dokter Ranap</a></li>
+                <li class="menu-icon"><a href="{?=url([ADMIN, 'dokter_ranap', 'manage'])?}"{if: !$mlite.dokter_ranap_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-hotel"></i> Dokter Ranap</a></li>
                 {/if}
               {else}
                 {if: $mlite.module_igd}
-                <li><a href="{?=url([ADMIN, 'igd', 'manage'])?}"{if: !$mlite.igd_access || !$mlite.module_igd} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-igd.png') ?}" alt=""> IGD</a></li>
+                <li class="menu-icon"><a href="{?=url([ADMIN, 'igd', 'manage'])?}"{if: !$mlite.igd_access || !$mlite.module_igd} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-ambulance"></i> IGD</a></li>
                 {/if}
                 {if: $mlite.module_rawat_jalan}
-                <li><a href="{?=url([ADMIN, 'rawat_jalan', 'manage'])?}"{if: !$mlite.rawat_jalan_access || !$mlite.module_rawat_jalan} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ralan.png') ?}" alt=""> Rawat Jalan</a></li>
+                <li class="menu-icon"><a href="{?=url([ADMIN, 'rawat_jalan', 'manage'])?}"{if: !$mlite.rawat_jalan_access || !$mlite.module_rawat_jalan} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-wheelchair"></i> Poliklinik</a></li>
                 {/if}
                 {if: $mlite.module_rawat_inap}
-                <li><a href="{?=url([ADMIN, 'rawat_inap', 'manage'])?}"{if: !$mlite.rawat_inap_access || !$mlite.module_rawat_inap} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ranap.png') ?}" alt=""> Rawat Inap</a></li>
+                <li class="menu-icon"><a href="{?=url([ADMIN, 'rawat_inap', 'manage'])?}"{if: !$mlite.rawat_inap_access || !$mlite.module_rawat_inap} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-hotel"></i> Rawat Inap</a></li>
                 {/if}
               {/if}
-              {if: $mlite.cek_anjungan}
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="menu_icon" src="{?= url('/assets/img/icon-informasi.png') ?}" alt=""> Anjungan
-                <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  {if: $mlite.presensi}
-                  <li><a href="{?=url()?}/anjungan/presensi" target="_blank">Presensi Pegawai</a></li>
-                  {/if}
-                  <li><a href="{?=url()?}/anjungan/bed" target="_blank">Ketersediaan Kamar</a></li>
-                  <li><a href="{?=url()?}/anjungan/pasien" target="_blank">Anjungan Pasien Mandiri</a></li>
-                  <li><a href="{?=url()?}/anjungan/sep" target="_blank">Anjungan Cetak SEP</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="{?=url()?}/anjungan/loket" target="_blank">Antrian Loket</a></li>
-                  <li><a href="{?=url()?}/anjungan/laboratorium" target="_blank">Antrian Laboratorium</a></li>
-                  <li><a href="{?=url()?}/anjungan/apotek" target="_blank">Antrian Apotek</a></li>
-                  <li><a href="{?=url()?}/anjungan/poli" target="_blank">Antrian Poliklinik</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="{?=url()?}/anjungan/poli/all" target="_blank">Antrian Poliklinik Alternatif</a></li>
-                  {loop: $mlite.poliklinik}
-                    {if: $value.attr == 'selected'}
-                      <li><a href="{?=url()?}/anjungan/poli/{$value.kd_poli}" target="_blank">Antrian {$value.nm_poli}</a></li>
-                    {/if}
-                  {/loop}
-                </ul>
-              </li>
+              {if: $mlite.module_apotek_ralan}
+              <li class="menu-icon"><a href="{?=url([ADMIN, 'apotek_ralan', 'manage'])?}"{if: !$mlite.apotek_ralan_access || !$mlite.module_apotek_ralan} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-medkit"></i> Apotek</a></li>
               {/if}
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="menu_icon" src="{?= url('/assets/img/icon-about.png') ?}" alt=""> mLITE
-                <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li><a href="#" data-toggle="modal" data-target="#tentangModal"> Tentang</a></li>
-                  <li><a href="#" data-toggle="modal" data-target="#bantuanModal"> Bantuan</a></li>
-                  <li><a href="{?=url(ADMIN.'/logout')?}"> Logout</a></li>
-                </ul>
-              </li>
+              {if: $mlite.module_laboratorium}
+              <li class="menu-icon"><a href="{?=url([ADMIN, 'laboratorium', 'manage'])?}"{if: !$mlite.laboratorium_access || !$mlite.module_laboratorium} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-flask"></i> Laboratorium</a></li>
+              {/if}
+              {if: $mlite.module_radiologi}
+              <li class="menu-icon"><a href="{?=url([ADMIN, 'radiologi', 'manage'])?}"{if: !$mlite.radiologi_access || !$mlite.module_radiologi} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-film"></i> Radiologi</a></li>
+              {/if}
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="{?=url(ADMIN.'/logout')?}" class="fa fa-power-off" data-toggle="tooltip" data-placement="bottom" title="Keluar"></a></li>
+              <li class="menu-icon"><a href="{?=url(ADMIN.'/logout')?}" class="btn" style="border-radius: 5px !important;" title="Logout"><i class="fa fa-power-off"></i> Logout</a></li>
             </ul>
           </div>
         </nav>

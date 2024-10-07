@@ -2,8 +2,6 @@
 namespace Plugins\Pasien;
 
 use Systems\AdminModule;
-use Plugins\Pasien\DB_Wilayah;
-use Plugins\Icd\DB_ICD;
 
 class Admin extends AdminModule
 {
@@ -756,7 +754,7 @@ class Admin extends AdminModule
           if(isset($_POST["query"])){
             $output = '';
             $key = "%".$_POST["query"]."%";
-            $rows = $this->data_wilayah('propinsi')->like('nm_prop', $key)->asc('kd_prop')->limit(10)->toArray();
+            $rows = $this->db('propinsi')->like('nm_prop', $key)->asc('kd_prop')->limit(10)->toArray();
             $output = '';
             if(count($rows)){
               foreach ($rows as $row) {
@@ -770,7 +768,7 @@ class Admin extends AdminModule
           if(isset($_POST["query"])){
             $output = '';
             $key = "%".$_POST["query"]."%";
-            $rows = $this->data_wilayah('kabupaten')->like('nm_kab', $key)->asc('kd_kab')->limit(10)->toArray();
+            $rows = $this->db('kabupaten')->like('nm_kab', $key)->asc('kd_kab')->limit(10)->toArray();
             $output = '';
             if(count($rows)){
               foreach ($rows as $row) {
@@ -784,7 +782,7 @@ class Admin extends AdminModule
           if(isset($_POST["query"])){
             $output = '';
             $key = "%".$_POST["query"]."%";
-            $rows = $this->data_wilayah('kecamatan')->like('nm_kec', $key)->asc('kd_kec')->limit(10)->toArray();
+            $rows = $this->db('kecamatan')->like('nm_kec', $key)->asc('kd_kec')->limit(10)->toArray();
             $output = '';
             if(count($rows)){
               foreach ($rows as $row) {
@@ -825,196 +823,6 @@ class Admin extends AdminModule
         }
       	return $umur;
     }
-
-    public function getPasien()
-    {
-        // CSS
-        $this->_addHeaderFiles();
-        $this->core->addCSS(url('assets/css/jquery-ui.css'));
-        $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
-
-        // JS
-        $this->core->addJS(url(MODULES.'/dashboard/js/admin/webcam.js?v={$mlite.version}'));
-        $this->core->addJS(url('assets/jscripts/jquery-ui.js'));
-        $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
-        $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
-
-        $cek_pcare = $this->db('mlite_modules')->where('dir', 'pcare')->oneArray();
-        $usernamePcare = '';
-        if($cek_pcare) {
-          $usernamePcare = $this->settings('pcare', 'usernamePcare');
-        }  
-        $penjab = $this->db('penjab')->where('status', '1')->toArray();
-        $stts_nikah = array('BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO');
-        $agama = array('ISLAM', 'KRISTEN', 'PROTESTAN', 'HINDU', 'BUDHA', 'KONGHUCU', 'KEPERCAYAAN');
-        $pnd = array('TS','TK','SD','SMP','SMA','SLTA/SEDERAJAT','D1','D2','D3','D4','S1','S2','S3','-');
-        $keluarga = array('AYAH','IBU','ISTRI','SUAMI','SAUDARA','ANAK');
-  
-        $pasien = [
-          'no_rkm_medis' => '',
-          'nm_pasien' => '',
-          'no_ktp' => '',
-          'jk' => '',
-          'tmp_lahir' => '',
-          'tgl_lahir' => '',
-          'nm_ibu' => '-',
-          'alamat' => '',
-          'gol_darah' => '-',
-          'pekerjaan' => '-',
-          'stts_nikah' => '',
-          'agama' => 'ISLAM',
-          'tgl_daftar' => date('Y-m-d'),
-          'no_tlp' => '',
-          'umur' => '',
-          'pnd' => '-',
-          'keluarga' => '',
-          'namakeluarga' => '-',
-          'kd_pj' => '',
-          'no_peserta' => '',
-          'kd_kel' => '1',
-          'kd_kec' => '1',
-          'kd_kab' => '1',
-          'pekerjaanpj' => '',
-          'alamatpj' => '',
-          'kelurahanpj' => '',
-          'kecamatanpj' => '',
-          'kabupatenpj' => '',
-          'perusahaan_pasien' => '',
-          'suku_bangsa' => '',
-          'bahasa_pasien' => '',
-          'cacat_fisik' => '',
-          'email' => '-',
-          'nip' => '',
-          'kd_prop' => '1',
-          'propinsipj' => '',
-          'propinsi' => ['nm_prop' => '-'],
-          'kabupaten' => ['nm_kab' => '-'],
-          'kecamatan' => ['nm_kec' => '-'],
-          'kelurahan' => ['nm_kel' => '-']
-        ];
-
-        return $this->draw('pasien.html', 
-        [
-          'pasien' => $pasien, 
-          'penjab' => $penjab,
-          'stts_nikah' => $stts_nikah,
-          'agama' => $agama,
-          'pnd' => $pnd,
-          'keluarga' => $keluarga,
-          'no_rkm_medis_baru' => $this->core->setNoRM(),
-          'waapitoken' => $this->settings->get('wagateway.token'),
-          'waapiphonenumber' => $this->settings->get('wagateway.phonenumber'),
-          'admin_mode' => $this->settings->get('settings.admin_mode'), 
-          'urlUploadPhoto' => '',
-          'cek_pcare' => $cek_pcare,
-          'usernamePcare' => $usernamePcare
-        ]);
-    }
-    
-    public function postDataPasien()
-    {
-  
-        // $_POST['length'] = '';
-        // $_POST['start'] = '';
-        // $_POST['order'] = '';
-        // $_POST['search'] = '';
-        // $_POST['draw'] = '';
-
-        $columns = array( 
-          0 => 'no_rkm_medis',
-          1 => 'nm_pasien',
-          2 => 'tgl_lahir',
-          3 => 'jk', 
-          4 => 'gol_darah', 
-          5 => 'pekerjaan', 
-          6 => 'alamat', 
-          7 => 'no_tlp', 
-          8 => 'tgl_daftar', 
-          9 => 'email'
-        );
-  
-        // $start_date = date('Y-m-d');
-        $start_date = '1970-01-01';
-        $end_date = date('Y-m-d');
-        if(isset($_POST['searchByFromdate']) && $_POST['searchByFromdate'] !='') {
-          $start_date = $_POST['searchByFromdate'];
-        }
-        if(isset($_POST['searchByTodate']) && $_POST['searchByTodate'] !='') {
-          $end_date = $_POST['searchByTodate'];
-        }    
-        
-        $limit = $_POST['length'];
-        $start = $_POST['start'];
-        $order = $columns[$_POST['order']['0']['column']];
-        $dir = $_POST['order']['0']['dir'];
-              
-        $keyword = $_POST['search']['value']; 
-        $penjab = isset($_POST['sortByPenjab']) ? $_POST['sortByPenjab'] : '';
-  
-        $sql_query = "select * from pasien where ";
-        $sql_query .= "tgl_daftar between ? and ? and ";
-        $sql_query .= "(no_rkm_medis like ? or nm_pasien like ?) ";
-        if($penjab) {
-          $sql_query .= "and kd_pj = '$penjab' ";
-        }
-
-        $total = $this->db()->pdo()->prepare($sql_query);
-        $total->execute([$start_date, $end_date, '%'.$keyword.'%', '%'.$keyword.'%']);
-        $total = $total->fetchAll(\PDO::FETCH_ASSOC);          
-
-        $totalData = count($total);
-              
-        $totalFiltered = $totalData; 
-
-        $sql_query .= "order by $order $dir LIMIT $start,$limit";    
-
-        $query = $this->db()->pdo()->prepare($sql_query);
-        $query->execute([$start_date, $end_date, '%'.$keyword.'%', '%'.$keyword.'%']);
-        $query = $query->fetchAll(\PDO::FETCH_ASSOC);
-  
-        $data = array();
-        if(!empty($query))
-        {
-            foreach($query as $row) {
-              $row['aksi'] = '
-              <div class="dropdown">
-              <button data-toggle="dropdown" class="btn btn-sm btn-default dropdown-toggle" aria-haspopup="true" aria-expanded="false">Action <span class="caret"></span></button>
-                                
-              <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                      <li><a href="">Edit</a></li>
-                      <li><a href="">Delete</a></li>
-                      <li class="divider"></li>
-                      <li><a href="">Separated link</a></li>
-                      <li class="dropdown-submenu">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Surat-Surat</a>
-                      <ul class="dropdown-menu">
-                        <li><a href="#surat_kontrol" data-no_rawat="2023/12/03/000002" data-no_rkm_medis="000009" data-nm_pasien="Coba ajah" data-tgl_registrasi="2023-12-03">Surat Kontrol</a></li>
-                        <li><a href="http://mlite.loc/admin/rawat_jalan/suratrujukan/20231203000002?t=a3fb0aa946a3" target="_blank">Surat Rujukan</a></li>
-                        <li><a href="http://mlite.loc/admin/rawat_jalan/suratsehat/20231203000002?t=a3fb0aa946a3" target="_blank">Surat Keterangan Sehat</a></li>
-                        <li><a href="http://mlite.loc/admin/rawat_jalan/suratsakit/20231203000002?t=a3fb0aa946a3" target="_blank">Surat Keterangan Sakit</a></li>
-                      </ul>
-                    </li>
-                      
-              </ul>
-              </div>
-              ';
-              // $row['aksi'] = '<a href="#" data-toggle="modal" data-target="#statusModal" class="btn btn-sm btn-warning"><i class="fa fa-refresh"></i> '.$penjab.'</a>';
-              $data[] = $row;
-            }
-        }
-            
-        
-        $json_data = array(
-            "draw"            => intval($_POST['draw']),  
-            "recordsTotal"    => intval($totalData),  
-            "recordsFiltered" => intval($totalFiltered), 
-            "data"            => $data 
-        );
-              
-        echo json_encode($json_data); 
-        exit();
-      
-    } 
 
     public function getExportPDF()
     {
@@ -1096,16 +904,6 @@ class Admin extends AdminModule
           $this->notify('error', 'Pengaturan gagal disimpan');
         }
         redirect(url([ADMIN, 'pasien', 'settings']));
-    }
-
-    protected function data_wilayah($table)
-    {
-        return new DB_Wilayah($table);
-    }
-
-    protected function data_icd($table)
-    {
-        return new DB_ICD($table);
     }
 
     public function getCetakMpdf()

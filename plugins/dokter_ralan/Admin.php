@@ -2,7 +2,6 @@
 namespace Plugins\Dokter_Ralan;
 
 use Systems\AdminModule;
-use Plugins\Icd\DB_ICD;
 use LZCompressor\LZString;
 
 class Admin extends AdminModule
@@ -1214,11 +1213,11 @@ class Admin extends AdminModule
           if(isset($_GET['s']))
             $phrase = $_GET['s'];
 
-          $rows = $this->data_icd('icd10')->like('kode', '%'.$phrase.'%')->orLike('nama', '%'.$phrase.'%')->toArray();
+          $rows = $this->db('penyakit')->like('kd_penyakit', '%'.$phrase.'%')->orLike('nm_penyakit', '%'.$phrase.'%')->toArray();
           foreach ($rows as $row) {
             $array[] = array(
-                'kd_penyakit' => $row['kode'],
-                'nm_penyakit'  => $row['nama']
+                'kd_penyakit' => $row['kd_penyakit'],
+                'nm_penyakit'  => $row['nm_penyakit']
             );
           }
           echo json_encode($array, true);
@@ -1228,11 +1227,11 @@ class Admin extends AdminModule
           if(isset($_GET['s']))
             $phrase = $_GET['s'];
 
-          $rows = $this->data_icd('icd9')->like('kode', '%'.$phrase.'%')->orLike('nama', '%'.$phrase.'%')->toArray();
+          $rows = $this->db('icd9')->like('kode', '%'.$phrase.'%')->orLike('deskripsi_panjang', '%'.$phrase.'%')->toArray();
           foreach ($rows as $row) {
             $array[] = array(
                 'kode' => $row['kode'],
-                'deskripsi_panjang'  => $row['nama']
+                'deskripsi_panjang'  => $row['deskripsi_panjang']
             );
           }
           echo json_encode($array, true);
@@ -1685,11 +1684,6 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
         $this->core->addCSS(url([ADMIN, 'dokter_ralan', 'css']));
         $this->core->addJS(url([ADMIN, 'dokter_ralan', 'javascript']), 'footer');
-    }
-
-    protected function data_icd($table)
-    {
-        return new DB_ICD($table);
     }
 
 }

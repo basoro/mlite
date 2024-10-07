@@ -2133,7 +2133,7 @@ VALUES
 	(15,'dokter_igd','14'),
 	(16,'laboratorium','15'),
 	(17,'radiologi','16'),
-	(18,'icd','17'),
+	(18,'icd_10','17'),
 	(19,'rawat_inap','18'),
 	(20,'apotek_ranap','19'),
 	(21,'dokter_ranap','20'),
@@ -2149,7 +2149,8 @@ VALUES
 	(31,'vedika','30'),
 	(32,'profil','31'),
 	(33,'orthanc','32'),
-	(34,'veronisa','33');
+	(34,'veronisa','33'),
+	(35,'icd_9','34');
 
 /*!40000 ALTER TABLE `mlite_modules` ENABLE KEYS */;
 UNLOCK TABLES;

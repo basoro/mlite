@@ -3,7 +3,6 @@
 namespace Plugins\Utd;
 
 use Systems\AdminModule;
-use Plugins\Utd\DB_Wilayah;
 
 class Admin extends AdminModule
 {
@@ -281,7 +280,7 @@ class Admin extends AdminModule
         if(isset($_POST["query"])){
           $output = '';
           $key = "%".$_POST["query"]."%";
-          $rows = $this->data_wilayah('propinsi')->like('nm_prop', $key)->asc('kd_prop')->limit(10)->toArray();
+          $rows = $this->db('propinsi')->like('nm_prop', $key)->asc('kd_prop')->limit(10)->toArray();
           $output = '';
           if(count($rows)){
             foreach ($rows as $row) {
@@ -295,7 +294,7 @@ class Admin extends AdminModule
         if(isset($_POST["query"])){
           $output = '';
           $key = "%".$_POST["query"]."%";
-          $rows = $this->data_wilayah('kabupaten')->like('nm_kab', $key)->asc('kd_kab')->limit(10)->toArray();
+          $rows = $this->db('kabupaten')->like('nm_kab', $key)->asc('kd_kab')->limit(10)->toArray();
           $output = '';
           if(count($rows)){
             foreach ($rows as $row) {
@@ -309,7 +308,7 @@ class Admin extends AdminModule
         if(isset($_POST["query"])){
           $output = '';
           $key = "%".$_POST["query"]."%";
-          $rows = $this->data_wilayah('kecamatan')->like('nm_kec', $key)->asc('kd_kec')->limit(10)->toArray();
+          $rows = $this->db('kecamatan')->like('nm_kec', $key)->asc('kd_kec')->limit(10)->toArray();
           $output = '';
           if(count($rows)){
             foreach ($rows as $row) {
@@ -389,11 +388,6 @@ class Admin extends AdminModule
       $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
       $this->core->addJS(url('assets/jscripts/jquery.confirm.js'));
       $this->core->addJS(url([ADMIN, 'utd', 'javascript']), 'footer');
-  }
-
-  protected function data_wilayah($table)
-  {
-      return new DB_Wilayah($table);
   }
 
 }

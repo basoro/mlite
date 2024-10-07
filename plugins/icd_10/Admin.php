@@ -213,6 +213,71 @@ $status = $_POST['status'];
       exit();
     }
 
+    public function postSaveICD10()
+    {
+      $_POST['status_penyakit'] = 'Baru';
+      unset($_POST['nama']);
+      $this->db('diagnosa_pasien')->save($_POST);
+      exit();
+    }  
+
+    public function getDisplay()
+    {
+      $no_rawat = $_GET['no_rawat'];
+      $prosedurs = $this->db('prosedur_pasien')
+        ->where('no_rawat', $no_rawat)
+        ->asc('prioritas')
+        ->toArray();
+      $prosedur = [];
+      foreach ($prosedurs as $row_prosedur) {
+        $icd9 = $this->db('icd9')->where('kode', $row_prosedur['kode'])->oneArray();
+        $row_prosedur['nama'] = $icd9['deskripsi_panjang'];
+        $prosedur[] = $row_prosedur;
+      }
+  
+      $diagnosas = $this->db('diagnosa_pasien')
+        ->where('no_rawat', $no_rawat)
+        ->asc('prioritas')
+        ->toArray();
+      $diagnosa = [];
+      foreach ($diagnosas as $row_diagnosa) {
+        $icd10 = $this->db('penyakit')->where('kd_penyakit', $row_diagnosa['kd_penyakit'])->oneArray();
+        $row_diagnosa['nama'] = $icd10['nm_penyakit'];
+        $diagnosa[] = $row_diagnosa;
+      }
+  
+      echo $this->draw('display.html', ['diagnosa' => $diagnosa, 'prosedur' => $prosedur]);
+      exit();
+    }
+
+    public function postHapusICD10()
+    {
+      $this->db('diagnosa_pasien')->where('no_rawat', $_POST['no_rawat'])->where('prioritas', $_POST['prioritas'])->delete();
+      exit();
+    }
+  
+    public function postICD10()
+    {
+  
+      if(isset($_POST["query"])){
+        $output = '';
+        $key = "%".$_POST["query"]."%";
+        $rows = $this->db('penyakit')->like('kd_penyakit', $key)->orLike('nm_penyakit', $key)->asc('kd_penyakit')->limit(10)->toArray();
+        $output = '';
+        if(count($rows)){
+          foreach ($rows as $row) {
+            $output .= '<li class="list-group-item link-class">'.$row["kd_penyakit"].': '.$row["nm_penyakit"].'</li>';
+          }
+        } else {
+          $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
+        }
+        echo $output;
+      }
+  
+      exit();
+  
+    }
+        
     public function getCss()
     {
         header('Content-type: text/css');

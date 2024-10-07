@@ -607,9 +607,4 @@ class Admin extends AdminModule
         $this->core->addJS(url([ADMIN, 'apotek_ralan', 'javascript']), 'footer');
     }
 
-    protected function data_icd($table)
-    {
-        return new DB_ICD($table);
-    }
-
 }
