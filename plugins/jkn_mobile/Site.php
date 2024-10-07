@@ -83,6 +83,7 @@ class Site extends SiteModule
         $this->route('jknmobile_v2/jadwal/(:str)/(:str)', '_getJadwal');
         $this->route('jknmobile_v2/antrian/pertanggal/(:str)', 'getListAntrol');
 
+        $this->route('jknmobile_v2/aplicare', 'getAplicareManajemen');
         $this->route('jknmobile_v2/aplicare/(:str)', 'getAplicare');
         $this->route('jknmobile_v2/aplicare/(:str)/(:str)', 'getAplicare');
         /* End Old school routing */
