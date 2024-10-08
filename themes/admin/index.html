@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex">
     <title>mLITE - {$module.name}</title>
     <link rel="icon" href="{?=url()?}/{$mlite.logo}" type="image/x-icon">
-    <link href="{$mlite.path}/assets/css/{$mlite.theme_admin}.min.css?v=1211{$mlite.version}" rel="stylesheet">
+    <link href="{$mlite.path}/assets/css/{$mlite.theme_admin}.min.css?v={$mlite.version}" rel="stylesheet">
     <link href="{$mlite.path}/assets/css/animate.min.css?v={$mlite.version}" rel="stylesheet">
     <link href="{?=url(THEMES.'/admin/css/style.css?v=1122'.$mlite.version)?}" rel="stylesheet">
     <link href="{$mlite.path}/assets/css/font-awesome.css?v={$mlite.version}" rel="stylesheet">
@@ -283,39 +283,39 @@
           </div>          
           <div class="container-fluid navbar-icon-top">
             <ul class="nav navbar-nav">
-              <li class="menu-icon"><a href="{?=url([ADMIN,'dashboard', 'menu'])?}" data-toggle="modal" data-target="#menuModal" style="border-radius: 5px !important;"><i class="fa fa-home"></i> Menu</a></li>
+              <li class="menu-icon"><a href="{?=url([ADMIN,'dashboard', 'menu'])?}" data-toggle="modal" data-target="#menuModal" style="border-radius: 5px !important;"><i class="fa fa-home text-primary"></i> Menu</a></li>
               {if: $mlite.module_pasien}
-              <li class="menu-icon"><a href="{?=url([ADMIN, 'pasien', 'manage'])?}"{if: !$mlite.pasien_access || !$mlite.module_pasien} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-users"></i> Pasien</a></li>
+              <li class="menu-icon"><a href="{?=url([ADMIN, 'pasien', 'manage'])?}"{if: !$mlite.pasien_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-users {if: $mlite.pasien_access}text-success{else}text-muted{/if}"></i> Pasien</a></li>
               {/if}
               {if: $this->core->getUserInfo('role', !empty($_SESSION['mlite_user']) ? $_SESSION['mlite_user'] : 1) == 'medis'}
                 {if: $mlite.dokter_igd_access}
-                <li class="menu-icon"><a href="{?=url([ADMIN, 'dokter_igd', 'manage'])?}"{if: !$mlite.dokter_igd_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-ambulance"></i> Dokter IGD</a></li>
+                <li class="menu-icon"><a href="{?=url([ADMIN, 'dokter_igd', 'manage'])?}"{if: !$mlite.dokter_igd_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-ambulance {if: $mlite.dokter_igd_access}text-danger{else}text-muted{/if}"></i> Dokter IGD</a></li>
                 {/if}
                 {if: $mlite.dokter_ralan_access}
-                <li class="menu-icon"><a href="{?=url([ADMIN, 'dokter_ralan', 'manage'])?}"{if: !$mlite.dokter_ralan_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-wheelchair"></i> Dokter Ralan</a></li>
+                <li class="menu-icon"><a href="{?=url([ADMIN, 'dokter_ralan', 'manage'])?}"{if: !$mlite.dokter_ralan_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-wheelchair {if: $mlite.dokter_ralan_access}text-warning{else}text-muted{/if}"></i> Dokter Ralan</a></li>
                 {/if} 
                 {if: $mlite.dokter_ranap_access}
-                <li class="menu-icon"><a href="{?=url([ADMIN, 'dokter_ranap', 'manage'])?}"{if: !$mlite.dokter_ranap_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-hotel"></i> Dokter Ranap</a></li>
+                <li class="menu-icon"><a href="{?=url([ADMIN, 'dokter_ranap', 'manage'])?}"{if: !$mlite.dokter_ranap_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-hotel {if: $mlite.dokter_ranap_access}text-info{else}text-muted{/if}"></i> Dokter Ranap</a></li>
                 {/if}
               {else}
                 {if: $mlite.module_igd}
-                <li class="menu-icon"><a href="{?=url([ADMIN, 'igd', 'manage'])?}"{if: !$mlite.igd_access || !$mlite.module_igd} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-ambulance"></i> IGD</a></li>
+                <li class="menu-icon"><a href="{?=url([ADMIN, 'igd', 'manage'])?}"{if: !$mlite.igd_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-ambulance {if: $mlite.igd_access}text-danger{else}text-muted{/if}"></i> IGD</a></li>
                 {/if}
                 {if: $mlite.module_rawat_jalan}
-                <li class="menu-icon"><a href="{?=url([ADMIN, 'rawat_jalan', 'manage'])?}"{if: !$mlite.rawat_jalan_access || !$mlite.module_rawat_jalan} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-wheelchair"></i> Poliklinik</a></li>
+                <li class="menu-icon"><a href="{?=url([ADMIN, 'rawat_jalan', 'manage'])?}"{if: !$mlite.rawat_jalan_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-wheelchair {if: $mlite.rawat_jalan_access}text-warning{else}text-muted{/if}"></i> Poliklinik</a></li>
                 {/if}
                 {if: $mlite.module_rawat_inap}
-                <li class="menu-icon"><a href="{?=url([ADMIN, 'rawat_inap', 'manage'])?}"{if: !$mlite.rawat_inap_access || !$mlite.module_rawat_inap} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-hotel"></i> Rawat Inap</a></li>
+                <li class="menu-icon"><a href="{?=url([ADMIN, 'rawat_inap', 'manage'])?}"{if: !$mlite.rawat_inap_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-hotel {if: $mlite.rawat_inap_access}text-info{else}text-muted{/if}"></i> Rawat Inap</a></li>
                 {/if}
               {/if}
               {if: $mlite.module_apotek_ralan}
-              <li class="menu-icon"><a href="{?=url([ADMIN, 'apotek_ralan', 'manage'])?}"{if: !$mlite.apotek_ralan_access || !$mlite.module_apotek_ralan} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-medkit"></i> Apotek</a></li>
+              <li class="menu-icon"><a href="{?=url([ADMIN, 'apotek_ralan', 'manage'])?}"{if: !$mlite.apotek_ralan_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-medkit {if: $mlite.apotek_ralan_access}text-success{else}text-muted{/if}"></i> Apotek</a></li>
               {/if}
               {if: $mlite.module_laboratorium}
-              <li class="menu-icon"><a href="{?=url([ADMIN, 'laboratorium', 'manage'])?}"{if: !$mlite.laboratorium_access || !$mlite.module_laboratorium} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-flask"></i> Laboratorium</a></li>
+              <li class="menu-icon"><a href="{?=url([ADMIN, 'laboratorium', 'manage'])?}"{if: !$mlite.laboratorium_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-flask {if: $mlite.laboratorium_access}text-warning{else}text-muted{/if}"></i> Laboratorium</a></li>
               {/if}
               {if: $mlite.module_radiologi}
-              <li class="menu-icon"><a href="{?=url([ADMIN, 'radiologi', 'manage'])?}"{if: !$mlite.radiologi_access || !$mlite.module_radiologi} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-film"></i> Radiologi</a></li>
+              <li class="menu-icon"><a href="{?=url([ADMIN, 'radiologi', 'manage'])?}"{if: !$mlite.radiologi_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-film {if: $mlite.radiologi_access}text-info{else}text-muted{/if}"></i> Radiologi</a></li>
               {/if}
             </ul>
             <ul class="nav navbar-nav navbar-right">
