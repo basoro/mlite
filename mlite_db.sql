@@ -3431,7 +3431,7 @@ UNLOCK TABLES;
 
 CREATE TABLE `penyakit` (
   `kd_penyakit` varchar(10) NOT NULL,
-  `nm_penyakit` varchar(100) DEFAULT NULL,
+  `nm_penyakit` varchar(250) DEFAULT NULL,
   `ciri_ciri` text,
   `keterangan` varchar(60) DEFAULT NULL,
   `kd_ktg` varchar(8) DEFAULT NULL,
