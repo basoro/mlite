@@ -82,7 +82,7 @@ class DataBarang
             'nama_brng' => '',
             'kode_satbesar' => '',
             'kode_sat' => '',
-            'letak_barang' => '',
+            'letak_barang' => '-',
             'dasar' => '',
             'h_beli' => '',
             'ralan' => '',
