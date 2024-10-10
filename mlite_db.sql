@@ -2598,7 +2598,8 @@ VALUES
 	(148,'jkn_mobile','kirimantrian','tidak'),
 	(149,'settings','keamanan','ya'),
 	(150,'dokter_ralan','set_sudah','tidak'),
-  (151,'settings','websocket','tidak');
+  (151,'settings','websocket','tidak'),
+  (152,'settings','websocket_proxy','');
 
 /*!40000 ALTER TABLE `mlite_settings` ENABLE KEYS */;
 UNLOCK TABLES;

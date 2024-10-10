@@ -134,7 +134,11 @@
     {loop: $mlite.header}{$value}{/loop}
     {if: $mlite.websocket == 'ya'}
     <script>
-      var URL_WEBSOCKET = "ws://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
+    {if: $mlite.websocket_proxy != ''}
+    var URL_WEBSOCKET = "{$mlite.websocket_proxy}";
+    {else}
+    var URL_WEBSOCKET = "ws://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
+    {/if}
     </script>
     <script src="{?=url(THEMES.'/admin/js/websocket.js?v='.$mlite.version)?}"></script>
     {/if}
