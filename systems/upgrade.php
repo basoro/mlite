@@ -50,8 +50,11 @@ switch ($version) {
     case '4.1.2':
         $return = '4.1.3'; 
     case '4.1.3':
-        $return = '4.1.4';        
+        $return = '4.1.4'; 
     case '4.1.4':
         $return = '4.1.5';        
+    case '4.1.5':
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'websocket', 'tidak')");
+        $return = '4.1.6';        
     }
 return $return;

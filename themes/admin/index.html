@@ -132,6 +132,9 @@
         var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}", admin:"{?=ADMIN?}"};
     </script>
     {loop: $mlite.header}{$value}{/loop}
+    {if: $mlite.websocket == 'ya'}
+    <script src="{?=url(THEMES.'/admin/js/websocket.js?v='.$mlite.version)?}"></script>
+    {/if}
 </head>
 
 <body>

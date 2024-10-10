@@ -215,6 +215,17 @@
                     </div>
                     {/if}
                     <div class="form-group">
+                        <label>Aktifkan Websocket</label>
+                        <div class="radio">
+                            <label class="radio-inline">
+                               <input type="radio" name="websocket" value="tidak" {if: $settings.websocket == 'tidak'}checked{/if} /> Tidak
+                            </label>
+                            <label class="radio-inline">
+                               <input type="radio" name="websocket" value="ya" {if: $settings.websocket == 'ya'}checked{/if} /> Ya
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label>Set Nomor RM Terakhir</label>
                         <input type="text" name="set_no_rkm_medis" class="form-control" value="{$set_no_rkm_medis.no_rkm_medis}" />
                     </div>
