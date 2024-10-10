@@ -383,14 +383,14 @@ class Admin extends AdminModule
         ]);
       }
 
-      if($query) {
+      if($query->errorInfo()['0'] == '00000') {
         $data['status'] = 'success';
         echo json_encode($data);
       } else {
         $data['status'] = 'error';
+        $data['msg'] = $query->errorInfo()['2'];
         echo json_encode($data);
       }
-
       exit();
     }
 
