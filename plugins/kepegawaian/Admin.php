@@ -249,7 +249,7 @@ class Admin extends AdminModule
       $mpdf->SetHTMLHeader($this->core->setPrintHeader());
       $mpdf->SetHTMLFooter($this->core->setPrintFooter());
             
-      $url = url('admin/tmp/cetak.pegawai.html');
+      $url = url(ADMIN./tmp/cetak.pegawai.html');
       $html = file_get_contents($url);
       $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
       $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);

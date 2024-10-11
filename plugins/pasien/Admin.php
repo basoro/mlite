@@ -335,7 +335,8 @@ class Admin extends AdminModule
         unset($_POST['nm_kec']);
         unset($_POST['nm_kel']);
         $query = $this->db('pasien')->save($_POST);
-        if($this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray()) {
+
+        if($query->errorInfo()['0'] == '00000') {
           if($manual == '0') {
             $this->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
           }
@@ -343,21 +344,26 @@ class Admin extends AdminModule
           echo json_encode($data);
         } else {
           $data['status'] = 'error';
+          $data['msg'] = $query->errorInfo()['2'];
           echo json_encode($data);
         }
+  
       } else {
         unset($_POST['nm_prop']);
         unset($_POST['nm_kab']);
         unset($_POST['nm_kec']);
         unset($_POST['nm_kel']);
         $query = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->update($_POST);
-        if($query) {
+
+        if($query->errorInfo()['0'] == '00000') {
           $data['status'] = 'success';
           echo json_encode($data);
         } else {
           $data['status'] = 'error';
+          $data['msg'] = $query->errorInfo()['2'];
           echo json_encode($data);
         }
+  
       }
 
       exit();
@@ -472,7 +478,7 @@ class Admin extends AdminModule
         'margin_bottom' => 4
       ]);
 
-      $url = url('admin/tmp/kartu.html');
+      $url = url(ADMIN./tmp/kartu.html');
       $html = file_get_contents($url);
       $mpdf->WriteHTML($html);
 
@@ -855,7 +861,7 @@ class Admin extends AdminModule
       $mpdf->SetHTMLHeader($this->core->setPrintHeader());
       $mpdf->SetHTMLFooter($this->core->setPrintFooter());
             
-      $url = url('admin/tmp/pasien.export.pdf.html');
+      $url = url(ADMIN./tmp/pasien.export.pdf.html');
       $html = file_get_contents($url);
       $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
       $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
@@ -916,7 +922,7 @@ class Admin extends AdminModule
       $mpdf->SetHTMLHeader($this->core->setPrintHeader());
       $mpdf->SetHTMLFooter($this->core->setPrintFooter());
             
-      $url = url('admin/tmp/cetak.pasien.html');
+      $url = url(ADMIN./tmp/cetak.pasien.html');
       $html = file_get_contents($url);
       $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
       $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
@@ -956,7 +962,7 @@ class Admin extends AdminModule
       // $mpdf->SetHTMLHeader($this->core->setPrintHeader());
       // $mpdf->SetHTMLFooter($this->core->setPrintFooter());
             
-      $url = url('admin/tmp/riwayat.perawatan.html');
+      $url = url(ADMIN.'/tmp/riwayat.perawatan.html');
       $html = file_get_contents($url);
       $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
       $mpdf->WriteHTML($css);
@@ -970,7 +976,7 @@ class Admin extends AdminModule
     public function getExcel()
     {
       $file = "data.pasien.xls";
-      $html = file_get_contents(url('admin/tmp/cetak.pasien.html'));
+      $html = file_get_contents(url(ADMIN./tmp/cetak.pasien.html'));
       header("Content-type: application/vnd-ms-excel");
       header("Content-Disposition: attachment; filename=$file");
       echo "<!DOCTYPE html><html><head></head><body>";

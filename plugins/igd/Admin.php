@@ -305,11 +305,12 @@ class Admin extends AdminModule
         ]);
       }
 
-      if($query) {
+      if($query->errorInfo()['0'] == '00000') {
         $data['status'] = 'success';
         echo json_encode($data);
       } else {
         $data['status'] = 'error';
+        $data['msg'] = $query->errorInfo()['2'];
         echo json_encode($data);
       }
       exit();
@@ -928,7 +929,7 @@ class Admin extends AdminModule
       $mpdf->SetHTMLHeader($this->core->setPrintHeader());
       $mpdf->SetHTMLFooter($this->core->setPrintFooter());
             
-      $url = url('admin/tmp/cetak.igd.html');
+      $url = url(ADMIN./tmp/cetak.igd.html');
       $html = file_get_contents($url);
       $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
       $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);

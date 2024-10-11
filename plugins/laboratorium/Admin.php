@@ -504,7 +504,7 @@ class Admin extends AdminModule
       </style>
       ';
       
-      $url = url('admin/tmp/cetakhasil.html');
+      $url = url(ADMIN./tmp/cetakhasil.html');
       $html = file_get_contents($url);
       $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
       $mpdf->WriteHTML($css);
