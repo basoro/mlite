@@ -1343,7 +1343,7 @@ class Admin extends AdminModule
       $mpdf->SetHTMLHeader($this->core->setPrintHeader());
       $mpdf->SetHTMLFooter($this->core->setPrintFooter());
             
-      $url = url(ADMIN./tmp/cetak.rawat_jalan.html');
+      $url = url(ADMIN.'/tmp/cetak.rawat_jalan.html');
       $html = file_get_contents($url);
       $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
       $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
@@ -1356,7 +1356,7 @@ class Admin extends AdminModule
     public function getExcel()
     {
       $file = "data.pasien.rawat.jalan.xls";
-      $html = file_get_contents(url(ADMIN./tmp/cetak.rawat_jalan.html'));
+      $html = file_get_contents(url(ADMIN.'/tmp/cetak.rawat_jalan.html'));
       header("Content-type: application/vnd-ms-excel");
       header("Content-Disposition: attachment; filename=$file");
       echo "<!DOCTYPE html><html><head></head><body>";
