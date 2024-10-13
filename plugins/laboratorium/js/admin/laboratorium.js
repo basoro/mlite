@@ -651,6 +651,12 @@ $("#form_rincian").on("click","#jam_reg", function(event){
           $("#laboratorium #display").show().load(baseURL + '/laboratorium/display?t=' + mlite.token);
         }
       }
+      if(output['action'] == 'permintaan_laboratorium'){
+        if(output['modul'] == 'dokter_ralan'){
+          var audio = new Audio('{?=url()?}/assets/sound/alarm.mp3');
+          audio.play();    
+        }
+      }
     }catch(e){
       console.log(e);
     }
