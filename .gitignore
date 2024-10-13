@@ -1,5 +1,5 @@
 .DS_Store
-#config.php
+config.php
 admin/tmp
 admin/pla.php
 tmp
