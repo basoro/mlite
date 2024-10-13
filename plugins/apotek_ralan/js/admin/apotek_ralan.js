@@ -481,6 +481,12 @@ $(document).on('click', '.table-responsive [data-toggle="dropdown"]', function (
           $("#apotek_ralan #display").show().load(baseURL + '/apotek_ralan/display?t=' + mlite.token);
         }
       }
+      if(output['action'] == 'permintaan_resep'){
+        if(output['modul'] == 'dokter_ralan'){
+          var audio = new Audio('{?=url()?}/assets/sound/alarm.mp3');
+          audio.play();    
+        }
+      }
     }catch(e){
       console.log(e);
     }

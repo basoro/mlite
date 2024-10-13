@@ -822,6 +822,12 @@ $("#form_rincian").on("click","#jam_reg", function(event){
           $("#radiologi #display").show().load(baseURL + '/radiologi/display?t=' + mlite.token);
         }
       }
+      if(output['action'] == 'permintaan_radiologi'){
+        if(output['modul'] == 'dokter_ralan'){
+          var audio = new Audio('{?=url()?}/assets/sound/alarm.mp3');
+          audio.play();    
+        }
+      }
     }catch(e){
       console.log(e);
     }

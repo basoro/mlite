@@ -775,6 +775,28 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   diagnosa_klinis      : diagnosa_klinis
   }, function(data) {
     console.log(data);
+    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+      if(kat == 'obat' || kat == 'racikan') {
+        let payload = {
+            'action' : 'permintaan_resep',
+            'modul' : 'dokter_ralan'
+        }
+      }
+      if(kat == 'laboratorium') {
+        let payload = {
+            'action' : 'permintaan_laboratorium',
+            'modul' : 'dokter_ralan'
+        }
+      }
+      if(kat == 'radiologi') {
+        let payload = {
+            'action' : 'permintaan_radiologi',
+            'modul' : 'dokter_ralan'
+        }
+      }
+      ws.send(JSON.stringify(payload));
+      console.log(payload);
+    }
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/dokter_ralan/rincian?t=' + mlite.token;
