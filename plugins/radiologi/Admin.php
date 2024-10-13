@@ -972,7 +972,9 @@ class Admin extends AdminModule
     public function getJavascript()
     {
         header('Content-type: text/javascript');
-        echo $this->draw(MODULES.'/radiologi/js/admin/radiologi.js');
+        $this->assign['websocket'] = $this->settings->get('settings.websocket');
+        $this->assign['websocket_proxy'] = $this->settings->get('settings.websocket_proxy');
+        echo $this->draw(MODULES.'/radiologi/js/admin/radiologi.js', ['mlite' => $this->assign]);
         exit();
     }
 
