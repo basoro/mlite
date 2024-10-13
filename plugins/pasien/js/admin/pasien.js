@@ -329,7 +329,7 @@ $('body').on('hidden.bs.modal', '.modal', function () {
     $(this).removeData('bs.modal');
 });
 
-$(function () {
+$(function (event) {
     if (window.location.href.indexOf("nama") > -1) {
         var baseURL = mlite.url + '/' + mlite.admin;
         event.preventDefault();
