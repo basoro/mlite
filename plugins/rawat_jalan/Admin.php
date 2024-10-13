@@ -1594,7 +1594,9 @@ class Admin extends AdminModule
         if($cek_pegawai) {
           $cek_role = $this->core->getPegawaiInfo('nik', $this->core->getUserInfo('username', $_SESSION['mlite_user']));
         }
-        echo $this->draw(MODULES.'/rawat_jalan/js/admin/rawat_jalan.js', ['cek_role' => $cek_role]);
+        $this->assign['websocket'] = $this->settings->get('settings.websocket');
+        $this->assign['websocket_proxy'] = $this->settings->get('settings.websocket_proxy');
+        echo $this->draw(MODULES.'/rawat_jalan/js/admin/rawat_jalan.js', ['cek_role' => $cek_role, 'mlite' => $this->assign]);
         exit();
     }
 
