@@ -95,7 +95,6 @@
           $('#berkasdigitalstatus').html(data);
 
           var baseURL = mlite.url + '/' + mlite.admin;
-          event.preventDefault();
           var url = baseURL + '/rawat_jalan/berkasdigital?t=' + mlite.token;
           $.post(url, {no_rawat : no_rawat,
           }, function(data) {

@@ -254,7 +254,7 @@ $('#keterangan').val('');
         var rowData = var_tbl_mlite_antrian_referensi_taskid.rows({ selected: true }).data()[0];
 
         if (rowData) {
-var tanggal_periksa = rowData['tanggal_periksa'];
+            var tanggal_periksa = rowData['tanggal_periksa'];
             var baseURL = mlite.url + '/' + mlite.admin;
             event.preventDefault();
             var loadURL =  baseURL + '/log_antrian_taskid/detail/' + tanggal_periksa + '?t=' + mlite.token;

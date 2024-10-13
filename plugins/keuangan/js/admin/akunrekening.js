@@ -59,7 +59,6 @@ $("#akunrekening").on("click", "#buka_form", function(event){
 
 // tombol tutup form diklik
 $("#akunrekening").on('click', '#tutupform', function(){
-  event.preventDefault();
   $("#form").hide();
   $("#tutupform").val("Buka Form");
   $("#tutupform").attr("id", "buka_form");

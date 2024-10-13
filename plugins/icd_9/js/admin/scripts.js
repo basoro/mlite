@@ -231,7 +231,7 @@ eTable += '<td>' + res[i]['deskripsi_pendek'] + '</td>';
         var rowData = var_tbl_icd9.rows({ selected: true }).data()[0];
 
         if (rowData) {
-var kode = rowData['kode'];
+            var kode = rowData['kode'];
             var baseURL = mlite.url + '/' + mlite.admin;
             event.preventDefault();
             var loadURL =  baseURL + '/icd_9/detail/' + kode + '?t=' + mlite.token;

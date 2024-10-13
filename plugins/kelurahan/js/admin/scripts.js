@@ -222,7 +222,7 @@ eTable += '<td>' + res[i]['nm_kel'] + '</td>';
         var rowData = var_tbl_kelurahan.rows({ selected: true }).data()[0];
 
         if (rowData) {
-var kd_kel = rowData['kd_kel'];
+            var kd_kel = rowData['kd_kel'];
             var baseURL = mlite.url + '/' + mlite.admin;
             event.preventDefault();
             var loadURL =  baseURL + '/kelurahan/detail/' + kd_kel + '?t=' + mlite.token;

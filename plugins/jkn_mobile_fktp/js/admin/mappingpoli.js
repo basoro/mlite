@@ -1,14 +1,12 @@
 // tombol tambah diklik
 $("#index").on('click', '#bukaform', function(){
   var baseURL = mlite.url + '/' + mlite.admin;
-  event.preventDefault();
   $("#form").show().load(baseURL + '/jkn_mobile_fktp/mappingpoliform?t=' + mlite.token);
   $("#bukaform").val("Tutup Form");
   $("#bukaform").attr("id", "tutupform");
 });
 
 $("#index").on('click', '#tutupform', function(){
-  event.preventDefault();
   $("#form").hide();
   $("#tutupform").val("Buka Form");
   $("#tutupform").attr("id", "bukaform");

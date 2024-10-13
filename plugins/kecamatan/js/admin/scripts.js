@@ -222,7 +222,7 @@ eTable += '<td>' + res[i]['nm_kec'] + '</td>';
         var rowData = var_tbl_kecamatan.rows({ selected: true }).data()[0];
 
         if (rowData) {
-var kd_kec = rowData['kd_kec'];
+            var kd_kec = rowData['kd_kec'];
             var baseURL = mlite.url + '/' + mlite.admin;
             event.preventDefault();
             var loadURL =  baseURL + '/kecamatan/detail/' + kd_kec + '?t=' + mlite.token;

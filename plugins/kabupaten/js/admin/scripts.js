@@ -222,7 +222,7 @@ eTable += '<td>' + res[i]['nm_kab'] + '</td>';
         var rowData = var_tbl_kabupaten.rows({ selected: true }).data()[0];
 
         if (rowData) {
-var kd_kab = rowData['kd_kab'];
+            var kd_kab = rowData['kd_kab'];
             var baseURL = mlite.url + '/' + mlite.admin;
             event.preventDefault();
             var loadURL =  baseURL + '/kabupaten/detail/' + kd_kab + '?t=' + mlite.token;
