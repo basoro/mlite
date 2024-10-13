@@ -776,7 +776,14 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   }, function(data) {
     console.log(data);
     if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
-      if(kat == 'obat' || kat == 'racikan') {
+      console.log(kat);
+      if(kat == 'obat') {
+        let payload = {
+            'action' : 'permintaan_resep',
+            'modul' : 'dokter_ralan'
+        }
+      }
+      if(kat == 'racikan') {
         let payload = {
             'action' : 'permintaan_resep',
             'modul' : 'dokter_ralan'
