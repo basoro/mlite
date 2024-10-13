@@ -776,33 +776,27 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   }, function(data) {
     console.log(data);
     if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
-      console.log(kat);
-      if(kat == 'obat') {
+      if(kat == 'obat' || kat == 'racikan') {
         let payload = {
             'action' : 'permintaan_resep',
             'modul' : 'dokter_ralan'
         }
-      }
-      if(kat == 'racikan') {
-        let payload = {
-            'action' : 'permintaan_resep',
-            'modul' : 'dokter_ralan'
-        }
+        ws.send(JSON.stringify(payload));
       }
       if(kat == 'laboratorium') {
         let payload = {
             'action' : 'permintaan_laboratorium',
             'modul' : 'dokter_ralan'
         }
+        ws.send(JSON.stringify(payload));
       }
       if(kat == 'radiologi') {
         let payload = {
             'action' : 'permintaan_radiologi',
             'modul' : 'dokter_ralan'
         }
+        ws.send(JSON.stringify(payload));
       }
-      ws.send(JSON.stringify(payload));
-      console.log(payload);
     }
     // tampilkan data
     $("#display").hide();
