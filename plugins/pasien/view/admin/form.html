@@ -252,7 +252,6 @@
 </script>
 <script>
   $('#nm_prop').keyup(function(){
-     event.preventDefault();
      var query = $(this).val();
      if(query != '')
      {
@@ -274,7 +273,6 @@
      $('#propinsiList').fadeOut();
   });
   $('#nm_kab').keyup(function(){
-     event.preventDefault();
      var query = $(this).val();
      if(query != '')
      {
@@ -296,7 +294,6 @@
        $('#kabupatenList').fadeOut();
   });
   $('#nm_kec').keyup(function(){
-       event.preventDefault();
        var query = $(this).val();
        if(query != '')
        {
@@ -318,7 +315,6 @@
        $('#kecamatanList').fadeOut();
   });
   $('#nm_kel').keyup(function(){
-       event.preventDefault();
        var query = $(this).val();
        if(query != '')
        {
@@ -370,7 +366,6 @@
         }
       });
     }
-    event.preventDefault();
   });
   {else}
   $("#no_ktp").on('keyup', function (event) {
@@ -397,7 +392,6 @@
         }
       });
     }
-    event.preventDefault();
   });
   {/if}
   {if: $cek_pcare}
@@ -428,7 +422,6 @@
         }
       });
     }
-    event.preventDefault();
   });
   {else}
   $("#no_peserta").on('keyup', function (event) {
@@ -456,7 +449,6 @@
         }
       });
     }
-    event.preventDefault();
   });
   {/if}
 </script>
@@ -545,7 +537,6 @@
                 }
             }
             var baseURL = mlite.url + '/' + mlite.admin;
-            event.preventDefault();
         }
         if (queryString["nama"] != null && queryString["no_telp"] != null) {
             $('input:text[name=nm_pasien]').val(queryString["nama"]);
