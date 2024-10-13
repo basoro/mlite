@@ -1211,7 +1211,9 @@ class Admin extends AdminModule
     public function getCss()
     {
         header('Content-type: text/css');
-        echo $this->draw(MODULES.'/dokter_igd/css/admin/dokter_igd.css');
+        $this->assign['websocket'] = $this->settings->get('settings.websocket');
+        $this->assign['websocket_proxy'] = $this->settings->get('settings.websocket_proxy');
+        echo $this->draw(MODULES.'/dokter_igd/css/admin/dokter_igd.css', ['mlite' => $this->assign]);
         exit();
     }
 
