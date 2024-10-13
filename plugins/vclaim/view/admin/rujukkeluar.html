@@ -134,7 +134,6 @@
 
   $(document).ready(function () {
     var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
     $("#rujukdisplay").show().load(baseURL + '/vclaim/rujukkeluardisplay/{$no_kartu}?t=' + mlite.token);
   });
 

@@ -94,7 +94,6 @@
 
   $(document).ready(function() {
     var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
     $("#kontroldisplay").show().load(baseURL + '/vclaim/kontroldisplay/{$no_kartu}?t=' + mlite.token);
   });
 

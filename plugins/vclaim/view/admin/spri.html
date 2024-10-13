@@ -84,7 +84,6 @@
 
   $(document).ready(function() {
     var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
     $("#spridisplay").show().load(baseURL + '/vclaim/spridisplay/{$no_kartu}/{?=convertNorawat($no_rawat)?}?t=' + mlite.token);
   });
 

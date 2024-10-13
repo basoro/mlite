@@ -375,7 +375,7 @@ function printContent(el){
             var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}", admin:"{?=ADMIN?}"};
             $('#syncsep').on('click',function(e){
               var baseURL = mlite.url + '/' + mlite.admin;
-              event.preventDefault();
+              e.preventDefault();
               $.get("{?=url([ADMIN, 'vclaim', 'carisep', parseURL()[2]])?}", function(data){
                 var data = JSON.parse(data);
                 $("#carisep pre").text(JSON.stringify(data, null, '\t'));

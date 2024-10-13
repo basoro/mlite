@@ -258,7 +258,7 @@ eTable += '<td>' + res[i]['status'] + '</td>';
         var rowData = var_tbl_penyakit.rows({ selected: true }).data()[0];
 
         if (rowData) {
-var kd_penyakit = rowData['kd_penyakit'];
+            var kd_penyakit = rowData['kd_penyakit'];
             var baseURL = mlite.url + '/' + mlite.admin;
             event.preventDefault();
             var loadURL =  baseURL + '/icd_10/detail/' + kd_penyakit + '?t=' + mlite.token;

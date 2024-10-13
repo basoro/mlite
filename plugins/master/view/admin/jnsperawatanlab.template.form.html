@@ -112,7 +112,7 @@
   $('#simpan_template').click(function(e){
     //alert('Simpan Template');
     var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
+    e.preventDefault();
     var url = baseURL + '/master/jnsperawatanlabtemplatesave?t=' + mlite.token;
     $('#templateModal').modal('hide')
     $.post(url,

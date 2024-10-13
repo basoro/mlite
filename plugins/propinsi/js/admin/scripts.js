@@ -222,7 +222,7 @@ eTable += '<td>' + res[i]['nm_prop'] + '</td>';
         var rowData = var_tbl_propinsi.rows({ selected: true }).data()[0];
 
         if (rowData) {
-var kd_prop = rowData['kd_prop'];
+            var kd_prop = rowData['kd_prop'];
             var baseURL = mlite.url + '/' + mlite.admin;
             event.preventDefault();
             var loadURL =  baseURL + '/propinsi/detail/' + kd_prop + '?t=' + mlite.token;

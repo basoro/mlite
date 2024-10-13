@@ -10,7 +10,6 @@ $('#aturan_pakai').hide();
 // tombol buka form diklik
 $("#index").on('click', '#bukaform', function(){
   var baseURL = mlite.url + '/' + mlite.admin;
-  event.preventDefault();
   $("#form").show().load(baseURL + '/radiologi/form?t=' + mlite.token);
   $("#bukaform").val("Tutup Form");
   $("#bukaform").attr("id", "tutupform");
@@ -18,7 +17,6 @@ $("#index").on('click', '#bukaform', function(){
 
 // tombol tutup form diklik
 $("#index").on('click', '#tutupform', function(){
-  event.preventDefault();
   $("#form").hide();
   $("#tutupform").val("Buka Form");
   $("#tutupform").attr("id", "bukaform");
@@ -570,7 +568,6 @@ $("#rincian").on("click",".hasil_radiologi", function(event){
     $('#btn_upload').click(function(){
 
       var baseURL = mlite.url + '/' + mlite.admin;
-      event.preventDefault();
       var url= baseURL + '/radiologi/uploadhasil?t=' + mlite.token;
 
       var fd = new FormData();
