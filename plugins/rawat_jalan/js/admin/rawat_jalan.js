@@ -110,6 +110,8 @@ $("#form").on("click", "#simpan", function(event){
     },function(data) {
       console.log(data);
       data = JSON.parse(data);
+      var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
+      audio.play();
       if(data.status == 'success') {
         if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
           let payload = {
