@@ -11,7 +11,7 @@ $("#index").on('click', '#bukaform', function(event){
 });
 
 // tombol tutup form diklik
-$("#index").on('click', '#tutupform', function(){
+$("#index").on('click', '#tutupform', function(event){
   event.preventDefault();
   $("#form").hide();
   $("#tutupform").val("Buka Form");
