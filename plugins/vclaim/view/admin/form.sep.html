@@ -502,7 +502,14 @@
           </div>
           <div class="panel-footer">
             <input type="submit" id="simpan" class="btn btn-primary" name="" value="Simpan">
-            <button type="button" name="button" class="btn btn-success" id="finger">Cek Finger</button>
+            <!-- <button type="button" name="button" class="btn btn-success" id="finger">Cek Finger</button> -->
+            <div class="btn-group">
+              <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Biometrik <span class="caret"></span></button>
+              <ul class="dropdown-menu">
+                <li><a href="#" class="" id="finger">Finger Print</a></li>
+                <li><a href="#" class="" id="frista">Frista</a></li>
+              </ul>
+            </div>
             <!--<button type="button" name="button" class="btn btn-warning" id="sync_sep">Sync SEP</button>-->
             <div class="btn-group">
               <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Antrian <span class="caret"></span></button>
@@ -728,7 +735,11 @@
     var url = baseURL + '/vclaim/finger/' + no_kartu + '?t=' + mlite.token
     $.get(url,function (data) {
       var data = JSON.parse(data);
-      alert(data.response.status)
+      if(data.response.status != 'Peserta belum melakukan validasi finger print') {
+        openFingerprint(no_kartu);
+      } else {
+        alert(data.response.status)
+      }
     })
   });
   $("#form_sep").on("click","#approvefinger", function(event){
@@ -741,6 +752,27 @@
       alert(data)
     })
   });
+</script>
+<script>
+async function openFingerprint(noka) {
+	const response = await fetch(`http://localhost:3000`, {
+		method: 'POST',
+		body: new URLSearchParams({
+			username: '{$username-fp}',
+			password: '{$password-fp}',
+			card_number: noka,
+			exit: true, // wait window for exit (optional, default false)
+			wait: 2_000 // wait for login to completed (optional, default 3_593)
+		})
+	});
+
+	if (response.ok) {
+		// Response OK setelah jendela aplikasi sidik jari ditutup
+	} else {
+		const result = await response.json();
+		alert(result.message);
+	}
+} 
 </script>
 <script type="text/javascript">
   // ketika tombol hapus ditekan
