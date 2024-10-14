@@ -2601,7 +2601,9 @@ VALUES
   (151,'settings','websocket','tidak'),
   (152,'settings','websocket_proxy',''),
   (153,'settings','username_fp',''),
-  (154,'settings','password_fp','');
+  (154,'settings','password_fp',''),
+  (155,'settings','username_frista',''),
+  (156,'settings','password_frista','');
 
 /*!40000 ALTER TABLE `mlite_settings` ENABLE KEYS */;
 UNLOCK TABLES;

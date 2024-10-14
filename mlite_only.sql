@@ -531,7 +531,9 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (151, 'settings', 'websocket', 'tidak'),
 (152, 'settings', 'websocket_proxy', ''),
 (153, 'settings', 'username_fp', ''),
-(154, 'settings', 'password_fp', '');
+(154, 'settings', 'password_fp', ''),
+(155, 'settings', 'username_frista', ''),
+(156, 'settings', 'password_frista', '');
 
 CREATE TABLE IF NOT EXISTS `mlite_subrekening` (
   `kd_rek` varchar(15) NOT NULL,

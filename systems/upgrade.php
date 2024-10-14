@@ -58,6 +58,8 @@ switch ($version) {
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'websocket_proxy', '')");
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'username_fp', '')");
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'password_fp', '')");
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'username_frista', '')");
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'password_frista', '')");
         $return = '4.1.6';        
     }
 return $return;
