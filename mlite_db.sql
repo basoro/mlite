@@ -2599,7 +2599,9 @@ VALUES
 	(149,'settings','keamanan','ya'),
 	(150,'dokter_ralan','set_sudah','tidak'),
   (151,'settings','websocket','tidak'),
-  (152,'settings','websocket_proxy','');
+  (152,'settings','websocket_proxy',''),
+  (153,'settings','username_fp',''),
+  (154,'settings','password_fp','');
 
 /*!40000 ALTER TABLE `mlite_settings` ENABLE KEYS */;
 UNLOCK TABLES;
