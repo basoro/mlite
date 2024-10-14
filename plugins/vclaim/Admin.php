@@ -1209,6 +1209,43 @@ class Admin extends AdminModule
     exit();
   }
 
+  public function getFrista($keyword)
+  {
+    $dateNow = date('Y-m-d');
+    date_default_timezone_set('UTC');
+    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+    $key = $this->consid . $this->secretkey . $tStamp;
+
+    $url = $this->api_url . '/SEP/FingerPrint/Peserta/' . $keyword . '/TglPelayanan/'.$dateNow.'';
+    $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+    $json = json_decode($output, true);
+    //echo json_encode($json);
+    $code = $json['metaData']['code'];
+    $message = $json['metaData']['message'];
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
+    } else {
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+    }
+
+    exit();
+  }
+
   public function getApproveFinger($keyword)
   {
     $dateNow = date('Y-m-d');

@@ -745,7 +745,16 @@
   $("#form_sep").on("click","#frista", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
-    alert('Dalam pengembangan');
+    var no_kartu = $('#sep_no_kartu').val();
+    var url = baseURL + '/vclaim/frista/' + no_kartu + '?t=' + mlite.token
+    $.get(url,function (data) {
+      var data = JSON.parse(data);
+      if(data.response.status == 'Peserta belum melakukan validasi frista') {
+        openFrista(no_kartu);
+      } else {
+        alert(data.response.status)
+      }
+    })
   });
   $("#form_sep").on("click","#approvefinger", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
@@ -765,6 +774,25 @@ async function openFingerprint(noka) {
 		body: new URLSearchParams({
 			username: "{?=isset_or($username_fp, '')?}",
 			password: "{?=isset_or($password_fp, '')?}",
+			card_number: noka,
+			exit: true, // wait window for exit (optional, default false)
+			wait: 2_000 // wait for login to completed (optional, default 3_593)
+		})
+	});
+
+	if (response.ok) {
+		// Response OK setelah jendela aplikasi sidik jari ditutup
+	} else {
+		const result = await response.json();
+		alert(result.message);
+	}
+} 
+async function openFrista(noka) {
+	const response = await fetch(`http://localhost:3001`, {
+		method: 'POST',
+		body: new URLSearchParams({
+			username: "{?=isset_or($username_frista, '')?}",
+			password: "{?=isset_or($password_frista, '')?}",
 			card_number: noka,
 			exit: true, // wait window for exit (optional, default false)
 			wait: 2_000 // wait for login to completed (optional, default 3_593)
