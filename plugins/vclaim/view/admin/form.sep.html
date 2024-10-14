@@ -507,7 +507,7 @@
               <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Biometrik <span class="caret"></span></button>
               <ul class="dropdown-menu">
                 <li><a href="#" class="" id="finger">Finger Print</a></li>
-                <li><a href="#" class="" id="frista">Frista</a></li>
+                <li><a href="#" class="" id="frista">Face Recognition</a></li>
               </ul>
             </div>
             <!--<button type="button" name="button" class="btn btn-warning" id="sync_sep">Sync SEP</button>-->
@@ -741,6 +741,11 @@
         alert(data.response.status)
       }
     })
+  });
+  $("#form_sep").on("click","#frista", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    alert('Dalam pengembangan');
   });
   $("#form_sep").on("click","#approvefinger", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
