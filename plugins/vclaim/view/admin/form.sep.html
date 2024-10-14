@@ -735,7 +735,7 @@
     var url = baseURL + '/vclaim/finger/' + no_kartu + '?t=' + mlite.token
     $.get(url,function (data) {
       var data = JSON.parse(data);
-      if(data.response.status != 'Peserta belum melakukan validasi finger print') {
+      if(data.response.status == 'Peserta belum melakukan validasi finger print') {
         openFingerprint(no_kartu);
       } else {
         alert(data.response.status)
