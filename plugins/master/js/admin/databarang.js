@@ -79,14 +79,28 @@ $("#form").on("click", "#simpan", function(event){
     kode_kategori: kode_kategori,
     kode_golongan: kode_golongan
   } ,function(data) {
-      $("#display").show().load(baseURL + '/master/databarangdisplay?t=' + mlite.token);
-      $("#form").hide();
-      $("#tutupform").val("Buka Form");
-      $("#tutupform").attr("id", "bukaform");
-      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data barang telah disimpan!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
+      console.log(data);
+      data = JSON.parse(data);
+      var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
+      audio.play();
+      if(data.status == 'success') {
+        $("#display").show().load(baseURL + '/master/databarangdisplay?t=' + mlite.token);
+        bersih();
+        $("#form").hide();
+        $("#tutupform").val("Buka Form");
+        $("#tutupform").attr("id", "bukaform");
+        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Master data barang telah disimpan!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      }
+      if(data.status == 'error') {
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Gagal menyimpan master data barang!<br>"+
+        data.msg+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      }
   });
 });
 

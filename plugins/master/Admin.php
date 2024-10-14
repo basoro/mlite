@@ -473,7 +473,17 @@ class Admin extends AdminModule
 
     public function postDataBarangSave()
     {
-      $this->databarang->postSave();
+      $query = $this->databarang->postSave();
+      
+      if($query->errorInfo()['0'] == '00000') {
+        $data['status'] = 'success';
+        echo json_encode($data);
+      } else {
+        $data['status'] = 'error';
+        $data['msg'] = $query->errorInfo()['2'];
+        echo json_encode($data);
+      }
+
       exit();
     }
 
