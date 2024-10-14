@@ -82,7 +82,9 @@ class Admin extends AdminModule
             'admin_mode' => $this->settings->get('settings.admin_mode'),
             'waapitoken' => $waapitoken,
             'waapiphonenumber' => $waapiphonenumber,
-            'nama_instansi' => $nama_instansi
+            'nama_instansi' => $nama_instansi, 
+            'username-fp' => $this->settings->get('settings.username-fp'), 
+            'password-fp' => $this->settings->get('settings.password-fp')
           ]
         );
     }
