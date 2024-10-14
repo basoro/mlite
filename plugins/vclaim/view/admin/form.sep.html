@@ -758,8 +758,8 @@ async function openFingerprint(noka) {
 	const response = await fetch(`http://localhost:3000`, {
 		method: 'POST',
 		body: new URLSearchParams({
-			username: '{?=isset_or($username-fp, '')?}',
-			password: '{?=isset_or($password-fp, '')?}',
+			username: "{?=isset_or($username-fp, '')?}",
+			password: "{?=isset_or($password-fp, '')?}",
 			card_number: noka,
 			exit: true, // wait window for exit (optional, default false)
 			wait: 2_000 // wait for login to completed (optional, default 3_593)
