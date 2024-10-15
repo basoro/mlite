@@ -9,12 +9,12 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Kelola'   => 'dashboard',
+            'Kelola'   => 'manage',
             'Pengaturan' => 'settings'
         ];
     }
 
-    public function getDashboard()
+    public function getManage()
     {
       $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
       $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
@@ -63,7 +63,7 @@ class Admin extends AdminModule
       );
       $hari=$day[date('D',strtotime(date('Y-m-d')))];
 
-      return $this->draw('dashboard.html', [
+      return $this->draw('manage.html', [
         'settings' => $settings,
         'stats' => $stats,
         'pasien' => $this->db('pasien')->join('penjab', 'penjab.kd_pj = pasien.kd_pj')->desc('tgl_daftar')->limit('5')->toArray(),
