@@ -49,6 +49,7 @@
               </tr>
             </thead>
             <tbody>
+              {if: $jurnalharian}
               {loop: $jurnalharian}
               <tr>
                 <td>{$value.tgl_jurnal}</td>
@@ -61,6 +62,11 @@
                 <td><span class="pull-right">{?= number_format($value.kredit,2,',','.')?}</span></td>
               </tr>
               {/loop}
+              {else} 
+              <tr>
+                <td colspan="8">Belum ada data jurnal harian.</td>
+              </tr>
+              {/if}
             </tbody>
           </table>
         </div>
