@@ -325,7 +325,7 @@ class Admin extends AdminModule
     public function postStatusLanjut()
     {
       $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save([
-        'status_lanjut' => 'Ranap'
+        'status_lanjut' => $_POST['status_lanjut']
       ]);
       exit();
     }

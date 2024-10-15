@@ -352,28 +352,68 @@
         }
     });
   });
+
   $('a[href="#status_lanjut"]').click(function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var url = baseURL + '/rawat_jalan/statuslanjut?t=' + mlite.token;
     var no_rawat = $(this).attr("data-no_rawat");
     // tampilkan dialog konfirmasi
-    bootbox.confirm("Apakah pasien dimasukkan dalam kamar inap?", function(result){
-      // ketika ditekan tombol ok
-      if (result){
-        // mengirimkan perintah penghapusan
-        $.post(url, {
-          no_rawat: no_rawat
-        } ,function(data) {
-          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
-          $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
-          $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-          "Status periksa pasien telah disimpan!"+
-          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-          "</div>").show();
-        });
+
+    var set_status_lanjut = ''
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Pilih Status Lanjut</label>'
+        + '<select name="status_lanjut" id="status_lanjut" class="form-control" data-use-dimmer="false">'
+        + '<option value="ralan">Rawat Jalan</option>'
+        + '<option value="ranap">Rawat Inap</option>'
+        + '</select>'
+        + '</div>'
+        + '';
+
+    // bootbox.confirm("Apakah pasien dimasukkan dalam kamar inap?", function(result){
+    //   // ketika ditekan tombol ok
+    //   if (result){
+    //     // mengirimkan perintah penghapusan
+    //     $.post(url, {
+    //       no_rawat: no_rawat
+    //     } ,function(data) {
+    //       // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+    //       $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+    //       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+    //       "Status periksa pasien telah disimpan!"+
+    //       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+    //       "</div>").show();
+    //     });
+    //   }
+    // });
+    bootbox.dialog({
+      message: set_status_lanjut,
+      title: 'Set Status Lanjut Pasien',
+      buttons: {
+        main: {
+          label: 'Simpan',
+          className: 'btn-primary',
+          callback() {
+            var status_lanjut = $('#status_lanjut').find(':selected').val();
+            //console.log(tgl_keluar);
+            $.post(url, {
+              no_rawat: no_rawat,
+              status_lanjut: status_lanjut
+            } ,function(data) {
+              // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+              $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+              $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+              "Status lanjut pasien telah disimpan!"+
+              "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+              "</div>").show();
+            });
+          }
+        }
       }
     });
+    $('select').selectator();
+    event.stopPropagation();
+    return false;
   });
   $('a[href="#obat_kronis"]').click(function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
