@@ -44,6 +44,6 @@ plugins/pasien_galleries
 .env
 logs/
 config.php
-workerman.php
+#workerman.php
 composer.lock
 backups
