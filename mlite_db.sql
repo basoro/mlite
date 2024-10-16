@@ -2437,10 +2437,11 @@ CREATE TABLE `mlite_satu_sehat_response` (
 
 CREATE TABLE `mlite_settings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `module` text,
-  `field` text,
-  `value` text,
-  PRIMARY KEY (`id`)
+  `module` varchar(100) NOT NULL,
+  `field` varchar(100) NOT NULL,
+  `value` varchar(250) NOT NULL, 
+  PRIMARY KEY (`id`), 
+  UNIQUE KEY `module` (`module`,`field`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 LOCK TABLES `mlite_settings` WRITE;
