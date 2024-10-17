@@ -44,9 +44,9 @@
               <label for="" class="col-sm-3 control-label">Nama Barang</label>
               <div class="col-sm-7">
                 <select class="form-control" id="barang" name="barang">
-                  <option value="">&nbsp;</option>
+                  <option value="">Select</option>
                   {loop: $barang}
-                  <option value="{$value.id}" data-subtitle="{$value.keterangan}" data-right="{$value.stok}">{$value.nama_barang}</option>
+                  <option value="{$value.id}" data-subtitle="{$value.harga}" data-right="{$value.stok}">{$value.nama_barang}</option>
                   {/loop}
                 </select>
               </div>
@@ -62,7 +62,7 @@
             </div>
             <div class="pull-right">
               <button type="button" name="button" class="btn btn-primary" id="simpan_penjualan"><i class="fa fa-save"></i><span class="hidden-xs"> Masukkan Rincian</span></button>
-              <button type="button" name="button" class="btn btn-danger" id="penjualan_baru"><i class="fa fa-close"></i><span class="hidden-xs"> Order Baru</span></button>
+              <a href="{?=url([ADMIN,'penjualan','order'])?}" class="btn btn-danger"><i class="fa fa-edit"></i><span class="hidden-xs"> Order Baru</span></a>
             </div>        
           </div>
         </div>
@@ -92,7 +92,7 @@
                       <td>{$value.nama_barang}</td>
                       <td>{$value.jumlah}</td>
                       <td>{$value.harga}</td>
-                      <td><button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button></td>
+                      <td><button class="btn btn-xs btn-danger hapus_rincian_penjualan" data-id="{$value.id}"><i class="fa fa-trash"></i></button></td>
                   </tr>
                   {/loop}
               </tbody>
@@ -232,6 +232,23 @@ $("#form_penjualan").on("click", "#simpan_penjualan", function(event){
       $("#form_rincian_penjualan").html(data).show();
     });
   });
+});
+
+$("#rincian_penjualan").on("click",".hapus_rincian_penjualan", function(event) {
+  var id = $(this).attr("data-id");
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  bootbox.confirm("Apakah ada ingin mengahous item dengan id = " + id + "?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        var url = baseURL + '/penjualan/hapusitempenjualan?t=' + mlite.token;
+        $.post(url, {id : id
+        } ,function(data) {
+          location.reload();
+        });
+      }
+    });
 });
 
 $("#form_rincian_penjualan").on("click","#simpan_billing_penjualan", function(event){

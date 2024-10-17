@@ -41,39 +41,82 @@
 
 <div class="panel panel-default">
     <div class="panel-body">
-      <div class="table-responsive no-margin" id="barang_penjualan">
-        <table class="table table-stripped dataTables" width="100%">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nama Barang</th>
-              <th>Harga</th>
-              <th>Stok</th>
-            </tr>
-          </thead>
-          <tbody>
-            {if: $barang}
-            {loop: $barang}
-            <tr class="barang_penjualan" 
-              data-id="{$value.id}" 
-              data-nama_barang="{$value.nama_barang}" 
-              data-harga="{$value.harga}"
-              data-stok="{$value.stok}"
-              data-keterangan="{$value.keterangan}"
-            >
-              <td>{$value.id}</td>
-              <td>{$value.nama_barang}</td>
-              <td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
-              <td>{$value.stok}</td>
-            </tr>
-            {/loop}
-            {else}
-            <tr>
-              <td colspan="4"class="text-center">Data barang jualan tidak ditemukan.</td>
-            </tr>
-            {/if}
-          </tbody>
-        </table>
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#barang" aria-controls="barang" role="tab" data-toggle="tab">Barang</a></li>
+        <li role="presentation"><a href="#obat" aria-controls="obat" role="tab" data-toggle="tab">Obat</a></li>
+      </ul>
+      <div class="tab-content" style="margin-top: 20px;">
+        <div role="tabpanel" class="tab-pane fade in active" id="barang">
+          <div class="table-responsive no-margin" id="barang_penjualan">
+            <table class="table table-stripped dataTables" width="100%">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nama Barang</th>
+                  <th>Harga</th>
+                  <th>Stok</th>
+                </tr>
+              </thead>
+              <tbody>
+                {if: $barang}
+                {loop: $barang}
+                <tr class="barang_penjualan" 
+                  data-id="{$value.id}" 
+                  data-nama_barang="{$value.nama_barang}" 
+                  data-harga="{$value.harga}"
+                  data-stok="{$value.stok}"
+                  data-keterangan="{$value.keterangan}"
+                >
+                  <td>{$value.id}</td>
+                  <td>{$value.nama_barang}</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
+                  <td>{$value.stok}</td>
+                </tr>
+                {/loop}
+                {else}
+                <tr>
+                  <td colspan="4"class="text-center">Data barang jualan tidak ditemukan.</td>
+                </tr>
+                {/if}
+              </tbody>
+            </table>
+          </div>          
+        </div>
+        <div role="tabpanel" class="tab-pane fade in" id="obat">
+          <div class="table-responsive no-margin" id="barang_penjualan">
+            <table class="table table-stripped dataTables" width="100%">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nama Obat</th>
+                  <th>Harga</th>
+                  <th>Stok</th>
+                </tr>
+              </thead>
+              <tbody>
+                {if: $obat}
+                {loop: $obat}
+                <tr 
+                  data-id="{$value.id}" 
+                  data-nama_barang="{$value.nama_barang}" 
+                  data-harga="{$value.harga}"
+                  data-stok="{$value.stok}"
+                >
+                  <td>{$value.id}</td>
+                  <td>{$value.nama_barang}</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
+                  <td>{$value.stok}</td>
+                </tr>
+                {/loop}
+                {else}
+                <tr>
+                  <td colspan="4"class="text-center">Data obat jualan tidak ditemukan.</td>
+                </tr>
+                {/if}
+              </tbody>
+            </table>
+          </div>           
+        </div>
       </div>
     </div>
 </div>

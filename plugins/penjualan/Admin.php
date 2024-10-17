@@ -64,18 +64,44 @@ class Admin extends AdminModule
         $no = 1;
         $total_tagihan = 0;
         foreach($rows as $row) {
-          $row['no'] = $no;
+          $row['no'] = $no++;
           $total_tagihan += $row['harga_total'];
           $rincian_penjualan[] = $row;
         }
       }
-      return $this->draw('order.html', ['barang' => $this->db('mlite_penjualan_barang')->toArray(), 'penjualan' => $penjualan, 'rincian_penjualan' => $rincian_penjualan, 'total_tagihan' => $total_tagihan, 'id_penjualan' => isset_or($id_penjualan, '')]);
+      $obat = $this->db('gudangbarang')->join('databarang', 'databarang.kode_brng = gudangbarang.kode_brng')
+      ->select([
+        'id' => 'gudangbarang.kode_brng', 
+        'nama_barang' => 'databarang.nama_brng', 
+        'stok' => 'gudangbarang.stok', 
+        'harga' => 'databarang.h_beli'
+      ])
+      ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+      ->toArray();
+      $barang = $this->db('mlite_penjualan_barang')
+      ->select([
+        'id' => 'id', 
+        'nama_barang' => 'nama_barang', 
+        'stok' => 'stok', 
+        'harga' => 'harga'
+      ])
+      ->toArray();
+      return $this->draw('order.html', ['barang' => array_merge($barang, $obat), 'penjualan' => $penjualan, 'rincian_penjualan' => $rincian_penjualan, 'total_tagihan' => $total_tagihan, 'id_penjualan' => isset_or($id_penjualan, '')]);
     }
 
     public function getBarang()
     {
         $this->_addHeaderFiles();
-        return $this->draw('barang.html', ['barang' => $this->db('mlite_penjualan_barang')->toArray()]);
+        $obat = $this->db('gudangbarang')->join('databarang', 'databarang.kode_brng = gudangbarang.kode_brng')
+        ->select([
+          'id' => 'gudangbarang.kode_brng', 
+          'nama_barang' => 'databarang.nama_brng', 
+          'stok' => 'gudangbarang.stok', 
+          'harga' => 'databarang.h_beli'
+        ])
+        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->toArray();        
+        return $this->draw('barang.html', ['barang' => $this->db('mlite_penjualan_barang')->toArray(), 'obat' => $obat]);
     }
 
     public function postSaveBarang()
@@ -114,7 +140,10 @@ class Admin extends AdminModule
 
     public function postSimpanPenjualan()
     {
-        $barang = $this->db('mlite_penjualan_barang')->where('id', $_POST['id_barang'])->oneArray();
+        $barang = $this->db('mlite_penjualan_barang')->select(['harga' => 'harga'])->where('id', $_POST['id_barang'])->oneArray();
+        if(!$barang) {
+          $barang = $this->db('databarang')->select(['harga' => 'h_beli'])->where('kode_brng', $_POST['id_barang'])->oneArray();
+        }
         $harga_total = $barang['harga'] * $_POST['jumlah'];
         if(isset($_POST['id']) && $_POST['id'] !='') {
             $detail = $this->db('mlite_penjualan_detail')
@@ -132,9 +161,31 @@ class Admin extends AdminModule
             echo $_POST['id'];
             if($detail) {
                 $mlite_penjualan_barang = $this->db('mlite_penjualan_barang')->where('id', $_POST['id_barang'])->oneArray();
-                $this->db('mlite_penjualan_barang')->where('id', $_POST['id_barang'])->update(['stok' => $mlite_penjualan_barang['stok'] - $_POST['jumlah']]);
+                if($mlite_penjualan_barang) {
+                  $this->db('mlite_penjualan_barang')->where('id', $_POST['id_barang'])->update(['stok' => $mlite_penjualan_barang['stok'] - $_POST['jumlah']]);
+                } else {
+                  $gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['id_barang'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
+                  $this->db('gudangbarang')->where('kode_brng', $_POST['id_barang'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->update(['stok' => $gudangbarang['stok'] - $_POST['jumlah']]);
+                  $this->db('riwayat_barang_medis')
+                    ->save([
+                      'kode_brng' => $_POST['id_barang'],
+                      'stok_awal' => $gudangbarang['stok'],
+                      'masuk' => '0',
+                      'keluar' => $_POST['jumlah'],
+                      'stok_akhir' => $gudangbarang['stok'] - $_POST['jumlah'],
+                      'posisi' => 'Pemberian Obat',
+                      'tanggal' => date('Y-m-d'),
+                      'jam' => date('H:i:s'),
+                      'petugas' => $this->core->getUserInfo('fullname', null, true),
+                      'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+                      'status' => 'Simpan',
+                      'no_batch' => $gudangbarang['no_batch'],
+                      'no_faktur' => $gudangbarang['no_faktur'],
+                      'keterangan' => 'Penjualan obat bebas'
+                    ]);                  
+                }
             }
-    } else {
+        } else {
             $penjualan = $this->db('mlite_penjualan')
             ->save([
                 'nama_pembeli' => $_POST['nama_pembeli'], 
@@ -163,11 +214,39 @@ class Admin extends AdminModule
                 echo $lastInsertID;
                 if($detail) {
                     $mlite_penjualan_barang = $this->db('mlite_penjualan_barang')->where('id', $_POST['id_barang'])->oneArray();
-                    $this->db('mlite_penjualan_barang')->where('id', $_POST['id_barang'])->update(['stok' => $mlite_penjualan_barang['stok'] - $_POST['jumlah']]);
+                    if($mlite_penjualan_barang) {
+                      $this->db('mlite_penjualan_barang')->where('id', $_POST['id_barang'])->update(['stok' => $mlite_penjualan_barang['stok'] - $_POST['jumlah']]);
+                    } else {
+                      $gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['id_barang'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
+                      $this->db('gudangbarang')->where('kode_brng', $_POST['id_barang'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->update(['stok' => $gudangbarang['stok'] - $_POST['jumlah']]);
+                      $this->db('riwayat_barang_medis')
+                        ->save([
+                          'kode_brng' => $_POST['id_barang'],
+                          'stok_awal' => $gudangbarang['stok'],
+                          'masuk' => '0',
+                          'keluar' => $_POST['jumlah'],
+                          'stok_akhir' => $gudangbarang['stok'] - $_POST['jumlah'],
+                          'posisi' => 'Pemberian Obat',
+                          'tanggal' => date('Y-m-d'),
+                          'jam' => date('H:i:s'),
+                          'petugas' => $this->core->getUserInfo('fullname', null, true),
+                          'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+                          'status' => 'Simpan',
+                          'no_batch' => $gudangbarang['no_batch'],
+                          'no_faktur' => $gudangbarang['no_faktur'],
+                          'keterangan' => 'Penjualan obat bebas'
+                        ]);                          
+                    }
                 }
             }
         }
         exit();
+    }
+
+    public function postHapusItemPenjualan()
+    {
+      $this->db('mlite_penjualan_detail')->where('id', $_POST['id'])->delete();
+      exit();
     }
 
     public function anyRincianPenjualan()
@@ -176,7 +255,7 @@ class Admin extends AdminModule
         $no = 1;
         $rincian_penjualan = [];
         foreach($rows as $row) {
-            $row['no'] = $no;
+            $row['no'] = $no++;
             $rincian_penjualan[] = $row;
         }
         echo $this->draw('rincian.penjualan.html', ['rincian_penjualan' => $rincian_penjualan]);

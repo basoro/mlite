@@ -2,7 +2,7 @@
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <span class="pull-right"><a href="{?=url(ADMIN.'/farmasi/mutasi')?}" class="btn btn-xs btn-info" role="tab">Aktif</a> <a href="{?=url(ADMIN.'/farmasi/mutasi/0')?}" class="btn btn-xs btn-info" role="tab">Tidak Aktif</a></span>
+                <!-- <span class="pull-right"><a href="{?=url(ADMIN.'/farmasi/mutasi')?}" class="btn btn-xs btn-info" role="tab">Aktif</a> <a href="{?=url(ADMIN.'/farmasi/mutasi/0')?}" class="btn btn-xs btn-info" role="tab">Tidak Aktif</a></span> -->
                 <h3 class="panel-title">{$databarang.title}</h3>
             </div>
             <div class="panel-body">
@@ -32,16 +32,19 @@
                         {loop: $value.gudangbarang as $data}
                         <ul>
                           <li>
-                            Lokasi: {$data.nm_bangsal} ({$data.kd_bangsal}) - Stok: {$data.stok}
+                            Lokasi: {$data.nm_bangsal} ({$data.kd_bangsal}) - Stok: {$data.stok} 
+                            <a href="#re_stok" data-kode_brng="{$value.kode_brng}" data-kd_bangsal="{$data.kd_bangsal}">
+                              <i class="fa fa-undo text-danger"></i>
+                            </a> 
                           </li>
                         </ul>
                         {/loop}
                       </td>
     									<td style="vertical-align:top" class="text-right">
                         <a href="#set_stok" data-kode_brng="{$value.kode_brng}" class="btn btn-success btn-xs">
-    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Edit</span>
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Mutasi</span>
     										</a>
-                        {if: $value.status == '1'}
+                        <!-- {if: $value.status == '1'}
                           <a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
       											<i class="fa fa-close"></i> <span class="hidden-xs">Delete</span>
       										</a>
@@ -49,7 +52,7 @@
                           <a href="{$value.restoreURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin merestore?">
       											<i class="fa fa-reply"></i> <span class="hidden-xs">Restore</span>
       										</a>
-                        {/if}
+                        {/if} -->
     									</td>
     								</tr>
     								{/loop}
@@ -115,6 +118,47 @@
     event.stopPropagation();
     return false;
   });
+  $('a[href="#re_stok"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/farmasi/restok?t=' + mlite.token;
+    var kode_brng = $(this).attr("data-kode_brng");
+    var kd_bangsal = $(this).attr("data-kd_bangsal");
+
+    var set_stok = ''
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Re-Stok ke Gudang</label>'
+        + '<input name="stok" id="stok" class="form-control" placeholder="Jumlah re-stok">'
+        + '</div>'
+        + '';
+
+    // tampilkan dialog konfirmasi
+    bootbox.dialog({
+      message: set_stok,
+      title: 'Re-Stok Data Barang',
+      buttons: {
+        main: {
+          label: 'Simpan',
+          className: 'btn-primary',
+          callback() {
+            var stok = $('#stok').val();
+            //console.log(tgl_keluar);
+            $.post(url, {
+              kode_brng: kode_brng,
+              kd_bangsal: kd_bangsal,
+              stok: stok,
+            } ,function(data) {
+              alert('Set Stok telah disimpan!');
+              window.location.href = baseURL + '/farmasi/mutasi?t=' + mlite.token;
+            });
+          }
+        }
+      }
+    });
+    $('select').selectator();
+    event.stopPropagation();
+    return false;
+  });  
   $(document).ready(function(){
     $('.dataTables').DataTable({
       "order": [[ 1, "asc" ]],
