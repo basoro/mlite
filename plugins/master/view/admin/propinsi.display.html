@@ -1,0 +1,87 @@
+<div id="display">
+  <div class="table-responsive no-margin">
+    <table class="table table-striped no-padding">
+      <thead>
+        <tr>
+          <th>Kode Propinsi</th>
+          <th>Nama Propinsi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {if: $propinsi.list}
+        {loop: $propinsi.list}
+        <tr class="edit" data-kd_prop="{$value.kd_prop}">
+          <td>{$value.kd_prop}</td>
+          <td>{$value.nm_prop}</td>
+        </tr>
+        {/loop}
+        {else}
+        <tr>
+          <td colspan="2" class="text-center">Tidak ada data propinsi.</td>
+        </tr>
+        {/if}
+      </tbody>
+    </table>
+  </div>
+  <nav class="clearfix m-t-xs">
+    <div class="col">
+      <ul class="pagination no-margin pull-right">
+      {if: isset($propinsi.halaman)}
+        {if: $propinsi.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $propinsi.halaman > 1}
+        <li class="halaman" data-hal="{?=$propinsi.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$propinsi.halaman} dari {$propinsi.jml_halaman} Hal</a></li>
+        {if: $propinsi.halaman < $propinsi.jml_halaman}
+        <li class="halaman" data-hal="{?=$propinsi.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $propinsi.halaman == $propinsi.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$propinsi.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {else}
+        {if: $propinsi.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $propinsi.halaman > 1}
+        <li class="halaman" data-hal="{?=$propinsi.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$propinsi.halaman} dari {$propinsi.jml_halaman} Hal</a></li>
+        {if: $propinsi.halaman < $propinsi.jml_halaman}
+        <li class="halaman" data-hal="{?=$propinsi.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $propinsi.halaman == $propinsi.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$propinsi.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {/if}
+      </ul>
+    </div>
+  </nav>
+</div>
+<div class="modal fade" id="moduleModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+          ...
+      </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+</script>
