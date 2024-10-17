@@ -15,7 +15,7 @@
           <tbody>
             {if: $penjualan}
             {loop: $penjualan}
-            <tr class="pilih_layanan" data-id="{$value.id}" data-nm_perawatan="{$value.nama_barang}" data-biaya="{$value.harga}">
+            <tr>
               <td>{$value.no}</td>
               <td><a href="{?=url([ADMIN,'penjualan','order', $value.id])?}">{$value.nama_pembeli}</a></td>
               <td>{$value.alamat_pembeli}</td>

@@ -1,13 +1,15 @@
 <div>
     {loop: $detail}
-    {$settings.nama_instansi}<br>
-    {$settings.email} - {$settings.nomor_telepon}<br>
-    Instalasi Farmasi
+    <b>{$settings.nama_instansi}</b><br>
+    {$settings.alamat} - &#9742; {$settings.nomor_telepon}<br>
+    <b>{$farmasi.keterangan_etiket}</b>
     <hr>
     <div align="right">{$tanggal}</div>
-    Pasien : <b>{$pasien} - {$no_rm}</b><br>
-    Klinik : {$value.nm_poli}<br><br>
-    {$value.nama_brng} - {$value.jml} - {$value.aturan_pakai}<br><br><br>
+    a/n : <b>{$pasien} - {$no_rm}</b><br><br>
+    <div style="text-align:center;">
+        {$value.aturan_pakai}<br>
+        <b>Pagi / Siang / Sore / Malam</b><br><br><br>
+    </div>
     <div align="center"><b>SEMOGA LEKAS SEMBUH</b></div>
     {/loop}
 </div>

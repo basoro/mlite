@@ -61,5 +61,11 @@ switch ($version) {
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'username_frista', '')");
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'password_frista', '')");
         $return = '4.1.6';        
+    case '4.1.6':
+        $this->core->db()->pdo()->exec("ALTER TABLE `mlite_settings` CHANGE `module` `module` VARCHAR(100) NOT NULL");
+        $this->core->db()->pdo()->exec("ALTER TABLE `mlite_settings` CHANGE `field` `field` VARCHAR(100) NOT NULL");
+        $this->core->db()->pdo()->exec("ALTER TABLE `mlite_settings` CHANGE `value` `value` VARCHAR(250) NOT NULL");
+        $this->core->db()->pdo()->exec("ALTER TABLE `mlite_settings` ADD UNIQUE KEY `module` (`module`,`field`)");
+        $return = '4.1.7';        
     }
 return $return;

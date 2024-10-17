@@ -14,6 +14,10 @@ use Plugins\Master\Src\JnsPerawatanInap;
 use Plugins\Master\Src\JnsPerawatanLab;
 use Plugins\Master\Src\JnsPerawatanRadiologi;
 use Plugins\Master\Src\Bahasa;
+use Plugins\Master\Src\Propinsi;
+use Plugins\Master\Src\Kabupaten;
+use Plugins\Master\Src\Kecamatan;
+use Plugins\Master\Src\Kelurahan;
 use Plugins\Master\Src\Cacat;
 use Plugins\Master\Src\Suku;
 use Plugins\Master\Src\Perusahaan;
@@ -56,6 +60,10 @@ class Admin extends AdminModule
   protected $jnsperawatanlab;
   protected $jnsperawatanradiologi;
   protected $bahasa;
+  protected $propinsi;
+  protected $kabupaten;
+  protected $kecamatan;
+  protected $kelurahan;
   protected $cacat;
   protected $suku;
   protected $perusahaan;
@@ -97,6 +105,10 @@ class Admin extends AdminModule
         $this->jnsperawatanlab = new JnsPerawatanLab();
         $this->jnsperawatanradiologi = new JnsPerawatanRadiologi();
         $this->bahasa = new Bahasa();
+        $this->propinsi = new Propinsi();
+        $this->kabupaten = new Kabupaten();
+        $this->kecamatan = new Kecamatan();
+        $this->kelurahan = new Kelurahan();
         $this->cacat = new Cacat();
         $this->suku = new Suku();
         $this->perusahaan = new Perusahaan();
@@ -141,6 +153,10 @@ class Admin extends AdminModule
             'Perawatan Laboratorium' => 'jnsperawatanlab',
             'Perawatan Radiologi' => 'jnsperawatanradiologi',
             'Bahasa' => 'bahasa',
+            'Propinsi' => 'propinsi',
+            'Kabupaten' => 'kabupaten',
+            'Kecamatan' => 'kecamatan',
+            'Kelurahan' => 'kelurahan',
             'Cacat Fisik' => 'cacat',
             'Suku Bangsa' => 'suku',
             'Perusahaan Pasien' => 'perusahaan',
@@ -185,6 +201,10 @@ class Admin extends AdminModule
         ['name' => 'Perawatan Laboratorium', 'url' => url([ADMIN, 'master', 'jnsperawatanlab']), 'icon' => 'cubes', 'desc' => 'Master jenis perawatan laboratorium'],
         ['name' => 'Perawatan Radiologi', 'url' => url([ADMIN, 'master', 'jnsperawatanradiologi']), 'icon' => 'cubes', 'desc' => 'Master jenis perawatan radiologi'],
         ['name' => 'Bahasa', 'url' => url([ADMIN, 'master', 'bahasa']), 'icon' => 'cubes', 'desc' => 'Master bahasa'],
+        ['name' => 'Propinsi', 'url' => url([ADMIN, 'master', 'propinsi']), 'icon' => 'cubes', 'desc' => 'Master propinsi'],
+        ['name' => 'Kabupaten', 'url' => url([ADMIN, 'master', 'kabupaten']), 'icon' => 'cubes', 'desc' => 'Master kabupaten'],
+        ['name' => 'Kecamatan', 'url' => url([ADMIN, 'master', 'kecamatan']), 'icon' => 'cubes', 'desc' => 'Master kecamatan'],
+        ['name' => 'Kelurahan', 'url' => url([ADMIN, 'master', 'kelurahan']), 'icon' => 'cubes', 'desc' => 'Master kelurahan'],
         ['name' => 'Cacat Fisik', 'url' => url([ADMIN, 'master', 'cacat']), 'icon' => 'cubes', 'desc' => 'Master cacat fisik'],
         ['name' => 'Suku Bangsa', 'url' => url([ADMIN, 'master', 'suku']), 'icon' => 'cubes', 'desc' => 'Master suku bangsa'],
         ['name' => 'Perusahaan Pasien', 'url' => url([ADMIN, 'master', 'perusahaan']), 'icon' => 'cubes', 'desc' => 'Master perusahaan pasien'],
@@ -780,6 +800,338 @@ class Admin extends AdminModule
         exit();
     }
     /* End Bahasa Section */
+
+    /* Start Propinsi Section */
+    public function getPropinsi()
+    {
+      $this->core->addJS(url([ADMIN, 'master', 'propinsijs']), 'footer');
+      $return = $this->propinsi->getIndex();
+      return $this->draw('propinsi.html', [
+        'propinsi' => $return
+      ]);
+
+    }
+
+    public function anyPropinsiForm()
+    {
+        $return = $this->propinsi->anyForm();
+        echo $this->draw('propinsi.form.html', ['propinsi' => $return]);
+        exit();
+    }
+
+    public function anyPropinsiDisplay()
+    {
+        $return = $this->propinsi->anyDisplay();
+        echo $this->draw('propinsi.display.html', ['propinsi' => $return]);
+        exit();
+    }
+
+    public function postPropinsiSave()
+    {
+      $this->propinsi->postSave();
+      exit();
+    }
+
+    public function postPropinsiHapus()
+    {
+      $this->propinsi->postHapus();
+      exit();
+    }
+
+    public function getPropinsiJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/propinsi.js');
+        exit();
+    }
+
+    public function getImportPropinsi()
+    {
+      $fileName = 'https://basoro.id/downloads/provinces.csv';
+      echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
+
+      $csvData = file_get_contents($fileName);
+      if($csvData) {
+        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] File '.$filename.' tidak ditemukan'."<br>";
+        exit();
+      }
+
+      $lines = explode(PHP_EOL, $csvData);
+      $array = array();
+      foreach ($lines as $line) {
+          $array[] = str_getcsv($line);
+      }
+
+      foreach ($array as $data){   
+        $kode = $data[0];
+        $nama = isset_or($data[1], '');
+        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."')";
+      }
+      $str = implode(",", $value_query);
+      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
+      $result = $this->core->db()->pdo()->exec("INSERT INTO propinsi (kd_prop, nm_prop) VALUES $str ON DUPLICATE KEY UPDATE kd_prop=VALUES(kd_prop)");
+      if($result) {
+        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
+        exit();
+      }
+      
+      exit();
+    }
+
+    /* End Propinsi Section */    
+
+    /* Start Kabupaten Section */
+    public function getKabupaten()
+    {
+      $this->core->addJS(url([ADMIN, 'master', 'kabupatenjs']), 'footer');
+      $return = $this->kabupaten->getIndex();
+      return $this->draw('kabupaten.html', [
+        'kabupaten' => $return
+      ]);
+
+    }
+
+    public function anyKabupatenForm()
+    {
+        $return = $this->kabupaten->anyForm();
+        echo $this->draw('kabupaten.form.html', ['kabupaten' => $return]);
+        exit();
+    }
+
+    public function anyKabupatenDisplay()
+    {
+        $return = $this->kabupaten->anyDisplay();
+        echo $this->draw('kabupaten.display.html', ['kabupaten' => $return]);
+        exit();
+    }
+
+    public function postKabupatenSave()
+    {
+      $this->kabupaten->postSave();
+      exit();
+    }
+
+    public function postKabupatenHapus()
+    {
+      $this->kabupaten->postHapus();
+      exit();
+    }
+
+    public function getKabupatenJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/kabupaten.js');
+        exit();
+    }
+
+    public function getImportKabupaten()
+    {
+      $fileName = 'https://basoro.id/downloads/regencies.csv';
+      echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
+
+      $csvData = file_get_contents($fileName);
+      if($csvData) {
+        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] File '.$filename.' tidak ditemukan'."<br>";
+        exit();
+      }
+
+      $lines = explode(PHP_EOL, $csvData);
+      $array = array();
+      foreach ($lines as $line) {
+          $array[] = str_getcsv($line);
+      }
+
+      foreach ($array as $data){   
+        $kode = $data[0];
+        $nama = $data[2];
+        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."')";
+      }
+      $str = implode(",", $value_query);
+      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
+      $result = $this->core->db()->pdo()->exec("INSERT INTO kabupaten (kd_kab, nm_kab) VALUES $str ON DUPLICATE KEY UPDATE kd_kab=VALUES(kd_kab)");
+      if($result) {
+        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
+        exit();
+      }
+
+      exit();
+    }
+
+    /* End Kabupaten Section */    
+
+    /* Start Kecamatan Section */
+    public function getKecamatan()
+    {
+      $this->core->addJS(url([ADMIN, 'master', 'kecamatanjs']), 'footer');
+      $return = $this->kecamatan->getIndex();
+      return $this->draw('kecamatan.html', [
+        'kecamatan' => $return
+      ]);
+
+    }
+
+    public function anyKecamatanForm()
+    {
+        $return = $this->kecamatan->anyForm();
+        echo $this->draw('kecamatan.form.html', ['kecamatan' => $return]);
+        exit();
+    }
+
+    public function anyKecamatanDisplay()
+    {
+        $return = $this->kecamatan->anyDisplay();
+        echo $this->draw('kecamatan.display.html', ['kecamatan' => $return]);
+        exit();
+    }
+
+    public function postKecamatanSave()
+    {
+      $this->kecamatan->postSave();
+      exit();
+    }
+
+    public function postKecamatanHapus()
+    {
+      $this->kecamatan->postHapus();
+      exit();
+    }
+
+    public function getKecamatanJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/kecamatan.js');
+        exit();
+    }
+
+    public function getImportKecamatan()
+    {
+      $fileName = 'https://basoro.id/downloads/districts.csv';
+      echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
+
+      $csvData = file_get_contents($fileName);
+      if($csvData) {
+        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] File '.$filename.' tidak ditemukan'."<br>";
+        exit();
+      }
+
+      $lines = explode(PHP_EOL, $csvData);
+      $array = array();
+      foreach ($lines as $line) {
+          $array[] = str_getcsv($line);
+      }
+
+      foreach ($array as $data){   
+        $kode = $data[0];
+        $nama = $data[2];
+        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."')";
+      }
+      $str = implode(",", $value_query);
+      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
+      $result = $this->core->db()->pdo()->exec("INSERT INTO kecamatan (kd_kec, nm_kec) VALUES $str ON DUPLICATE KEY UPDATE kd_kec=VALUES(kd_kec)");
+      if($result) {
+        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
+        exit();
+      }
+
+      exit();
+    }
+
+    /* End Kecamatan Section */    
+
+    /* Start Kelurahan Section */
+    public function getKelurahan()
+    {
+      $this->core->addJS(url([ADMIN, 'master', 'kelurahanjs']), 'footer');
+      $return = $this->kelurahan->getIndex();
+      return $this->draw('kelurahan.html', [
+        'kelurahan' => $return
+      ]);
+
+    }
+
+    public function anyKelurahanForm()
+    {
+        $return = $this->kelurahan->anyForm();
+        echo $this->draw('kelurahan.form.html', ['kelurahan' => $return]);
+        exit();
+    }
+
+    public function anyKelurahanDisplay()
+    {
+        $return = $this->kelurahan->anyDisplay();
+        echo $this->draw('kelurahan.display.html', ['kelurahan' => $return]);
+        exit();
+    }
+
+    public function postKelurahanSave()
+    {
+      $this->kelurahan->postSave();
+      exit();
+    }
+
+    public function postKelurahanHapus()
+    {
+      $this->kelurahan->postHapus();
+      exit();
+    }
+
+    public function getKelurahanJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/kelurahan.js');
+        exit();
+    }
+
+    public function getImportKelurahan()
+    {
+      $fileName = 'https://basoro.id/downloads/villages.csv';
+      echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
+
+      $csvData = file_get_contents($fileName);
+      if($csvData) {
+        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] File '.$filename.' tidak ditemukan'."<br>";
+        exit();
+      }
+
+      $lines = explode(PHP_EOL, $csvData);
+      $array = array();
+      foreach ($lines as $line) {
+          $array[] = str_getcsv($line);
+      }
+
+      foreach ($array as $data){   
+        $kode = $data[0];
+        $nama = $data[2];
+        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."')";
+      }
+      $str = implode(",", $value_query);
+      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
+      $result = $this->core->db()->pdo()->exec("INSERT INTO kelurahan (kd_kel, nm_kel) VALUES $str ON DUPLICATE KEY UPDATE kd_kel=VALUES(kd_kel)");
+      if($result) {
+        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
+        exit();
+      }
+
+      exit();
+    }
+
+    /* End Kelurahan Section */   
 
     /* Start Cacat Fisik Section */
     public function getCacat()

@@ -372,9 +372,9 @@ CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_response` (
 
 CREATE TABLE IF NOT EXISTS `mlite_settings` (
   `id` int(11) NOT NULL,
-  `module` text,
-  `field` text,
-  `value` text
+  `module` varchar(100) NOT NULL,
+  `field` varchar(100) NOT NULL,
+  `value` varchar(250) NOT NULL
 ) ENGINE=MyISAM AUTO_INCREMENT=151 DEFAULT CHARSET=utf8;
 
 INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
@@ -802,7 +802,8 @@ ALTER TABLE `mlite_satu_sehat_response`
   ADD PRIMARY KEY (`no_rawat`);
 
 ALTER TABLE `mlite_settings`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `module` (`module`,`field`);
 
 ALTER TABLE `mlite_subrekening`
   ADD PRIMARY KEY (`kd_rek2`),

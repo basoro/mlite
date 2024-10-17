@@ -486,6 +486,7 @@ class Admin extends AdminModule
         'no_rm' => $no_rm, 
         'tanggal' => $tanggal, 
         'settings' => $this->settings('settings'), 
+        'farmasi' => $this->settings('farmasi'), 
         'detail' => $detail_pemberian_obat
       ]);
 
