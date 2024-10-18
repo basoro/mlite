@@ -651,14 +651,31 @@ class Admin extends AdminModule
 
     public function anyLayanan()
     {
+      $poliklinik = $this->db('poliklinik')->select('kd_poli')->where('status', '1')->toArray();
+      $poliklinik = implode(",", array_column($poliklinik, 'kd_poli'));
+      $poliklinik = explode(',', $poliklinik);
+      if($this->core->getUserInfo('role', null, true) != 'admin') {
+        $poliklinik = explode(',', $this->core->getUserInfo('cap', null, true));
+      }
       $layanan = $this->db('jns_perawatan')
         ->where('status', '1')
         ->like('nm_perawatan', '%'.$_POST['layanan'].'%')
+        ->in('kd_poli', $poliklinik)
         ->limit(10)
         ->toArray();
       echo $this->draw('layanan.html', ['layanan' => $layanan]);
       exit();
     }
+
+    public function postGetLayanan()
+    {
+      $layanan = $this->db('jns_perawatan')
+        ->where('status', '1')
+        ->where('kd_jenis_prw', $_POST['layanan'])
+        ->oneArray();
+      echo json_encode($layanan);
+      exit();
+    }    
 
     public function anyObat()
     {
