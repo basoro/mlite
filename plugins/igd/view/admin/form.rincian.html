@@ -202,16 +202,33 @@
       $('#rawat_jl_dr').hide();
       $('#rawat_jl_pr').hide();
       $('#pilih_provider').change(function(){
-          if($('#pilih_provider').val() == 'rawat_jl_dr') {
-              $('#rawat_jl_dr').show();
-              $('#rawat_jl_pr').hide();
-          } else if($('#pilih_provider').val() == 'rawat_jl_pr') {
-              $('#rawat_jl_dr').hide();
-              $('#rawat_jl_pr').show();
-          } else {
-              $('#rawat_jl_dr').show();
-              $('#rawat_jl_pr').show();
-          }
+        var baseURL = mlite.url + '/' + mlite.admin;
+          var url    = baseURL + '/igd/getlayanan?t=' + mlite.token;
+          var layanan = $('input:hidden[name=kd_jenis_prw]').val();
+
+          $.post(url, {layanan: layanan} ,function(data) {
+            // console.log(data);
+            data = JSON.parse(data);
+            var total_byrdr =data.total_byrdr;            
+            var total_byrpr = data.total_byrpr;            
+            var total_byrdrpr = data.total_byrdrpr;            
+
+            if($('#pilih_provider').val() == 'rawat_jl_dr') {
+                $('#biaya').val(total_byrdr);
+                $('#rawat_jl_dr').show();
+                $('#rawat_jl_pr').hide();
+            } else if($('#pilih_provider').val() == 'rawat_jl_pr') {
+                $('#biaya').val(total_byrpr);
+                $('#rawat_jl_dr').hide();
+                $('#rawat_jl_pr').show();
+            } else {
+                $('#biaya').val(total_byrdrpr);
+                $('#rawat_jl_dr').show();
+                $('#rawat_jl_pr').show();
+            }
+
+          });
+
       });
   });
 </script>
