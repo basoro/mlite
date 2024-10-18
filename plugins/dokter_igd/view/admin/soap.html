@@ -84,7 +84,25 @@
       <tr>
         <td>
           <div class="">
-            {if: $this->core->getUserInfo('username', !empty($_SESSION['mlite_user'])) == $value.nip}
+            <button type="button" name="button" class="btn btn-primary btn-xs copy_soap"
+              data-suhu_tubuh="{$value.suhu_tubuh}"
+              data-tensi="{$value.tensi}"
+              data-nadi="{$value.nadi}"
+              data-respirasi="{$value.respirasi}"
+              data-tinggi="{$value.tinggi}"
+              data-berat="{$value.berat}"
+              data-gcs="{$value.gcs}"
+              data-kesadaran="{$value.kesadaran}"
+              data-alergi="{$value.alergi}"
+              data-lingkar_perut="{$value.lingkar_perut}"
+              data-keluhan="{$value.keluhan}"
+              data-pemeriksaan="{$value.pemeriksaan}"
+              data-penilaian="{$value.penilaian}"
+              data-rtl="{$value.rtl}"
+              data-instruksi="{$value.instruksi}"
+              data-evaluasi="{$value.evaluasi}"
+              data-spo2="{$value.spo2}"
+              ><span class="fa fa-copy"></span><span class="hidden-xs"> Copy</span></button>
             <button type="button" name="button" class="btn btn-success btn-xs edit_soap"
               data-no_rawat="{$value.no_rawat}"
               data-tgl_perawatan="{$value.tgl_perawatan}"
@@ -106,13 +124,14 @@
               data-instruksi="{$value.instruksi}"
               data-evaluasi="{$value.evaluasi}"
               data-spo2="{$value.spo2}"
+              {if: $this->core->getUserInfo('username', $_SESSION['mlite_user']) != $value.nip}disabled{/if}
               ><span class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
             <button type="button" name="button" class="btn btn-danger btn-xs hapus_soap"
               data-no_rawat="{$value.no_rawat}"
               data-tgl_perawatan="{$value.tgl_perawatan}"
               data-jam_rawat="{$value.jam_rawat}"
+              {if: $this->core->getUserInfo('username', $_SESSION['mlite_user']) != $value.nip}disabled{/if}
               ><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
-              {/if}
           </div>
         </td>
         <th colspan="2">Plan</th>
@@ -170,7 +189,23 @@
       <tr>
         <td>
           <div class="">
-            {if: $this->core->getUserInfo('username', !empty($_SESSION['mlite_user'])) == $value.nip}
+            <button type="button" name="button" class="btn btn-primary btn-xs copy_soap"
+              data-suhu_tubuh="{$data.suhu_tubuh}"
+              data-tensi="{$data.tensi}"
+              data-nadi="{$data.nadi}"
+              data-respirasi="{$data.respirasi}"
+              data-tinggi="{$data.tinggi}"
+              data-berat="{$data.berat}"
+              data-gcs="{$data.gcs}"
+              data-alergi="{$data.alergi}"
+              data-keluhan="{$data.keluhan}"
+              data-pemeriksaan="{$data.pemeriksaan}"
+              data-penilaian="{$data.penilaian}"
+              data-rtl="{$data.rtl}"
+              data-instruksi="{$data.instruksi}"
+              data-evaluasi="{$data.evaluasi}"
+              data-spo2="{$data.spo2}"
+              ><span class="fa fa-copy"></span><span class="hidden-xs"> Copy</span></button>
             <button type="button" name="button" class="btn btn-success btn-xs edit_soap"
               data-no_rawat="{$data.no_rawat}"
               data-tgl_perawatan="{$data.tgl_perawatan}"
@@ -190,13 +225,14 @@
               data-instruksi="{$data.instruksi}"
               data-evaluasi="{$data.evaluasi}"
               data-spo2="{$data.spo2}"
+              {if: $this->core->getUserInfo('username', $_SESSION['mlite_user']) != $value.nip}disabled{/if}
               ><span class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
             <button type="button" name="button" class="btn btn-danger btn-xs hapus_soap"
               data-no_rawat="{$data.no_rawat}"
               data-tgl_perawatan="{$data.tgl_perawatan}"
               data-jam_rawat="{$data.jam_rawat}"
+              {if: $this->core->getUserInfo('username', $_SESSION['mlite_user']) != $value.nip}disabled{/if}
               ><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
-              {/if}
           </div>
         </td>
         <th colspan="2">Plan</th>
