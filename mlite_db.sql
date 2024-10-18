@@ -2439,7 +2439,7 @@ CREATE TABLE `mlite_settings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `module` varchar(100) NOT NULL,
   `field` varchar(100) NOT NULL,
-  `value` varchar(250) NOT NULL, 
+  `value` varchar(1000) NOT NULL, 
   PRIMARY KEY (`id`), 
   UNIQUE KEY `module` (`module`,`field`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

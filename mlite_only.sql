@@ -374,7 +374,7 @@ CREATE TABLE IF NOT EXISTS `mlite_settings` (
   `id` int(11) NOT NULL,
   `module` varchar(100) NOT NULL,
   `field` varchar(100) NOT NULL,
-  `value` varchar(250) NOT NULL
+  `value` varchar(1000) NOT NULL
 ) ENGINE=MyISAM AUTO_INCREMENT=151 DEFAULT CHARSET=utf8;
 
 INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
