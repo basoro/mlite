@@ -1128,6 +1128,16 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postGetLayanan()
+    {
+      $layanan = $this->db('jns_perawatan')
+        ->where('status', '1')
+        ->where('kd_jenis_prw', $_POST['layanan'])
+        ->oneArray();
+      echo json_encode($layanan);
+      exit();
+    }    
+
     public function anyBerkasDigital()
     {
       $berkas_digital = $this->db('berkas_digital_perawatan')->where('no_rawat', $_POST['no_rawat'])->toArray();
