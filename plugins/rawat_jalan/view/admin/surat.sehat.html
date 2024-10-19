@@ -13,22 +13,74 @@
     font-family: georgia;
   }
   @media print {
-    #printPageButton {
+    #saveButton, #printPageButton {
       display: none;
     }
   }
 </style>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
 <script>
   function Cetak()
   {
       window.print();
+  }  
+  function Simpan()
+  {
+    var url = "{?=url([ADMIN,'rawat_jalan','simpansuratsehat'])?}";
+    var no_rawat = "{$no_rawat}";
+    var nomor_surat = $("#nomor_surat").val();
+    var no_rkm_medis = "{$pasien.no_rkm_medis}";
+    var nm_pasien = "{$pasien.nm_pasien}";
+    var tgl_lahir = "{$pasien.tgl_lahir}";
+    var umur = "{?=hitungUmur($pasien.tgl_lahir)?}";
+    var jk = "{$pasien.jk}";
+    var berat_badan = $("#nomor_surat").val();
+    var tinggi_badan =$("#nomor_surat").val();
+    var tensi = $("#nomor_surat").val();
+    var gol_darah = $("#nomor_surat").val();
+    var riwayat_penyakit = $("#nomor_surat").val();
+    var keperluan = $("#nomor_surat").val();
+    var dokter = "{$nm_dokter}";
+    var petugas = "{?=$this->core->getUserInfo('username', $_SESSION['mlite_user'])?}";
+
+    $.post(
+      url, 
+      {
+        nomor_surat: nomor_surat, 
+        no_rawat: no_rawat, 
+        no_rkm_medis: no_rkm_medis, 
+        nm_pasien: nm_pasien, 
+        tgl_lahir: tgl_lahir, 
+        umur: umur, 
+        jk: jk, 
+        berat_badan: berat_badan, 
+        tinggi_badan: tinggi_badan, 
+        tensi: tensi, 
+        gol_darah: gol_darah, 
+        riwayat_penyakit: riwayat_penyakit, 
+        keperluan: keperluan, 
+        dokter: dokter, 
+        petugas: petugas
+      },
+      function(data) {
+        data = JSON.parse(data);
+        console.log(data);
+        if(data.status == 'success') {
+          alert('Sukses');
+        }
+        if(data.status == 'error') {
+          alert(data.msg);
+        }
+      }
+    );
   }  
   function auto_grow(element) {
     element.style.height = "5px";
     element.style.height = (element.scrollHeight) + "px";
   }  
 </script>
-
 <div style="width:960px;">
   <table>
     <thead>
@@ -51,7 +103,7 @@
   </table>
   <center>
     <h2 style="margin-bottom:0px !important;border-bottom: 2px solid #000;width:400px;">SURAT KETERANGAN SEHAT</h2>
-    Nomor: <input type="text" class="form-control" name="" value="" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"><br><br>
+    Nomor: <input type="text" class="form-control" id="nomor_surat" name="" value="" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"><br><br>
   </center>
   <br><br>
   <table>
@@ -133,12 +185,17 @@
         <td colspan="2" width="700">
         </td>
         <td width="180"><br><br>
-          {$settings.kota}, {?=date('Y-m-d')?}<br>
-          <br><br><br><br><br><br><br><br>
+          {$settings.kota}, {?=date('Y-m-d')?}<br><br>
+          <div id="qrcode_dokter" style="margin-top:10px;width:80px;"></div><br>
           {$nm_dokter}
         </td>
       </tr>
   </table>
 </div>
+<script>
+  	jQuery('#qrcode_dokter').qrcode({
+  		text	: "Dokter: {$nm_dokter}, SIP: {$sip_dokter}"
+  	});
+</script>
 <br><br>
-<button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>
+<button id="saveButton" onclick="Simpan()">&#9635; Simpan</button> <button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>

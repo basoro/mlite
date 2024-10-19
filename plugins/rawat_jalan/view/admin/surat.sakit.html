@@ -24,6 +24,9 @@
       window.print();
   }  
 </script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
 
 <div style="width:960px;">
   <table>
@@ -100,12 +103,17 @@
         <td colspan="2" width="700">
         </td>
         <td width="180"><br><br>
-          {$settings.kota}, {?=date('Y-m-d')?}<br>
-          <br><br><br><br><br><br><br><br>
+          {$settings.kota}, {?=date('Y-m-d')?}<br><br>
+          <div id="qrcode_dokter" style="margin-top:10px;width:80px;"></div><br>
           {$nm_dokter}
         </td>
       </tr>
   </table>
 </div>
+<script>
+  	jQuery('#qrcode_dokter').qrcode({
+  		text	: "Dokter: {$nm_dokter}, SIP: {$sip_dokter}"
+  	});
+</script>
 <br><br>
 <button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>
