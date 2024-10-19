@@ -924,3 +924,24 @@ ALTER TABLE `mlite_satu_sehat_response`
 ALTER TABLE `mlite_subrekening`
   ADD CONSTRAINT `mlite_subrekening_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON UPDATE CASCADE,
   ADD CONSTRAINT `mlite_subrekening_ibfk_2` FOREIGN KEY (`kd_rek2`) REFERENCES `mlite_rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+CREATE TABLE `mlite_surat_sehat` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nomor_surat` varchar(100) DEFAULT NULL,
+  `no_rawat` varchar(100) DEFAULT NULL,
+  `no_rkm_medis` varchar(100) DEFAULT NULL,
+  `nm_pasien` varchar(100) DEFAULT NULL,
+  `tgl_lahir` varchar(100) DEFAULT NULL,
+  `umur` varchar(100) DEFAULT NULL,
+  `jk` varchar(100) DEFAULT NULL,
+  `berat_badan` varchar(100) DEFAULT NULL,
+  `tinggi_badan` varchar(100) DEFAULT NULL,
+  `tensi` varchar(100) DEFAULT NULL,
+  `gol_darah` varchar(100) DEFAULT NULL,
+  `riwayat_penyakit` varchar(100) DEFAULT NULL,
+  `keperluan` varchar(100) DEFAULT NULL,
+  `dokter` varchar(100) DEFAULT NULL,
+  `petugas` varchar(100) DEFAULT NULL, 
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
