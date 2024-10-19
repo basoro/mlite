@@ -4608,6 +4608,26 @@ CREATE TABLE `utd_stok_darah` (
 
 
 
+CREATE TABLE `mlite_surat_sehat` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nomor_surat` varchar(100) DEFAULT NULL,
+  `no_rawat` varchar(100) DEFAULT NULL,
+  `no_rkm_medis` varchar(100) DEFAULT NULL,
+  `nm_pasien` varchar(100) DEFAULT NULL,
+  `tgl_lahir` varchar(100) DEFAULT NULL,
+  `umur` varchar(100) DEFAULT NULL,
+  `jk` varchar(100) DEFAULT NULL,
+  `berat_badan` varchar(100) DEFAULT NULL,
+  `tinggi_badan` varchar(100) DEFAULT NULL,
+  `tensi` varchar(100) DEFAULT NULL,
+  `gol_darah` varchar(100) DEFAULT NULL,
+  `riwayat_penyakit` varchar(100) DEFAULT NULL,
+  `keperluan` varchar(100) DEFAULT NULL,
+  `dokter` varchar(100) DEFAULT NULL,
+  `petugas` varchar(100) DEFAULT NULL, 
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
