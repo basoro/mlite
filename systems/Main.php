@@ -185,7 +185,9 @@ abstract class Main
         $hasBacklink = strpos($checkBuffer, base64_decode('UG93ZXJlZCBieSA8YSBocmVmPSJodHRwczovL21saXRlLmlkLyI+bUxJVEU8L2E+')) !== false;
         $hasHeader = get_headers_list('X-Created-By') === 'Medic LITE Indonesia <mlite.id>';
         $license = License::verify($core->settings->get('settings.license'));
-        if (($license == License::UNREGISTERED) && $isHTML && (!$hasBacklink)) {
+        if (!$core->settings->get('settings')) {
+            redirect(url('install.php'));
+        } elseif (($license == License::UNREGISTERED) && $isHTML && (!$hasBacklink)) {
             return '<center><strong>Ciluk baaa......</strong><br />Menghapus trade mark saya yaa....! Upsss....</center>';
         //} elseif ($license == License::TIME_OUT) {
         //    return $buffer.'<script>alert("Upstream Server\nCan\'t connect to server and verify it.");</script>';
