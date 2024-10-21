@@ -339,9 +339,10 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
   var tgl_peresepan = $(this).attr("data-tgl_peresepan");
   var jam_peresepan = $(this).attr("data-jam_peresepan");
   var jenis_racikan = $(this).attr("data-racikan");
+  var penyerahan = $(this).attr("data-penyerahan");
 
   // tampilkan dialog konfirmasi
-  bootbox.confirm("Apakah Anda yakin ingin menvalidasi data resep ini?", function(result){
+  bootbox.confirm("Apakah Anda yakin ingin menvalidasi/menyerahkan data resep ini?", function(result){
     // ketika ditekan tombol ok
     if (result){
       // mengirimkan perintah penghapusan
@@ -350,7 +351,8 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
         no_rawat: no_rawat,
         tgl_peresepan: tgl_peresepan,
         jam_peresepan: jam_peresepan,
-        jenis_racikan: jenis_racikan
+        jenis_racikan: jenis_racikan,
+        penyerahan: penyerahan
       } ,function(data) {
         console.log(data);
         var url = baseURL + '/apotek_ralan/rincian?t=' + mlite.token;
@@ -360,7 +362,7 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
           $("#rincian").html(data).show();
         });
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data rincian rawat jalan telah divalidasi!"+
+        "Data rincian rawat jalan telah disimpan!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
       });

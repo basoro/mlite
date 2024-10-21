@@ -82,7 +82,7 @@
                 {if: $display}
                 {loop: $display}
                 <li style="padding:10px;">
-                  <span class="noantrian"><b>{$value.noantrian}</b></span> {$value.nm_pasien} - [{$value.no_rkm_medis}], Resep: {$value.jenis_resep} <span class="pull-right">Status: <b {if: $value.status_resep == 'Disiapkan'}style="color:red;"{/if}>{$value.status_resep}</b></span><br>
+                  <span class="noantrian"><b>{$value.noantrian}</b></span> {$value.nm_pasien} - [{$value.no_rkm_medis}], Resep: {$value.jenis_resep} <span class="pull-right">Status: <b {if: $value.status_resep == 'Disiapkan'}style="color:red;"{/if} {if: $value.status_resep == 'Diserahkan'}style="color:green;"{/if}>{$value.status_resep}</b></span><br>
                 </li>
                 {/loop}
                 {else}
