@@ -1281,7 +1281,7 @@ class Site extends SiteModule
     public function getDisplayAntrianApotek()
     {
         $logo  = $this->settings->get('settings.logo');
-        $title = 'Display Antrian Laboratorium';
+        $title = 'Display Antrian Apotek';
         $display = $this->_resultDisplayAntrianApotek();
 
         $date = date('Y-m-d');

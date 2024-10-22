@@ -207,14 +207,25 @@ $(document).ready(function () {
             if(i == nama_field.options.length-1){
                 ISI_SEARCH_ISI = ISI_SEARCH_ISI + "<option value='" + nama_field.options[i].value + "'>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "</option>\n";
                 ISI_HEAD_TABLE = ISI_HEAD_TABLE + "<th>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "</th>\n";
-                ISI_FORM_EDIT = ISI_FORM_EDIT + "<label>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "<br /></label><input type='text' class='form-control' id='" + nama_field.options[i].value + "' name='" + nama_field.options[i].value + "' /><div><span class='error'></span></div>\n";
-
+                ISI_FORM_EDIT += "  <div class='col-xxl-3 col-lg-4 col-sm-6'>\n";
+                ISI_FORM_EDIT += "  <div class='form-group'>\n";
+                ISI_FORM_EDIT += "      <label class='form-label' for='" + nama_field.options[i].value + "'>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "</label>\n";
+                ISI_FORM_EDIT += "      <input type='text' class='form-control' id='" + nama_field.options[i].value + "' name='" + nama_field.options[i].value + "' />\n";
+                ISI_FORM_EDIT += "    <div class='error'></div>\n";
+                ISI_FORM_EDIT += "  </div>\n";
+                ISI_FORM_EDIT += "  </div>\n";
             }
             else
             {
                 ISI_SEARCH_ISI = ISI_SEARCH_ISI + "<option value='" + nama_field.options[i].value + "'>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "</option>\n";
                 ISI_HEAD_TABLE = ISI_HEAD_TABLE + "<th>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "</th>\n";
-                ISI_FORM_EDIT = ISI_FORM_EDIT + "<label>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "<br /></label><input type='text' class='form-control' id='" + nama_field.options[i].value + "' name='" + nama_field.options[i].value + "' /><div><span class='error'></span></div>\n";
+                ISI_FORM_EDIT += "  <div class='col-xxl-3 col-lg-4 col-sm-6'>\n";
+                ISI_FORM_EDIT += "  <div class='form-group'>\n";
+                ISI_FORM_EDIT += "      <label class='form-label' for='" + nama_field.options[i].value + "'>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "</label>\n";
+                ISI_FORM_EDIT += "      <input type='text' class='form-control' id='" + nama_field.options[i].value + "' name='" + nama_field.options[i].value + "' />\n";
+                ISI_FORM_EDIT += "    <div class='error'></div>\n";
+                ISI_FORM_EDIT += "  </div>\n";
+                ISI_FORM_EDIT += "  </div>\n";
             }
         }
 

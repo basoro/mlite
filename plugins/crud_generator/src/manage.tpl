@@ -74,9 +74,11 @@
         </h4>
       </div>
       <div class="modal-body">
-        <form name="form_NAMA_TABLE">
+        <div class="row">
+          <form name="form_NAMA_TABLE">
           <input type="hidden" class="form-control" id="typeact" /> 
           FORM_EDIT
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>

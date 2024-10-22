@@ -13,10 +13,14 @@
                         </div>
                         <div style="margin-top: 10px;margin-bottom: 10px;">
                             <label class="input-group-text" for="inputGroupSelect01" style="width: 100px;">Tables</label>
-                            <select id="table_txt" class="form-control" name="table_txt">    
-                            </select>
+                            <div class="input-group">
+                                <select id="table_txt" class="form-control" name="table_txt">    
+                                </select>
+                                <span class="input-group-addon text-success" id="tambah_data_tabel_database"><i class="fa fa-plus"></i></span>
+                                <span class="input-group-addon text-primary" id="database"><i class="fa fa-search"></i></span>
+                            </div>
                         </div>
-                        <div style="margin-top: 10px;margin-bottom: 50px;">
+                        <div style="margin-top: 10px;margin-bottom: 20px;">
                           <label class="input-group-text" for="inputGroupSelect01" style="width: 100px;">Fields</label>
                           <div class="input-group">
                             <select id="fields_txt" class="form-control" name="fields_txt">
@@ -24,10 +28,16 @@
                             <span class="input-group-addon text-danger" id="field_remove"><i class="fa fa-close"></i></span>
                           </div>
                         </div>
-                  
-                        <button id="database" name="database" class="btn btn-primary" type="button" style="width: 100%;">1. Pilih table</button>
-                        <button class="btn btn-primary" id="open" name="open" type="button" style="width: 100%;margin: 0;margin-top: 10px;">2. Load Files</button>
-                        <button class="btn btn-primary" id="generate" name="generate" type="button" style="width: 100%;margin: 0;margin-top: 10px;">3. Generate</button>              
+                        <div class="row">
+                            <div class="col-md-4">
+                                <button class="btn btn-primary" id="open" name="open" type="button" style="width: 100%;margin: 0;margin-top: 10px;">Load Files</button>
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-danger" id="generate" name="generate" type="button" style="width: 100%;margin: 0;margin-top: 10px;">Generate</button>                                              
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-9">
                         <ul class="nav nav-tabs">

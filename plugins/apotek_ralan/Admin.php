@@ -161,6 +161,8 @@ class Admin extends AdminModule
 
     public function postValidasiResep()
     {
+      $tgl_rawat = date('Y-m-d');
+      $jam_rawat = date('H:i:s');
       if($_POST['penyerahan'] == 'penyerahan') {
         $this->db('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_penyerahan' => $tgl_rawat, 'jam_penyerahan' => $jam_rawat]);
       } else {
@@ -183,8 +185,6 @@ class Admin extends AdminModule
           ->where('resep_dokter_racikan.no_racik=resep_dokter_racikan_detail.no_racik')
           ->toArray();
         $get_resep_dokter = array_merge($get_resep_dokter_nonracikan, $get_resep_dokter_racikan);
-        $tgl_rawat = date('Y-m-d');
-        $jam_rawat = date('H:i:s');
         foreach ($get_resep_dokter as $item) {
 
           $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $item['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
