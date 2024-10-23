@@ -1,7 +1,7 @@
-.dataTables_wrapper th, td { 
+#tbl_detail_pemberian_obat th, #tbl_detail_pemberian_obat td, #forTable_detail_pemberian_obat th, #forTable_detail_pemberian_obat td {
   white-space: nowrap; 
 }
-#tbl_detail_pemberian_obat th, #tbl_detail_pemberian_obat td {
+.dataTables_wrapper th, .dataTables_wrapper td {
   white-space: nowrap; 
 }
 .pmd-datatable-pagination {

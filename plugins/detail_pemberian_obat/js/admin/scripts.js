@@ -18,29 +18,15 @@ jQuery().ready(function () {
                 var search_field_detail_pemberian_obat = $('#search_field_detail_pemberian_obat').val();
                 var search_text_detail_pemberian_obat = $('#search_text_detail_pemberian_obat').val();
                 
-                var from_date = $('#tanggal_awal').val();
-                var to_date = $('#tanggal_akhir').val();
-
                 data.search_field_detail_pemberian_obat = search_field_detail_pemberian_obat;
                 data.search_text_detail_pemberian_obat = search_text_detail_pemberian_obat;
-
-                data.searchByFromdate = from_date;
-                data.searchByTodate = to_date;
                 
             }
         },
-        "fnDrawCallback": function () {
-            $('.selectator').selectator();
-            $(".datepicker").datetimepicker({
-              format: 'YYYY-MM-DD',
-              locale: 'id'
-            });
-          },          
         "columns": [
 { 'data': 'tgl_perawatan' },
 { 'data': 'jam' },
 { 'data': 'no_rawat' },
-{ 'data': 'nm_pasien' },
 { 'data': 'kode_brng' },
 { 'data': 'h_beli' },
 { 'data': 'biaya_obat' },
@@ -68,8 +54,7 @@ jQuery().ready(function () {
 { 'targets': 10},
 { 'targets': 11},
 { 'targets': 12},
-{ 'targets': 13},
-{ 'targets': 14}
+{ 'targets': 13}
 
         ],
         buttons: [],
@@ -167,55 +152,11 @@ var no_faktur= $('#no_faktur').val();
     $('#search_text_detail_pemberian_obat').keyup(function () {
         var_tbl_detail_pemberian_obat.draw();
     });
-
-    $('#tanggal_filter').click(function () {
-        var_tbl_detail_pemberian_obat.draw();
-    });
-
-    $("#search_field_detail_pemberian_obat").on('change', function() {
-        if ($(this).val() == 'kode_brng'){
-          $('#tempat_pilih').empty();
-          $('#search_text_detail_pemberian_obat').remove();
-          $('#tempat_pilih').append('<select class="form-control" name="search_text_detail_pemberian_obat" id="search_text_detail_pemberian_obat" style="text-align:left !important;">' +
-            '<option value=""></option>' +
-            {loop: $databarang}
-            '<option value="{$value.kode_brng}">{$value.nama_brng}</option>' +
-            {/loop}
-            '</select>');
-          $('#search_text_detail_pemberian_obat').selectator();
-          $("#search_text_detail_pemberian_obat").on('change', function() {
-            var_tbl_detail_pemberian_obat.draw();
-          });  
-        } else if ($(this).val() == 'kd_bangsal'){
-            $('#tempat_pilih').empty();
-            $('#search_text_detail_pemberian_obat').remove();
-            $('#tempat_pilih').append('<select class="form-control" name="search_text_detail_pemberian_obat" id="search_text_detail_pemberian_obat" style="text-align:left !important;">' +
-              '<option value=""></option>' +
-              {loop: $bangsal}
-              '<option value="{$value.kd_bangsal}">{$value.nm_bangsal}</option>' +
-              {/loop}
-              '</select>');
-            $('#search_text_detail_pemberian_obat').selectator();
-            $("#search_text_detail_pemberian_obat").on('change', function() {
-              var_tbl_detail_pemberian_obat.draw();
-            });    
-        } else {
-          $('#tempat_pilih').empty();
-          $('#search_text_detail_pemberian_obat').remove();
-          $('#tempat_pilih').append('<input class="form-control" name="search_text_detail_pemberian_obat" id="search_text_detail_pemberian_obat" type="search" placeholder="Masukkan Kata Kunci Pencarian" />');
-          $('#search_text_detail_pemberian_obat').keyup(function () {
-            var_tbl_detail_pemberian_obat.draw();
-          });
-        }
-    });  
-
     // ==============================================================
     // CLICK TANDA X DI INPUT SEARCH
     // ==============================================================
     $("#searchclear_detail_pemberian_obat").click(function () {
         $("#search_text_detail_pemberian_obat").val("");
-        $("#tanggal_awal").val("");
-        $("#tanggal_akhir").val("");
         var_tbl_detail_pemberian_obat.draw();
     });
 
@@ -268,7 +209,6 @@ $('#no_faktur').val(no_faktur);
         else {
             alert("Silakan pilih data yang akan di edit.");
         }
-        //var no_pengajuan = rowData["no_pengajuan"];
 
     });
 
@@ -343,29 +283,23 @@ $('#no_faktur').val('');
 
         var search_field_detail_pemberian_obat = $('#search_field_detail_pemberian_obat').val();
         var search_text_detail_pemberian_obat = $('#search_text_detail_pemberian_obat').val();
-        var from_date = $('#tanggal_awal').val();
-        var to_date = $('#tanggal_akhir').val();
 
         $.ajax({
             url: "{?=url([ADMIN,'detail_pemberian_obat','aksi'])?}",
             method: "POST",
             data: {
                 typeact: 'lihat', 
-                search_field: search_field_detail_pemberian_obat, 
-                search_value: search_text_detail_pemberian_obat, 
-                searchByFromdate: from_date, 
-                searchByTodate: to_date
+                search_field_detail_pemberian_obat: search_field_detail_pemberian_obat, 
+                search_text_detail_pemberian_obat: search_text_detail_pemberian_obat
             },
             dataType: 'json',
             success: function (res) {
-                console.log(res);
-                var eTable = "<div class='table-responsive'><table id='tbl_detail_pemberian_obat' class='table display dataTable' style='width:100%'><thead><th>Tgl Perawatan</th><th>Jam</th><th>No Rawat</th><th>Nama Pasien</th><th>Kode Brng</th><th>H Beli</th><th>Biaya Obat</th><th>Jml</th><th>Embalase</th><th>Tuslah</th><th>Total</th><th>Status</th><th>Kd Bangsal</th><th>No Batch</th><th>No Faktur</th></thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_detail_pemberian_obat' class='table display dataTable' style='width:100%'><thead><th>Tgl Perawatan</th><th>Jam</th><th>No Rawat</th><th>Kode Brng</th><th>H Beli</th><th>Biaya Obat</th><th>Jml</th><th>Embalase</th><th>Tuslah</th><th>Total</th><th>Status</th><th>Kd Bangsal</th><th>No Batch</th><th>No Faktur</th></thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     eTable += '<td>' + res[i]['tgl_perawatan'] + '</td>';
 eTable += '<td>' + res[i]['jam'] + '</td>';
 eTable += '<td>' + res[i]['no_rawat'] + '</td>';
-eTable += '<td>' + res[i]['nm_pasien'] + '</td>';
 eTable += '<td>' + res[i]['kode_brng'] + '</td>';
 eTable += '<td>' + res[i]['h_beli'] + '</td>';
 eTable += '<td>' + res[i]['biaya_obat'] + '</td>';
@@ -391,12 +325,12 @@ eTable += '<td>' + res[i]['no_faktur'] + '</td>';
     // ==============================================================
     // TOMBOL DETAIL detail_pemberian_obat DI CLICK
     // ==============================================================
-    $("#lihat_detail_detail_pemberian_obat").click(function (event) {
+    jQuery("#lihat_detail_detail_pemberian_obat").click(function (event) {
 
         var rowData = var_tbl_detail_pemberian_obat.rows({ selected: true }).data()[0];
 
         if (rowData) {
-            var tgl_perawatan = rowData['tgl_perawatan'];
+var tgl_perawatan = rowData['tgl_perawatan'];
             var baseURL = mlite.url + '/' + mlite.admin;
             event.preventDefault();
             var loadURL =  baseURL + '/detail_pemberian_obat/detail/' + tgl_perawatan + '?t=' + mlite.token;
@@ -420,7 +354,8 @@ eTable += '<td>' + res[i]['no_faktur'] + '</td>';
     // Ketika tombol export pdf di tekan
     // ===========================================
     $("#export_pdf").click(function () {
-        var doc = new jsPDF('l', 'pt', 'A4'); /* pilih 'l' atau 'p' */
+
+        var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
         var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
         doc.addImage(img, 'JPEG', 20, 10, 50, 50);
         doc.setFontSize(20);
@@ -428,13 +363,13 @@ eTable += '<td>' + res[i]['no_faktur'] + '</td>';
         doc.setFontSize(10);
         doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
         doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
-        doc.line(20,70,820,70,null); /* doc.line(20,70,820,70,null); */
-        doc.line(20,72,820,72,null); /* doc.line(20,72,820,72,null); */
+        doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
+        doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
         doc.setFontSize(14);
         doc.text("Tabel Data Detail Pemberian Obat", 20, 95, null, null, null);
-        const totalPagesExp = "{total_pages_count_string}";
+        const totalPagesExp = "{total_pages_count_string}";        
         doc.autoTable({
-            html: '#tbl_detail_pemberian_obat',
+            html: '#tbl_lihat_detail_pemberian_obat',
             startY: 105,
             margin: {
                 left: 20, 
@@ -457,14 +392,15 @@ eTable += '<td>' + res[i]['no_faktur'] + '</td>';
             doc.putTotalPages(totalPagesExp);
         }
         // doc.save('table_data_detail_pemberian_obat.pdf')
-        window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");
+        window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+              
     })
 
     // ===========================================
     // Ketika tombol export xlsx di tekan
     // ===========================================
     $("#export_xlsx").click(function () {
-        let tbl1 = document.getElementById("tbl_detail_pemberian_obat");
+        let tbl1 = document.getElementById("tbl_lihat_detail_pemberian_obat");
         let worksheet_tmp1 = XLSX.utils.table_to_sheet(tbl1);
         let a = XLSX.utils.sheet_to_json(worksheet_tmp1, { header: 1 });
         let worksheet1 = XLSX.utils.json_to_sheet(a, { skipHeader: true });
@@ -472,5 +408,4 @@ eTable += '<td>' + res[i]['no_faktur'] + '</td>';
         XLSX.utils.book_append_sheet(new_workbook, worksheet1, "Data detail_pemberian_obat");
         XLSX.writeFile(new_workbook, 'tmp_file.xls');
     })
-
 });
