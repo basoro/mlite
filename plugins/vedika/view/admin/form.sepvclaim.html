@@ -3,7 +3,7 @@
     <h4 class="modal-title">Ambil Data SEP dari VClaim</h4>
 </div>
 <div class="modal-body">
-  <article class="row">
+  <div class="row">
   	<form name="vedika" action="{?=url(ADMIN.'/vedika/savesep/'.@$vedika.no_sep)?}" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="no_rawat" class="form-control" value="{?=$_GET['no_rawat']?}" />
       <div class="col-md-6">
@@ -59,7 +59,7 @@
         </div>
       </div>
   	</form>
-  </article>
+  </div>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>

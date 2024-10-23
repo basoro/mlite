@@ -48,6 +48,56 @@ $(document).ready(function () {
         });
     });
 
+    $("#tambah_data_tabel_database").click(function () {
+        $('#modal-title').text("Tambah Table Database");
+        $("#modal_crud_generator").modal('show');
+    });
+
+    $(document).on('click', '.btn-add', function(e) {
+        e.preventDefault();
+        $("#repeat-div .outer:first").find('#column_type').selectator('destroy');
+        var controlForm = $('#repeat-div .outer:first').clone(true);
+        $(controlForm).find('button.btn')
+            .removeClass('btn-add btn-success').addClass('btn-remove btn-danger')
+            .html('<i class="ri-close-line"></i>');//add remove class
+        $("#repeat-div").append(controlForm)    
+        $("#repeat-div .outer:first").find('#column_type').selectator();
+        $("#repeat-div .outer:last").find('#column_type').selectator();
+    }).on('click', '.btn-remove', function(e) {
+        e.preventDefault();
+        $(this).parents('.outer').remove();//remove closest class .outer
+        return false;
+    });
+    
+    $("form[name='form_crud_generator']").validate({
+        rules: {
+        },
+        messages: {
+        },
+        submitHandler: function (form) {
+
+            var formData = new FormData(form); // tambahan
+
+            $.ajax({
+                url: "{?=url([ADMIN,'crud_generator','saveaddtable'])?}",
+                method: "POST",
+                contentType: false, // tambahan
+                processData: false, // tambahan
+                data: formData,
+                success: function (data) {
+                    data = JSON.parse(data);
+                    // console.log(data);
+                    var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
+                    audio.play();
+                    if(data.status === 'success') {
+                        bootbox.alert('<span class="text-success">' + data.msg + '</span>');
+                    }    
+                    $("#modal_crud_generator").modal('hide');
+                }
+            })
+        }
+    });
+
     $("#database").click(function() {
         $('#table_txt').selectator('destroy');
         $.ajax({

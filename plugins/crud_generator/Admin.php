@@ -18,6 +18,48 @@ class Admin extends AdminModule
         return $this->draw('manage.html');
     }
 
+    public function postSaveAddTable()
+    {
+      $table_name = $_POST['table_name'];
+      $column_name = $_POST['column_name'];
+      $column_type = $_POST['column_type'];
+      $column_length = $_POST['column_length'];
+      $column_default = $_POST['column_default'];
+      
+      $table_data = array();
+      for($i=0; $i < count($column_name); $i++){
+        $table_data[] = array(
+          'column_name' => $column_name[$i], 
+          'column_type' => $column_type[$i], 
+          'column_length' => $column_length[$i], 
+          'column_default' => isset_or($column_default[$i], '') 
+        );
+      }
+
+      $c_query = "CREATE TABLE IF NOT EXISTS ". $table_name ." (";
+      $c_query .= "id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY, ";
+      foreach($table_data as $key => $value){
+        if($value['column_type'] =='INT' || $value['column_type'] =='VARCHAR') {
+          $c_query .= $value['column_name'] . " " . $value['column_type'] . "(" . $value['column_length'] . ") " . $value['column_default'] . ",";
+        } else {
+          $c_query .= $value['column_name'] . " " . $value['column_type'] . " " . $value['column_default'] . ",";
+        }
+      }
+      $c_query = substr_replace($c_query,"",-1);
+      $c_query .= ") ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+
+      $query = $this->db()->pdo()->exec($c_query);
+      
+      $data = array(
+        'status' => 'success', 
+        'msg' => 'Tabel baru telah ditambahkan'
+      );
+
+      echo json_encode($data); 
+
+      exit();
+    }    
+
     public function postDatabase()
     {
       $database = DBNAME;
@@ -157,7 +199,8 @@ class Admin extends AdminModule
 
     private function _addHeaderFiles()
     {
-        $this->core->addJS(url([ADMIN, 'crud_generator', 'javascript']), 'footer');
+      $this->core->addJS(url('assets/jscripts/jqueryvalidation.js'));
+      $this->core->addJS(url([ADMIN, 'crud_generator', 'javascript']), 'footer');
     }
 
 }
