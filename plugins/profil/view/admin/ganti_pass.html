@@ -1,4 +1,4 @@
-<article class="row">
+<div class="row">
     <form name="petugas" action="{?=url(ADMIN.'/profil/ganti_save/'.@$ganti_pass.form.id_user)?}" method="POST">
         <div class="col-md-8">
             <div class="panel panel-default">
@@ -21,7 +21,7 @@
             </div>
         </div>
     </form>
-</article>
+</div>
 <!-- {if: $petugas.form.nip !== ''}
   <script>
     $('#nip option:not(:selected)').remove();

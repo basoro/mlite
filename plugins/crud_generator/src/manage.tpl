@@ -1,4 +1,4 @@
-<article class="row">
+<div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -60,7 +60,7 @@
             </div>
         </div>
     </div>
-</article>
+</div>
 
 <!-- Modal -->
 <div id="modal_NAMA_TABLE" class="modal fade" role="dialog" tabindex="-1">

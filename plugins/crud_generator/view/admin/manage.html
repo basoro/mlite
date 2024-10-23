@@ -1,4 +1,4 @@
-<article class="row">
+<div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -77,4 +77,74 @@
             </div>
         </div>
     </div>
-</article>
+</div>
+
+<div id="modal_crud_generator" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title"><span id="modal-title">Edit Data Bangsal</span></h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form name="form_crud_generator">
+            <input type="hidden" class="form-control" id="typeact" /> 
+            <div class='row gx-3'>
+              <div class='col-xxl-12 col-lg-12 col-sm-6'>
+                <div class='mb-3'>
+                  <label class='form-label' for='table_name'>Nama Tabel</label>
+                  <input type='text' class='form-control' id='table_name' name='table_name' />
+                <div class='invalid-feedback error'></div>
+                </div>
+              </div>
+              <div id="repeat-div">
+                <div class="outer row">
+                    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+                        <div class='mb-3'>
+                        <label class='form-label' for='column_name'>Nama Kolom</label>
+                        <input type='text' class='form-control' id='column_name' name='column_name[]' />
+                        <div class='invalid-feedback error'></div>
+                        </div>
+                    </div>
+                    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+                        <div class='mb-3'>
+                        <label class='form-label' for='column_type'>Tipe</label>
+                        <select class="form-select" name="column_type[]" id="column_type">
+                            <option value="INT">INT</option>
+                            <option value="VARCHAR">VARCHAR</option>
+                            <option value="TEXT">TEXT</option>
+                            <option value="DATE">DATE</option>
+                            <option value="DATETIME">DATETIME</option>
+                        </select>
+                        <div class='invalid-feedback error'></div>
+                        </div>
+                    </div>
+                    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+                        <div class='mb-3'>
+                        <label class='form-label' for='column_length'>Length/Value</label>
+                        <input type='text' class='form-control' id='column_length' name='column_length[]' />
+                        <div class='invalid-feedback error'></div>
+                        </div>
+                    </div>
+                    <div class='col-xxl-3 col-lg-3 col-sm-6'>
+                        <div class='mb-3'>
+                        <label class='form-label' for='default'>Default</label>
+                        <div class="input-group">
+                            <input type='text' class='form-control' id='column_default' name='column_default[]' />
+                            <button class="btn btn-success btn-add" type="button"><i class="ri-add-line"></i></button>                  
+                        </div>
+                        <div class='invalid-feedback error'></div>
+                        </div>
+                    </div>                    
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><i class="ri-close-line"></i> Batal </button>
+          <button type="submit" id="simpan_data_bangsal" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan </button>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
