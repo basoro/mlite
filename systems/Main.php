@@ -490,6 +490,12 @@ abstract class Main
         return $accessmodule;
     }
 
+    public function ActiveModule($module)
+    {
+        $activemodule = $this->db('mlite_modules')->where('dir', $module)->oneArray();
+        return $activemodule['dir'];
+    }
+
     public function setPrintHeader()
     {
         $header = '
