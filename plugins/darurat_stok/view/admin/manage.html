@@ -1,0 +1,98 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-6 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_databarang' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Lihat Data databarang' style='color:white;'>
+                          <i class='fa fa-eye' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> </button>
+                          <button id='lihat_detail_databarang' class='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Lihat Detail databarang' style='color:white;'>
+                          <i class='fa fa-search' style='font-size: 15px;'></i><span class="hidden-xs"> Detail</span> </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-addon">Cari :</span>
+                          <span class="input-group-addon" style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-control" id='search_field_databarang' name='search_field_databarang' style="margin: 0 !important;"> 
+                              <option value='kode_brng'>Kode Brng</option>
+<option value='nama_brng'>Nama Brng</option>
+<option value='kode_satbesar'>Kode Satbesar</option>
+<option value='kode_sat'>Kode Sat</option>
+<option value='dasar'>Dasar</option>
+<option value='h_beli'>H Beli</option>
+<option value='stokminimal'>Stokminimal</option>
+<option value='isi'>Isi</option>
+<option value='kapasitas'>Kapasitas</option>
+<option value='expire'>Expire</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_databarang' id='search_text_databarang' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-addon">
+                          <span id='searchclear_databarang' data-toggle='tooltip' data-placement='top' title='Clear'><i class="fa fa-times text-danger"></i></span>
+                          </span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_databarang" class="table table-bordered table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>Kode Brng</th>
+                            <th>Nama Brng</th>
+                            <th>Stok Saat Ini</th>
+                            <th>Stokminimal</th>
+                            <th>Kode Satbesar</th>
+                            <th>Kode Sat</th>
+                            <th>Dasar</th>
+                            <th>H Beli</th>
+                            <th>Isi</th>
+                            <th>Kapasitas</th>
+                            <th>Expire</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>        
+            </div>
+        </div>
+    </div>
+  </div>
+
+<div id="modal_lihat_databarang" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Darurat Stok</span>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_databarang"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+        <button type="submit" id="export_pdf" class="btn btn-primary">
+          <i class="fa fa-file-pdf-o"></i>&nbsp;PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-primary">
+          <i class="fa fa-file-excel-o"></i>&nbsp;XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_databarang" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

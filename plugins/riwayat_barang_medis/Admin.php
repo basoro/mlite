@@ -1,5 +1,5 @@
 <?php
-namespace Plugins\Detail_Pemberian_Obat;
+namespace Plugins\Riwayat_Barang_Medis;
 
 use Systems\AdminModule;
 
@@ -28,28 +28,28 @@ class Admin extends AdminModule
         $searchValue = $_POST['search']['value']; // Search value
 
         ## Custom Field value
-        $search_field_detail_pemberian_obat= $_POST['search_field_detail_pemberian_obat'];
-        $search_text_detail_pemberian_obat = $_POST['search_text_detail_pemberian_obat'];
+        $search_field_riwayat_barang_medis= $_POST['search_field_riwayat_barang_medis'];
+        $search_text_riwayat_barang_medis = $_POST['search_text_riwayat_barang_medis'];
 
         $searchQuery = " ";
-        if($search_text_detail_pemberian_obat != ''){
-            $searchQuery .= " and (".$search_field_detail_pemberian_obat." like '%".$search_text_detail_pemberian_obat."%' ) ";
+        if($search_text_riwayat_barang_medis != ''){
+            $searchQuery .= " and (".$search_field_riwayat_barang_medis." like '%".$search_text_riwayat_barang_medis."%' ) ";
         }
 
         ## Total number of records without filtering
-        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from detail_pemberian_obat");
+        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from riwayat_barang_medis");
         $sel->execute();
         $records = $sel->fetch();
         $totalRecords = $records['allcount'];
 
         ## Total number of records with filtering
-        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from detail_pemberian_obat WHERE 1 ".$searchQuery);
+        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from riwayat_barang_medis WHERE 1 ".$searchQuery);
         $sel->execute();
         $records = $sel->fetch();
         $totalRecordwithFilter = $records['allcount'];
 
         ## Fetch records
-        $sel = $this->db()->pdo()->prepare("select * from detail_pemberian_obat WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row1.",".$rowperpage);
+        $sel = $this->db()->pdo()->prepare("select * from riwayat_barang_medis WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row1.",".$rowperpage);
         $sel->execute();
         $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -58,22 +58,22 @@ class Admin extends AdminModule
             $databarang = $this->db('databarang')->select('nama_brng')->where('kode_brng', $row['kode_brng'])->oneArray();
             $bangsal = $this->db('bangsal')->select('nm_bangsal')->where('kd_bangsal', $row['kd_bangsal'])->oneArray();
             $data[] = array(
-                'tgl_perawatan'=>$row['tgl_perawatan'],
-                'jam'=>$row['jam'],
-                'no_rawat'=>$row['no_rawat'],
                 'kode_brng'=>$row['kode_brng'],
                 'nama_brng'=>$databarang['nama_brng'],
-                'h_beli'=>$row['h_beli'],
-                'biaya_obat'=>$row['biaya_obat'],
-                'jml'=>$row['jml'],
-                'embalase'=>$row['embalase'],
-                'tuslah'=>$row['tuslah'],
-                'total'=>$row['total'],
-                'status'=>$row['status'],
+                'stok_awal'=>$row['stok_awal'],
+                'masuk'=>$row['masuk'],
+                'keluar'=>$row['keluar'],
+                'stok_akhir'=>$row['stok_akhir'],
+                'posisi'=>$row['posisi'],
+                'tanggal'=>$row['tanggal'],
+                'jam'=>$row['jam'],
+                'petugas'=>$row['petugas'],
                 'kd_bangsal'=>$row['kd_bangsal'],
                 'nm_bangsal'=>$bangsal['nm_bangsal'],
+                'status'=>$row['status'],
                 'no_batch'=>$row['no_batch'],
-                'no_faktur'=>$row['no_faktur']
+                'no_faktur'=>$row['no_faktur'],
+                'keterangan'=>$row['keterangan']
             );
         }
 
@@ -99,54 +99,54 @@ class Admin extends AdminModule
 
         if ($act=='add') {
 
-        $tgl_perawatan = $_POST['tgl_perawatan'];
+        $kode_brng = $_POST['kode_brng'];
+$stok_awal = $_POST['stok_awal'];
+$masuk = $_POST['masuk'];
+$keluar = $_POST['keluar'];
+$stok_akhir = $_POST['stok_akhir'];
+$posisi = $_POST['posisi'];
+$tanggal = $_POST['tanggal'];
 $jam = $_POST['jam'];
-$no_rawat = $_POST['no_rawat'];
-$kode_brng = $_POST['kode_brng'];
-$h_beli = $_POST['h_beli'];
-$biaya_obat = $_POST['biaya_obat'];
-$jml = $_POST['jml'];
-$embalase = $_POST['embalase'];
-$tuslah = $_POST['tuslah'];
-$total = $_POST['total'];
-$status = $_POST['status'];
+$petugas = $_POST['petugas'];
 $kd_bangsal = $_POST['kd_bangsal'];
+$status = $_POST['status'];
 $no_batch = $_POST['no_batch'];
 $no_faktur = $_POST['no_faktur'];
+$keterangan = $_POST['keterangan'];
 
             
-            $detail_pemberian_obat_add = $this->db()->pdo()->prepare('INSERT INTO detail_pemberian_obat VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-            $detail_pemberian_obat_add->execute([$tgl_perawatan, $jam, $no_rawat, $kode_brng, $h_beli, $biaya_obat, $jml, $embalase, $tuslah, $total, $status, $kd_bangsal, $no_batch, $no_faktur]);
+            $riwayat_barang_medis_add = $this->db()->pdo()->prepare('INSERT INTO riwayat_barang_medis VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+            $riwayat_barang_medis_add->execute([$kode_brng, $stok_awal, $masuk, $keluar, $stok_akhir, $posisi, $tanggal, $jam, $petugas, $kd_bangsal, $status, $no_batch, $no_faktur, $keterangan]);
 
         }
         if ($act=="edit") {
 
-        $tgl_perawatan = $_POST['tgl_perawatan'];
+        $kode_brng = $_POST['kode_brng'];
+$stok_awal = $_POST['stok_awal'];
+$masuk = $_POST['masuk'];
+$keluar = $_POST['keluar'];
+$stok_akhir = $_POST['stok_akhir'];
+$posisi = $_POST['posisi'];
+$tanggal = $_POST['tanggal'];
 $jam = $_POST['jam'];
-$no_rawat = $_POST['no_rawat'];
-$kode_brng = $_POST['kode_brng'];
-$h_beli = $_POST['h_beli'];
-$biaya_obat = $_POST['biaya_obat'];
-$jml = $_POST['jml'];
-$embalase = $_POST['embalase'];
-$tuslah = $_POST['tuslah'];
-$total = $_POST['total'];
-$status = $_POST['status'];
+$petugas = $_POST['petugas'];
 $kd_bangsal = $_POST['kd_bangsal'];
+$status = $_POST['status'];
 $no_batch = $_POST['no_batch'];
 $no_faktur = $_POST['no_faktur'];
+$keterangan = $_POST['keterangan'];
 
 
         // BUANG FIELD PERTAMA
 
-            $detail_pemberian_obat_edit = $this->db()->pdo()->prepare("UPDATE detail_pemberian_obat SET tgl_perawatan=?, jam=?, no_rawat=?, kode_brng=?, h_beli=?, biaya_obat=?, jml=?, embalase=?, tuslah=?, total=?, status=?, kd_bangsal=?, no_batch=?, no_faktur=? WHERE tgl_perawatan=?");
-            $detail_pemberian_obat_edit->execute([$tgl_perawatan, $jam, $no_rawat, $kode_brng, $h_beli, $biaya_obat, $jml, $embalase, $tuslah, $total, $status, $kd_bangsal, $no_batch, $no_faktur,$tgl_perawatan]);
+            $riwayat_barang_medis_edit = $this->db()->pdo()->prepare("UPDATE riwayat_barang_medis SET kode_brng=?, stok_awal=?, masuk=?, keluar=?, stok_akhir=?, posisi=?, tanggal=?, jam=?, petugas=?, kd_bangsal=?, status=?, no_batch=?, no_faktur=?, keterangan=? WHERE kode_brng=?");
+            $riwayat_barang_medis_edit->execute([$kode_brng, $stok_awal, $masuk, $keluar, $stok_akhir, $posisi, $tanggal, $jam, $petugas, $kd_bangsal, $status, $no_batch, $no_faktur, $keterangan,$kode_brng]);
         
         }
 
         if ($act=="del") {
-            $tgl_perawatan= $_POST['tgl_perawatan'];
-            $check_db = $this->db()->pdo()->prepare("DELETE FROM detail_pemberian_obat WHERE tgl_perawatan='$tgl_perawatan'");
+            $kode_brng= $_POST['kode_brng'];
+            $check_db = $this->db()->pdo()->prepare("DELETE FROM riwayat_barang_medis WHERE kode_brng='$kode_brng'");
             $result = $check_db->execute();
             $error = $check_db->errorInfo();
             if (!empty($result)){
@@ -165,15 +165,15 @@ $no_faktur = $_POST['no_faktur'];
 
         if ($act=="lihat") {
 
-            $search_field_detail_pemberian_obat= $_POST['search_field_detail_pemberian_obat'];
-            $search_text_detail_pemberian_obat = $_POST['search_text_detail_pemberian_obat'];
+            $search_field_riwayat_barang_medis= $_POST['search_field_riwayat_barang_medis'];
+            $search_text_riwayat_barang_medis = $_POST['search_text_riwayat_barang_medis'];
 
             $searchQuery = " ";
-            if($search_text_detail_pemberian_obat != ''){
-                $searchQuery .= " and (".$search_field_detail_pemberian_obat." like '%".$search_text_detail_pemberian_obat."%' ) ";
+            if($search_text_riwayat_barang_medis != ''){
+                $searchQuery .= " and (".$search_field_riwayat_barang_medis." like '%".$search_text_riwayat_barang_medis."%' ) ";
             }
 
-            $user_lihat = $this->db()->pdo()->prepare("SELECT * from detail_pemberian_obat WHERE 1 ".$searchQuery);
+            $user_lihat = $this->db()->pdo()->prepare("SELECT * from riwayat_barang_medis WHERE 1 ".$searchQuery);
             $user_lihat->execute();
             $result = $user_lihat->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -183,22 +183,22 @@ $no_faktur = $_POST['no_faktur'];
                 $databarang = $this->db('databarang')->select('nama_brng')->where('kode_brng', $row['kode_brng'])->oneArray();
                 $bangsal = $this->db('bangsal')->select('nm_bangsal')->where('kd_bangsal', $row['kd_bangsal'])->oneArray();
                 $data[] = array(
-                    'tgl_perawatan'=>$row['tgl_perawatan'],
-                    'jam'=>$row['jam'],
-                    'no_rawat'=>$row['no_rawat'],
                     'kode_brng'=>$row['kode_brng'],
                     'nama_brng'=>$databarang['nama_brng'],
-                    'h_beli'=>$row['h_beli'],
-                    'biaya_obat'=>$row['biaya_obat'],
-                    'jml'=>$row['jml'],
-                    'embalase'=>$row['embalase'],
-                    'tuslah'=>$row['tuslah'],
-                    'total'=>$row['total'],
-                    'status'=>$row['status'],
+                    'stok_awal'=>$row['stok_awal'],
+                    'masuk'=>$row['masuk'],
+                    'keluar'=>$row['keluar'],
+                    'stok_akhir'=>$row['stok_akhir'],
+                    'posisi'=>$row['posisi'],
+                    'tanggal'=>$row['tanggal'],
+                    'jam'=>$row['jam'],
+                    'petugas'=>$row['petugas'],
                     'kd_bangsal'=>$row['kd_bangsal'],
                     'nm_bangsal'=>$bangsal['nm_bangsal'],
+                    'status'=>$row['status'],
                     'no_batch'=>$row['no_batch'],
-                    'no_faktur'=>$row['no_faktur']
+                    'no_faktur'=>$row['no_faktur'],
+                    'keterangan'=>$row['keterangan']
                 );
             }
 
@@ -207,9 +207,9 @@ $no_faktur = $_POST['no_faktur'];
         exit();
     }
 
-    public function getDetail($tgl_perawatan)
+    public function getDetail($kode_brng)
     {
-        $detail = $this->db('detail_pemberian_obat')->where('tgl_perawatan', $tgl_perawatan)->toArray();
+        $detail = $this->db('riwayat_barang_medis')->where('kode_brng', $kode_brng)->toArray();
         echo $this->draw('detail.html', ['detail' => $detail]);
         exit();
     }
@@ -217,7 +217,7 @@ $no_faktur = $_POST['no_faktur'];
     public function getCss()
     {
         header('Content-type: text/css');
-        echo $this->draw(MODULES.'/detail_pemberian_obat/css/admin/styles.css');
+        echo $this->draw(MODULES.'/riwayat_barang_medis/css/admin/styles.css');
         exit();
     }
 
@@ -225,7 +225,7 @@ $no_faktur = $_POST['no_faktur'];
     {
         header('Content-type: text/javascript');
         $settings = $this->settings('settings');
-        echo $this->draw(MODULES.'/detail_pemberian_obat/js/admin/scripts.js', ['settings' => $settings]);
+        echo $this->draw(MODULES.'/riwayat_barang_medis/js/admin/scripts.js', ['settings' => $settings]);
         exit();
     }
 
@@ -238,8 +238,8 @@ $no_faktur = $_POST['no_faktur'];
         $this->core->addJS(url('assets/jscripts/jspdf.plugin.autotable.min.js'));
         $this->core->addJS(url('assets/jscripts/datatables.min.js'));
 
-        $this->core->addCSS(url([ADMIN, 'detail_pemberian_obat', 'css']));
-        $this->core->addJS(url([ADMIN, 'detail_pemberian_obat', 'javascript']), 'footer');
+        $this->core->addCSS(url([ADMIN, 'riwayat_barang_medis', 'css']));
+        $this->core->addJS(url([ADMIN, 'riwayat_barang_medis', 'javascript']), 'footer');
     }
 
 }

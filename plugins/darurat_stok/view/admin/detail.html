@@ -1,0 +1,44 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Detail databarang</h4>
+</div>
+<div class="modal-body">
+    <table id="tbl_detail_databarang" class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        </thead>
+        <tbody>
+            {loop: $detail}
+            <tr><td>Kode Brng</td><td>{$value.kode_brng}</td><tr>
+<tr><td>Nama Brng</td><td>{$value.nama_brng}</td><tr>
+<tr><td>Kode Satbesar</td><td>{$value.kode_satbesar}</td><tr>
+<tr><td>Kode Sat</td><td>{$value.kode_sat}</td><tr>
+<tr><td>Letak Barang</td><td>{$value.letak_barang}</td><tr>
+<tr><td>Dasar</td><td>{$value.dasar}</td><tr>
+<tr><td>H Beli</td><td>{$value.h_beli}</td><tr>
+<tr><td>Ralan</td><td>{$value.ralan}</td><tr>
+<tr><td>Kelas1</td><td>{$value.kelas1}</td><tr>
+<tr><td>Kelas2</td><td>{$value.kelas2}</td><tr>
+<tr><td>Kelas3</td><td>{$value.kelas3}</td><tr>
+<tr><td>Utama</td><td>{$value.utama}</td><tr>
+<tr><td>Vip</td><td>{$value.vip}</td><tr>
+<tr><td>Vvip</td><td>{$value.vvip}</td><tr>
+<tr><td>Beliluar</td><td>{$value.beliluar}</td><tr>
+<tr><td>Jualbebas</td><td>{$value.jualbebas}</td><tr>
+<tr><td>Karyawan</td><td>{$value.karyawan}</td><tr>
+<tr><td>Stokminimal</td><td>{$value.stokminimal}</td><tr>
+<tr><td>Kdjns</td><td>{$value.kdjns}</td><tr>
+<tr><td>Isi</td><td>{$value.isi}</td><tr>
+<tr><td>Kapasitas</td><td>{$value.kapasitas}</td><tr>
+<tr><td>Expire</td><td>{$value.expire}</td><tr>
+<tr><td>Status</td><td>{$value.status}</td><tr>
+<tr><td>Kode Industri</td><td>{$value.kode_industri}</td><tr>
+<tr><td>Kode Kategori</td><td>{$value.kode_kategori}</td><tr>
+<tr><td>Kode Golongan</td><td>{$value.kode_golongan}</td><tr>
+
+            {/loop}
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>

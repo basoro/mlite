@@ -1,0 +1,32 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Detail riwayat_barang_medis</h4>
+</div>
+<div class="modal-body">
+    <table id="tbl_detail_riwayat_barang_medis" class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        </thead>
+        <tbody>
+            {loop: $detail}
+            <tr><td>Kode Brng</td><td>{$value.kode_brng}</td><tr>
+            <tr><td>Stok Awal</td><td>{$value.stok_awal}</td><tr>
+            <tr><td>Masuk</td><td>{$value.masuk}</td><tr>
+            <tr><td>Keluar</td><td>{$value.keluar}</td><tr>
+            <tr><td>Stok Akhir</td><td>{$value.stok_akhir}</td><tr>
+            <tr><td>Posisi</td><td>{$value.posisi}</td><tr>
+            <tr><td>Tanggal</td><td>{$value.tanggal}</td><tr>
+            <tr><td>Jam</td><td>{$value.jam}</td><tr>
+            <tr><td>Petugas</td><td>{$value.petugas}</td><tr>
+            <tr><td>Kd Bangsal</td><td>{$value.kd_bangsal}</td><tr>
+            <tr><td>Status</td><td>{$value.status}</td><tr>
+            <tr><td>No Batch</td><td>{$value.no_batch}</td><tr>
+            <tr><td>No Faktur</td><td>{$value.no_faktur}</td><tr>
+            <tr><td>Keterangan</td><td>{$value.keterangan}</td><tr>
+
+            {/loop}
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>

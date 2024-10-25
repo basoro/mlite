@@ -168,88 +168,88 @@
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Layanan</a>
                   <ul class="dropdown-menu">
-                    <li {if: !$this->core->AccesModule('igd')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('igd')}{?=url([ADMIN, 'igd', 'manage'])?}{/if}">IGD</a></li>
-                    <li {if: !$this->core->AccesModule('rawat_jalan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('rawat_jalan')}{?=url([ADMIN, 'rawat_jalan', 'manage'])?}{/if}">Rawat Jalan</a></li>
-                    <li {if: !$this->core->AccesModule('rawat_inap')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('rawat_inap')}{?=url([ADMIN, 'rawat_inap', 'manage'])?}{/if}">Rawat Inap</a></li>
-                    <li {if: !$this->core->AccesModule('dokter_igd')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('dokter_igd')}{?=url([ADMIN, 'dokter_igd', 'manage'])?}{/if}">Dokter IGD</a></li>
-                    <li {if: !$this->core->AccesModule('dokter_ralan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('dokter_ralan')}{?=url([ADMIN, 'dokter_ralan', 'manage'])?}{/if}">Dokter Rawat Jalan</a></li>
-                    <li {if: !$this->core->AccesModule('dokter_ranap')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('dokter_ranap')}{?=url([ADMIN, 'dokter_ranap', 'manage'])?}{/if}">Dokter Rawat Inap</a></li>
-                    <li {if: !$this->core->AccesModule('apotek_ralan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('apotek_ralan')}{?=url([ADMIN, 'apotek_ralan', 'manage'])?}{/if}">Apotek</a></li>
-                    <li {if: !$this->core->AccesModule('laboratorium')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('laboratorium')}{?=url([ADMIN, 'laboratorium', 'manage'])?}{/if}">Laboratorium</a></li>
-                    <li {if: !$this->core->AccesModule('radiologi')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('radiologi')}{?=url([ADMIN, 'radiologi', 'manage'])?}{/if}">Radiologi</a></li>
+                    <li {if: !$this->core->AccesModule('igd') || !$this->core->ActiveModule('igd')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('igd') && $this->core->ActiveModule('igd')}{?=url([ADMIN, 'igd', 'manage'])?}{/if}">IGD</a></li>
+                    <li {if: !$this->core->AccesModule('rawat_jalan') || !$this->core->ActiveModule('rawat_jalan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('rawat_jalan') && $this->core->ActiveModule('rawat_jalan')}{?=url([ADMIN, 'rawat_jalan', 'manage'])?}{/if}">Rawat Jalan</a></li>
+                    <li {if: !$this->core->AccesModule('rawat_inap') || !$this->core->ActiveModule('rawat_inap')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('rawat_inap') && $this->core->ActiveModule('rawat_inap')}{?=url([ADMIN, 'rawat_inap', 'manage'])?}{/if}">Rawat Inap</a></li>
+                    <li {if: !$this->core->AccesModule('dokter_igd') || !$this->core->ActiveModule('dokter_igd')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('dokter_igd') && $this->core->ActiveModule('dokter_igd')}{?=url([ADMIN, 'dokter_igd', 'manage'])?}{/if}">Dokter IGD</a></li>
+                    <li {if: !$this->core->AccesModule('dokter_ralan') || !$this->core->ActiveModule('dokter_ralan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('dokter_ralan') && $this->core->ActiveModule('dokter_ralan')}{?=url([ADMIN, 'dokter_ralan', 'manage'])?}{/if}">Dokter Rawat Jalan</a></li>
+                    <li {if: !$this->core->AccesModule('dokter_ranap') || !$this->core->ActiveModule('dokter_ranap')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('dokter_ranap') && $this->core->ActiveModule('dokter_ranap')}{?=url([ADMIN, 'dokter_ranap', 'manage'])?}{/if}">Dokter Rawat Inap</a></li>
+                    <li {if: !$this->core->AccesModule('apotek_ralan') || !$this->core->ActiveModule('apotek_ralan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('apotek_ralan') && $this->core->ActiveModule('apotek_ralan')}{?=url([ADMIN, 'apotek_ralan', 'manage'])?}{/if}">Apotek</a></li>
+                    <li {if: !$this->core->AccesModule('laboratorium') || !$this->core->ActiveModule('laboratorium')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('laboratorium') && $this->core->ActiveModule('laboratorium')}{?=url([ADMIN, 'laboratorium', 'manage'])?}{/if}">Laboratorium</a></li>
+                    <li {if: !$this->core->AccesModule('radiologi') || !$this->core->ActiveModule('radiologi')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('radiologi') && $this->core->ActiveModule('radiologi')}{?=url([ADMIN, 'radiologi', 'manage'])?}{/if}">Radiologi</a></li>
                   </ul>  
                 </li>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manajemen</a>
                   <ul class="dropdown-menu">
-                    <li {if: !$this->core->AccesModule('manajemen')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('manajemen')}{?=url([ADMIN, 'manajemen', 'manage'])?}{/if}">Manajemen Mutu</a></li>
-                    <li {if: !$this->core->AccesModule('master')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('master')}{?=url([ADMIN, 'master', 'manage'])?}{/if}">Master Data</a></li>
-                    <li {if: !$this->core->AccesModule('kepegawaian')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('kepegawaian')}{?=url([ADMIN, 'kepegawaian', 'manage'])?}{/if}">Kepegawaian</a></li>
-                    <li {if: !$this->core->AccesModule('master')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('master')}{?=url([ADMIN, 'master', 'dokter'])?}{/if}">Dokter</a></li>
-                    <li {if: !$this->core->AccesModule('master')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('master')}{?=url([ADMIN, 'master', 'petugas'])?}{/if}">Petugas</a></li>
-                    <li {if: !$this->core->AccesModule('wagateway')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('wagateway')}{?=url([ADMIN, 'wagateway', 'manage'])?}{/if}">WA Gateway</a></li>
-                    <li {if: !$this->core->AccesModule('presensi')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('presensi')}{?=url([ADMIN, 'presensi', 'manage'])?}{/if}">Presensi Pegawai</a></li>
-                    <li {if: !$this->core->AccesModule('profil')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('profil')}{?=url([ADMIN, 'profil', 'manage'])?}{/if}">Akun Pegawai</a></li>
+                    <li {if: !$this->core->AccesModule('manajemen') || !$this->core->ActiveModule('manajemen')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('manajemen') && $this->core->ActiveModule('manajemen')}{?=url([ADMIN, 'manajemen', 'manage'])?}{/if}">Manajemen Mutu</a></li>
+                    <li {if: !$this->core->AccesModule('master') || !$this->core->ActiveModule('master')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('master') && $this->core->ActiveModule('master')}{?=url([ADMIN, 'master', 'manage'])?}{/if}">Master Data</a></li>
+                    <li {if: !$this->core->AccesModule('kepegawaian') || !$this->core->ActiveModule('kepegawaian')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('kepegawaian') && $this->core->ActiveModule('kepegawaian')}{?=url([ADMIN, 'kepegawaian', 'manage'])?}{/if}">Kepegawaian</a></li>
+                    <li {if: !$this->core->AccesModule('master') || !$this->core->ActiveModule('master')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('master') && $this->core->ActiveModule('master')}{?=url([ADMIN, 'master', 'dokter'])?}{/if}">Dokter</a></li>
+                    <li {if: !$this->core->AccesModule('master') || !$this->core->ActiveModule('master')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('master') && $this->core->ActiveModule('master')}{?=url([ADMIN, 'master', 'petugas'])?}{/if}">Petugas</a></li>
+                    <li {if: !$this->core->AccesModule('wagateway') || !$this->core->ActiveModule('wagateway')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('wagateway') && $this->core->ActiveModule('wagateway')}{?=url([ADMIN, 'wagateway', 'manage'])?}{/if}">WA Gateway</a></li>
+                    <li {if: !$this->core->AccesModule('presensi') || !$this->core->ActiveModule('presensi')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('presensi') && $this->core->ActiveModule('presensi')}{?=url([ADMIN, 'presensi', 'manage'])?}{/if}">Presensi Pegawai</a></li>
+                    <li {if: !$this->core->AccesModule('profil') || !$this->core->ActiveModule('profil')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('profil') && $this->core->ActiveModule('profil')}{?=url([ADMIN, 'profil', 'manage'])?}{/if}">Akun Pegawai</a></li>
+                    <li {if: !$this->core->AccesModule('inventaris') || !$this->core->ActiveModule('inventaris')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('inventaris') && $this->core->ActiveModule('inventaris')}{?=url([ADMIN, 'inventaris', 'manage'])?}{/if}">Data Inventaris</a></li>
                   </ul>  
                 </li>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Farmasi</a>
                   <ul class="dropdown-menu">
-                    <li {if: !$this->core->AccesModule('apotek_ralan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('apotek_ralan')}{?=url([ADMIN, 'apotek_ralan', 'manage'])?}{/if}">Apotek Rawat Jalan</a></li>
-                    <li {if: !$this->core->AccesModule('apotek_ranap')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('apotek_ranap')}{?=url([ADMIN, 'apotek_ranap', 'manage'])?}{/if}">Apotek Rawat Inap</a></li>
-                    <li {if: !$this->core->AccesModule('master')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('master')}{?=url([ADMIN, 'master', 'databarang'])?}{/if}">Inventory Obat</a></li>
-                    <li {if: !$this->core->AccesModule('farmasi')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('farmasi')}{?=url([ADMIN, 'farmasi', 'opname'])?}{/if}">Stok Opname</a></li>
-                    <li {if: !$this->core->AccesModule('farmasi')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('farmasi')}{?=url([ADMIN, 'farmasi', 'mutasi'])?}{/if}">Mutasi Obat</a></li>
-                    <li><a href="#">Sirkulasi Obat</a></li>
-                    <li {if: !$this->core->AccesModule('detail_pemberian_obat')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('detail_pemberian_obat')}{?=url([ADMIN, 'detail_pemberian_obat', 'manage'])?}{/if}">Detail Pemberian Obat</a></li>
-                    <li><a href="#">Darurat Stok</a></li>
+                    <li {if: !$this->core->AccesModule('apotek_ralan') || !$this->core->ActiveModule('apotek_ralan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('apotek_ralan') && $this->core->ActiveModule('apotek_ralan')}{?=url([ADMIN, 'apotek_ralan', 'manage'])?}{/if}">Apotek Rawat Jalan</a></li>
+                    <li {if: !$this->core->AccesModule('apotek_ranap') || !$this->core->ActiveModule('apotek_ranap')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('apotek_ranap') && $this->core->ActiveModule('apotek_ralan')}{?=url([ADMIN, 'apotek_ranap', 'manage'])?}{/if}">Apotek Rawat Inap</a></li>
+                    <li {if: !$this->core->AccesModule('master') || !$this->core->ActiveModule('master')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('master') && $this->core->ActiveModule('master')}{?=url([ADMIN, 'master', 'databarang'])?}{/if}">Inventory Obat</a></li>
+                    <li {if: !$this->core->AccesModule('farmasi') || !$this->core->ActiveModule('farmasi')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('farmasi') && $this->core->ActiveModule('farmasi')}{?=url([ADMIN, 'farmasi', 'opname'])?}{/if}">Stok Opname</a></li>
+                    <li {if: !$this->core->AccesModule('farmasi') || !$this->core->ActiveModule('farmasi')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('farmasi') && $this->core->ActiveModule('farmasi')}{?=url([ADMIN, 'farmasi', 'mutasi'])?}{/if}">Mutasi Obat</a></li>
+                    <li {if: !$this->core->AccesModule('riwayat_barang_medis') || !$this->core->ActiveModule('riwayat_barang_medis')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('riwayat_barang_medis') && $this->core->ActiveModule('riwayat_barang_medis')}{?=url([ADMIN, 'riwayat_barang_medis', 'manage'])?}{/if}">Sirkulasi Obat</a></li>
+                    <li {if: !$this->core->AccesModule('detail_pemberian_obat') || !$this->core->ActiveModule('detail_pemberian_obat')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('detail_pemberian_obat') && $this->core->ActiveModule('detail_pemberian_obat')}{?=url([ADMIN, 'detail_pemberian_obat', 'manage'])?}{/if}">Detail Pemberian Obat</a></li>
+                    <li {if: !$this->core->AccesModule('darurat_stok') || !$this->core->ActiveModule('darurat_stok')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('darurat_stok') && $this->core->ActiveModule('darurat_stok')}{?=url([ADMIN, 'darurat_stok', 'manage'])?}{/if}">Darurat Stok</a></li>
                   </ul>  
                 </li>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Rekan Medik</a>
                   <ul class="dropdown-menu">
-                    <li {if: !$this->core->AccesModule('pasien')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('pasien')}{?=url([ADMIN, 'pasien', 'manage'])?}{/if}">Data Pasien</a></li>
-                    <li {if: !$this->core->AccesModule('vedika')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('vedika')}{?=url([ADMIN, 'vedika', 'manage'])?}{/if}">Verifikasi Digital Klaim</a></li>
-                    <li {if: !$this->core->AccesModule('veronisa')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('veronisa')}{?=url([ADMIN, 'veronisa', 'manage'])?}{/if}">Verifikasi Obat Kronis</a></li>
+                    <li {if: !$this->core->AccesModule('pasien') || !$this->core->ActiveModule('pasien')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('pasien') && $this->core->ActiveModule('pasien')}{?=url([ADMIN, 'pasien', 'manage'])?}{/if}">Data Pasien</a></li>
+                    <li {if: !$this->core->AccesModule('vedika') || !$this->core->ActiveModule('vedika')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('vedika') && $this->core->ActiveModule('vedika')}{?=url([ADMIN, 'vedika', 'manage'])?}{/if}">Verifikasi Digital Klaim</a></li>
+                    <li {if: !$this->core->AccesModule('veronisa') || !$this->core->ActiveModule('veronisa')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('veronisa') && $this->core->ActiveModule('veronisa')}{?=url([ADMIN, 'veronisa', 'manage'])?}{/if}">Verifikasi Obat Kronis</a></li>
                   </ul>  
                 </li>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Bridging</a>
                   <ul class="dropdown-menu">
-                    <li {if: !$this->core->AccesModule('vclaim')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('vclaim')}{?=url([ADMIN, 'vclaim', 'manage'])?}{/if}">vClaim BPJS</a></li>
-                    <li {if: !$this->core->AccesModule('jkn_mobile')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('jkn_mobile')}{?=url([ADMIN, 'jkn_mobile', 'manage'])?}{/if}">Antrol FKTL BPJS</a></li>
-                    <li {if: !$this->core->AccesModule('pcare')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('pcare')}{?=url([ADMIN, 'pcare', 'manage'])?}{/if}">PCare BPJS</a></li>
-                    <li {if: !$this->core->AccesModule('jkn_mobile_fktp')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('jkn_mobile_fktp')}{?=url([ADMIN, 'jkn_mobile_fktp', 'manage'])?}{/if}">Antrol FKTP BPJS</a></li>
-                    <li><a href="#">Aplicare BPJS</a></li>
-                    <li {if: !$this->core->AccesModule('icare')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('icare')}{?=url([ADMIN, 'icare', 'manage'])?}{/if}">iCare BPJS</a></li>
-                    <li><a href="#">Siranap Kemkes</a></li>
-                    <li {if: !$this->core->AccesModule('satu_sehat')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('satu_sehat')}{?=url([ADMIN, 'satu_sehat', 'manage'])?}{/if}">Satu Sehat Kemkes</a></li>
-                    <li {if: !$this->core->AccesModule('orthanc')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('orthanc')}{?=url([ADMIN, 'orthanc', 'manage'])?}{/if}">Radiologi Orthanc</a></li>
-                    <li><a href="#">Laborarotium MyLIMS</a></li>
+                    <li {if: !$this->core->AccesModule('vclaim') || !$this->core->ActiveModule('vclaim')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('vclaim') && $this->core->ActiveModule('vclaim')}{?=url([ADMIN, 'vclaim', 'manage'])?}{/if}">vClaim BPJS</a></li>
+                    <li {if: !$this->core->AccesModule('jkn_mobile') || !$this->core->ActiveModule('jkn_mobile')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('jkn_mobile') && $this->core->ActiveModule('jkn_mobile')}{?=url([ADMIN, 'jkn_mobile', 'manage'])?}{/if}">Antrol FKTL BPJS</a></li>
+                    <li {if: !$this->core->AccesModule('pcare') || !$this->core->ActiveModule('pcare')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('pcare') && $this->core->ActiveModule('pcare')}{?=url([ADMIN, 'pcare', 'manage'])?}{/if}">PCare BPJS</a></li>
+                    <li {if: !$this->core->AccesModule('jkn_mobile_fktp') || !$this->core->ActiveModule('jkn_mobile_fktp')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('jkn_mobile_fktp') && $this->core->ActiveModule('jkn_mobile_fktp')}{?=url([ADMIN, 'jkn_mobile_fktp', 'manage'])?}{/if}">Antrol FKTP BPJS</a></li>
+                    <li><a href="#" style="color: red !important">Aplicare BPJS</a></li>
+                    <li {if: !$this->core->AccesModule('icare') || !$this->core->ActiveModule('icare')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('icare') && $this->core->ActiveModule('icare')}{?=url([ADMIN, 'icare', 'manage'])?}{/if}">iCare BPJS</a></li>
+                    <li><a href="#" style="color: red !important">Siranap Kemkes</a></li>
+                    <li {if: !$this->core->AccesModule('satu_sehat') || !$this->core->ActiveModule('satu_sehat')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('satu_sehat') && $this->core->ActiveModule('satu_sehat')}{?=url([ADMIN, 'satu_sehat', 'manage'])?}{/if}">Satu Sehat Kemkes</a></li>
+                    <li {if: !$this->core->AccesModule('orthanc') || !$this->core->ActiveModule('orthanc')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('orthanc') && $this->core->ActiveModule('orthanc')}{?=url([ADMIN, 'orthanc', 'manage'])?}{/if}">Radiologi Orthanc</a></li>
+                    <li><a href="#" style="color: red !important">Laborarotium MyLIMS</a></li>
                   </ul>  
                 </li>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Laporan</a>
                   <ul class="dropdown-menu">
-                    <li><a href="#">Penggunaan Obat</a></li>
-                    <li><a href="#">Jasa Medik</a></li>
-                    <li><a href="#">Pembayaran Rawat Jalan</a></li>
-                    <li><a href="#">Pembayaran Rawat Inap</a></li>
-                    <li><a href="#">Kunjungan Rawat Jalan</a></li>
-                    <li><a href="#">Kunjungan Rawat Inap</a></li>
-                    <li><a href="#">Sensus Harian</a></li>
+                    <li><a href="#" style="color: red !important">Penggunaan Obat</a></li>
+                    <li><a href="#" style="color: red !important">Jasa Medik</a></li>
+                    <li><a href="#" style="color: red !important">Pembayaran Rawat Jalan</a></li>
+                    <li><a href="#" style="color: red !important">Pembayaran Rawat Inap</a></li>
+                    <li><a href="#" style="color: red !important">Kunjungan Rawat Jalan</a></li>
+                    <li><a href="#" style="color: red !important">Kunjungan Rawat Inap</a></li>
+                    <li><a href="#" style="color: red !important">Sensus Harian</a></li>
                   </ul>  
                 </li>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Keuangan</a>
                   <ul class="dropdown-menu">
-                    <li {if: !$this->core->AccesModule('penjualan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('penjualan')}{?=url([ADMIN, 'penjualan', 'manage'])?}{/if}">Penjualan</a></li>
-                    <li><a href="#">Pengeluaran Harian</a></li>
-                    <li {if: !$this->core->AccesModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan')}{?=url([ADMIN, 'keuangan', 'jurnalharian'])?}{/if}">Jurnal Harian</a></li>
-                    <li {if: !$this->core->AccesModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan')}{?=url([ADMIN, 'keuangan', 'postingjurnal'])?}{/if}">Posting Jurnal</a></li>
-                    <li {if: !$this->core->AccesModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan')}{?=url([ADMIN, 'keuangan', 'bukubesar'])?}{/if}">Buku Besar</a></li>
-                    <li {if: !$this->core->AccesModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan')}{?=url([ADMIN, 'keuangan', 'cashflow'])?}{/if}">Cash Flow</a></li>
-                    <li {if: !$this->core->AccesModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan')}{?=url([ADMIN, 'keuangan', 'neraca'])?}{/if}">Neraca Rugi Laba</a></li>
+                    <li {if: !$this->core->AccesModule('penjualan') || !$this->core->ActiveModule('penjualan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('penjualan') && $this->core->ActiveModule('penjualan')}{?=url([ADMIN, 'penjualan', 'manage'])?}{/if}">Penjualan</a></li>
+                    <li {if: !$this->core->AccesModule('keuangan') || !$this->core->ActiveModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan') && $this->core->ActiveModule('keuangan')}{?=url([ADMIN, 'keuangan', 'jurnalharian'])?}{/if}">Jurnal Harian</a></li>
+                    <li {if: !$this->core->AccesModule('keuangan') || !$this->core->ActiveModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan') && $this->core->ActiveModule('keuangan')}{?=url([ADMIN, 'keuangan', 'postingjurnal'])?}{/if}">Posting Jurnal</a></li>
+                    <li {if: !$this->core->AccesModule('keuangan') || !$this->core->ActiveModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan') && $this->core->ActiveModule('keuangan')}{?=url([ADMIN, 'keuangan', 'bukubesar'])?}{/if}">Buku Besar</a></li>
+                    <li {if: !$this->core->AccesModule('keuangan') || !$this->core->ActiveModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan') && $this->core->ActiveModule('keuangan')}{?=url([ADMIN, 'keuangan', 'cashflow'])?}{/if}">Cash Flow</a></li>
+                    <li {if: !$this->core->AccesModule('keuangan') || !$this->core->ActiveModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan') && $this->core->ActiveModule('keuangan')}{?=url([ADMIN, 'keuangan', 'neraca'])?}{/if}">Neraca Rugi Laba</a></li>
                   </ul>  
                 </li>
                 <li class="dropdown">
