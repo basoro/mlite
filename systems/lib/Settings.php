@@ -38,7 +38,7 @@ class Settings
             return $this->cache[$module];
         }
 
-        return $this->cache[$module][$field];
+        return isset_or($this->cache[$module][$field]);
     }
 
     public function set($module, $field, $value = false)

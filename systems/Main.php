@@ -493,7 +493,7 @@ abstract class Main
     public function ActiveModule($module)
     {
         $activemodule = $this->db('mlite_modules')->where('dir', $module)->oneArray();
-        return $activemodule['dir'];
+        return isset_or($activemodule['dir']);
     }
 
     public function setPrintHeader()
