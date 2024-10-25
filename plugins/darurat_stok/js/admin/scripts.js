@@ -51,6 +51,12 @@ jQuery().ready(function () {
 { 'targets': 10}
 
         ],
+        "createdRow": function( row, data, dataIndex){
+            if(data['stok'] <= data['stokminimal']){
+                $('td', row).css('background-color', 'Red');
+                $('td', row).css('color', 'white');
+            }
+        },         
         buttons: [],
         "scrollCollapse": true,
         // "scrollY": '48vh', 

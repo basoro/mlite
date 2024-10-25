@@ -56,21 +56,19 @@ class Admin extends AdminModule
         $data = array();
         foreach($result as $row) {
             $stok = $this->db('gudangbarang')->select(['stok' => 'SUM(stok)'])->where('kode_brng', $row['kode_brng'])->toArray();
-            if($stok[0]['stok']<=$row['stokminimal']) {
-                $data[] = array(
-                    'kode_brng'=>$row['kode_brng'],
-                    'nama_brng'=>$row['nama_brng'],
-                    'stok'=>$stok[0]['stok'],
-                    'stokminimal'=>$row['stokminimal'],
-                    'kode_satbesar'=>$row['kode_satbesar'],
-                    'kode_sat'=>$row['kode_sat'],
-                    'dasar'=>$row['dasar'],
-                    'h_beli'=>$row['h_beli'],
-                    'isi'=>$row['isi'],
-                    'kapasitas'=>$row['kapasitas'],
-                    'expire'=>$row['expire']
-                );
-            }
+            $data[] = array(
+                'kode_brng'=>$row['kode_brng'],
+                'nama_brng'=>$row['nama_brng'],
+                'stok'=>$stok[0]['stok'],
+                'stokminimal'=>$row['stokminimal'],
+                'kode_satbesar'=>$row['kode_satbesar'],
+                'kode_sat'=>$row['kode_sat'],
+                'dasar'=>$row['dasar'],
+                'h_beli'=>$row['h_beli'],
+                'isi'=>$row['isi'],
+                'kapasitas'=>$row['kapasitas'],
+                'expire'=>$row['expire']
+            );
         }
 
         ## Response
@@ -111,21 +109,19 @@ class Admin extends AdminModule
 
             foreach($result as $row) {
                 $stok = $this->db('gudangbarang')->select(['stok' => 'SUM(stok)'])->where('kode_brng', $row['kode_brng'])->toArray();
-                if($stok[0]['stok']<=$row['stokminimal']) {
-                    $data[] = array(
-                        'kode_brng'=>$row['kode_brng'],
-                        'nama_brng'=>$row['nama_brng'],
-                        'stok'=>$stok[0]['stok'],
-                        'stokminimal'=>$row['stokminimal'],
-                        'kode_satbesar'=>$row['kode_satbesar'],
-                        'kode_sat'=>$row['kode_sat'],
-                        'dasar'=>$row['dasar'],
-                        'h_beli'=>$row['h_beli'],
-                        'isi'=>$row['isi'],
-                        'kapasitas'=>$row['kapasitas'],
-                        'expire'=>$row['expire']
-                    );
-                }
+                $data[] = array(
+                    'kode_brng'=>$row['kode_brng'],
+                    'nama_brng'=>$row['nama_brng'],
+                    'stok'=>$stok[0]['stok'],
+                    'stokminimal'=>$row['stokminimal'],
+                    'kode_satbesar'=>$row['kode_satbesar'],
+                    'kode_sat'=>$row['kode_sat'],
+                    'dasar'=>$row['dasar'],
+                    'h_beli'=>$row['h_beli'],
+                    'isi'=>$row['isi'],
+                    'kapasitas'=>$row['kapasitas'],
+                    'expire'=>$row['expire']
+                );
             }
 
             echo json_encode($data);
