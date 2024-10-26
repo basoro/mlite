@@ -1,0 +1,98 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Stok Opname</h3>
+                <ul class="nav nav-tabs">
+                    <li>
+                        <a href="{?=url([ADMIN,'farmasi','opname'])?}" role="tab">Opname</a>
+                    </li>
+                    <li class="active">
+                        <a href="{?=url([ADMIN,'farmasi','opname','data'])?}" role="tab">Data</a>
+                    </li>
+				</ul>
+            </div>
+            <div class="panel-body">
+                <form method="post" id="update_form">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped dataTables" width="100%">
+                            <thead>
+                                <th width="10%">Kode Barang</th>
+                                <th width="30%">Nama Barang</th>
+                                <th width="5%">Harga Beli</th>
+                                <th width="5%">Stok</th>
+                                <th width="5%">Real</th>
+                                <th width="5%">Selisih</th>
+                                <th width="5%">Nominal Hilang</th>
+                                <th width="5%">Lebih</th>
+                                <th width="5%">Nominal Lebih</th>
+                                <th width="5%">Keterangan</th>
+                                <th width="5%">Kode Bangsal</th>
+                                <th width="20%">Nama Bangsal</th>
+                                <th width="10%">No. Batch</th>
+                                <th width="10%">No. Faktur</th>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function(){
+    fetch_data();
+    function fetch_data(){
+        $.ajax({
+            url:"{?=url([ADMIN,'farmasi','opnamedata'])?}",
+            method:"POST",
+            dataType:"json",
+            success:function(data)
+            {
+                var html = '';
+                for(var count = 0; count < data.length; count++)
+                {
+                    html += '<tr>';
+                    html += '<td>'+data[count].kode_brng+'</td>';
+                    html += '<td>'+data[count].nama_brng+'</td>';
+                    html += '<td>'+data[count].h_beli+'</td>';
+                    html += '<td>'+data[count].stok+'</td>';
+                    html += '<td>'+data[count].real+'</td>';
+                    html += '<td>'+data[count].selisih+'</td>';
+                    html += '<td>'+data[count].nomihilang+'</td>';
+                    html += '<td>'+data[count].lebih+'</td>';
+                    html += '<td>'+data[count].nomilebih+'</td>';
+                    html += '<td>'+data[count].keterangan+'</td>';
+                    html += '<td>'+data[count].kd_bangsal+'</td>';
+                    html += '<td>'+data[count].nm_bangsal+'</td>';
+                    html += '<td>'+data[count].no_batch+'</td>';
+                    html += '<td>'+data[count].no_faktur+'</td></tr>';
+                }
+                $('tbody').html(html);
+                $('.dataTables').DataTable({
+                  "order": [[ 2, "desc" ]],
+                  "pageLength": 20,
+                  "pagingType": "full",
+                  "language": {
+                    "paginate": {
+                      "first": "&laquo;",
+                      "last": "&raquo;",
+                      "previous": "‹",
+                      "next":     "›"
+                    },
+                    "search": "",
+                    "searchPlaceholder": "Search..."
+                  },
+                  "lengthChange": false,
+                  "scrollX": true,
+                  dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+                });
+                var t = $(".dataTables").DataTable().rows().count();
+                $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+            }
+        });
+    }
+
+});
+</script>

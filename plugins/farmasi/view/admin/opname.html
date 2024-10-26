@@ -3,6 +3,14 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">Stok Opname</h3>
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="{?=url([ADMIN,'farmasi','opname'])?}" role="tab">Opname</a>
+                    </li>
+                    <li>
+                        <a href="{?=url([ADMIN,'farmasi','opname','data'])?}" role="tab">Data</a>
+                    </li>
+				</ul>
             </div>
             <div class="panel-body">
                 <form method="post" id="update_form">
@@ -123,8 +131,19 @@ $(document).ready(function(){
                 method:"POST",
                 data:$(this).serialize(),
                 success:function(data){
-                    //alert(data);
-                    alert('Data stok opname berhasil diperbarui');
+                    data = data.replace("}{", "},{");
+                    console.log(data);
+                    data = JSON.parse('[' + data + ']');
+                    for (var i = 0; i < data.length; i++) {
+                        var pesan = "";
+                        if(data[i].status == 'success') {
+                            var pesan = "Stok opname " + data[i].msg + " telah disimpan.";
+                        }
+                        if(data[i].status == 'error') {
+                            var pesan = "Stok opname " + data[i].msg + " gagal disimpan.\n" + data[i].info;
+                        }
+                        alert(pesan);
+                    }
                     $('.dataTables').DataTable().clear().destroy();
                     fetch_data();
                 }

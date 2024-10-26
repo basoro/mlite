@@ -47,3 +47,4 @@ config.php
 #workerman.php
 composer.lock
 backups
+themes/atilamedika

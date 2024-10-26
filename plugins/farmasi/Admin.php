@@ -316,10 +316,14 @@ class Admin extends AdminModule
 
     /* End Databarang Section */
 
-    public function getOpname()
+    public function getOpname($data='')
     {
       $this->_addHeaderFiles();
-      return $this->draw('opname.html');
+      if($data == 'data') {
+        return $this->draw('opname.data.html');
+      } else {
+        return $this->draw('opname.html');
+      }
     }
 
     public function postOpnameAll()
@@ -330,6 +334,17 @@ class Admin extends AdminModule
         ->where('databarang.status', '1')
         ->toJson();
       echo $gudangbarang;
+      exit();
+    }
+
+    public function postOpnameData()
+    {
+      $opname = $this->db('opname')
+        ->join('databarang', 'databarang.kode_brng=opname.kode_brng')
+        ->join('bangsal', 'bangsal.kd_bangsal=opname.kd_bangsal')
+        ->where('databarang.status', '1')
+        ->toJson();
+      echo $opname;
       exit();
     }
 
@@ -345,24 +360,65 @@ class Admin extends AdminModule
       $no_batch = $_POST['no_batch'];
       $no_faktur = $_POST['no_faktur'];
       for($count = 0; $count < count($kode_brng); $count++){
-       $query = "UPDATE gudangbarang SET stok=?, no_batch=?, no_faktur=? WHERE kode_brng=? AND kd_bangsal=?";
-       $opname = $this->db()->pdo()->prepare($query);
-       $opname->execute([$real[$count], $no_batch[$count], $no_faktur[$count], $kode_brng[$count], $kd_bangsal[$count]]);
+        $selisih = $real[$count] - $stok[$count];
+        $nomihilang = $selisih * $h_beli[$count];
+        $lebih = 0;
+        $nomilebih = 0;
+        if($selisih < 0) {
+          $selisih = 0;
+          $nomihilang = 0;
+          $lebih = $stok[$count] - $real[$count];
+          $nomilebih = $lebih * $h_beli[$count];
+        }
 
-       $selisih = $real[$count] - $stok[$count];
-       $nomihilang = $selisih * $h_beli[$count];
-       $lebih = 0;
-       $nomilebih = 0;
-       if($selisih < 0) {
-         $selisih = 0;
-         $nomihilang = 0;
-         $lebih = $stok[$count] - $real[$count];
-         $nomilebih = $lebih * $h_beli[$count];
-       }
+        $query2 = "INSERT INTO `opname` (`kode_brng`, `h_beli`, `tanggal`, `stok`, `real`, `selisih`, `nomihilang`, `lebih`, `nomilebih`, `keterangan`, `kd_bangsal`, `no_batch`, `no_faktur`) VALUES ('$kode_brng[$count]', '$h_beli[$count]', '$tanggal[$count]', '$real[$count]', '$stok[$count]', '$selisih', '$nomihilang', '$lebih', '$nomilebih', '$keterangan[$count]', '$kd_bangsal[$count]', '$no_batch[$count]', '$no_faktur[$count]')";
+        $opname2 = $this->db()->pdo()->prepare($query2);
+        $opname2->execute();
 
-       $query2 = "INSERT INTO `opname` (`kode_brng`, `h_beli`, `tanggal`, `stok`, `real`, `selisih`, `nomihilang`, `lebih`, `nomilebih`, `keterangan`, `kd_bangsal`, `no_batch`, `no_faktur`) VALUES ('$kode_brng[$count]', '$h_beli[$count]', '$tanggal[$count]', '$real[$count]', '$stok[$count]', '$selisih', '$nomihilang', '$lebih', '$nomilebih', '$keterangan[$count]', '$kd_bangsal[$count]', '$no_batch[$count]', '$no_faktur[$count]')";
-       $opname2 = $this->db()->pdo()->prepare($query2);
-       $opname2->execute();
+        if ($opname2->errorInfo()[2] == ''){
+          $query = "UPDATE gudangbarang SET stok=?, no_batch=?, no_faktur=? WHERE kode_brng=? AND kd_bangsal=?";
+          $opname = $this->db()->pdo()->prepare($query);              
+          $opname->execute([$real[$count], $no_batch[$count], $no_faktur[$count], $kode_brng[$count], $kd_bangsal[$count]]);
+          $keluar = '0';
+          $masuk = '0';
+          if($real[$count]>$stok[$count]) {
+          $masuk = $real[$count]-$stok[$count];
+          }
+          if($real[$count]<$stok[$count]) {
+          $keluar = $stok[$count]-$real[$count];
+          }
+          $this->db('riwayat_barang_medis')
+          ->save([
+            'kode_brng' => $kode_brng[$count],
+            'stok_awal' => $stok[$count],
+            'masuk' => $masuk,
+            'keluar' => $keluar,
+            'stok_akhir' => $real[$count],
+            'posisi' => 'Opname',
+            'tanggal' => $tanggal[$count],
+            'jam' => date('H:i:s'),
+            'petugas' => $this->core->getUserInfo('fullname', null, true),
+            'kd_bangsal' => $kd_bangsal[$count],
+            'status' => 'Simpan',
+            'no_batch' => $no_batch[$count],
+            'no_faktur' => $no_faktur[$count],
+            'keterangan' => $keterangan[$count]
+          ]);   
+                    
+          $data = array(
+            'status' => 'success', 
+            'msg' => $this->db('databarang')->select('nama_brng')->where('kode_brng', $kode_brng[$count])->oneArray()['nama_brng'], 
+            'info' => json_encode($opname2->errorInfo()[2])
+          );
+
+        } else {
+          $data = array(
+            'status' => 'error', 
+            'msg' => $this->db('databarang')->select('nama_brng')->where('kode_brng', $kode_brng[$count])->oneArray()['nama_brng'], 
+            'info' => json_encode($opname2->errorInfo()[2])
+          );
+        }
+        echo json_encode($data);   
 
       }
       exit();
