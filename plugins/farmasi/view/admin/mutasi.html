@@ -33,9 +33,11 @@
                         <ul>
                           <li>
                             Lokasi: {$data.nm_bangsal} ({$data.kd_bangsal}) - Stok: {$data.stok} 
+                            {if: $data.kd_bangsal != $this->core->settings->get('farmasi.gudang')}
                             <a href="#re_stok" data-kode_brng="{$value.kode_brng}" data-kd_bangsal="{$data.kd_bangsal}">
                               <i class="fa fa-undo text-danger"></i>
                             </a> 
+                            {/if}
                           </li>
                         </ul>
                         {/loop}
