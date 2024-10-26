@@ -212,6 +212,8 @@
                     <li {if: !$this->core->AccesModule('pasien') || !$this->core->ActiveModule('pasien')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('pasien') && $this->core->ActiveModule('pasien')}{?=url([ADMIN, 'pasien', 'manage'])?}{/if}">Data Pasien</a></li>
                     <li {if: !$this->core->AccesModule('vedika') || !$this->core->ActiveModule('vedika')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('vedika') && $this->core->ActiveModule('vedika')}{?=url([ADMIN, 'vedika', 'manage'])?}{/if}">Verifikasi Digital Klaim</a></li>
                     <li {if: !$this->core->AccesModule('veronisa') || !$this->core->ActiveModule('veronisa')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('veronisa') && $this->core->ActiveModule('veronisa')}{?=url([ADMIN, 'veronisa', 'manage'])?}{/if}">Verifikasi Obat Kronis</a></li>
+                    <li {if: !$this->core->AccesModule('icd_10') || !$this->core->ActiveModule('icd_10')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('icd_10') && $this->core->ActiveModule('icd_10')}{?=url([ADMIN, 'icd_10', 'manage'])?}{/if}">Data ICD 10</a></li>
+                    <li {if: !$this->core->AccesModule('icd_9') || !$this->core->ActiveModule('icd_9')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('icd_9') && $this->core->ActiveModule('icd_9')}{?=url([ADMIN, 'icd_9', 'manage'])?}{/if}">Data ICD 9</a></li>
                   </ul>  
                 </li>
                 <li class="dropdown">
@@ -233,7 +235,8 @@
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Laporan</a>
                   <ul class="dropdown-menu">
                     <li><a href="#" style="color: red !important">Penggunaan Obat</a></li>
-                    <li><a href="#" style="color: red !important">Jasa Medik</a></li>
+                    <li><a href="#" style="color: red !important">Jasa Medik Dokter</a></li>
+                    <li><a href="#" style="color: red !important">Jasa Medik Petugas</a></li>
                     <li><a href="#" style="color: red !important">Pembayaran Rawat Jalan</a></li>
                     <li><a href="#" style="color: red !important">Pembayaran Rawat Inap</a></li>
                     <li><a href="#" style="color: red !important">Kunjungan Rawat Jalan</a></li>
