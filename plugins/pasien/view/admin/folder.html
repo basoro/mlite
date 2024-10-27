@@ -101,12 +101,12 @@ h5 {
                         <li class="breadcrumb-item">
                             <a href="{?=url([ADMIN,'pasien','folder',parseUrl()[2]])?}">{?=parseUrl()[2]?}</a>
                         </li>
-                        {if: parseUrl()[3] !=''}
+                        {if: isset_or(parseUrl()[3]) !=''}
                         <li class="breadcrumb-item active">{?=revertNoRawat(parseUrl()[3])?}</li>
                         {/if}
                     </ol>
                     <div class="row">
-                        {if: parseUrl()[3] != ''}
+                        {if: isset_or(parseUrl()[3]) != ''}
                         <div class="col-md-12" style="margin-bottom: 20px;">
                             <div class="panel panel-default">
                                 <div class="panel-body">                        
