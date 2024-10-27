@@ -1698,7 +1698,7 @@ class Admin extends AdminModule
         'umur' => $_POST['umur'], 
         'jk' => $_POST['jk'], 
         'alamat' => $_POST['alamat'], 
-        'kepasa' => $_POST['kepasa'], 
+        'kepada' => $_POST['kepada'], 
         'di' => $_POST['di'], 
         'anamnesa' => $_POST['anamnesa'], 
         'pemeriksaan_fisik' => $_POST['pemeriksaan_fisik'], 
