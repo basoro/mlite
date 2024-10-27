@@ -13,15 +13,75 @@
     font-family: georgia;
   }
   @media print {
-    #printPageButton {
+    #saveButton, #printPageButton {
       display: none;
     }
+    textarea {
+      border: none;
+      resize: none;
+    }    
   }
   </style>
 <script>
   function Cetak()
   {
       window.print();
+  }  
+  function Simpan()
+  {
+    var url = "{?=url([ADMIN,'rawat_jalan','simpansuratrujukan'])?}";
+    var no_rawat = "{$no_rawat}";
+    var nomor_surat = $("#nomor_surat").val();
+    var no_rkm_medis = "{$pasien.no_rkm_medis}";
+    var nm_pasien = "{$pasien.nm_pasien}";
+    var tgl_lahir = "{$pasien.tgl_lahir}";
+    var umur = "{?=hitungUmur($pasien.tgl_lahir)?}";
+    var jk = "{$pasien.jk}";
+    var alamat = "{$pasien.alamat}, {$pasien.nm_kel}, {$pasien.nm_kec}, {$pasien.nm_kab}, {$pasien.nm_prop}";
+    var kepada = $("#kepada").val();
+    var di = $("#di").val();
+    var anamnesa = $("#anamnesa").val();
+    var pemeriksaan_fisik =$("#pemeriksaan_fisik").val();
+    var pemeriksaan_penunjang = $("#pemeriksaan_penunjang").val();
+    var diagnosa = $("#diagnosa").val();
+    var terapi = $("#terapi").val();
+    var alasan_dirujuk = $("#alasan_dirujuk").val();
+    var dokter = "{$nm_dokter}";
+    var petugas = "{?=$this->core->getUserInfo('username', $_SESSION['mlite_user'])?}";
+
+    $.post(
+      url, 
+      {
+        nomor_surat: nomor_surat, 
+        no_rawat: no_rawat, 
+        no_rkm_medis: no_rkm_medis, 
+        nm_pasien: nm_pasien, 
+        tgl_lahir: tgl_lahir, 
+        umur: umur, 
+        jk: jk, 
+        alamat: alamat, 
+        kepada: kepada,
+        di: di,
+        anamnesa: anamnesa, 
+        pemeriksaan_fisik: pemeriksaan_fisik, 
+        pemeriksaan_penunjang: pemeriksaan_penunjang, 
+        diagnosa: diagnosa, 
+        terapi: terapi, 
+        alasan_dirujuk: alasan_dirujuk, 
+        dokter: dokter, 
+        petugas: petugas
+      },
+      function(data) {
+        data = JSON.parse(data);
+        console.log(data);
+        if(data.status == 'success') {
+          alert('Sukses');
+        }
+        if(data.status == 'error') {
+          alert(data.msg);
+        }
+      }
+    );
   }  
   function auto_grow(element) {
     element.style.height = "px";
@@ -54,7 +114,7 @@
   </table>
   <center>
     <h2 style="margin-bottom:0px !important;border-bottom: 2px solid #000;width:250px;">SURAT RUJUKAN</h2>
-    Nomor: <input type="text" class="form-control" name="" value="" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"><br><br>
+    Nomor: <input type="text" class="form-control" name="nomor_surat" id="nomor_surat" value="" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"><br><br>
   </center>
   <table>
     <tbody>
@@ -64,10 +124,9 @@
         <td width="180">
           Kepada Yth.<br>
           Rekan Sejawat<br>
-          <input type="text" class="form-control" name="" value="" style="width: 300px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"><br>
-          <input type="text" class="form-control" name="" value="" style="width: 300px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"><br>
+          <textarea name="kepada" id="kepada" cols="34" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea><br>
           Di<br>
-          <input type="text" class="form-control" name="" value="" style="width: 300px;border: 0;padding:5px;background-color:#eee;">
+          <input type="text" class="form-control" name="di" id="di" value="" style="width: 300px;border: 0;padding:5px;background-color:#eee;">
         </td>
       </tr>
       <tr>
@@ -107,42 +166,42 @@
         <td width="200" style="vertical-align: top;">a. Anamnesis</td>
         <td style="vertical-align: top;"> : </td>
         <td>
-          <textarea name="name" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
+          <textarea name="anamnesa" id="anamnesa" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
         </td>
       </tr>
       <tr>
         <td width="200" style="vertical-align: top;">b. Pemeriksaan fisik</td>
         <td style="vertical-align: top;"> : </td>
         <td>
-          <textarea name="name" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
+          <textarea name="pemeriksaan_fisik" id="pemeriksaan_fisik" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
         </td>
       </tr>
       <tr>
         <td width="200" style="vertical-align: top;">c. Pemeriksaan penunjang </td>
         <td style="vertical-align: top;"> : </td>
         <td>
-          <textarea name="name" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
+          <textarea name="pemeriksaan_penunjang" id="pemeriksaan_penunjang" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
         </td>
       </tr>
       <tr>
         <td width="200" style="vertical-align: top;">d. Diagnosis</td>
         <td style="vertical-align: top;"> : </td>
         <td>
-          <textarea name="name" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
+          <textarea name="diagnosa" id="diagnosa" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
         </td>
       </tr>
       <tr>
         <td width="200" style="vertical-align: top;">e. Terapi</td>
         <td style="vertical-align: top;"> : </td>
         <td>
-          <textarea name="name" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
+          <textarea name="terapi" id="terapi" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
         </td>
       </tr>
       <tr>
         <td width="200" style="vertical-align: top;">e. Alasan dirujuk</td>
         <td style="vertical-align: top;"> : </td>
         <td>
-          <textarea name="name" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
+          <textarea name="alasan_dirujuk" id="alasan_dirujuk" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
         </td>
       </tr>
       <tr>
@@ -170,4 +229,4 @@
   	});
 </script>
 <br><br>
-<button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>
+<button id="saveButton" onclick="Simpan()">&#9635; Simpan</button> <button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>

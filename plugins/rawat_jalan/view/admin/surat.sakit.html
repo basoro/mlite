@@ -13,8 +13,12 @@
     font-family: georgia;
   }
   @media print {
-    #printPageButton {
+    #saveButton, #printPageButton {
       display: none;
+    }
+    textarea {
+      border: none;
+      resize: none;
     }
   }
 </style>
@@ -23,6 +27,58 @@
   {
       window.print();
   }  
+  function Simpan()
+  {
+    var url = "{?=url([ADMIN,'rawat_jalan','simpansuratsakit'])?}";
+    var no_rawat = "{$no_rawat}";
+    var nomor_surat = $("#nomor_surat").val();
+    var no_rkm_medis = "{$pasien.no_rkm_medis}";
+    var nm_pasien = "{$pasien.nm_pasien}";
+    var tgl_lahir = "{$pasien.tgl_lahir}";
+    var umur = "{?=hitungUmur($pasien.tgl_lahir)?}";
+    var jk = "{$pasien.jk}";
+    var alamat = "{$pasien.alamat}, {$pasien.nm_kel}, {$pasien.nm_kec}, {$pasien.nm_kab}, {$pasien.nm_prop}";
+    var keadaan = $("#keadaan").val();
+    var diagnosa =$("#diagnosa").val();
+    var lama_angka = $("#lama_angka").val();
+    var lama_huruf = $("#lama_huruf").val();
+    var tanggal_mulai = $("#tanggal_mulai").val();
+    var tanggal_selesai = $("#tanggal_selesai").val();
+    var dokter = "{$nm_dokter}";
+    var petugas = "{?=$this->core->getUserInfo('username', $_SESSION['mlite_user'])?}";
+
+    $.post(
+      url, 
+      {
+        nomor_surat: nomor_surat, 
+        no_rawat: no_rawat, 
+        no_rkm_medis: no_rkm_medis, 
+        nm_pasien: nm_pasien, 
+        tgl_lahir: tgl_lahir, 
+        umur: umur, 
+        jk: jk, 
+        alamat: alamat, 
+        keadaan: keadaan, 
+        diagnosa: diagnosa, 
+        lama_angka: lama_angka, 
+        lama_huruf: lama_huruf, 
+        tanggal_mulai: tanggal_mulai, 
+        tanggal_selesai: tanggal_selesai, 
+        dokter: dokter, 
+        petugas: petugas
+      },
+      function(data) {
+        data = JSON.parse(data);
+        console.log(data);
+        if(data.status == 'success') {
+          alert('Sukses');
+        }
+        if(data.status == 'error') {
+          alert(data.msg);
+        }
+      }
+    );
+  }   
 </script>
 <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
 <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
@@ -50,7 +106,7 @@
   </table>
   <center>
     <h2 style="margin-bottom:0px !important;border-bottom: 2px solid #000;width:400px;">SURAT KETERANGAN SAKIT</h2>
-    Nomor: <input type="text" class="form-control" name="" value="" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"><br><br>
+    Nomor: <input type="text" class="form-control" name="nomor_surat" id="nomor_surat" value="{?=isset_or($surat.nomor_surat)?}" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"><br><br>
   </center>
   <br><br>
   <table>
@@ -77,7 +133,7 @@
       <tr>
         <td width="200">Jenis Kelamin</td>
         <td> : </td>
-        <td>{$pasien.jk}</td>
+        <td>{if: $pasien.jk == 'L'}Laki-Laki{/if}{if: $pasien.jk == 'P'}Perempuan{/if}</td>
       </tr>
       <tr>
         <td width="200">Alamat</td>
@@ -87,9 +143,9 @@
       <tr>
         <td colspan="3">
           <br>
-          Berdasarkan hasil pemeriksaan klinis / laboratories / radiologi*, yang bersangkutan dalam keadaan
-          <input type="text" class="form-control" name="" value="" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;">
-          dengan diagnosa penyakit <input type="text" class="form-control" name="" value="" style="width: 300px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;">, dan perlu istirahatselama <input type="text" class="form-control" name="" value="" style="width: 50px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"> ( <input type="text" class="form-control" name="" value="" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"> ) hari, terhitung mulai tanggal <input type="text" class="form-control" name="" value="" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"> sampai dengan tanggal <input type="text" class="form-control" name="" value="" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;">.
+          Berdasarkan hasil pemeriksaan klinis, yang bersangkutan dalam keadaan
+          <input type="text" class="form-control" name="keadaan" id="keadaan" value="{?=isset_or($surat.keadaan)?}" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;">
+          dengan diagnosa penyakit <input type="text" class="form-control" name="diagnosa" id="diagnosa" value="{?=isset_or($surat.diagnosa)?}" style="width: 300px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;">, dan perlu istirahat selama <input type="text" class="form-control" name="lama_angka" id="lama_angka" value="{?=isset_or($surat.lama_angka)?}" style="width: 50px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"> ( <input type="text" class="form-control" name="lama_huruf" id="lama_huruf" value="{?=isset_or($surat.lama_huruf)?}" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"> ) hari, terhitung mulai tanggal <input type="date" class="form-control" name="tanggal_mulai" id="tanggal_mulai" value="{?=isset_or($surat.tanggal_mulai)?}" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"> sampai dengan tanggal <input type="date" class="form-control" name="tanggal_selesai" id="tanggal_selesai" value="{?=isset_or($surat.tanggal_selesai)?}" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;">.
         </td>
       </tr>
       <tr>
@@ -116,4 +172,4 @@
   	});
 </script>
 <br><br>
-<button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>
+<button id="saveButton" onclick="Simpan()">&#9635; Simpan</button> <button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>
