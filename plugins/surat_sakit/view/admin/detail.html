@@ -1,0 +1,35 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Detail mlite_surat_sakit</h4>
+</div>
+<div class="modal-body">
+    <table id="tbl_detail_mlite_surat_sakit" class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        </thead>
+        <tbody>
+            {loop: $detail}
+            <tr><td>Id</td><td>{$value.id}</td><tr>
+<tr><td>Nomor Surat</td><td>{$value.nomor_surat}</td><tr>
+<tr><td>No Rawat</td><td>{$value.no_rawat}</td><tr>
+<tr><td>No Rkm Medis</td><td>{$value.no_rkm_medis}</td><tr>
+<tr><td>Nm Pasien</td><td>{$value.nm_pasien}</td><tr>
+<tr><td>Tgl Lahir</td><td>{$value.tgl_lahir}</td><tr>
+<tr><td>Umur</td><td>{$value.umur}</td><tr>
+<tr><td>Jk</td><td>{$value.jk}</td><tr>
+<tr><td>Alamat</td><td>{$value.alamat}</td><tr>
+<tr><td>Keadaan</td><td>{$value.keadaan}</td><tr>
+<tr><td>Diagnosa</td><td>{$value.diagnosa}</td><tr>
+<tr><td>Lama Angka</td><td>{$value.lama_angka}</td><tr>
+<tr><td>Lama Huruf</td><td>{$value.lama_huruf}</td><tr>
+<tr><td>Tanggal Mulai</td><td>{$value.tanggal_mulai}</td><tr>
+<tr><td>Tanggal Selesai</td><td>{$value.tanggal_selesai}</td><tr>
+<tr><td>Dokter</td><td>{$value.dokter}</td><tr>
+<tr><td>Petugas</td><td>{$value.petugas}</td><tr>
+
+            {/loop}
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>

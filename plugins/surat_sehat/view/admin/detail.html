@@ -1,0 +1,36 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Detail mlite_surat_sehat</h4>
+</div>
+<div class="modal-body">
+    <table id="tbl_detail_mlite_surat_sehat" class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        </thead>
+        <tbody>
+            {loop: $detail}
+            <tr><td>Id</td><td>{$value.id}</td><tr>
+<tr><td>Nomor Surat</td><td>{$value.nomor_surat}</td><tr>
+<tr><td>No Rawat</td><td>{$value.no_rawat}</td><tr>
+<tr><td>No Rkm Medis</td><td>{$value.no_rkm_medis}</td><tr>
+<tr><td>Nm Pasien</td><td>{$value.nm_pasien}</td><tr>
+<tr><td>Tgl Lahir</td><td>{$value.tgl_lahir}</td><tr>
+<tr><td>Umur</td><td>{$value.umur}</td><tr>
+<tr><td>Jk</td><td>{$value.jk}</td><tr>
+<tr><td>Alamat</td><td>{$value.alamat}</td><tr>
+<tr><td>Tanggal</td><td>{$value.tanggal}</td><tr>
+<tr><td>Berat Badan</td><td>{$value.berat_badan}</td><tr>
+<tr><td>Tinggi Badan</td><td>{$value.tinggi_badan}</td><tr>
+<tr><td>Tensi</td><td>{$value.tensi}</td><tr>
+<tr><td>Gol Darah</td><td>{$value.gol_darah}</td><tr>
+<tr><td>Riwayat Penyakit</td><td>{$value.riwayat_penyakit}</td><tr>
+<tr><td>Keperluan</td><td>{$value.keperluan}</td><tr>
+<tr><td>Dokter</td><td>{$value.dokter}</td><tr>
+<tr><td>Petugas</td><td>{$value.petugas}</td><tr>
+
+            {/loop}
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>

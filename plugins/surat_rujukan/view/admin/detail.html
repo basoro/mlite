@@ -1,0 +1,37 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Detail mlite_surat_rujukan</h4>
+</div>
+<div class="modal-body">
+    <table id="tbl_detail_mlite_surat_rujukan" class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        </thead>
+        <tbody>
+            {loop: $detail}
+            <tr><td>Id</td><td>{$value.id}</td><tr>
+<tr><td>Nomor Surat</td><td>{$value.nomor_surat}</td><tr>
+<tr><td>No Rawat</td><td>{$value.no_rawat}</td><tr>
+<tr><td>No Rkm Medis</td><td>{$value.no_rkm_medis}</td><tr>
+<tr><td>Nm Pasien</td><td>{$value.nm_pasien}</td><tr>
+<tr><td>Tgl Lahir</td><td>{$value.tgl_lahir}</td><tr>
+<tr><td>Umur</td><td>{$value.umur}</td><tr>
+<tr><td>Jk</td><td>{$value.jk}</td><tr>
+<tr><td>Alamat</td><td>{$value.alamat}</td><tr>
+<tr><td>Kepada</td><td>{$value.kepada}</td><tr>
+<tr><td>Di</td><td>{$value.di}</td><tr>
+<tr><td>Anamnesa</td><td>{$value.anamnesa}</td><tr>
+<tr><td>Pemeriksaan Fisik</td><td>{$value.pemeriksaan_fisik}</td><tr>
+<tr><td>Pemeriksaan Penunjang</td><td>{$value.pemeriksaan_penunjang}</td><tr>
+<tr><td>Diagnosa</td><td>{$value.diagnosa}</td><tr>
+<tr><td>Terapi</td><td>{$value.terapi}</td><tr>
+<tr><td>Alasan Dirujuk</td><td>{$value.alasan_dirujuk}</td><tr>
+<tr><td>Dokter</td><td>{$value.dokter}</td><tr>
+<tr><td>Petugas</td><td>{$value.petugas}</td><tr>
+
+            {/loop}
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>

@@ -1,0 +1,267 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-6 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_mlite_surat_sakit' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Lihat Data mlite_surat_sakit' style='color:white;'>
+                          <i class='fa fa-eye' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> </button>
+                          <button id='tambah_data_mlite_surat_sakit' class='btn btn-success' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                          <i class='fa fa-plus-square' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_mlite_surat_sakit' class='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                          <i class='fa fa-edit' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_mlite_surat_sakit' class='btn btn-danger' data-toggle='tooltip' data-placement='top' title='Hapus Data'>
+                          <i class='fa fa-trash' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                          <button id='lihat_detail_mlite_surat_sakit' class='btn btn-default' data-toggle='tooltip' data-placement='top' title='Detail Data'>
+                          <i class='fa fa-search' style='font-size: 15px;'></i><span class="hidden-xs"> Detail</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-addon">Cari :</span>
+                          <span class="input-group-addon" style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-control" id='search_field_mlite_surat_sakit' name='search_field_mlite_surat_sakit' style="margin: 0 !important;"> 
+                              <option value='id'>Id</option>
+<option value='nomor_surat'>Nomor Surat</option>
+<option value='no_rawat'>No Rawat</option>
+<option value='no_rkm_medis'>No Rkm Medis</option>
+<option value='nm_pasien'>Nm Pasien</option>
+<option value='tgl_lahir'>Tgl Lahir</option>
+<option value='umur'>Umur</option>
+<option value='jk'>Jk</option>
+<option value='alamat'>Alamat</option>
+<option value='keadaan'>Keadaan</option>
+<option value='diagnosa'>Diagnosa</option>
+<option value='lama_angka'>Lama Angka</option>
+<option value='lama_huruf'>Lama Huruf</option>
+<option value='tanggal_mulai'>Tanggal Mulai</option>
+<option value='tanggal_selesai'>Tanggal Selesai</option>
+<option value='dokter'>Dokter</option>
+<option value='petugas'>Petugas</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_mlite_surat_sakit' id='search_text_mlite_surat_sakit' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-addon">
+                          <span id='searchclear_mlite_surat_sakit' data-toggle='tooltip' data-placement='top' title='Clear'><i class="fa fa-times text-danger"></i></span>
+                          </span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_mlite_surat_sakit" class="table table-bordered table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>Id</th>
+<th>Nomor Surat</th>
+<th>No Rawat</th>
+<th>No Rkm Medis</th>
+<th>Nm Pasien</th>
+<th>Tgl Lahir</th>
+<th>Umur</th>
+<th>Jk</th>
+<th>Alamat</th>
+<th>Keadaan</th>
+<th>Diagnosa</th>
+<th>Lama Angka</th>
+<th>Lama Huruf</th>
+<th>Tanggal Mulai</th>
+<th>Tanggal Selesai</th>
+<th>Dokter</th>
+<th>Petugas</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>        
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- Modal -->
+<div id="modal_mlite_surat_sakit" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Surat Sakit</span>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <form name="form_mlite_surat_sakit">
+          <input type="hidden" class="form-control" id="typeact" /> 
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='id'>Id</label>
+            <input type='text' class='form-control' id='id' name='id' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='nomor_surat'>Nomor Surat</label>
+            <input type='text' class='form-control' id='nomor_surat' name='nomor_surat' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='no_rawat'>No Rawat</label>
+            <input type='text' class='form-control' id='no_rawat' name='no_rawat' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='no_rkm_medis'>No Rkm Medis</label>
+            <input type='text' class='form-control' id='no_rkm_medis' name='no_rkm_medis' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='nm_pasien'>Nm Pasien</label>
+            <input type='text' class='form-control' id='nm_pasien' name='nm_pasien' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='tgl_lahir'>Tgl Lahir</label>
+            <input type='text' class='form-control' id='tgl_lahir' name='tgl_lahir' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='umur'>Umur</label>
+            <input type='text' class='form-control' id='umur' name='umur' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='jk'>Jk</label>
+            <input type='text' class='form-control' id='jk' name='jk' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='alamat'>Alamat</label>
+            <input type='text' class='form-control' id='alamat' name='alamat' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='keadaan'>Keadaan</label>
+            <input type='text' class='form-control' id='keadaan' name='keadaan' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='diagnosa'>Diagnosa</label>
+            <input type='text' class='form-control' id='diagnosa' name='diagnosa' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='lama_angka'>Lama Angka</label>
+            <input type='text' class='form-control' id='lama_angka' name='lama_angka' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='lama_huruf'>Lama Huruf</label>
+            <input type='text' class='form-control' id='lama_huruf' name='lama_huruf' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='tanggal_mulai'>Tanggal Mulai</label>
+            <input type='text' class='form-control' id='tanggal_mulai' name='tanggal_mulai' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='tanggal_selesai'>Tanggal Selesai</label>
+            <input type='text' class='form-control' id='tanggal_selesai' name='tanggal_selesai' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='dokter'>Dokter</label>
+            <input type='text' class='form-control' id='dokter' name='dokter' />
+          <div class='error'></div>
+        </div>
+        </div>
+        <div class='col-xxl-3 col-lg-4 col-sm-6'>
+        <div class='form-group'>
+            <label class='form-label' for='petugas'>Petugas</label>
+            <input type='text' class='form-control' id='petugas' name='petugas' />
+          <div class='error'></div>
+        </div>
+        </div>
+      </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+        <button type="submit" id="simpan_data_mlite_surat_sakit" class="btn btn-primary">Simpan Data</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_mlite_surat_sakit" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Surat Sakit</span>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_mlite_surat_sakit"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+        <button type="submit" id="export_pdf" class="btn btn-primary">
+          <i class="fa fa-file-pdf-o"></i>&nbsp;PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-primary">
+          <i class="fa fa-file-excel-o"></i>&nbsp;XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_mlite_surat_sakit" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

@@ -1,0 +1,242 @@
+<style>
+.file-man-box {
+    padding: 20px;
+    border: 1px solid #e3eaef;
+    border-radius: 5px;
+    position: relative;
+    margin-bottom: 20px
+}
+
+.file-man-box .file-close {
+    color: #f1556c;
+    position: absolute;
+    line-height: 24px;
+    font-size: 24px;
+    right: 10px;
+    top: 10px;
+    visibility: hidden
+}
+
+.file-man-box .file-img-box {
+    line-height: 120px;
+    text-align: center
+}
+
+.file-man-box .file-img-box img {
+    height: 64px
+}
+
+.file-man-box .file-download {
+    font-size: 32px;
+    color: #98a6ad;
+    position: absolute;
+    right: 10px
+}
+
+.file-man-box .file-download:hover {
+    color: #313a46
+}
+
+.file-man-box .file-man-title {
+    padding-right: 25px
+}
+
+.file-man-box:hover {
+    -webkit-box-shadow: 0 0 24px 0 rgba(0, 0, 0, .06), 0 1px 0 0 rgba(0, 0, 0, .02);
+    box-shadow: 0 0 24px 0 rgba(0, 0, 0, .06), 0 1px 0 0 rgba(0, 0, 0, .02)
+}
+
+.file-man-box:hover .file-close {
+    visibility: visible
+}
+.text-overflow {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+}
+h5 {
+    font-size: 15px;
+}    
+</style>
+<div class="row" style="margin-bottom:100px;" id="folder_pasien">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Kelola Folder Pasien</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <div class="bg-white">
+                                <img src="{?=url()?}/plugins/pasien/img/{$pasien.jk}.png" class="img-fluid" width="70%" alt="Responsive image" />
+                                <div class="p-3 border-bottom">
+                                    <h4 class="font-weight-bold text-dark">Nama: {$pasien.nm_pasien}</h4>
+                                    <h4 class="font-weight-bold text-dark">Nomor RM: {$pasien.no_rkm_medis}</h4>
+                                    <h4 class="font-weight-bold text-dark">Umur: {$pasien.umur}</h4>
+                                    <p class="mb-0 text-muted">{$pasien.alamat}</p>
+                                </div>
+                            </div>        
+                        </li>
+                        {loop: $reg_periksa} 
+                        <li class="list-group-item">
+                            <a href="{?=url([ADMIN,'pasien','folder',$value.no_rkm_medis,convertNoRawat($value.no_rawat)])?}">
+                                Tanggal: {$value.tgl_registrasi}<br>
+                                No. Rawat: {$value.no_rawat}<br>
+                                Poliklinik: {$value.nm_poli}<br>
+                                Dokter: {$value.nm_dokter}
+                            </a>
+                        </li>
+                        {/loop}
+                    </ul>
+                </div>
+                <div class="col-md-9">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{?=url([ADMIN,'pasien','manage'])?}">Pasien</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{?=url([ADMIN,'pasien','folder',parseUrl()[2]])?}">{?=parseUrl()[2]?}</a>
+                        </li>
+                        {if: isset_or(parseUrl()[3]) !=''}
+                        <li class="breadcrumb-item active">{?=revertNoRawat(parseUrl()[3])?}</li>
+                        {/if}
+                    </ol>
+                    <div class="row">
+                        {if: isset_or(parseUrl()[3]) != ''}
+                        <div class="col-md-12" style="margin-bottom: 20px;">
+                            <div class="panel panel-default">
+                                <div class="panel-body">                        
+                                    <div class="form-horizontal" id="form_berkasdigital">
+                                        <div class="form-group">
+                                            <label for="nama_pasien" class="col-sm-3 control-label">Nomor Rawat</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="no_rawat" name="no_rawat" value="{?=revertNoRawat(parseUrl()[3])?}" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="nama_pasien" class="col-sm-3 control-label">Kategori Berkas</label>
+                                            <div class="col-sm-9">
+                                            <select name="kode" id="kode" class="form-control">
+                                                {loop: $master_berkas_digital}
+                                                <option value="{$value.kode}">{$value.nama}</option>
+                                                {/loop}
+                                            </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="nama_pasien" class="col-sm-3 control-label">Pilih Berkas</label>
+                                            <div class="col-sm-9">
+                                            <input type="file" name="berkas" accept="*/*" id="berkas" class="form-control" />
+                                            <div id="berkasdigitalstatus"></div>
+                                            </div>
+                                        </div>
+                                        <div class="m-t-x pull-right">
+                                            <button type="button" name="button" class="btn btn-primary" id="simpan_berkas_digital"><i class="fa fa-save"></i><span class="hidden-xs"> Unggah Berkas</span></button>
+                                        </div>
+                                    </div>     
+                                </div>
+                            </div>                       
+                        </div>                        
+                        {loop: $berkas_digital_perawatan}
+                        <div class="col-md-4 col-lg-2 col-xl-2">
+                            <div class="file-man-box"><a href="" class="file-close hapus_berkas_digital" data-lokasi_file="{$value.lokasi_file}"><i class="fa fa-times-circle"></i></a>
+                                <div class="file-img-box"><a href="{?=url('uploads/berkasrawat/')?}/{$value.lokasi_file}" target="_blank"><img src="{?=url()?}/assets/svg/{?=explode('.',$value.lokasi_file)[1]?}.svg" alt="icon"></a></div><a href="#" class="file-download download_berkas_digital" data-lokasi_file="{$value.lokasi_file}"><i class="fa fa-download"></i></a>
+                                <div class="file-man-title">
+                                    <h5 class="mb-0 text-overflow">{$value.no_rawat}</h5>
+                                    <p class="mb-0"><small>{$value.nama}</small></p>
+                                </div>
+                            </div>
+                        </div>
+                        {/loop}
+                        {else} 
+                        {loop: $berkas_digital_perawatan}
+                        <div class="col-md-4 col-lg-2 col-xl-2">
+                            <div class="file-man-box"><a href="" class="file-close hapus_berkas_digital" data-lokasi_file="{$value.lokasi_file}"><i class="fa fa-times-circle"></i></a>
+                                <div class="file-img-box"><a href="{?=url('uploads/berkasrawat/')?}/{$value.lokasi_file}" target="_blank"><img src="{?=url()?}/assets/svg/{?=explode('.',$value.lokasi_file)[1]?}.svg" alt="icon"></a></div><a href="#" class="file-download download_berkas_digital" data-lokasi_file="{$value.lokasi_file}"><i class="fa fa-download"></i></a>
+                                <div class="file-man-title">
+                                    <h5 class="mb-0 text-overflow">{$value.no_rawat}</h5>
+                                    <p class="mb-0"><small>{$value.nama}</small></p>
+                                </div>
+                            </div>
+                        </div>
+                        {/loop}
+                        {/if}
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    $("#form_berkasdigital").on("click", "#simpan_berkas_digital", function(event){
+        var property = document.getElementById('berkas').files[0];
+        var image_name = property.name;
+        var image_extension = image_name.split('.').pop().toLowerCase();
+  
+        if(jQuery.inArray(image_extension,['gif','jpg','jpeg','png','pdf','doc','docx','xls','xlsx']) == -1){
+          alert("Invalid image file");
+        }
+  
+        var form_data = new FormData();
+        var no_rawat = $('input:text[name=no_rawat]').val();
+        form_data.append("file",property);
+        form_data.append("no_rawat",$('#no_rawat').val());
+        form_data.append("kode",$('#kode').val());
+        $.ajax({
+          url:'{?=url([ADMIN,'pasien','saveberkasdigital'])?}',
+          method:'POST',
+          data:form_data,
+          contentType:false,
+          cache:false,
+          processData:false,
+          beforeSend:function(){
+            $('#berkasdigitalstatus').html('Loading......');
+          },
+          success:function(data){  
+            console.log(data);
+            // $('#berkasdigitalstatus').html(data);
+            location.reload();
+          }
+        });
+  
+    });
+    $("#folder_pasien").on("click", ".hapus_berkas_digital", function(event){
+        // alert(lokasi_file);
+        var baseURL = mlite.url + '/' + mlite.admin;
+        event.preventDefault();
+        var url = baseURL + '/pasien/hapusberkasdigital?t=' + mlite.token;
+        var lokasi_file = $(this).attr("data-lokasi_file");;
+        // tampilkan dialog konfirmasi
+        bootbox.confirm("Apakah anda yakin ingin menghapus berkas ini?", function(result){
+            // ketika ditekan tombol ok
+            if (result){
+               // mengirimkan perintah penghapusan
+                $.post(url, {
+                    lokasi_file: lokasi_file
+                } ,function(data) {
+                    location.reload();
+                });
+            }
+        });        
+    });
+    $("#folder_pasien").on("click", ".download_berkas_digital", function(event){
+        // alert(lokasi_file);
+        var baseURL = mlite.url + '/' + mlite.admin;
+        event.preventDefault();
+        var lokasi_file = $(this).attr("data-lokasi_file");
+        var url = baseURL + '/pasien/downloadberkasdigital?lokasi_file=' + lokasi_file + '&t=' + mlite.token;
+        // tampilkan dialog konfirmasi
+        bootbox.confirm("Apakah anda ingin mengunduh berkas ini?", function(result){
+            // ketika ditekan tombol ok
+            if (result){
+               // mengirimkan perintah penghapusan
+               window.location.href = url;
+            }
+        });        
+    });    
+  </script>

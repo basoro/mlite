@@ -5,6 +5,7 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    private $_uploads = WEBAPPS_PATH.'/berkasrawat/pages/upload';
 
     public function navigation()
     {
@@ -485,6 +486,124 @@ class Admin extends AdminModule
       // Output a PDF file directly to the browser
       $mpdf->Output();
             
+      exit();
+    }
+
+    public function getFolder($no_rkm_medis, $no_rawat='')
+    {
+      $this->_addHeaderFiles();
+      $pasien = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+      $reg_periksa = $this->db('reg_periksa')
+        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+        ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+        ->where('no_rkm_medis', $no_rkm_medis)
+        ->toArray();
+      $no_rawat_array = [];
+      foreach($reg_periksa as $row) {
+        $no_rawat_array[] = $row['no_rawat'];
+      }
+      $berkas_digital_perawatan = $this->db('berkas_digital_perawatan')
+        ->join('master_berkas_digital', 'master_berkas_digital.kode = berkas_digital_perawatan.kode')
+        ->in('no_rawat', $no_rawat_array)
+        ->toArray();
+      if($no_rawat) {
+        $berkas_digital_perawatan = $this->db('berkas_digital_perawatan')
+        ->join('master_berkas_digital', 'master_berkas_digital.kode = berkas_digital_perawatan.kode')
+        ->where('no_rawat', revertNoRawat($no_rawat))
+        ->toArray();
+      }
+      $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
+      return $this->draw('folder.html', ['pasien' => $pasien, 'reg_periksa' => $reg_periksa, 'berkas_digital_perawatan' => $berkas_digital_perawatan, 'master_berkas_digital' => $master_berkas_digital]);
+    }
+
+    public function postSaveBerkasDigital()
+    {
+
+      if(MULTI_APP) {
+
+        $curl = curl_init();
+        $filePath = $_FILES['file']['tmp_name'];
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => str_replace('webapps','',WEBAPPS_URL).'api/berkasdigital',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS => array('file'=> new \CURLFILE($filePath),'token' => $this->settings->get('api.berkasdigital_key'), 'no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode']),
+          CURLOPT_HTTPHEADER => array(),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        $json = json_decode($response, true);
+        if($json['status'] == 'Success') {
+          echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$json['msg'].'" width="150" />';
+        } else {
+          echo 'Gagal menambahkan gambar';
+        }
+
+      } else {      
+        $dir    = $this->_uploads;
+        $cntr   = 0;
+
+        $id = convertNorawat($_POST['no_rawat']);
+        $temp = explode(".", $_FILES["file"]["name"]);
+        $imgName = time().$cntr++;
+        $lokasi_file = 'pages/upload/'.$id.'_'.$imgName.'.'.end($temp);
+        $FileName = $id.'_'.$imgName.'.'.end($temp);
+        $tmpFileName = $_FILES['file']['tmp_name'];
+        $uploaded = move_uploaded_file($tmpFileName, $dir.'/'.$FileName);
+        if($uploaded) {
+            $query = $this->db('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+            if($query) {
+              echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$lokasi_file.'" width="150" />';
+            }          
+        } else {
+          echo 'Upload gagal';
+        }
+      }
+      exit();
+
+    }
+
+    public function postHapusBerkasDigital()
+    {
+      if (file_exists(UPLOADS.'/berkasrawat/'.$_POST['lokasi_file'])) {
+        $hapus = unlink(UPLOADS.'/berkasrawat/'.$_POST['lokasi_file']);
+        if($hapus) {
+          $this->db('berkas_digital_perawatan')->where('lokasi_file', $_POST['lokasi_file'])->delete();
+        }
+      }
+      exit();
+    }
+
+    public function getDownloadBerkasDigital()
+    {
+      $file = explode('/', $_GET['lokasi_file']);
+      $file_name = $file['2'];
+      $file_url = '{?=url()?}/uploads/berkasrawat/' . $_GET['lokasi_file'];
+      
+      // Configure.
+      header('Content-Type: application/octet-stream');
+      header("Content-Transfer-Encoding: Binary"); 
+      header("Content-disposition: attachment; filename=\"".$file_name."\"");
+      
+      // Actual download.
+      readfile($file_url);
+
+      exit();
+    }
+
+    public function getTest()
+    {
+      $filename = 'pages/upload/20241011000007_17300215500.pdf';
+      $file = explode('/', $filename);
+      echo json_encode($file);
       exit();
     }
 

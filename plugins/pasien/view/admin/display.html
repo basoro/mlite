@@ -36,6 +36,7 @@
                 <li><a href="{?=url([ADMIN, 'pasien', 'pcare_bynik', 'nik', $value.no_ktp])?}" data-toggle="modal" data-target="#asuransiModal">[PCare] Cek Nomor KTP</a></li>
               {/if}
               <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
+              <li><a href="{?=url([ADMIN, 'pasien', 'folder', $value.no_rkm_medis])?}">Folder Berkas Digital</a></li>
             </ul>
           </td>
           <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{$value.nm_pasien}</a></td>
