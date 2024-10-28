@@ -1,0 +1,21 @@
+#tbl_mlite_surat_rujukan th, #tbl_mlite_surat_rujukan td, #forTable_mlite_surat_rujukan th, #forTable_mlite_surat_rujukan td {
+  white-space: nowrap; 
+}
+.dataTables_wrapper th, .dataTables_wrapper td {
+  white-space: nowrap; 
+}
+.pmd-datatable-pagination {
+  padding-top: 10px !important;
+}
+.dataTables_length {
+  display: inline;
+}
+.dataTables_paginate {
+  display: inline;
+  float: right;
+}
+@media (max-width:767px) {
+  .dataTables_length{
+    display: none !important;
+  }
+}

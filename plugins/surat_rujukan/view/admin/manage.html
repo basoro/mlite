@@ -1,0 +1,286 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-6 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_mlite_surat_rujukan' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Lihat Data mlite_surat_rujukan' style='color:white;'>
+                          <i class='fa fa-eye' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> </button>
+                          <button id='tambah_data_mlite_surat_rujukan' class='btn btn-success' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                          <i class='fa fa-plus-square' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_mlite_surat_rujukan' class='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                          <i class='fa fa-edit' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_mlite_surat_rujukan' class='btn btn-danger' data-toggle='tooltip' data-placement='top' title='Hapus Data'>
+                          <i class='fa fa-trash' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                          <button id='lihat_detail_mlite_surat_rujukan' class='btn btn-default' data-toggle='tooltip' data-placement='top' title='Detail Data'>
+                          <i class='fa fa-search' style='font-size: 15px;'></i><span class="hidden-xs"> Detail</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-addon">Cari :</span>
+                          <span class="input-group-addon" style="width:200px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-control" id='search_field_mlite_surat_rujukan' name='search_field_mlite_surat_rujukan' style="margin: 0 !important;"> 
+                              <option value='id'>Id</option>
+<option value='nomor_surat'>Nomor Surat</option>
+<option value='no_rawat'>No Rawat</option>
+<option value='no_rkm_medis'>No Rkm Medis</option>
+<option value='nm_pasien'>Nm Pasien</option>
+<option value='tgl_lahir'>Tgl Lahir</option>
+<option value='umur'>Umur</option>
+<option value='jk'>Jk</option>
+<option value='alamat'>Alamat</option>
+<option value='kepada'>Kepada</option>
+<option value='di'>Di</option>
+<option value='anamnesa'>Anamnesa</option>
+<option value='pemeriksaan_fisik'>Pemeriksaan Fisik</option>
+<option value='pemeriksaan_penunjang'>Pemeriksaan Penunjang</option>
+<option value='diagnosa'>Diagnosa</option>
+<option value='terapi'>Terapi</option>
+<option value='alasan_dirujuk'>Alasan Dirujuk</option>
+<option value='dokter'>Dokter</option>
+<option value='petugas'>Petugas</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_mlite_surat_rujukan' id='search_text_mlite_surat_rujukan' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-addon">
+                          <span id='searchclear_mlite_surat_rujukan' data-toggle='tooltip' data-placement='top' title='Clear'><i class="fa fa-times text-danger"></i></span>
+                          </span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_mlite_surat_rujukan" class="table table-bordered table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>Id</th>
+<th>Nomor Surat</th>
+<th>No Rawat</th>
+<th>No Rkm Medis</th>
+<th>Nm Pasien</th>
+<th>Tgl Lahir</th>
+<th>Umur</th>
+<th>Jk</th>
+<th>Alamat</th>
+<th>Kepada</th>
+<th>Di</th>
+<th>Anamnesa</th>
+<th>Pemeriksaan Fisik</th>
+<th>Pemeriksaan Penunjang</th>
+<th>Diagnosa</th>
+<th>Terapi</th>
+<th>Alasan Dirujuk</th>
+<th>Dokter</th>
+<th>Petugas</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>        
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- Modal -->
+<div id="modal_mlite_surat_rujukan" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Surat Rujukan</span>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <form name="form_mlite_surat_rujukan">
+          <input type="hidden" class="form-control" id="typeact" /> 
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='id'>Id</label>
+                <input type='text' class='form-control' id='id' name='id' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='nomor_surat'>Nomor Surat</label>
+                <input type='text' class='form-control' id='nomor_surat' name='nomor_surat' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='no_rawat'>No Rawat</label>
+                <input type='text' class='form-control' id='no_rawat' name='no_rawat' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='no_rkm_medis'>No Rkm Medis</label>
+                <input type='text' class='form-control' id='no_rkm_medis' name='no_rkm_medis' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='nm_pasien'>Nm Pasien</label>
+                <input type='text' class='form-control' id='nm_pasien' name='nm_pasien' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='tgl_lahir'>Tgl Lahir</label>
+                <input type='text' class='form-control' id='tgl_lahir' name='tgl_lahir' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='umur'>Umur</label>
+                <input type='text' class='form-control' id='umur' name='umur' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='jk'>Jk</label>
+                <input type='text' class='form-control' id='jk' name='jk' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='alamat'>Alamat</label>
+                <input type='text' class='form-control' id='alamat' name='alamat' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='kepada'>Kepada</label>
+                <input type='text' class='form-control' id='kepada' name='kepada' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='di'>Di</label>
+                <input type='text' class='form-control' id='di' name='di' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='anamnesa'>Anamnesa</label>
+                <input type='text' class='form-control' id='anamnesa' name='anamnesa' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='pemeriksaan_fisik'>Pemeriksaan Fisik</label>
+                <input type='text' class='form-control' id='pemeriksaan_fisik' name='pemeriksaan_fisik' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='pemeriksaan_penunjang'>Pemeriksaan Penunjang</label>
+                <input type='text' class='form-control' id='pemeriksaan_penunjang' name='pemeriksaan_penunjang' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='diagnosa'>Diagnosa</label>
+                <input type='text' class='form-control' id='diagnosa' name='diagnosa' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='terapi'>Terapi</label>
+                <input type='text' class='form-control' id='terapi' name='terapi' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='alasan_dirujuk'>Alasan Dirujuk</label>
+                <input type='text' class='form-control' id='alasan_dirujuk' name='alasan_dirujuk' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='dokter'>Dokter</label>
+                <input type='text' class='form-control' id='dokter' name='dokter' />
+              <div class='error'></div>
+            </div>
+          </div>
+          <div class='col-xxl-3 col-lg-4 col-sm-6'>
+            <div class='form-group'>
+                <label class='form-label' for='petugas'>Petugas</label>
+                <input type='text' class='form-control' id='petugas' name='petugas' />
+              <div class='error'></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+        <button type="submit" id="simpan_data_mlite_surat_rujukan" class="btn btn-primary">Simpan Data</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_mlite_surat_rujukan" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Surat Rujukan</span>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_mlite_surat_rujukan"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+        <button type="submit" id="export_pdf" class="btn btn-primary">
+          <i class="fa fa-file-pdf-o"></i>&nbsp;PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-primary">
+          <i class="fa fa-file-excel-o"></i>&nbsp;XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_mlite_surat_rujukan" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>
