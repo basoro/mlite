@@ -31,6 +31,15 @@
               <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAP & Pemeriksaan</a></li>
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
+              <li class="dropdown-submenu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Surat-Surat</a>
+                <ul class="dropdown-menu">
+                  <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
+                  <li><a href="{?=url([ADMIN,'rawat_jalan','suratrujukan',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Rujukan</a></li>
+                  <li><a href="{?=url([ADMIN,'rawat_jalan','suratsehat',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sehat</a></li>
+                  <li><a href="{?=url([ADMIN,'rawat_jalan','suratsakit',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sakit</a></li>
+                </ul>
+              </li>
               <li><a href="#set_dpjp" data-no_rawat="{$value.no_rawat}">Set DPJP</a></li>
               <li><a href="#ubah_penjab" data-no_rawat="{$value.no_rawat}">Ubah Penjamin</a></li>
               {/if}
@@ -155,6 +164,36 @@
     $('select').selectator();
     event.stopPropagation();
     return false;
+  });
+</script>
+<script>
+  $('a[href="#surat_kontrol"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rawat = $(this).attr("data-no_rawat");
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+    var tgl_registrasi = $(this).attr("data-tgl_registrasi");
+
+    $('input:text[name=no_rawat]').val(no_rawat);
+    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+    $('input:text[name=nm_pasien]').val(nm_pasien);
+    $('input:text[name=tgl_registrasi]').val(tgl_registrasi);
+    $("#display").hide();
+
+    var url = baseURL + '/rawat_inap/kontrol?t=' + mlite.token;
+    $.post(url, {no_rkm_medis : no_rkm_medis,
+    }, function(data) {
+      //console.log(data);
+      // tampilkan data
+      $("#form_rincian").hide();
+      $("#form").hide();
+      $("#notif").hide();
+      $("#form_soap").hide();
+      $("#form_kontrol").show();
+      $("#surat_kontrol").html(data).show();
+    });
   });
 </script>
 <script type="text/javascript">

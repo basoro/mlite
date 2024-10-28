@@ -57,9 +57,9 @@
             <label>Diagnosa Utama</label>
             <div class="input-group">
               <span class="input-group-addon">
-                <span class="" aria-hidden="true">{if: $resume_pasien}{?=isset_or($resume_pasien.kd_diagnosa_utama)?}{else}{$diagnosa_utama.kd_penyakit}{/if}</span>
+                <span class="" aria-hidden="true">{if: $resume_pasien}{?=isset_or($resume_pasien.kd_diagnosa_utama)?}{else}{?=isset_or($diagnosa_utama.kd_penyakit)?}{/if}</span>
               </span>
-              <input type="text" class="form-control" value="{if: $resume_pasien}{?=isset_or($resume_pasien.diagnosa_utama)?}{else}{$diagnosa_utama.nm_penyakit}{/if}">
+              <input type="text" class="form-control" value="{if: $resume_pasien}{?=isset_or($resume_pasien.diagnosa_utama)?}{else}{?=isset_or($diagnosa_utama.nm_penyakit)?}{/if}">
             </div>
         </div>
       </div>
