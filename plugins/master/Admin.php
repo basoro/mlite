@@ -673,21 +673,37 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function anyTemplateLaboratoriumForm($kd_jenis_prw)
+    public function anyTemplateLaboratoriumForm($kd_jenis_prw, $id_template='')
     {
-      echo $this->draw('jnsperawatanlab.template.form.html', ['kd_jenis_prw' => $kd_jenis_prw]);
+      $template = [];
+      if($id_template !='') {
+        $template = $this->db('template_laboratorium')->where('id_template', $id_template)->oneArray();
+      }
+      echo $this->draw('jnsperawatanlab.template.form.html', ['kd_jenis_prw' => $kd_jenis_prw, 'id_template' => $id_template, 'template' => $template]);
       exit();
     }
 
     public function postJnsPerawatanLabTemplateSave()
     {
-      $this->db('template_laboratorium')->save($_POST);
+      if($_POST['id_template'] !='') {
+        $this->db('template_laboratorium')->where('id_template', $_POST['id_template'])->save($_POST);
+      } else {
+        $this->db('template_laboratorium')->save($_POST);
+      }
       exit();
     }
 
     public function postJnsPerawatanLabTemplateHapus()
     {
-      $this->db('template_laboratorium')->where('id_template', $_POST['id_template'])->delete();
+      $query = $this->db('template_laboratorium')->where('id_template', $_POST['id_template'])->delete();
+      if($query == 1) {
+        $data['status'] = 'success';
+        echo json_encode($data);
+      } else {
+        $data['status'] = 'error';
+        $data['msg'] = $query->errorInfo()['2'];
+        echo json_encode($data);
+      }
       exit();
     }
 

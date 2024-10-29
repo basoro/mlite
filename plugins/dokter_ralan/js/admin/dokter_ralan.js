@@ -409,7 +409,7 @@ $("#form_kontrol").on("click", "#simpan_kontrol", function(event){
     $.post(url, {no_rkm_medis : no_rkm_medis,
     }, function(data) {
       // tampilkan data
-      $("#kontrol").html(data).show();
+      $("#surat_kontrol").html(data).show();
     });
     $('input:text[name=nm_perawatan]').val("");
     $('input:text[name=biaya]').val("");
@@ -440,7 +440,6 @@ $("#form_rincian").on("click", "#selesai", function(event){
   $('#daftar_racikan').hide();
   $("#info_tambahan").hide();
   $("#form_kontrol").hide();
-  $("#kontrol").hide();
   $("#surat_kontrol").hide();
 });
 
@@ -457,7 +456,6 @@ $("#form_soap").on("click", "#selesai_soap", function(event){
   $('#daftar_racikan').hide();
   $("#info_tambahan").hide();
   $("#form_kontrol").hide();
-  $("#kontrol").hide();
   $("#surat_kontrol").hide();
 });
 
@@ -474,7 +472,6 @@ $("#form_kontrol").on("click", "#selesai_kontrol", function(event){
   $('#daftar_racikan').hide();
   $("#info_tambahan").hide();
   $("#form_kontrol").hide();
-  $("#kontrol").hide();
   $("#surat_kontrol").hide();
 });
 

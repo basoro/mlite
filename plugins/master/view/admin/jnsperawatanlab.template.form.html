@@ -11,40 +11,48 @@
           <input type="text" id="kd_jenis_prw" name="kd_jenis_prw" class="form-control" value="{$kd_jenis_prw}" readonly>
         </div>
       </div>
+      {if: $id_template !=''}
+      <div class="form-group">
+        <label for="" class="col-sm-3 control-label">ID Template</label>
+        <div class="col-sm-9">
+          <input type="text" id="id_template" name="id_template" class="form-control" value="{$id_template}" readonly>
+        </div>
+      </div>
+      {/if}
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">Pemeriksaan</label>
         <div class="col-sm-9">
-          <input type="text" name="Pemeriksaan" class="form-control" value="">
+          <input type="text" name="Pemeriksaan" class="form-control" value="{$template.Pemeriksaan}">
         </div>
       </div>
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">Satuan</label>
         <div class="col-sm-9">
-          <input type="text" name="satuan" class="form-control" value="">
+          <input type="text" name="satuan" class="form-control" value="{$template.satuan}">
         </div>
       </div>
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">N. Rujukan. LD</label>
         <div class="col-sm-9">
-          <input type="text" name="nilai_rujukan_ld" class="form-control" value="">
+          <input type="text" name="nilai_rujukan_ld" class="form-control" value="{$template.nilai_rujukan_ld}">
         </div>
       </div>
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">N. Rujukan LA</label>
         <div class="col-sm-9">
-          <input type="text" name="nilai_rujukan_la" class="form-control" value="">
+          <input type="text" name="nilai_rujukan_la" class="form-control" value="{$template.nilai_rujukan_la}">
         </div>
       </div>
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">N. Rujukan PD</label>
         <div class="col-sm-9">
-          <input type="text" name="nilai_rujukan_pd" class="form-control" value="">
+          <input type="text" name="nilai_rujukan_pd" class="form-control" value="{$template.nilai_rujukan_pd}">
         </div>
       </div>
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">N. Rujukan PA</label>
         <div class="col-sm-9">
-          <input type="text" name="nilai_rujukan_pa" class="form-control" value="">
+          <input type="text" name="nilai_rujukan_pa" class="form-control" value="{$template.nilai_rujukan_pa}">
         </div>
       </div>
       <div class="form-group hidden">
@@ -98,7 +106,7 @@
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">No. Urut</label>
         <div class="col-sm-9">
-          <input type="text" name="urut" class="form-control" value="">
+          <input type="text" name="urut" class="form-control" value="{$template.urut}">
         </div>
       </div>
     </form>
@@ -114,7 +122,8 @@
     var baseURL = mlite.url + '/' + mlite.admin;
     e.preventDefault();
     var url = baseURL + '/master/jnsperawatanlabtemplatesave?t=' + mlite.token;
-    $('#templateModal').modal('hide')
+    $('#templateModal').modal('hide');
+    $('#templateModalEdit').modal('hide');
     $.post(url,
        $('#templateForm').serialize(),
        function(data, status, xhr){
@@ -125,4 +134,5 @@
          "</div>").show();
        });
   });
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
 </script>

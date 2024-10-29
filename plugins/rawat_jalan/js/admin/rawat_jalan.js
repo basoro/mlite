@@ -667,8 +667,6 @@ $("#form_rincian").on("click", "#selesai", function(event){
   $("#soap").hide();
   $("#berkasdigital").hide();
   $("#form_kontrol").hide();
-  $("#kontrol").hide();
-  $("#form_kontrol").hide();
   $("#surat_kontrol").hide();
 });
 
@@ -683,8 +681,6 @@ $("#form_soap").on("click", "#selesai_soap", function(event){
   $("#rincian").hide();
   $("#soap").hide();
   $("#berkasdigital").hide();
-  $("#form_kontrol").hide();
-  $("#kontrol").hide();
   $("#form_kontrol").hide();
   $("#surat_kontrol").hide();
 });
@@ -701,12 +697,11 @@ $("#form_kontrol").on("click", "#selesai_kontrol", function(event){
   $("#soap").hide();
   $("#berkasdigital").hide();
   $("#form_kontrol").hide();
-  $("#kontrol").hide();
   $("#surat_kontrol").hide();
 });
 
 // ketika tombol hapus ditekan
-$("#kontrol").on("click",".hapus_kontrol", function(event){
+$("#surat_kontrol").on("click",".hapus_kontrol", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/rawat_jalan/hapuskontrol?t=' + mlite.token;
@@ -732,7 +727,7 @@ $("#kontrol").on("click",".hapus_kontrol", function(event){
         $.post(url, {no_rkm_medis : no_rkm_medis,
         }, function(data) {
           // tampilkan data
-          $("#kontrol").html(data).show();
+          $("#surat_kontrol").html(data).show();
         });
         /*
         $('input:text[name=suhu_tubuh]').val("");
@@ -945,7 +940,7 @@ $("#form_kontrol").on("click", "#simpan_kontrol", function(event){
     $.post(url, {no_rkm_medis : no_rkm_medis,
     }, function(data) {
       // tampilkan data
-      $("#kontrol").html(data).show();
+      $("#surat_kontrol").html(data).show();
     });
     $('input:text[name=nm_perawatan]').val("");
     $('input:text[name=biaya]').val("");
@@ -998,7 +993,7 @@ $("#form_kontrol").on("click", "#simpan_kontrol_bpjs", function(event){
     $.post(url, {no_rkm_medis : no_rkm_medis,
     }, function(data) {
       // tampilkan data
-      $("#kontrol").html(data).show();
+      $("#surat_kontrol").html(data).show();
     });
     $('input:text[name=nm_perawatan]').val("");
     $('input:text[name=biaya]').val("");
