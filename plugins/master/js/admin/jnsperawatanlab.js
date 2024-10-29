@@ -106,13 +106,24 @@ $("#display_template").on("click",".delete_template", function(event){
       $.post(url, {
         id_template: id_template
       } ,function(data) {
-        // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+        data = JSON.parse(data);
         $("#form").hide();
         $("#display_template").hide();
-        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data template telah dihapus!"+
-        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-        "</div>").show();
+        if(data.status == 'success') {
+          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+          $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Data template telah dihapus!"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        }
+        if(data.status == 'error') {
+          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Data template gagal dihapus!<br>"+
+          data.msg+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        }
       });
 });
 

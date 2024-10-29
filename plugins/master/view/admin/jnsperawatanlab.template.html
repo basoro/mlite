@@ -5,6 +5,10 @@
         <tr>
           <th>Nama Pemeriksaan <a href="{?=url([ADMIN,'master','templatelaboratoriumform','{$jnsperawatan.kd_jenis_prw}'])?}" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#templateModal"><span class="fa fa-plus"></span> Add</a> <button type="button" class="btn btn-xs btn-warning" id="tutup_template"><span class="fa fa-forward"></span></button></th>
           <th>Satuan</th>
+          <th>N.R.L. Dewasa</th>
+          <th>N.R.L. Anak</th>
+          <th>N.R.P. Dewasa</th>
+          <th>N.R.P. Anak</th>
           <th>Aksi</th>
         </tr>
       </thead>
@@ -14,7 +18,11 @@
         <tr>
           <td>{$value.Pemeriksaan}</td>
           <td>{$value.satuan}</td>
-          <td><button type="button" class="btn btn-xs btn-danger delete_template" data-id_template="{$value.id_template}"><span class="fa fa-trash"></span> Del</button></td>
+          <td>{$value.nilai_rujukan_ld}</td>
+          <td>{$value.nilai_rujukan_la}</td>
+          <td>{$value.nilai_rujukan_pd}</td>
+          <td>{$value.nilai_rujukan_pa}</td>
+          <td><a href="{?=url([ADMIN,'master','templatelaboratoriumform','{$jnsperawatan.kd_jenis_prw}','{$value.id_template}'])?}" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#templateModalEdit"><span class="fa fa-edit"></span> Edit</a> <button type="button" class="btn btn-xs btn-danger delete_template" data-id_template="{$value.id_template}"><span class="fa fa-trash"></span> Del</button></td>
         </tr>
         {/loop}
         {else}
@@ -32,6 +40,13 @@
             ...
         </div>
     </div>
+</div>
+<div class="modal fade" id="templateModalEdit" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+          ...
+      </div>
+  </div>
 </div>
 <script type="text/javascript">
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);

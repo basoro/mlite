@@ -424,7 +424,12 @@ class QueryWrapper
             $this->where($column, $value);
         }
         $st = $this->_build('delete');
-        return $st->rowCount();
+
+        $return = $st->rowCount();
+        if($st->rowCount() == 0) {
+            $return = $st;
+        }
+        return $return;
     }
 
     public function toSql($type = 'default')
