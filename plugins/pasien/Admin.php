@@ -600,14 +600,6 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getTest()
-    {
-      $filename = 'pages/upload/20241011000007_17300215500.pdf';
-      $file = explode('/', $filename);
-      echo json_encode($file);
-      exit();
-    }
-
     public function getVclaim_ByNoKartu($noKartu, $tglPelayananSEP)
     {
       $url = url([ADMIN, 'vclaim', 'bynokartu', $noKartu, $tglPelayananSEP]);
