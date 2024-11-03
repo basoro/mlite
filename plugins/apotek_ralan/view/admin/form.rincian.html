@@ -20,9 +20,13 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="obat" class="col-sm-3 control-label">Obat</label>
-            <div class="col-sm-9">
-              <input type="text" name="obat" class="form-control" placeholder="Input obat/BHP" value="">
+            <label for="" class="col-sm-3 control-label">Non-Racik</label>
+            <div class="col-sm-4">
+              <input type="text" name="obat" class="form-control" placeholder="Nama obat/BHP" value="">
+            </div>
+            <label for="" class="col-sm-2 control-label">Racikan</label>
+            <div class="col-sm-3">
+              <input type="text" name="racikan" class="form-control" placeholder="Nama racikan" value="">
             </div>
           </div>
         </div>
@@ -32,6 +36,7 @@
   <div class="col-md-6">
     <div id="layanan"></div>
     <div id="obat"></div>
+    <div id="racikan"></div>
     <div class="panel panel-default">
       <div class="panel-body">
         <div class="form-horizontal">
@@ -52,43 +57,40 @@
             <div class="col-sm-4">
               <input type="hidden" name="kd_jenis_prw" class="form-control" value="">
               <input type="text" name="nm_perawatan" class="form-control" placeholder="Nama tindakan/layanan/obat/BHP" value="" readonly>
+              <input type="hidden" name="kat" class="form-control" value="">
             </div>
             <label for="pnd" class="col-sm-1 control-label">Biaya</label>
             <div class="col-sm-4">
               <input type="text" id="biaya" name="biaya" class="form-control" value="" readonly>
             </div>
           </div>
-          <div class="form-group" id="provider">
-            <label for="jenis" class="col-sm-3 control-label">Jenis Provider</label>
-            <div class="col-sm-9">
-              <select class="form-control" name="provider" id="pilih_provider">
-                <option>Pilih provider</option>
-                <option value="rawat_jl_dr">Dokter</option>
-                <option value="rawat_jl_pr">Perawat</option>
-                <option value="rawat_jl_drpr">Dokter & Perawat</option>
-              </select>
+          <div id="daftar_racikan">
+            <div class="form-group">
+              <label for="" class="col-sm-3 control-label">Nama Racikan</label>
+              <div class="col-sm-9">
+                <input type="text" id="nama_racik" name="nama_racik" class="form-control" value="">
+              </div>
             </div>
-          </div>
-          <div class="form-group" id="rawat_jl_dr">
-            <label for="" class="col-sm-3 control-label">Nama Dokter</label>
-            <div class="col-sm-6">
-              <input type="text" name="nama_provider" id="nama_provider" class="form-control" value="">
-              <ul class="list-group" id="kode_providerList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            <div id="item_racikan">
+              <div class="form-group">
+                <label class="col-md-3 control-label"><button type="button" class="btn btn-xs btn-primary add_racikan"><span class="fa fa-plus"></span></button> Nama Obat</label>
+                <div class="col-sm-6">
+                  <select name="kode_brng" id="kode_brng" class="form-control databarang_ajax">
+                  </select>
+                  <!--<input type="hidden" name="kode_brng" class="form-control" value="" />
+                  <input type="text" name="nama_brng" class="form-control nama_brng" value="" />-->
+                </div>
+                <label for="" class="col-sm-1 control-label">Knd.</label>
+                <div class="col-sm-2">
+                  <input type="text" name="kandungan" class="form-control" value="" />
+                </div>
+              </div>
             </div>
-            <label for="" class="col-sm-1 control-label">Kode</label>
-            <div class="col-sm-2">
-              <input type="text" name="kode_provider" id="kode_provider" class="form-control" value="">
-            </div>
-          </div>
-          <div class="form-group" id="rawat_jl_pr">
-            <label for="" class="col-sm-3 control-label">Nama Perawat</label>
-            <div class="col-sm-6">
-              <input type="text" name="nama_provider2" id="nama_provider2" class="form-control" value="">
-              <ul class="list-group" id="kode_providerList2" style="z-index:1000;position:absolute;width:100%;"></ul>
-            </div>
-            <label for="" class="col-sm-1 control-label">Kode</label>
-            <div class="col-sm-2">
-              <input type="text" name="kode_provider2" id="kode_provider2" class="form-control" value="">
+            <div class="form-group">
+              <label for="" class="col-sm-3 control-label">Keterangan</label>
+              <div class="col-sm-9">
+                <textarea name="keterangan" id="keterangan" rows="2" class="form-control"></textarea>
+              </div>
             </div>
           </div>
           <div class="form-group" id="aturan_pakai">
@@ -206,5 +208,79 @@
               $('#rawat_jl_pr').show();
           }
       });
+  });
+</script>
+<script>
+  var count=2;
+  $(document).on('click', '.add_racikan', function(){
+      var html = '';
+      html += '<div class="form-group row_racikan">';
+      html += '    <label class="col-md-3 control-label"><button type="button" class="btn btn-xs btn-danger remove_racikan"><span class="fa fa-minus"></span></button></label>';
+      html += '    <div class="col-md-6">';
+      html += '        <select name="kode_brng" class="form-control databarang_ajax">';
+      html += '        </select>';
+      //html += '        <input type="hidden" name="kode_brng" class="form-control" value="">';
+      //html += '        <input type="text" name="nama_brng" class="form-control nama_brng" value="">';
+      html += '    </div>';
+      html += '    <label for="" class="col-sm-1 control-label">Knd.</label>';
+      html += '    <div class="col-sm-2">';
+      html += '        <input type="text" name="kandungan" id="kandungan" class="form-control" value="">';
+      html += '    </div>';
+      html += '</div>';
+      $('#item_racikan').append(html);
+      count++;
+      console.log(html);
+      var strip_tags = function(str) {
+        return (str + '').replace(/<\/?[^>]+(>|$)/g, '')
+      };
+      var truncate_string = function(str, chars) {
+        if ($.trim(str).length <= chars) {
+          return str;
+        } else {
+          return $.trim(str.substr(0, chars)) + '…';
+        }
+      };
+      $('.databarang_ajax').selectator({
+        labels: {
+          search: 'Cari obat...'
+        },
+        load: function (search, callback) {
+          if (search.length < this.minSearchLength) return callback();
+          $.ajax({
+            url: '{?=url()?}/{?=ADMIN?}/apotek_ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+              callback(data.slice(0, 100));
+              console.log(data);
+            },
+            error: function() {
+              callback();
+            }
+          });
+        },
+        delay: 300,
+        minSearchLength: 1,
+        valueField: 'kode_brng',
+        textField: 'nama_brng'
+      });
+      $('select').each(function () {
+          var options = {
+              useDimmer: true,
+              useSearch: true,
+              labels: {
+                  search: '...'
+              }
+          };
+          $.each($(this).data(), function (key, value) {
+              options[key] = value;
+          });
+          $(this).selectator(options);
+      });
+
+  });
+
+  $(document).on('click', '.remove_racikan', function(){
+      $(this).closest('.row_racikan').remove();
   });
 </script>

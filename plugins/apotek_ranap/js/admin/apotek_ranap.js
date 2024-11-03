@@ -6,6 +6,7 @@ $("#histori_pelayanan").hide();
 $("#notif").hide();
 $('#provider').hide();
 $('#aturan_pakai').hide();
+$('#daftar_racikan').hide();
 
 $("#display").on("click",".riwayat_perawatan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
@@ -227,21 +228,87 @@ $("#obat").on("click", ".pilih_obat", function(event){
   var nama_brng = $(this).attr("data-nama_brng");
   var biaya = $(this).attr("data-ranap");
   var stok = $(this).attr("data-stok");
+  var kat = $(this).attr("data-kat");
 
   if(stok < 10) {
     alert('Stok obat ' + nama_brng + ' tidak mencukupi.');
     $('input:hidden[name=kd_jenis_prw]').val();
     $('input:text[name=nm_perawatan]').val();
     $('input:text[name=biaya]').val();
+    $('input:hidden[name=kat]').val();
   } else {
     $('input:hidden[name=kd_jenis_prw]').val(kode_brng);
     $('input:text[name=nm_perawatan]').val(nama_brng);
     $('input:text[name=biaya]').val(biaya);
+    $('input:hidden[name=kat]').val(kat);
   }
 
   $('#obat').hide();
   $('#aturan_pakai').show();
   $('#rawat_jl_dr').show();
+});
+
+// ketika inputbox pencarian diisi
+$('input:text[name=racikan]').on('input',function(e){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url    = baseURL + '/apotek_ralan/racikan?t=' + mlite.token;
+  var racikan = $('input:text[name=racikan]').val();
+
+  if(racikan!="") {
+      $.post(url, {racikan: racikan} ,function(data) {
+      // tampilkan data yang sudah di perbaharui
+        $("#racikan").html(data).show();
+        $("#obat").hide();
+      });
+  }
+
+});
+// end pencarian
+
+// ketika baris data diklik
+$("#racikan").on("click", ".pilih_racikan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var kd_racik = $(this).attr("data-kd_racik");
+  var nm_racik = $(this).attr("data-nm_racik");
+  var kat = $(this).attr("data-kat");
+
+  $('input:hidden[name=kd_jenis_prw]').val(kd_racik);
+  $('input:text[name=nm_perawatan]').val(nm_racik);
+  $('input:text[name=biaya]').val('');
+  $('input:hidden[name=kat]').val(kat);
+
+  $('#racikan').hide();
+  $('#aturan_pakai').show();
+  $('#daftar_racikan').show();
+
+});
+
+$('select').selectator('destroy');
+$('.databarang_ajax').selectator({
+  labels: {
+    search: 'Cari obat...'
+  },
+  load: function (search, callback) {
+    if (search.length < this.minSearchLength) return callback();
+    $.ajax({
+      url: '{?=url()?}/{?=ADMIN?}/dokter_ranap/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+      type: 'GET',
+      dataType: 'json',
+      success: function(data) {
+        callback(data.slice(0, 100));
+        console.log(data);
+      },
+      error: function() {
+        callback();
+      }
+    });
+  },
+  delay: 300,
+  minSearchLength: 1,
+  valueField: 'kode_brng',
+  textField: 'nama_brng'
 });
 
 // ketika tombol simpan diklik
@@ -257,7 +324,12 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var jam_rawat       = $('input:text[name=jam_rawat]').val();
   var biaya           = $('input:text[name=biaya]').val();
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
+  var kat             = $('input:hidden[name=kat]').val();
   var jml             = $('input:text[name=jml]').val();
+  var nama_racik      = $('input:text[name=nama_racik]').val();
+  var keterangan      = $('textarea[name=keterangan]').val();
+  var kode_brng       = JSON.stringify($('select[name=kode_brng]').serializeArray());
+  var kandungan       = JSON.stringify($('input:text[name=kandungan]').serializeArray());
 
   var url = baseURL + '/apotek_ranap/savedetail?t=' + mlite.token;
   $.post(url, {no_rawat : no_rawat,
@@ -268,7 +340,12 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   jam_rawat      : jam_rawat,
   biaya          : biaya,
   aturan_pakai   : aturan_pakai,
-  jml            : jml
+  kat            : kat,
+  jml            : jml,
+  nama_racik     : nama_racik,
+  keterangan     : keterangan,
+  kode_brng      : kode_brng,
+  kandungan      : kandungan 
   }, function(data) {
     // tampilkan data
     $("#display").hide();
@@ -338,9 +415,11 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
   var no_rawat = $(this).attr("data-no_rawat");
   var tgl_peresepan = $(this).attr("data-tgl_peresepan");
   var jam_peresepan = $(this).attr("data-jam_peresepan");
+  var jenis_racikan = $(this).attr("data-racikan");
+  var penyerahan = $(this).attr("data-penyerahan");
 
   // tampilkan dialog konfirmasi
-  bootbox.confirm("Apakah Anda yakin ingin menvalidasi data resep ini?", function(result){
+  bootbox.confirm("Apakah Anda yakin ingin menvalidasi/menyerahkan data resep ini?", function(result){
     // ketika ditekan tombol ok
     if (result){
       // mengirimkan perintah penghapusan
@@ -348,7 +427,9 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
         no_resep: no_resep,
         no_rawat: no_rawat,
         tgl_peresepan: tgl_peresepan,
-        jam_peresepan: jam_peresepan
+        jam_peresepan: jam_peresepan,
+        jenis_racikan: jenis_racikan,
+        penyerahan: penyerahan
       } ,function(data) {
         var url = baseURL + '/apotek_ranap/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
