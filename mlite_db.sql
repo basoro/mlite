@@ -2482,7 +2482,7 @@ VALUES
 	(31,'settings','admin_mode','complex'),
 	(32,'settings','input_kasir','tidak'),
 	(33,'settings','editor','wysiwyg'),
-	(34,'settings','version','4.1.5'),
+	(34,'settings','version','4.1.7'),
 	(35,'settings','update_check','0'),
 	(36,'settings','update_changelog',''),
 	(37,'settings','update_version','0'),
