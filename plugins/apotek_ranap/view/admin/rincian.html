@@ -1,11 +1,12 @@
 <h4>Pemberian Obat</h4>
+<h5>Non Racikan</h5>
 <div class="table-responsive no-margin">
   <table class="table table-striped table-bordered no-padding" width="100%">
     <thead>
       <tr>
         <th>Nama Obat</th>
         <th>Jumlah</th>
-        <th>Aturan Pakai {if: $detail_pemberian_obat}<button type="button" class="btn btn-danger btn-xs cetak_etiket" data-no_rawat="{?=convertNoRawat($detail_pemberian_obat.0.no_rawat)?}" data-tgl_peresepan="{$detail_pemberian_obat.0.tgl_perawatan}" data-jam_peresepan="{$detail_pemberian_obat.0.jam}" data-tipe="nonracikan"><i class="fa fa-print"></i><span class="hidden-xs"> Etiket</span></button>{/if}</th>
+        <th>Aturan Pakai</th>
         <th>Harga</th>
         <th>Aksi</th>
       </tr>
@@ -15,8 +16,8 @@
       <tr>
         <td>{$value.nama_brng}</td>
         <td>{$value.jml}</td>
-        <td>{$value.aturan_pakai}</td>
-        <td>Rp. <span class="pull-right">{?= number_format(($value.h_beli * $value.jml),2,',','.')?}</span></td>
+        <td>{$value.aturan_pakai} <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="{$value.kode_brng}" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="nonracikan"><i class="fa fa-print"></i></button></td>
+        <td>Rp. <span class="pull-right">{?= number_format(($value.ranap * $value.jml),2,',','.')?}</span></td>
         <td colspan="2">
           <!--<button type="button" class="btn btn-danger btn-xs hapus_resep_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>-->
         </td>
@@ -32,7 +33,52 @@
     </tfoot>
   </table>
 </div>
+<h5>Racikan</h5>
+<div class="table-responsive no-margin">
+  <table class="table table-striped table-bordered no-padding" width="100%">
+    <thead>
+      <tr>
+        <th>Nama Racikan</th>
+        <th>Jumlah</th>
+        <th>Aturan Pakai</th>
+        <th>Harga</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {loop: $detail_pemberian_obat_racikan}
+      <tr>
+        <td>{$value.nama_racik}</td>
+        <td>{$value.jml_dr}</td>
+        <td>{$value.aturan_pakai} <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="{$value.kd_racik}" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="racikan"><i class="fa fa-print"></i></button></td>
+        <td></td>
+        <td colspan="2">
+          <!--<button type="button" class="btn btn-danger btn-xs hapus_resep_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>-->
+        </td>
+      </tr>
+        {loop: $value.detail_pemberian_obat as $data}
+        <tr>
+          <td>{$data.nama_brng}</td>
+          <td colspan="2">{$data.jml}</td>
+          <td>Rp. <span class="pull-right">{?= number_format(($data.dasar),2,',','.')?}</span></td>
+          <td></td>
+        </tr>
+        {/loop}
+      {/loop}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th colspan="3">Total Biaya Obat</th>
+        <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_obat2,2,',','.')?}</span></th>
+        <th></th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+<br>
+<hr>  
 <h4>e-Resep</h4>
+<h5>Non Racikan</h5>
 <div class="table-responsive no-margin">
   <table class="table table-striped table-bordered no-padding" width="100%">
     <thead>
@@ -40,7 +86,7 @@
         <th>Nama Dokter</th>
         <th>Nomor Resep</th>
         <th>Tanggal Peresepan</th>
-        <th colspan="2">Aksi</th>
+        <th>Aksi</th>
       </tr>
     </thead>
     <tbody>
@@ -49,28 +95,24 @@
         <td>{$value.nm_dokter}</td>
         <td>{$value.no_resep}</td>
         <td>{$value.tgl_peresepan} {$value.jam_peresepan}</td>
-        <td colspan="2">
-          <button type="button" class="btn btn-danger btn-xs {if: $value.tgl_perawatan !== '0000-00-00'}disabled{else}hapus_resep_obat{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>
-          <button type="button" class="btn btn-success btn-xs {if: $value.tgl_perawatan !== '0000-00-00'}disabled{else}validasi_resep_obat{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Validasi Resep</span></button>
-          <button type="button" class="btn btn-danger btn-xs cetak_eresep" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam_peresepan}" data-tipe="nonracikan"><i class="fa fa-print"></i><span class="hidden-xs"> e-Resep</span></button>
+        <td>
+          <button type="button" class="btn btn-danger btn-xs {if: $value.tgl_perawatan !== '0000-00-00'}disabled{else}hapus_resep_obat{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+          <button type="button" class="btn btn-success btn-xs {if: $value.tgl_perawatan !== '0000-00-00' && $value.tgl_penyerahan !== '0000-00-00'}disabled{else}validasi_resep_obat{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}" data-penyerahan="{if: $value.tgl_perawatan !== '0000-00-00' && $value.tgl_penyerahan == '0000-00-00'}penyerahan{/if}"><i class="fa fa-check"></i><span class="hidden-xs"> {if: $value.tgl_perawatan !== '0000-00-00' && $value.tgl_penyerahan == '0000-00-00'}Penyerahan{else}Validasi{/if}</span></button>
+          <button type="button" class="btn btn-danger btn-xs cetak_eresep" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="nonracikan"><i class="fa fa-print"></i><span class="hidden-xs"> e-Resep</span></button>
         </td>
       </tr>
       <tr>
         <th>Nama Obat</th>
         <th>Jumlah</th>
-        <th>Aturan Pakai {if: $resep}<button type="button" class="btn btn-danger btn-xs cetak_etiket" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="nonracikan"><i class="fa fa-print"></i><span class="hidden-xs"> Etiket</span></button>{/if}</th>
+        <th>Aturan Pakai</th>
         <th>Harga</th>
-        <th>Aksi</th>
       </tr>
       {loop: $value.resep_dokter as $data}
         <tr>
           <td>{$data.nama_brng}</td>
           <td>{$data.jml}</td>
-          <td>{$data.aturan_pakai}</td>
-          <td>Rp. <span class="pull-right">{?= number_format(($data.h_beli * $data.jml),2,',','.')?}</span></td>
-          <td>
-            <button type="button" class="btn btn-danger btn-xs {if: $value.tgl_perawatan !== $value.tgl_peresepan || $value.jam !== $value.jam_peresepan}disabled{else}hapus_resep_dokter{/if}" data-no_rawat="{$data.no_rawat}" data-kd_jenis_prw="{$data.kode_brng}" data-no_resep="{$data.no_resep}" data-jml="{$data.jml}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Obat</span></button>
-          </td>
+          <td>{$data.aturan_pakai} <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="{$value.kode_brng}" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam_peresepan}" data-tipe="nonracikan"><i class="fa fa-print"></i></button></td>
+          <td>Rp. <span class="pull-right">{?= number_format(($data.ralan * $data.jml),2,',','.')?}</span></td>
         </tr>
       {/loop}
       {/loop}
@@ -79,7 +121,65 @@
       <tr>
         <th colspan="3">Total Biaya Obat</th>
         <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_resep,2,',','.')?}</span></th>
-        <th></th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+<h5>Racikan </h5>
+<div class="table-responsive no-margin">
+  <table class="table table-striped table-bordered no-padding" width="100%">
+    <thead>
+      <tr>
+        <th>Nama Dokter</th>
+        <th>Nomor Resep</th>
+        <th>Tanggal Peresepan</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {loop: $resep_racikan}
+      <tr>
+        <td>{$value.nm_dokter}</td>
+        <td>{$value.no_resep}</td>
+        <td>{$value.tgl_peresepan} {$value.jam_peresepan}</td>
+        <td>
+          <button type="button" class="btn btn-danger btn-xs {if: $value.tgl_perawatan !== '0000-00-00'}disabled{else}hapus_resep_obat{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+          <button type="button" class="btn btn-success btn-xs {if: $value.tgl_perawatan !== '0000-00-00' && $value.tgl_penyerahan !== '0000-00-00'}disabled{else}validasi_resep_obat{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}" data-penyerahan="{if: $value.tgl_perawatan !== '0000-00-00' && $value.tgl_penyerahan == '0000-00-00'}penyerahan{/if}"><i class="fa fa-check"></i><span class="hidden-xs"> {if: $value.tgl_perawatan !== '0000-00-00' && $value.tgl_penyerahan == '0000-00-00'}Penyerahan{else}Validasi{/if}</span></button>
+          <button type="button" class="btn btn-danger btn-xs cetak_eresep" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="racikan"><i class="fa fa-print"></i><span class="hidden-xs"> e-Resep</span></button>
+        </td>
+      </tr>
+      <tr>
+        <th>Nama Racikan</th>
+        <th>Jml. Racik</th>
+        <th>Aturan Pakai</th>
+        <th>Keterangan</th>
+      </tr>
+      <tr>
+        <td>{$value.nama_racik}</td>
+        <td>{$value.jml_dr}</td>
+        <td>{$value.aturan_pakai} <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="{$value.kd_racik}" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="racikan"><i class="fa fa-print"></i></button></td>
+        <td>{$value.keterangan}</td>
+      </tr>
+      <tr>
+        <th>Nama Obat</th>
+        <th>Kandungan</th>
+        <th>Jumlah</th>
+        <th>Harga</th>
+      </tr>
+      {loop: $value.resep_dokter_racikan_detail as $data}
+        <tr>
+          <td>{$data.nama_brng}</td>
+          <td>{$data.kandungan}</td>
+          <td>{$data.jml}</td>
+          <td>Rp. <span class="pull-right">{?= number_format(($data.ralan * $data.jml),2,',','.')?}</span></td>
+        </tr>
+      {/loop}
+      {/loop}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th colspan="3">Total Biaya Obat Racikan</th>
+        <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_resep_racikan,2,',','.')?}</span></th>
       </tr>
     </tfoot>
   </table>
@@ -108,9 +208,12 @@
   $(".cetak_etiket").click(function(){
       var baseURL = mlite.url + '/' + mlite.admin;
       var no_rawat = $(this).attr("data-no_rawat");
+      var kode_brng = $(this).attr("data-kode_brng");
       var tgl_peresepan = $(this).attr("data-tgl_peresepan");
+      var jam_peresepan = $(this).attr("data-jam_peresepan");
       var tipe = $(this).attr("data-tipe");
-      $("#cetakEtiket").modal('show').html('<div style="text-align:center;margin:20px auto;width:500px;height:360px;"><iframe src="' + baseURL + '/apotek_ranap/cetaklabel/' + no_rawat +'/' + tipe +'/' + tgl_peresepan + '?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+      // alert(baseURL + '/apotek_ranap/cetaklabel/' + kode_brng +'/' + no_rawat +'/' + tgl_peresepan +'/' + jam_peresepan + '/' + tipe +'?t=' + mlite.token);
+      $("#cetakEtiket").modal('show').html('<div style="text-align:center;margin:20px auto;width:500px;height:360px;"><iframe src="' + baseURL + '/apotek_ranap/cetaklabel/' + kode_brng +'/' + no_rawat +'/' + tgl_peresepan +'/' + jam_peresepan + '/' + tipe +'?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
   })
   $(".cetak_eresep").click(function(){
       var baseURL = mlite.url + '/' + mlite.admin;
@@ -119,5 +222,5 @@
       var jam_peresepan = $(this).attr("data-jam_peresepan");
       var tipe = $(this).attr("data-tipe");
       $("#cetakEtiket").modal('show').html('<div style="text-align:center;margin:20px auto;width:700px;height:900px;"><iframe src="' + baseURL + '/apotek_ranap/cetakeresep/' + no_rawat +'/' + tipe +'/' + tgl_peresepan + '/' + jam_peresepan + '?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
-  })  
+  })
 </script>

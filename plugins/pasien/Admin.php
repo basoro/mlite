@@ -354,6 +354,7 @@ class Admin extends AdminModule
         unset($_POST['nm_kab']);
         unset($_POST['nm_kec']);
         unset($_POST['nm_kel']);
+        $_POST['umur'] = $this->hitungUmur($_POST['tgl_lahir']);
         $query = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->update($_POST);
 
         if($query->errorInfo()['0'] == '00000') {

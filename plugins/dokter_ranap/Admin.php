@@ -671,10 +671,11 @@ class Admin extends AdminModule
       // }
 
       $rows_laboratorium = $this->db('permintaan_lab')
-        ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
-        ->where('no_rawat', $_POST['no_rawat'])
-        ->where('permintaan_lab.status', 'ranap')
-        ->toArray();
+      ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
+      ->where('no_rawat', $_POST['no_rawat'])
+      ->where('permintaan_lab.status', 'ranap')
+      ->toArray();
+      $jumlah_total_lab = 0;
       $laboratorium = [];
       foreach ($rows_laboratorium as $row) {
         $rows2 = $this->db('permintaan_pemeriksaan_lab')

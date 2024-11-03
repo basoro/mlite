@@ -74,7 +74,7 @@ class Admin extends AdminModule
         'id' => 'gudangbarang.kode_brng', 
         'nama_barang' => 'databarang.nama_brng', 
         'stok' => 'gudangbarang.stok', 
-        'harga' => 'databarang.h_beli'
+        'harga' => 'databarang.dasar'
       ])
       ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
       ->toArray();
@@ -97,7 +97,7 @@ class Admin extends AdminModule
           'id' => 'gudangbarang.kode_brng', 
           'nama_barang' => 'databarang.nama_brng', 
           'stok' => 'gudangbarang.stok', 
-          'harga' => 'databarang.h_beli'
+          'harga' => 'databarang.dasar'
         ])
         ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
         ->toArray();        
@@ -142,7 +142,7 @@ class Admin extends AdminModule
     {
         $barang = $this->db('mlite_penjualan_barang')->select(['harga' => 'harga'])->where('id', $_POST['id_barang'])->oneArray();
         if(!$barang) {
-          $barang = $this->db('databarang')->select(['harga' => 'h_beli'])->where('kode_brng', $_POST['id_barang'])->oneArray();
+          $barang = $this->db('databarang')->select(['harga' => 'dasar'])->where('kode_brng', $_POST['id_barang'])->oneArray();
         }
         $harga_total = $barang['harga'] * $_POST['jumlah'];
         if(isset($_POST['id']) && $_POST['id'] !='') {
