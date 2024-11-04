@@ -661,10 +661,10 @@ select[multiple].form-control {
 }
 .modal-full {
   margin: auto;
-  width: 90%;
+  width: 100%;
 }
 .modal-full .modal-content {
-  min-height: 100vh;
+  min-height: 90vh;
 }
 
 .modal.left .modal-dialog,
