@@ -797,7 +797,7 @@ $("#obat").on("click", ".pilih_obat", function(event){
 
   var kode_brng = $(this).attr("data-kode_brng");
   var nama_brng = $(this).attr("data-nama_brng");
-  var biaya = $(this).attr("data-ralan");
+  var biaya = $(this).attr("data-dasar");
   var kat = $(this).attr("data-kat");
 
   $('input:hidden[name=kd_jenis_prw]').val(kode_brng);

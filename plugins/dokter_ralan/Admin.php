@@ -563,7 +563,7 @@ class Admin extends AdminModule
         $row['nomor'] = $i++;
         $row['resep_dokter'] = $this->db('resep_dokter')->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
         foreach ($row['resep_dokter'] as $value) {
-          $value['ralan'] = $value['jml'] * $value['ralan'];
+          $value['ralan'] = $value['jml'] * $value['dasar'];
           $jumlah_total_resep += floatval($value['ralan']);
         }
         $resep[] = $row;
@@ -582,7 +582,7 @@ class Admin extends AdminModule
         $row['nomor'] = $i++;
         $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
         foreach ($row['resep_dokter_racikan_detail'] as $value) {
-          $value['ralan'] = $value['jml'] * $value['ralan'];
+          $value['ralan'] = $value['jml'] * $value['dasar'];
           $jumlah_total_resep_racikan += floatval($value['ralan']);
         }
         $resep_racikan[] = $row;
@@ -709,7 +709,7 @@ class Admin extends AdminModule
         $row['nomor'] = $i++;
         $row['resep_dokter'] = $this->db('resep_dokter')->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
         foreach ($row['resep_dokter'] as $value) {
-          $value['ralan'] = $value['jml'] * $value['ralan'];
+          $value['ralan'] = $value['jml'] * $value['dasar'];
           $jumlah_total_resep += floatval($value['ralan']);
         }
         $resep[] = $row;
@@ -728,7 +728,7 @@ class Admin extends AdminModule
         $row['nomor'] = $i++;
         $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
         foreach ($row['resep_dokter_racikan_detail'] as $value) {
-          $value['ralan'] = $value['jml'] * $value['ralan'];
+          $value['ralan'] = $value['jml'] * $value['dasar'];
           $jumlah_total_resep_racikan += floatval($value['ralan']);
         }
         $resep_racikan[] = $row;
@@ -1265,7 +1265,7 @@ class Admin extends AdminModule
         $row['nomor'] = $i++;
         $row['resep_dokter'] = $this->db('resep_dokter')->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
         foreach ($row['resep_dokter'] as $value) {
-          $value['ralan'] = $value['jml'] * $value['ralan'];
+          $value['ralan'] = $value['jml'] * $value['dasar'];
           $jumlah_total_resep += floatval($value['ralan']);
         }
         $resep[] = $row;
@@ -1284,7 +1284,7 @@ class Admin extends AdminModule
         $row['nomor'] = $i++;
         $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
         foreach ($row['resep_dokter_racikan_detail'] as $value) {
-          $value['ralan'] = $value['jml'] * $value['ralan'];
+          $value['ralan'] = $value['jml'] * $value['dasar'];
           $jumlah_total_resep_racikan += floatval($value['ralan']);
         }
         $resep_racikan[] = $row;

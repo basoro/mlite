@@ -569,7 +569,7 @@ class Admin extends AdminModule
         $row['nomor'] = $i++;
         $row['resep_dokter'] = $this->db('resep_dokter')->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
         foreach ($row['resep_dokter'] as $value) {
-          $value['ralan'] = $value['jml'] * $value['ralan'];
+          $value['ralan'] = $value['jml'] * $value['dasar'];
           $jumlah_total_resep += floatval($value['ralan']);
         }
         $resep[] = $row;
@@ -1073,6 +1073,12 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function getLokalis()
+    {
+      echo $this->draw('lokalis.html');
+      exit();
+    }
+        
     public function getJavascript()
     {
         header('Content-type: text/javascript');
