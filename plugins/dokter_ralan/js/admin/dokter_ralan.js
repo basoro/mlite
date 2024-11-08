@@ -684,7 +684,7 @@ $("#obat_racikan").on("click", ".pilih_obat_racikan", function(event){
   var biaya = $(this).attr("data-dasar");
   var stok = $(this).attr("data-stok");
 
-  if(stok < 10) {
+  if(stok < 1) {
     alert('Stok obat ' + nama_brng + ' tidak mencukupi.');
     $('input:hidden[name=kode_brng]').val();
     $('input:text[name=nama_brng]').val();

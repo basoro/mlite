@@ -228,9 +228,10 @@ $("#obat").on("click", ".pilih_obat", function(event){
   var nama_brng = $(this).attr("data-nama_brng");
   var biaya = $(this).attr("data-dasar");
   var stok = $(this).attr("data-stok");
+  var stokminimal = $(this).attr("data-stokminimal");
   var kat = $(this).attr("data-kat");
 
-  if(stok < 10) {
+  if(stok < stokminimal) {
     alert('Stok obat ' + nama_brng + ' tidak mencukupi.');
     $('input:hidden[name=kd_jenis_prw]').val();
     $('input:text[name=nm_perawatan]').val();
