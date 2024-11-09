@@ -373,7 +373,7 @@ class Admin extends AdminModule
         if (!$id) {
             $location = url([ADMIN, 'presensi', 'jadwal']);
         } else {
-            $location = url([ADMIN, 'presensi', 'jadwaledit', $id]);
+            $location = url([ADMIN, 'presensi', 'jadwaledit', $id, $_POST['bulan'], $_POST['tahun']]);
         }
 
         //if (checkEmptyFields(['id'], $_POST)){

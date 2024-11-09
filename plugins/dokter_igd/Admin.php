@@ -1042,7 +1042,7 @@ class Admin extends AdminModule
           $rows = $this->db('databarang')
             ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
             ->where('status', '1')
-            ->where('stok', '>', '10')
+            ->where('stok', '>', '1')
             ->where('gudangbarang.kd_bangsal', $this->settings->get('farmasi.deporalan'))
             ->like('databarang.nama_brng', '%'.$_GET['nama_brng'].'%')
             ->limit(10)
