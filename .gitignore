@@ -21,6 +21,7 @@ plugins/utd/www
 plugins/lisensi
 assets/easyui
 plugins/desktop
+plugins/crud_generator
 plugins/kasir
 plugins/dokter_radiologi
 plugins/dokter_ulun

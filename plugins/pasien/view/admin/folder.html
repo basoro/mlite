@@ -185,7 +185,8 @@ h5 {
         var image_extension = image_name.split('.').pop().toLowerCase();
   
         if(jQuery.inArray(image_extension,['gif','jpg','jpeg','png','pdf','doc','docx','xls','xlsx']) == -1){
-          alert("Invalid image file");
+          alert("Invalid file type");
+          return false;
         }
   
         var form_data = new FormData();
