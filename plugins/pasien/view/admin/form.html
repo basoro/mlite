@@ -509,15 +509,20 @@
   	var message = document.getElementById("message").value;
   	//console.log(api_key + " - " + number + " - " + message);
   	xhttp.onreadystatechange = function() {
-  		if (this.readyState == 4 && this.status == 200) {
-  			var data=xhttp.responseText;
-  			var jsonResponse = JSON.parse(data);
-  			if(jsonResponse["status"] == true) {
-  				alert('Sukses mengirim pesan.');
-  			} else {
-  				alert('Gagal mengirim pesan.\n' + jsonResponse["msg"]);
-  			}
-  		}
+      if (this.readyState == 4 && this.status == 200) {
+        var data=xhttp.responseText;
+        var timeout = '504 Gateway Time-out';
+        if(data.indexOf(timeout) != -1) {
+            alert('Timeout!!! Gagal mengirim pesan.');
+        } else {
+            var jsonResponse = JSON.parse(data);
+            if(jsonResponse["status"] == true) {
+              alert('Sukses mengirim pesan.');
+            } else {
+            alert('Gagal mengirim pesan.\n' + jsonResponse["msg"]);
+            }
+        }
+      }
   	};
   	xhttp.open("POST", "{?=url([ADMIN,'api','kirimwa'])?}", true);
   	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
