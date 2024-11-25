@@ -111,7 +111,7 @@
         <tr>
           <td>{$data.nama_brng}</td>
           <td>{$data.jml}</td>
-          <td>{$data.aturan_pakai} <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="{$data.kode_brng}" data-no_rawat="{?=convertNoRawat($data.no_rawat)?}" data-tgl_peresepan="{$data.tgl_perawatan}" data-jam_peresepan="{$data.jam}" data-tipe="nonracikan"><i class="fa fa-print"></i></button></td>
+          <td>{$data.aturan_pakai} <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="{$data.kode_brng}" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="nonracikan"><i class="fa fa-print"></i></button></td>
           <td>Rp. <span class="pull-right">{?= number_format(($data.ralan * $data.jml),2,',','.')?}</span></td>
         </tr>
       {/loop}
@@ -212,7 +212,6 @@
       var tgl_peresepan = $(this).attr("data-tgl_peresepan");
       var jam_peresepan = $(this).attr("data-jam_peresepan");
       var tipe = $(this).attr("data-tipe");
-      console.log(tipe + ' - ' + kode_brng)
       $("#cetakEtiket").modal('show').html('<div style="text-align:center;margin:20px auto;width:500px;height:360px;"><iframe src="' + baseURL + '/apotek_ralan/cetaklabel/' + kode_brng +'/' + no_rawat +'/' + tgl_peresepan +'/' + jam_peresepan + '/' + tipe +'?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
   })
   $(".cetak_eresep").click(function(){
