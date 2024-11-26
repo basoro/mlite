@@ -946,7 +946,7 @@ class Admin extends AdminModule
         // Output a PDF file save to server
         $mpdf->Output(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf','F');
                 
-        echo $this->draw('billing.besar.html', ['wagateway' => $this->settings->get('wagateway'), 'billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'qrCode' => $qrCode, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
+        echo $this->draw('billing.besar.html', ['billing_obat' => $this->settings->get('billing_obat'), 'wagateway' => $this->settings->get('wagateway'), 'billing' => $result, 'total_billing_obat' => $total_detail_pemberian_obat, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'qrCode' => $qrCode, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
         break;
         case "kecil":
         $result = $this->db('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
