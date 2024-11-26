@@ -81,8 +81,13 @@
 				<td colspan="1">Biaya Obat & BHP</td>
 				<td></td>
 				<td></td>
+				{if: $billing_obat == true}
 				<td></td>
+				{else} 
+				<td>Rp. <span class="pull-right">{?= number_format($total_billing_obat,2,',','.')?}</span></td>
+				{/if}
 			</tr>
+			{if: $billing_obat == true}
 			{if: $billing_besar_detail.detail_pemberian_obat}
 			<tr>
 				<td></td>
@@ -98,6 +103,7 @@
 				<td>Rp. <span class="pull-right">{?= number_format($data.total,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
+			{/if}
 			<tr border='1', height='20px'>
 				<td>III</td>
 				<td colspan="1">Jasa Dokter</td>
