@@ -533,7 +533,8 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (153, 'settings', 'username_fp', ''),
 (154, 'settings', 'password_fp', ''),
 (155, 'settings', 'username_frista', ''),
-(156, 'settings', 'password_frista', '');
+(156, 'settings', 'password_frista', ''),
+(157, 'settings', 'billing_obat', 'false');
 
 CREATE TABLE IF NOT EXISTS `mlite_subrekening` (
   `kd_rek` varchar(15) NOT NULL,

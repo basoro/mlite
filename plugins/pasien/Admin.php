@@ -798,8 +798,8 @@ class Admin extends AdminModule
           ->where('no_rawat', $row['no_rawat'])
           ->toArray();
 
-        $row['penilaian_medis_ralan'] = $this->db('penilaian_medis_ralan')
-        ->join('dokter', 'dokter.kd_dokter=penilaian_medis_ralan.kd_dokter')
+        $row['penilaian_medis_ralan'] = $this->db('mlite_penilaian_medis_ralan')
+        ->join('dokter', 'dokter.kd_dokter=mlite_penilaian_medis_ralan.kd_dokter')
         ->where('no_rawat', $row['no_rawat'])
         ->toArray();
 

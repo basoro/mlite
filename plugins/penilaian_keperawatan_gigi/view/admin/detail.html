@@ -1,0 +1,126 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Detail mlite_penilaian_awal_keperawatan_gigi</h4>
+</div>
+<div class="modal-body">
+    <table id="tbl_detail_mlite_penilaian_awal_keperawatan_gigi" class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        </thead>
+        <tbody>
+            {loop: $detail}
+            <tr><td>No Rawat</td><td>{$value.no_rawat}</td><tr>
+<tr><td>Tanggal</td><td>{$value.tanggal}</td><tr>
+<tr><td>Informasi</td><td>{$value.informasi}</td><tr>
+<tr><td>Td</td><td>{$value.td}</td><tr>
+<tr><td>Nadi</td><td>{$value.nadi}</td><tr>
+<tr><td>Rr</td><td>{$value.rr}</td><tr>
+<tr><td>Suhu</td><td>{$value.suhu}</td><tr>
+<tr><td>Bb</td><td>{$value.bb}</td><tr>
+<tr><td>Tb</td><td>{$value.tb}</td><tr>
+<tr><td>Bmi</td><td>{$value.bmi}</td><tr>
+<tr><td>Keluhan Utama</td><td>{$value.keluhan_utama}</td><tr>
+<tr><td>Riwayat Penyakit</td><td>{$value.riwayat_penyakit}</td><tr>
+<tr><td>Ket Riwayat Penyakit</td><td>{$value.ket_riwayat_penyakit}</td><tr>
+<tr><td>Alergi</td><td>{$value.alergi}</td><tr>
+<tr><td>Riwayat Perawatan Gigi</td><td>{$value.riwayat_perawatan_gigi}</td><tr>
+<tr><td>Ket Riwayat Perawatan Gigi</td><td>{$value.ket_riwayat_perawatan_gigi}</td><tr>
+<tr><td>Kebiasaan Sikat Gigi</td><td>{$value.kebiasaan_sikat_gigi}</td><tr>
+<tr><td>Kebiasaan Lain</td><td>{$value.kebiasaan_lain}</td><tr>
+<tr><td>Ket Kebiasaan Lain</td><td>{$value.ket_kebiasaan_lain}</td><tr>
+<tr><td>Obat Yang Diminum Saatini</td><td>{$value.obat_yang_diminum_saatini}</td><tr>
+<tr><td>Alat Bantu</td><td>{$value.alat_bantu}</td><tr>
+<tr><td>Ket Alat Bantu</td><td>{$value.ket_alat_bantu}</td><tr>
+<tr><td>Prothesa</td><td>{$value.prothesa}</td><tr>
+<tr><td>Ket Pro</td><td>{$value.ket_pro}</td><tr>
+<tr><td>Status Psiko</td><td>{$value.status_psiko}</td><tr>
+<tr><td>Ket Psiko</td><td>{$value.ket_psiko}</td><tr>
+<tr><td>Hub Keluarga</td><td>{$value.hub_keluarga}</td><tr>
+<tr><td>Tinggal Dengan</td><td>{$value.tinggal_dengan}</td><tr>
+<tr><td>Ket Tinggal</td><td>{$value.ket_tinggal}</td><tr>
+<tr><td>Ekonomi</td><td>{$value.ekonomi}</td><tr>
+<tr><td>Budaya</td><td>{$value.budaya}</td><tr>
+<tr><td>Ket Budaya</td><td>{$value.ket_budaya}</td><tr>
+<tr><td>Edukasi</td><td>{$value.edukasi}</td><tr>
+<tr><td>Ket Edukasi</td><td>{$value.ket_edukasi}</td><tr>
+<tr><td>Berjalan A</td><td>{$value.berjalan_a}</td><tr>
+<tr><td>Berjalan B</td><td>{$value.berjalan_b}</td><tr>
+<tr><td>Berjalan C</td><td>{$value.berjalan_c}</td><tr>
+<tr><td>Hasil</td><td>{$value.hasil}</td><tr>
+<tr><td>Lapor</td><td>{$value.lapor}</td><tr>
+<tr><td>Ket Lapor</td><td>{$value.ket_lapor}</td><tr>
+<tr><td>Nyeri</td><td>{$value.nyeri}</td><tr>
+<tr><td>Lokasi</td><td>{$value.lokasi}</td><tr>
+<tr><td>Skala Nyeri</td><td>{$value.skala_nyeri}</td><tr>
+<tr><td>Durasi</td><td>{$value.durasi}</td><tr>
+<tr><td>Frekuensi</td><td>{$value.frekuensi}</td><tr>
+<tr><td>Nyeri Hilang</td><td>{$value.nyeri_hilang}</td><tr>
+<tr><td>Ket Nyeri</td><td>{$value.ket_nyeri}</td><tr>
+<tr><td>Pada Dokter</td><td>{$value.pada_dokter}</td><tr>
+<tr><td>Ket Dokter</td><td>{$value.ket_dokter}</td><tr>
+<tr><td>Kebersihan Mulut</td><td>{$value.kebersihan_mulut}</td><tr>
+<tr><td>Mukosa Mulut</td><td>{$value.mukosa_mulut}</td><tr>
+<tr><td>Karies</td><td>{$value.karies}</td><tr>
+<tr><td>Karang Gigi</td><td>{$value.karang_gigi}</td><tr>
+<tr><td>Gingiva</td><td>{$value.gingiva}</td><tr>
+<tr><td>Palatum</td><td>{$value.palatum}</td><tr>
+<tr><td>Rencana</td><td>{$value.rencana}</td><tr>
+<tr><td>Nip</td><td>{$value.nip}</td><tr>
+
+            {/loop}
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" id="export_pdf_detail" class="btn btn-danger">PDF</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script>
+$(document).ready(function() {
+
+    // ===========================================
+    // Ketika tombol export pdf di tekan
+    // ===========================================
+    $("#export_pdf_detail").click(function () {
+        var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
+        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        doc.addImage(img, 'JPEG', 20, 10, 50, 50);
+        doc.setFontSize(20);
+        doc.text("{$settings.nama_instansi}", 80, 35, null, null, null);
+        doc.setFontSize(10);
+        doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
+        doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
+        doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
+        doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
+        doc.setFontSize(14);
+        doc.text("Data Detail", 20, 95, null, null, null);
+        const totalPagesExp = "{total_pages_count_string}";        
+        doc.autoTable({
+            html: '#tbl_detail_mlite_penilaian_awal_keperawatan_gigi',
+            startY: 105,
+            margin: {
+                left: 20, 
+                right: 20
+            }, 
+            styles: {
+                fontSize: 10,
+                cellPadding: 5
+            }, 
+            didDrawPage: data => {
+                let footerStr = "Page " + doc.internal.getNumberOfPages();
+                if (typeof doc.putTotalPages === 'function') {
+                footerStr = footerStr + " of " + totalPagesExp;
+                }
+                doc.setFontSize(10);
+                doc.text(`© ${new Date().getFullYear()} {$settings.nama_instansi}.`, data.settings.margin.left, doc.internal.pageSize.height - 10);                
+                doc.text(footerStr, data.settings.margin.left + 480, doc.internal.pageSize.height - 10);
+           }
+        });
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPagesExp);
+        }
+        // doc.save('detail_data_mlite_penilaian_awal_keperawatan_gigi.pdf')
+        window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+              
+    }) 
+}); 
+</script>

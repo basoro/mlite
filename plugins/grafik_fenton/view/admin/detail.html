@@ -1,0 +1,80 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Detail mlite_fenton</h4>
+</div>
+<div class="modal-body">
+    <table id="tbl_detail_mlite_fenton" class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        </thead>
+        <tbody>
+            {loop: $detail}
+            <tr><td>Id</td><td>{$value.id}</td><tr>
+<tr><td>No Rawat</td><td>{$value.no_rawat}</td><tr>
+<tr><td>Tanggal</td><td>{$value.tanggal}</td><tr>
+<tr><td>Usia Kehamilan</td><td>{$value.usia_kehamilan}</td><tr>
+<tr><td>Tgl Lahir</td><td>{$value.tgl_lahir}</td><tr>
+<tr><td>Berat Badan</td><td>{$value.berat_badan}</td><tr>
+<tr><td>Lingkar Kepala</td><td>{$value.lingkar_kepala}</td><tr>
+<tr><td>Panjang Badan</td><td>{$value.panjang_badan}</td><tr>
+<tr><td>Petugas</td><td>{$value.petugas}</td><tr>
+<tr><td>Created At</td><td>{$value.created_at}</td><tr>
+<tr><td>Deleted At</td><td>{$value.deleted_at}</td><tr>
+
+            {/loop}
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" id="export_pdf_detail" class="btn btn-danger">PDF</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script>
+$(document).ready(function() {
+
+    // ===========================================
+    // Ketika tombol export pdf di tekan
+    // ===========================================
+    $("#export_pdf_detail").click(function () {
+        var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
+        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        doc.addImage(img, 'JPEG', 20, 10, 50, 50);
+        doc.setFontSize(20);
+        doc.text("{$settings.nama_instansi}", 80, 35, null, null, null);
+        doc.setFontSize(10);
+        doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
+        doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
+        doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
+        doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
+        doc.setFontSize(14);
+        doc.text("Data Detail", 20, 95, null, null, null);
+        const totalPagesExp = "{total_pages_count_string}";        
+        doc.autoTable({
+            html: '#tbl_detail_mlite_fenton',
+            startY: 105,
+            margin: {
+                left: 20, 
+                right: 20
+            }, 
+            styles: {
+                fontSize: 10,
+                cellPadding: 5
+            }, 
+            didDrawPage: data => {
+                let footerStr = "Page " + doc.internal.getNumberOfPages();
+                if (typeof doc.putTotalPages === 'function') {
+                footerStr = footerStr + " of " + totalPagesExp;
+                }
+                doc.setFontSize(10);
+                doc.text(`© ${new Date().getFullYear()} {$settings.nama_instansi}.`, data.settings.margin.left, doc.internal.pageSize.height - 10);                
+                doc.text(footerStr, data.settings.margin.left + 480, doc.internal.pageSize.height - 10);
+           }
+        });
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPagesExp);
+        }
+        // doc.save('detail_data_mlite_fenton.pdf')
+        window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+              
+    }) 
+}); 
+</script>

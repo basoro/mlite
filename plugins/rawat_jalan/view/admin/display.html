@@ -39,11 +39,22 @@
               {/if}
               <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
-              <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAP & Pemeriksaan</a></li>
+              <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAPIE & Pemeriksaan</a></li>
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Tindakan</a></li>
+              <li class="dropdown-submenu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Penilaian Keperawatan</a>
+                <ul class="dropdown-menu">
+                  <li><a href="{?=url([ADMIN,'penilaian_keperawatan_ralan','manage'])?}&no_rawat={$value.no_rawat}">Keperawatan Umum</a></li>
+                  <li><a href="{?=url([ADMIN,'penilaian_keperawatan_gigi','manage'])?}&no_rawat={$value.no_rawat}">Keperawatan Gigi</a></li>
+                </ul>
+              </li>
+              <li><a href="{?=url([ADMIN,'peta_mukosa_rongga_mulut','manage'])?}&no_rawat={$value.no_rawat}">Peta Mukosa Oral</a></li>
+              <li><a href="{?=url([ADMIN,'penilaian_ulang_nyeri','manage'])?}&no_rawat={$value.no_rawat}">Penilaian Ulang Nyeri</a></li>
               <li class="dropdown-submenu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Surat-Surat</a>
                 <ul class="dropdown-menu">
+                  <li><a href="#cover_rm" data-no_rkm_medis="{$value.no_rkm_medis}">Cover Rekam Medis</a></li>
+                  <li><a href="#identitas_pasien" data-no_rkm_medis="{$value.no_rkm_medis}">Identitas Pasien</a></li>
                   <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
                   <li><a href="{?=url([ADMIN,'rawat_jalan','suratrujukan',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Rujukan</a></li>
                   <li><a href="{?=url([ADMIN,'rawat_jalan','suratsehat',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sehat</a></li>
@@ -524,6 +535,29 @@
       $("#surat_kontrol").html(data).show();
     });
   });
+
+  $('a[href="#cover_rm"]').click(function(event){
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var loadURL =  baseURL + '/jasper/coverrm/' + no_rkm_medis + '?t=' + mlite.token;
+    $("#modal_cetak_cover_rm").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + loadURL + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+
+    return false;
+
+  });
+
+  $('a[href="#identitas_pasien"]').click(function(event){
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var loadURL =  baseURL + '/jasper/identitaspasien/' + no_rkm_medis + '?t=' + mlite.token;
+    $("#modal_cetak_identitas_pasien").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + loadURL + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+
+    return false;
+
+  });
+  
 </script>
 <script type="text/javascript">
   $("#display").on("click",".bridgingpcare", function(event){
