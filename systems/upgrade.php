@@ -125,6 +125,9 @@ switch ($version) {
             `petugas` varchar(100) DEFAULT NULL, 
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");        
-        $return = '4.1.7';        
+        $return = '4.1.7';
+    case '4.1.7':
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'billing_obat', 'false')");
+        $return = '4.1.8'; 
     }
 return $return;

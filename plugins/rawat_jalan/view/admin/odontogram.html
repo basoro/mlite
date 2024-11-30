@@ -290,6 +290,7 @@
           </div>
           <div class="col-md-12">
               <button class="btn btn-success simpan">Simpan</button>
+              <a href="" class="btn btn-primary" id="cetak_odontogram">Cetak</a>
           </div>
         </div>
       </div>
@@ -501,5 +502,16 @@ $(document).ready(function(){
       $('.tampildataohis').load(baseURL + '/rawat_jalan/ohistampil/' + id_pasien + '?t=' + mlite.token);
     });
   });  
+});
+jQuery("#cetak_odontogram").click(function (event) {
+
+    var no_rawat = $('input:text[name=no_rawat]').val();
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var loadURL =  baseURL + '/jasper/odontogram/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token;
+    $("#modal_cetak_odontogram").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + loadURL + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+
+    return false;
+
 });
 </script>

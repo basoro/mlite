@@ -28,12 +28,15 @@
               {/if}
               <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
-              <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAP & Pemeriksaan</a></li>
+              <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAPIE & Pemeriksaan</a></li>
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
+              <li><a href="{?=url([ADMIN,'penilaian_keperawatan_ranap','manage'])?}&no_rawat={$value.no_rawat}">Penilaian Keperawatan Ranap</a></li>
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
               <li class="dropdown-submenu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Surat-Surat</a>
                 <ul class="dropdown-menu">
+                  <li><a href="#cover_rm" data-no_rkm_medis="{$value.no_rkm_medis}">Cover Rekam Medis</a></li>
+                  <li><a href="#identitas_pasien" data-no_rkm_medis="{$value.no_rkm_medis}">Identitas Pasien</a></li>
                   <li><a href="{?=url([ADMIN,'rawat_inap','persetujuanumum',$value.no_rkm_medis])?}" target="_blank">Persetujuan Umum</a></li>
                   <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
                   <li><a href="{?=url([ADMIN,'rawat_inap','suratrujukan',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Rujukan</a></li>
@@ -196,6 +199,28 @@
       $("#surat_kontrol").html(data).show();
     });
   });
+
+  $('a[href="#cover_rm"]').click(function(event){
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var loadURL =  baseURL + '/jasper/coverrm/' + no_rkm_medis + '?t=' + mlite.token;
+    $("#modal_cetak_cover_rm").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + loadURL + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+
+    return false;
+
+  });
+
+  $('a[href="#identitas_pasien"]').click(function(event){
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var loadURL =  baseURL + '/jasper/identitaspasien/' + no_rkm_medis + '?t=' + mlite.token;
+    $("#modal_cetak_identitas_pasien").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + loadURL + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+
+    return false;
+
+  });    
 </script>
 <script type="text/javascript">
   // ketika tombol hapus ditekan
