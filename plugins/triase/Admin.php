@@ -13,30 +13,6 @@ class Admin extends AdminModule
         ];
     }
 
-    public function getTest()
-    {
-        header('Content-Type: application/json; charset=utf-8');
-        $rows_triase_pemeriksaan = $this->db('mlite_triase_pemeriksaan')->toArray();
-        $skala_pemeriksaan = [];
-        foreach($rows_triase_pemeriksaan as $row) {
-            $rows_kode_pemeriksaan = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', $row['kode_pemeriksaan'])->toArray();
-            $row_['kode'] = $row['kode_pemeriksaan'];
-            $row_['nama_pemeriksaan'] = $row['nama_pemeriksaan'];
-            foreach($rows_kode_pemeriksaan as $row1) {
-                $rows_skala = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', $row_['kode'])->group('skala')->toArray();
-                $row_['skala'] = [];
-                foreach($rows_skala as $row2) {
-                    $row2_['skala'] = $row2['skala'];
-                    $row2_['skala_nilai'] = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', $row_['kode'])->where('skala', $row2['skala'])->toArray();
-                    $row_['skala'][] = $row2_;
-                }
-            }
-            $skala_pemeriksaan[] = $row_;
-        }
-        echo json_encode($skala_pemeriksaan);
-        exit();
-    }
-    
     public function getManage(){
         $this->_addHeaderFiles();
         $enum['cara_masuk'] = $this->core->getEnum('mlite_triase', 'cara_masuk');
@@ -180,10 +156,14 @@ $kebutuhan_khusus = $_POST['kebutuhan_khusus'];
 $catatan = $_POST['catatan'];
 $plan = $_POST['plan'];
 $nik = $_POST['nik'];
-
             
             $mlite_triase_add = $this->db()->pdo()->prepare('INSERT INTO mlite_triase VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
             $mlite_triase_add->execute([$no_rawat, $tgl_kunjungan, $cara_masuk, $alat_transportasi, $alasan_kedatangan, $keterangan_kedatangan, $macam_kasus, $tekanan_darah, $nadi, $pernapasan, $suhu, $saturasi_o2, $nyeri, $jenis_triase, $keluhan_utama, $kebutuhan_khusus, $catatan, $plan, $nik]);
+
+            for($l=0; $l < count($_POST['id_skala_triase']); $l++){
+                $mlite_triase_skala = $this->db('mlite_triase_skala')->where('id', $_POST['id_skala_triase'][$l])->oneArray();
+                $mlite_triase_detail = $this->db('mlite_triase_detail')->save(['no_rawat' => $no_rawat, 'skala' => $mlite_triase_skala['skala'], 'kode_skala' => $mlite_triase_skala['kode_skala']]);
+            }
 
         }
         if ($act=="edit") {

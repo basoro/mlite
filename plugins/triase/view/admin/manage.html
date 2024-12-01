@@ -352,7 +352,7 @@
             {loop: $value.skala as $data1}
             <div class="tab-pane fade {if: $data1.skala == '1'}active{/if} in" id="{$value.kode}skala{$data1.skala}">
                 {loop: $data1.skala_nilai as $data2} 
-                  <input type="checkbox" name="skala_triase" value="{$data2.id}" class="form-control">{$data2.pengkajian_skala}<br>
+                  <input type="checkbox" name="id_skala_triase[]" value="{$data2.id}" class="form-control">{$data2.pengkajian_skala}<br>
                 {/loop}
             </div>
             {/loop}
