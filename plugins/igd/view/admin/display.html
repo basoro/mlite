@@ -45,6 +45,7 @@
                 <ul class="dropdown-menu">
                   <li><a href="#cover_rm" data-no_rkm_medis="{$value.no_rkm_medis}">Cover Rekam Medis</a></li>
                   <li><a href="#identitas_pasien" data-no_rkm_medis="{$value.no_rkm_medis}">Identitas Pasien</a></li>
+                  <li><a href="{?=url([ADMIN,'igd','persetujuanumum',$value.no_rkm_medis])?}" target="_blank">Persetujuan Umum</a></li>
                   <li><a href="{?=url([ADMIN,'igd','suratrujukan',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Rujukan</a></li>
                   <li><a href="{?=url([ADMIN,'igd','suratsehat',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sehat</a></li>
                   <li><a href="{?=url([ADMIN,'igd','suratsakit',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sakit</a></li>

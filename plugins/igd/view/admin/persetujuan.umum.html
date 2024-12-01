@@ -1,0 +1,325 @@
+<style>
+    body {
+        background-color: white;
+        margin-top: 50px;
+        margin-bottom: 50px;
+        font-size: 13px;
+        font-family: Arial;
+    }
+    canvas{border:1px solid red; margin:0 auto; }
+    #wrapper {
+        width: 960px;
+        margin: 0 auto;
+    }
+    table th, table td {
+        background-color: white;
+    }
+</style>
+<script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+<script src="{?=url()?}/assets/jscripts/jspdf.min.js"></script>
+<script src="{?=url()?}/assets/jscripts/jspdf.plugin.autotable.min.js"></script>
+<div id="wrapper">
+    <table id="tbl_persetujuan_umum">
+        <thead>
+
+        </thead>
+        <tbody>
+            <tr>
+                <td width="200">Nama Pasien</td>
+                <td>: {$pasien.nm_pasien}</td>
+            </tr>
+            <tr>
+                <td width="200">Nomor RM</td>
+                <td>: {$pasien.no_rkm_medis}</td>
+            </tr>
+            <tr>
+                <td width="200">Tanggal Lahir</td>
+                <td>: {$pasien.tgl_lahir}</td>
+            </tr>
+            <tr>
+                <td width="200">Alamat</td>
+                <td>: {$pasien.alamat}</td>
+            </tr>
+            <tr>
+                <td width="200">Nomor HP</td>
+                <td>: {$pasien.no_tlp}</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <br>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    Yang bertanda tangan dibawah ini:
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                </td>
+            </tr>
+            <tr>
+                <td width="200">Nama</td>
+                <td>: {$pasien.tgl_lahir}</td>
+            </tr>
+            <tr>
+                <td width="200">Alamat</td>
+                <td>: {$pasien.alamat}</td>
+            </tr>
+            <tr>
+                <td width="200">Nomor HP</td>
+                <td>: {$pasien.no_tlp}</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    Selaku Pasien/Wali hukum {$pasien.nm_pasien} dengan menyatakan persetujuan :
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <br>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    I. PERSETUJUAN UNTUK PERAWATAN DAN PENGOBATAN
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    Saya menyetujui untuk perawatan di {$settings.nama_instansi} sebagai pasien rawat jalan atau rawat inap tergantung kepada kebutuhan medis.
+                    Pengobatan dapat meliputi pemeriksaan x-ray/radiology, tes darah, perawatan rutin dan prosedur seperti cairan infus atau suntikan dan evaluasi (contohnya wawancara dan pemeriksaan fisik). 
+                    Persetujuan yang saya berikan  tidak termasuk persetujuan untuk prosedur/tindakan  invasif (misalnya, operasi) atau tindakan yang mempunyai resiko tinggi. 
+                    Jika saya memutuskan untuk menghentikan perawatan medis untuk diri saya sendiri. Saya memahami dan menyadari bahwa {$settings.nama_instansi} atau dokter tidak bertanggung jawab atas hasil yang merugikan Saya.
+                    <br><br>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    II. PERSETUJUAN PELEPASAN INFORMASI
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    Saya memahami informasi yang ada didalam diri Saya, termasuk Diagnosis, hasil laboratorium dan hasil tes diagnostik  yang akan di gunakan untuk perawatan medis, {$settings.nama_instansi} akan menjamin kerahasiaannya.
+                    Saya memberi wewenang kepada {$settings.nama_instansi} untuk memberikan  informasi tentang tentang diagnosis, hasil pelayanan dan pengobatan  bila diperlukan untuk memproses klaim asuransi/ perusahaan dan atau lembaga pemerintah.
+                    Saya memberi wewenang kepada {$settings.nama_instansi} untuk memberikan  informasi tentang diagnosis, hasil pelayanan dan pengobatan  saya kepada anggota keluarga saya.
+                    <br><br>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    III. HAK DAN TANGGUNG JAWAB PASIEN
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    Saya memiliki hak untuk mengambil bagian dalam keputusan mengenai penyakit saya  dan dalam hal perawatan medis dan rencana pengobatan. 
+                    Saya telah mendapat informasi tentang  “Hak dan tanggung jawab pasien“ di {$settings.nama_instansi} melalui Leaflet dan banner yang diediakan oleh petugas.
+                    Saya memahami bahwa {$settings.nama_instansi} tidak bertanggung jawab atas kehilangan barang-barang pribadi dan barang berharga yang di bawa ke {$settings.nama_instansi}.
+                    <br><br>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    IV. INFORMASI RAWAT INAP 
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    Saya Tidak di perkenankan untuk membawa barang-barang berharga ke ruang rawat inap, jika ada  anggota keluarga atau teman harus diminta untuk membawa pulang uang atau perhiasan. 
+                    Bila tidak ada anggota keluarga, {$settings.nama_instansi} menyediakan tempat penitipan barang milik pasien di tempat resmi yang telah disediakan {$settings.nama_instansi}. 
+                    Saya telah menerima informasi tentang peraturan yang diberlakukan oleh {$settings.nama_instansi} dan saya beserta keluarga bersedia untuk mematuhinya, termasuk akan mematuhi jam berkunjung pasien sesuai dengan aturan di {$settings.nama_instansi}. 
+                    Anggota keluarga saya yang menunggu saya, bersedia untuk selalu memakai tanda pengenal khusus yang diberikan oleh {$settings.nama_instansi}, dan demi keamanan seluruh pasien setiap keluarga dan siapapun yang akan megunjungi saya diluar jam berkunjung, bersedia untuk diminta/diperiksa identitasnya dan memakai identitias yang diberikan oleh {$settings.nama_instansi}.
+                    <br><br>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    V. INFORMASI BIAYA<br>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    Saya memahami tentang informasi biaya pengobatan atau biaya tindakan yang dijelaskan oleh petugas {$settings.nama_instansi} <br><br>               
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    VI.TANDA TANGAN<br>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    Dengan tanda tangan saya di bawah, saya menyatakan bahwa saya telah membaca dan memahami item pada Persetujuan Umum/ General Consent.                
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <br><br>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <canvas id="canvas" width="250" height="150"></canvas>
+                </td>
+            </tr>
+        </tbody>
+    </table>   
+</div>
+
+<button class="btn btn-default" id="export_pdf">Print PDF</button>
+
+        <script type="text/javascript">
+            var canvas, ctx, flag = false,
+                prevX = 0,
+                currX = 0,
+                prevY = 0,
+                currY = 0,
+                dot_flag = false;
+
+            window.onload = function () {
+                canvas = document.getElementById('canvas');
+                ctx = canvas.getContext("2d");
+                w = canvas.width;
+                h = canvas.height;
+
+                canvas.addEventListener("mousemove", function (e) {
+                    findxy('move', e)
+                }, false);
+                canvas.addEventListener("mousedown", function (e) {
+                    findxy('down', e)
+                }, false);
+                canvas.addEventListener("mouseup", function (e) {
+                    findxy('up', e)
+                }, false);
+                canvas.addEventListener("mouseout", function (e) {
+                    findxy('out', e)
+                }, false);
+            }
+
+            function draw() {
+                ctx.beginPath();
+                ctx.moveTo(prevX, prevY);
+                ctx.lineTo(currX, currY);
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.closePath();
+            }
+
+            function findxy(res, e) {
+                if (res == 'down') {
+                    prevX = currX;
+                    prevY = currY;
+                    rect = canvas.getBoundingClientRect();
+                    currX = e.clientX - rect.left;
+                    currY = e.clientY - rect.top;
+
+                    flag = true;
+                    dot_flag = true;
+                    if (dot_flag) {
+                        ctx.beginPath();
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(currX, currY, 2, 2);
+                        ctx.closePath();
+                        dot_flag = false;
+                    }
+                }
+                if (res == 'up' || res == "out") {
+                    flag = false;
+                }
+                if (res == 'move') {
+                    if (flag) {
+                        prevX = currX;
+                        prevY = currY;
+                        currX = e.clientX - rect.left;
+                        currY = e.clientY - rect.top;
+                        draw();
+                    }
+                }
+            }
+        </script>
+
+
+<script>
+    // ===========================================
+    // Ketika tombol export pdf di tekan
+    // ===========================================
+    $("#export_pdf").click(function () {
+        var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
+        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        var canvas = document.getElementById('canvas');
+        var imgData = canvas.toDataURL("image/png", 1.0);
+        doc.addImage(img, 'JPEG', 20, 10, 50, 50);
+        doc.setFontSize(20);
+        doc.text("{$settings.nama_instansi}", 80, 35, null, null, null);
+        doc.setFontSize(10);
+        doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
+        doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
+        doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
+        doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
+        doc.setFontSize(14);
+        doc.text("PERSETUJUAN UMUM / GENERAL CONSENT", 300, 110, null, null, 'center');
+        const totalPagesExp = "{total_pages_count_string}";        
+        doc.autoTable({
+            html: '#tbl_persetujuan_umum',
+            startY: 140,
+            margin: {
+                left: 60, 
+                right: 40
+            }, 
+            styles: {
+                fontSize: 12,
+                cellPadding: 5
+            }, 
+            columnStyles: { 0: { halign: 'justify', columnWidth: 120, cellPadding: 0, fillColor: [255, 255, 255] }, 1: { columnWidth: 360, cellPadding: 0, fillColor: [255, 255, 255] } },
+            didDrawPage: data => {
+                let footerStr = "Page " + doc.internal.getNumberOfPages();
+                if (typeof doc.putTotalPages === 'function') {
+                footerStr = footerStr + " of " + totalPagesExp;
+                }
+                doc.setFontSize(11);
+                doc.text(footerStr, data.settings.margin.left, doc.internal.pageSize.height - 10);
+            }
+        });
+        
+        doc.isFinished = true;
+        doc.setFontSize(11);
+        doc.text("{$settings.kota}, {?=date('Y-m-d')?}", 350, 580, null, null, null);
+        doc.addImage(imgData, 'JPEG', 300, 590, 220, 130);
+        doc.text("(_________________________)", 350, 710, null, null, null);
+        doc.isFinished = false;
+
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPagesExp);
+        }
+        // doc.save('table_data_icd9.pdf')
+        window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+      
+    })    
+</script>

@@ -362,7 +362,7 @@ eTable += '<td>' + res[i]['petugas'] + '</td>';
             var no_rawat = no_rawat.replace(/\//g,'');
             var baseURL = mlite.url + '/' + mlite.admin;
             event.preventDefault();
-            var loadURL =  baseURL + '/rawat_jalan/suratsakit/' + no_rawat + '?t=' + mlite.token;
+            var loadURL =  baseURL + '/surat_sakit/suratsakit/' + no_rawat + '?t=' + mlite.token;
             window.open(loadURL);        
         
             // var modal = $('#modal_detail_mlite_surat_sakit');

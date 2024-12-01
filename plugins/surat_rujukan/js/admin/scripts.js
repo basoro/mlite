@@ -378,7 +378,7 @@ eTable += '<td>' + res[i]['petugas'] + '</td>';
             var no_rawat = no_rawat.replace(/\//g,'');
             var baseURL = mlite.url + '/' + mlite.admin;
             event.preventDefault();
-            var loadURL =  baseURL + '/rawat_jalan/suratrujukan/' + no_rawat + '?t=' + mlite.token;
+            var loadURL =  baseURL + '/surat_rujukan/suratrujukan/' + no_rawat + '?t=' + mlite.token;
             window.open(loadURL);        
             // var modal = $('#modal_detail_mlite_surat_rujukan');
             // var modalContent = $('#modal_detail_mlite_surat_rujukan .modal-content');

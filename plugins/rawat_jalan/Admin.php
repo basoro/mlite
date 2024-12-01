@@ -706,6 +706,16 @@ class Admin extends AdminModule
       exit();
     }
 
+
+    public function getPersetujuanUmum($no_rkm_medis)
+    {
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+      $pasien = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+      echo $this->draw('persetujuan.umum.html', ['pasien' => $pasien]);
+      exit();
+    }
+
     public function getJadwal()
     {
         // JS
