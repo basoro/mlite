@@ -115,7 +115,8 @@ class Admin extends AdminModule
         $enum['skrining_gizi2'] = $this->core->getEnum('mlite_penilaian_awal_keperawatan_ranap', 'skrining_gizi2');
         $enum['skrining_gizi_diagnosa_khusus'] = $this->core->getEnum('mlite_penilaian_awal_keperawatan_ranap', 'skrining_gizi_diagnosa_khusus');
         $enum['skrining_gizi_diketahui_dietisen'] = $this->core->getEnum('mlite_penilaian_awal_keperawatan_ranap', 'skrining_gizi_diketahui_dietisen');
-        return $this->draw('manage.html', ['enum' => $enum]);
+        $dokter = $this->db('dokter')->where('status', '1')->toArray();
+        return $this->draw('manage.html', ['enum' => $enum, 'dokter' => $dokter]);
     }
 
     public function postData(){

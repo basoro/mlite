@@ -157,21 +157,21 @@
         <div class="row">
           <form name="form_penilaian_medis_ranap">
           <input type="hidden" class="form-control" id="typeact" /> 
-            <div class='col-md-6'>
+            <div class='col-md-3'>
   <div class='form-group'>
       <label class='form-label' for='no_rawat'>No Rawat</label>
       <input type='text' class='form-control' id='no_rawat' name='no_rawat' placeholder="Nomor Rawat" required value="{$reg_periksa.no_rawat}" />
     <div class='error'></div>
   </div>
   </div>
-  <div class='col-md-6'>
+  <div class='col-md-3'>
   <div class='form-group'>
       <label class='form-label' for='tanggal'>Tanggal</label>
       <input type='datetime-local' class='form-control' id='tanggal' name='tanggal' />
     <div class='error'></div>
   </div>
   </div>
-  <div class='col-md-3'>
+  <div class='col-md-3 hidden'>
   <div class='form-group'>
       <label class='form-label' for='kd_dokter'>Kd Dokter</label>
       <input type='text' class='form-control' id='kd_dokter' placeholder="Kd Dokter" name='kd_dokter' required value="{$dokter.nm_dokter}" />
@@ -189,7 +189,7 @@
       </select>
     </div>
   </div>
-  <div class='col-md-6'>
+  <div class='col-md-3'>
     <div class="form-group">
       <label for="hubungan">Hubungan</label>
       <input type="text" name="hubungan" id="hubungan" class="form-control" value="{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.hubungan,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.hubungan,'')?}{/if}">
@@ -312,7 +312,12 @@
   <div class='col-md-2'>
     <div class='form-group'>
         <label class='form-label' for='mata'>Mata</label>
-        <input type='text' class='form-control' id='mata' name='mata' />
+        <select name="mata" id="mata" class="form-control">
+          <option value="">Select</option>
+          {loop: $enum.mata}
+          <option value="{$value}">{$value}</option>
+          {/loop}
+        </select>
       <div class='error'></div>
     </div>
     </div>
@@ -360,7 +365,7 @@
       </select>
     </div>
     </div>
-  <div class='col-md-3'>
+  <div class='col-md-2'>
   <div class='form-group'>
       <label class='form-label' for='tht'>Tht</label>
       <select name="tht" id="tht" class="form-control">
@@ -371,7 +376,7 @@
     </select>
   </div>
   </div>
-  <div class='col-md-3'>
+  <div class='col-md-2'>
     <div class='form-group'>
         <label class='form-label' for='ekstremitas'>Ekstremitas</label>
         <select name="ekstremitas" id="ekstremitas" class="form-control">
@@ -382,7 +387,7 @@
       </select>
     </div>
     </div>
-  <div class='col-md-3'>
+  <div class='col-md-2'>
   <div class='form-group'>
       <label class='form-label' for='thoraks'>Thoraks</label>
       <select name="thoraks" id="thoraks" class="form-control">
@@ -393,7 +398,7 @@
     </select>
   </div>
   </div>
-  <div class='col-md-3'>
+  <div class='col-md-2'>
     <div class='form-group'>
         <label class='form-label' for='kulit'>Kulit</label>
         <select name="kulit" id="kulit" class="form-control">
@@ -404,7 +409,7 @@
       </select>
     </div>
     </div>
-  <div class='col-md-6'>
+  <div class='col-md-2'>
   <div class='form-group'>
       <label class='form-label' for='jantung'>Jantung</label>
       <select name="jantung" id="jantung" class="form-control">
@@ -416,7 +421,7 @@
     <div class='error'></div>
   </div>
   </div>
-  <div class='col-md-6'>
+  <div class='col-md-2'>
   <div class='form-group'>
       <label class='form-label' for='paru'>Paru</label>
       <select name="paru" id="paru" class="form-control">

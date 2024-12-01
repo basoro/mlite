@@ -454,7 +454,7 @@ var no_rawat = rowData['no_rawat'];
         }
 
 $('#tanggal').val('');
-$('#kd_dokter').val('');
+$('#kd_dokter').val('{?=$this->core->getUserInfo('username', null, true)?}');
 $('#anamnesis').val('');
 $('#hubungan').val('');
 $('#keluhan_utama').val('');

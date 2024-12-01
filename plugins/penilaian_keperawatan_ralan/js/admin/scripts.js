@@ -552,9 +552,26 @@ var no_rawat = rowData['no_rawat'];
     // ==============================================================
     // TOMBOL TAMBAH DATA DI CLICK
     // ==============================================================
+
+    let searchParams = new URLSearchParams(window.location.search)
+
+    if(window.location.search.indexOf('no_rawat') !== -1) { 
+        $('#search_text_mlite_penilaian_awal_keperawatan_ralan').val(searchParams.get('no_rawat'));
+        var_tbl_mlite_penilaian_awal_keperawatan_ralan.draw();
+        if(searchParams.get('modal') == 'true') {
+            $("#modal_mlite_penilaian_awal_keperawatan_ralan").modal();
+            $('#no_rawat').val(searchParams.get('no_rawat'));    
+        }
+    }
+
     jQuery("#tambah_data_mlite_penilaian_awal_keperawatan_ralan").click(function () {
 
         $('#no_rawat').val('');
+
+        if(window.location.search.indexOf('no_rawat') !== -1) { 
+            $('#no_rawat').val(searchParams.get('no_rawat'));
+        }
+
 $('#tanggal').val('');
 $('#informasi').val('');
 $('#td').val('');
@@ -610,8 +627,7 @@ $('#ket_nyeri').val('');
 $('#pada_dokter').val('');
 $('#ket_dokter').val('');
 $('#rencana').val('');
-$('#nip').val('');
-
+$('#nip').val('{?=$this->core->getUserInfo('username', null, true)?}');
 
         $("#typeact").val("add");
         $("#no_rawat").prop('disabled', false);
@@ -619,73 +635,6 @@ $('#nip').val('');
         $('#modal-title').text("Tambah Data Penilaian Keperawatan Ralan");
         $("#modal_mlite_penilaian_awal_keperawatan_ralan").modal();
     });
-
-    if(window.location.search.indexOf('no_rawat') !== -1) { 
-        let searchParams = new URLSearchParams(window.location.search)
-        
-        $('#no_rawat').val(searchParams.get('no_rawat'));
-        $('#tanggal').val('');
-        $('#informasi').val('');
-        $('#td').val('');
-        $('#nadi').val('');
-        $('#rr').val('');
-        $('#suhu').val('');
-        $('#gcs').val('');
-        $('#bb').val('');
-        $('#tb').val('');
-        $('#bmi').val('');
-        $('#keluhan_utama').val('');
-        $('#rpd').val('');
-        $('#rpk').val('');
-        $('#rpo').val('');
-        $('#alergi').val('');
-        $('#alat_bantu').val('');
-        $('#ket_bantu').val('');
-        $('#prothesa').val('');
-        $('#ket_pro').val('');
-        $('#adl').val('');
-        $('#status_psiko').val('');
-        $('#ket_psiko').val('');
-        $('#hub_keluarga').val('');
-        $('#tinggal_dengan').val('');
-        $('#ket_tinggal').val('');
-        $('#ekonomi').val('');
-        $('#budaya').val('');
-        $('#ket_budaya').val('');
-        $('#edukasi').val('');
-        $('#ket_edukasi').val('');
-        $('#berjalan_a').val('');
-        $('#berjalan_b').val('');
-        $('#berjalan_c').val('');
-        $('#hasil').val('');
-        $('#lapor').val('');
-        $('#ket_lapor').val('');
-        $('#sg1').val('');
-        $('#nilai1').val('');
-        $('#sg2').val('');
-        $('#nilai2').val('');
-        $('#total_hasil').val('');
-        $('#nyeri').val('');
-        $('#provokes').val('');
-        $('#ket_provokes').val('');
-        $('#quality').val('');
-        $('#ket_quality').val('');
-        $('#lokasi').val('');
-        $('#menyebar').val('');
-        $('#skala_nyeri').val('');
-        $('#durasi').val('');
-        $('#nyeri_hilang').val('');
-        $('#ket_nyeri').val('');
-        $('#pada_dokter').val('');
-        $('#ket_dokter').val('');
-        $('#rencana').val('');
-        $('#nip').val('');
-
-        $("#typeact").val("add");
-        $("#no_rawat").prop('disabled', false);        
-        $('#modal-title').text("Tambah Data Penilaian Awal Keperawatan Rawat Jalan");
-        $("#modal_mlite_penilaian_awal_keperawatan_ralan").modal();
-    }
 
     // ===========================================
     // Ketika tombol lihat data di tekan

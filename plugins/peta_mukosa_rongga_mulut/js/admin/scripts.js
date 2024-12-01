@@ -211,7 +211,7 @@ var no_rawat = rowData['no_rawat'];
 $('#tanggal').val('');
 $('#kelainan').val('');
 $('#gambar').val('');
-$('#nip').val('');
+$('#nip').val('{?=$this->core->getUserInfo('username', null, true)?}');
 
 
         $("#typeact").val("add");
