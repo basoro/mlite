@@ -22,7 +22,36 @@ class Admin extends AdminModule
         $enum['jenis_triase'] = $this->core->getEnum('mlite_triase', 'jenis_triase');
         $enum['kebutuhan_khusus'] = $this->core->getEnum('mlite_triase', 'kebutuhan_khusus');
         $enum['plan'] = $this->core->getEnum('mlite_triase', 'plan');
-        return $this->draw('manage.html', ['enum' => $enum]);
+        $triase_pemeriksaan = $this->db('mlite_triase_pemeriksaan')->toArray();
+        $triase_skala = $this->db('mlite_triase_skala')->toArray();
+        $kode_pemeriksaan['001'] = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', '001')->toArray();
+        $kode_pemeriksaan['002'] = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', '002')->toArray();
+        $kode_pemeriksaan['003'] = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', '003')->toArray();
+        $kode_pemeriksaan['004'] = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', '004')->toArray();
+        $kode_pemeriksaan['005'] = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', '005')->toArray();
+        $kode_pemeriksaan['006'] = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', '006')->toArray();
+        $kode_pemeriksaan['007'] = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', '007')->toArray();
+        $kode_pemeriksaan['008'] = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', '008')->toArray();
+
+        $rows_triase_pemeriksaan = $this->db('mlite_triase_pemeriksaan')->toArray();
+        $skala_pemeriksaan = [];
+        foreach($rows_triase_pemeriksaan as $row) {
+            $rows_kode_pemeriksaan = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', $row['kode_pemeriksaan'])->toArray();
+            $row_['kode'] = $row['kode_pemeriksaan'];
+            $row_['nama_pemeriksaan'] = $row['nama_pemeriksaan'];
+            foreach($rows_kode_pemeriksaan as $row1) {
+                $rows_skala = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', $row_['kode'])->group('skala')->toArray();
+                $row_['skala'] = [];
+                foreach($rows_skala as $row2) {
+                    $row2_['skala'] = $row2['skala'];
+                    $row2_['skala_nilai'] = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', $row_['kode'])->where('skala', $row2['skala'])->toArray();
+                    $row_['skala'][] = $row2_;
+                }
+            }
+            $skala_pemeriksaan[] = $row_;
+        }
+
+        return $this->draw('manage.html', ['enum' => $enum, 'triase_pemeriksaan' => $triase_pemeriksaan, 'kode_pemeriksaan' => $kode_pemeriksaan, 'skala_pemeriksaan' => $skala_pemeriksaan]);
     }
 
     public function postData(){
@@ -127,10 +156,14 @@ $kebutuhan_khusus = $_POST['kebutuhan_khusus'];
 $catatan = $_POST['catatan'];
 $plan = $_POST['plan'];
 $nik = $_POST['nik'];
-
             
             $mlite_triase_add = $this->db()->pdo()->prepare('INSERT INTO mlite_triase VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
             $mlite_triase_add->execute([$no_rawat, $tgl_kunjungan, $cara_masuk, $alat_transportasi, $alasan_kedatangan, $keterangan_kedatangan, $macam_kasus, $tekanan_darah, $nadi, $pernapasan, $suhu, $saturasi_o2, $nyeri, $jenis_triase, $keluhan_utama, $kebutuhan_khusus, $catatan, $plan, $nik]);
+
+            for($l=0; $l < count($_POST['id_skala_triase']); $l++){
+                $mlite_triase_skala = $this->db('mlite_triase_skala')->where('id', $_POST['id_skala_triase'][$l])->oneArray();
+                $mlite_triase_detail = $this->db('mlite_triase_detail')->save(['no_rawat' => $no_rawat, 'skala' => $mlite_triase_skala['skala'], 'kode_skala' => $mlite_triase_skala['kode_skala']]);
+            }
 
         }
         if ($act=="edit") {

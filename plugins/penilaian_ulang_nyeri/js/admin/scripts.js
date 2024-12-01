@@ -386,7 +386,6 @@ var no_rawat = rowData['no_rawat'];
             event.preventDefault();
             {if: $this->core->ActiveModule('jasper')}
                 var loadURL =  baseURL + '/jasper/penilaianulangnyeri/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token;
-                alert(loadURL);
                 $("#modal_detail_mlite_penilaian_ulang_nyeri").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + loadURL + '" frameborder="no" width="100%" height="100%"></iframe></div>');
             {else}
                 bootbox.alert('Cetak PDF tidak bisa dilakukan. Silahkan aktifkan Modul Premium PDF Jasper!');
