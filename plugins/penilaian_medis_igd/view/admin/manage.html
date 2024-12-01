@@ -149,21 +149,21 @@
         <div class="row">
           <form name="form_mlite_penilaian_medis_igd">
           <input type="hidden" class="form-control" id="typeact" /> 
-            <div class='col-md-6'>
+  <div class='col-md-3'>
   <div class='form-group'>
       <label class='form-label' for='no_rawat'>No Rawat</label>
       <input type='text' class='form-control' id='no_rawat' name='no_rawat' />
     <div class='error'></div>
   </div>
   </div>
-  <div class='col-md-6'>
+  <div class='col-md-3'>
   <div class='form-group'>
       <label class='form-label' for='tanggal'>Tanggal</label>
       <input type='datetime-local' class='form-control' id='tanggal' name='tanggal' />
     <div class='error'></div>
   </div>
   </div>
-  <div class='col-md-3'>
+  <div class='col-md-3 hidden'>
   <div class='form-group'>
       <label class='form-label' for='kd_dokter'>Kd Dokter</label>
       <input type='text' class='form-control' id='kd_dokter' name='kd_dokter' />
@@ -182,7 +182,7 @@
     <div class='error'></div>
   </div>
   </div>
-  <div class='col-md-6'>
+  <div class='col-md-3'>
   <div class='form-group'>
       <label class='form-label' for='hubungan'>Hubungan</label>
       <input type='text' class='form-control' id='hubungan' name='hubungan' />
@@ -235,7 +235,7 @@
   <div class='form-group'>
       <label class='form-label' for='keadaan'>Keadaan</label>
       <select name="keadaan" id="keadaan" class="form-control">
-        <option value="'">Select</option>
+        <option value="">Select</option>
         {loop: $enum.keadaan}
         <option value="{$value}">{$value}</option>
         {/loop}
@@ -366,7 +366,7 @@
     <div class='error'></div>
   </div>
   </div>
-  <div class='col-md-3'>
+  <div class='col-md-4'>
   <div class='form-group'>
       <label class='form-label' for='abdomen'>Abdomen</label>
       <select name="abdomen" id="abdomen" class="form-control">
@@ -378,7 +378,7 @@
     <div class='error'></div>
   </div>
   </div>
-  <div class='col-md-3'>
+  <div class='col-md-4'>
   <div class='form-group'>
       <label class='form-label' for='genital'>Genital</label>
       <select name="genital" id="genital" class="form-control">
@@ -390,7 +390,7 @@
     <div class='error'></div>
   </div>
   </div>
-  <div class='col-md-3'>
+  <div class='col-md-4'>
   <div class='form-group'>
       <label class='form-label' for='ekstremitas'>Ekstremitas</label>
       <select name="ekstremitas" id="ekstremitas" class="form-control">
@@ -416,21 +416,21 @@
     <div class='error'></div>
   </div>
   </div>
-  <div class='col-md-6'>
+  <div class='col-md-4'>
   <div class='form-group'>
       <label class='form-label' for='ekg'>Ekg</label>
       <textarea name="ekg" id="ekg" class="form-control"></textarea>
     <div class='error'></div>
   </div>
   </div>
-  <div class='col-md-6'>
+  <div class='col-md-4'>
   <div class='form-group'>
       <label class='form-label' for='rad'>Rad</label>
       <textarea name="rad" id="rad" class="form-control"></textarea>
     <div class='error'></div>
   </div>
   </div>
-  <div class='col-md-6'>
+  <div class='col-md-4'>
   <div class='form-group'>
       <label class='form-label' for='lab'>Lab</label>
       <textarea name="lab" id="lab" class="form-control"></textarea>

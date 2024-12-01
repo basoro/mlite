@@ -291,7 +291,7 @@ $('#durasi').val('');
 $('#nyeri_hilang').val('');
 $('#ket_nyeri').val('');
 $('#manajemen_nyeri').val('');
-$('#nip').val('');
+$('#nip').val('{?=$this->core->getUserInfo('username', null, true)?}');
 
 
         $("#typeact").val("add");

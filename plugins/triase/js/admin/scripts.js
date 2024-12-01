@@ -323,7 +323,7 @@ $('#keluhan_utama').val('');
 $('#kebutuhan_khusus').val('');
 $('#catatan').val('');
 $('#plan').val('');
-$('#nik').val('');
+$('#nik').val('{?=$this->core->getUserInfo('username', null, true)?}');
 
 
         $("#typeact").val("add");

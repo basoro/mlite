@@ -1257,7 +1257,7 @@ $('#skrining_gizi_jam_diketahui_dietisen').val(skrining_gizi_jam_diketahui_dieti
 $('#rencana').val(rencana);
 $('#nip1').val(nip1);
 $('#nip2').val(nip2);
-$('#kd_dokter').val(kd_dokter);
+$('#kd_dokter').val(kd_dokter).change();
 
             //$("#no_rawat").prop('disabled', true); // GA BISA DIEDIT KALI DISABLE
             $('#modal-title').text("Edit Data Penilaian Keperawatan Ranap");
@@ -1489,8 +1489,8 @@ $('#skrining_gizi_diagnosa_khusus').val('');
 $('#skrining_gizi_diketahui_dietisen').val('');
 $('#skrining_gizi_jam_diketahui_dietisen').val('');
 $('#rencana').val('');
-$('#nip1').val('');
-$('#nip2').val('');
+$('#nip1').val('{?=$this->core->getUserInfo('username', null, true)?}');
+$('#nip2').val('{?=$this->core->getUserInfo('username', null, true)?}');
 $('#kd_dokter').val('');
 
 

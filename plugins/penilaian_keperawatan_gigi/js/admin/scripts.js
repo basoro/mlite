@@ -627,7 +627,7 @@ $('#karang_gigi').val('');
 $('#gingiva').val('');
 $('#palatum').val('');
 $('#rencana').val('');
-$('#nip').val('');
+$('#nip').val('{?=$this->core->getUserInfo('username', null, true)?}');
 
 
         $("#typeact").val("add");
