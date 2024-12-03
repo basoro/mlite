@@ -1,0 +1,232 @@
+<style>
+  body {
+    margin: 0 60px 40px 80px;
+    font-size: 16px;
+    font-family: georgia;
+  }
+  input, textarea {
+    font-size: 16px;
+    font-family: georgia;
+  }
+  @media print {
+    font-size: 14px;
+    font-family: georgia;
+  }
+  @media print {
+    #saveButton, #printPageButton {
+      display: none;
+    }
+    textarea {
+      border: none;
+      resize: none;
+    }    
+  }
+  </style>
+<script>
+  function Cetak()
+  {
+      window.print();
+  }  
+  function Simpan()
+  {
+    var url = "{?=url([ADMIN,'oral_diagnostic','simpansuratrujukan'])?}";
+    var no_rawat = "{$no_rawat}";
+    var nomor_surat = $("#nomor_surat").val();
+    var no_rkm_medis = "{$pasien.no_rkm_medis}";
+    var nm_pasien = "{$pasien.nm_pasien}";
+    var tgl_lahir = "{$pasien.tgl_lahir}";
+    var umur = "{?=hitungUmur($pasien.tgl_lahir)?}";
+    var jk = "{$pasien.jk}";
+    var alamat = "{$pasien.alamat}, {$pasien.nm_kel}, {$pasien.nm_kec}, {$pasien.nm_kab}, {$pasien.nm_prop}";
+    var kepada = $("#kepada").val();
+    var di = $("#di").val();
+    var anamnesa = $("#anamnesa").val();
+    var pemeriksaan_fisik =$("#pemeriksaan_fisik").val();
+    var pemeriksaan_penunjang = $("#pemeriksaan_penunjang").val();
+    var diagnosa = $("#diagnosa").val();
+    var terapi = $("#terapi").val();
+    var alasan_dirujuk = $("#alasan_dirujuk").val();
+    var dokter = "{$nm_dokter}";
+    var petugas = "{?=$this->core->getUserInfo('username', $_SESSION['mlite_user'])?}";
+
+    $.post(
+      url, 
+      {
+        nomor_surat: nomor_surat, 
+        no_rawat: no_rawat, 
+        no_rkm_medis: no_rkm_medis, 
+        nm_pasien: nm_pasien, 
+        tgl_lahir: tgl_lahir, 
+        umur: umur, 
+        jk: jk, 
+        alamat: alamat, 
+        kepada: kepada,
+        di: di,
+        anamnesa: anamnesa, 
+        pemeriksaan_fisik: pemeriksaan_fisik, 
+        pemeriksaan_penunjang: pemeriksaan_penunjang, 
+        diagnosa: diagnosa, 
+        terapi: terapi, 
+        alasan_dirujuk: alasan_dirujuk, 
+        dokter: dokter, 
+        petugas: petugas
+      },
+      function(data) {
+        data = JSON.parse(data);
+        console.log(data);
+        if(data.status == 'success') {
+          alert('Sukses');
+        }
+        if(data.status == 'error') {
+          alert(data.msg);
+        }
+      }
+    );
+  }  
+  function auto_grow(element) {
+    element.style.height = "px";
+    element.style.height = (element.scrollHeight) + "px";
+  }  
+</script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
+
+<div style="width:960px;">
+  <table>
+    <thead>
+      <tr>
+        <th>
+          <img src="{?=url()?}/{$settings.logo}" height="100px" style="margin-right: 20px;" alt="">
+        </th>
+        <th colspan="2" width="100%">
+            <p><span style="font-size: 28px;">{$settings.nama_instansi}</span><br>
+            <span style="font-size: 18px;">Alamat: {$settings.alamat} - {$settings.kota} - {$settings.propinsi}</span><br>
+            <span style="font-size: 18px;">Telepon: {$settings.nomor_telepon} - Email: {$settings.email}</span></p>
+        </th>
+      </tr>
+      <tr>
+        <th colspan="3">
+          <hr style="border-bottom: 2px solid #000;padding-top:3px;">
+        </th>
+      </tr>
+    </thead>
+  </table>
+  <center>
+    <h2 style="margin-bottom:0px !important;border-bottom: 2px solid #000;width:250px;">SURAT RUJUKAN</h2>
+    Nomor: <input type="text" class="form-control" name="nomor_surat" id="nomor_surat" value="" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"><br><br>
+  </center>
+  <table>
+    <tbody>
+      <tr>
+        <td colspan="2" width="700">
+        </td>
+        <td width="180">
+          Kepada Yth.<br>
+          Rekan Sejawat<br>
+          <textarea name="kepada" id="kepada" cols="34" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea><br>
+          Di<br>
+          <input type="text" class="form-control" name="di" id="di" value="" style="width: 300px;border: 0;padding:5px;background-color:#eee;">
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" width="100%">
+          Dengan Hormat,<br>
+          Mohon penanganan dan pengobatan lebih lanjut terhadap pasien tersebut dibawah ini.<br>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <table>
+    <tbody>
+      <tr>
+        <td width="200">Nama</td>
+        <td> : </td>
+        <td>{$pasien.nm_pasien}</td>
+      </tr>
+      <tr>
+        <td width="200">Tanggal Lahir / Umur</td>
+        <td> : </td>
+        <td>{$pasien.tgl_lahir} / {?=hitungUmur($pasien.tgl_lahir)?}</td>
+      </tr>
+      <tr>
+        <td width="200">Jenis Kelamin</td>
+        <td> : </td>
+        <td>{if: $pasien.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
+      </tr>
+      <tr>
+        <td width="200">Alamat</td>
+        <td> : </td>
+        <td>{$pasien.alamat}, {$pasien.nm_kel}, {$pasien.nm_kec}, {$pasien.nm_kab}, {$pasien.nm_prop}</td>
+      </tr>
+      <tr>
+        <td colspan="3"><br>Hasil-hasil penatalaksanaan yang telah kami lakukan terhadap pasien tersebut sebagai berikut.</td>
+      </tr>
+      <tr>
+        <td width="200" style="vertical-align: top;">a. Anamnesis</td>
+        <td style="vertical-align: top;"> : </td>
+        <td>
+          <textarea name="anamnesa" id="anamnesa" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td width="200" style="vertical-align: top;">b. Pemeriksaan fisik</td>
+        <td style="vertical-align: top;"> : </td>
+        <td>
+          <textarea name="pemeriksaan_fisik" id="pemeriksaan_fisik" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td width="200" style="vertical-align: top;">c. Pemeriksaan penunjang </td>
+        <td style="vertical-align: top;"> : </td>
+        <td>
+          <textarea name="pemeriksaan_penunjang" id="pemeriksaan_penunjang" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td width="200" style="vertical-align: top;">d. Diagnosis</td>
+        <td style="vertical-align: top;"> : </td>
+        <td>
+          <textarea name="diagnosa" id="diagnosa" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td width="200" style="vertical-align: top;">e. Terapi</td>
+        <td style="vertical-align: top;"> : </td>
+        <td>
+          <textarea name="terapi" id="terapi" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td width="200" style="vertical-align: top;">e. Alasan dirujuk</td>
+        <td style="vertical-align: top;"> : </td>
+        <td>
+          <textarea name="alasan_dirujuk" id="alasan_dirujuk" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3"><br>Demikian surat rujukan ini kami sampaikan. Mohon pengobatan dan perawatan selanjutnya. Atas perhatian dan kerjasamanya kami ucapkan terima kasih.</td>
+      </tr>
+    </tbody>
+  </table>
+  <br><br>
+  <table>
+      <tr>
+        <td colspan="2" width="700">
+        </td>
+        <td width="180">
+          {$settings.kota}, {?=date('Y-m-d')?}<br>
+          Salam Sejawat<br><br>
+          <div id="qrcode_dokter" style="margin-top:10px;width:80px;"></div><br>
+          {$nm_dokter}
+        </td>
+      </tr>
+  </table>
+</div>
+<script>
+  	jQuery('#qrcode_dokter').qrcode({
+  		text	: "Dokter: {$nm_dokter}, SIP: {$sip_dokter}"
+  	});
+</script>
+<br><br>
+<button id="saveButton" onclick="Simpan()">&#9635; Simpan</button> <button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>

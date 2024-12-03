@@ -1,0 +1,48 @@
+<style>
+table th, table td {
+  white-space: nowrap;  
+}  
+</style>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div class="table-responsive no-margin" style="min-height:.01%;overflow-x:auto;">
+      <table class="table table-stripped" width="100%">
+        <thead>
+          <tr>
+            <th>Nomor RM</th>
+            <th>Nama Pasien</th>
+            <th>Tgl. Lahir</th>
+            <th>Jenis Kelamin</th>
+            <th>Alamat</th>
+            <th>No. Telepon</th>
+          </tr>
+        </thead>
+        <tbody>
+          {if: $pasien}
+          {loop: $pasien}
+          <tr class="pilih"
+          data-no_rkm_medis="{$value.no_rkm_medis}"
+          data-nm_pasien="{$value.nm_pasien}"
+          data-tgl_lahir="{$value.tgl_lahir}"
+          data-jk="{if: $value.jk=='L'}Laki-Laki{else}Perempuan{/if}"
+          data-alamat="{$value.alamat}"
+          data-no_tlp="{$value.no_tlp}"
+          data-pekerjaan="{$value.pekerjaan}">
+            <td>{$value.no_rkm_medis}</td>
+            <td>{$value.nm_pasien}</td>
+            <td>{$value.tgl_lahir}</td>
+            <td>{if: $value.jk=='L'}Laki-Laki{else}Perempuan{/if}</td>
+            <td>{$value.alamat}</td>
+            <td>{$value.no_tlp}</td>
+          </tr>
+          {/loop}
+          {else}
+          <tr>
+            <td colspan="7" class="text-center">Pasien tidak ditemukan.</td>
+          </tr>
+          {/if}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
