@@ -1,0 +1,16 @@
+{if: !empty($berkas_digital)}
+<h4>Berkas Digital Perawatan</h4>
+<div class="row">
+    <div class="gallery">
+    {loop: $berkas_digital}
+        <div class="col-sm-6 col-md-6">
+            <div class="thumbnail">
+                <a href="{?=url(WEBAPPS_URL.'/berkasrawat/'.$value.lokasi_file)?}" class="images">
+                    <img src="{?=url(WEBAPPS_URL.'/berkasrawat/'.$value.lokasi_file)?}" class="img-responsive">
+                </a>
+            </div>
+        </div>
+    {/loop}
+    </div>
+</div>
+{/if}

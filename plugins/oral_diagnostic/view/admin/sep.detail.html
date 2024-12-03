@@ -1,0 +1,309 @@
+<style media="screen">
+  table td,
+  table th {
+    padding: 1.5px;
+  }
+</style>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Detail SEP</h4>
+</div>
+<div class="modal-body">
+
+    <table class="sep" width="880" style="font-size:12px;padding:0;border:0px solid #fff;" border="0" padding="0">
+      <tr>
+        <td>
+          <table border="0" padding="0">
+            <tr>
+              <td width="400">
+                <img src="{?=url()?}/plugins/vclaim/img/bpjslogo.png" alt="Image" width="400" height="68">
+              </td>
+              <td width="480">
+                <div style="font-size:26px;text-align:center;font-weight:bold;">
+                  SURAT ELEGIBILITAS PESERTA
+                </div>
+                <div style="font-size:21px;text-align:center;">
+                  {$sep.nmppkpelayanan}
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="400">
+                <b style="font-size:16px;" ><u>{$data_sep.potensi_prb}</u></b>
+              </td>
+              <td width="480">
+                <center>
+                  <img src="{?=url()?}/api/barcode/?codetype=code39&size=60&text={$sep.no_sep}" alt="" width="200px">
+                </center>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="150">
+                No. SEP
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$sep.no_sep}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="150">
+                Tgl. SEP
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$sep.tglsep}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="150">
+                No. Kartu
+              </td>
+              <td>
+                :
+              </td>
+              <td width="350">
+                {$sep.no_kartu} ( MR: {$sep.nomr})
+              </td>
+              <td width="90">
+                Peserta
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$sep.peserta}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="150">
+                Nama Peserta
+              </td>
+              <td>
+                :
+              </td>
+              <td width="350">
+                {$sep.nama_pasien}
+              </td>
+              <td width="90">
+                COB
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$sep.cob}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="150">
+                Tgl. Lahir
+              </td>
+              <td>
+                :
+              </td>
+              <td width="350">
+                {$sep.tanggal_lahir} Kelamin: {$sep.jkel}
+              </td>
+              <td width="90">
+                Jns. Rawat
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {if: $sep.jnspelayanan == 2}R.Jalan{else}R.Inap{/if}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="150">
+                No. Telepon
+              </td>
+              <td>
+                :
+              </td>
+              <td width="350">
+                {$sep.notelep}
+              </td>
+              <td width="90">
+                Kls. Rawat
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$print_sep.kelas_naik}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="150">
+                Spesialis/Sub Spesialis
+              </td>
+              <td>
+                :
+              </td>
+              <td width="350">
+                {$sep.nmpolitujuan}
+              </td>
+              <td width="90">
+                Kls. Hak
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                Kelas {$sep.klsrawat}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="150">
+                DPJP Yg Melayani
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$sep.nmdpdjp}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="150">
+                Faskes Perujuk
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$sep.nmppkrujukan}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="150">
+                Diagnosa Awal
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$sep.nmdiagnosaawal}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="150" valign="top">
+                Catatan
+              </td>
+              <td valign="top">
+                :
+              </td>
+              <td width="450" valign="top">
+                {$sep.catatan}
+              </td>
+              <td width="200" halign="center" valign="bottom">
+                Pasien/Keluarga Pasien
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="610" height="0">
+                <br>
+                <i style="font-size:9px;">
+                  *Saya Menyetujui BPJS Kesehatan menggunakan informasi Medis Pasien jika diperlukan.<br>
+                  **SEP bukan sebagai bukti penjaminan peserta<br>
+                  Cetakan ke 1 {?=date("d/m/Y H:i:s A")?}<br>
+                  Masa berlaku {$sep.tglrujukan} s/d {$print_sep.batas_rujukan}
+                </i>
+              </td>
+              <td valign="bottom" halign="center" padding="0" margin="0">
+                {$sep.nama_pasien}<br>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
