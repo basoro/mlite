@@ -564,29 +564,6 @@ eTable += '<td>' + res[i]['tata'] + '</td>';
             alert("Pilih satu baris untuk detail");
         }
     });
-       
-    jQuery("#lihat_detail_mlite_penilaian_medis_igd2").click(function (event) {
-
-        var rowData = var_tbl_mlite_penilaian_medis_igd.rows({ selected: true }).data()[0];
-
-        if (rowData) {
-            var no_rawat = rowData['no_rawat'];
-            var baseURL = mlite.url + '/' + mlite.admin;
-            event.preventDefault();
-            {if: $this->core->ActiveModule('jasper')}
-                var loadURL =  baseURL + '/jasper/awalmedisigd/' + no_rawat.replace(/\//g,'') + '?t=' + mlite.token;
-                $("#modal_detail_mlite_penilaian_medis_igd").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + loadURL + '" frameborder="no" width="100%" height="100%"></iframe></div>');
-            {else}
-                bootbox.alert('Cetak PDF tidak bisa dilakukan. Silahkan aktifkan Modul Premium PDF Jasper!');
-            {/if}
-
-            return false;
-        
-        }
-        else {
-            alert("Pilih satu baris untuk detail");
-        }
-    });
 
     // ===========================================
     // Ketika tombol export pdf di tekan
