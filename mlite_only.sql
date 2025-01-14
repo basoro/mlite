@@ -1324,8 +1324,7 @@ VALUES
 	(154,'settings','password_fp',''),
 	(155,'settings','username_frista',''),
 	(156,'settings','password_frista',''),
-	(157,'settings','billing_obat','false'),
-	(158,'settings','instansi_induk','false');
+	(157,'settings','billing_obat','false');
 
 /*!40000 ALTER TABLE `mlite_settings` ENABLE KEYS */;
 UNLOCK TABLES;

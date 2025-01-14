@@ -37,6 +37,13 @@
               {/if}
               <li><a href="#cover_rm" data-no_rkm_medis="{$value.no_rkm_medis}">Cover Rekam Medis</a></li>
               <li><a href="#identitas_pasien" data-no_rkm_medis="{$value.no_rkm_medis}">Identitas Pasien</a></li>
+              <li class="dropdown-submenu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Pendaftaran</a>
+                <ul class="dropdown-menu">
+                  <li><a href="{?=url([ADMIN,'igd','manage'])?}&no_rkm_medis={$value.no_rkm_medis}">IGD / UGD</a></li>
+                  <li><a href="{?=url([ADMIN,'rawat_jalan','manage'])?}&no_rkm_medis={$value.no_rkm_medis}">Poliklinik / Rawat Jalan</a></li>
+                </ul>
+              </li>              
               <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
               <li><a href="{?=url([ADMIN, 'pasien', 'folder', $value.no_rkm_medis])?}">Folder Berkas Digital</a></li>
             </ul>
