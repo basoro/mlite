@@ -3186,7 +3186,8 @@ VALUES
 	(154,'settings','password_fp',''),
 	(155,'settings','username_frista',''),
 	(156,'settings','password_frista',''),
-	(157,'settings','billing_obat','false');
+	(157,'settings','billing_obat','false'),
+	(158,'settings','prefix_surat','RS');
 
 /*!40000 ALTER TABLE `mlite_settings` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -5292,6 +5293,9 @@ CREATE TABLE `utd_stok_darah` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+CREATE TABLE `mlite_set_nomor_surat` (
+  `nomor_surat` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;

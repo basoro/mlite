@@ -1324,7 +1324,8 @@ VALUES
 	(154,'settings','password_fp',''),
 	(155,'settings','username_frista',''),
 	(156,'settings','password_frista',''),
-	(157,'settings','billing_obat','false');
+	(157,'settings','billing_obat','false'),
+	(158,'settings','prefix_surat','RS');
 
 /*!40000 ALTER TABLE `mlite_settings` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -1705,3 +1706,6 @@ CREATE TABLE `mlite_veronisa_feedback` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `mlite_set_nomor_surat` (
+  `nomor_surat` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

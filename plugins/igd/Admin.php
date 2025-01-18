@@ -876,6 +876,7 @@ class Admin extends AdminModule
         $this->tpl->set('no_rawat', revertNoRawat($no_rawat));
         $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($this->settings('settings'))));
         $this->tpl->set('surat', $this->db('mlite_surat_rujukan')->where('no_rawat', revertNoRawat($no_rawat))->oneArray());
+        $this->tpl->set('nomor_surat', $this->db('mlite_set_nomor_surat')->select('nomor_surat')->oneArray()['nomor_surat'].'/'.$this->settings->get('settings.prefix_surat').'/'.getRomawi(date('m')).'/'.date('Y'));
         echo $this->tpl->draw(MODULES.'/igd/view/admin/surat.rujukan.html', true);
         exit();
     }
@@ -899,6 +900,7 @@ class Admin extends AdminModule
         $this->tpl->set('no_rawat', revertNoRawat($no_rawat));
         $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($this->settings('settings'))));
         $this->tpl->set('surat', $this->db('mlite_surat_sehat')->where('no_rawat', revertNoRawat($no_rawat))->oneArray());
+        $this->tpl->set('nomor_surat', $this->db('mlite_set_nomor_surat')->select('nomor_surat')->oneArray()['nomor_surat'].'/'.$this->settings->get('settings.prefix_surat').'/'.getRomawi(date('m')).'/'.date('Y'));
         echo $this->tpl->draw(MODULES.'/igd/view/admin/surat.sehat.html', true);
         exit();
     }
@@ -922,6 +924,7 @@ class Admin extends AdminModule
         $this->tpl->set('no_rawat', revertNoRawat($no_rawat));
         $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($this->settings('settings'))));
         $this->tpl->set('surat', $this->db('mlite_surat_sakit')->where('no_rawat', revertNoRawat($no_rawat))->oneArray());
+        $this->tpl->set('nomor_surat', $this->db('mlite_set_nomor_surat')->select('nomor_surat')->oneArray()['nomor_surat'].'/'.$this->settings->get('settings.prefix_surat').'/'.getRomawi(date('m')).'/'.date('Y'));
         echo $this->tpl->draw(MODULES.'/igd/view/admin/surat.sakit.html', true);
         exit();
     }
@@ -949,6 +952,10 @@ class Admin extends AdminModule
       ]);
 
       if($query) {
+        $nomor_surat = ltrim($this->db('mlite_set_nomor_surat')->select('nomor_surat')->oneArray()['nomor_surat']);
+        $nomor_surat = sprintf('%03s', ($nomor_surat + 1));
+        $this->db('mlite_set_nomor_surat')->delete();
+        $this->db('mlite_set_nomor_surat')->save(['nomor_surat' => $nomor_surat]);
         $data['status'] = 'success';
         echo json_encode($data);
       } else {
@@ -984,6 +991,10 @@ class Admin extends AdminModule
       ]);
 
       if($query) {
+        $nomor_surat = ltrim($this->db('mlite_set_nomor_surat')->select('nomor_surat')->oneArray()['nomor_surat']);
+        $nomor_surat = sprintf('%03s', ($nomor_surat + 1));
+        $this->db('mlite_set_nomor_surat')->delete();
+        $this->db('mlite_set_nomor_surat')->save(['nomor_surat' => $nomor_surat]);
         $data['status'] = 'success';
         echo json_encode($data);
       } else {
@@ -1020,6 +1031,10 @@ class Admin extends AdminModule
       ]);
 
       if($query) {
+        $nomor_surat = ltrim($this->db('mlite_set_nomor_surat')->select('nomor_surat')->oneArray()['nomor_surat']);
+        $nomor_surat = sprintf('%03s', ($nomor_surat + 1));
+        $this->db('mlite_set_nomor_surat')->delete();
+        $this->db('mlite_set_nomor_surat')->save(['nomor_surat' => $nomor_surat]);
         $data['status'] = 'success';
         echo json_encode($data);
       } else {
