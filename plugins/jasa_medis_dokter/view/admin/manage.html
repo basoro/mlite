@@ -1,0 +1,127 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-6 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_dokter' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Lihat Data dokter' style='color:white;'>
+                          <i class='fa fa-eye' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <form action="">
+                            <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                            <span class="input-group-addon" style="width:50%;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                              <select name="search" id="search" class="form-control">
+                                <option value="">Select</option>
+                                {loop: $dokter} 
+                                  <option value="{$value.kd_dokter}" {if: $_GET['search'] == $value.kd_dokter}selected{/if}>{$value.nm_dokter}</option>
+                                {/loop}
+                              </select>
+                            </span>
+                            <span class="input-group-addon" style="width:50px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                              <input class='form-control periode_tanggal' name='tgl_awal' id='tgl_awal' value="{?=isset_or($_GET['tgl_awal'], date('Y-m-d'))?}" type='search' placeholder='Tanggal Awal' />                              
+                            </span>
+                            <span class="input-group-addon" style="width:50px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                              <input class='form-control periode_tanggal' name='tgl_akhir' id='tgl_akhir' value="{?=isset_or($_GET['tgl_akhir'], date('Y-m-d'))?}" type='search' placeholder='Tanggal Akhir' />                              
+                            </span>
+                            <span class="input-group-addon" style="margin: 0;padding: 0;">
+                              <input type="submit" class="form-control btn-primary" value="Go">
+                            </span>
+                          </form>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th width="250">Dokter</th>
+                            <th>Detail</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                          {loop: isset_or($jasa_medis.dokter, [])}
+                          <tr>
+                            <td>{$value.nm_dokter}</td>
+                            <td></td>
+                          </tr>
+                          {loop: isset_or($value.rawat_jl_dr, []) as $data}
+                          <tr>
+                            <td></td>
+                            <td>Tanggal : {$data.tgl_perawatan}</td>
+                          </tr>
+                          {loop: isset_or($data.detail, []) as $hasil}
+                          <tr>
+                            <td></td>
+                            <td>- {$hasil.nm_perawatan} : Rp. {?=number_format($hasil.tarif_tindakandr,0,',','.')?}</td>
+                          </tr>
+                          {/loop}
+                          <tr>
+                            <td></td>
+                            <td><i>Sub Total : Rp. {?=number_format($data.subtotal,0,',','.')?}</i></td>
+                          </tr>
+                          {/loop}
+                          <tr>
+                            <td></td>
+                            <td><b>Total : Rp. {?=number_format($value.total,0,',','.')?}</b></td>
+                          </tr>
+                          {/loop}
+                          <tr>
+                            <td><b>Grand Total</b></td>
+                            <td><b>Rp. {?=number_format($jasa_medis.grandtotal,0,',','.')?}</b></td>
+                          </tr>
+                        </tbody>
+                    </table>
+                </div>        
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal_lihat_dokter" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Jasa Medis Dokter</span>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_dokter"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+        <button type="submit" id="export_pdf" class="btn btn-primary">
+          <i class="fa fa-file-pdf-o"></i>&nbsp;PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-primary">
+          <i class="fa fa-file-excel-o"></i>&nbsp;XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_dokter" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(function () {
+      $('.periode_tanggal').datetimepicker({
+        defaultDate: '{?=date('Y-m-d')?}',
+        format: 'YYYY-MM-DD',
+        locale: 'id'
+      });
+  });
+</script>
