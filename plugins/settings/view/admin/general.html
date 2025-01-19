@@ -14,10 +14,6 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Instansi Induk</label>
-                        <input type="text" name="instansi_induk" class="form-control" value="{$settings.instansi_induk}" required />
-                    </div>
-                    <div class="form-group">
                         <label>Nama Instansi</label>
                         <input type="text" name="nama_instansi" class="form-control" value="{$settings.nama_instansi}" required />
                     </div>
@@ -247,6 +243,14 @@
                     <div class="form-group">
                         <label>Set Nomor RM Terakhir</label>
                         <input type="text" name="set_no_rkm_medis" class="form-control" value="{$set_no_rkm_medis.no_rkm_medis}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Prefix Surat Keterangan</label>
+                        <input type="text" name="prefix_surat" class="form-control" value="{$settings.prefix_surat}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Set Nomor Surat Terakhir</label>
+                        <input type="text" name="set_nomor_surat" class="form-control" value="{$set_nomor_surat.nomor_surat}" />
                     </div>
                     {if: $settings.bridging_sep}
                     <div class="form-group">

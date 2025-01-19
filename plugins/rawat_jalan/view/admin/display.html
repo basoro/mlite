@@ -78,7 +78,19 @@
               {if: $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
               disabled
               {/if}
-            ><span class="fa fa-print"></span> {$value.no_reg}</button> {if: $responsivevoice == 'true'}<button type="button" name="button" class="btn btn-xs btn-primary panggil" data-nm_pasien="{?=strtolower($value.nm_pasien)?}" data-nm_poli="{?=strtolower($value.nm_poli)?}" data-no_reg="{?=strtolower($value.no_reg)?}"><i class="fa fa-bullhorn"></i><span class="hidden-xs hidden-sm"> Panggil</span></button>{/if}</td>
+            ><span class="fa fa-print"></span> {$value.no_reg}</button> 
+            {if: $value.kd_pj == 'BPJ'}
+              {if: $cek_pcare}
+                <button class="badge progress-bar-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fa fa-send"></span> Antrian</button>
+                <ul class="dropdown-menu" aria-labelledby="about-us">
+                  <li><a href="#" onclick="addAntrian('{$value.no_rkm_medis}')">Add Antrian</a></li>
+                  <li><a href="#" onclick="panggilAntrian('{$value.no_rkm_medis}')">Panggil Antrian</a></li>
+                  <li><a href="#" onclick="batalAntrian('{$value.no_rkm_medis}')">Batal Antrian</a></li>
+                </ul>                
+              {/if}
+            {/if}
+            {if: $responsivevoice == 'true'}<button type="button" name="button" class="btn btn-xs btn-primary panggil" data-nm_pasien="{?=strtolower($value.nm_pasien)?}" data-nm_poli="{?=strtolower($value.nm_poli)?}" data-no_reg="{?=strtolower($value.no_reg)?}"><i class="fa fa-bullhorn"></i><span class="hidden-xs hidden-sm"> Panggil</span></button>{/if}
+          </td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.nm_poli}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.nm_dokter}</td>
           <td style="white-space: nowrap;">
@@ -100,7 +112,9 @@
               </div>
             {/if}
             {if: $cek_pcare}
-              <button type="button" name="button" class="btn btn-xs btn-info bridgingpcare"
+              BPJS 
+              {if: preg_match('/\bBPJS\b/', $value.png_jawab)}<a href="#" class="pendaftaranpcare" data-no_rkm_medis="{$value.no_rkm_medis}" data-tgl_registrasi="{$value.tgl_registrasi}"><button class="badge progress-bar-warning"><span class="fa fa-plus"></span><span class="hidden-xs"> Daftar</span></button></a>{/if}
+              <button type="button" name="button" class="badge progress-bar-info bridgingpcare"
                 data-no_rkm_medis="{$value.no_rkm_medis}"
                 data-nm_pasien="{$value.nm_pasien}"
                 data-no_rawat="{$value.no_rawat}"
@@ -109,7 +123,7 @@
                 {if: $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
                 disabled
                 {/if}
-              ><span class="fa fa-refresh"></span> BPJS</button>
+              ><span class="fa fa-refresh"></span> Kunjungan</button>
             {/if}
           {else}
             {$value.png_jawab}
@@ -153,6 +167,13 @@
             ...
         </div>
     </div>
+</div>
+<div class="modal fade" id="pendaftaranpcareModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+          ...
+      </div>
+  </div>
 </div>
 <div class="modal fade" id="bridgingpcareModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
@@ -577,6 +598,76 @@
     }).modal();
     return false;
   });
+  $("#display").on("click",".pendaftaranpcare", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var tgl_registrasi = $(this).attr("data-tgl_registrasi");
+    var loadURL =  baseURL + '/pcare/pendaftaranpcare/' + no_rkm_medis + '/' + tgl_registrasi + '?t=' + mlite.token;
+
+    var modal = $('#pendaftaranpcareModal');
+    var modalContent = $('#pendaftaranpcareModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+	function addAntrian(no_rkm_medis){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var loadURL =  baseURL + '/jkn_mobile_fktp/antroladdantrian/' + no_rkm_medis + '?t=' + mlite.token;
+    // alert(loadURL);
+    fetch(loadURL)
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Network response was not ok');
+			}
+			return response.json();
+		})
+		.then(data => {
+			alert(data.metaData.message);
+		})
+		.catch(error => {
+			alert('There was a problem with the fetch operation:');
+		});
+	}  
+	function panggilAntrian(no_rkm_medis){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var loadURL =  baseURL + '/jkn_mobile_fktp/antrolpanggilantrian/' + no_rkm_medis + '?t=' + mlite.token;
+    // alert(loadURL);
+    fetch(loadURL)
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Network response was not ok');
+			}
+			return response.json();
+		})
+		.then(data => {
+			alert(data.metaData.message);
+		})
+		.catch(error => {
+			alert('There was a problem with the fetch operation:');
+		});
+	}  
+	function batalAntrian(no_rkm_medis){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var loadURL =  baseURL + '/jkn_mobile_fktp/antrolbatalantrian/' + no_rkm_medis + '?t=' + mlite.token;
+    // alert(loadURL);
+    fetch(loadURL)
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Network response was not ok');
+			}
+			return response.json();
+		})
+		.then(data => {
+			alert(data.metaData.message);
+		})
+		.catch(error => {
+			alert('There was a problem with the fetch operation:');
+		});
+	}  
 </script>
 <script type="text/javascript">
   $("#display").on("click",".dirujuk", function(event){

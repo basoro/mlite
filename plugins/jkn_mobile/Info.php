@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul mLITE JKN Mobile API',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '4.*.*',
+    'compatibility' =>  '5.*.*',
     'icon'          =>  'tasks',
     'pages'         =>  ['JKN Mobile' => 'jknmobile'],
     'install'       =>  function () use ($core) {

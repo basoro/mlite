@@ -35,8 +35,13 @@
                 <li><a href="{?=url([ADMIN, 'pasien', 'pcare_bynokartu', 'noka', $value.no_peserta])?}" data-toggle="modal" data-target="#asuransiModal">[PCare] Cek Nomor Kartu</a></li>
                 <li><a href="{?=url([ADMIN, 'pasien', 'pcare_bynik', 'nik', $value.no_ktp])?}" data-toggle="modal" data-target="#asuransiModal">[PCare] Cek Nomor KTP</a></li>
               {/if}
-              <li><a href="#cover_rm" data-no_rkm_medis="{$value.no_rkm_medis}">Cover Rekam Medis</a></li>
-              <li><a href="#identitas_pasien" data-no_rkm_medis="{$value.no_rkm_medis}">Identitas Pasien</a></li>
+              <li class="dropdown-submenu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Pendaftaran</a>
+                <ul class="dropdown-menu">
+                  <li><a href="{?=url([ADMIN,'igd','manage'])?}&no_rkm_medis={$value.no_rkm_medis}">IGD / UGD</a></li>
+                  <li><a href="{?=url([ADMIN,'rawat_jalan','manage'])?}&no_rkm_medis={$value.no_rkm_medis}">Poliklinik / Rawat Jalan</a></li>
+                </ul>
+              </li>              
               <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
               <li><a href="{?=url([ADMIN, 'pasien', 'folder', $value.no_rkm_medis])?}">Folder Berkas Digital</a></li>
             </ul>
@@ -152,35 +157,6 @@
 
 		return false;
   });
-  $('a[href="#cover_rm"]').click(function(event){
-    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var loadURL =  baseURL + '/jasper/coverrm/' + no_rkm_medis + '?t=' + mlite.token;
-    {if: $this->core->ActiveModule('jasper')}
-      $("#modal_cetak_cover_rm").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + loadURL + '" frameborder="no" width="100%" height="100%"></iframe></div>');
-    {else}
-        bootbox.alert('Cetak PDF tidak bisa dilakukan. Silahkan aktifkan Modul Premium PDF Jasper!');
-    {/if}
-
-    return false;
-
-  });
-
-  $('a[href="#identitas_pasien"]').click(function(event){
-    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var loadURL =  baseURL + '/jasper/identitaspasien/' + no_rkm_medis + '?t=' + mlite.token;
-    {if: $this->core->ActiveModule('jasper')}
-      $("#modal_cetak_identitas_pasien").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + loadURL + '" frameborder="no" width="100%" height="100%"></iframe></div>');
-    {else}
-        bootbox.alert('Cetak PDF tidak bisa dilakukan. Silahkan aktifkan Modul Premium PDF Jasper!');
-    {/if}
-
-    return false;
-
-  });      
   $("#btn_export_xls").click(function() {
     alert('btn_export_xls');
     var baseURL = mlite.url + '/' + mlite.admin;

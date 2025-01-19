@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul apotek rawat inap untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '4.*.*',
+    'compatibility' =>  '5.*.*',
     'icon'          =>  'shopping-cart',
     'install'       =>  function () use ($core) {
     },

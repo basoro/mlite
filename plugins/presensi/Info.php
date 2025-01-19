@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul presensi',
     'author'        =>  'Basoro.ID',
     'version'       =>  '1.2',
-    'compatibility' =>  '4.*.*',
+    'compatibility' =>  '5.*.*',
     'icon'          =>  'user-o',
     'install'       =>  function () use ($core) {
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('presensi', 'lat', '-2.58')");

@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul Keuangan untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '4.*.*',
+    'compatibility' =>  '5.*.*',
     'icon'          =>  'money',
     'install'       =>  function () use ($core) {
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'jurnal_kasir', '0')");

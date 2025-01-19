@@ -38,8 +38,14 @@
                           </select>
                           </span>
                           <input class='form-control' name='search_text_riwayat_barang_medis' id='search_text_riwayat_barang_medis' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-addon" style="width:110px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                            <input class='form-control periode_tanggal' name='tgl_awal' id='tgl_awal' value="{?=date('Y-m-d')?}" type='search' placeholder='Tanggal Awal' />                              
+                          </span>
+                          <span class="input-group-addon" style="width:110px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                            <input class='form-control periode_tanggal' name='tgl_akhir' id='tgl_akhir' value="{?=date('Y-m-d')?}" type='search' placeholder='Tanggal Akhir' />                              
+                          </span>
                           <span class="input-group-addon">
-                          <span id='searchclear_riwayat_barang_medis' data-toggle='tooltip' data-placement='top' title='Clear'><i class="fa fa-times text-danger"></i></span>
+                          <span id='searchclear_riwayat_barang_medis' data-toggle='tooltip' data-placement='top' title='Clear'><i class="fa fa-search text-danger"></i></span>
                           </span>
                       </div>
                     </div>
@@ -107,3 +113,13 @@
     </div>
   </div>
 </div>
+
+<script type="text/javascript">
+  $(function () {
+      $('.periode_tanggal').datetimepicker({
+        defaultDate: '{?=date('Y-m-d')?}',
+        format: 'YYYY-MM-DD',
+        locale: 'id'
+      });
+  });
+</script>

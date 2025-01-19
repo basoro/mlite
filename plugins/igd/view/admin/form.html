@@ -105,23 +105,35 @@
   </div>
 </div>
 <script type="text/javascript">
+  
+  let searchParams = new URLSearchParams(window.location.search)
+  if(window.location.search.indexOf('no_rkm_medis') !== -1) { 
+      $('input:text[name=pasien]').val(searchParams.get('no_rkm_medis'));
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var url    = baseURL + '/igd/pasien?t=' + mlite.token;
+      var cari = $('input:text[name=pasien]').val();
+      $.post(url, {cari: cari} ,function(data) {
+        $("#pasien").html(data).show();
+      });
+  }
+
   $('select').selectator();
   // ketika inputbox pencarian no rm/nama pasien diisi
   $('input:text[name=pasien]').on('keydown',function(e){
     var baseURL = mlite.url + '/' + mlite.admin;
     if(event.which==13){
-    var url    = baseURL + '/igd/pasien?t=' + mlite.token;
-    var cari = $('input:text[name=pasien]').val();
+      var url    = baseURL + '/igd/pasien?t=' + mlite.token;
+      var cari = $('input:text[name=pasien]').val();
 
-    if(cari!="") {
-        $.post(url, {cari: cari} ,function(data) {
-        // tampilkan data yang sudah di perbaharui
-          $("#pasien").html(data).show();
-        });
-    }
-    else {
-        $("#pasien").hide();
-    }
+      if(cari!="") {
+          $.post(url, {cari: cari} ,function(data) {
+          // tampilkan data yang sudah di perbaharui
+            $("#pasien").html(data).show();
+          });
+      }
+      else {
+          $("#pasien").hide();
+      }
     }
   });
   // ketika baris data diklik

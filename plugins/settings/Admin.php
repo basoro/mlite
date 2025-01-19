@@ -90,6 +90,7 @@ class Admin extends AdminModule
         $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
         $this->tpl->set('url', url([ADMIN, 'settings', 's']));
         $this->tpl->set('set_no_rkm_medis', $this->db('set_no_rkm_medis')->oneArray());
+        $this->tpl->set('set_nomor_surat', $this->db('mlite_set_nomor_surat')->oneArray());
 
         return $this->draw('general.html');
     }
@@ -145,6 +146,11 @@ class Admin extends AdminModule
         if($_POST['set_no_rkm_medis']) {
             $this->db('set_no_rkm_medis')->delete();
             $this->db('set_no_rkm_medis')->save(['no_rkm_medis' => $_POST['set_no_rkm_medis']]);
+        }
+
+        if($_POST['set_nomor_surat']) {
+            $this->db('mlite_set_nomor_surat')->delete();
+            $this->db('mlite_set_nomor_surat')->save(['nomor_surat' => $_POST['set_nomor_surat']]);
         }
         
         if (!$errors) {

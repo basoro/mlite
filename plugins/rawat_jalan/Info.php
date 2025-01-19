@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul pendaftaran layanan untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '4.*.*',
+    'compatibility' =>  '5.*.*',
     'icon'          =>  'wheelchair',
     'install'       =>  function () use ($core) {
     },

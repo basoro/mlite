@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul Radiologi untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '4.*.*',
+    'compatibility' =>  '5.*.*',
     'icon'          =>  'film',
     'install'       =>  function () use ($core) {
       if (!is_dir(UPLOADS."/radiologi")) {

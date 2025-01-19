@@ -17,9 +17,13 @@ jQuery().ready(function () {
                 // Read values
                 var search_field_riwayat_barang_medis = $('#search_field_riwayat_barang_medis').val();
                 var search_text_riwayat_barang_medis = $('#search_text_riwayat_barang_medis').val();
+                var tgl_awal = $('#tgl_awal').val();
+                var tgl_akhir = $('#tgl_akhir').val();
                 
                 data.search_field_riwayat_barang_medis = search_field_riwayat_barang_medis;
                 data.search_text_riwayat_barang_medis = search_text_riwayat_barang_medis;
+                data.tgl_awal = tgl_awal;
+                data.tgl_akhir = tgl_akhir;
                 
             }
         },
@@ -73,14 +77,14 @@ jQuery().ready(function () {
     // ==============================================================
     // KETIKA MENGETIK DI INPUT SEARCH
     // ==============================================================
-    $('#search_text_riwayat_barang_medis').keyup(function () {
-        var_tbl_riwayat_barang_medis.draw();
-    });
+    // $('#search_text_riwayat_barang_medis').keyup(function () {
+    //     var_tbl_riwayat_barang_medis.draw();
+    // });
     // ==============================================================
     // CLICK TANDA X DI INPUT SEARCH
     // ==============================================================
     $("#searchclear_riwayat_barang_medis").click(function () {
-        $("#search_text_riwayat_barang_medis").val("");
+        // $("#search_text_riwayat_barang_medis").val("");
         var_tbl_riwayat_barang_medis.draw();
     });
 
@@ -93,13 +97,18 @@ jQuery().ready(function () {
         var search_field_riwayat_barang_medis = $('#search_field_riwayat_barang_medis').val();
         var search_text_riwayat_barang_medis = $('#search_text_riwayat_barang_medis').val();
 
+        var tgl_awal = $('#tgl_awal').val();
+        var tgl_akhir = $('#tgl_akhir').val();
+        
         $.ajax({
             url: "{?=url([ADMIN,'riwayat_barang_medis','aksi'])?}",
             method: "POST",
             data: {
                 typeact: 'lihat', 
                 search_field_riwayat_barang_medis: search_field_riwayat_barang_medis, 
-                search_text_riwayat_barang_medis: search_text_riwayat_barang_medis
+                search_text_riwayat_barang_medis: search_text_riwayat_barang_medis, 
+                tgl_awal: tgl_awal, 
+                tgl_akhir: tgl_akhir
             },
             dataType: 'json',
             success: function (res) {

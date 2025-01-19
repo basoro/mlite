@@ -5,7 +5,7 @@
         'description'   =>  'Modul mlite peta mukosa rongga mulut untuk mLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
-        'compatibility' =>  '4.*.*',
+        'compatibility' =>  '5.*.*',
         'icon'          =>  'code',
         'install'       =>  function () use ($core) {
         },

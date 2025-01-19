@@ -2249,6 +2249,44 @@ CREATE TABLE `mlite_ohis` (
 
 
 
+# Dump of table mlite_pendaftaran_oral_diagnostic
+# ------------------------------------------------------------
+
+CREATE TABLE `mlite_pendaftaran_oral_diagnostic` (
+  `no_reg` varchar(8) DEFAULT NULL,
+  `no_rawat` varchar(17) NOT NULL,
+  `tgl_registrasi` date DEFAULT NULL,
+  `jam_reg` time DEFAULT NULL,
+  `kd_dokter` varchar(20) DEFAULT NULL,
+  `no_rkm_medis` varchar(15) DEFAULT NULL,
+  `kd_poli` char(5) DEFAULT NULL,
+  `p_jawab` varchar(100) DEFAULT NULL,
+  `almt_pj` varchar(200) DEFAULT NULL,
+  `hubunganpj` varchar(20) DEFAULT NULL,
+  `biaya_reg` double DEFAULT NULL,
+  `stts` enum('Belum','Sudah','Batal','Berkas Diterima','Dirujuk','Meninggal','Dirawat','Pulang Paksa') DEFAULT NULL,
+  `stts_daftar` enum('-','Lama','Baru') NOT NULL,
+  `status_lanjut` enum('Ralan','Ranap') NOT NULL,
+  `kd_pj` char(3) NOT NULL,
+  `umurdaftar` int(11) DEFAULT NULL,
+  `sttsumur` enum('Th','Bl','Hr') DEFAULT NULL,
+  `status_bayar` enum('Sudah Bayar','Belum Bayar') NOT NULL,
+  `status_poli` enum('Lama','Baru') NOT NULL,
+  PRIMARY KEY (`no_rawat`),
+  KEY `no_rkm_medis` (`no_rkm_medis`),
+  KEY `kd_poli` (`kd_poli`),
+  KEY `kd_pj` (`kd_pj`),
+  KEY `status_lanjut` (`status_lanjut`),
+  KEY `kd_dokter` (`kd_dokter`),
+  KEY `status_bayar` (`status_bayar`) USING BTREE,
+  CONSTRAINT `mlite_pendaftaran_oral_diagnostic_ibfk_3` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `mlite_pendaftaran_oral_diagnostic_ibfk_4` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `mlite_pendaftaran_oral_diagnostic_ibfk_6` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON UPDATE CASCADE,
+  CONSTRAINT `mlite_pendaftaran_oral_diagnostic_ibfk_7` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
 # Dump of table mlite_pengaduan
 # ------------------------------------------------------------
 
@@ -3025,7 +3063,7 @@ VALUES
 	(31,'settings','admin_mode','complex'),
 	(32,'settings','input_kasir','tidak'),
 	(33,'settings','editor','wysiwyg'),
-	(34,'settings','version','4.1.8'),
+	(34,'settings','version','5.0.0'),
 	(35,'settings','update_check','0'),
 	(36,'settings','update_changelog',''),
 	(37,'settings','update_version','0'),
@@ -3148,7 +3186,10 @@ VALUES
 	(154,'settings','password_fp',''),
 	(155,'settings','username_frista',''),
 	(156,'settings','password_frista',''),
-	(157,'settings','billing_obat','false');
+	(157,'settings','billing_obat','false'),
+	(158,'settings','prefix_surat','RS'),
+	(159,'farmasi','keterangan_etiket',''),
+	(160,'pcare','consumerUserKeyAntrol','');
 
 /*!40000 ALTER TABLE `mlite_settings` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -5254,6 +5295,9 @@ CREATE TABLE `utd_stok_darah` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+CREATE TABLE `mlite_set_nomor_surat` (
+  `nomor_surat` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;

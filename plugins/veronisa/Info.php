@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul Verifikasi Obat Kronis',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '4.*.*',
+    'compatibility' =>  '5.*.*',
     'icon'          =>  'medkit',
     'install'       =>  function () use ($core) {
 

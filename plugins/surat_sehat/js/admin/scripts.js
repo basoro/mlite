@@ -326,27 +326,17 @@ $('#petugas').val('');
             },
             dataType: 'json',
             success: function (res) {
-                var eTable = "<div class='table-responsive'><table id='tbl_lihat_mlite_surat_sehat' class='table display dataTable' style='width:100%'><thead><th>Id</th><th>Nomor Surat</th><th>No Rawat</th><th>No Rkm Medis</th><th>Nm Pasien</th><th>Tgl Lahir</th><th>Umur</th><th>Jk</th><th>Alamat</th><th>Tanggal</th><th>Berat Badan</th><th>Tinggi Badan</th><th>Tensi</th><th>Gol Darah</th><th>Riwayat Penyakit</th><th>Keperluan</th><th>Dokter</th><th>Petugas</th></thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_mlite_surat_sehat' class='table display dataTable' style='width:100%'><thead><th>Nomor Surat</th><th>No Rawat</th><th>Nm Pasien</th><th>Tgl Lahir</th><th>Umur</th><th>Jk</th><th>Keperluan</th><th>Dokter</th></thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
-                    eTable += '<td>' + res[i]['id'] + '</td>';
 eTable += '<td>' + res[i]['nomor_surat'] + '</td>';
 eTable += '<td>' + res[i]['no_rawat'] + '</td>';
-eTable += '<td>' + res[i]['no_rkm_medis'] + '</td>';
 eTable += '<td>' + res[i]['nm_pasien'] + '</td>';
 eTable += '<td>' + res[i]['tgl_lahir'] + '</td>';
 eTable += '<td>' + res[i]['umur'] + '</td>';
 eTable += '<td>' + res[i]['jk'] + '</td>';
-eTable += '<td>' + res[i]['alamat'] + '</td>';
-eTable += '<td>' + res[i]['tanggal'] + '</td>';
-eTable += '<td>' + res[i]['berat_badan'] + '</td>';
-eTable += '<td>' + res[i]['tinggi_badan'] + '</td>';
-eTable += '<td>' + res[i]['tensi'] + '</td>';
-eTable += '<td>' + res[i]['gol_darah'] + '</td>';
-eTable += '<td>' + res[i]['riwayat_penyakit'] + '</td>';
 eTable += '<td>' + res[i]['keperluan'] + '</td>';
 eTable += '<td>' + res[i]['dokter'] + '</td>';
-eTable += '<td>' + res[i]['petugas'] + '</td>';
                     eTable += "</tr>";
                 }
                 eTable += "</tbody></table></div>";
@@ -394,7 +384,7 @@ eTable += '<td>' + res[i]['petugas'] + '</td>';
     // ===========================================
     $("#export_pdf").click(function () {
 
-        var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
+        var doc = new jsPDF('l', 'pt', 'A4'); /* pilih 'l' atau 'p' */
         var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
         doc.addImage(img, 'JPEG', 20, 10, 50, 50);
         doc.setFontSize(20);
@@ -402,8 +392,8 @@ eTable += '<td>' + res[i]['petugas'] + '</td>';
         doc.setFontSize(10);
         doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
         doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
-        doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
-        doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
+        doc.line(20,70,820,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
+        doc.line(20,72,820,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
         doc.setFontSize(14);
         doc.text("Tabel Data Mlite Surat Sehat", 20, 95, null, null, null);
         const totalPagesExp = "{total_pages_count_string}";        

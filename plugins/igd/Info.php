@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul igd untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '4.*.*',
+    'compatibility' =>  '5.*.*',
     'icon'          =>  'ambulance',
     'install'       =>  function () use ($core) {
     },

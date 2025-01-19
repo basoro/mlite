@@ -5,7 +5,7 @@ return [
     'description'   =>  'Bridging PACS via Orthanc',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '4.*.*',
+    'compatibility' =>  '5.*.*',
     'icon'          =>  'bolt',
     'install'       =>  function () use ($core) {
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('orthanc', 'server', 'http://localhost:8042')");

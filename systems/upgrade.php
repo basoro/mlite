@@ -653,10 +653,6 @@ switch ($version) {
             PRIMARY KEY (`kode_pemeriksaan`)
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-
-
-
-
           $this->core->db()->pdo()->exec("INSERT INTO `mlite_triase_pemeriksaan` (`kode_pemeriksaan`, `nama_pemeriksaan`)
           VALUES
             ('001','JALAN NAFAS'),
@@ -761,5 +757,16 @@ switch ($version) {
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
         $return = '4.1.8'; 
+    case '4.1.8':
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'prefix_surat', 'RS')");
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'keterangan_etiket', '')");
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'consumerUserKeyAntrol', '')");
+        $this->core->db()->pdo()->exec("ALTER TABLE `mlite_penjualan_detail` CHANGE `id_barang` `id_barang` VARCHAR(11) NOT NULL");
+
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_set_nomor_surat` (
+          `nomor_surat` varchar(10) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+        $return = '5.0.0'; 
     }
 return $return;

@@ -1,0 +1,71 @@
+<div id="form">
+  <div class="row col-md-5 m-r-md">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="kd_dokter" class="col-sm-3 control-label">Dokter RS</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="kd_dokter">
+                {loop: $dokter}
+                <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="kd_dokter_pcare" class="col-sm-3 control-label">Dokter PCare</label>
+            <div class="col-sm-9">
+              <input type="text" name="getDokter" id="getDokter" class="form-control" value="{if: $mappingdokter.kd_dokter !=''}{$mappingdokter.kd_dokter_pcare}: {$mappingdokter.nm_dokter_pcare}{/if}">
+              <ul class="list-group" id="dokterList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="m-b-xl clearfix">
+      <button type="button" name="button" class="btn btn-primary" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+      <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+      <button type="button" name="button" class="btn btn-warning" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('select').selectator();
+</script>
+<script type="text/javascript">
+  $('#getDokter').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/dokter?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var dokter = json_obj[0].response.list;
+                       for (var i in dokter) {
+                         output+='<li class=\"list-group-item link-class\">' + dokter[i].kdDokter + ': ' + dokter[i].nmDokter + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#dokterList').fadeIn();
+                     $('#dokterList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#dokterList').on('click', 'li', function(){
+       $('#getDokter').val($(this).text());
+       var getDokter = $('#getDokter').val();
+       $('#poliDokter').fadeOut();
+  });
+</script>
