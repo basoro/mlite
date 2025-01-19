@@ -234,8 +234,8 @@
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Laporan</a>
                   <ul class="dropdown-menu">
-                    <li><a href="#" style="color: red !important">Jasa Medik Dokter</a></li>
-                    <li><a href="#" style="color: red !important">Jasa Medik Petugas</a></li>
+                    <li {if: !$this->core->AccesModule('jasa_medis_dokter') || !$this->core->ActiveModule('jasa_medis_dokter')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('jasa_medis_dokter') && $this->core->ActiveModule('jasa_medis_dokter')}{?=url([ADMIN, 'jasa_medis_dokter', 'manage'])?}{/if}">Jasa Medik Dokter</a></li>
+                    <li {if: !$this->core->AccesModule('jasa_medis_perawat') || !$this->core->ActiveModule('jasa_medis_perawat')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('jasa_medis_perawat') && $this->core->ActiveModule('jasa_medis_perawat')}{?=url([ADMIN, 'jasa_medis_perawat', 'manage'])?}{/if}">Jasa Medik Petugas</a></li>
                     <li><a href="#" style="color: red !important">Pembayaran Rawat Jalan</a></li>
                     <li><a href="#" style="color: red !important">Pembayaran Rawat Inap</a></li>
                     <li><a href="#" style="color: red !important">Kunjungan Rawat Jalan</a></li>
