@@ -1325,7 +1325,9 @@ VALUES
 	(155,'settings','username_frista',''),
 	(156,'settings','password_frista',''),
 	(157,'settings','billing_obat','false'),
-	(158,'settings','prefix_surat','RS');
+	(158,'settings','prefix_surat','RS'),
+	(159,'farmasi','keterangan_etiket',''),
+	(160,'pcare','consumerUserKeyAntrol','');
 
 /*!40000 ALTER TABLE `mlite_settings` ENABLE KEYS */;
 UNLOCK TABLES;
