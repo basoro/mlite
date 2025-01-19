@@ -17,6 +17,12 @@ class Admin extends AdminModule
     $this->consumerSecret = $this->settings->get('pcare.consumerSecret');
     $this->consumerUserKey = $this->settings->get('pcare.consumerUserKey');
     $this->api_url = $this->settings->get('pcare.PCareApiUrl');
+    $this->api_url_antrol = 'https://apijkn.bpjs-kesehatan.go.id/antreanfktp/';
+    $this->api_url_icare = 'https://apijkn.bpjs-kesehatan.go.id/wsIHS/api/pcare/validate';
+    if (strpos($this->api_url, 'dev') !== false) { 
+      $this->api_url_antrol = 'https://apijkn-dev.bpjs-kesehatan.go.id/antreanfktp_dev/';
+      $this->api_url_icare = 'https://apijkn-dev.bpjs-kesehatan.go.id/ihs_dev/api/pcare/validate';
+    }  
   }
 
   public function navigation()
@@ -27,12 +33,17 @@ class Admin extends AdminModule
           'Dokter' => 'refdokter',
           'Kesadaran' => 'refkesadaran',
           'Kunjungan' => 'refkunjungan',
+          'MCU' => 'refmcu',
+          'Obat' => 'refobat',
           'Pendaftaran' => 'refpendaftaran',
           'Peserta' => 'refpeserta',
           'Poli' => 'refpoli',
+          'Alergi' => 'refalergi',
+          'Prognosa' => 'refprognosa',
           'Provider' => 'refprovider',
           'Tindakan' => 'reftindakan',
           'Status Pulang' => 'refstatuspulang',
+          'Kelompok' => 'refkelompok',
           'Spesialis' => 'refspesialis',
           'Settings' => 'settings'
       ];
@@ -191,7 +202,7 @@ class Admin extends AdminModule
 
   public function getRefAlergi()
   {
-      return $this->draw('kesadaran.html');
+      return $this->draw('alergi.html');
   }
 
   public function getAlergi($jenis)
@@ -203,7 +214,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'alergi/jenis/'.$jenis;
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      // echo json_encode($json);
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -233,7 +244,7 @@ class Admin extends AdminModule
 
   public function getRefPrognosa()
   {
-      return $this->draw('kesadaran.html');
+      return $this->draw('prognosa.html');
   }
 
   public function getPrognosa()
@@ -323,7 +334,6 @@ class Admin extends AdminModule
     $key = $this->consumerID . $this->consumerSecret . $tStamp;
 
     $data = [
-      /*
       'noKunjungan' => null,
       'noKartu' => $noKartu,
       'tglDaftar' => $tglDaftar,
@@ -354,31 +364,6 @@ class Admin extends AdminModule
           ],
           'khusus' => null
       ],
-      'kdTacc' => -1,
-      'alasanTacc' => null
-      */
-      'noKunjungan' => null,
-      'noKartu' => '0002058271953',
-      'tglDaftar' => '11-11-2022',
-      'kdPoli' => '001',
-      'keluhan' => 'keluhan',
-      'kdSadar' => '01',
-      'sistole' => 80,
-      'diastole' => 80,
-      'beratBadan' => 50,
-      'tinggiBadan' => 170,
-      'respRate' => 70,
-      'heartRate' => 80,
-      'lingkarPerut' => 36,
-      'terapi' => 'catatan',
-      'kdStatusPulang' => '3',
-      'tglPulang' => '11-11-2022',
-      'kdDokter' => '199714',
-      'kdDiag1' => 'O82',
-      'kdDiag2' => null,
-      'kdDiag3' => null,
-      'kdPoliRujukInternal' => null,
-      'rujukLanjut' => null,
       'kdTacc' => -1,
       'alasanTacc' => null
     ];
@@ -1506,6 +1491,20 @@ class Admin extends AdminModule
       exit();
   }
 
+  public function getPendaftaranPCare($no_rkm_medis, $date)
+  {
+    $reg_periksa = $this->db('reg_periksa')->where('no_rkm_medis', $no_rkm_medis)->like('tgl_registrasi', $date)->oneArray();
+    $rows_bridging_pcare = $this->db('mlite_bridging_pcare')
+      ->where('no_rkm_medis', $no_rkm_medis)
+      ->toArray();
+    $bridging_pcare = [];
+    foreach($rows_bridging_pcare as $row) {
+      $row['pasien'] = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+      $bridging_pcare[] = $row;
+    }
+    echo $this->draw('pendaftaranpcare.html', ['pasien' => $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray(), 'bridging_pcare' => $bridging_pcare, 'pendaftaran' => $reg_periksa, 'kode_fktp' => $this->settings->get('pcare.kode_fktp')]);
+    exit();
+  }
 
   public function getBridgingPCare($no_rkm_medis, $date)
   {
@@ -1954,76 +1953,104 @@ class Admin extends AdminModule
       $kunjSakit = false;
     }
 
+    $alergimakanan = 'null';
+    if(isset($_POST['getAlergiMakanan']) && $_POST['getAlergiMakanan'] !=''){
+      $alergimakanan = strtok($_POST['getAlergiMakanan'], ':');
+    }
+
+    $alergiudara = 'null';
+    if(isset($_POST['getAlergiUdara']) && $_POST['getAlergiUdara'] !=''){
+      $alergiudara = strtok($_POST['getAlergiUdara'], ':');
+    }
+
+    $alergiobat = 'null';
+    if(isset($_POST['getAlergiObat']) && $_POST['getAlergiObat'] !=''){
+      $alergiobat = strtok($_POST['getAlergiObat'], ':');
+    }
+
+    $prognosa = 'null';
+    if(isset($_POST['getPrognosa']) && $_POST['getPrognosa'] !=''){
+      $prognosa = strtok($_POST['getPrognosa'], ':');
+    }
+
     $diagnosa2 = 'null';
-    if($_POST['getDiagnosa2'] !=''){
+    if(isset($_POST['getDiagnosa2']) && $_POST['getDiagnosa2'] !=''){
       $diagnosa2 = strtok($_POST['getDiagnosa2'], ':');
     }
 
     $diagnosa3 = 'null';
-    if($_POST['getDiagnosa3'] !=''){
+    if(isset($_POST['getDiagnosa3']) && $_POST['getDiagnosa3'] !=''){
       $diagnosa3 = strtok($_POST['getDiagnosa3'], ':');
     }
 
-    $data = [
-      'kdProviderPeserta' => $_POST['kdProviderPeserta'],
-      'tglDaftar' => $_POST['tglDaftar'],
-      'noKartu' => $_POST['noKartu'],
-      'kdPoli' => strtok($_POST['getPoli'], ':'),
-      'keluhan' => $_POST['keluhan'],
-      'kunjSakit' => $kunjSakit,
-      'sistole' => 0,
-      'diastole' => 0,
-      'beratBadan' => 0,
-      'tinggiBadan' => 0,
-      'respRate' => 0,
-      'lingkarPerut' => 0,
-      'heartRate' => 0,
-      'rujukBalik' => 0,
-      'kdTkp' => $_POST['kode_tkp']
-    ];
+    $noUrut = '';
+    $noKunjungan = '';
+    
+    if($_POST['pendaftaran'] == 'true') {
+      $data = [
+        'kdProviderPeserta' => $_POST['kdProviderPeserta'],
+        'tglDaftar' => $_POST['tglDaftar'],
+        'noKartu' => $_POST['noKartu'],
+        'kdPoli' => strtok($_POST['getPoli'], ':'),
+        'keluhan' => $_POST['keluhan'],
+        'kunjSakit' => $kunjSakit,
+        'sistole' => 0,
+        'diastole' => 0,
+        'beratBadan' => 0,
+        'tinggiBadan' => 0,
+        'respRate' => 0,
+        'lingkarPerut' => 0,
+        'heartRate' => 0,
+        'rujukBalik' => 0,
+        'kdTkp' => $_POST['kode_tkp']
+      ];
 
-    $data = json_encode($data);
+      $data = json_encode($data);
 
-    date_default_timezone_set('UTC');
-    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
-    $key = $this->consumerID . $this->consumerSecret . $tStamp;
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+      $key = $this->consumerID . $this->consumerSecret . $tStamp;
 
-    $url = $this->api_url . 'pendaftaran';
-    $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
-    $json = json_decode($output, true);
-    //echo json_encode($json);
+      $url = $this->api_url . 'pendaftaran';
+      $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
+      $json = json_decode($output, true);
+      // echo json_encode($json);
 
-    $code = $json['metaData']['code'];
-    $message = $json['metaData']['message'];
-    $stringDecrypt = stringDecrypt($key, $json['response']);
-    $decompress = '""';
-    if (!empty($stringDecrypt)) {
-        $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
-        //echo $decompress;
-    }
-    if ($json != null) {
-        $data = '{
+      $code = $json['metaData']['code'];
+      $message = $json['metaData']['message'];
+      if ($json != null) {
+        if($code == '201') {
+          $stringDecrypt = stringDecrypt($key, isset_or($json['response']));
+          $decompress = '""';
+          if (!empty($stringDecrypt)) {
+              $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+          }
+          $data = '{
             "metaData": {
               "code": "' . $code . '",
               "message": "' . $message . '"
             },
             "response": ' . $decompress . '}';
-        //echo $data;
-        $data = json_decode($data, true);
+          // echo $data;
+          $data = json_decode($data, true);
+          $noUrut = $data['response']['message'];
+          echo $noUrut;
+        } else {
+            //echo json_encode($json);
+            echo $message;
+        }        
+      } else {
+          echo '{
+              "metaData": {
+                "code": "5000",
+                "message": "ERROR"
+              },
+              "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
 
-        $noUrut = $data['response']['message'];
+      }
+    }    
 
-    } else {
-        echo '{
-            "metaData": {
-              "code": "5000",
-              "message": "ERROR"
-            },
-            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-
-    }
-
-    if($_POST['rujukanlanjut'] == 'false') {
+    if(isset($_POST['rujukanlanjut']) && $_POST['rujukanlanjut'] == 'false') {
       $data = [
         'noKunjungan' => null,
         'noKartu' => $_POST['noKartu'],
@@ -2038,67 +2065,64 @@ class Admin extends AdminModule
         'respRate' => intval($_POST['respirasi']),
         'heartRate' => intval($_POST['nadi']),
         'lingkarPerut' => intval($_POST['lingkar_perut']),
+        // 'terapi' => $_POST['terapi'],
         'kdStatusPulang' => strtok($_POST['getStatusPulang'], ':'),
         'tglPulang' => $_POST['tglPulang'],
         'kdDokter' => strtok($_POST['getDokter'], ':'),
+        'alergiMakan' => ($alergimakanan === 'null') ? null : $alergimakanan,
+        'alergiUdara' => ($alergiudara === 'null') ? null : $alergiudara,
+        'alergiObat' => ($alergiobat === 'null') ? null : $alergiobat,
+        'kdPrognosa' => ($prognosa === 'null') ? null : $prognosa,
         'kdDiag1' => strtok($_POST['getDiagnosa1'], ':'),
         'kdDiag2' => ($diagnosa2 === 'null') ? null : $diagnosa2,
         'kdDiag3' => ($diagnosa3 === 'null') ? null : $diagnosa3,
         'kdPoliRujukInternal' => null,
         'rujukLanjut' => null,
         'kdTacc' => -1,
-        'alasanTacc' => null,
-        "anamnesa"=> $_POST['anamnesa'],
-        "alergiMakan"=> "00",
-        "alergiUdara"=> "00",
-        "alergiObat"=> "00",
-        "kdPrognosa"=> "01",
-        "terapiObat"=> "",
-        "terapiNonObat"=> $_POST['terapi'],
-        "bmhp"=> "",
-        "suhu"=> $_POST['suhu_tubuh']
+        'alasanTacc' => null, 
+        'anamnesa' => $_POST['anamnesa'],
+        'terapiObat' => $_POST['terapiObat'],
+        'terapiNonObat' => $_POST['terapiNonObat'],
+        'bmhp' => 'bmhp',
+        'suhu' => intval($_POST['suhu_tubuh'])
       ];
 
       $data = json_encode($data);
+      echo $data;
 
       date_default_timezone_set('UTC');
       $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
       $key = $this->consumerID . $this->consumerSecret . $tStamp;
 
-      $url = $this->api_url . 'kunjungan';
+      $url = $this->api_url . 'kunjungan/V1';
       $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      echo json_encode($json);
+      // echo json_encode($json);
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
-          //echo $decompress;
-      }
       if ($json != null) {
-          $data = '{
-              "metaData": {
-                "code": "' . $code . '",
-                "message": "' . $message . '"
-              },
-              "response": ' . $decompress . '}';
-
-              echo $data;
-              $data = json_decode($data, true);
-
-          $noKunjungan = $data['response'][0]['message'];
-
-      } else if ($code == '412') {
+        if($code == '201') {
+          $stringDecrypt = stringDecrypt($key, isset_or($json['response']));
+          $decompress = '""';
+          if (!empty($stringDecrypt)) {
+              $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+          }
           $data = '{
             "metaData": {
               "code": "' . $code . '",
               "message": "' . $message . '"
             },
-            "response": ' . $json['response'] . '}';
-            echo $data;
+            "response": ' . $decompress . '}';
+          // echo $data;
+          $data = json_decode($data, true);
+          $noKunjungan = $data['response'][0]['message'];
+          echo $noKunjungan;
+        } else {
+            //echo json_encode($json);
+            echo $message;
+        }
+
       } else {
           echo '{
               "metaData": {
@@ -2111,7 +2135,7 @@ class Admin extends AdminModule
 
     }
 
-    if($_POST['rujukanlanjut'] == 'true' && $_POST['rujukankhusus'] == 'false') {
+    if(isset($_POST['rujukanlanjut']) && $_POST['rujukanlanjut'] == 'true' && isset($_POST['rujukankhusus']) && $_POST['rujukankhusus'] == 'false') {
       $data = [
         'noKunjungan' => null,
         'noKartu' => $_POST['noKartu'],
@@ -2126,9 +2150,14 @@ class Admin extends AdminModule
         'respRate' => intval($_POST['respirasi']),
         'heartRate' => intval($_POST['nadi']),
         'lingkarPerut' => intval($_POST['lingkar_perut']),
+        // 'terapi' => $_POST['terapi'],
         'kdStatusPulang' => strtok($_POST['getStatusPulang'], ':'),
         'tglPulang' => $_POST['tglPulang'],
         'kdDokter' => strtok($_POST['getDokter'], ':'),
+        'alergiMakan' => ($alergimakanan === 'null') ? null : $alergimakanan,
+        'alergiUdara' => ($alergiudara === 'null') ? null : $alergiudara,
+        'alergiObat' => ($alergiobat === 'null') ? null : $alergiobat,
+        'kdPrognosa' => ($prognosa === 'null') ? null : $prognosa,
         'kdDiag1' => strtok($_POST['getDiagnosa1'], ':'),
         'kdDiag2' => ($diagnosa2 === 'null') ? null : $diagnosa2,
         'kdDiag3' => ($diagnosa3 === 'null') ? null : $diagnosa3,
@@ -2143,16 +2172,12 @@ class Admin extends AdminModule
             'khusus' => null
         ],
         'kdTacc' => intval(strtok($_POST['getTACC'], ':')),
-        'alasanTacc' => substr($_POST['alasanTacc'], strpos($_POST['alasanTacc'], ': ') + 1),
-        "anamnesa"=> "test anamnesa",
-        "alergiMakan"=> "00",
-        "alergiUdara"=> "00",
-        "alergiObat"=> "00",
-        "kdPrognosa"=> "01",
-        "terapiObat"=> "",
-        "terapiNonObat"=> $_POST['terapi'],
-        "bmhp"=> "",
-        "suhu"=> $_POST['suhu_tubuh']
+        'alasanTacc' => substr($_POST['alasanTacc'], strpos($_POST['alasanTacc'], ': ') + 1), 
+        'anamnesa' => $_POST['anamnesa'],
+        'terapiObat' => $_POST['terapiObat'],
+        'terapiNonObat' => $_POST['terapiNonObat'],
+        'bmhp' => 'bmhp',
+        'suhu' => intval($_POST['suhu_tubuh'])
       ];
 
       $data = json_encode($data);
@@ -2161,29 +2186,34 @@ class Admin extends AdminModule
       $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
       $key = $this->consumerID . $this->consumerSecret . $tStamp;
 
-      $url = $this->api_url . 'kunjungan';
+      $url = $this->api_url . 'kunjungan/V1';
       $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      // echo json_encode($json);
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
-      }
       if ($json != null) {
+        if($code == '201') {
+          $stringDecrypt = stringDecrypt($key, isset_or($json['response']));
+          $decompress = '""';
+          if (!empty($stringDecrypt)) {
+              $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+          }
           $data = '{
-              "metaData": {
-                "code": "' . $code . '",
-                "message": "' . $message . '"
-              },
-              "response": ' . $decompress . '}';
-          //echo $data;
+            "metaData": {
+              "code": "' . $code . '",
+              "message": "' . $message . '"
+            },
+            "response": ' . $decompress . '}';
+          // echo $data;
           $data = json_decode($data, true);
-
           $noKunjungan = $data['response'][0]['message'];
+          echo $noKunjungan;
+        } else {
+            //echo json_encode($json);
+            echo $message;
+        }
 
       } else {
           echo '{
@@ -2197,7 +2227,7 @@ class Admin extends AdminModule
 
     }
 
-    if($_POST['rujukankhusus'] == 'true') {
+    if(isset($_POST['rujukankhusus']) && $_POST['rujukankhusus'] == 'true') {
       echo 'rujukan khusus';
       $data = [
         'noKunjungan' => null,
@@ -2213,10 +2243,14 @@ class Admin extends AdminModule
         'respRate' => 0,
         'heartRate' => 0,
         'lingkarPerut' => 0,
-        'terapi' => $_POST['terapi'],
+        // 'terapi' => $_POST['terapi'],
         'kdStatusPulang' => strtok($_POST['getStatusPulang'], ':'),
         'tglPulang' => $_POST['tglPulang'],
         'kdDokter' => strtok($_POST['getDokter'], ':'),
+        'alergiMakan' => ($alergimakanan === 'null') ? null : $alergimakanan,
+        'alergiUdara' => ($alergiudara === 'null') ? null : $alergiudara,
+        'alergiObat' => ($alergiobat === 'null') ? null : $alergiobat,
+        'kdPrognosa' => ($prognosa === 'null') ? null : $prognosa,
         'kdDiag1' => strtok($_POST['getDiagnosa1'], ':'),
         'kdDiag2' => ($diagnosa2 === 'null') ? null : $diagnosa2,
         'kdDiag3' => ($diagnosa3 === 'null') ? null : $diagnosa3,
@@ -2232,44 +2266,45 @@ class Admin extends AdminModule
             ]
         ],
         'kdTacc' => 0,
-        'alasanTacc' => null,
-        "anamnesa"=> "test anamnesa",
-        "alergiMakan"=> "00",
-        "alergiUdara"=> "00",
-        "alergiObat"=> "00",
-        "kdPrognosa"=> "01",
-        "terapiObat"=> "",
-        "terapiNonObat"=> $_POST['terapi'],
-        "bmhp"=> "",
-        "suhu"=> $_POST['suhu_tubuh']
+        'alasanTacc' => null, 
+        'anamnesa' => $_POST['anamnesa'],
+        'terapiObat' => $_POST['terapiObat'],
+        'terapiNonObat' => $_POST['terapiNonObat'],
+        'bmhp' => 'bmhp',
+        'suhu' => intval($_POST['suhu_tubuh'])
       ];
 
       $data = json_encode($data);
 
-      $url = $this->api_url . 'kunjungan';
+      $url = $this->api_url . 'kunjungan/V1';
       $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      // echo json_encode($json);
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
-      }
       if ($json != null) {
+        if($code == '201') {
+          $stringDecrypt = stringDecrypt($key, isset_or($json['response']));
+          $decompress = '""';
+          if (!empty($stringDecrypt)) {
+              $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+          }
           $data = '{
-              "metaData": {
-                "code": "' . $code . '",
-                "message": "' . $message . '"
-              },
-              "response": ' . $decompress . '}';
-              $data = json_decode($data, true);
-              echo $data;
-
+            "metaData": {
+              "code": "' . $code . '",
+              "message": "' . $message . '"
+            },
+            "response": ' . $decompress . '}';
+          // echo $data;
+          $data = json_decode($data, true);
           $noKunjungan = $data['response'][0]['message'];
-
+          echo $noKunjungan;
+        } else {
+            //echo json_encode($json);
+            echo $message;
+        }
+          
       } else {
           echo '{
               "metaData": {
@@ -2281,7 +2316,7 @@ class Admin extends AdminModule
       }
     }
 
-    if($noUrut !="" && $noKunjungan !="") {
+    if($noUrut !="" && $_POST['pendaftaran'] !='false') {
       $this->db('mlite_bridging_pcare')->save([
         "no_rawat" => $_POST['id_pendaftaran'],
         "no_rkm_medis" => $_POST['id_pasien'],
@@ -2292,6 +2327,327 @@ class Admin extends AdminModule
         "kode_poli" => strtok($_POST['getPoli'], ':'),
         "nama_poli" => substr($_POST['getPoli'], strpos($_POST['getPoli'], ': ') + 1),
         "kunjungan_sakit" => $_POST['kunjSakit'],
+        "subyektif" => $_POST['keluhan'],
+        "id_user" => $this->core->getUserInfo('id'),
+        "tgl_input" => date('Y-m-d'),
+        "status_kirim" => "Terkirim"
+      ]);
+    }
+
+    if($noKunjungan !="" && $_POST['pendaftaran'] !='true') {
+      $this->db('mlite_bridging_pcare')
+        ->where('no_rawat', $_POST['id_pendaftaran'])      
+        ->save([
+        "nomor_kunjungan" => $noKunjungan,
+        "sistole" => $_POST['sistole'],
+        "diastole" => $_POST['diastole'],
+        "nadi" => $_POST['nadi'],
+        "respirasi" => $_POST['respirasi'],
+        "tinggi" => $_POST['tinggi'],
+        "berat" => $_POST['berat'],
+        "lingkar_perut" => $_POST['lingkar_perut'],
+        "rujuk_balik" => "",
+        "kode_tkp" => $_POST['kode_tkp'],
+        "kode_kesadaran" => strtok($_POST['getKesadaran'], ':'),
+        "nama_kesadaran" => substr($_POST['getKesadaran'], strpos($_POST['getKesadaran'], ': ') + 1),
+        "terapi" => $_POST['terapi'],
+        "kode_status_pulang" => strtok($_POST['getStatusPulang'], ':'),
+        "nama_status_pulang" => substr($_POST['getStatusPulang'], strpos($_POST['getStatusPulang'], ': ') + 1),
+        "tgl_pulang" => $_POST['tglPulang'],
+        "tgl_kunjungan" => $_POST['tglKunjungan'],
+        "kode_dokter" => strtok($_POST['getDokter'], ':'),
+        "nama_dokter" => substr($_POST['getDokter'], strpos($_POST['getDokter'], ': ') + 1),
+        "kode_diagnosa1" => strtok($_POST['getDiagnosa1'], ':'),
+        "nama_diagnosa1" => substr($_POST['getDiagnosa1'], strpos($_POST['getDiagnosa1'], ': ') + 1),
+        "kode_diagnosa2" => strtok($_POST['getDiagnosa2'], ':'),
+        "nama_diagnosa2" => substr($_POST['getDiagnosa2'], strpos($_POST['getDiagnosa2'], ': ') + 1),
+        "kode_diagnosa3" => strtok($_POST['getDiagnosa3'], ':'),
+        "nama_diagnosa3" => substr($_POST['getDiagnosa3'], strpos($_POST['getDiagnosa3'], ': ') + 1),
+        "kode_alergi_makanan" => strtok($_POST['getAlergiMakanan'], ':'),
+        "nama_alergi_makanan" => substr($_POST['getAlergiMakanan'], strpos($_POST['getAlergiMakanan'], ': ') + 1),
+        "kode_alergi_udara" => strtok($_POST['getAlergiUdara'], ':'),
+        "nama_alergi_udara" => substr($_POST['getAlergiUdara'], strpos($_POST['getAlergiObat'], ': ') + 1),
+        "kode_alergi_obat" => strtok($_POST['getAlergiObat'], ':'),
+        "nama_alergi_obat" => substr($_POST['getAlergiObat'], strpos($_POST['getAlergiObat'], ': ') + 1),
+        "kode_prognosa" => strtok($_POST['getPrognosa'], ':'),
+        "nama_prognosa" => substr($_POST['getPrognosa'], strpos($_POST['getPrognosa'], ': ') + 1),
+        "terapi_obat" => $_POST['terapiObat'],
+        "terapi_non_obat" => $_POST['terapiNonObat'],
+        "tgl_estimasi_rujuk" => $_POST['tglEstRujuk'],
+        "kode_ppk" => strtok($_POST['getReferensiFaskesSpesialis'], ':'),
+        "nama_ppk" => substr($_POST['getReferensiFaskesSpesialis'], strpos($_POST['getReferensiFaskesSpesialis'], ': ') + 1),
+        "kode_spesialis" => strtok($_POST['getReferensiSpesialis'], ':'),
+        "nama_spesialis" => substr($_POST['getReferensiSpesialis'], strpos($_POST['getReferensiSpesialis'], ': ') + 1),
+        "kode_subspesialis" => strtok($_POST['getReferensiSubSpesialis'], ':'),
+        "nama_subspesialis" => substr($_POST['getReferensiSubSpesialis'], strpos($_POST['getReferensiSubSpesialis'], ': ') + 1),
+        "kode_sarana" => strtok($_POST['getReferensiSarana'], ':'),
+        "nama_sarana" => substr($_POST['getReferensiSarana'], strpos($_POST['getReferensiSarana'], ': ') + 1),
+        "kode_referensikhusus" => strtok($_POST['getReferensiKhusus'], ':'),
+        "nama_referensikhusus" => substr($_POST['getReferensiKhusus'], strpos($_POST['getReferensiKhusus'], ': ') + 1),
+        "kode_faskeskhusus" => strtok($_POST['getFaskesKhusus'], ':'),
+        "nama_faskeskhusus" => substr($_POST['getFaskesKhusus'], strpos($_POST['getFaskesKhusus'], ': ') + 1),
+        "catatan" => $_POST['catatan'],
+        "kode_tacc" => strtok($_POST['getTACC'], ':'),
+        "nama_tacc" => substr($_POST['getTACC'], strpos($_POST['getTACC'], ': ') + 1),
+        "alasan_tacc" => substr($_POST['alasanTacc'], strpos($_POST['alasanTacc'], ': ') + 1)
+      ]);
+    }
+    exit();
+  }
+
+  public function postBridgingPCareEdit()
+  {
+    $bridging_pcare = $this->db('mlite_bridging_pcare')->where('no_rawat', $_POST['id_pendaftaran'])->oneArray();
+    $noKunjungan = $bridging_pcare['nomor_kunjungan'];
+    $noUrut = $bridging_pcare['nomor_urut'];
+
+    $kunjSakit = true;
+    if($_POST['kunjSakit'] == 'false') {
+      $kunjSakit = false;
+    }
+
+    $alergimakanan = 'null';
+    if($_POST['getAlergiMakanan'] !=''){
+      $alergimakanan = strtok($_POST['getAlergiMakanan'], ':');
+    }
+
+    $alergiudara = 'null';
+    if($_POST['getAlergiUdara'] !=''){
+      $alergiudara = strtok($_POST['getAlergiUdara'], ':');
+    }
+
+    $alergiobat = 'null';
+    if($_POST['getAlergiObat'] !=''){
+      $alergiobat = strtok($_POST['getAlergiObat'], ':');
+    }
+
+    $prognosa = 'null';
+    if($_POST['getPrognosa'] !=''){
+      $prognosa = strtok($_POST['getPrognosa'], ':');
+    }
+
+    $diagnosa2 = 'null';
+    if($_POST['getDiagnosa2'] !=''){
+      $diagnosa2 = strtok($_POST['getDiagnosa2'], ':');
+    }
+
+    $diagnosa3 = 'null';
+    if($_POST['getDiagnosa3'] !=''){
+      $diagnosa3 = strtok($_POST['getDiagnosa3'], ':');
+    }
+
+    if($_POST['rujukanlanjut'] == 'false') {
+      $data = [
+        'noKunjungan' => $noKunjungan,
+        'noKartu' => $_POST['noKartu'],
+        'tglDaftar' => $_POST['tglDaftar'],
+        'kdPoli' => strtok($_POST['getPoli'], ':'),
+        'keluhan' => $_POST['keluhan'],
+        'kdSadar' => strtok($_POST['getKesadaran'], ':'),
+        'sistole' => intval($_POST['sistole']),
+        'diastole' => intval($_POST['diastole']),
+        'beratBadan' => intval($_POST['berat']),
+        'tinggiBadan' => intval($_POST['tinggi']),
+        'respRate' => intval($_POST['respirasi']),
+        'heartRate' => intval($_POST['nadi']),
+        'lingkarPerut' => intval($_POST['lingkar_perut']),
+        // 'terapi' => $_POST['terapi'],
+        'kdStatusPulang' => strtok($_POST['getStatusPulang'], ':'),
+        'tglPulang' => $_POST['tglPulang'],
+        'kdDokter' => strtok($_POST['getDokter'], ':'),
+        'alergiMakan' => ($alergimakanan === 'null') ? null : $alergimakanan,
+        'alergiUdara' => ($alergiudara === 'null') ? null : $alergiudara,
+        'alergiObat' => ($alergiobat === 'null') ? null : $alergiobat,
+        'kdPrognosa' => ($prognosa === 'null') ? null : $prognosa,
+        'kdDiag1' => strtok($_POST['getDiagnosa1'], ':'),
+        'kdDiag2' => ($diagnosa2 === 'null') ? null : $diagnosa2,
+        'kdDiag3' => ($diagnosa3 === 'null') ? null : $diagnosa3,
+        'kdPoliRujukInternal' => null,
+        'rujukLanjut' => null,
+        'kdTacc' => -1,
+        'alasanTacc' => null, 
+        'anamnesa' => $_POST['anamnesa'],
+        'terapiObat' => $_POST['terapiObat'],
+        'terapiNonObat' => $_POST['terapiNonObat'],
+        'bmhp' => 'bmhp',
+        'suhu' => intval($_POST['suhu_tubuh'])
+      ];
+
+      $data = json_encode($data);
+
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+      $key = $this->consumerID . $this->consumerSecret . $tStamp;
+
+      $url = $this->api_url . 'kunjungan/V1';
+      $output = PcareService::put($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
+      $json = json_decode($output, true);
+      // echo json_encode($json);
+
+      $code = $json['metaData']['code'];
+      $message = $json['metaData']['message'];
+      if ($json != null) {
+        //echo json_encode($json);
+        echo $message;
+      } else {
+          echo '{
+              "metaData": {
+                "code": "5000",
+                "message": "ERROR"
+              },
+              "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+
+      }
+
+    }
+
+    if($_POST['rujukanlanjut'] == 'true' && $_POST['rujukankhusus'] == 'false') {
+      $data = [
+        'noKunjungan' => $noKunjungan,
+        'noKartu' => $_POST['noKartu'],
+        'tglDaftar' => $_POST['tglDaftar'],
+        'kdPoli' => strtok($_POST['getPoli'], ':'),
+        'keluhan' => $_POST['keluhan'],
+        'kdSadar' => strtok($_POST['getKesadaran'], ':'),
+        'sistole' => intval($_POST['sistole']),
+        'diastole' => intval($_POST['diastole']),
+        'beratBadan' => intval($_POST['berat']),
+        'tinggiBadan' => intval($_POST['tinggi']),
+        'respRate' => intval($_POST['respirasi']),
+        'heartRate' => intval($_POST['nadi']),
+        'lingkarPerut' => intval($_POST['lingkar_perut']),
+        // 'terapi' => $_POST['terapi'],
+        'kdStatusPulang' => strtok($_POST['getStatusPulang'], ':'),
+        'tglPulang' => $_POST['tglPulang'],
+        'kdDokter' => strtok($_POST['getDokter'], ':'),
+        'alergiMakan' => ($alergimakanan === 'null') ? null : $alergimakanan,
+        'alergiUdara' => ($alergiudara === 'null') ? null : $alergiudara,
+        'alergiObat' => ($alergiobat === 'null') ? null : $alergiobat,
+        'kdPrognosa' => ($prognosa === 'null') ? null : $prognosa,
+        'kdDiag1' => strtok($_POST['getDiagnosa1'], ':'),
+        'kdDiag2' => ($diagnosa2 === 'null') ? null : $diagnosa2,
+        'kdDiag3' => ($diagnosa3 === 'null') ? null : $diagnosa3,
+        'kdPoliRujukInternal' => null,
+        'rujukLanjut' => [
+            'kdppk' => strtok($_POST['getReferensiFaskesSpesialis'], ':'),
+            'tglEstRujuk' => $_POST['tglEstRujuk'],
+            'subSpesialis' => [
+                'kdSubSpesialis1' => strtok($_POST['getReferensiSubSpesialis'], ':'),
+                'kdSarana' => null
+            ],
+            'khusus' => null
+        ],
+        'kdTacc' => intval(strtok($_POST['getTACC'], ':')),
+        'alasanTacc' => substr($_POST['alasanTacc'], strpos($_POST['alasanTacc'], ': ') + 1), 
+        'anamnesa' => $_POST['anamnesa'],
+        'terapiObat' => $_POST['terapiObat'],
+        'terapiNonObat' => $_POST['terapiNonObat'],
+        'bmhp' => 'bmhp',
+        'suhu' => intval($_POST['suhu_tubuh'])
+      ];
+
+      $data = json_encode($data);
+
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+      $key = $this->consumerID . $this->consumerSecret . $tStamp;
+
+      $url = $this->api_url . 'kunjungan/V1';
+      $output = PcareService::put($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
+      $json = json_decode($output, true);
+      //echo json_encode($json);
+
+      $code = $json['metaData']['code'];
+      $message = $json['metaData']['message'];
+      if ($json != null) {
+        //echo json_encode($json);
+        echo $message;
+      } else {
+          echo '{
+              "metaData": {
+                "code": "5000",
+                "message": "ERROR"
+              },
+              "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+
+      }
+
+    }
+
+    if($_POST['rujukankhusus'] == 'true') {
+      echo 'rujukan khusus';
+      $data = [
+        'noKunjungan' => $noKunjungan,
+        'noKartu' => $_POST['noKartu'],
+        'tglDaftar' => $_POST['tglDaftar'],
+        'kdPoli' => null,
+        'keluhan' => $_POST['keluhan'],
+        'kdSadar' => strtok($_POST['getKesadaran'], ':'),
+        'sistole' => 0,
+        'diastole' => 0,
+        'beratBadan' => 0,
+        'tinggiBadan' => 0,
+        'respRate' => 0,
+        'heartRate' => 0,
+        'lingkarPerut' => 0,
+        // 'terapi' => $_POST['terapi'],
+        'kdStatusPulang' => strtok($_POST['getStatusPulang'], ':'),
+        'tglPulang' => $_POST['tglPulang'],
+        'kdDokter' => strtok($_POST['getDokter'], ':'),
+        'alergiMakan' => ($alergimakanan === 'null') ? null : $alergimakanan,
+        'alergiUdara' => ($alergiudara === 'null') ? null : $alergiudara,
+        'alergiObat' => ($alergiobat === 'null') ? null : $alergiobat,
+        'kdPrognosa' => ($prognosa === 'null') ? null : $prognosa,
+        'kdDiag1' => strtok($_POST['getDiagnosa1'], ':'),
+        'kdDiag2' => ($diagnosa2 === 'null') ? null : $diagnosa2,
+        'kdDiag3' => ($diagnosa3 === 'null') ? null : $diagnosa3,
+        'kdPoliRujukInternal' => null,
+        'rujukLanjut' => [
+            'tglEstRujuk' => $_POST['tglEstRujuk'],
+            'kdppk' => strtok($_POST['getFaskesKhusus'], ':'),
+            'subSpesialis' => null,
+            'khusus' => [
+              'kdKhusus' => strtok($_POST['getReferensiKhusus'], ':'),
+              'kdSubSpesialis' => null,
+              'catatan' => $_POST['catatan']
+            ]
+        ],
+        'kdTacc' => 0,
+        'alasanTacc' => null, 
+        'anamnesa' => $_POST['anamnesa'],
+        'terapiObat' => $_POST['terapiObat'],
+        'terapiNonObat' => $_POST['terapiNonObat'],
+        'bmhp' => 'bmhp',
+        'suhu' => intval($_POST['suhu_tubuh'])
+      ];
+
+      $data = json_encode($data);
+
+      $url = $this->api_url . 'kunjungan/V1';
+      $output = PcareService::put($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
+      $json = json_decode($output, true);
+      //echo json_encode($json);
+
+      $code = $json['metaData']['code'];
+      $message = $json['metaData']['message'];
+      if ($json != null) {
+        //echo json_encode($json);
+        echo $message;
+      } else {
+          echo '{
+              "metaData": {
+                "code": "5000",
+                "message": "ERROR"
+              },
+              "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+
+      }
+    }
+
+    if($code == 200) {
+      $this->db('bridging_pcare')
+      ->where('id_pendaftaran', $_POST['id_pendaftaran'])
+      ->save([
         "sistole" => $_POST['sistole'],
         "diastole" => $_POST['diastole'],
         "nadi" => $_POST['nadi'],
@@ -2318,6 +2674,16 @@ class Admin extends AdminModule
         "nama_diagnosa2" => substr($_POST['getDiagnosa2'], strpos($_POST['getDiagnosa2'], ': ') + 1),
         "kode_diagnosa3" => strtok($_POST['getDiagnosa3'], ':'),
         "nama_diagnosa3" => substr($_POST['getDiagnosa3'], strpos($_POST['getDiagnosa3'], ': ') + 1),
+        "kode_alergi_makanan" => strtok($_POST['getAlergiMakanan'], ':'),
+        "nama_alergi_makanan" => substr($_POST['getAlergiMakanan'], strpos($_POST['getAlergiMakanan'], ': ') + 1),
+        "kode_alergi_udara" => strtok($_POST['getAlergiUdara'], ':'),
+        "nama_alergi_udara" => substr($_POST['getAlergiUdara'], strpos($_POST['getAlergiObat'], ': ') + 1),
+        "kode_alergi_obat" => strtok($_POST['getAlergiObat'], ':'),
+        "nama_alergi_obat" => substr($_POST['getAlergiObat'], strpos($_POST['getAlergiObat'], ': ') + 1),
+        "kode_prognosa" => strtok($_POST['getPrognosa'], ':'),
+        "nama_prognosa" => substr($_POST['getPrognosa'], strpos($_POST['getPrognosa'], ': ') + 1),
+        "terapi_obat" => $_POST['terapiObat'],
+        "terapi_non_obat" => $_POST['terapiNonObat'],
         "tgl_estimasi_rujuk" => $_POST['tglEstRujuk'],
         "kode_ppk" => strtok($_POST['getReferensiFaskesSpesialis'], ':'),
         "nama_ppk" => substr($_POST['getReferensiFaskesSpesialis'], strpos($_POST['getReferensiFaskesSpesialis'], ': ') + 1),
@@ -2334,10 +2700,7 @@ class Admin extends AdminModule
         "catatan" => $_POST['catatan'],
         "kode_tacc" => strtok($_POST['getTACC'], ':'),
         "nama_tacc" => substr($_POST['getTACC'], strpos($_POST['getTACC'], ': ') + 1),
-        "alasan_tacc" => substr($_POST['alasanTacc'], strpos($_POST['alasanTacc'], ': ') + 1),
-        "id_user" => $this->core->getUserInfo('id'),
-        "tgl_input" => date('Y-m-d'),
-        "status_kirim" => "Terkirim"
+        "alasan_tacc" => substr($_POST['alasanTacc'], strpos($_POST['alasanTacc'], ': ') + 1)
       ]);
     }
     exit();

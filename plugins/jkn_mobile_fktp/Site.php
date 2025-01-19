@@ -77,6 +77,9 @@ class Site extends SiteModule
         if($poli['kd_poli_pcare'] == '002') {
             $kode_antrean = 'B';
         }
+        if($poli['kd_poli_pcare'] == '003') {
+            $kode_antrean = 'C';
+        }
         
         $antrian_panggil = $kode_antrean . '-' .isset_or($antrean_periksa['no_reg'], '0');
         $total_antrean = isset_or($total, '0');
@@ -661,6 +664,10 @@ class Site extends SiteModule
                 
                         if($decode['kodepoli'] == '002') {
                             $kode_antrean = 'B';
+                        }    
+
+                        if($decode['kodepoli'] == '003') {
+                            $kode_antrean = 'C';
                         }    
 
                         if ($query) {

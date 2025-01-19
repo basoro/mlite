@@ -57,7 +57,7 @@
             ><span class="fa fa-print"></span> {$value.no_reg}</button> {if: $responsivevoice == 'true'}<button type="button" name="button" class="btn btn-xs btn-primary panggil" data-nm_pasien="{?=strtolower($value.nm_pasien)?}" data-nm_poli="{?=strtolower($value.nm_poli)?}" data-no_reg="{?=strtolower($value.no_reg)?}"><i class="fa fa-bullhorn"></i><span class="hidden-xs hidden-sm"> Panggil</span></button>{/if}</td>
           <td style="white-space: nowrap;">{$value.nm_poli}</td>
           <td style="white-space: nowrap;">{$value.nm_dokter}</td>
-          <td style="white-space: nowrap;">{$value.png_jawab} {if: $value.kd_pj == 'BPJ'}<a href="{?=url([ADMIN, 'icare', 'riwayat', convertNorawat($value.no_rawat)])?}" class="btn btn-xs btn-info" data-toggle="modal" data-target="#riwayatModal"><span class="fa fa-file"></span> iCare</a>{/if}</td>
+          <td style="white-space: nowrap;">{$value.png_jawab} {if: $value.kd_pj == 'BPJ'}{if: $this->core->ActiveModule('vclaim_request')}<a href="{?=url([ADMIN, 'icare', 'riwayat', convertNorawat($value.no_rawat)])?}" class="btn btn-xs btn-info" data-toggle="modal" data-target="#riwayatModal"><span class="fa fa-file"></span> iCare</a>{/if}{if: $this->core->ActiveModule('pcare')}<a href="{?=url([ADMIN, 'icare', 'riwayat', convertNorawat($value.no_rawat), 'fktp'])?}" class="btn btn-xs btn-info" data-toggle="modal" data-target="#riwayatModal"><span class="fa fa-file"></span> iCare</a>{/if}{/if}</td>
           <td style="white-space: nowrap;">{$value.no_peserta}</td>
           <td style="white-space: nowrap;">{$value.tgl_registrasi} {$value.jam_reg}</td>
           <td style="white-space: nowrap;">{$value.stts}</td>

@@ -1,0 +1,297 @@
+<style media="screen">
+  table td,
+  table th {
+    padding: 5px;
+  }
+</style>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Bridging PCare BPJS</h4>
+</div>
+<div class="modal-body">
+  <div class="row" style="margin-top:20px;">
+    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+    <input type="hidden" id="addpendaftaran" name="addpendaftaran" class="form-control" value="">
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Nomor Rekam Medis</label>
+        <input type="text" id="id_pasien" name="id_pasien_bridging" class="form-control" value="{$pasien.no_rkm_medis}">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Nomor Pendaftaran</label>
+        <input type="text" id="id_pendaftaran" name="id_pendaftaran_bridging" class="form-control" value="{$pendaftaran.no_rawat}">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Nomor Kartu</label>
+        <input type="text" id="noKartu" name="noKartu" class="form-control" value="{$pasien.no_peserta}">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Kode Provider</label>
+        <input type="text" id="kdProviderPeserta" name="kdProviderPeserta" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Tanggal Daftar</label>
+        <input type="text" id="tglDaftar" name="tglDaftar" class="form-control tanggal" value="{?=date('d-m-Y')?}">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Poliklinik</label>
+        <input type="text" name="getPoli" id="getPoli" class="form-control" value="">
+        <ul class="list-group" id="poliList" style="z-index:1000;position:absolute;width:100%;"></ul>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Jenis Kunjungan</label>
+        <select class="form-control" name="kunjSakit" id="kunjSakit">
+          <option value="true">Kunjungan Sakit</option>
+          <option value="false">Kunjungan Sehat</option>
+        </select>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Jenis Layanan</label>
+        <select class="form-control" name="kdTkp" id="kdTkp">
+          <option value="10">Rawat Jalan</option>
+          <option value="20">Rawat Inap</option>
+          <option value="50">Promotif</option>
+        </select>
+      </div>
+    </div>
+    <div class="col col-md-12">
+      <div class="form-group">
+        <label for="poli">Keluhan</label>
+        <textarea name="keluhan" id="keluhan" class="form-control" rows="2" cols="80"></textarea>
+      </div>
+    </div>
+    <div class="col col-md-12">
+      <button class="btn btn-success simpanbridging">
+          Simpan
+      </button>
+      <button class="btn btn-danger hapusbridging">
+          Hapus
+      </button>
+    </div>
+  </div>
+  <div class="tampildatapendaftaran" style="margin-top:30px;">
+    <h4>Data Pendaftaran</h4>
+    <div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover display nowrap datatablebridgingpcare" width="100%">
+      <thead>
+        <tr>
+          <th>Tgl. Daftar</th>
+          <th>ID. Rawat</th>
+          <th>No. Urut</th>
+          <th>No. RM</th>
+          <th>Nama Pasien</th>
+          <th>No. Kartu</th>
+          <th>Nama Poli</th>
+          <th>Keluhan</th>
+          <th>Jenis Kunjungan</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {loop: $bridging_pcare}
+        <tr>
+          <td>{$value.tgl_daftar}</td>
+          <td>{$value.id_pendaftaran}</td>
+          <td>{$value.nomor_urut}</td>
+          <td>{$value.id_pasien}</td>
+          <td>{$value.pasien.nama_pasien}</td>
+          <td>{$value.nomor_jaminan}</td>
+          <td>{$value.nama_poli}</td>
+          <td>{$value.subyektif}</td>
+          <td>{?=($value.kunjungan_sakit === 'true') ? 'Kunjungan Sakit' : 'Kunjungan Sehat'?}</td>
+          <td>{$value.status_kirim}</td>
+        </tr>
+        {/loop}
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+
+<script type="text/javascript">
+  $('select').selectator();
+  $('.collapse').collapse();
+  $("#tampilfaskesspesialiskhusus").hide();
+  $("#rujukankhusus").click(function() {
+      if($(this).is(":checked")) {
+          $("#tampilfaskesspesialis").hide();
+          $("#tampilfaskesspesialiskhusus").show();
+      } else {
+          $("#tampilfaskesspesialis").show();
+          $("#tampilfaskesspesialiskhusus").hide();
+      }
+  });
+</script>
+<script type="text/javascript">
+   $(function () {
+       $('.tanggal').datetimepicker({
+         format: 'DD-MM-YYYY',
+         locale: 'id'
+       });
+   });
+</script>
+<script type="text/javascript">
+  $('.datatablebridgingpcare').DataTable();
+</script>
+<script type="text/javascript">
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var nomor_jaminan = $('input:text[name=noKartu]').val();
+  var url = baseURL + '/pcare/peserta/' + nomor_jaminan + '?t=' + mlite.token;
+
+  $.get(url, function(data){
+    // console.log(data);
+    var data = JSON.parse(data);
+    var json_obj = [data];
+    if(!json_obj[0]) {
+      alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
+    } else if(json_obj[0].metaData.code == 200) {
+      $('#kdProviderPeserta').val(data.response.kdProviderPst.kdProvider);
+    } else {
+      alert(json_obj[0].metaData.message);
+    }
+  });
+</script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var id_pasien = $('input:text[name=id_pasien_bridging]').val();
+      var target = $(e.target).attr("href")
+      if(target == '#pendaftaran') {
+        $('.tampildatapendaftaran').load(baseURL + '/pcare/bridgingpcarependaftarantampil/' + id_pasien + '?t=' + mlite.token);
+      }
+      if(target == '#kunjungan') {
+        $('.tampildatakunjungan').load(baseURL + '/pcare/bridgingpcarekunjungantampil/' + id_pasien + '?t=' + mlite.token);
+      }
+      if(target == '#rujukan') {
+        $('.tampildatarujukan').load(baseURL + '/pcare/bridgingpcarerujukantampil/' + id_pasien + '?t=' + mlite.token);
+      }
+    });
+  });
+</script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $(".simpanbridging").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var id_pasien = $('input:text[name=id_pasien_bridging]').val();
+    var id_pendaftaran = $('input:text[name=id_pendaftaran_bridging]').val();
+    var noKartu = $('input:text[name=noKartu]').val();
+    var kdProviderPeserta = $('input:text[name=kdProviderPeserta]').val();
+    var tglDaftar = $('#tglDaftar').val();
+    var kunjSakit = $('select[name=kunjSakit]').val();
+    var getPoli = $('input:text[name=getPoli]').val();
+    var kode_tkp = $('select[name=kdTkp]').val();
+    var keluhan = $('textarea[name=keluhan]').val();
+    var url = baseURL + '/pcare/bridgingpcaresave/?t=' + mlite.token;
+    $.post(url,{
+      id_pasien: id_pasien,
+      id_pendaftaran: id_pendaftaran,
+      noKartu: noKartu,
+      kdProviderPeserta: kdProviderPeserta,
+      tglDaftar: tglDaftar,
+      kunjSakit: kunjSakit,
+      getPoli: getPoli,
+      keluhan: keluhan,
+      kode_tkp: kode_tkp,
+      pendaftaran: 'true'
+    } ,function(data) {
+      console.log(data);
+      bootbox.alert(data);
+      $('.tampildatapendaftaran').load(baseURL + '/pcare/bridgingpcarependaftarantampil/' + id_pasien + '?t=' + mlite.token);
+    });
+  });
+  $(".editbridging").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var id_pasien = $('input:text[name=id_pasien_bridging]').val();
+    var id_pendaftaran = $('input:text[name=id_pendaftaran_bridging]').val();
+    var noKartu = $('input:text[name=noKartu]').val();
+    var kdProviderPeserta = $('input:text[name=kdProviderPeserta]').val();
+    var tglDaftar = $('#tglDaftar').val();
+    var kunjSakit = $('select[name=kunjSakit]').val();
+    var getPoli = $('input:text[name=getPoli]').val();
+    var kode_tkp = $('select[name=kdTkp]').val();
+    var keluhan = $('textarea[name=keluhan]').val();
+    var url = baseURL + '/pcare/bridgingpcareedit/?t=' + mlite.token;
+    $.post(url,{
+      id_pasien: id_pasien,
+      id_pendaftaran: id_pendaftaran,
+      noKartu: noKartu,
+      kdProviderPeserta: kdProviderPeserta,
+      tglDaftar: tglDaftar,
+      kunjSakit: kunjSakit,
+      getPoli: getPoli,
+      keluhan: keluhan,
+      kode_tkp: kode_tkp,
+      pendaftaran: 'true'
+    } ,function(data) {
+      console.log(data);
+      bootbox.alert(data);
+      $('.tampildatapendaftaran').load(baseURL + '/pcare/bridgingpcarependaftarantampil/' + id_pasien + '?t=' + mlite.token);
+    });
+  });
+  $(".hapusbridging").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var id_pendaftaran = $('input:text[name=id_pendaftaran_bridging]').val();
+    var url = baseURL + '/pcare/bridgingpcaredelete/?t=' + mlite.token;
+    $.post(url,{
+      id_pendaftaran:id_pendaftaran
+    } ,function(data) {
+      $('.tampildatapendaftaran').load(baseURL + '/pcare/bridgingpcarependaftarantampil/' + id_pasien + '?t=' + mlite.token);
+    });
+  });
+});
+</script>
+<script type="text/javascript">
+  $('#getPoli').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/pcare/poli?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var poli = json_obj[0].response.list;
+                       for (var i in poli) {
+                         output+='<li class=\"list-group-item link-class\">' + poli[i].kdPoli + ': ' + poli[i].nmPoli + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#poliList').fadeIn();
+                     $('#poliList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#poliList').on('click', 'li', function(){
+       $('#getPoli').val($(this).text());
+       var getPoli = $('#getPoli').val();
+       $('#poliList').fadeOut();
+  });
+</script>
