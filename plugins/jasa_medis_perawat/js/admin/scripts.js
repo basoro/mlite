@@ -37,7 +37,7 @@ jQuery().ready(function () {
                         for (var iii = 0; iii < res[i]['rawat_jl_pr'][ii]['detail'].length; iii++) {
                             eTable += "<tr>";
                             eTable += '<td></td>';
-                            eTable += '<td>- ' + res[i]['rawat_jl_pr'][ii]['detail'][iii]['nm_perawatan'] + ' : Rp. ' + (res[i]['rawat_jl_pr'][ii]['detail'][iii]['tarif_tindakandr']/1000).toFixed(3) + '</td>';
+                            eTable += '<td>- ' + res[i]['rawat_jl_pr'][ii]['detail'][iii]['nm_perawatan'] + ' : Rp. ' + (res[i]['rawat_jl_pr'][ii]['detail'][iii]['tarif_tindakanpr']/1000).toFixed(3) + '</td>';
                             eTable += "</tr>";
                         }    
                         eTable += '<tr>';

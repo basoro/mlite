@@ -36,7 +36,7 @@ class Admin extends AdminModule
             $tgl_perawatan = $this->db('rawat_jl_pr')
                 ->select(['tgl_perawatan'])
                 ->where('nip', $row['nip'])
-                ->where('stts_bayar', 'Sudah')
+                // ->where('stts_bayar', 'Sudah')
                 ->where('tgl_perawatan', '>=', $tgl_awal)
                 ->where('tgl_perawatan', '<=', $tgl_akhir)
                 ->group('tgl_perawatan')
@@ -50,14 +50,14 @@ class Admin extends AdminModule
                     ->select(['rawat_jl_pr.kd_jenis_prw', 'nm_perawatan', 'rawat_jl_pr.tarif_tindakanpr'])
                     ->where('tgl_perawatan', $row2['tgl_perawatan'])
                     ->where('nip', $row['nip'])
-                    ->where('stts_bayar', 'Sudah')
+                    // ->where('stts_bayar', 'Sudah')
                     ->toArray();
                 $row2['subtotal'] = 0;
                 foreach($row2['detail'] as $row3) {
                     $row2['subtotal'] += $row3['tarif_tindakanpr'];
                 }
                 $row['total'] += $row2['subtotal'];
-                $row['rawat_jl_dr'][] = $row2;
+                $row['rawat_jl_pr'][] = $row2;
             }
 
             $this->assign['grandtotal'] += $row['total'];
@@ -97,7 +97,7 @@ class Admin extends AdminModule
                 $tgl_perawatan = $this->db('rawat_jl_pr')
                     ->select(['tgl_perawatan'])
                     ->where('nip', $row['nip'])
-                    ->where('stts_bayar', 'Sudah')
+                    // ->where('stts_bayar', 'Sudah')
                     ->where('tgl_perawatan', '>=', $tgl_awal)
                     ->where('tgl_perawatan', '<=', $tgl_akhir)
                     ->group('tgl_perawatan')
@@ -111,14 +111,14 @@ class Admin extends AdminModule
                         ->select(['rawat_jl_pr.kd_jenis_prw', 'nm_perawatan', 'rawat_jl_pr.tarif_tindakanpr'])
                         ->where('tgl_perawatan', $row2['tgl_perawatan'])
                         ->where('nip', $row['nip'])
-                        ->where('stts_bayar', 'Sudah')
+                        // ->where('stts_bayar', 'Sudah')
                         ->toArray();
                     $row2['subtotal'] = 0;
                     foreach($row2['detail'] as $row3) {
                         $row2['subtotal'] += $row3['tarif_tindakanpr'];
                     }
                     $row['total'] += $row2['subtotal'];
-                    $row['rawat_jl_dr'][] = $row2;
+                    $row['rawat_jl_pr'][] = $row2;
                 }
 
                 $this->assign['grandtotal'] += $row['total'];

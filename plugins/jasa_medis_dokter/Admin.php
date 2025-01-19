@@ -36,7 +36,7 @@ class Admin extends AdminModule
             $tgl_perawatan = $this->db('rawat_jl_dr')
                 ->select(['tgl_perawatan'])
                 ->where('kd_dokter', $row['kd_dokter'])
-                ->where('stts_bayar', 'Sudah')
+                // ->where('stts_bayar', 'Sudah')
                 ->where('tgl_perawatan', '>=', $tgl_awal)
                 ->where('tgl_perawatan', '<=', $tgl_akhir)
                 ->group('tgl_perawatan')
@@ -50,7 +50,7 @@ class Admin extends AdminModule
                     ->select(['rawat_jl_dr.kd_jenis_prw', 'nm_perawatan', 'rawat_jl_dr.tarif_tindakandr'])
                     ->where('tgl_perawatan', $row2['tgl_perawatan'])
                     ->where('kd_dokter', $row['kd_dokter'])
-                    ->where('stts_bayar', 'Sudah')
+                    // ->where('stts_bayar', 'Sudah')
                     ->toArray();
                 $row2['subtotal'] = 0;
                 foreach($row2['detail'] as $row3) {
@@ -97,7 +97,7 @@ class Admin extends AdminModule
                 $tgl_perawatan = $this->db('rawat_jl_dr')
                     ->select(['tgl_perawatan'])
                     ->where('kd_dokter', $row['kd_dokter'])
-                    ->where('stts_bayar', 'Sudah')
+                    // ->where('stts_bayar', 'Sudah')
                     ->where('tgl_perawatan', '>=', $tgl_awal)
                     ->where('tgl_perawatan', '<=', $tgl_akhir)
                     ->group('tgl_perawatan')
@@ -111,7 +111,7 @@ class Admin extends AdminModule
                         ->select(['rawat_jl_dr.kd_jenis_prw', 'nm_perawatan', 'rawat_jl_dr.tarif_tindakandr'])
                         ->where('tgl_perawatan', $row2['tgl_perawatan'])
                         ->where('kd_dokter', $row['kd_dokter'])
-                        ->where('stts_bayar', 'Sudah')
+                        // ->where('stts_bayar', 'Sudah')
                         ->toArray();
                     $row2['subtotal'] = 0;
                     foreach($row2['detail'] as $row3) {
