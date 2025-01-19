@@ -5,7 +5,7 @@ return [
     'description'   =>  'Pengelolaan pengguna',
     'author'        =>  'Basoro.ID',
     'version'       =>  '1.1',
-    'compatibility' =>  '4.*.*',
+    'compatibility' =>  '5.*.*',
     'icon'          =>  'user',
     'pages'         =>  ['Login' => 'login'],
 

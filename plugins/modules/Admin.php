@@ -215,7 +215,7 @@ class Admin extends AdminModule
                     $other['basic'] = false;
                 }
 
-                $other['compatible'] = $this->checkCompatibility(isset_or($details['compatibility'], '4.0.0'));
+                $other['compatible'] = $this->checkCompatibility(isset_or($details['compatibility'], '5.0.0'));
                 $result[] = $details + $urls + $other;
             }
         }

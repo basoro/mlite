@@ -767,6 +767,6 @@ switch ($version) {
           `nomor_surat` varchar(10) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-        $return = '4.1.9'; 
+        $return = '5.0.0'; 
     }
 return $return;
