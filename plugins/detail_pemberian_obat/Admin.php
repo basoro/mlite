@@ -57,9 +57,12 @@ class Admin extends AdminModule
         foreach($result as $row) {
             $databarang = $this->db('databarang')->select('nama_brng')->where('kode_brng', $row['kode_brng'])->oneArray();
             $bangsal = $this->db('bangsal')->select('nm_bangsal')->where('kd_bangsal', $row['kd_bangsal'])->oneArray();
+            $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat']);
             $data[] = array(
                 'tgl_perawatan'=>$row['tgl_perawatan'],
                 'jam'=>$row['jam'],
+                'no_rkm_medis' => $no_rkm_medis, 
+                'nm_pasien' => $this->core->getPasienInfo('nm_pasien', $no_rkm_medis), 
                 'no_rawat'=>$row['no_rawat'],
                 'kode_brng'=>$row['kode_brng'],
                 'nama_brng'=>$databarang['nama_brng'],
@@ -116,9 +119,12 @@ class Admin extends AdminModule
             foreach($result as $row) {
                 $databarang = $this->db('databarang')->select('nama_brng')->where('kode_brng', $row['kode_brng'])->oneArray();
                 $bangsal = $this->db('bangsal')->select('nm_bangsal')->where('kd_bangsal', $row['kd_bangsal'])->oneArray();
+                $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat']);
                 $data[] = array(
                     'tgl_perawatan'=>$row['tgl_perawatan'],
                     'jam'=>$row['jam'],
+                    'no_rkm_medis' => $no_rkm_medis, 
+                    'nm_pasien' => $this->core->getPasienInfo('nm_pasien', $no_rkm_medis), 
                     'no_rawat'=>$row['no_rawat'],
                     'kode_brng'=>$row['kode_brng'],
                     'nama_brng'=>$databarang['nama_brng'],

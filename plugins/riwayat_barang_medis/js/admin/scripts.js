@@ -97,13 +97,18 @@ jQuery().ready(function () {
         var search_field_riwayat_barang_medis = $('#search_field_riwayat_barang_medis').val();
         var search_text_riwayat_barang_medis = $('#search_text_riwayat_barang_medis').val();
 
+        var tgl_awal = $('#tgl_awal').val();
+        var tgl_akhir = $('#tgl_akhir').val();
+        
         $.ajax({
             url: "{?=url([ADMIN,'riwayat_barang_medis','aksi'])?}",
             method: "POST",
             data: {
                 typeact: 'lihat', 
                 search_field_riwayat_barang_medis: search_field_riwayat_barang_medis, 
-                search_text_riwayat_barang_medis: search_text_riwayat_barang_medis
+                search_text_riwayat_barang_medis: search_text_riwayat_barang_medis, 
+                tgl_awal: tgl_awal, 
+                tgl_akhir: tgl_akhir
             },
             dataType: 'json',
             success: function (res) {

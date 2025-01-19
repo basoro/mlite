@@ -26,6 +26,8 @@ jQuery().ready(function () {
         "columns": [
 { 'data': 'tgl_perawatan' },
 { 'data': 'jam' },
+{ 'data': 'no_rkm_medis' },
+{ 'data': 'nm_pasien' },
 { 'data': 'no_rawat' },
 { 'data': 'kode_brng' },
 { 'data': 'nama_brng' },
@@ -58,7 +60,9 @@ jQuery().ready(function () {
 { 'targets': 12},
 { 'targets': 13},
 { 'targets': 14},
-{ 'targets': 15}
+{ 'targets': 15},
+{ 'targets': 16},
+{ 'targets': 17}
 
         ],
         buttons: [],
@@ -103,11 +107,13 @@ jQuery().ready(function () {
             },
             dataType: 'json',
             success: function (res) {
-                var eTable = "<div class='table-responsive'><table id='tbl_lihat_detail_pemberian_obat' class='table display dataTable' style='width:100%'><thead><th>Tgl Perawatan</th><th>Jam</th><th>No Rawat</th><th>Kode Brng</th><th>Nama Brng</th><th>H Beli</th><th>Biaya Obat</th><th>Jml</th><th>Embalase</th><th>Tuslah</th><th>Total</th><th>Status</th><th>Kd Bangsal</th><th>Nama Bangsal</th><th>No Batch</th><th>No Faktur</th></thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_detail_pemberian_obat' class='table display dataTable' style='width:100%'><thead><th>Tgl Perawatan</th><th>Jam</th><th>No RM</th><th>Nama Pasien</th><th>No Rawat</th><th>Kode Brng</th><th>Nama Brng</th><th>H Beli</th><th>Biaya Obat</th><th>Jml</th><th>Embalase</th><th>Tuslah</th><th>Total</th><th>Status</th><th>Kd Bangsal</th><th>Nama Bangsal</th><th>No Batch</th><th>No Faktur</th></thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     eTable += '<td>' + res[i]['tgl_perawatan'] + '</td>';
                     eTable += '<td>' + res[i]['jam'] + '</td>';
+                    eTable += '<td>' + res[i]['no_rkm_medis'] + '</td>';
+                    eTable += '<td>' + res[i]['nm_pasien'] + '</td>';
                     eTable += '<td>' + res[i]['no_rawat'] + '</td>';
                     eTable += '<td>' + res[i]['kode_brng'] + '</td>';
                     eTable += '<td>' + res[i]['nama_brng'] + '</td>';

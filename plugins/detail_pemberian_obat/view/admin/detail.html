@@ -10,6 +10,8 @@
             {loop: $detail}
             <tr><td>Tgl Perawatan</td><td>{$value.tgl_perawatan}</td><tr>
 <tr><td>Jam</td><td>{$value.jam}</td><tr>
+<tr><td>No RM</td><td>{?=$this->core->getRegPeriksaInfo('no_rkm_medis', $value.no_rawat)?}</td><tr>
+<tr><td>Nama Pasien</td><td>{?=$this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $value.no_rawat))?}</td><tr>
 <tr><td>No Rawat</td><td>{$value.no_rawat}</td><tr>
 <tr><td>Kode Brng</td><td>{$value.kode_brng}</td><tr>
 <tr><td>H Beli</td><td>{$value.h_beli}</td><tr>
