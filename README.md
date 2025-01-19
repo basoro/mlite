@@ -1,5 +1,5 @@
 <p align="right">
-    <b>Codename: Ataaka</b><br>
+    <b>Codename: Kirana</b><br>
 </p>
 
 # mLITE
