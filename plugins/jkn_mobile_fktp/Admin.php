@@ -16,7 +16,7 @@ class Admin extends AdminModule
       $this->consumerID = $this->settings->get('pcare.consumerID');
       $this->consumerSecret = $this->settings->get('pcare.consumerSecret');
       $this->consumerUserKey = $this->settings->get('pcare.consumerUserKey');
-      $this->consumerUserKeyAntrol = $this->settings->get('pcare.hari_antrol');
+      $this->consumerUserKeyAntrol = $this->settings->get('pcare.consumerUserKeyAntrol');
       $this->api_url = $this->settings->get('pcare.PCareApiUrl');
       $this->api_url_antrol = 'https://apijkn.bpjs-kesehatan.go.id/antreanfktp/';
       $this->api_url_icare = 'https://apijkn.bpjs-kesehatan.go.id/wsIHS/api/pcare/validate';
