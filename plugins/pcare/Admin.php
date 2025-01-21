@@ -1954,18 +1954,18 @@ class Admin extends AdminModule
     }
 
     $alergimakanan = 'null';
-    if(isset($_POST['getAlergiMakanan']) && $_POST['getAlergiMakanan'] !=''){
-      $alergimakanan = strtok($_POST['getAlergiMakanan'], ':');
+    if(isset($_POST['getAlergi1']) && $_POST['getAlergi1'] !=''){
+      $alergimakanan = strtok($_POST['getAlergi1'], ':');
     }
 
     $alergiudara = 'null';
-    if(isset($_POST['getAlergiUdara']) && $_POST['getAlergiUdara'] !=''){
-      $alergiudara = strtok($_POST['getAlergiUdara'], ':');
+    if(isset($_POST['getAlergi2']) && $_POST['getAlergi2'] !=''){
+      $alergiudara = strtok($_POST['getAlergi2'], ':');
     }
 
     $alergiobat = 'null';
-    if(isset($_POST['getAlergiObat']) && $_POST['getAlergiObat'] !=''){
-      $alergiobat = strtok($_POST['getAlergiObat'], ':');
+    if(isset($_POST['getAlergi3']) && $_POST['getAlergi3'] !=''){
+      $alergiobat = strtok($_POST['getAlergi3'], ':');
     }
 
     $prognosa = 'null';
@@ -1986,7 +1986,7 @@ class Admin extends AdminModule
     $noUrut = '';
     $noKunjungan = '';
     
-    if($_POST['pendaftaran'] == 'true') {
+    if(isset($_POST['pendaftaran']) && $_POST['pendaftaran'] == 'true') {
       $data = [
         'kdProviderPeserta' => $_POST['kdProviderPeserta'],
         'tglDaftar' => $_POST['tglDaftar'],
@@ -2049,6 +2049,9 @@ class Admin extends AdminModule
 
       }
     }    
+
+    $_POST['terapiObat'] = 'tidak ada';
+    $_POST['terapiNonObat'] = 'tidak ada';
 
     if(isset($_POST['rujukanlanjut']) && $_POST['rujukanlanjut'] == 'false') {
       $data = [
@@ -2180,6 +2183,7 @@ class Admin extends AdminModule
         'suhu' => intval($_POST['suhu_tubuh'])
       ];
 
+      $data_test = json_encode($data);
       $data = json_encode($data);
 
       date_default_timezone_set('UTC');
@@ -2212,6 +2216,7 @@ class Admin extends AdminModule
           echo $noKunjungan;
         } else {
             //echo json_encode($json);
+            // echo $data_test;
             echo $message;
         }
 
@@ -2321,7 +2326,7 @@ class Admin extends AdminModule
         "no_rawat" => $_POST['id_pendaftaran'],
         "no_rkm_medis" => $_POST['id_pasien'],
         "tgl_daftar" => $_POST['tglDaftar'],
-        "nomor_kunjungan" => $noKunjungan,
+        "nomor_urut" => $noUrut,
         "kode_provider_peserta" => $_POST['kdProviderPeserta'],
         "nomor_jaminan" => $_POST['noKartu'],
         "kode_poli" => strtok($_POST['getPoli'], ':'),
@@ -2363,16 +2368,16 @@ class Admin extends AdminModule
         "nama_diagnosa2" => substr($_POST['getDiagnosa2'], strpos($_POST['getDiagnosa2'], ': ') + 1),
         "kode_diagnosa3" => strtok($_POST['getDiagnosa3'], ':'),
         "nama_diagnosa3" => substr($_POST['getDiagnosa3'], strpos($_POST['getDiagnosa3'], ': ') + 1),
-        "kode_alergi_makanan" => strtok($_POST['getAlergiMakanan'], ':'),
-        "nama_alergi_makanan" => substr($_POST['getAlergiMakanan'], strpos($_POST['getAlergiMakanan'], ': ') + 1),
-        "kode_alergi_udara" => strtok($_POST['getAlergiUdara'], ':'),
-        "nama_alergi_udara" => substr($_POST['getAlergiUdara'], strpos($_POST['getAlergiObat'], ': ') + 1),
-        "kode_alergi_obat" => strtok($_POST['getAlergiObat'], ':'),
-        "nama_alergi_obat" => substr($_POST['getAlergiObat'], strpos($_POST['getAlergiObat'], ': ') + 1),
-        "kode_prognosa" => strtok($_POST['getPrognosa'], ':'),
-        "nama_prognosa" => substr($_POST['getPrognosa'], strpos($_POST['getPrognosa'], ': ') + 1),
-        "terapi_obat" => $_POST['terapiObat'],
-        "terapi_non_obat" => $_POST['terapiNonObat'],
+        // "kode_alergi_makanan" => strtok($_POST['getAlergi1'], ':'),
+        // "nama_alergi_makanan" => substr($_POST['getAlergi1'], strpos($_POST['getAlergi1'], ': ') + 1),
+        // "kode_alergi_udara" => strtok($_POST['getAlergi2'], ':'),
+        // "nama_alergi_udara" => substr($_POST['getAlergi2'], strpos($_POST['getAlergi2'], ': ') + 1),
+        // "kode_alergi_obat" => strtok($_POST['getAlergi3'], ':'),
+        // "nama_alergi_obat" => substr($_POST['getAlergi3'], strpos($_POST['getAlergi3'], ': ') + 1),
+        // "kode_prognosa" => strtok($_POST['getPrognosa'], ':'),
+        // "nama_prognosa" => substr($_POST['getPrognosa'], strpos($_POST['getPrognosa'], ': ') + 1),
+        // "terapi_obat" => $_POST['terapiObat'],
+        // "terapi_non_obat" => $_POST['terapiNonObat'],
         "tgl_estimasi_rujuk" => $_POST['tglEstRujuk'],
         "kode_ppk" => strtok($_POST['getReferensiFaskesSpesialis'], ':'),
         "nama_ppk" => substr($_POST['getReferensiFaskesSpesialis'], strpos($_POST['getReferensiFaskesSpesialis'], ': ') + 1),
@@ -2407,18 +2412,18 @@ class Admin extends AdminModule
     }
 
     $alergimakanan = 'null';
-    if($_POST['getAlergiMakanan'] !=''){
-      $alergimakanan = strtok($_POST['getAlergiMakanan'], ':');
+    if(isset($_POST['getAlergi1']) && $_POST['getAlergi1'] !=''){
+      $alergimakanan = strtok($_POST['getAlergi1'], ':');
     }
 
     $alergiudara = 'null';
-    if($_POST['getAlergiUdara'] !=''){
-      $alergiudara = strtok($_POST['getAlergiUdara'], ':');
+    if(isset($_POST['getAlergi2']) && $_POST['getAlergi2'] !=''){
+      $alergiudara = strtok($_POST['getAlergi2'], ':');
     }
 
     $alergiobat = 'null';
-    if($_POST['getAlergiObat'] !=''){
-      $alergiobat = strtok($_POST['getAlergiObat'], ':');
+    if(isset($_POST['getAlergi3']) && $_POST['getAlergi3'] !=''){
+      $alergiobat = strtok($_POST['getAlergi3'], ':');
     }
 
     $prognosa = 'null';
@@ -2436,6 +2441,9 @@ class Admin extends AdminModule
       $diagnosa3 = strtok($_POST['getDiagnosa3'], ':');
     }
 
+    $_POST['terapiObat'] = 'tidak ada';
+    $_POST['terapiNonObat'] = 'tidak ada';
+    $_POST['anamnesa'] = 'Sakit gigi dan mulut';
     if($_POST['rujukanlanjut'] == 'false') {
       $data = [
         'noKunjungan' => $noKunjungan,
@@ -2645,8 +2653,8 @@ class Admin extends AdminModule
     }
 
     if($code == 200) {
-      $this->db('bridging_pcare')
-      ->where('id_pendaftaran', $_POST['id_pendaftaran'])
+      $this->db('mlite_bridging_pcare')
+      ->where('no_rawat', $_POST['id_pendaftaran'])
       ->save([
         "sistole" => $_POST['sistole'],
         "diastole" => $_POST['diastole'],
@@ -2674,16 +2682,16 @@ class Admin extends AdminModule
         "nama_diagnosa2" => substr($_POST['getDiagnosa2'], strpos($_POST['getDiagnosa2'], ': ') + 1),
         "kode_diagnosa3" => strtok($_POST['getDiagnosa3'], ':'),
         "nama_diagnosa3" => substr($_POST['getDiagnosa3'], strpos($_POST['getDiagnosa3'], ': ') + 1),
-        "kode_alergi_makanan" => strtok($_POST['getAlergiMakanan'], ':'),
-        "nama_alergi_makanan" => substr($_POST['getAlergiMakanan'], strpos($_POST['getAlergiMakanan'], ': ') + 1),
-        "kode_alergi_udara" => strtok($_POST['getAlergiUdara'], ':'),
-        "nama_alergi_udara" => substr($_POST['getAlergiUdara'], strpos($_POST['getAlergiObat'], ': ') + 1),
-        "kode_alergi_obat" => strtok($_POST['getAlergiObat'], ':'),
-        "nama_alergi_obat" => substr($_POST['getAlergiObat'], strpos($_POST['getAlergiObat'], ': ') + 1),
-        "kode_prognosa" => strtok($_POST['getPrognosa'], ':'),
-        "nama_prognosa" => substr($_POST['getPrognosa'], strpos($_POST['getPrognosa'], ': ') + 1),
-        "terapi_obat" => $_POST['terapiObat'],
-        "terapi_non_obat" => $_POST['terapiNonObat'],
+        // "kode_alergi_makanan" => strtok($_POST['getAlergi1'], ':'),
+        // "nama_alergi_makanan" => substr($_POST['getAlergi1'], strpos($_POST['getAlergi1'], ': ') + 1),
+        // "kode_alergi_udara" => strtok($_POST['getAlergi2'], ':'),
+        // "nama_alergi_udara" => substr($_POST['getAlergi2'], strpos($_POST['getAlergi2'], ': ') + 1),
+        // "kode_alergi_obat" => strtok($_POST['getAlergi3'], ':'),
+        // "nama_alergi_obat" => substr($_POST['getAlergi3'], strpos($_POST['getAlergi3'], ': ') + 1),
+        // "kode_prognosa" => strtok($_POST['getPrognosa'], ':'),
+        // "nama_prognosa" => substr($_POST['getPrognosa'], strpos($_POST['getPrognosa'], ': ') + 1),
+        // "terapi_obat" => $_POST['terapiObat'],
+        // "terapi_non_obat" => $_POST['terapiNonObat'],
         "tgl_estimasi_rujuk" => $_POST['tglEstRujuk'],
         "kode_ppk" => strtok($_POST['getReferensiFaskesSpesialis'], ':'),
         "nama_ppk" => substr($_POST['getReferensiFaskesSpesialis'], strpos($_POST['getReferensiFaskesSpesialis'], ': ') + 1),

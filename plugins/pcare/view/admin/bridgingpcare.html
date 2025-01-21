@@ -534,6 +534,10 @@ $(document).ready(function(){
     var anamnesa = $('textarea[name=anamnesa]').val();
     var getStatusPulang = $('input:text[name=getStatusPulang]').val();
     var getKesadaran = $('input:text[name=getKesadaran]').val();
+    var getAlergi1 = $('input:text[name=getAlergi1]').val();
+    var getAlergi2 = $('input:text[name=getAlergi2]').val();
+    var getAlergi3 = $('input:text[name=getAlergi3]').val();
+    var getPrognosa = $('input:text[name=getPrognosa]').val();
     var getDiagnosa1 = $('input:text[name=getDiagnosa1]').val();
     var getDiagnosa2 = $('input:text[name=getDiagnosa2]').val();
     var getDiagnosa3 = $('input:text[name=getDiagnosa3]').val();
@@ -587,6 +591,133 @@ $(document).ready(function(){
       anamnesa: anamnesa,
       getStatusPulang: getStatusPulang,
       getKesadaran: getKesadaran,
+      getAlergi1: getAlergi1,
+      getAlergi2: getAlergi2,
+      getAlergi3: getAlergi3,
+      getPrognosa: getPrognosa,
+      getDiagnosa1: getDiagnosa1,
+      getDiagnosa2: getDiagnosa2,
+      getDiagnosa3: getDiagnosa3,
+      rujukanlanjut: rujukanlanjut,
+      rujukankhusus: rujukankhusus,
+      getReferensiSpesialis: getReferensiSpesialis,
+      getReferensiSubSpesialis: getReferensiSubSpesialis,
+      getReferensiSarana: getReferensiSarana,
+      tglEstRujuk: tglEstRujuk,
+      getReferensiFaskesSpesialis: getReferensiFaskesSpesialis,
+      getReferensiKhusus: getReferensiKhusus,
+      getFaskesKhusus: getFaskesKhusus,
+      catatan: catatan,
+      getTACC: getTACC,
+      alasanTacc: alasanTacc, 
+      pendaftaran: 'false'
+    } ,function(data) {
+      console.log(data);
+      // data = JSON.parse(data);
+      alert(data);
+      $('.tampildatapendaftaran').load(baseURL + '/pcare/bridgingpcarependaftarantampil/' + id_pasien + '?t=' + mlite.token);
+    });
+  });
+  $(".editbridging").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var id_pasien = $('input:text[name=id_pasien_bridging]').val();
+    var id_pendaftaran = $('input:text[name=id_pendaftaran_bridging]').val();
+    var noKartu = $('input:text[name=noKartu]').val();
+    var kdProviderPeserta = $('input:text[name=kdProviderPeserta]').val();
+    var tglDaftar = $('#tglDaftar').val();
+    var kunjSakit = $('select[name=kunjSakit]').val();
+    var getPoli = $('input:text[name=getPoli]').val();
+    var kode_tkp = $('select[name=kdTkp]').val();
+    var keluhan = $('textarea[name=keluhan]').val();
+    var sistole = $('input:text[name=sistole_bridging]').val();
+    var diastole = $('input:text[name=diastole_bridging]').val();
+    var nadi = $('input:text[name=nadi_bridging]').val();
+    var respirasi = $('input:text[name=respirasi_bridging]').val();
+    var suhu_tubuh = $('input:text[name=suhu_tubuh_bridging]').val();
+    var tinggi = $('input:text[name=tinggi_bridging]').val();
+    var berat = $('input:text[name=berat_bridging]').val();
+    var lingkar_perut = $('input:text[name=lingkar_perut_bridging]').val();
+    if($('#kunjungan_bridging').is(':checked')){
+      var kunjungan = 'true';
+    }
+    else{
+      var kunjungan = 'false';
+    }
+    var tglPulang = $('#tglPulang').val();
+    var tglKunjungan = $('input:text[name=tglKunjungan]').val();
+    var getDokter = $('input:text[name=getDokter]').val();
+    var anamnesa = $('textarea[name=anamnesa]').val();
+    var terapi = $('textarea[name=terapi_bridging]').val();
+    var getStatusPulang = $('input:text[name=getStatusPulang]').val();
+    var getKesadaran = $('input:text[name=getKesadaran]').val();
+
+    var getAlergi1 = $('input:text[name=getAlergi1]').val();
+    var getAlergi2 = $('input:text[name=getAlergi2]').val();
+    var getAlergi3 = $('input:text[name=getAlergi3]').val();
+    var getPrognosa = $('input:text[name=getPrognosa]').val();
+
+    var terapiObat = $('input:text[name=terapiObat]').val();
+    var terapiNonObat = $('input:text[name=terapiNonObat]').val();
+
+    var getDiagnosa1 = $('input:text[name=getDiagnosa1]').val();
+    var getDiagnosa2 = $('input:text[name=getDiagnosa2]').val();
+    var getDiagnosa3 = $('input:text[name=getDiagnosa3]').val();
+    if($('#rujukanlanjut').is(':checked')){
+      var rujukanlanjut = 'true';
+    }
+    else{
+      var rujukanlanjut = 'false';
+    }
+    if($('#rujukankhusus').is(':checked')){
+      var rujukankhusus = 'true';
+    }
+    else{
+      var rujukankhusus = 'false';
+    }
+    var getReferensiSpesialis = $('input:text[name=getReferensiSpesialis]').val();
+    var getReferensiSubSpesialis = $('input:text[name=getReferensiSubSpesialis]').val();
+    var getReferensiSarana = $('input:text[name=getReferensiSarana]').val();
+    var tglEstRujuk = $('#tglEstRujuk').val();
+    var getReferensiFaskesSpesialis = $('input:text[name=getReferensiFaskesSpesialis]').val();
+    var getReferensiKhusus = $('input:text[name=getReferensiKhusus]').val();
+    var getFaskesKhusus = $('input:text[name=getFaskesKhusus]').val();
+    var catatan = $('textarea[name=catatan]').val();
+    var getTACC = $('select[name=getTACC]').val();
+    var alasanTacc = $('#getTACC option:selected').text();
+    var url = baseURL + '/pcare/bridgingpcareedit/?t=' + mlite.token;
+    //alert(tglPulang + ' - ' + sistole);
+    $.post(url,{
+      id_pasien: id_pasien,
+      id_pendaftaran: id_pendaftaran,
+      noKartu: noKartu,
+      kdProviderPeserta: kdProviderPeserta,
+      tglDaftar: tglDaftar,
+      kunjSakit: kunjSakit,
+      getPoli: getPoli,
+      keluhan: keluhan,
+      kode_tkp: kode_tkp,
+      sistole: sistole,
+      diastole: diastole,
+      nadi: nadi,
+      respirasi: respirasi,
+      suhu_tubuh: suhu_tubuh,
+      tinggi: tinggi,
+      berat: berat,
+      lingkar_perut: lingkar_perut,
+      kunjungan: kunjungan,
+      tglPulang: tglPulang,
+      tglKunjungan: tglKunjungan,
+      getDokter: getDokter,
+      anamnesa: anamnesa, 
+      terapi: terapi,
+      getStatusPulang: getStatusPulang,
+      getKesadaran: getKesadaran,
+      getAlergi1: getAlergi1,
+      getAlergi2: getAlergi2,
+      getAlergi3: getAlergi3,
+      getPrognosa: getPrognosa, 
+      terapiObat: terapiObat, 
+      terapiNonObat: terapiNonObat, 
       getDiagnosa1: getDiagnosa1,
       getDiagnosa2: getDiagnosa2,
       getDiagnosa3: getDiagnosa3,
@@ -604,8 +735,7 @@ $(document).ready(function(){
       alasanTacc: alasanTacc
     } ,function(data) {
       console.log(data);
-      // data = JSON.parse(data);
-      alert(data);
+      bootbox.alert(data);
       $('.tampildatapendaftaran').load(baseURL + '/pcare/bridgingpcarependaftarantampil/' + id_pasien + '?t=' + mlite.token);
     });
   });

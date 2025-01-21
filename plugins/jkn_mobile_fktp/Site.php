@@ -69,19 +69,19 @@ class Site extends SiteModule
         
         $kode = '';
 
-        $poli = $this->db('maping_poliklinik_pcare')->where('kd_poli_rs', $antrean_periksa['kd_poli'])->oneArray();
+        $poli = $this->db('maping_poliklinik_pcare')->like('kd_poli_rs', isset_or($antrean_periksa['kd_poli']))->oneArray();
         
-        if($poli['kd_poli_pcare'] == '001') {
+        if(isset_or($poli['kd_poli_pcare']) == '001') {
             $kode_antrean = 'A';
         }
-        if($poli['kd_poli_pcare'] == '002') {
+        if(isset_or($poli['kd_poli_pcare']) == '002') {
             $kode_antrean = 'B';
         }
-        if($poli['kd_poli_pcare'] == '003') {
+        if(isset_or($poli['kd_poli_pcare']) == '003') {
             $kode_antrean = 'C';
         }
         
-        $antrian_panggil = $kode_antrean . '-' .isset_or($antrean_periksa['no_reg'], '0');
+        $antrian_panggil = isset_or($kode_antrean, '0') . '-' .isset_or($antrean_periksa['no_reg'], '0');
         $total_antrean = isset_or($total, '0');
         $antrean = $antrian_panggil;
         $sisa_antrean = isset_or($sisa_antrean, '0');
@@ -1017,7 +1017,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
+        if($header[$this->settings->get('jkn_mobile_fktp.header')] == false) {
             $response = array(
                 'metadata' => array(
                     'message' => 'Token expired',
@@ -1025,7 +1025,8 @@ class Site extends SiteModule
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
+
+        } else if ($header[$this->settings->get('jkn_mobile_fktp.header_username')] == $this->settings->get('jkn_mobile_fktp.username') && $header[$this->settings->get('jkn_mobile_fktp.header')] == $this->_getToken()) {
             if (empty($decode['nomorkartu'])){
                 $response = array(
                     'metadata' => array(
@@ -1378,21 +1379,21 @@ class Site extends SiteModule
                     $_POST['namakeluarga'] = '-';
                     $_POST['kd_pj'] = 'BPJ';
                     $_POST['no_peserta'] = $decode['nomorkartu'];
-                    $_POST['kd_kel'] = $this->settings->get('jkn_mobile.kdkel');
-                    $_POST['kd_kec'] = $this->settings->get('jkn_mobile.kdkec');
-                    $_POST['kd_kab'] = $this->settings->get('jkn_mobile.kdkab');
+                    $_POST['kd_kel'] = $this->settings->get('jkn_mobile_fktp.kdkel');
+                    $_POST['kd_kec'] = $this->settings->get('jkn_mobile_fktp.kdkec');
+                    $_POST['kd_kab'] = $this->settings->get('jkn_mobile_fktp.kdkab');
                     $_POST['pekerjaanpj'] = '-';
                     $_POST['alamatpj'] = '-';
                     $_POST['kelurahanpj'] = '-';
                     $_POST['kecamatanpj'] = '-';
                     $_POST['kabupatenpj'] = '-';
-                    $_POST['perusahaan_pasien'] = $this->settings->get('jkn_mobile.perusahaan_pasien');
-                    $_POST['suku_bangsa'] = $this->settings->get('jkn_mobile.suku_bangsa');
-                    $_POST['bahasa_pasien'] = $this->settings->get('jkn_mobile.bahasa_pasien');
-                    $_POST['cacat_fisik'] = $this->settings->get('jkn_mobile.cacat_fisik');
+                    $_POST['perusahaan_pasien'] = $this->settings->get('jkn_mobile_fktp.perusahaan_pasien');
+                    $_POST['suku_bangsa'] = $this->settings->get('jkn_mobile_fktp.suku_bangsa');
+                    $_POST['bahasa_pasien'] = $this->settings->get('jkn_mobile_fktp.bahasa_pasien');
+                    $_POST['cacat_fisik'] = $this->settings->get('jkn_mobile_fktp.cacat_fisik');
                     $_POST['email'] = '';
                     $_POST['nip'] = '';
-                    $_POST['kd_prop'] = $this->settings->get('jkn_mobile.kdprop');
+                    $_POST['kd_prop'] = $this->settings->get('jkn_mobile_fktp.kdprop');
                     $_POST['propinsipj'] = '-';
 
                     $query = $this->db('pasien')->save($_POST);

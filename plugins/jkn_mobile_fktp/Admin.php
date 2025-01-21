@@ -57,6 +57,14 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengaturan Modul JKN Mobile FKTP';
+        $this->assign['propinsi'] = $this->db('propinsi')->where('kd_prop', $this->settings->get('jkn_mobile_fktp.kdprop'))->oneArray();
+        $this->assign['kabupaten'] = $this->db('kabupaten')->where('kd_kab', $this->settings->get('jkn_mobile_fktp.kdkab'))->oneArray();
+        $this->assign['kecamatan'] = $this->db('kecamatan')->where('kd_kec', $this->settings->get('jkn_mobile_fktp.kdkec'))->oneArray();
+        $this->assign['kelurahan'] = $this->db('kelurahan')->where('kd_kel', $this->settings->get('jkn_mobile_fktp.kdkel'))->oneArray();
+        $this->assign['suku_bangsa'] = $this->db('suku_bangsa')->toArray();
+        $this->assign['bahasa_pasien'] = $this->db('bahasa_pasien')->toArray();
+        $this->assign['cacat_fisik'] = $this->db('cacat_fisik')->toArray();
+        $this->assign['perusahaan_pasien'] = $this->db('perusahaan_pasien')->toArray();
         $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
         $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('jkn_mobile_fktp.display'));
         $this->assign['jkn_mobile_fktp'] = htmlspecialchars_array($this->settings('jkn_mobile_fktp'));
@@ -395,7 +403,7 @@ class Admin extends AdminModule
         $hari=$day[$tentukan_hari];
 
         $jadwal = $this->db('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();        
-        $jampraktek = $jadwal['jam_mulai'].'-'.$jadwal['jam_selesai'];
+        $jampraktek = date('H:i', strtotime($jadwal['jam_mulai'])).'-'.date('H:i', strtotime($jadwal['jam_selesai']));
 
         $data = [
           'nomorkartu' => $noKartu,
@@ -530,7 +538,7 @@ class Admin extends AdminModule
         ];
     
         $data = json_encode($data);
-        // echo $data;
+        echo $data;
   
         date_default_timezone_set('UTC');
         $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
@@ -562,6 +570,124 @@ class Admin extends AdminModule
                   "message": "ERROR"
                 },
                 "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+        }
+        exit();
+    }
+
+    public function getAjax()
+    {
+        header('Content-type: text/html');
+        $show = isset($_GET['show']) ? $_GET['show'] : "";
+        switch($show){
+        	default:
+          break;
+        	case "propinsi":
+          $propinsi = $this->db('propinsi')->toArray();
+          foreach ($propinsi as $row) {
+            echo '<tr class="pilihpropinsi" data-kdprop="'.$row['kd_prop'].'" data-namaprop="'.$row['nm_prop'].'">';
+      			echo '<td>'.$row['kd_prop'].'</td>';
+      			echo '<td>'.$row['nm_prop'].'</td>';
+      			echo '</tr>';
+          }
+          break;
+          case "kabupaten":
+          $kabupaten = $this->db('kabupaten')->toArray();
+          foreach ($kabupaten as $row) {
+            echo '<tr class="pilihkabupaten" data-kdkab="'.$row['kd_kab'].'" data-namakab="'.$row['nm_kab'].'">';
+      			echo '<td>'.$row['kd_kab'].'</td>';
+      			echo '<td>'.$row['nm_kab'].'</td>';
+      			echo '</tr>';
+          }
+          break;
+          case "kecamatan":
+          $kecamatan = $this->db('kecamatan')->toArray();
+          foreach ($kecamatan as $row) {
+            echo '<tr class="pilihkecamatan" data-kdkec="'.$row['kd_kec'].'" data-namakec="'.$row['nm_kec'].'">';
+      			echo '<td>'.$row['kd_kec'].'</td>';
+      			echo '<td>'.$row['nm_kec'].'</td>';
+      			echo '</tr>';
+          }
+          break;
+          case "kelurahan":
+          // Alternative SQL join in Datatables
+          $id_table = 'kd_kel';
+          $columns = array(
+                       'kd_kel',
+                       'nm_kel'
+                     );
+          //$action = '"Test" as action';
+          // gunakan join disini
+          $from = 'kelurahan';
+
+          $id_table = $id_table != '' ? $id_table . ',' : '';
+          // custom SQL
+          $sql = "SELECT {$id_table} ".implode(',', $columns)." FROM {$from}";
+
+          // search
+          if (isset($_GET['search']['value']) && $_GET['search']['value'] != '') {
+              $search = $_GET['search']['value'];
+              $where  = '';
+              // create parameter pencarian kesemua kolom yang tertulis
+              // di $columns
+              for ($i=0; $i < count($columns); $i++) {
+                  $where .= $columns[$i] . ' LIKE "%'.$search.'%"';
+
+                  // agar tidak menambahkan 'OR' diakhir Looping
+                  if ($i < count($columns)-1) {
+                      $where .= ' OR ';
+                  }
+              }
+
+              $sql .= ' WHERE ' . $where;
+          }
+
+          //SORT Kolom
+          $sortColumn = isset($_GET['order'][0]['column']) ? $_GET['order'][0]['column'] : 0;
+          $sortDir    = isset($_GET['order'][0]['dir']) ? $_GET['order'][0]['dir'] : 'asc';
+
+          $sortColumn = $columns[$sortColumn];
+
+          $sql .= " ORDER BY {$sortColumn} {$sortDir}";
+
+          $query = $this->db()->pdo()->prepare($sql);
+          $query->execute();
+          $query = $query->fetchAll();
+
+          // var_dump($sql);
+          //$count = $database->query($sql);
+          // hitung semua data
+          $totaldata = count($query);
+
+          // memberi Limit
+          $start  = isset($_GET['start']) ? $_GET['start'] : 0;
+          $length = isset($_GET['length']) ? $_GET['length'] : 10;
+
+
+          $sql .= " LIMIT {$start}, {$length}";
+
+          $data = $this->db()->pdo()->prepare($sql);
+          $data->execute();
+          $data = $data->fetchAll();
+
+          // create json format
+          $datatable['draw']            = isset($_GET['draw']) ? $_GET['draw'] : 1;
+          $datatable['recordsTotal']    = $totaldata;
+          $datatable['recordsFiltered'] = $totaldata;
+          $datatable['data']            = array();
+
+          foreach ($data as $row) {
+
+              $fields = array();
+              $fields['0'] = $row['kd_kel'];
+              $fields['1'] = '<span class="pilihkelurahan" data-kdkel="'.$row['kd_kel'].'" data-namakel="'.$row['nm_kel'].'">'.$row['nm_kel'].'</span>';
+              $datatable['data'][] = $fields;
+
+          }
+
+          echo json_encode($datatable);
+
+          break;
+
         }
         exit();
     }
