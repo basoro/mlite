@@ -31,10 +31,15 @@ class Admin extends AdminModule
         $search_field_detail_pemberian_obat= $_POST['search_field_detail_pemberian_obat'];
         $search_text_detail_pemberian_obat = $_POST['search_text_detail_pemberian_obat'];
 
+        $tgl_awal = isset_or($_POST['tgl_awal'], date('Y-m-d'));
+        $tgl_akhir = isset_or($_POST['tgl_akhir'], date('Y-m-d'));
+
         $searchQuery = " ";
         if($search_text_detail_pemberian_obat != ''){
             $searchQuery .= " and (".$search_field_detail_pemberian_obat." like '%".$search_text_detail_pemberian_obat."%' ) ";
         }
+
+        $searchQuery .= " and (tgl_perawatan between '".$tgl_awal."' and '".$tgl_akhir."') ";
 
         ## Total number of records without filtering
         $sel = $this->db()->pdo()->prepare("select count(*) as allcount from detail_pemberian_obat");
@@ -105,10 +110,15 @@ class Admin extends AdminModule
             $search_field_detail_pemberian_obat= $_POST['search_field_detail_pemberian_obat'];
             $search_text_detail_pemberian_obat = $_POST['search_text_detail_pemberian_obat'];
 
+            $tgl_awal = isset_or($_POST['tgl_awal'], date('Y-m-d'));
+            $tgl_akhir = isset_or($_POST['tgl_akhir'], date('Y-m-d'));
+    
             $searchQuery = " ";
             if($search_text_detail_pemberian_obat != ''){
                 $searchQuery .= " and (".$search_field_detail_pemberian_obat." like '%".$search_text_detail_pemberian_obat."%' ) ";
             }
+
+            $searchQuery .= " and (tgl_perawatan between '".$tgl_awal."' and '".$tgl_akhir."') ";
 
             $user_lihat = $this->db()->pdo()->prepare("SELECT * from detail_pemberian_obat WHERE 1 ".$searchQuery);
             $user_lihat->execute();
@@ -177,6 +187,9 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/jscripts/jspdf.min.js'));
         $this->core->addJS(url('assets/jscripts/jspdf.plugin.autotable.min.js'));
         $this->core->addJS(url('assets/jscripts/datatables.min.js'));
+        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
 
         $this->core->addCSS(url([ADMIN, 'detail_pemberian_obat', 'css']));
         $this->core->addJS(url([ADMIN, 'detail_pemberian_obat', 'javascript']), 'footer');

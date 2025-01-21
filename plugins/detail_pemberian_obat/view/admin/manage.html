@@ -20,26 +20,21 @@
                           <span class="input-group-addon">Cari :</span>
                           <span class="input-group-addon" style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
                           <select class="form-control" id='search_field_detail_pemberian_obat' name='search_field_detail_pemberian_obat' style="margin: 0 !important;"> 
-                              <option value='tgl_perawatan'>Tgl Perawatan</option>
-<option value='jam'>Jam</option>
-<option value='no_rawat'>No Rawat</option>
-<option value='kode_brng'>Kode Brng</option>
-<option value='h_beli'>H Beli</option>
-<option value='biaya_obat'>Biaya Obat</option>
-<option value='jml'>Jml</option>
-<option value='embalase'>Embalase</option>
-<option value='tuslah'>Tuslah</option>
-<option value='total'>Total</option>
-<option value='status'>Status</option>
-<option value='kd_bangsal'>Kd Bangsal</option>
-<option value='no_batch'>No Batch</option>
-<option value='no_faktur'>No Faktur</option>
-
+                            <option value='no_rawat'>No Rawat</option>
+                            <option value='kode_brng'>Kode Brng</option>
+                            <option value='status'>Status</option>
+                            <option value='kd_bangsal'>Kd Bangsal</option>
                           </select>
                           </span>
-                          <input class='form-control' name='search_text_detail_pemberian_obat' id='search_text_detail_pemberian_obat' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <input class='form-control' name='search_text_detail_pemberian_obat' id='search_text_detail_pemberian_obat' type='search' placeholder='Masukkan Kata Kunci Pencarian' /> 
+                          <span class="input-group-addon" style="width:110px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                            <input class='form-control periode_tanggal' name='tgl_awal' id='tgl_awal' value="{?=date('Y-m-d')?}" type='search' placeholder='Tanggal Awal' />                              
+                          </span>
+                          <span class="input-group-addon" style="width:110px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                            <input class='form-control periode_tanggal' name='tgl_akhir' id='tgl_akhir' value="{?=date('Y-m-d')?}" type='search' placeholder='Tanggal Akhir' />                              
+                          </span>
                           <span class="input-group-addon">
-                          <span id='searchclear_detail_pemberian_obat' data-toggle='tooltip' data-placement='top' title='Clear'><i class="fa fa-times text-danger"></i></span>
+                          <span id='searchclear_detail_pemberian_obat' data-toggle='tooltip' data-placement='top' title='Clear'><i class="fa fa-search text-danger"></i></span>
                           </span>
                       </div>
                     </div>
@@ -49,24 +44,23 @@
                         <thead>
                         <tr> 
                             <th>Tgl Perawatan</th>
-<th>Jam</th>
-<th>No RM</th>
-<th>Nama Pasien</th>
-<th>No Rawat</th>
-<th>Kode Brng</th>
-<th>Nama Brng</th>
-<th>H Beli</th>
-<th>Biaya Obat</th>
-<th>Jml</th>
-<th>Embalase</th>
-<th>Tuslah</th>
-<th>Total</th>
-<th>Status</th>
-<th>Kd Bangsal</th>
-<th>Nama Bangsal</th>
-<th>No Batch</th>
-<th>No Faktur</th>
-
+                            <th>Jam</th>
+                            <th>No RM</th>
+                            <th>Nama Pasien</th>
+                            <th>No Rawat</th>
+                            <th>Kode Brng</th>
+                            <th>Nama Brng</th>
+                            <th>H Beli</th>
+                            <th>Biaya Obat</th>
+                            <th>Jml</th>
+                            <th>Embalase</th>
+                            <th>Tuslah</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Kd Bangsal</th>
+                            <th>Nama Bangsal</th>
+                            <th>No Batch</th>
+                            <th>No Faktur</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -109,3 +103,13 @@
     </div>
   </div>
 </div>
+
+<script type="text/javascript">
+  $(function () {
+      $('.periode_tanggal').datetimepicker({
+        defaultDate: '{?=date('Y-m-d')?}',
+        format: 'YYYY-MM-DD',
+        locale: 'id'
+      });
+  });
+</script>
