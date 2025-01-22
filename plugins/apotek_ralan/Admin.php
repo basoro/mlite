@@ -645,6 +645,13 @@ class Admin extends AdminModule
 
     public function getCetakEresep($no_rawat, $tipe, $tgl_peresepan, $jam_peresepan){
       if($tipe == 'nonracikan') {
+        $resep_obat = $this->db('resep_obat')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+        $resep_dokter_racikan_detail = $this->db('resep_dokter_racikan_detail')->select('kode_brng')->where('no_resep', $resep_obat['no_resep'])->toArray();
+        
+        $notIn = array_map(function ($entry) {
+          return ($entry[key($entry)]);
+        }, $resep_dokter_racikan_detail);        
+        
         $rows_pemberian_obat = $this->db('detail_pemberian_obat')
         ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
         ->join('reg_periksa', 'reg_periksa.no_rawat=detail_pemberian_obat.no_rawat')
@@ -653,6 +660,7 @@ class Admin extends AdminModule
         ->where('detail_pemberian_obat.status', 'Ralan')
         ->where('detail_pemberian_obat.tgl_perawatan', $tgl_peresepan)
         ->where('detail_pemberian_obat.jam', $jam_peresepan)
+        ->notIn('detail_pemberian_obat.kode_brng', $notIn)
         ->toArray();
         $detail_pemberian_obat = [];
         $jumlah_total_obat = 0;

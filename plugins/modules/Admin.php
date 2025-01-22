@@ -19,6 +19,8 @@ class Admin extends AdminModule
     */
     public function getManage($type = 'active')
     {
+        $this->core->addCSS(url('assets/css/datatables.min.css'));
+        $this->core->addJS(url('assets/jscripts/datatables.min.js'));
         $modules = $this->_modulesList($type);
         return $this->draw('manage.html', ['modules' => array_chunk($modules, 2), 'tab' => $type]);
     }

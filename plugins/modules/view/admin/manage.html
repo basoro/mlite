@@ -15,10 +15,11 @@
             <div class="panel-body">
                 {if: !empty($modules)}
 				<div class="table-responsive no-margin">
-					<table class="table table-striped no-margin">
+					<table class="table table-striped no-margin" id="tbl_modules">
 						<thead>
 							<tr>
-								<th colspan="2">Module</th>
+                                <th>Icon</th>
+								<th>Module</th>
 								<th>Versi</th>
                                 <th>Status</th>
 								<th class="text-right">Aksi</th>
@@ -82,3 +83,10 @@
         </div>
     </div>
 </div>
+
+<script>
+    $('#tbl_modules').DataTable({
+        'dom': 'Bfrtip',
+        buttons: [],
+    });
+</script>
