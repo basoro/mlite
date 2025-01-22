@@ -220,7 +220,6 @@
       var tgl_peresepan = $(this).attr("data-tgl_peresepan");
       var jam_peresepan = $(this).attr("data-jam_peresepan");
       var tipe = $(this).attr("data-tipe");
-      alert(baseURL + '/apotek_ralan/cetakeresep/' + no_rawat +'/' + tipe +'/' + tgl_peresepan + '/' + jam_peresepan + '?t=' + mlite.token);
       $("#cetakEtiket").modal('show').html('<div style="text-align:center;margin:20px auto;width:700px;height:900px;"><iframe src="' + baseURL + '/apotek_ralan/cetakeresep/' + no_rawat +'/' + tipe +'/' + tgl_peresepan + '/' + jam_peresepan + '?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
   })
 </script>
