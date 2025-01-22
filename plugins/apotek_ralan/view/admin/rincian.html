@@ -94,7 +94,7 @@
       <tr>
         <td>{$value.nm_dokter}</td>
         <td>{$value.no_resep}</td>
-        <td>{$value.tgl_peresepan} {$value.jam_peresepan}</td>
+        <td>{$value.tgl_peresepan} {$value.jam}</td>
         <td>
           <button type="button" class="btn btn-danger btn-xs {if: $value.tgl_perawatan !== '0000-00-00'}disabled{else}hapus_resep_obat{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
           <button type="button" class="btn btn-success btn-xs {if: $value.tgl_perawatan !== '0000-00-00' && $value.tgl_penyerahan !== '0000-00-00'}disabled{else}validasi_resep_obat{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}" data-penyerahan="{if: $value.tgl_perawatan !== '0000-00-00' && $value.tgl_penyerahan == '0000-00-00'}penyerahan{/if}"><i class="fa fa-check"></i><span class="hidden-xs"> {if: $value.tgl_perawatan !== '0000-00-00' && $value.tgl_penyerahan == '0000-00-00'}Penyerahan{else}Validasi{/if}</span></button>
@@ -220,6 +220,7 @@
       var tgl_peresepan = $(this).attr("data-tgl_peresepan");
       var jam_peresepan = $(this).attr("data-jam_peresepan");
       var tipe = $(this).attr("data-tipe");
+      alert(baseURL + '/apotek_ralan/cetakeresep/' + no_rawat +'/' + tipe +'/' + tgl_peresepan + '/' + jam_peresepan + '?t=' + mlite.token);
       $("#cetakEtiket").modal('show').html('<div style="text-align:center;margin:20px auto;width:700px;height:900px;"><iframe src="' + baseURL + '/apotek_ralan/cetakeresep/' + no_rawat +'/' + tipe +'/' + tgl_peresepan + '/' + jam_peresepan + '?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
   })
 </script>

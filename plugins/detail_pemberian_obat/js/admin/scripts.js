@@ -18,8 +18,14 @@ jQuery().ready(function () {
                 var search_field_detail_pemberian_obat = $('#search_field_detail_pemberian_obat').val();
                 var search_text_detail_pemberian_obat = $('#search_text_detail_pemberian_obat').val();
                 
+                var tgl_awal = $('#tgl_awal').val();
+                var tgl_akhir = $('#tgl_akhir').val();
+
                 data.search_field_detail_pemberian_obat = search_field_detail_pemberian_obat;
                 data.search_text_detail_pemberian_obat = search_text_detail_pemberian_obat;
+
+                data.tgl_awal = tgl_awal;
+                data.tgl_akhir = tgl_akhir;
                 
             }
         },
@@ -77,14 +83,14 @@ jQuery().ready(function () {
     // ==============================================================
     // KETIKA MENGETIK DI INPUT SEARCH
     // ==============================================================
-    $('#search_text_detail_pemberian_obat').keyup(function () {
-        var_tbl_detail_pemberian_obat.draw();
-    });
+    // $('#search_text_detail_pemberian_obat').keyup(function () {
+    //     var_tbl_detail_pemberian_obat.draw();
+    // });
     // ==============================================================
     // CLICK TANDA X DI INPUT SEARCH
     // ==============================================================
     $("#searchclear_detail_pemberian_obat").click(function () {
-        $("#search_text_detail_pemberian_obat").val("");
+        // $("#search_text_detail_pemberian_obat").val("");
         var_tbl_detail_pemberian_obat.draw();
     });
 
@@ -97,17 +103,22 @@ jQuery().ready(function () {
         var search_field_detail_pemberian_obat = $('#search_field_detail_pemberian_obat').val();
         var search_text_detail_pemberian_obat = $('#search_text_detail_pemberian_obat').val();
 
+        var tgl_awal = $('#tgl_awal').val();
+        var tgl_akhir = $('#tgl_akhir').val();
+        
         $.ajax({
             url: "{?=url([ADMIN,'detail_pemberian_obat','aksi'])?}",
             method: "POST",
             data: {
                 typeact: 'lihat', 
                 search_field_detail_pemberian_obat: search_field_detail_pemberian_obat, 
-                search_text_detail_pemberian_obat: search_text_detail_pemberian_obat
+                search_text_detail_pemberian_obat: search_text_detail_pemberian_obat, 
+                tgl_awal: tgl_awal, 
+                tgl_akhir: tgl_akhir
             },
             dataType: 'json',
             success: function (res) {
-                var eTable = "<div class='table-responsive'><table id='tbl_lihat_detail_pemberian_obat' class='table display dataTable' style='width:100%'><thead><th>Tgl Perawatan</th><th>Jam</th><th>No RM</th><th>Nama Pasien</th><th>No Rawat</th><th>Kode Brng</th><th>Nama Brng</th><th>H Beli</th><th>Biaya Obat</th><th>Jml</th><th>Embalase</th><th>Tuslah</th><th>Total</th><th>Status</th><th>Kd Bangsal</th><th>Nama Bangsal</th><th>No Batch</th><th>No Faktur</th></thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_detail_pemberian_obat' class='table display dataTable' style='width:100%'><thead><th>Tgl Perawatan</th><th>Jam</th><th>No RM</th><th>Nama Pasien</th><th>No Rawat</th><th>Kode Brng</th><th>Nama Brng</th><th>H Beli</th><th>Biaya Obat</th><th>Jml</th><th>Total</th><th>Kd Bangsal</th><th>Nama Bangsal</th></thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     eTable += '<td>' + res[i]['tgl_perawatan'] + '</td>';
@@ -120,14 +131,9 @@ jQuery().ready(function () {
                     eTable += '<td>' + res[i]['h_beli'] + '</td>';
                     eTable += '<td>' + res[i]['biaya_obat'] + '</td>';
                     eTable += '<td>' + res[i]['jml'] + '</td>';
-                    eTable += '<td>' + res[i]['embalase'] + '</td>';
-                    eTable += '<td>' + res[i]['tuslah'] + '</td>';
                     eTable += '<td>' + res[i]['total'] + '</td>';
-                    eTable += '<td>' + res[i]['status'] + '</td>';
                     eTable += '<td>' + res[i]['kd_bangsal'] + '</td>';
                     eTable += '<td>' + res[i]['nm_bangsal'] + '</td>';
-                    eTable += '<td>' + res[i]['no_batch'] + '</td>';
-                    eTable += '<td>' + res[i]['no_faktur'] + '</td>';
                     eTable += "</tr>";
                 }
                 eTable += "</tbody></table></div>";
@@ -147,7 +153,7 @@ jQuery().ready(function () {
         var rowData = var_tbl_detail_pemberian_obat.rows({ selected: true }).data()[0];
 
         if (rowData) {
-var tgl_perawatan = rowData['tgl_perawatan'];
+            var tgl_perawatan = rowData['tgl_perawatan'];
             var baseURL = mlite.url + '/' + mlite.admin;
             event.preventDefault();
             var loadURL =  baseURL + '/detail_pemberian_obat/detail/' + tgl_perawatan + '?t=' + mlite.token;
@@ -172,7 +178,7 @@ var tgl_perawatan = rowData['tgl_perawatan'];
     // ===========================================
     $("#export_pdf").click(function () {
 
-        var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
+        var doc = new jsPDF('l', 'pt', 'A4'); /* pilih 'l' atau 'p' */
         var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
         doc.addImage(img, 'JPEG', 20, 10, 50, 50);
         doc.setFontSize(20);
@@ -180,8 +186,8 @@ var tgl_perawatan = rowData['tgl_perawatan'];
         doc.setFontSize(10);
         doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
         doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
-        doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
-        doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
+        doc.line(20,70,820,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
+        doc.line(20,72,820,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
         doc.setFontSize(14);
         doc.text("Tabel Data Detail Pemberian Obat", 20, 95, null, null, null);
         const totalPagesExp = "{total_pages_count_string}";        

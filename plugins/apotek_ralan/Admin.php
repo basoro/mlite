@@ -645,6 +645,13 @@ class Admin extends AdminModule
 
     public function getCetakEresep($no_rawat, $tipe, $tgl_peresepan, $jam_peresepan){
       if($tipe == 'nonracikan') {
+        $resep_obat = $this->db('resep_obat')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+        $resep_dokter_racikan_detail = $this->db('resep_dokter_racikan_detail')->select('kode_brng')->where('no_resep', $resep_obat['no_resep'])->toArray();
+        
+        $notIn = array_map(function ($entry) {
+          return ($entry[key($entry)]);
+        }, $resep_dokter_racikan_detail);      
+                
         $rows_pemberian_obat = $this->db('detail_pemberian_obat')
         ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
         ->join('reg_periksa', 'reg_periksa.no_rawat=detail_pemberian_obat.no_rawat')
@@ -654,6 +661,19 @@ class Admin extends AdminModule
         ->where('detail_pemberian_obat.tgl_perawatan', $tgl_peresepan)
         ->where('detail_pemberian_obat.jam', $jam_peresepan)
         ->toArray();
+        if($notIn){
+          $rows_pemberian_obat = $this->db('detail_pemberian_obat')
+          ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+          ->join('reg_periksa', 'reg_periksa.no_rawat=detail_pemberian_obat.no_rawat')
+          ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+          ->where('detail_pemberian_obat.no_rawat', revertNoRawat($no_rawat))
+          ->where('detail_pemberian_obat.status', 'Ralan')
+          ->where('detail_pemberian_obat.tgl_perawatan', $tgl_peresepan)
+          ->where('detail_pemberian_obat.jam', $jam_peresepan)
+          ->notIn('detail_pemberian_obat.kode_brng', $notIn)
+          ->toArray();  
+        }
+        echo json_encode($rows_pemberian_obat);
         $detail_pemberian_obat = [];
         $jumlah_total_obat = 0;
         foreach ($rows_pemberian_obat as $row) {
@@ -693,33 +713,33 @@ class Admin extends AdminModule
       $sttsumur = $this->core->getRegPeriksaInfo('sttsumur', revertNoRawat($no_rawat));
       $alamat = $this->core->getPasienInfo('alamat', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat)));
 
-      echo $this->draw('cetak.eresep.html', [
-        'pasien' => $pasien, 
-        'no_rm' => $no_rm, 
-        'umur' => $umur . ' ' . $sttsumur, 
-        'alamat' => $alamat, 
-        'tanggal' => $tanggal, 
-        'settings' => $this->settings('settings'), 
-        'detail' => $detail_pemberian_obat
-      ]);
+      // echo $this->draw('cetak.eresep.html', [
+      //   'pasien' => $pasien, 
+      //   'no_rm' => $no_rm, 
+      //   'umur' => $umur . ' ' . $sttsumur, 
+      //   'alamat' => $alamat, 
+      //   'tanggal' => $tanggal, 
+      //   'settings' => $this->settings('settings'), 
+      //   'detail' => $detail_pemberian_obat
+      // ]);
 
-      $mpdf = new \Mpdf\Mpdf([
-        'mode' => 'utf-8',
-        'format' => [200, 400], 
-        'margin_left' => 20,
-        'margin_right' => 20,
-        'margin_top' => 2,
-        'margin_bottom' => 2
-      ]);
+      // $mpdf = new \Mpdf\Mpdf([
+      //   'mode' => 'utf-8',
+      //   'format' => [200, 400], 
+      //   'margin_left' => 20,
+      //   'margin_right' => 20,
+      //   'margin_top' => 2,
+      //   'margin_bottom' => 2
+      // ]);
 
-      $url = url(ADMIN.'/tmp/cetak.eresep.html');
-      $html = file_get_contents($url);
-      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
+      // $url = url(ADMIN.'/tmp/cetak.eresep.html');
+      // $html = file_get_contents($url);
+      // $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      // $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
 
-      // Output a PDF file directly to the browser
-      $mpdf->Output();
-      // $mpdf->Output(UPLOADS.'/test.pdf', 'F');
+      // // Output a PDF file directly to the browser
+      // $mpdf->Output();
+      // // $mpdf->Output(UPLOADS.'/test.pdf', 'F');
       exit();
     }
 
