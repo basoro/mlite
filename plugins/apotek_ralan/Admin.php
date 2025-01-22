@@ -673,7 +673,6 @@ class Admin extends AdminModule
           ->notIn('detail_pemberian_obat.kode_brng', $notIn)
           ->toArray();  
         }
-        echo json_encode($rows_pemberian_obat);
         $detail_pemberian_obat = [];
         $jumlah_total_obat = 0;
         foreach ($rows_pemberian_obat as $row) {
@@ -713,33 +712,33 @@ class Admin extends AdminModule
       $sttsumur = $this->core->getRegPeriksaInfo('sttsumur', revertNoRawat($no_rawat));
       $alamat = $this->core->getPasienInfo('alamat', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat)));
 
-      // echo $this->draw('cetak.eresep.html', [
-      //   'pasien' => $pasien, 
-      //   'no_rm' => $no_rm, 
-      //   'umur' => $umur . ' ' . $sttsumur, 
-      //   'alamat' => $alamat, 
-      //   'tanggal' => $tanggal, 
-      //   'settings' => $this->settings('settings'), 
-      //   'detail' => $detail_pemberian_obat
-      // ]);
+      echo $this->draw('cetak.eresep.html', [
+        'pasien' => $pasien, 
+        'no_rm' => $no_rm, 
+        'umur' => $umur . ' ' . $sttsumur, 
+        'alamat' => $alamat, 
+        'tanggal' => $tanggal, 
+        'settings' => $this->settings('settings'), 
+        'detail' => $detail_pemberian_obat
+      ]);
 
-      // $mpdf = new \Mpdf\Mpdf([
-      //   'mode' => 'utf-8',
-      //   'format' => [200, 400], 
-      //   'margin_left' => 20,
-      //   'margin_right' => 20,
-      //   'margin_top' => 2,
-      //   'margin_bottom' => 2
-      // ]);
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => [200, 400], 
+        'margin_left' => 20,
+        'margin_right' => 20,
+        'margin_top' => 2,
+        'margin_bottom' => 2
+      ]);
 
-      // $url = url(ADMIN.'/tmp/cetak.eresep.html');
-      // $html = file_get_contents($url);
-      // $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-      // $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
+      $url = url(ADMIN.'/tmp/cetak.eresep.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
 
-      // // Output a PDF file directly to the browser
-      // $mpdf->Output();
-      // // $mpdf->Output(UPLOADS.'/test.pdf', 'F');
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+      // $mpdf->Output(UPLOADS.'/test.pdf', 'F');
       exit();
     }
 
