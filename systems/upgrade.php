@@ -768,5 +768,7 @@ switch ($version) {
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
         $return = '5.0.0'; 
+    case '5.0.0':
+        $return = '5.1.0'; 
     }
 return $return;
