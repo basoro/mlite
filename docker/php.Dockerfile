@@ -31,7 +31,7 @@ COPY config.php mlite/config.php
 RUN mkdir -p mlite/uploads 
 RUN mkdir -p mlite/tmp 
 RUN mkdir -p mlite/admin 
-RUN mkdir -p mlitr/admin/tmp
+RUN mkdir -p mlite/admin/tmp
 
 RUN chmod -R 777 mlite/uploads 
 RUN chmod -R 777 mlite/tmp 
