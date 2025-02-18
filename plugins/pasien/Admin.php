@@ -614,14 +614,14 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getPcare_ByNoKartu($noKartu, $tglPelayananSEP)
+    public function getPcare_ByNoKartu($noKartu)
     {
       $url = url([ADMIN, 'pcare', 'byjeniskartu', 'noka', $noKartu]);
       echo $this->draw('pcare.bynokartu.html', ['url' => $url]);
       exit();
     }
 
-    public function getPcare_ByNIK($nik, $tglPelayananSEP)
+    public function getPcare_ByNIK($nik)
     {
       $url = url([ADMIN, 'pcare', 'byjeniskartu', 'nik', $nik]);
       echo $this->draw('pcare.bynik.html', ['url' => $url]);
