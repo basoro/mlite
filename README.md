@@ -12,7 +12,6 @@ Panel kontrol dan tampilan default sepenuhnya responsif, yang membuatnya dapat d
 
 Masih banyak fitur-fitur tersembunyi untuk kebutuhan pengembangan. Silahkan jelajahi!!
 
-
 Kebutuhan Sistem
 ----------------
 
