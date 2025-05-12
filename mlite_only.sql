@@ -1,3 +1,5 @@
+SET FOREIGN_KEY_CHECKS=0;
+
 # Dump of table mlite_akun_kegiatan
 # ------------------------------------------------------------
 
@@ -1711,3 +1713,5 @@ CREATE TABLE `mlite_veronisa_feedback` (
 CREATE TABLE `mlite_set_nomor_surat` (
   `nomor_surat` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+SET FOREIGN_KEY_CHECKS=1;
