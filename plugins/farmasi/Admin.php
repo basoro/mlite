@@ -94,7 +94,7 @@ class Admin extends AdminModule
               'no_faktur' => '0',
               'keterangan' => '-'
             ]);
-            if($query2) {
+            if($query) {
               $this->db('gudangbarang')
                 ->where('kode_brng', $_POST['kode_brng'])
                 ->where('kd_bangsal', $this->settings->get('farmasi.gudang'))
@@ -146,7 +146,7 @@ class Admin extends AdminModule
             ->where('kode_brng', $_POST['kode_brng'])
             ->where('kd_bangsal', $this->settings->get('farmasi.gudang'))
             ->save([
-              'stok' => $get_gudangbarang['stok'] - $_POST['stok']
+              'stok' => $get_gudangbarang['stok'] + $_POST['stok']
           ]);
         }
         if($query2) {
@@ -158,7 +158,6 @@ class Admin extends AdminModule
           ]);
         }
       } else {
-
         $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.gudang'))->oneArray();
         $stok = '0';
         if($get_gudangbarang) {
