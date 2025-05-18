@@ -80,6 +80,7 @@
                             <option value="paper"{if: $settings.theme_admin == 'paper'} selected{/if}>Paper</option>
                             <option value="readable"{if: $settings.theme_admin == 'readable'} selected{/if}>Readable</option>
                             <option value="sandstone"{if: $settings.theme_admin == 'sandstone'} selected{/if}>Sandstone</option>
+                            <option value="sketchy"{if: $settings.theme_admin == 'sketchy'} selected{/if}>Sketchy</option>
                             <option value="simplex"{if: $settings.theme_admin == 'simplex'} selected{/if}>Simplex</option>
                             <option value="slate"{if: $settings.theme_admin == 'slate'} selected{/if}>Slate</option>
                             <option value="spacelab"{if: $settings.theme_admin == 'spacelab'} selected{/if}>Spacelab</option>
@@ -456,7 +457,7 @@
   });
 
   var path='{?=url()?}/assets/img/';
-  var img_array=new Array('','ataaka.png','bootstrap.png','cerulean.png','cosmo.png','cyborg.png','darkly.png','flatly.png','journal.png','lumen.png','mlite.png','paper.png','readable.png','sandstone.png','simplex.png','slate.png','spacelab.png','superhero.png','united.png','yeti.png');
+  var img_array=new Array('','ataaka.png','bootstrap.png','cerulean.png','cosmo.png','cyborg.png','darkly.png','flatly.png','journal.png','lumen.png','mlite.png','paper.png','readable.png','sandstone.png','sketchy.png','simplex.png','slate.png','spacelab.png','superhero.png','united.png','yeti.png');
 
   function change_theme(obj,id){
    var i=obj.selectedIndex;
