@@ -457,13 +457,27 @@
         <div class="container-fluid">
           <ul class="nav navbar-nav">
             <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-home text-primary"></i> <span class="text-primary">Menu</span></a></li>
+            {if: $this->core->ActiveModule('pasien')}
             <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-users text-success"></i> <span class="text-success">Pasien</span></a></li>
+            {/if}
+            {if: $this->core->ActiveModule('igd')}
             <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-ambulance text-danger"></i> <span class="text-danger">IGD</span></a></li>
+            {/if}
+            {if: $this->core->ActiveModule('rawat_jalan')}
             <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-wheelchair text-warning"></i> <span class="text-warning">Poliklinik</span></a></li>
+            {/if}
+            {if: $this->core->ActiveModule('rawat_inap')}
             <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-hotel text-info"></i> <span class="text-info">Rawat Inap</span></a></li>
+            {/if}
+            {if: $this->core->ActiveModule('apotek_ralan')}
             <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-medkit text-success"></i> <span class="text-success">Apotek</span></a></li>
+            {/if}
+            {if: $this->core->ActiveModule('laboratorium')}
             <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-flask text-warning"></i> <span class="text-warning">Laboratorium</span></a></li>
+            {/if}
+            {if: $this->core->ActiveModule('radiologi')}
             <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-film text-info"></i> <span class="text-info">Radiologi</span></a></li>
+            {/if}
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li class="menu-icon"><a href="#" class="btn bg-success" style="border-radius: 5px !important;" data-toggle="modal" data-target="#menuModal" title="Login"><i class="fa fa-key text-danger"></i> <span class="text-danger">Login</span></a></li>
