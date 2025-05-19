@@ -4,6 +4,7 @@
         'name'          =>  'ICD 9',
         'description'   =>  'Modul icd9 untuk mLITE',
         'author'        =>  'Basoro',
+        'category'      =>  'rekammedik', 
         'version'       =>  '1.0',
         'compatibility' =>  '5.*.*',
         'icon'          =>  'code',

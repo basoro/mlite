@@ -3,6 +3,7 @@ return [
     'name'          =>  'AFM',
     'description'   =>  'Katalog API AFM mLITE',
     'author'        =>  'Basoro',
+    'category'      =>  'bridging', 
     'version'       =>  '1.0',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'laptop',

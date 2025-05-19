@@ -32,6 +32,8 @@ class Site extends SiteModule
         $assign['module_rawat_inap'] = $this->db('mlite_modules')->where('dir', 'rawat_inap')->oneArray();
         $assign['cek_anjungan'] = $this->db('mlite_modules')->where('dir', 'anjungan')->oneArray();
         $assign['poliklinik'] = '';
+        $assign['nav'] = $this->_modulesList();
+
         if($assign['cek_anjungan']) {
           $assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));
         }
@@ -48,6 +50,56 @@ class Site extends SiteModule
         exit();
     }
 
+    private function _modulesList()
+    {
+        $modules = array_column($this->db('mlite_modules')->asc('sequence')->toArray(), 'dir');
+        $result = [];
+    
+        foreach ($modules as $name) {
+            $files = [
+                'info'  => MODULES . '/' . $name . '/Info.php',
+                'admin' => MODULES . '/' . $name . '/Admin.php',
+            ];
+    
+            if (file_exists($files['info']) && file_exists($files['admin'])) {
+                $details = $this->getModuleInfo($name);
+
+                $class = '\\Plugins\\' . $name . '\\Admin';
+                $api_admin = new $class($this->core);
+                $features = $api_admin->navigation();
+    
+                $details['url'] = url([ADMIN, $name, array_shift($features)]);
+                $details['dir'] = $name;
+
+                $subnavURLs = [];
+                foreach ($features as $key => $val) {
+
+                    $subnavURLs[] = [
+                        'name'      => $key,
+                        'url'       => url([ADMIN, $name, $val]),
+                    ];
+                }
+
+                $details['subnav'] = $subnavURLs;
+                
+                $result[] = $details;
+            }
+        }
+        return $result;
+    }
+
+    public function getModuleInfo($dir)
+    {
+        $file = MODULES.'/'.$dir.'/Info.php';
+        $core = $this;
+
+        if (file_exists($file)) {
+            return include($file);
+        } else {
+            return false;
+        }
+    }
+    
     private function _getPoliklinik($kd_poli = null)
     {
         $result = [];

@@ -4,6 +4,7 @@ return [
     'name'          =>  'Presensi',
     'description'   =>  'Modul presensi',
     'author'        =>  'Basoro.ID',
+    'category'      =>  'manajemen', 
     'version'       =>  '1.2',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'user-o',

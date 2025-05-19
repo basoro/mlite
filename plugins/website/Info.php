@@ -4,6 +4,7 @@ return [
     'name'          =>  'Website',
     'description'   =>  'Membuat website dan berita.',
     'author'        =>  'Basoro',
+    'category'      =>  'manajemen', 
     'version'       =>  '1.3',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'pencil-square',

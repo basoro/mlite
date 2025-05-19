@@ -4,6 +4,7 @@
         'name'          =>  'Penilaian Keperawatan Ralan',
         'description'   =>  'Modul mlite penilaian awal keperawatan ralan untuk mLITE',
         'author'        =>  'Basoro',
+        'category'      =>  'rekammedik', 
         'version'       =>  '1.0',
         'compatibility' =>  '5.*.*',
         'icon'          =>  'code',

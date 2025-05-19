@@ -166,6 +166,43 @@
         }
     }
 
+
+    /* Dropdown menu 2 columns layout */
+    .dropdown-menu.columns-2 {
+        min-width: 400px;
+        padding: 10px 0;
+    }
+
+    .dropdown-menu.columns-2 > li {
+        float: left;
+        width: 50%;
+    }
+
+    .dropdown-menu.columns-2:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    /* Fix submenu positioning in 2-column layout */
+    .dropdown-submenu > .dropdown-menu {
+        left: 100%;
+        margin-top: -6px;
+        margin-left: -1px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 767px) {
+        .dropdown-menu.columns-2 {
+            min-width: 100%;
+        }
+        
+        .dropdown-menu.columns-2 > li {
+            width: 100%;
+            float: none;
+        }
+    }
+
     </style>
 
 </head>
@@ -198,96 +235,188 @@
                 <ul class="dropdown-menu">
                   <li><a href="#" data-toggle="modal" data-target="#tentangModal"> Tentang</a></li>
                   <li class="disabled"><a href="#"> Menu</a></li>
+                  <li role="separator" class="divider"></li>                  
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'main'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {$value.name}
+                      </a>
+                      <ul class="dropdown-menu {if: $value.name == 'Master Data'}columns-2{/if}">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{$value.name}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{$value.name}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
+                  <li role="separator" class="divider"></li>
                   <li><a href="#" data-toggle="modal" data-target="#menuModal"> Login</a></li>
                 </ul>  
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Layanan</a>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a href="#">IGD</a></li>
-                  <li class="disabled"><a href="#">Rawat Jalan</a></li>
-                  <li class="disabled"><a href="#">Rawat Inap</a></li>
-                  <li class="disabled"><a href="#">Dokter IGD</a></li>
-                  <li class="disabled"><a href="#">Dokter Rawat Jalan</a></li>
-                  <li class="disabled"><a href="#">Dokter Rawat Inap</a></li>
-                  <li class="disabled"><a href="#">Apotek</a></li>
-                  <li class="disabled"><a href="#">Laporatorium</a></li>
-                  <li class="disabled"><a href="#">Radiologi</a></li>
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'layanan'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {$value.name}
+                      </a>
+                      <ul class="dropdown-menu">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{$value.name}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{$value.name}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
                 </ul>  
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manajemen</a>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a href="#">Manajemen Mutu</a></li>
-                  <li class="disabled"><a href="#">Master Data</a></li>
-                  <li class="disabled"><a href="#">Kepegawaian</a></li>
-                  <li class="disabled"><a href="#">Dokter</a></li>
-                  <li class="disabled"><a href="#">Petugas</a></li>
-                  <li class="disabled"><a href="#">WA Gateway</a></li>
-                  <li class="disabled"><a href="#">Presensi Pegawai</a></li>
-                  <li class="disabled"><a href="#">Akun Pegawai</a></li>
-                  <li class="disabled"><a href="#">Data Inventaris</a></li>
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'manajemen'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {$value.name}
+                      </a>
+                      <ul class="dropdown-menu">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{$value.name}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{$value.name}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
                 </ul>  
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Farmasi</a>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a href="#">Apotek Rawat Jalan</a></li>
-                  <li class="disabled"><a href="#">Apotek Rawat Inap</a></li>
-                  <li class="disabled"><a href="#">Inventory Obat</a></li>
-                  <li class="disabled"><a href="#">Stok Opname</a></li>
-                  <li class="disabled"><a href="#">Mutasi Obat</a></li>
-                  <li class="disabled"><a href="#">Sirkulasi Obat</a></li>
-                  <li class="disabled"><a href="#">Detail Pemberian Obat</a></li>
-                  <li class="disabled"><a href="#">Darurat Stok</a></li>
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'farmasi'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {$value.name}
+                      </a>
+                      <ul class="dropdown-menu">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{$value.name}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{$value.name}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
                 </ul>  
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Rekan Medik</a>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a href="#">Data Pasien</a></li>
-                  <li class="disabled"><a href="#">Verifikasi Digital Klaim</a></li>
-                  <li class="disabled"><a href="#">Verifikasi Obat Kronis</a></li>
-                  <li class="disabled"><a href="#">Data ICD 10</a></li>
-                  <li class="disabled"><a href="#">Data ICD 9</a></li>
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'rekammedik'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {$value.name}
+                      </a>
+                      <ul class="dropdown-menu">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{$value.name}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{$value.name}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
                 </ul>  
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Bridging</a>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a href="#">vClaim BPJS</a></li>
-                  <li class="disabled"><a href="#">Antrol FKTL BPJS</a></li>
-                  <li class="disabled"><a href="#">PCare BPJS</a></li>
-                  <li class="disabled"><a href="#">Antrol FKTP BPJS</a></li>
-                  <li class="disabled"><a href="#">Aplicare BPJS</a></li>
-                  <li class="disabled"><a href="#">iCare BPJS</a></li>
-                  <li class="disabled"><a href="#">Siranap Kemkes</a></li>
-                  <li class="disabled"><a href="#">Satu Sehat Kemkes</a></li>
-                  <li class="disabled"><a href="#">Radiologi Orthanc</a></li>
-                  <li class="disabled"><a href="#">Laborarotium MyLIMS</a></li>
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'bridging'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {$value.name}
+                      </a>
+                      <ul class="dropdown-menu">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{$value.name}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{$value.name}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
                 </ul>  
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Laporan</a>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a href="#">Jasa Medik Dokter</a></li>
-                  <li class="disabled"><a href="#">Jasa Medik Perawat</a></li>
-                  <li class="disabled"><a href="#">Pembayaran Rawat Jalan</a></li>
-                  <li class="disabled"><a href="#">Pembayaran Rawat Inap</a></li>
-                  <li class="disabled"><a href="#">Kunjungan Rawat Jalan</a></li>
-                  <li class="disabled"><a href="#">Kunjungan Rawat Inap</a></li>
-                  <li class="disabled"><a href="#">Sensus Harian</a></li>
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'laporan'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {$value.name}
+                      </a>
+                      <ul class="dropdown-menu">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{$value.name}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{$value.name}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
                 </ul>  
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Keuangan</a>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a href="#">Penjualan</a></li>
-                  <li class="disabled"><a href="#">Jurnal Harian</a></li>
-                  <li class="disabled"><a href="#">Posting Jurnal</a></li>
-                  <li class="disabled"><a href="#">Buku Besar</a></li>
-                  <li class="disabled"><a href="#">Cash Flow</a></li>
-                  <li class="disabled"><a href="#">Neraca Rugi Laba</a></li>
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'keuangan'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {$value.name}
+                      </a>
+                      <ul class="dropdown-menu">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{$value.name}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{$value.name}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
                 </ul>  
               </li>
               <li class="dropdown">

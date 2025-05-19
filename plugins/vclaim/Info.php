@@ -4,6 +4,7 @@ return [
     'name'          =>  'VClaim Request',
     'description'   =>  'Modul vclaim api untuk mLITE',
     'author'        =>  'Basoro',
+    'category'      =>  'bridging', 
     'version'       =>  '1.1',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'database',

@@ -4,6 +4,7 @@ return [
     'name'          =>  'iCare',
     'description'   =>  'Modul iCare BPJS',
     'author'        =>  'Basoro',
+    'category'      =>  'bridging', 
     'version'       =>  '1.0',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'plus-square',

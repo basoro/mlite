@@ -97,6 +97,43 @@
         top: -7px;
     }
 }
+
+/* Dropdown menu 2 columns layout */
+.dropdown-menu.columns-2 {
+    min-width: 400px;
+    padding: 10px 0;
+}
+
+.dropdown-menu.columns-2 > li {
+    float: left;
+    width: 50%;
+}
+
+.dropdown-menu.columns-2:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Fix submenu positioning in 2-column layout */
+.dropdown-submenu > .dropdown-menu {
+    left: 100%;
+    margin-top: -6px;
+    margin-left: -1px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+    .dropdown-menu.columns-2 {
+        min-width: 100%;
+    }
+    
+    .dropdown-menu.columns-2 > li {
+        width: 100%;
+        float: none;
+    }
+}
+
 </style>
     <!-- PWA Support -->
     <link rel="manifest" href="{$mlite.path}/manifest.json" />
@@ -162,96 +199,188 @@
                   <ul class="dropdown-menu">
                     <li><a href="#" data-toggle="modal" data-target="#tentangModal"> Tentang</a></li>
                     <li><a href="{?=url([ADMIN,'dashboard', 'menu'])?}" data-toggle="modal" data-target="#menuModal"> Menu</a></li>
-                    <li><a href="{?=url(ADMIN.'/logout')?}"> Logout</a></li>
+                    <li role="separator" class="divider"></li>                  
+                    {loop: $mlite.nav}
+                    {if: $value.category == 'main'}
+                    <li{if: !empty($value.subnav)} class="dropdown-submenu"{/if}>
+                        {if: !empty($value.subnav)}
+                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                          {$value.name}
+                        </a>
+                        <ul class="dropdown-menu {if: $value.name == 'Master Data'}columns-2{/if}">
+                            {loop: $value.subnav}
+                            <li><a href="{$value.url}" class="dropdown-item">{$value.name}</a></li>
+                            {/loop}
+                        </ul>
+                        {else} 
+                        <a class="dropdown-item" href="{$value.url}">{$value.name}</a>
+                        {/if}
+                    </li>
+                    {/if}
+                    {/loop}
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#" data-toggle="modal" data-target="#menuModal"> Login</a></li>
                   </ul>  
                 </li>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Layanan</a>
                   <ul class="dropdown-menu">
-                    <li {if: !$this->core->AccesModule('igd') || !$this->core->ActiveModule('igd')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('igd') && $this->core->ActiveModule('igd')}{?=url([ADMIN, 'igd', 'manage'])?}{/if}">IGD</a></li>
-                    <li {if: !$this->core->AccesModule('rawat_jalan') || !$this->core->ActiveModule('rawat_jalan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('rawat_jalan') && $this->core->ActiveModule('rawat_jalan')}{?=url([ADMIN, 'rawat_jalan', 'manage'])?}{/if}">Rawat Jalan</a></li>
-                    <li {if: !$this->core->AccesModule('rawat_inap') || !$this->core->ActiveModule('rawat_inap')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('rawat_inap') && $this->core->ActiveModule('rawat_inap')}{?=url([ADMIN, 'rawat_inap', 'manage'])?}{/if}">Rawat Inap</a></li>
-                    <li {if: !$this->core->AccesModule('dokter_igd') || !$this->core->ActiveModule('dokter_igd')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('dokter_igd') && $this->core->ActiveModule('dokter_igd')}{?=url([ADMIN, 'dokter_igd', 'manage'])?}{/if}">Dokter IGD</a></li>
-                    <li {if: !$this->core->AccesModule('dokter_ralan') || !$this->core->ActiveModule('dokter_ralan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('dokter_ralan') && $this->core->ActiveModule('dokter_ralan')}{?=url([ADMIN, 'dokter_ralan', 'manage'])?}{/if}">Dokter Rawat Jalan</a></li>
-                    <li {if: !$this->core->AccesModule('dokter_ranap') || !$this->core->ActiveModule('dokter_ranap')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('dokter_ranap') && $this->core->ActiveModule('dokter_ranap')}{?=url([ADMIN, 'dokter_ranap', 'manage'])?}{/if}">Dokter Rawat Inap</a></li>
-                    <li {if: !$this->core->AccesModule('apotek_ralan') || !$this->core->ActiveModule('apotek_ralan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('apotek_ralan') && $this->core->ActiveModule('apotek_ralan')}{?=url([ADMIN, 'apotek_ralan', 'manage'])?}{/if}">Apotek</a></li>
-                    <li {if: !$this->core->AccesModule('laboratorium') || !$this->core->ActiveModule('laboratorium')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('laboratorium') && $this->core->ActiveModule('laboratorium')}{?=url([ADMIN, 'laboratorium', 'manage'])?}{/if}">Laboratorium</a></li>
-                    <li {if: !$this->core->AccesModule('radiologi') || !$this->core->ActiveModule('radiologi')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('radiologi') && $this->core->ActiveModule('radiologi')}{?=url([ADMIN, 'radiologi', 'manage'])?}{/if}">Radiologi</a></li>
+                    {loop: $mlite.nav}
+                    {if: $value.category == 'layanan'}
+                    <li{if: !empty($value.subnav)} class="dropdown-submenu"{/if}>
+                        {if: !empty($value.subnav)}
+                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                          {$value.name}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {loop: $value.subnav}
+                            <li><a href="{$value.url}" class="dropdown-item">{$value.name}</a></li>
+                            {/loop}
+                        </ul>
+                        {else} 
+                        <a class="dropdown-item" href="{$value.url}">{$value.name}</a>
+                        {/if}
+                    </li>
+                    {/if}
+                    {/loop}
                   </ul>  
                 </li>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manajemen</a>
                   <ul class="dropdown-menu">
-                    <li {if: !$this->core->AccesModule('manajemen') || !$this->core->ActiveModule('manajemen')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('manajemen') && $this->core->ActiveModule('manajemen')}{?=url([ADMIN, 'manajemen', 'manage'])?}{/if}">Manajemen Mutu</a></li>
-                    <li {if: !$this->core->AccesModule('master') || !$this->core->ActiveModule('master')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('master') && $this->core->ActiveModule('master')}{?=url([ADMIN, 'master', 'manage'])?}{/if}">Master Data</a></li>
-                    <li {if: !$this->core->AccesModule('kepegawaian') || !$this->core->ActiveModule('kepegawaian')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('kepegawaian') && $this->core->ActiveModule('kepegawaian')}{?=url([ADMIN, 'kepegawaian', 'manage'])?}{/if}">Kepegawaian</a></li>
-                    <li {if: !$this->core->AccesModule('master') || !$this->core->ActiveModule('master')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('master') && $this->core->ActiveModule('master')}{?=url([ADMIN, 'master', 'dokter'])?}{/if}">Dokter</a></li>
-                    <li {if: !$this->core->AccesModule('master') || !$this->core->ActiveModule('master')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('master') && $this->core->ActiveModule('master')}{?=url([ADMIN, 'master', 'petugas'])?}{/if}">Petugas</a></li>
-                    <li {if: !$this->core->AccesModule('wagateway') || !$this->core->ActiveModule('wagateway')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('wagateway') && $this->core->ActiveModule('wagateway')}{?=url([ADMIN, 'wagateway', 'manage'])?}{/if}">WA Gateway</a></li>
-                    <li {if: !$this->core->AccesModule('presensi') || !$this->core->ActiveModule('presensi')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('presensi') && $this->core->ActiveModule('presensi')}{?=url([ADMIN, 'presensi', 'manage'])?}{/if}">Presensi Pegawai</a></li>
-                    <li {if: !$this->core->AccesModule('profil') || !$this->core->ActiveModule('profil')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('profil') && $this->core->ActiveModule('profil')}{?=url([ADMIN, 'profil', 'manage'])?}{/if}">Akun Pegawai</a></li>
-                    <li {if: !$this->core->AccesModule('inventaris') || !$this->core->ActiveModule('inventaris')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('inventaris') && $this->core->ActiveModule('inventaris')}{?=url([ADMIN, 'inventaris', 'manage'])?}{/if}">Data Inventaris</a></li>
+                    {loop: $mlite.nav}
+                    {if: $value.category == 'manajemen'}
+                    <li{if: !empty($value.subnav)} class="dropdown-submenu"{/if}>
+                        {if: !empty($value.subnav)}
+                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                          {$value.name}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {loop: $value.subnav}
+                            <li><a href="{$value.url}" class="dropdown-item">{$value.name}</a></li>
+                            {/loop}
+                        </ul>
+                        {else} 
+                        <a class="dropdown-item" href="{$value.url}">{$value.name}</a>
+                        {/if}
+                    </li>
+                    {/if}
+                    {/loop}
                   </ul>  
                 </li>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Farmasi</a>
                   <ul class="dropdown-menu">
-                    <li {if: !$this->core->AccesModule('apotek_ralan') || !$this->core->ActiveModule('apotek_ralan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('apotek_ralan') && $this->core->ActiveModule('apotek_ralan')}{?=url([ADMIN, 'apotek_ralan', 'manage'])?}{/if}">Apotek Rawat Jalan</a></li>
-                    <li {if: !$this->core->AccesModule('apotek_ranap') || !$this->core->ActiveModule('apotek_ranap')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('apotek_ranap') && $this->core->ActiveModule('apotek_ralan')}{?=url([ADMIN, 'apotek_ranap', 'manage'])?}{/if}">Apotek Rawat Inap</a></li>
-                    <li {if: !$this->core->AccesModule('master') || !$this->core->ActiveModule('master')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('master') && $this->core->ActiveModule('master')}{?=url([ADMIN, 'master', 'databarang'])?}{/if}">Inventory Obat</a></li>
-                    <li {if: !$this->core->AccesModule('farmasi') || !$this->core->ActiveModule('farmasi')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('farmasi') && $this->core->ActiveModule('farmasi')}{?=url([ADMIN, 'farmasi', 'opname'])?}{/if}">Stok Opname</a></li>
-                    <li {if: !$this->core->AccesModule('farmasi') || !$this->core->ActiveModule('farmasi')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('farmasi') && $this->core->ActiveModule('farmasi')}{?=url([ADMIN, 'farmasi', 'mutasi'])?}{/if}">Mutasi Obat</a></li>
-                    <li {if: !$this->core->AccesModule('riwayat_barang_medis') || !$this->core->ActiveModule('riwayat_barang_medis')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('riwayat_barang_medis') && $this->core->ActiveModule('riwayat_barang_medis')}{?=url([ADMIN, 'riwayat_barang_medis', 'manage'])?}{/if}">Sirkulasi Obat</a></li>
-                    <li {if: !$this->core->AccesModule('detail_pemberian_obat') || !$this->core->ActiveModule('detail_pemberian_obat')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('detail_pemberian_obat') && $this->core->ActiveModule('detail_pemberian_obat')}{?=url([ADMIN, 'detail_pemberian_obat', 'manage'])?}{/if}">Detail Pemberian Obat</a></li>
-                    <li {if: !$this->core->AccesModule('darurat_stok') || !$this->core->ActiveModule('darurat_stok')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('darurat_stok') && $this->core->ActiveModule('darurat_stok')}{?=url([ADMIN, 'darurat_stok', 'manage'])?}{/if}">Darurat Stok</a></li>
+                    {loop: $mlite.nav}
+                    {if: $value.category == 'farmasi'}
+                    <li{if: !empty($value.subnav)} class="dropdown-submenu"{/if}>
+                        {if: !empty($value.subnav)}
+                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                          {$value.name}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {loop: $value.subnav}
+                            <li><a href="{$value.url}" class="dropdown-item">{$value.name}</a></li>
+                            {/loop}
+                        </ul>
+                        {else} 
+                        <a class="dropdown-item" href="{$value.url}">{$value.name}</a>
+                        {/if}
+                    </li>
+                    {/if}
+                    {/loop}
                   </ul>  
                 </li>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Rekan Medik</a>
                   <ul class="dropdown-menu">
-                    <li {if: !$this->core->AccesModule('pasien') || !$this->core->ActiveModule('pasien')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('pasien') && $this->core->ActiveModule('pasien')}{?=url([ADMIN, 'pasien', 'manage'])?}{/if}">Data Pasien</a></li>
-                    <li {if: !$this->core->AccesModule('vedika') || !$this->core->ActiveModule('vedika')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('vedika') && $this->core->ActiveModule('vedika')}{?=url([ADMIN, 'vedika', 'manage'])?}{/if}">Verifikasi Digital Klaim</a></li>
-                    <li {if: !$this->core->AccesModule('veronisa') || !$this->core->ActiveModule('veronisa')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('veronisa') && $this->core->ActiveModule('veronisa')}{?=url([ADMIN, 'veronisa', 'manage'])?}{/if}">Verifikasi Obat Kronis</a></li>
-                    <li {if: !$this->core->AccesModule('icd_10') || !$this->core->ActiveModule('icd_10')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('icd_10') && $this->core->ActiveModule('icd_10')}{?=url([ADMIN, 'icd_10', 'manage'])?}{/if}">Data ICD 10</a></li>
-                    <li {if: !$this->core->AccesModule('icd_9') || !$this->core->ActiveModule('icd_9')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('icd_9') && $this->core->ActiveModule('icd_9')}{?=url([ADMIN, 'icd_9', 'manage'])?}{/if}">Data ICD 9</a></li>
+                    {loop: $mlite.nav}
+                    {if: $value.category == 'rekammedik'}
+                    <li{if: !empty($value.subnav)} class="dropdown-submenu"{/if}>
+                        {if: !empty($value.subnav)}
+                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                          {$value.name}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {loop: $value.subnav}
+                            <li><a href="{$value.url}" class="dropdown-item">{$value.name}</a></li>
+                            {/loop}
+                        </ul>
+                        {else} 
+                        <a class="dropdown-item" href="{$value.url}">{$value.name}</a>
+                        {/if}
+                    </li>
+                    {/if}
+                    {/loop}
                   </ul>  
                 </li>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Bridging</a>
                   <ul class="dropdown-menu">
-                    <li {if: !$this->core->AccesModule('vclaim') || !$this->core->ActiveModule('vclaim')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('vclaim') && $this->core->ActiveModule('vclaim')}{?=url([ADMIN, 'vclaim', 'manage'])?}{/if}">vClaim BPJS</a></li>
-                    <li {if: !$this->core->AccesModule('jkn_mobile') || !$this->core->ActiveModule('jkn_mobile')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('jkn_mobile') && $this->core->ActiveModule('jkn_mobile')}{?=url([ADMIN, 'jkn_mobile', 'manage'])?}{/if}">Antrol FKTL BPJS</a></li>
-                    <li {if: !$this->core->AccesModule('pcare') || !$this->core->ActiveModule('pcare')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('pcare') && $this->core->ActiveModule('pcare')}{?=url([ADMIN, 'pcare', 'manage'])?}{/if}">PCare BPJS</a></li>
-                    <li {if: !$this->core->AccesModule('jkn_mobile_fktp') || !$this->core->ActiveModule('jkn_mobile_fktp')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('jkn_mobile_fktp') && $this->core->ActiveModule('jkn_mobile_fktp')}{?=url([ADMIN, 'jkn_mobile_fktp', 'manage'])?}{/if}">Antrol FKTP BPJS</a></li>
-                    <li><a href="#" style="color: red !important">Aplicare BPJS</a></li>
-                    <li {if: !$this->core->AccesModule('icare') || !$this->core->ActiveModule('icare')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('icare') && $this->core->ActiveModule('icare')}{?=url([ADMIN, 'icare', 'manage'])?}{/if}">iCare BPJS</a></li>
-                    <li><a href="#" style="color: red !important">Siranap Kemkes</a></li>
-                    <li {if: !$this->core->AccesModule('satu_sehat') || !$this->core->ActiveModule('satu_sehat')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('satu_sehat') && $this->core->ActiveModule('satu_sehat')}{?=url([ADMIN, 'satu_sehat', 'manage'])?}{/if}">Satu Sehat Kemkes</a></li>
-                    <li {if: !$this->core->AccesModule('orthanc') || !$this->core->ActiveModule('orthanc')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('orthanc') && $this->core->ActiveModule('orthanc')}{?=url([ADMIN, 'orthanc', 'manage'])?}{/if}">Radiologi Orthanc</a></li>
-                    <li><a href="#" style="color: red !important">Laborarotium MyLIMS</a></li>
+                    {loop: $mlite.nav}
+                    {if: $value.category == 'bridging'}
+                    <li{if: !empty($value.subnav)} class="dropdown-submenu"{/if}>
+                        {if: !empty($value.subnav)}
+                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                          {$value.name}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {loop: $value.subnav}
+                            <li><a href="{$value.url}" class="dropdown-item">{$value.name}</a></li>
+                            {/loop}
+                        </ul>
+                        {else} 
+                        <a class="dropdown-item" href="{$value.url}">{$value.name}</a>
+                        {/if}
+                    </li>
+                    {/if}
+                    {/loop}
                   </ul>  
                 </li>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Laporan</a>
                   <ul class="dropdown-menu">
-                    <li {if: !$this->core->AccesModule('jasa_medis_dokter') || !$this->core->ActiveModule('jasa_medis_dokter')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('jasa_medis_dokter') && $this->core->ActiveModule('jasa_medis_dokter')}{?=url([ADMIN, 'jasa_medis_dokter', 'manage'])?}{/if}">Jasa Medik Dokter</a></li>
-                    <li {if: !$this->core->AccesModule('jasa_medis_perawat') || !$this->core->ActiveModule('jasa_medis_perawat')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('jasa_medis_perawat') && $this->core->ActiveModule('jasa_medis_perawat')}{?=url([ADMIN, 'jasa_medis_perawat', 'manage'])?}{/if}">Jasa Medik Petugas</a></li>
-                    <li><a href="#" style="color: red !important">Pembayaran Rawat Jalan</a></li>
-                    <li><a href="#" style="color: red !important">Pembayaran Rawat Inap</a></li>
-                    <li><a href="#" style="color: red !important">Kunjungan Rawat Jalan</a></li>
-                    <li><a href="#" style="color: red !important">Kunjungan Rawat Inap</a></li>
-                    <li><a href="#" style="color: red !important">Sensus Harian</a></li>
+                    {loop: $mlite.nav}
+                    {if: $value.category == 'laporan'}
+                    <li{if: !empty($value.subnav)} class="dropdown-submenu"{/if}>
+                        {if: !empty($value.subnav)}
+                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                          {$value.name}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {loop: $value.subnav}
+                            <li><a href="{$value.url}" class="dropdown-item">{$value.name}</a></li>
+                            {/loop}
+                        </ul>
+                        {else} 
+                        <a class="dropdown-item" href="{$value.url}">{$value.name}</a>
+                        {/if}
+                    </li>
+                    {/if}
+                    {/loop}
                   </ul>  
                 </li>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Keuangan</a>
                   <ul class="dropdown-menu">
-                    <li {if: !$this->core->AccesModule('penjualan') || !$this->core->ActiveModule('penjualan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('penjualan') && $this->core->ActiveModule('penjualan')}{?=url([ADMIN, 'penjualan', 'manage'])?}{/if}">Penjualan</a></li>
-                    <li {if: !$this->core->AccesModule('keuangan') || !$this->core->ActiveModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan') && $this->core->ActiveModule('keuangan')}{?=url([ADMIN, 'keuangan', 'jurnalharian'])?}{/if}">Jurnal Harian</a></li>
-                    <li {if: !$this->core->AccesModule('keuangan') || !$this->core->ActiveModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan') && $this->core->ActiveModule('keuangan')}{?=url([ADMIN, 'keuangan', 'postingjurnal'])?}{/if}">Posting Jurnal</a></li>
-                    <li {if: !$this->core->AccesModule('keuangan') || !$this->core->ActiveModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan') && $this->core->ActiveModule('keuangan')}{?=url([ADMIN, 'keuangan', 'bukubesar'])?}{/if}">Buku Besar</a></li>
-                    <li {if: !$this->core->AccesModule('keuangan') || !$this->core->ActiveModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan') && $this->core->ActiveModule('keuangan')}{?=url([ADMIN, 'keuangan', 'cashflow'])?}{/if}">Cash Flow</a></li>
-                    <li {if: !$this->core->AccesModule('keuangan') || !$this->core->ActiveModule('keuangan')}class="disabled"{/if}><a href="{if: $this->core->AccesModule('keuangan') && $this->core->ActiveModule('keuangan')}{?=url([ADMIN, 'keuangan', 'neraca'])?}{/if}">Neraca Rugi Laba</a></li>
+                    {loop: $mlite.nav}
+                    {if: $value.category == 'keuangan'}
+                    <li{if: !empty($value.subnav)} class="dropdown-submenu"{/if}>
+                        {if: !empty($value.subnav)}
+                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                          {$value.name}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {loop: $value.subnav}
+                            <li><a href="{$value.url}" class="dropdown-item">{$value.name}</a></li>
+                            {/loop}
+                        </ul>
+                        {else} 
+                        <a class="dropdown-item" href="{$value.url}">{$value.name}</a>
+                        {/if}
+                    </li>
+                    {/if}
+                    {/loop}
                   </ul>  
                 </li>
                 <li class="dropdown">
@@ -286,7 +415,7 @@
                     <li><a href="#" data-toggle="modal" data-target="#bantuanModal"> Bantuan</a></li>
                   </ul>  
                 </li>
-              </ul>
+              </ul>  
             </div><!--/.nav-collapse -->
           </div>          
           <div class="container-fluid navbar-icon-top">
@@ -476,6 +605,6 @@
     </script>
     <!-- End PWA Support -->
     <script src="{?= url(THEMES.'/admin/js/scripts.js?v='.$mlite.version) ?}"></script>
-    {loop: $mlite.footer}{$value}{/loop}
+    {loop: $mlite.footer}{$value}{/loop}  
 </body>
 </html>

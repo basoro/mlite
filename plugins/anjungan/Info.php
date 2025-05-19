@@ -3,6 +3,7 @@ return [
     'name'          =>  'Anjungan',
     'description'   =>  'Modul anjungan pasien rawat jalan',
     'author'        =>  'Basoro',
+    'category'      =>  'bridging', 
     'version'       =>  '1.0',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'desktop',

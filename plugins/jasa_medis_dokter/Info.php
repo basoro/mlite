@@ -2,8 +2,9 @@
 
     return [
         'name'          =>  'Jasa Medis Dokter',
-        'description'   =>  'Modul dokter untuk mLITE',
+        'description'   =>  'Modul jasa medis dokter untuk mLITE',
         'author'        =>  'Basoro',
+        'category'      =>  'keuangan', 
         'version'       =>  '1.0',
         'compatibility' =>  '5.*.*',
         'icon'          =>  'code',

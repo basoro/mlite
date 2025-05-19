@@ -4,6 +4,7 @@ return [
     'name'          =>  'Veronisa',
     'description'   =>  'Modul Verifikasi Obat Kronis',
     'author'        =>  'Basoro',
+    'category'      =>  'bridging', 
     'version'       =>  '1.0',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'medkit',

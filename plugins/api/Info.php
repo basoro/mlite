@@ -3,6 +3,7 @@ return [
     'name'          =>  'API',
     'description'   =>  'Katalog API mLITE',
     'author'        =>  'Basoro',
+    'category'      =>  'bridging', 
     'version'       =>  '1.0',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'database',

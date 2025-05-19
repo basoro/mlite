@@ -4,6 +4,7 @@
         'name'          =>  'Surat Rujukan',
         'description'   =>  'Modul mlite surat rujukan untuk mLITE',
         'author'        =>  'Basoro',
+        'category'      =>  'manajemen', 
         'version'       =>  '1.0',
         'compatibility' =>  '5.*.*',
         'icon'          =>  'code',

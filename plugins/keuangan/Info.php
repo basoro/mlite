@@ -4,6 +4,7 @@ return [
     'name'          =>  'Keuangan',
     'description'   =>  'Modul Keuangan untuk mLITE',
     'author'        =>  'Basoro',
+    'category'      =>  'keuangan', 
     'version'       =>  '1.0',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'money',

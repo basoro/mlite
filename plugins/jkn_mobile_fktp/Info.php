@@ -3,6 +3,7 @@ return [
     'name'          =>  'JKN Mobile FKTP',
     'description'   =>  'Modul JKN Mobile API untuk FKTP',
     'author'        =>  'Basoro',
+    'category'      =>  'bridging', 
     'version'       =>  '1.0',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'tasks',

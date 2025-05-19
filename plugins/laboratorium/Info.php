@@ -4,6 +4,7 @@ return [
     'name'          =>  'Laboratorium',
     'description'   =>  'Modul Laboratorium untuk mLITE',
     'author'        =>  'Basoro',
+    'category'      =>  'layanan', 
     'version'       =>  '1.0',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'flask',

@@ -4,6 +4,7 @@ return [
     'name'          =>  'Manajemen',
     'description'   =>  'Modul manajemen untuk mLITE',
     'author'        =>  'Basoro',
+    'category'      =>  'manajemen', 
     'version'       =>  '1.0',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'dashboard',

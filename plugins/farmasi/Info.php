@@ -4,6 +4,7 @@ return [
     'name'          =>  'Farmasi',
     'description'   =>  'Pengelolaan data gudang farmasi.',
     'author'        =>  'Basoro',
+    'category'      =>  'farmasi', 
     'version'       =>  '1.1',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'medkit',

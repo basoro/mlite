@@ -4,6 +4,7 @@ return [
     'name'          =>  'Dokter Ralan',
     'description'   =>  'Modul dokter rawat jalan untuk mLITE',
     'author'        =>  'Basoro',
+    'category'      =>  'layanan', 
     'version'       =>  '1.0',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'user-md',

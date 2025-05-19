@@ -168,6 +168,7 @@ class Admin extends Main
                 $nav[] = [
                     'dir'       => $dir,
                     'name'      => $details['name'],
+                    'category'  => $details['category'], 
                     'icon'      => $details['icon'],
                     'desc'      => $details['description'],
                     'url'       => $moduleURL,

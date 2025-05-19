@@ -4,6 +4,7 @@ return [
     'name'          =>  'Bridging PCare',
     'description'   =>  'Modul pcare api untuk mLITE',
     'author'        =>  'Basoro',
+    'category'      =>  'bridging', 
     'version'       =>  '1.0',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'database',

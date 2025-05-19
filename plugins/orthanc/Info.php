@@ -4,6 +4,7 @@ return [
     'name'          =>  'Orthanc',
     'description'   =>  'Bridging PACS via Orthanc',
     'author'        =>  'Basoro',
+    'category'      =>  'bridging', 
     'version'       =>  '1.0',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'bolt',

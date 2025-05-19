@@ -272,6 +272,11 @@ abstract class Main
             self::$userCache = $this->db('mlite_users')->where('id', $id)->oneArray();
         }
 
+        // Tambahkan pengecekan untuk key yang tidak ada
+        if (!isset(self::$userCache[$field])) {
+            return null; // atau nilai default yang sesuai
+        }
+
         return self::$userCache[$field];
     }
 

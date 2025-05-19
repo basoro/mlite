@@ -3,6 +3,7 @@ return [
     'name'          =>  'Vedika',
     'description'   =>  'Modul klaim online Vedika BPJS',
     'author'        =>  'Basoro',
+    'category'      =>  'bridging', 
     'version'       =>  '1.0',
     'compatibility' =>  '5.*.*',
     'icon'          =>  'code',
