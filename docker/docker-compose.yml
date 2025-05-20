@@ -34,7 +34,7 @@ services:
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: true
-      MYSQL_DATABASE: mlite_db
+      MYSQL_DATABASE: mlite
     ports:
       - 3308:3306
     volumes:
