@@ -83,7 +83,7 @@ $ cd mlite/docker && docker-compose up -d
 4. Silahkan login dengan Username: admin dan Password: admin
 
 
-#### Catatan:
+## Catatan:
 Untuk setiap kali update, silahkan jalankan perintah
 ```
 $ composer update
@@ -91,7 +91,7 @@ $ composer update
 Ini untuk menambahkan dependensi baru pada aplikasi
 
 
-### Peringatan!
+## Peringatan!
 
 + Untuk pengguna Apache, pastikan file `.htaccess` juga ada di server. Tanpanya mLITE tidak akan berfungsi.
 + Untuk pengguna Nginx, tambahkan konfigurasi berikut di pengaturan nginx.conf (atau sejenisnya)
