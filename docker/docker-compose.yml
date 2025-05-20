@@ -15,6 +15,12 @@ services:
     restart: unless-stopped
     command: >
       sh -c "
+        mkdir -p /var/www/public/uploads &&
+        chmod -R 777 /var/www/public/uploads &&
+        mkdir -p /var/www/public/tmp &&
+        chmod -R 777 /var/www/public/tmp &&
+        mkdir -p /var/www/public/admin/tmp &&
+        chmod -R 777 /var/www/public/admin/tmp &&
         composer install --no-dev --optimize-autoloader &&
         php-fpm
       "
