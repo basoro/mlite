@@ -77,7 +77,6 @@ $ git clone https://github.com/basoro/mlite.git
 ```
 $ cd mlite/docker && docker-compose up -d
 ```
-Tunggu hingga proses selesai.
 
 3. Buka browser Anda dan navigasikan ke alamat URL_ADDRESS:8088.
 
