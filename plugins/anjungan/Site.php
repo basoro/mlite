@@ -80,7 +80,7 @@ class Site extends SiteModule
     {
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
-        $poliklinik = $this->db('poliklinik')->toArray();
+        $poliklinik = $this->db('poliklinik')->where('status', '1')->toArray();
         $carabayar = str_replace(",","','", $this->settings->get('anjungan.carabayar'));
         $penjab = $this->db()->pdo()->prepare("SELECT * FROM penjab WHERE kd_pj IN ('$carabayar')");
         $penjab->execute();
@@ -2146,7 +2146,7 @@ class Site extends SiteModule
               $_POST['umurdaftar'] = $umur;
               $_POST['sttsumur'] = $sttsumur;
               $_POST['status_lanjut']   = 'Ralan';
-              $_POST['kd_pj']           = $this->settings->get('anjungan.carabayar_umum');
+              // $_POST['kd_pj']           = $this->settings->get('anjungan.carabayar_umum');
               $_POST['status_bayar']    = 'Belum Bayar';
               $_POST['no_rawat'] = $this->core->setNoRawat($date);
               $_POST['jam_reg'] = date('H:i:s');
