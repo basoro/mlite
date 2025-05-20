@@ -32,7 +32,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 COPY ./php/php.ini /usr/local/etc/php/conf.d/custom.ini
 
-WORKDIR /var/www
+WORKDIR /var/www/public
 
 CMD ["php-fpm"]
 

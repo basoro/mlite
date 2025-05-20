@@ -28,6 +28,11 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+    command: >
+      sh -c "
+        composer install --no-dev --optimize-autoloader &&
+        php-fpm
+      "
 
   mysql:
     image: mysql:5.7.22
