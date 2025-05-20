@@ -21,6 +21,7 @@ services:
         chmod -R 777 /var/www/public/tmp &&
         mkdir -p /var/www/public/admin/tmp &&
         chmod -R 777 /var/www/public/admin/tmp &&
+        sed -i 's/localhost/mysql/g' /var/www/public/config.php &&
         composer install --no-dev --optimize-autoloader &&
         php-fpm
       "
