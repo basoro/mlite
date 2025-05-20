@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # PHP Service
+  php:
+    build:
+      context: .              # Build context is current directory
+      dockerfile: php/Dockerfile
+    container_name: php81_app # Name our container
+    volumes:
+      - ../:/var/www/public   # Mount our source code
+    networks:
+      - app-network          # Connect to our network
+    environment:
+      PHP_IDE_CONFIG: serverName=Docker # For Xdebug
+    # Make container restart unless stopped manually
+    restart: unless-stopped
+
+  # Nginx Service
+  nginx:
+    image: nginx:latest      # Use official Nginx image
+    container_name: nginx_app
+    ports:
+      - "8088:80"           # Map port 8080 on our PC to 80 in container
+    volumes:
+      - ../:/var/www/public  # Mount same source code
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php                 # Wait for PHP container
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:5.7.22
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
+      MYSQL_DATABASE: mlite_db
+    ports:
+      - 3308:3306
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ../mlite_db.sql:/docker-entrypoint-initdb.d/00-mlite_db.sql
+      - ./db:/docker-entrypoint-initdb.d/01-custom
+    networks:
+      - app-network    # Add this to connect to the network      
+
+networks:
+  app-network:
+    driver: bridge          # Standard Docker network type
