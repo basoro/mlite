@@ -66,6 +66,24 @@ $ composer install
 
 7. Silahkan login dengan Username: admin dan Password: admin
 
+### Pemasangan menggunakan docker.
+1. Download file release terbaru [mLITE] atau lakukan git clone.
+
+```
+$ git clone https://github.com/basoro/mlite.git
+```
+
+2. Jalankan perintah docker-compose
+```
+$ cd mlite/docker && docker-compose up -d
+```
+Tunggu hingga proses selesai.
+
+3. Buka browser Anda dan navigasikan ke alamat URL_ADDRESS:8088.
+
+4. Silahkan login dengan Username: admin dan Password: admin
+
+
 #### Catatan:
 Untuk setiap kali update, silahkan jalankan perintah
 ```
