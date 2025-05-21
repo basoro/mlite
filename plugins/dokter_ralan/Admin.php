@@ -121,6 +121,14 @@ class Admin extends AdminModule
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
+          $row['potensi_prb'] = '';
+          $bpjs_prb = $this->db('bpjs_prb')
+            ->join('bridging_sep', 'bridging_sep.no_sep', 'bpjs_prb.no_sep')
+            ->where('bridging_sep.no_rawat', $row['no_rawat'])
+            ->oneArray();
+          if(!empty($bpjs_prb)) {
+            $row['potensi_prb'] = $bpjs_prb['prb'];
+          }
           $this->assign['list'][] = $row;
         }
 
