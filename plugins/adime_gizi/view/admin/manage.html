@@ -1,0 +1,189 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-6 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_catatan_adime_gizi' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Lihat Data catatan_adime_gizi' style='color:white;'>
+                          <i class='fa fa-eye' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> </button>
+                          <button id='tambah_data_catatan_adime_gizi' class='btn btn-success' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                          <i class='fa fa-plus-square' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_catatan_adime_gizi' class='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                          <i class='fa fa-edit' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='hapus_data_catatan_adime_gizi' class='btn btn-danger' data-toggle='tooltip' data-placement='top' title='Hapus Data' {if: $this->core->getUserInfo('role') !='admin'}disabled{/if}>
+                          <i class='fa fa-trash' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                          <button id='lihat_detail_catatan_adime_gizi' class='btn btn-default' data-toggle='tooltip' data-placement='top' title='Hapus Data' {if: $this->core->getUserInfo('role') !='admin'}disabled{/if}>
+                          <i class='fa fa-file' style='font-size: 15px;'></i><span class="hidden-xs"> Detail</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-addon">Cari :</span>
+                          <span class="input-group-addon" style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-control" id='search_field_catatan_adime_gizi' name='search_field_catatan_adime_gizi' style="margin: 0 !important;"> 
+                              <option value='no_rawat'>No Rawat</option>
+<option value='tanggal'>Tanggal</option>
+<option value='asesmen'>Asesmen</option>
+<option value='diagnosis'>Diagnosis</option>
+<option value='intervensi'>Intervensi</option>
+<option value='monitoring'>Monitoring</option>
+<option value='evaluasi'>Evaluasi</option>
+<option value='instruksi'>Instruksi</option>
+<option value='nip'>Nip</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_catatan_adime_gizi' id='search_text_catatan_adime_gizi' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-addon">
+                          <span id='searchclear_catatan_adime_gizi' data-toggle='tooltip' data-placement='top' title='Clear'><i class="fa fa-times text-danger"></i></span>
+                          </span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_catatan_adime_gizi" class="table table-bordered table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>No Rawat</th>
+<th>Tanggal</th>
+<th>Asesmen</th>
+<th>Diagnosis</th>
+<th>Intervensi</th>
+<th>Monitoring</th>
+<th>Evaluasi</th>
+<th>Instruksi</th>
+<th>Nip</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>        
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_catatan_adime_gizi" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data Adime Gizi</span>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <form name="form_catatan_adime_gizi">
+          <input type="hidden" class="form-control" id="typeact" /> 
+            <div class='col-xxl-6 col-lg-6 col-sm-6'>
+  <div class='form-group'>
+      <label class='form-label' for='no_rawat'>No Rawat</label>
+      <input type='text' class='form-control' id='no_rawat' name='no_rawat' />
+    <div class='error'></div>
+  </div>
+  </div>
+  <div class='col-xxl-6 col-lg-6 col-sm-6'>
+  <div class='form-group'>
+      <label class='form-label' for='tanggal'>Tanggal</label>
+      <input type='text' class='form-control tanggal' id='tanggal' name='tanggal' />
+    <div class='error'></div>
+  </div>
+  </div>
+  <div class='col-xxl-6 col-lg-6 col-sm-6'>
+  <div class='form-group'>
+      <label class='form-label' for='asesmen'>Asesmen</label>
+      <textarea name="asesmen" class="form-control" id="asesmen"></textarea>
+    <div class='error'></div>
+  </div>
+  </div>
+  <div class='col-xxl-6 col-lg-6 col-sm-6'>
+  <div class='form-group'>
+      <label class='form-label' for='diagnosis'>Diagnosis</label>
+      <textarea name="diagnosis" class="form-control" id="diagnosis"></textarea>
+    <div class='error'></div>
+  </div>
+  </div>
+  <div class='col-xxl-6 col-lg-6 col-sm-6'>
+  <div class='form-group'>
+      <label class='form-label' for='intervensi'>Intervensi</label>
+      <textarea name="intervensi" class="form-control" id="intervensi"></textarea>
+    <div class='error'></div>
+  </div>
+  </div>
+  <div class='col-xxl-6 col-lg-6 col-sm-6'>
+  <div class='form-group'>
+      <label class='form-label' for='monitoring'>Monitoring</label>
+      <textarea name="monitoring" class="form-control" id="monitoring"></textarea>
+    <div class='error'></div>
+  </div>
+  </div>
+  <div class='col-xxl-6 col-lg-6 col-sm-6'>
+  <div class='form-group'>
+      <label class='form-label' for='evaluasi'>Evaluasi</label>
+      <textarea name="evaluasi" class="form-control" id="evaluasi"></textarea>
+    <div class='error'></div>
+  </div>
+  </div>
+  <div class='col-xxl-6 col-lg-6 col-sm-6'>
+  <div class='form-group'>
+      <label class='form-label' for='instruksi'>Instruksi</label>
+      <textarea name="instruksi" class="form-control" id="instruksi"></textarea>
+    <div class='error'></div>
+  </div>
+  </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+        <button type="submit" id="simpan_data_catatan_adime_gizi" class="btn btn-primary">Simpan Data</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_catatan_adime_gizi" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data Adime Gizi</span>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_catatan_adime_gizi"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+        <button type="submit" id="export_pdf" class="btn btn-primary">
+          <i class="fa fa-file-pdf-o"></i>&nbsp;PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-primary">
+          <i class="fa fa-file-excel-o"></i>&nbsp;XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_catatan_adime_gizi" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

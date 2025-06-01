@@ -513,6 +513,25 @@ VALUES
 /*!40000 ALTER TABLE `cacat_fisik` ENABLE KEYS */;
 UNLOCK TABLES;
 
+# Dump of table catatan_adime_gizi
+# ------------------------------------------------------------
+
+CREATE TABLE `catatan_adime_gizi` (
+  `no_rawat` varchar(17) NOT NULL,
+  `tanggal` datetime NOT NULL,
+  `asesmen` varchar(1000) DEFAULT NULL,
+  `diagnosis` varchar(1000) DEFAULT NULL,
+  `intervensi` varchar(1000) DEFAULT NULL,
+  `monitoring` varchar(1000) DEFAULT NULL,
+  `evaluasi` varchar(1000) DEFAULT NULL,
+  `instruksi` varchar(1000) DEFAULT NULL,
+  `nip` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`no_rawat`,`tanggal`),
+  KEY `nip` (`nip`),
+  CONSTRAINT `catatan_adime_gizi_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `catatan_adime_gizi_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 # Dump of table catatan_perawatan
 # ------------------------------------------------------------
@@ -3007,6 +3026,26 @@ CREATE TABLE `mlite_satu_sehat_response` (
   `id_observation_ttvkesadaran` varchar(50) DEFAULT NULL,
   `id_procedure` varchar(50) DEFAULT NULL,
   `id_composition` varchar(50) DEFAULT NULL,
+  `id_medication_request` varchar(50) DEFAULT NULL,
+  `id_medication_dispense` varchar(50) DEFAULT NULL,
+  `id_medication_statement` varchar(50) DEFAULT NULL,
+  `id_rad_request` varchar(50) DEFAULT NULL,
+  `id_rad_specimen` varchar(50) DEFAULT NULL,
+  `id_rad_observation` varchar(50) DEFAULT NULL,
+  `id_rad_diagnostic` varchar(50) DEFAULT NULL,
+  `id_lab_pk_request` varchar(50) DEFAULT NULL,
+  `id_lab_pk_specimen` varchar(50) DEFAULT NULL,
+  `id_lab_pk_observation` varchar(50) DEFAULT NULL,
+  `id_lab_pk_diagnostic` varchar(50) DEFAULT NULL,
+  `id_lab_pa_request` varchar(50) DEFAULT NULL,
+  `id_lab_pa_specimen` varchar(50) DEFAULT NULL,
+  `id_lab_pa_observation` varchar(50) DEFAULT NULL,
+  `id_lab_pa_diagnostic` varchar(50) DEFAULT NULL,
+  `id_lab_mb_request` varchar(50) DEFAULT NULL,
+  `id_lab_mb_specimen` varchar(50) DEFAULT NULL,
+  `id_lab_mb_observation` varchar(50) DEFAULT NULL,
+  `id_lab_mb_diagnostic` varchar(50) DEFAULT NULL,
+  `id_careplan` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`no_rawat`),
   CONSTRAINT `mlite_satu_sehat_response_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
