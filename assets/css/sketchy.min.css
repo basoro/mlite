@@ -6574,43 +6574,43 @@ html {
   /*fonts*/
   @font-face {
     font-family: 'Redacted Script';
-    src: url('fonts/redacted-script-bold.woff2') format('woff2'), url('fonts/redacted-script-bold.woff') format('woff');
+    src: url('../fonts/redacted-script-bold.woff2') format('woff2'), url('../fonts/redacted-script-bold.woff') format('woff');
     font-weight: 700;
     font-style: normal;
   }
   @font-face {
     font-family: 'Redacted Script';
-    src: url('fonts/redacted-script-light.woff2') format('woff2'), url('fonts/redacted-script-light.woff') format('woff');
+    src: url('../fonts/redacted-script-light.woff2') format('woff2'), url('../fonts/redacted-script-light.woff') format('woff');
     font-weight: 200;
     font-style: normal;
   }
   @font-face {
     font-family: 'Redacted Script';
-    src: url('fonts/redacted-script-regular.woff2') format('woff2'), url('fonts/redacted-script-regular.woff') format('woff');
+    src: url('../fonts/redacted-script-regular.woff2') format('woff2'), url('../fonts/redacted-script-regular.woff') format('woff');
     font-weight: 400;
     font-style: normal;
   }
   @font-face {
     font-family: 'Comic Neue';
-    src: url('fonts/ComicNeue-Regular.woff2') format('woff2'), url('fonts/ComicNeue-Regular.woff') format('woff');
+    src: url('../fonts/ComicNeue-Regular.woff2') format('woff2'), url('../fonts/ComicNeue-Regular.woff') format('woff');
     font-weight: 400;
     font-style: normal;
   }
   @font-face {
     font-family: 'Comic Neue';
-    src: url('fonts/ComicNeue-Bold.woff2') format('woff2'), url('fonts/ComicNeue-Bold.woff') format('woff');
+    src: url('../fonts/ComicNeue-Bold.woff2') format('woff2'), url('../fonts/ComicNeue-Bold.woff') format('woff');
     font-weight: 700;
     font-style: normal;
   }
   @font-face {
     font-family: 'Comic Neue';
-    src: url('fonts/ComicNeue-Regular-Oblique.woff2') format('woff2'), url('fonts/ComicNeue-Regular-Oblique.woff') format('woff');
+    src: url('../fonts/ComicNeue-Regular-Oblique.woff2') format('woff2'), url('../fonts/ComicNeue-Regular-Oblique.woff') format('woff');
     font-weight: 400;
     font-style: italic;
   }
   @font-face {
     font-family: 'Comic Neue';
-    src: url('fonts/ComicNeue-Bold-Oblique.woff2') format('woff2'), url('fonts/ComicNeue-Bold-Oblique.woff') format('woff');
+    src: url('../fonts/ComicNeue-Bold-Oblique.woff2') format('woff2'), url('../fonts/ComicNeue-Bold-Oblique.woff') format('woff');
     font-weight: 700;
     font-style: italic;
   }
