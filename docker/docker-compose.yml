@@ -47,6 +47,7 @@ services:
   # MySQL Service
   mysql:
     image: mysql:5.7.22 # biarms/mysql:5.7 # Use MySQL image for ARM
+    container_name: mysql57_app
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: true
