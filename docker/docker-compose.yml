@@ -34,7 +34,7 @@ services:
     image: nginx:latest      # Use official Nginx image
     container_name: nginx_app
     ports:
-      - "8088:80"           # Map port 8080 on our PC to 80 in container
+      - "8080:80"           # Map port 8080 on our PC to 80 in container
     volumes:
       - ../:/var/www/public  # Mount same source code
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
@@ -52,7 +52,7 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: true
       MYSQL_DATABASE: mlite
     ports:
-      - 3308:3306
+      - 3308:3306 # Map port 3308 on our PC to 3306 in container
     volumes:
       - ./mysql:/var/lib/mysql
       - ../mlite_db.sql:/docker-entrypoint-initdb.d/00-mlite_db.sql
