@@ -19,6 +19,8 @@ services:
         chmod -R 777 /var/www/public/uploads &&
         mkdir -p /var/www/public/tmp &&
         chmod -R 777 /var/www/public/tmp &&
+        mkdir -p /var/www/public/backups &&
+        chmod -R 777 /var/www/public/backups &&
         mkdir -p /var/www/public/admin/tmp &&
         chmod -R 777 /var/www/public/admin/tmp &&
         sed -i 's/localhost/mysql/g' /var/www/public/config.php &&
@@ -43,7 +45,7 @@ services:
 
   # MySQL Service
   mysql:
-    image: mysql:5.7.22
+    image: mysql:5.7.22 # biarms/mysql:5.7 # Use MySQL image for ARM
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: true
