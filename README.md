@@ -76,6 +76,7 @@ $ composer install
 ```
 $ git clone https://github.com/basoro/mlite.git
 ```
+Sesuaikan port di bagian Nginx Service dari 8080 ke port yang anda inginkan (atau biarkan defautl saja).
 
 2. Jalankan perintah docker-compose
 ```
