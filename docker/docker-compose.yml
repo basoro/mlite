@@ -23,9 +23,9 @@ services:
         chmod -R 777 /var/www/public/backups &&
         mkdir -p /var/www/public/admin/tmp &&
         chmod -R 777 /var/www/public/admin/tmp &&
-        chmod -R 777 /var/www/public/vendor/mpdf/mpdf/tmp &&
         sed -i 's/localhost/mysql/g' /var/www/public/config.php &&
         composer install --no-dev --optimize-autoloader &&
+        chmod -R 777 /var/www/public/vendor/mpdf/mpdf/tmp &&
         php-fpm
       "
 
