@@ -569,4 +569,36 @@ abstract class Main
         }
     }
 
+    public function umurDaftar($tgl_lahir) {
+        $birthDate = new \DateTime($tgl_lahir);
+        $today = new \DateTime("today");
+    
+        $umur_daftar = 0;
+        $status_umur = 'Hr';
+    
+        if ($birthDate < $today) {
+            $diff = $today->diff($birthDate);
+            $y = $diff->y;
+            $m = $diff->m;
+            $d = $diff->d;
+    
+            if ($y != 0) {
+                $umur_daftar = $y;
+                $status_umur = "Th";
+            } elseif ($m != 0) {
+                $umur_daftar = $m;
+                $status_umur = "Bl";
+            } else {
+                $umur_daftar = $d;
+                $status_umur = "Hr";
+            }
+        }
+    
+        // Kembalikan sebagai array
+        return [
+            'umur_daftar' => $umur_daftar,
+            'status_umur' => $status_umur
+        ];
+    }    
+
 }
