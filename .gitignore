@@ -41,8 +41,8 @@ plugins/khanza
 plugins/pasien_galleries
 # plugins/log_antrian_taskid
 
-
-.env
+docker/mysql
+# .env
 logs/
 config.php
 #workerman.php

@@ -1,0 +1,141 @@
+<style>
+    .nowrap th, .nowrap td {
+      white-space: nowrap;
+    }
+</style>
+<h4>Mapping Obat Satu Sehat</h4>
+<form action="{?=url(ADMIN.'/satu_sehat/saveobat')?}" method="POST">
+    <input type="hidden" name="id_organisasi_satusehat">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Pilih Obat</label>
+                        <select name="kode_brng" id="kode_brng" class="form-control" data-use-search="true" >
+                            {loop: $databarang}
+                            <option value="{$value.kode_brng}">[{$value.kode_brng}] - {$value.nama_brng}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Pilih Obat KFA</label>
+                        <select id="select_kfa" name="select_kfa" class="form-control" placeholder="Silahkan cari Obat KFA..."></select>
+                    </div>
+                    <!-- <div class="form-group">
+                        <label for="">Tipe</label>
+                        <select name="type" id="type" class="form-control">
+                            <option value="obat">Obat</option>
+                            <option value="vaksin">Vaksin</option>
+                        </select>
+                    </div> -->
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <!-- <input type="submit" name="update" class="btn btn-info" value="Update" /> -->
+                    <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row">
+<div class="col-md-12">
+    <div class="table-responsive no-margin" id="mapping_obat_satu_sehat">
+    <table class="table table-striped table-bordered no-padding nowrap display_mapping_obat" width="100%">
+        <thead>
+        <tr>
+            <th>Nama Obat Lokal</th>
+            <th>Nama Obat KFA</th>
+            <th>Nama Bahan</th>
+        </tr>
+        </thead>
+        <tbody>
+        {loop: $mapping_obat_satu_sehat}
+        <tr class="mapping_obat_satu_sehat"
+        data-kode_brng="{$value.kode_brng}"
+        >
+            <td>{$value.kode_brng}</td>
+            <td>{$value.nama_kfa}</td>
+            <td>{$value.nama_bahan}</td>
+        </tr>
+        {/loop}
+        </tbody>
+    </table>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $('.display_mapping_obat').DataTable({
+        "language": { "search": "", "searchPlaceholder": "Search..." },
+        "fixedColumns": {
+            "left": 4
+        },
+        "lengthChange": false,
+        "scrollX": true,
+        dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+        });
+        var t = $(".display_mapping_obat").DataTable().rows().count();
+        $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+    });
+
+    $("#mapping_obat_satu_sehat").on("click", ".mapping_obat_satu_sehat", function(event){
+        var kode_brng  = $(this).attr("data-kode_brng");
+        $('#kode_brng').val(kode_brng).change();
+    });
+
+    var strip_tags = function(str) {
+        return (str + '').replace(/<\/?[^>]+(>|$)/g, '')
+    };
+
+    var truncate_string = function(str, chars) {
+        if ($.trim(str).length <= chars) {
+            return str;
+        } else {
+            return $.trim(str.substr(0, chars)) + '…';
+        }
+    };
+
+    var $select = $('#select_kfa');
+
+    $select.selectator({
+        labels: {
+            search: 'Search here...'
+        },
+        load: function (search, callback) {
+            if (search.length < this.minSearchLength) return callback();
+
+            var baseURL = mlite.url + '/' + mlite.admin;
+            var url = baseURL + '/satu_sehat/mappingobatsearch?t=' + mlite.token + '&keyword=' + encodeURIComponent(search);
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    // console.log('Data:', data);
+                    callback(data.items.data.slice(0, 100));
+                },
+                error: function() {
+                    callback();
+                }
+            });
+        },
+        delay: 300,
+        minSearchLength: 6,
+        valueField: 'kfa_code',
+        textField: 'name',
+        render: {
+            option: function (_item, escape) {
+                var html = '';
+                html += '<div class="selectator_option_title">' + ((typeof _item.name !== 'undefined') ? _item.name : '') + '</div>';
+                html += '<div class="selectator_option_subtitle">' + ((typeof _item.manufacturer !== 'undefined') ? truncate_string(escape(strip_tags(_item.manufacturer)), 75) : '') + '</div>';
+                return html;
+            }
+        }
+
+    });
+</script>
+

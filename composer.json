@@ -2,6 +2,11 @@
     "name": "basoro/mlite",
     "description": "SIM Kesehatan Aman, Ringan & Modular. Jalan di sisi server sebagai aplikasi web (PWA Ready) dan bersifat mobile first (responsive).",
     "type": "project",
+    "autoload": {
+        "psr-4": {
+            "SatuSehat\\": "plugins/satu_sehat/"
+        }
+    },
     "require": {
         "nullpunkt/lz-string-php": "^1.3", 
 		"phpseclib/phpseclib": "~3.0.36", 

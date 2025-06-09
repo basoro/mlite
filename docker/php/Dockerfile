@@ -43,6 +43,9 @@ COPY ./php/php.ini /usr/local/etc/php/conf.d/custom.ini
 
 WORKDIR /var/www/public
 
-CMD ["php-fpm"]
+COPY ./php/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 9000

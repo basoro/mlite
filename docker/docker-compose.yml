@@ -13,21 +13,6 @@ services:
       PHP_IDE_CONFIG: serverName=Docker # For Xdebug
     # Make container restart unless stopped manually
     restart: unless-stopped
-    command: >
-      sh -c "
-        mkdir -p /var/www/public/uploads &&
-        chmod -R 777 /var/www/public/uploads &&
-        mkdir -p /var/www/public/tmp &&
-        chmod -R 777 /var/www/public/tmp &&
-        mkdir -p /var/www/public/backups &&
-        chmod -R 777 /var/www/public/backups &&
-        mkdir -p /var/www/public/admin/tmp &&
-        chmod -R 777 /var/www/public/admin/tmp &&
-        sed -i 's/localhost/mysql/g' /var/www/public/config.php &&
-        composer install --no-dev --optimize-autoloader &&
-        chmod -R 777 /var/www/public/vendor/mpdf/mpdf/tmp &&
-        php-fpm
-      "
 
   # Nginx Service
   nginx:
@@ -46,8 +31,7 @@ services:
 
   # MySQL Service
   mysql:
-    image: mysql:5.7.22 # biarms/mysql:5.7 # Use MySQL image for ARM
-    container_name: mysql57_app
+    image: ${MYSQL_VERSION}
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: true

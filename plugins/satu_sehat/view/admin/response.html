@@ -29,7 +29,7 @@
                             <th style="white-space: nowrap;">No. RM</th>
                             <th style="white-space: nowrap;">Nama Pasien</th>
                             <th style="white-space: nowrap;">No. KTP Pasien</th>
-                            <th style="white-space: nowrap;">Kd. Dokter</th>
+                            <th style="white-space: nowrap;">Kd. Dokter (ID Praktisi)</th>
                             <th style="white-space: nowrap;">Nama Dokter</th>
                             <th style="white-space: nowrap;">No. KTP Dokter</th>
                             <th style="white-space: nowrap;">Kd. Poli/Unit</th>
@@ -54,44 +54,10 @@
                             <th style="white-space: nowrap;">ID Observation Kesadaran</th>
                             <th style="white-space: nowrap;">ID Procedure</th>
                             <th style="white-space: nowrap;">ID Composition</th>
+                            <th style="white-space: nowrap;">ID Medication Request</th>
+                            <th style="white-space: nowrap;">ID Medication Dispense</th>
                         </tr>    
                     </thead>
-                    <tbody>
-                        {loop: $data_response}
-                        <tr>
-                            <td style="white-space: nowrap;">{$value.tgl_registrasi}</td>
-                            <td style="white-space: nowrap;">{$value.no_rawat}</td>
-                            <td style="white-space: nowrap;">{$value.no_rkm_medis} &nbsp; <a href="{?=url([ADMIN, 'satu_sehat', 'encounterbundle', convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-plus"></i></a></td>
-                            <td style="white-space: nowrap;">{$value.nm_pasien}</td>
-                            <td style="white-space: nowrap;">{$value.no_ktp_pasien}</td>
-                            <td style="white-space: nowrap;">{$value.kd_dokter}</td>
-                            <td style="white-space: nowrap;">{$value.nm_dokter}</td>
-                            <td style="white-space: nowrap;">{$value.no_ktp_dokter}</td>
-                            <td style="white-space: nowrap;">{$value.kd_poli}</td>
-                            <td style="white-space: nowrap;">{$value.nm_poli}</td>
-                            <td style="white-space: nowrap;">{$value.stts}</td>
-                            <td style="white-space: nowrap;">{$value.status_lanjut}</td>
-                            <td style="white-space: nowrap;">{$value.status_bayar}</td>
-                            <td style="white-space: nowrap;">{$value.tgl_pulang}</td>
-                            <td style="white-space: nowrap;">{$value.id_organisasi}</td>
-                            <td style="white-space: nowrap;">{$value.id_lokasi}</td>
-                            <td style="white-space: nowrap;">{if: empty($value.id_encounter)}{if: $value.tgl_pulang}<a href="{?=url([ADMIN, 'satu_sehat', 'encounter', convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_encounter}{/if}</td>
-                            <td style="white-space: nowrap;">{if: empty($value.id_condition)}{if: $value.diagnosa_pasien} <a href="{?=url([ADMIN, 'satu_sehat', 'condition', convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_condition}{/if}</td>
-                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvtensi)}{if: isset($value.pemeriksaan.tensi)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'tensi'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvtensi}{/if}</td>
-                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvnadi)}{if: isset($value.pemeriksaan.nadi)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'nadi'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvnadi}{/if}</td>
-                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvrespirasi)}{if: isset($value.pemeriksaan.respirasi)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'respirasi'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvrespirasi}{/if}</td>
-                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvsuhu)}{if: isset($value.pemeriksaan.suhu_tubuh)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'suhu'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvsuhu}{/if}</td>
-                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvspo2)}{if: isset($value.pemeriksaan.spo2)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'spo2'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvspo2}{/if}</td>
-                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvgcs)}{if: isset($value.pemeriksaan.gcs)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'gcs'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvgcs}{/if}</td>
-                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvtinggi)}{if: isset($value.pemeriksaan.tinggi)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'tinggi'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvtinggi}{/if}</td>
-                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvberat)}{if: isset($value.pemeriksaan.berat)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'berat'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvberat}{/if}</td>
-                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvperut)}{if: isset($value.pemeriksaan.lingkar_perut)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'perut'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvperut}{/if}</td>
-                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvkesadaran)}{if: isset($value.pemeriksaan.kesadaran)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'kesadaran'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvkesadaran}{/if}</td>
-                            <td style="white-space: nowrap;">{$value.id_procedure}</td>
-                            <td style="white-space: nowrap;">{$value.id_composition}</td>
-                        </tr>
-                        {/loop}
-                    </tbody>
                 </table>
             </div>
         </div>
@@ -99,24 +65,95 @@
 </div>
 <div class="modal fade" id="asuransiModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
+        <div class="modal-content" id="modalcontent">
             ...
         </div>
     </div>
 </div>
 <script type="text/javascript">
     $(document).ready(function(){
-      $('.display').DataTable({
+        const urlParams = new URLSearchParams(window.location.search);
+        const periode = urlParams.get('periode'); // name will be "John"
+        var baseURL = mlite.url + '/' + mlite.admin;
+        var urlapi = baseURL + '/satu_sehat/responseapi?t=' + mlite.token + '&periode=' + encodeURIComponent(periode);
+        $('.display').DataTable({
+        processing: true,
+        serverSide: true,
+        stateSave: true,
+        ajax: {
+            url: urlapi, // your PHP backend
+            type: 'POST'
+        },
         "language": { "search": "", "searchPlaceholder": "Search..." },
         "fixedColumns": {
             "left": 4
         },
+        columns: [
+            { data: 'tgl_registrasi' },
+            { data: 'no_rawat' },
+            { data: 'no_rkm_medis',
+            render:function(data, type, row) {
+                if(row.id_encounter == '' && row.diagnosa_pasien != '' && row.tgl_pulang != ''){
+                    return `${data} <br><a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-plus"></i></a>`;
+                }else if(row.id_encounter != ''){
+                    return `${data} <br><span class="text-success">Sudah di Kirim</span>`; 
+                }else{return `${data}`}
+            }},
+            { data: 'nm_pasien' },
+            { data: 'no_ktp_pasien' },
+            { data: 'kd_dokter' ,
+                render:function(data, type, row) {
+                    return `${data}` +' ('+ `${row.praktisi_id}`+ ')';
+                }
+            },
+            { data: 'nm_dokter' },
+            { data: 'no_ktp_dokter' },
+            { data: 'kd_poli' },
+            { data: 'nm_poli' },
+            { data: 'stts' },
+            { data: 'status_lanjut' },
+            { data: 'status_bayar' },
+            { data: 'tgl_pulang' },
+            { data: 'id_organisasi' },
+            { data: 'id_lokasi' },
+            { data: 'id_encounter' },
+            { data: 'id_condition' },
+            { data: 'id_observation_ttvtensi' },
+            { data: 'id_observation_ttvnadi' },
+            { data: 'id_observation_ttvrespirasi' },
+            { data: 'id_observation_ttvsuhu' },
+            { data: 'id_observation_ttvspo2' },
+            { data: 'id_observation_ttvgcs' },
+            { data: 'id_observation_ttvtinggi' },
+            { data: 'id_observation_ttvberat' },
+            { data: 'id_observation_ttvperut' },
+            { data: 'id_observation_ttvkesadaran' },
+            { data: 'id_procedure' },
+            { data: 'id_composition' },
+            { data: 'id_medication_request' },
+            { data: 'id_medication_dispense' },
+        ],
         "lengthChange": false,
         "scrollX": true,
         dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
-      });
-      var t = $(".display").DataTable().rows().count();
-      $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+        });
+        // var t = $(".display").DataTable().rows().count();
+        // $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+    });
+    
+    $('#asuransiModal').on('hidden.bs.modal', function () {
+        table.ajax.reload(null, false);
+    });
+    $('#asuransiModal').on('show.bs.modal', function (event) {
+        var baseURL = mlite.url + '/' + mlite.admin;
+        const button = $(event.relatedTarget);
+        const id = button.data('id');
+        const url = baseURL+"/satu_sehat/encounterbundle/"+id+"?t="+mlite.token
+
+        $('#modalcontent').html('<div class="p-3 text-muted">Loading...</div>');
+        $.get(url, function(response) {
+            $('#modalcontent').html(response);
+        });
     });
 </script>
 <script type="text/javascript">
