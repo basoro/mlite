@@ -1173,6 +1173,7 @@ CREATE TABLE `mlite_satu_sehat_mapping_obat` (
   `nama_sediaan` varchar(100) DEFAULT NULL,
   `kode_route` varchar(10) DEFAULT NULL,
   `nama_route` varchar(50) DEFAULT NULL,
+  `type` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=166 DEFAULT CHARSET=utf8;
 

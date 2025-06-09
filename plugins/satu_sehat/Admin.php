@@ -2506,7 +2506,8 @@ class Admin extends AdminModule
           'kode_sediaan' => $cari_obat['result']['dosage_form']['code'],
           'nama_sediaan' => $cari_obat['result']['dosage_form']['name'],
           'kode_route' => $cari_obat['result']['rute_pemberian']['code'],
-          'nama_route' => $cari_obat['result']['rute_pemberian']['name']
+          'nama_route' => $cari_obat['result']['rute_pemberian']['name'],
+          'type' => $_POST['type'],
         ]
       );
       if ($query) {
