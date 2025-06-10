@@ -3075,7 +3075,9 @@ CREATE TABLE `mlite_satu_sehat_response` (
   `id_observation_ttvtensi` varchar(50) DEFAULT NULL,
   `id_observation_ttvkesadaran` varchar(50) DEFAULT NULL,
   `id_procedure` varchar(50) DEFAULT NULL,
+  `id_clinical_impression` varchar(50) DEFAULT NULL,
   `id_composition` varchar(50) DEFAULT NULL,
+  `id_immunization` varchar(50) DEFAULT NULL,
   `id_medication_request` varchar(50) DEFAULT NULL,
   `id_medication_dispense` varchar(50) DEFAULT NULL,
   `id_medication_statement` varchar(50) DEFAULT NULL,
@@ -3119,7 +3121,8 @@ CREATE TABLE `mlite_satu_sehat_mapping_obat` (
   `nama_sediaan` varchar(100) DEFAULT NULL,
   `kode_route` varchar(10) DEFAULT NULL,
   `nama_route` varchar(50) DEFAULT NULL,
-  `type` varchar(10) DEFAULT NULL,
+  `type` enum('obat','vaksin') NOT NULL,
+  `id_medication` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=166 DEFAULT CHARSET=utf8;
 
