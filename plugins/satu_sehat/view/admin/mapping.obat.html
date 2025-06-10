@@ -44,22 +44,52 @@
     <div class="table-responsive no-margin" id="mapping_obat_satu_sehat">
     <table class="table table-striped table-bordered no-padding nowrap display_mapping_obat" width="100%">
         <thead>
-        <tr>
-            <th>Nama Obat Lokal</th>
-            <th>Nama Obat KFA</th>
-            <th>Nama Bahan</th>
-        </tr>
+            <tr>
+                <th>Kode Obat Lokal</th>
+                <th>Kode Obat KFA</th>
+                <th>Nama Obat KFA</th>
+                <th>Kode Bahan</th>
+                <th>Nama Bahan</th>
+                <th>Numerator</th>
+                <th>Satuan Numerator</th>
+                <th>System Numerator</th>
+                <th>Denominator</th>
+                <th>Satuan Denominator</th>
+                <th>System Denominator</th>
+                <th>Nama Satuan Denominator</th>
+                <th>Kode Sediaan</th>
+                <th>Nama Sediaan</th>
+                <th>Kode Route</th>
+                <th>Nama Route</th>
+                <th>Tipe</th>
+                <th>ID Medication</th>
+            </tr>
         </thead>
         <tbody>
-        {loop: $mapping_obat_satu_sehat}
-        <tr class="mapping_obat_satu_sehat"
-        data-kode_brng="{$value.kode_brng}"
-        >
-            <td>{$value.kode_brng}</td>
-            <td>{$value.nama_kfa}</td>
-            <td>{$value.nama_bahan}</td>
-        </tr>
-        {/loop}
+            {loop: $mapping_obat_satu_sehat}
+            <tr class="mapping_obat_satu_sehat"
+            data-kode_brng="{$value.kode_brng}"
+            >
+                <td>{$value.kode_brng}</td>
+                <td>{$value.kode_kfa}</td>
+                <td>{$value.nama_kfa}</td>
+                <td>{$value.kode_bahan}</td>
+                <td>{$value.nama_bahan}</td>
+                <td>{$value.numerator}</td>
+                <td>{$value.satuan_num}</td>
+                <td>{$value.system_num}</td>
+                <td>{$value.denominator}</td>
+                <td>{$value.satuan_den}</td>
+                <td>{$value.system_den}</td>
+                <td>{$value.nama_satuan_den}</td>
+                <td>{$value.kode_sediaan}</td>
+                <td>{$value.nama_sediaan}</td>
+                <td>{$value.kode_route}</td>
+                <td>{$value.nama_route}</td>
+                <td>{$value.type}</td>
+                <td style="white-space: nowrap;">{?=isset_or($value.id_medication, '<a href="'.url([ADMIN, 'satu_sehat', 'medication', 'mapping', $value.kode_brng]).'" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>')?}</td>
+            </tr>
+            {/loop}
         </tbody>
     </table>
     </div>
@@ -71,7 +101,7 @@
         $('.display_mapping_obat').DataTable({
         "language": { "search": "", "searchPlaceholder": "Search..." },
         "fixedColumns": {
-            "left": 4
+            "left": 3
         },
         "lengthChange": false,
         "scrollX": true,
@@ -84,6 +114,13 @@
     $("#mapping_obat_satu_sehat").on("click", ".mapping_obat_satu_sehat", function(event){
         var kode_brng  = $(this).attr("data-kode_brng");
         $('#kode_brng').val(kode_brng).change();
+    });
+
+    $('input[name="hapus"]').on('click', function (e) {
+        const confirmDelete = confirm('Apakah Anda yakin ingin menghapus data ini?');
+        if (!confirmDelete) {
+            e.preventDefault(); // Batalkan submit jika tidak disetujui
+        }
     });
 
     var strip_tags = function(str) {
