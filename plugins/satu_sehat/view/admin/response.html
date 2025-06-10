@@ -342,11 +342,13 @@
         "lengthChange": false,
         dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
         });
+
+        $('#asuransiModal').on('hidden.bs.modal', function () {
+            table.ajax.reload(null, false);
+        });
+
     });
     
-    $('#asuransiModal').on('hidden.bs.modal', function () {
-        table.ajax.reload(null, false);
-    });
     $('#asuransiModal').on('show.bs.modal', function (event) {
         var baseURL = mlite.url + '/' + mlite.admin;
         const button = $(event.relatedTarget);
@@ -354,6 +356,7 @@
         const tipe = button.data('tipe');
         const ttv = "/"+button.data('ttv') || "";
         const url = baseURL+"/satu_sehat/"+tipe+"/"+id+ttv+"?t="+mlite.token
+        console.log(url);
 
         $('#modalcontent').html('<div class="p-3 text-muted">Loading...</div>');
         $.get(url, function(response) {
