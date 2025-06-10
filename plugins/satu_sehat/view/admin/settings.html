@@ -28,12 +28,12 @@
                             <input type="text" name="satu_sehat[fhirurl]" class="form-control" value="{$satu_sehat.fhirurl}" />
                         </div>
                         <div class="form-group">
-                            <label>Longitude</label>
-                            <input type="text" name="satu_sehat[longitude]" class="form-control" value="{$satu_sehat.longitude}" />
+                            <label>Latitude</label><span class="pull-right"><a href="#koordinat-modal" data-toggle="modal" class="small">[Generate Koordinat Latitude & Longitude]</a></span>
+                            <input type="text" name="satu_sehat[latitude]" id="latitude" class="form-control" value="{$satu_sehat.latitude}" />
                         </div>
                         <div class="form-group">
-                            <label>Latitude</label>
-                            <input type="text" name="satu_sehat[latitude]" class="form-control" value="{$satu_sehat.latitude}" />
+                            <label>Longitude</label>
+                            <input type="text" name="satu_sehat[longitude]" id="longitude" class="form-control" value="{$satu_sehat.longitude}" />
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -70,10 +70,11 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Jenis Billing</label>
-                            <select name="satu_sehat[billing]" class="form-control">
-                                <option value="mlite"{if: $satu_sehat.billing == 'mlite'} selected{/if}>mLITE</option>
-                                <option value="khanza"{if: $satu_sehat.billing == 'khanza'} selected{/if}>Khanza</option>
+                            <label>Departemen Farmasi</label>
+                            <select name="satu_sehat[farmasi]" class="form-control">
+                                {loop: $mapping_lokasi} 
+                                    <option value="{$value.kode}">{$value.lokasi}</option>
+                                {/loop}
                             </select>
                         </div>
                     </div>
@@ -85,7 +86,39 @@
         </div>
     </form>
 </div>
+<div class="modal fade" id="koordinat-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Genarete Koordinat Lattitude dan Longitude</h4>
+            </div>
+            <div class="modal-body">
+                Cara mendapatkan koordinat suatu tempat
+                <ol>
+                    <li>Di komputer Anda, <a href="https://www.google.com/maps" target="_blank">buka Google Maps</a>.</li>
+                    <li>
+                        Klik kanan tempat atau area pada peta.
+                        <ul>
+                            <li>Ini akan membuka jendela pop-up. Anda dapat menemukan garis lintang dan garis bujur dalam format desimal di bagian atas.</li>
+                        </ul>
+                    </li>
+                    <li>Untuk menyalin koordinat secara otomatis, klik kiri pada peta Google Maps atau tanda lokasi anda.</li>
+                    <li>Tempelkan (ctrl+v) koordinat yang sudah disalin tadi ke kolom Lattitude.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
+    $('#latitude').keyup(function(){
+        var coordinate = $('#latitude').val();
+        var latitude = coordinate.substring(0, coordinate.indexOf(","));
+        var longitude = coordinate.split(',')[1].trim();
+        $('#latitude').val(latitude);
+        $('#longitude').val(longitude);
+    })
+
     $('#kd_prop').keyup(function(){
        var query = $(this).val();
        if(query != '')

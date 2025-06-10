@@ -1158,25 +1158,53 @@ CREATE TABLE `mlite_satu_sehat_response` (
 # ------------------------------------------------------------
 
 CREATE TABLE `mlite_satu_sehat_mapping_obat` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `kode_brng` varchar(50) DEFAULT NULL,
-  `kode_kfa` varchar(50) DEFAULT NULL,
-  `nama_kfa` varchar(100) DEFAULT NULL,
-  `kode_bahan` varchar(50) DEFAULT NULL,
-  `nama_bahan` varchar(100) DEFAULT NULL,
-  `numerator` varchar(10) DEFAULT NULL,
-  `satuan_num` varchar(10) DEFAULT NULL,
-  `denominator` varchar(10) DEFAULT NULL,
-  `satuan_den` varchar(10) DEFAULT NULL,
-  `nama_satuan_den` varchar(10) DEFAULT NULL,
-  `kode_sediaan` varchar(50) DEFAULT NULL,
-  `nama_sediaan` varchar(100) DEFAULT NULL,
-  `kode_route` varchar(10) DEFAULT NULL,
-  `nama_route` varchar(50) DEFAULT NULL,
-  `type` varchar(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=166 DEFAULT CHARSET=utf8;
+  `kode_brng` varchar(15) NOT NULL,
+  `obat_code` varchar(15) DEFAULT NULL,
+  `obat_system` varchar(100) NOT NULL,
+  `obat_display` varchar(80) DEFAULT NULL,
+  `form_code` varchar(30) DEFAULT NULL,
+  `form_system` varchar(100) DEFAULT NULL,
+  `form_display` varchar(80) DEFAULT NULL,
+  `numerator_code` varchar(15) DEFAULT NULL,
+  `numerator_system` varchar(80) DEFAULT NULL,
+  `denominator_code` varchar(15) DEFAULT NULL,
+  `denominator_system` varchar(80) DEFAULT NULL,
+  `route_code` varchar(30) DEFAULT NULL,
+  `route_system` varchar(100) DEFAULT NULL,
+  `route_display` varchar(80) DEFAULT NULL,
+  `dose_quantity_code` varchar(15) DEFAULT NULL,
+  `dose_quantity_system` varchar(80) DEFAULT NULL,
+  `dose_quantity_unit` varchar(15) DEFAULT NULL,
+  `type` enum('obat','vaksin') NOT NULL,
+  PRIMARY KEY (`kode_brng`),
+  CONSTRAINT `mlite_satu_sehat_mapping_obat_ibfk_1` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+
+CREATE TABLE `mlite_satu_sehat_mapping_lab` (
+  `id_template` int(11) NOT NULL,
+  `code` varchar(15) DEFAULT NULL,
+  `system` varchar(100) NOT NULL,
+  `display` varchar(80) DEFAULT NULL,
+  `sampel_code` varchar(15) NOT NULL,
+  `sampel_system` varchar(100) NOT NULL,
+  `sampel_display` varchar(80) NOT NULL,
+  PRIMARY KEY (`id_template`),
+  CONSTRAINT `mlite_satu_sehat_mapping_lab_ibfk_1` FOREIGN KEY (`id_template`) REFERENCES `template_laboratorium` (`id_template`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE `mlite_satu_sehat_mapping_rad` (
+  `kd_jenis_prw` varchar(15) NOT NULL,
+  `code` varchar(15) DEFAULT NULL,
+  `system` varchar(100) NOT NULL,
+  `display` varchar(80) DEFAULT NULL,
+  `sampel_code` varchar(15) NOT NULL,
+  `sampel_system` varchar(100) NOT NULL,
+  `sampel_display` varchar(80) NOT NULL,
+  PRIMARY KEY (`kd_jenis_prw`),
+  CONSTRAINT `mlite_satu_sehat_mapping_rad_ibfk_1` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_radiologi` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 ;
 
 # Dump of table mlite_settings
 # ------------------------------------------------------------

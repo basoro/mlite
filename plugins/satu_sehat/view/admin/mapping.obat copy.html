@@ -1,0 +1,243 @@
+<style>
+    .nowrap th, .nowrap td {
+      white-space: nowrap;
+    }
+    .selected {
+        background-color: #d0ebff !important;
+    }    
+</style>
+<h4>Mapping Obat Satu Sehat</h4>
+<form action="{?=url(ADMIN.'/satu_sehat/saveobat')?}" method="POST">
+    <input type="hidden" name="nama_kfa" id="nama_kfa">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Pilih Obat</label>
+                        <select name="kode_brng" id="kode_brng" class="form-control" 
+                            data-use-search="true" 
+                        >
+                            {loop: $databarang}
+                            <option value="{$value.kode_brng}">[{$value.kode_brng}] - {$value.nama_brng}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Tipe</label>
+                        <select name="type" id="type" class="form-control">
+                            <option value="obat">Obat</option>
+                            <option value="vaksin">Vaksin</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="pilih_obat">
+                        <p class="pilih_obat">
+                            <label>Pilih Obat KFA</label>
+                            <select id="select_kfa" name="select_kfa" class="form-control" placeholder="Silahkan cari Obat KFA..."></select>
+                        </p>
+                        <div id="detail_obat"></div>
+                    </div>
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row">
+<div class="col-md-12">
+    <div class="table-responsive no-margin" id="mapping_obat_satu_sehat">
+    <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+        <thead>
+        <tr>
+            <th>Kode Obat Lokal</th>
+            <th>Kode Obat KFA</th>
+            <th>Nama Obat KFA</th>
+            <th>Kode Bahan</th>
+            <th>Nama Bahan</th>
+            <th>Numerator</th>
+            <th>Satuan Numerator</th>
+            <th>System Numerator</th>
+            <th>Denominator</th>
+            <th>Satuan Denominator</th>
+            <th>System Denominator</th>
+            <th>Nama Satuan Denominator</th>
+            <th>Kode Sediaan</th>
+            <th>Nama Sediaan</th>
+            <th>Kode Route</th>
+            <th>Nama Route</th>
+            <th>Tipe</th>
+            <th>ID Medication</th>
+        </tr>
+        </thead>
+        <tbody>
+        {loop: $mapping_obat_satu_sehat}
+        <tr class="mapping_obat_satu_sehat"
+        data-kode_brng="{$value.kode_brng}"
+        >
+            <td>{$value.kode_brng}</td>
+            <td>{$value.kode_kfa}</td>
+            <td>{$value.nama_kfa}</td>
+            <td>{$value.kode_bahan}</td>
+            <td>{$value.nama_bahan}</td>
+            <td>{$value.numerator}</td>
+            <td>{$value.satuan_num}</td>
+            <td>{$value.system_num}</td>
+            <td>{$value.denominator}</td>
+            <td>{$value.satuan_den}</td>
+            <td>{$value.system_den}</td>
+            <td>{$value.nama_satuan_den}</td>
+            <td>{$value.kode_sediaan}</td>
+            <td>{$value.nama_sediaan}</td>
+            <td>{$value.kode_route}</td>
+            <td>{$value.nama_route}</td>
+            <td>{$value.tipe}</td>
+            <td style="white-space: nowrap;">{?=isset_or($value.id_medication, '<a href="'.url([ADMIN, 'satu_sehat', 'medication', 'mapping', $value.kode_brng]).'" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>')?}</td>
+        </tr>
+        {/loop}
+    </table>
+    </div>
+</div>
+</div>
+<div class="modal fade" id="asuransiModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$('.dataTables').DataTable();
+
+$('#mapping_obat_satu_sehat table tbody').on('click', 'tr.mapping_obat_satu_sehat', function() {
+    // Remove selection from other rows
+    $('#mapping_obat_satu_sehat table tbody tr').removeClass('selected');
+
+    // Add selected class to clicked row
+    $(this).addClass('selected');
+
+    // Example: Get data attribute
+    var kodeBrng = $(this).data('kode_brng');
+    $('#kode_brng').val(kodeBrng).change();
+    console.log('Selected Kode Brng:', kodeBrng);
+});
+
+$('input[name="hapus"]').on('click', function (e) {
+    const confirmDelete = confirm('Apakah Anda yakin ingin menghapus data ini?');
+    if (!confirmDelete) {
+        e.preventDefault(); // Batalkan submit jika tidak disetujui
+    }
+});
+
+var strip_tags = function(str) {
+    return (str + '').replace(/<\/?[^>]+(>|$)/g, '')
+};
+var truncate_string = function(str, chars) {
+    if ($.trim(str).length <= chars) {
+        return str;
+    } else {
+        return $.trim(str.substr(0, chars)) + '…';
+    }
+};
+var $select = $('#select_kfa');
+const url = 'https://raw.githubusercontent.com/basoro/basoro.github.io/refs/heads/master/downloads/satu_sehat_kfa_master.json';
+$select.selectator({
+    labels: {
+        search: 'Search here...'
+    },
+    load: function (search, callback) {
+      if (search.length < 5) {
+        callback([{ value: '', text: 'Ketik minimal 5 huruf...' }]);
+        return;
+      }
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          dataKFA = data; // Simpan data di variabel global
+          console.log(dataKFA);
+          const filtered = data.filter(item =>
+            item.Display_Name && item.Display_Name.toLowerCase().includes(search.toLowerCase())
+          );
+
+          const options = filtered.map(item => ({
+            value: item.Kode_KFA,
+            text: item.Display_Name,
+            subtext: `Bentuk: ${item.Bentuk_Sediaan_Display_Name || '-'} | Bahan: ${item.Bahan_Baku_Aktif_Display_Name || '-'}`
+          }));
+
+          callback(options.slice(0, 100)); // Batasi maksimal 100 hasil
+        })
+        .catch(err => {
+          console.error('Gagal mengambil data:', err);
+          callback([]);
+        });
+    },
+    delay: 300,
+    minSearchLength: 5,
+    valueField: 'value',
+    textField: 'text',
+    render: {
+        option: function (_item, escape) {
+            var html = '';
+            html += '<div class="selectator_option_title">' + ((typeof _item.text !== 'undefined') ? _item.text : '') + '</div>';
+            html += '<div class="selectator_option_subtitle">' + ((typeof _item.subtext !== 'undefined') ? truncate_string(escape(strip_tags(_item.subtext)), 75) : '') + '</div>';
+            return html;
+        }
+    }
+
+});
+
+// Event saat pilih salah satu kode KFA
+$('#type').on('change', function () {
+    const type = $(this).val();
+
+    if (type == 'vaksin') {
+        $('#pilih_obat .pilih_obat').hide();
+        $('#detail_obat').html(`
+        <p><label>Kode KFA</label><input type="text" name="select_kfa" class="form-control" value=""></p>
+        <p><label>Nama KFA</label><input type="text" name="nama_kfa" class="form-control" value=""></p>
+        <p><label>Satuan Numerator</label><input type="text" name="satuan_num" class="form-control" value=""></p>
+        <p><label>Syatem Numerator</label><input type="text" name="system_num" class="form-control" value=""></p>
+        <p><label>Kode Route</label><input type="text" name="kode_route" class="form-control"></p>
+        <p><label>Nama Route</label><input type="text" name="nama_route" class="form-control"></p>
+        `);
+    }
+});
+
+$('#select_kfa').on('change', function () {
+    const kodeKFA = $(this).val();
+    if (!kodeKFA) return;
+
+    // Cari detail di dataKFA berdasarkan kodeKFA
+    const detail = dataKFA.find(item => item.Kode_KFA.toString() === kodeKFA.toString());
+
+    if (detail) {
+        console.log('Detail lengkap obat:', detail);
+        $('#nama_kfa').val(detail.Display_Name);
+        $('#detail_obat').html(`
+        <p>
+            <label>Kode Bahan</label>
+            <div class="input-group">
+                <input type="text" name="kode_bahan" class="form-control" value="${detail.Product_Template_Kode_KFA}">
+                <a href="http://google.com" target="_blank" class="input-group-addon">Browse KFA</a>
+            </div>
+        </p>        
+        <p><label>Nama Bahan KFA</label><input type="text" name="nama_bahan" class="form-control" value="${detail.Product_Template_Display_Name}"></p>
+        <p><label>Numerator</label><input type="text" name="numerator" class="form-control" value=""></p>
+        <p><label>Satuan Numerator</label><input type="text" name="satuan_num" class="form-control" value="${detail.Bahan_Baku_Aktif_Satuan_Numerator}"></p>
+        <p><label>Denominator</label><input type="text" name="denominator" class="form-control" value="${detail.Bahan_Baku_Aktif_Denominator}"></p>
+        <p><label>Satuan Denominator</label><input type="text" name="satuan_den" class="form-control" value=""></p>
+        <p><label>Nama Satuan Denominator</label><input type="text" name="nama_satuan_den" class="form-control" value=""></p>
+        <p><label>Kode Sediaan</label><input type="text" name="kode_sediaan" class="form-control" value="${detail.Bentuk_Sediaan_Kode}"></p>
+        <p><label>Nama Sediaan</label><input type="text" name="nama_sediaan" class="form-control" value="${detail.Bentuk_Sediaan_Display_Name}"></p>
+        <p><label>Kode Route</label><input type="text" name="kode_route" class="form-control"></p>
+        <p><label>Nama Route</label><input type="text" name="nama_route" class="form-control"></p>
+        `);
+    }
+});
+
+</script>
+  

@@ -1,0 +1,178 @@
+<style>
+    .nowrap th, .nowrap td {
+      white-space: nowrap;
+    }
+    .selected {
+        background-color: #d0ebff !important;
+    }    
+</style>
+<h4>Mapping Radiologi Satu Sehat</h4>
+<form action="{?=url(ADMIN.'/satu_sehat/saverad')?}" method="POST">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Pilih Jenis Perawatan</label>
+                        <select name="kd_jenis_prw" id="kd_jenis_prw" class="form-control" data-use-search="true">
+                            {loop: $jns_perawatan_radiologi}
+                            <option value="{$value.kd_jenis_prw}">[{$value.kd_jenis_prw}] - {$value.nm_perawatan}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <label>Terminologi Loinc Radiologi</label>
+                            <select id="select_rad" name="select_rad" class="form-control" placeholder="Silahkan cari terminologi..."></select>
+                        </p>
+                        <div id="detail_rad"></div>
+                    </div>
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row">
+<div class="col-md-12">
+    <div class="table-responsive no-margin" id="mapping_rad_satu_sehat">
+    <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+        <thead>
+        <tr>
+            <th>Kode Perawatan</th>
+            <th>Nama Perawatan</th>
+            <th>Code</th>
+            <th>Code System</th>
+            <th>Display</th>
+            <th>Sample Code</th>
+            <th>Sample System</th>
+            <th>Sample Display</th>
+        </tr>
+        </thead>
+        <tbody>
+        {loop: $mapping_rad_satu_sehat}
+        <tr class="mapping_rad_satu_sehat"
+        data-kd_jenis_prw="{$value.kd_jenis_prw}"
+        >
+            <td>{$value.kd_jenis_prw}</td>
+            <td>{$value.nm_perawatan}</td>
+            <td>{$value.code}</td>
+            <td>{$value.code_system}</td>
+            <td>{$value.display}</td>
+            <td>{$value.sample_code}</td>
+            <td>{$value.sample_system}</td>
+            <td>{$value.sample_display}</td>
+        </tr>
+        {/loop}
+        </tbody>
+    </table>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+$('.dataTables').DataTable();
+
+$('#mapping_rad_satu_sehat table tbody').on('click', 'tr.mapping_rad_satu_sehat', function() {
+    // Remove selection from other rows
+    $('#mapping_rad_satu_sehat table tbody tr').removeClass('selected');
+
+    // Add selected class to clicked row
+    $(this).addClass('selected');
+
+    // Example: Get data attribute
+    var kd_jenis_prw = $(this).data('kd_jenis_prw');
+    $('#kd_jenis_prw').val(kd_jenis_prw).change();
+    console.log('Selected Kode Jenis Perawatan:', kd_jenis_prw);
+});
+
+$('input[name="hapus"]').on('click', function (e) {
+    const confirmDelete = confirm('Apakah Anda yakin ingin menghapus data ini?');
+    if (!confirmDelete) {
+        e.preventDefault(); // Batalkan submit jika tidak disetujui
+    }
+});
+
+var strip_tags = function(str) {
+    return (str + '').replace(/<\/?[^>]+(>|$)/g, '')
+};
+var truncate_string = function(str, chars) {
+    if ($.trim(str).length <= chars) {
+        return str;
+    } else {
+        return $.trim(str.substr(0, chars)) + '…';
+    }
+};
+var $select = $('#select_rad');
+const url = 'https://basoro.id/downloads/LoincRadiologi.json';
+$select.selectator({
+    labels: {
+        search: 'Search here...'
+    },
+    load: function (search, callback) {
+      if (search.length < 5) {
+        callback([{ value: '', text: 'Ketik minimal 3 huruf...' }]);
+        return;
+      }
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          dataRad = data; // Simpan data di variabel global
+          console.log(dataRad);
+          const filtered = data.filter(item =>
+            item.Nama_Pemeriksaan && item.Nama_Pemeriksaan.toLowerCase().includes(search.toLowerCase())
+          );
+
+          const options = filtered.map(item => ({
+            value: item.Code,
+            text: item.Nama_Pemeriksaan,
+            subtext: `Sample Code: ${item.Body_Site_Code || '-'} | Sample Display: ${item.Body_Site_Display || '-'}`
+          }));
+
+          callback(options.slice(0, 100)); // Batasi maksimal 100 hasil
+        })
+        .catch(err => {
+          console.error('Gagal mengambil data:', err);
+          callback([]);
+        });
+    },
+    delay: 300,
+    minSearchLength: 5,
+    valueField: 'value',
+    textField: 'text',
+    render: {
+        option: function (_item, escape) {
+            var html = '';
+            html += '<div class="selectator_option_title">' + ((typeof _item.text !== 'undefined') ? _item.text : '') + '</div>';
+            html += '<div class="selectator_option_subtitle">' + ((typeof _item.subtext !== 'undefined') ? truncate_string(escape(strip_tags(_item.subtext)), 75) : '') + '</div>';
+            return html;
+        }
+    }
+
+});
+
+$('#select_rad').on('change', function () {
+    const kodeRad = $(this).val();
+    if (!kodeRad) return;
+
+    // Cari detail di dataKFA berdasarkan kodeKFA
+    const detail = dataRad.find(item => item.Code.toString() === kodeRad.toString());
+
+    if (detail) {
+        console.log('Detail lengkap rad:', detail);
+        $('#detail_rad').html(`
+        <p><label>Kode</label><input type="text" name="code" class="form-control" value="${detail.Code}"></p>
+        <p><label>Nama Pemeriksaan</label><input type="text" name="display" class="form-control" value="${detail.Nama_Pemeriksaan}"></p>
+        <p><label>Code System</label><input type="text" name="code_system" class="form-control" value="${detail.Code_System}"></p>
+        <p><label>Sample Code</label><input type="text" name="sample_code" class="form-control" value="${detail.Body_Site_Code}"></p>
+        <p><label>Sample Display</label><input type="text" name="sample_display" class="form-control" value="${detail.Body_Site_Display}"></p>
+        <p><label>Sample System</label><input type="text" name="sample_system" class="form-control" value="${detail.Body_Site_Code_System}"></p>
+        `);
+    }
+});
+
+</script>
+  
