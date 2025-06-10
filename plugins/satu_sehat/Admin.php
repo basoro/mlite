@@ -2,17 +2,17 @@
 
 namespace Plugins\Satu_Sehat;
 
-use SatuSehat\Model\Composition;
 use Systems\AdminModule;
-use SatuSehat\Model\Condition;
-use SatuSehat\Model\Respiratory;
-use SatuSehat\Model\HeartRate;
-use SatuSehat\Model\Medication;
-use SatuSehat\Model\MedicationDispense;
-use SatuSehat\Model\MedicationRequest;
-use SatuSehat\Model\Procedure;
-use SatuSehat\Model\QuestionareMedication;
-use SatuSehat\Model\Temperature;
+use SatuSehat\Src\Composition;
+use SatuSehat\Src\Condition;
+use SatuSehat\Src\Respiratory;
+use SatuSehat\Src\HeartRate;
+use SatuSehat\Src\Medication;
+use SatuSehat\Src\MedicationDispense;
+use SatuSehat\Src\MedicationRequest;
+use SatuSehat\Src\Procedure;
+use SatuSehat\Src\QuestionareMedication;
+use SatuSehat\Src\Temperature;
 
 class Admin extends AdminModule
 {
