@@ -1121,6 +1121,7 @@ CREATE TABLE `mlite_satu_sehat_lokasi` (
 CREATE TABLE `mlite_satu_sehat_mapping_praktisi` (
   `practitioner_id` varchar(40) NOT NULL,
   `kd_dokter` varchar(20) NOT NULL,
+  `jenis_praktisi` varchar(10) NOT NULL,
   PRIMARY KEY (`practitioner_id`),
   KEY `kd_dokter` (`kd_dokter`),
   CONSTRAINT `mlite_satu_sehat_mapping_praktisi_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1147,10 +1148,34 @@ CREATE TABLE `mlite_satu_sehat_response` (
   `id_observation_ttvkesadaran` varchar(50) DEFAULT NULL,
   `id_procedure` varchar(50) DEFAULT NULL,
   `id_composition` varchar(50) DEFAULT NULL,
+  `id_medication_request` varchar(50) DEFAULT NULL,
+  `id_medication_dispense` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`no_rawat`),
   CONSTRAINT `mlite_satu_sehat_response_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+# Dump of table mlite_satu_sehat_mapping_obat
+# ------------------------------------------------------------
+
+CREATE TABLE `mlite_satu_sehat_mapping_obat` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `kode_brng` varchar(50) DEFAULT NULL,
+  `kode_kfa` varchar(50) DEFAULT NULL,
+  `nama_kfa` varchar(100) DEFAULT NULL,
+  `kode_bahan` varchar(50) DEFAULT NULL,
+  `nama_bahan` varchar(100) DEFAULT NULL,
+  `numerator` varchar(10) DEFAULT NULL,
+  `satuan_num` varchar(10) DEFAULT NULL,
+  `denominator` varchar(10) DEFAULT NULL,
+  `satuan_den` varchar(10) DEFAULT NULL,
+  `nama_satuan_den` varchar(10) DEFAULT NULL,
+  `kode_sediaan` varchar(50) DEFAULT NULL,
+  `nama_sediaan` varchar(100) DEFAULT NULL,
+  `kode_route` varchar(10) DEFAULT NULL,
+  `nama_route` varchar(50) DEFAULT NULL,
+  `type` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=166 DEFAULT CHARSET=utf8;
 
 
 # Dump of table mlite_settings

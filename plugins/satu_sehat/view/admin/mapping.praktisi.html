@@ -19,6 +19,17 @@
                         </select>
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Apoteker</label>
+                        <select name="dokter" id="dokter" class="form-control">
+                            <option value="">Pilih Apoteker</option>
+                            {loop: $apoteker}
+                            <option value="{$value.nik}">{$value.nama}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                </div>
                 <div class="col-md-12" style="padding-top: 20px;">
                     <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
                     <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
@@ -30,7 +41,7 @@
 <div class="row">
 <div class="col-md-12">
     <div class="table-responsive no-margin" id="mapping_praktisi">
-    <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+    <table class="table table-striped table-bordered no-padding nowrap display_praktisi" width="100%">
         <thead>
         <tr>
             <th>ID Dokter</th>
@@ -53,6 +64,21 @@
     </div>
 </div>
 </div>
+<script type="text/javascript">
+    $(document).ready(function(){
+      $('.display_praktisi').DataTable({
+        "language": { "search": "", "searchPlaceholder": "Search..." },
+        "fixedColumns": {
+            "left": 4
+        },
+        "lengthChange": false,
+        "scrollX": true,
+        dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+      });
+      var t = $(".display_praktisi").DataTable().rows().count();
+      $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+    });
+</script>
 <script type="text/javascript">
 $("#mapping_praktisi").on("click", ".mapping_praktisi", function(event){
     var kd_dokter  = $(this).attr("data-kd_dokter");
