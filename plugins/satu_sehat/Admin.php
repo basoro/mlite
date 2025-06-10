@@ -5439,6 +5439,11 @@ class Admin extends AdminModule
     if (isset($_GET['periode']) && $_GET['periode'] != '') {
       $periode = $_GET['periode'];
     }
+
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $periode)) {
+      $periode = date('Y-m-d'); // fallback
+    }
+        
     $start  = intval($_POST['start'] ?? 0);
     $length = intval($_POST['length'] ?? 10);
     $data_response = [];
@@ -5526,15 +5531,15 @@ class Admin extends AdminModule
         ->where('mlite_satu_sehat_mapping_obat.type', 'vaksin')
         ->where('no_rawat', $row['no_rawat'])->oneArray();
         
-      $row['clinical_impression'] = $row['pemeriksaan']['penilaian'];
+      $row['clinical_impression'] = isset_or($row['pemeriksaan']['penilaian']);
 
       $row['medications'] = $this->db('resep_obat')
         ->join('resep_dokter','resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $row['no_rawat'])->oneArray();
 
-      $row['medication_request'] = $row['medications']['tgl_peresepan'];
+      $row['medication_request'] = isset_or($row['medications']['tgl_peresepan']);
         
-      $row['medication_dispense'] = $row['medications']['tgl_perawatan'];
+      $row['medication_dispense'] = isset_or($row['medications']['tgl_perawatan']);
 
       $row['permintaan_radiologi'] = $this->db('permintaan_radiologi')
         ->where('no_rawat', $row['no_rawat'])
