@@ -1150,6 +1150,7 @@ CREATE TABLE `mlite_satu_sehat_response` (
   `id_composition` varchar(50) DEFAULT NULL,
   `id_medication_request` varchar(50) DEFAULT NULL,
   `id_medication_dispense` varchar(50) DEFAULT NULL,
+  `id_clinical_impression` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`no_rawat`),
   CONSTRAINT `mlite_satu_sehat_response_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

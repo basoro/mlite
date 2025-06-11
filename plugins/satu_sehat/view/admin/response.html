@@ -42,6 +42,7 @@
                             <th style="white-space: nowrap;">ID Lokasi</th>
                             <th style="white-space: nowrap;">ID Encounter</th>
                             <th style="white-space: nowrap;">ID Condition</th>
+                            <th style="white-space: nowrap;">ID Clinical Impression</th>
                             <th style="white-space: nowrap;">ID Observation Tensi</th>
                             <th style="white-space: nowrap;">ID Observation Nadi</th>
                             <th style="white-space: nowrap;">ID Observation RR</th>
@@ -147,14 +148,15 @@
     </div>
 </div>
 <script type="text/javascript">
+    let table;
     $(document).ready(function(){
         console.log($('.display').length);
         const urlParams = new URLSearchParams(window.location.search);
         const periode = urlParams.get('periode'); // name will be "John"
         var baseURL = mlite.url + '/' + mlite.admin;
         var urlapi = baseURL + '/satu_sehat/responseapi?t=' + mlite.token + '&periode=' + encodeURIComponent(periode);
-        let table = $('.display').DataTable({
-            processing: true,
+        table = $('.display').DataTable({
+        processing: true,
         serverSide: true,
         stateSave: true,
         scrollX: true,
@@ -225,38 +227,52 @@
                 }else{return `${data}`}
             }
             },
+            { data: 'id_clinical_impression' ,
+            render:function(data, type, row) {
+                const keluhan = String(row.clinical_impression || '').trim();
+                if(row.id_clinical_impression === '' && keluhan !== ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="clinicalimpression" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_clinical_impression === '' && keluhan === ''){
+                    return `<span class="text-success">Penilaian Kosong</span>`; 
+                }else{return `${data}`}
+            }
+            },
             { data: 'id_observation_ttvtensi' ,
             render:function(data, type, row) {
-                if(row.id_observation_ttvtensi == '' && row.pemeriksaan.tensi != ''){
+                const tensi = String(row.pemeriksaan?.tensi || '').trim();
+                if(row.id_observation_ttvtensi === '' && !['-', ''].includes(tensi)){
                     return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="observation" data-ttv="tensi" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
-                }else if(row.id_observation_ttvtensi == '' && row.pemeriksaan.tensi == ''){
+                }else if(row.id_observation_ttvtensi === '' && ['-', ''].includes(tensi)){
                     return `<span class="text-success">Tensi Kosong</span>`; 
                 }else{return `${data}`}
             }
             },
             { data: 'id_observation_ttvnadi' ,
             render:function(data, type, row) {
-                if(row.id_observation_ttvnadi == '' && row.pemeriksaan.nadi != ''){
+                const nadi = String(row.pemeriksaan?.nadi || '').trim();
+                if(row.id_observation_ttvnadi === '' && !['-', ''].includes(nadi)){
                     return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="observation" data-ttv="nadi" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
-                }else if(row.id_observation_ttvnadi == '' && row.pemeriksaan.nadi == ''){
+                }else if(row.id_observation_ttvnadi === '' && ['-', ''].includes(nadi)){
                     return `<span class="text-success">Nadi Kosong</span>`; 
                 }else{return `${data}`}
             }
             },
             { data: 'id_observation_ttvrespirasi' ,
             render:function(data, type, row) {
-                if(row.id_observation_ttvrespirasi == '' && row.pemeriksaan.respirasi != ''){
+                const respirasi = String(row.pemeriksaan?.respirasi || '').trim();
+                if(row.id_observation_ttvrespirasi == '' && respirasi !== ''){
                     return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="observation" data-ttv="respirasi" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
-                }else if(row.id_observation_ttvrespirasi == '' && row.pemeriksaan.respirasi == ''){
+                }else if(row.id_observation_ttvrespirasi == '' && respirasi === ''){
                     return `<span class="text-success">Respirasi Kosong</span>`; 
                 }else{return `${data}`}
             }
             },
             { data: 'id_observation_ttvsuhu' ,
             render:function(data, type, row) {
-                if(row.id_observation_ttvsuhu == '' && row.pemeriksaan.suhu_tubuh != ''){
+                const suhu_tubuh = String(row.pemeriksaan?.suhu_tubuh || '').trim();
+                if(row.id_observation_ttvsuhu == '' && suhu_tubuh != ''){
                     return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="observation" data-ttv="suhu" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
-                }else if(row.id_observation_ttvsuhu == '' && row.pemeriksaan.suhu_tubuh == ''){
+                }else if(row.id_observation_ttvsuhu == '' && suhu_tubuh == ''){
                     return `<span class="text-success">Suhu Kosong</span>`; 
                 }else{return `${data}`}
             }
@@ -275,7 +291,7 @@
                 if(row.id_observation_ttvgcs == '' && row.pemeriksaan.gcs != ''){
                     return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="observation" data-ttv="gcs" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
                 }else if(row.id_observation_ttvgcs == '' && row.pemeriksaan.gcs == ''){
-                    return `<span class="text-success">Sp02 Kosong</span>`; 
+                    return `<span class="text-success">GCS Kosong</span>`; 
                 }else{return `${data}`}
             }
             },
@@ -284,7 +300,7 @@
                 if(row.id_observation_ttvtinggi == '' && row.pemeriksaan.tinggi != ''){
                     return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="observation" data-ttv="tinggi" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
                 }else if(row.id_observation_ttvtinggi == '' && row.pemeriksaan.tinggi == ''){
-                    return `<span class="text-success">Sp02 Kosong</span>`; 
+                    return `<span class="text-success">Tinggi Kosong</span>`; 
                 }else{return `${data}`}
             }
             },
@@ -318,7 +334,6 @@
             { data: 'id_procedure' },
             { data: 'id_composition' },
             { data: 'id_immunization'},
-            { data: 'id_clinical_impression' },
             { data: 'id_medication_request' },
             { data: 'id_medication_dispense' },
             { data: 'id_service_request_radiologi' },
