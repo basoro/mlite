@@ -639,7 +639,7 @@ class Admin extends AdminModule
 
     public function anySaveNilai()
     {
-      $this->db('detail_periksa_lab')
+      $hasil = $this->db('detail_periksa_lab')
         ->where('no_rawat', $_REQUEST['no_rawat'])
         ->where('tgl_periksa', $_REQUEST['tgl_periksa'])
         ->where('jam', $_REQUEST['jam'])
@@ -647,6 +647,17 @@ class Admin extends AdminModule
         ->save([
           'nilai' => $_REQUEST['value']
         ]);
+      if($hasil) {
+          $this->db('permintaan_lab')
+            ->where('no_rawat', $_REQUEST['no_rawat'])
+            ->where('tgl_permintaan', $_REQUEST['tgl_periksa'])
+            ->where('jam_permintaan', $_REQUEST['jam'])
+            ->save([
+              'tgl_hasil' => date('Y-m-d'),
+              'jam_hasil' => date('H:i:s')
+              ]
+            );
+      }
 
       exit();
     }

@@ -5443,7 +5443,7 @@ class Admin extends AdminModule
     if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $periode)) {
       $periode = date('Y-m-d'); // fallback
     }
-        
+
     $start  = intval($_POST['start'] ?? 0);
     $length = intval($_POST['length'] ?? 10);
     $data_response = [];
@@ -5525,7 +5525,7 @@ class Admin extends AdminModule
       $row['adime_gizi'] = $this->db('catatan_adime_gizi')
         ->where('no_rawat', $row['no_rawat'])->oneArray();
 
-      $row['vaksin'] = $this->db('resep_obat')
+      $row['immunization'] = $this->db('resep_obat')
         ->join('resep_dokter','resep_dokter.no_resep=resep_obat.no_resep')
         ->join('mlite_satu_sehat_mapping_obat','mlite_satu_sehat_mapping_obat.kode_brng=resep_dokter.kode_brng')
         ->where('mlite_satu_sehat_mapping_obat.type', 'vaksin')
@@ -5557,7 +5557,7 @@ class Admin extends AdminModule
         ->where('no_rawat', $row['no_rawat'])
         ->oneArray();
 
-      $row['service_request_lab_pk'] = $row['permintaan_lab'];
+      $row['service_request_lab_pk'] = $row['permintaan_lab']['tgl_permintaan'];
 
       $row['service_request_lab_pa'] = $row['permintaan_lab'];
 
