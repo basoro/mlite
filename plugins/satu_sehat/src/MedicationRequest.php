@@ -1,6 +1,6 @@
 <?php
 
-namespace SatuSehat\Model;
+namespace SatuSehat\Src;
 
 class MedicationRequest
 {
