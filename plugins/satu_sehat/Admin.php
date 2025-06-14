@@ -18,6 +18,12 @@ use SatuSehat\Src\Temperature;
 class Admin extends AdminModule
 {
 
+  private $authurl;
+  private $fhirurl;
+  private $clientid;
+  private $secretkey;
+  private $organizationid;  
+
   public function init()
   {
     $this->authurl = $this->settings->get('satu_sehat.authurl');
@@ -814,23 +820,6 @@ class Admin extends AdminModule
     $tgl_registrasi = $this->core->getRegPeriksaInfo('tgl_registrasi', $no_rawat);
     $jam_reg = $this->core->getRegPeriksaInfo('jam_reg', $no_rawat);
     $endTime = date("H:i:s", strtotime('+10 minutes', strtotime($jam_reg)));
-    $mlite_billing = $this->db('mlite_billing')->where('no_rawat', $no_rawat)->oneArray();
-    if ($this->settings->get('satu_sehat.billing') == 'khanza') {
-      $mlite_billing = $this->db('nota_jalan')->select([
-        'tgl_billing' => 'tanggal',
-        'jam_billing' => 'jam'
-      ])
-        ->where('no_rawat', $no_rawat)
-        ->oneArray();
-      if ($status_lanjut == 'Ranap') {
-        $mlite_billing = $this->db('nota_inap')->select([
-          'tgl_billing' => 'tanggal',
-          'jam_billing' => 'jam'
-        ])
-          ->where('no_rawat', $no_rawat)
-          ->oneArray();
-      }
-    }
 
     $code = 'AMB';
     $display = 'ambulatory';
@@ -971,22 +960,6 @@ class Admin extends AdminModule
     }
 
     $mlite_billing = $this->db('mlite_billing')->where('no_rawat', $no_rawat)->oneArray();
-    if ($this->settings->get('satu_sehat.billing') == 'khanza') {
-      $mlite_billing = $this->db('nota_jalan')->select([
-        'tgl_billing' => 'tanggal',
-        'jam_billing' => 'jam'
-      ])
-        ->where('no_rawat', $no_rawat)
-        ->oneArray();
-      if ($status_lanjut == 'Ranap') {
-        $mlite_billing = $this->db('nota_inap')->select([
-          'tgl_billing' => 'tanggal',
-          'jam_billing' => 'jam'
-        ])
-          ->where('no_rawat', $no_rawat)
-          ->oneArray();
-      }
-    }
 
     $kunjungan = 'Kunjungan';
     if ($status_lanjut == 'Ranap') {
@@ -2162,14 +2135,8 @@ class Admin extends AdminModule
             'no_rawat' => $no_rawat,
             'id_observation_ttv' . $ttv . '' => $id_observation
           ]);
-      } else {
-        $this->db('mlite_satu_sehat_response')
-          ->save([
-            'no_rawat' => $no_rawat,
-            'id_observation_ttv' . $ttv . '' => $id_condition
-          ]);
+        $pesan = 'Sukses mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!';
       }
-      $pesan = 'Sukses mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!';
     }
 
     curl_close($curl);
@@ -5360,102 +5327,7 @@ class Admin extends AdminModule
   public function getResponse()
   {
     $this->_addHeaderFiles();
-    // $periode = date('Y-m-d');
-    // if (isset($_GET['periode']) && $_GET['periode'] != '') {
-    //   $periode = $_GET['periode'];
-    // }
-    // $data_response = [];
-    // $query = $this->db('reg_periksa')
-    //   ->where('reg_periksa.tgl_registrasi', $periode)
-    //   ->where('stts', '!=', 'Batal')
-    //   ->where('status_lanjut', 'Ralan')
-    //   ->limit(10)
-    //   ->offset(220)
-    //   ->toArray();
-    // foreach ($query as $row) {
-
-    //   $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $row['no_rawat'])->oneArray();
-
-    //   $row['no_ktp_pasien'] = $this->core->getPasienInfo('no_ktp', $row['no_rkm_medis']);
-    //   $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
-    //   $row['nm_dokter'] = $this->core->getDokterInfo('nm_dokter', $row['kd_dokter']);
-    //   $row['no_ktp_dokter'] = $this->core->getPegawaiInfo('no_ktp', $row['kd_dokter']);
-    //   $row['nm_poli'] = $this->core->getPoliklinikInfo('nm_poli', $row['kd_poli']);
-
-    //   $praktisi_id = $this->db('mlite_satu_sehat_mapping_praktisi')->where('kd_dokter',$row['kd_dokter'])->oneArray();
-    //   $row['praktisi_id'] = $praktisi_id['practitioner_id'];
-
-    //   $mlite_billing = $this->db('mlite_billing')->where('no_rawat', $row['no_rawat'])->oneArray();
-    //   if($this->settings->get('satu_sehat.billing') == 'khanza') {
-    //     $mlite_billing = $this->db('nota_jalan')->select([
-    //       'tgl_billing' => 'tanggal'
-    //     ])
-    //     ->where('no_rawat', $row['no_rawat'])
-    //     ->oneArray();
-    //     if($status_lanjut == 'Ranap') {
-    //       $mlite_billing = $this->db('nota_inap')->select([
-    //         'tgl_billing' => 'tanggal'
-    //       ])
-    //       ->where('no_rawat', $row['no_rawat'])
-    //       ->oneArray();
-    //     }
-    //   }      
-    //   $row['tgl_pulang'] = isset_or($mlite_billing['tgl_billing'], '');      
-
-    //   if ($row['status_lanjut'] == 'Ranap') {
-    //     $row['kd_kamar'] = $this->core->getKamarInapInfo('kd_kamar', $row['no_rawat']);
-    //     $row['kd_poli'] = $this->core->getKamarInfo('kd_bangsal', $row['kd_kamar']);
-    //     $row['nm_poli'] = $this->core->getBangsalInfo('nm_bangsal', $row['kd_poli']);
-    //   }
-
-    //   $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $row['kd_poli'])->oneArray();
-    //   $row['id_organisasi'] = $mlite_satu_sehat_lokasi['id_organisasi_satusehat'];
-    //   $row['id_lokasi'] = $mlite_satu_sehat_lokasi['id_lokasi_satusehat'];
-
-    //   $row['pemeriksaan'] = $this->db('pemeriksaan_ralan')
-    //     ->where('no_rawat', $row['no_rawat'])
-    //     ->limit(1)
-    //     ->desc('tgl_perawatan')
-    //     ->oneArray();
-
-    //   if ($row['status_lanjut'] == 'Ranap') {
-    //     $row['pemeriksaan'] = $this->db('pemeriksaan_ranap')
-    //       ->where('no_rawat', $row['no_rawat'])
-    //       ->limit(1)
-    //       ->desc('tgl_perawatan')
-    //       ->oneArray();
-    //   }
-
-    //   $row['diagnosa_pasien'] = $this->db('diagnosa_pasien')
-    //     ->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')
-    //     ->where('no_rawat', $row['no_rawat'])
-    //     ->where('diagnosa_pasien.status', $row['status_lanjut'])
-    //     ->where('prioritas', '1')
-    //     ->oneArray();
-
-    //   $row['id_encounter'] = isset_or($mlite_satu_sehat_response['id_encounter'], '');
-    //   $row['id_condition'] = isset_or($mlite_satu_sehat_response['id_condition'], '');
-    //   $row['id_clinical_impression'] = isset_or($mlite_satu_sehat_response['id_clinical_impression'], '');
-    //   $row['id_observation_ttvtensi'] = isset_or($mlite_satu_sehat_response['id_observation_ttvtensi'], '');
-    //   $row['id_observation_ttvnadi'] = isset_or($mlite_satu_sehat_response['id_observation_ttvnadi'], '');
-    //   $row['id_observation_ttvrespirasi'] = isset_or($mlite_satu_sehat_response['id_observation_ttvrespirasi'], '');
-    //   $row['id_observation_ttvsuhu'] = isset_or($mlite_satu_sehat_response['id_observation_ttvsuhu'], '');
-    //   $row['id_observation_ttvspo2'] = isset_or($mlite_satu_sehat_response['id_observation_ttvspo2'], '');
-    //   $row['id_observation_ttvgcs'] = isset_or($mlite_satu_sehat_response['id_observation_ttvgcs'], '');
-    //   $row['id_observation_ttvtinggi'] = isset_or($mlite_satu_sehat_response['id_observation_ttvtinggi'], '');
-    //   $row['id_observation_ttvberat'] = isset_or($mlite_satu_sehat_response['id_observation_ttvberat'], '');
-    //   $row['id_observation_ttvperut'] = isset_or($mlite_satu_sehat_response['id_observation_ttvperut'], '');
-    //   $row['id_observation_ttvkesadaran'] = isset_or($mlite_satu_sehat_response['id_observation_ttvkesadaran'], '');
-    //   $row['id_procedure'] = isset_or($mlite_satu_sehat_response['id_procedure'], '');
-    //   $row['id_composition'] = isset_or($mlite_satu_sehat_response['id_composition'], '');
-    //   $row['id_medication_for_request'] = isset_or($mlite_satu_sehat_response['id_medication_for_request'], '');
-    //   $row['id_medication_request'] = isset_or($mlite_satu_sehat_response['id_medication_request'], '');
-    //   $row['id_medication_for_dispense'] = isset_or($mlite_satu_sehat_response['id_medication_for_dispense'], '');
-    //   $row['id_medication_dispense'] = isset_or($mlite_satu_sehat_response['id_medication_dispense'], '');
-    //   $data_response[] = $row;
-    // }
     return $this->draw('response.html');
-    // return $this->draw('response.html', ['data_response' => $data_response]);
   }
 
   public function postResponseApi()
@@ -5503,20 +5375,6 @@ class Admin extends AdminModule
       $row['praktisi_id'] = $praktisi_id['practitioner_id'];
 
       $mlite_billing = $this->db('mlite_billing')->where('no_rawat', $row['no_rawat'])->oneArray();
-      if ($this->settings->get('satu_sehat.billing') == 'khanza') {
-        $mlite_billing = $this->db('nota_jalan')->select([
-          'tgl_billing' => 'tanggal'
-        ])
-          ->where('no_rawat', $row['no_rawat'])
-          ->oneArray();
-        if ($status_lanjut == 'Ranap') {
-          $mlite_billing = $this->db('nota_inap')->select([
-            'tgl_billing' => 'tanggal'
-          ])
-            ->where('no_rawat', $row['no_rawat'])
-            ->oneArray();
-        }
-      }
       $row['tgl_pulang'] = isset_or($mlite_billing['tgl_billing'], '');
 
       if ($row['status_lanjut'] == 'Ranap') {

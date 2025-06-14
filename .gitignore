@@ -26,7 +26,6 @@ plugins/kasir
 plugins/dokter_radiologi
 plugins/dokter_ulun
 plugins/reg_periksa
-plugins/khanza
 plugins/___siap_insulin
 plugins/siap_insulin
 plugins/pasien_galleries
@@ -35,9 +34,7 @@ jasperphp
 plugins/utd/Site.php
 plugins/utd/view/adonan.html
 websocket
-plugins/khanza.zip
 plugins/website_ausy
-plugins/khanza
 plugins/pasien_galleries
 # plugins/log_antrian_taskid
 
