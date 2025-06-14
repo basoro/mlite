@@ -5551,9 +5551,9 @@ class Admin extends AdminModule
       $row['adime_gizi'] = $this->db('catatan_adime_gizi')
         ->where('no_rawat', $row['no_rawat'])->oneArray();
 
-      $row['vaksin'] = $this->db('resep_obat')
-        ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
-        ->join('mlite_satu_sehat_mapping_obat', 'mlite_satu_sehat_mapping_obat.kode_brng=resep_dokter.kode_brng')
+      $row['immunization'] = $this->db('resep_obat')
+        ->join('resep_dokter','resep_dokter.no_resep=resep_obat.no_resep')
+        ->join('mlite_satu_sehat_mapping_obat','mlite_satu_sehat_mapping_obat.kode_brng=resep_dokter.kode_brng')
         ->where('mlite_satu_sehat_mapping_obat.type', 'vaksin')
         ->where('no_rawat', $row['no_rawat'])->oneArray();
 
@@ -5583,7 +5583,7 @@ class Admin extends AdminModule
         ->where('no_rawat', $row['no_rawat'])
         ->oneArray();
 
-      $row['service_request_lab_pk'] = $row['permintaan_lab'];
+      $row['service_request_lab_pk'] = $row['permintaan_lab']['tgl_permintaan'];
 
       $row['service_request_lab_pa'] = $row['permintaan_lab'];
 

@@ -1,3 +1,26 @@
+<style>
+#tbl_response th, #tbl_response td {
+  white-space: nowrap; 
+}
+.dataTables_wrapper th, .dataTables_wrapper td {
+  white-space: nowrap; 
+}
+.pmd-datatable-pagination {
+  padding-top: 10px !important;
+}
+.dataTables_length {
+  display: inline;
+}
+.dataTables_paginate {
+  display: inline;
+  float: right;
+}
+@media (max-width:767px) {
+  .dataTables_length{
+    display: none !important;
+  }
+}    
+</style>
 <div class="panel panel-default">
     <div class="panel-heading">
         <div class="btn-group pull-right" style="margin-top:-8px;margin-right: 40px;">
@@ -20,7 +43,7 @@
     </div>
     <div class="panel-body">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12" id="tbl_response">
                 <table class="table display table-bordered table-striped" width="100%">
                     <thead>
                         <tr>
@@ -186,10 +209,12 @@
             render:function(data, type, row) {
                 if(row.id_encounter == '' && row.diagnosa_pasien != '' && row.tgl_pulang != ''){
                     return `${data} <br><a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="encounterbundle" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-plus"></i></a>`;
+                }else if(row.id_encounter == '' && row.tgl_pulang == ''){
+                    return `${data} <br><span class="badge badge-error">Belum Closing</span>`; 
                 }else if(row.id_encounter != '' && row.id_condition != ''){
-                    return `${data} <br><span class="text-success">Sudah di Kirim</span>`; 
+                    return `${data} <br><span class="badge badge-success">Sudah di Kirim</span>`; 
                 }else if(row.id_encounter != '' && row.id_condition == ''){
-                    return `${data} <br><span class="text-success">Sudah di Kirim Sebagian</span>`; 
+                    return `${data} <br><span class="badge badge-warning">Sudah di Kirim Sebagian</span>`; 
                 }else{return `${data}`}
             }},
             { data: 'nm_pasien' },
@@ -331,25 +356,106 @@
                 }else{return `${data}`}
             }
             },
-            { data: 'id_procedure' },
-            { data: 'id_composition' },
-            { data: 'id_immunization'},
-            { data: 'id_medication_request' },
-            { data: 'id_medication_dispense' },
+            { data: 'id_procedure' , 
+            render:function(data, type, row) {
+                if(row.id_procedure == '' && row.prosedur_pasien != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_procedure == '' && row.prosedur_pasien == ''){
+                    return `<span class="text-success">Prosedur Kosong</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_composition', 
+            render:function(data, type, row) {
+                if(row.id_composition == '' && row.adime_gizi != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_composition == '' && row.adime_gizi == ''){
+                    return `<span class="text-success">Adime Gizi Kosong</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_immunization', 
+            render:function(data, type, row) {
+                if(row.id_immunization == '' && row.immunization != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_immunization == '' && row.immunization == ''){
+                    return `<span class="text-success">Vaksin/Imunisasi Kosong</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_clinical_impression', 
+            render:function(data, type, row) {
+                if(row.id_clinical_impression == '' && row.clinical_impression != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_clinical_impression == '' && row.clinical_impression == ''){
+                    return `<span class="text-success">Penilaian Kosong</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_medication_request', 
+            render:function(data, type, row) {
+                if(row.id_medication_request == '' && row.medication_request != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_medication_request == '' && row.medication_request == ''){
+                    return `<span class="text-success">Permintaan Resep Kosong</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_medication_dispense', 
+            render:function(data, type, row) {
+                if(row.id_medication_dispense == '' && row.medication_dispense != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_medication_dispense == '' && row.medication_dispense == ''){
+                    return `<span class="text-success">Validasi Resep Kosong</span>`; 
+                }else{return `${data}`}
+            }
+            },
             { data: 'id_service_request_radiologi' },
             { data: 'id_specimen_radiologi' },
             { data: 'id_observation_radiologi' },
             { data: 'id_diagnostic_report_radiologi' },
-            { data: 'id_service_request_lab_pk' },
+            { data: 'id_service_request_lab_pk', 
+            render:function(data, type, row) {
+                if(row.id_service_request_lab_pk == '' && row.service_request_lab_pk != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_service_request_lab_pk == '' && row.service_request_lab_pk == ''){
+                    return `<span class="text-success">Request Lab PK</span>`; 
+                }else{return `${data}`}
+            }
+            },
             { data: 'id_service_request_lab_pa' },
             { data: 'id_service_request_lab_mb' },
-            { data: 'id_specimen_lab_pk' },
+            { data: 'id_specimen_lab_pk', 
+            render:function(data, type, row) {
+                if(row.id_specimen_lab_pk == '' && row.specimen_lab_pk != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_specimen_lab_pk == '' && row.specimen_lab_pk == ''){
+                    return `<span class="text-success">Specimen Lab PK</span>`; 
+                }else{return `${data}`}
+            }
+            },
             { data: 'id_specimen_lab_pa' },
             { data: 'id_specimen_lab_mb' },
-            { data: 'id_observation_lab_pk' },
+            { data: 'id_observation_lab_pk', 
+            render:function(data, type, row) {
+                if(row.id_observation_lab_pk == '' && row.observation_lab_pk != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_observation_lab_pk == '' && row.observation_lab_pk == ''){
+                    return `<span class="text-success">Observation Lab PK</span>`; 
+                }else{return `${data}`}
+            }
+            },
             { data: 'id_observation_lab_pa' },
             { data: 'id_observation_lab_mb' },
-            { data: 'id_diagnostic_report_lab_pk' },
+            { data: 'id_diagnostic_report_lab_pk', 
+            render:function(data, type, row) {
+                if(row.id_diagnostic_report_lab_pk == '' && row.diagnostic_report_lab_pk != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_diagnostic_report_lab_pk == '' && row.diagnostic_report_lab_pk == ''){
+                    return `<span class="text-success">Diagnostic Lab PK</span>`; 
+                }else{return `${data}`}
+            }
+            },
             { data: 'id_diagnostic_report_lab_pa' },
             { data: 'id_diagnostic_report_lab_mb' },
             { data: 'id_care_plan' },
