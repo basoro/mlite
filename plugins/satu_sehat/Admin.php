@@ -5463,15 +5463,24 @@ class Admin extends AdminModule
     $this->_addHeaderFiles();
     $periode = date('Y-m-d');
     if (isset($_GET['periode']) && $_GET['periode'] != '') {
-      $periode = $_GET['periode'];
+        $periode = $_GET['periode'];
     }
 
     if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $periode)) {
-      $periode = date('Y-m-d'); // fallback
+        $periode = date('Y-m-d'); // fallback
     }
 
     $start  = intval($_POST['start'] ?? 0);
     $length = intval($_POST['length'] ?? 10);
+    $draw   = intval($_POST['draw'] ?? 1); // untuk datatables tracking
+
+    // Hitung total records tanpa filter (total di DB pada tanggal itu)
+    $totalRecords = $this->db('reg_periksa')
+        ->where('tgl_registrasi', $periode)
+        ->where('stts', '!=', 'Batal')
+        ->where('status_lanjut', 'Ralan')
+        ->count();    
+
     $data_response = [];
     $query = $this->db('reg_periksa')
       ->where('reg_periksa.tgl_registrasi', $periode)
@@ -5653,12 +5662,14 @@ class Admin extends AdminModule
       $row['id_care_plan'] = isset_or($mlite_satu_sehat_response['id_care_plan'], '');
       $data_response[] = $row;
     }
-    // echo json_encode($data_response);
+    // Format hasil
     echo json_encode([
-      "data" => $data_response
+        "draw" => $draw,
+        "recordsTotal" => $totalRecords,
+        "recordsFiltered" => $totalRecords, // Jika tidak pakai pencarian server-side, ini bisa sama
+        "data" => $data_response
     ]);
     exit();
-    // return $this->draw('response.html', ['data_response' => $data_response]);
   }
 
   public function gen_uuid()
