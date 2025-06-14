@@ -3107,7 +3107,6 @@ CREATE TABLE `mlite_satu_sehat_response` (
 # ------------------------------------------------------------
 
 CREATE TABLE `mlite_satu_sehat_mapping_obat` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
   `kode_brng` varchar(50) DEFAULT NULL,
   `kode_kfa` varchar(50) DEFAULT NULL,
   `nama_kfa` varchar(100) DEFAULT NULL,
@@ -3124,7 +3123,8 @@ CREATE TABLE `mlite_satu_sehat_mapping_obat` (
   `nama_route` varchar(50) DEFAULT NULL,
   `type` enum('obat','vaksin') NOT NULL,
   `id_medication` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`kode_brng`),
+  CONSTRAINT `mlite_satu_sehat_mapping_obat_ibfk_1` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=166 DEFAULT CHARSET=utf8;
 
 

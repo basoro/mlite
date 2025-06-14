@@ -410,10 +410,42 @@
                 }else{return `${data}`}
             }
             },
-            { data: 'id_service_request_radiologi' },
-            { data: 'id_specimen_radiologi' },
-            { data: 'id_observation_radiologi' },
-            { data: 'id_diagnostic_report_radiologi' },
+            { data: 'id_service_request_radiologi', 
+            render:function(data, type, row) {
+                if(row.id_service_request_radiologi == '' && row.ervice_request_radiologi != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_service_request_radiologi == '' && row.service_request_radiologi == ''){
+                    return `<span class="text-success">Service Request Radiologi</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_specimen_radiologi', 
+            render:function(data, type, row) {
+                if(row.id_specimen_radiologi == '' && row.specimen_radiologi != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_specimen_radiologi == '' && row.specimen_radiologi == ''){
+                    return `<span class="text-success">Specimen Radiologi</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_observation_radiologi', 
+            render:function(data, type, row) {
+                if(row.id_observation_radiologi == '' && row.observation_radiologi != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_observation_radiologi == '' && row.observation_radiologi == ''){
+                    return `<span class="text-success">Observation Radiologi</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_diagnostic_report_radiologi', 
+            render:function(data, type, row) {
+                if(row.id_diagnostic_report_radiologi == '' && row.diagnostic_report_radiologi != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_diagnostic_report_radiologi == '' && row.diagnostic_report_radiologi == ''){
+                    return `<span class="text-success">Diagnostic Report Radiologi</span>`; 
+                }else{return `${data}`}
+            }
+            },
             { data: 'id_service_request_lab_pk', 
             render:function(data, type, row) {
                 if(row.id_service_request_lab_pk == '' && row.service_request_lab_pk != ''){
@@ -423,8 +455,24 @@
                 }else{return `${data}`}
             }
             },
-            { data: 'id_service_request_lab_pa' },
-            { data: 'id_service_request_lab_mb' },
+            { data: 'id_service_request_lab_pa', 
+            render:function(data, type, row) {
+                if(row.id_service_request_lab_pa == '' && row.service_request_lab_pa != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_service_request_lab_pa == '' && row.service_request_lab_pa == ''){
+                    return `<span class="text-success">Service Request Lab PA</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_service_request_lab_mb', 
+            render:function(data, type, row) {
+                if(row.id_service_request_lab_mb == '' && row.service_request_lab_mb != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_service_request_lab_mb == '' && row.service_request_lab_mb == ''){
+                    return `<span class="text-success">Service Request Lab MB</span>`; 
+                }else{return `${data}`}
+            }
+            },
             { data: 'id_specimen_lab_pk', 
             render:function(data, type, row) {
                 if(row.id_specimen_lab_pk == '' && row.specimen_lab_pk != ''){
@@ -434,8 +482,24 @@
                 }else{return `${data}`}
             }
             },
-            { data: 'id_specimen_lab_pa' },
-            { data: 'id_specimen_lab_mb' },
+            { data: 'id_specimen_lab_pa', 
+            render:function(data, type, row) {
+                if(row.id_specimen_lab_pa == '' && row.specimen_lab_pa != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_specimen_lab_pa == '' && row.specimen_lab_pa == ''){
+                    return `<span class="text-success">Specimen Lab PA</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_specimen_lab_mb', 
+            render:function(data, type, row) {
+                if(row.id_specimen_lab_mb == '' && row.specimen_lab_mb != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_specimen_lab_mb == '' && row.specimen_lab_mb == ''){
+                    return `<span class="text-success">Specimen Lab MB</span>`; 
+                }else{return `${data}`}
+            }
+            },
             { data: 'id_observation_lab_pk', 
             render:function(data, type, row) {
                 if(row.id_observation_lab_pk == '' && row.observation_lab_pk != ''){
@@ -445,8 +509,24 @@
                 }else{return `${data}`}
             }
             },
-            { data: 'id_observation_lab_pa' },
-            { data: 'id_observation_lab_mb' },
+            { data: 'id_observation_lab_pa', 
+            render:function(data, type, row) {
+                if(row.id_observation_lab_pa == '' && row.observation_lab_pa != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_observation_lab_pa == '' && row.observation_lab_pa == ''){
+                    return `<span class="text-success">Observation Lab PA</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_observation_lab_mb', 
+            render:function(data, type, row) {
+                if(row.id_observation_lab_mb == '' && row.observation_lab_mb != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_observation_lab_mb == '' && row.observation_lab_mb == ''){
+                    return `<span class="text-success">Observation Lab PK</span>`; 
+                }else{return `${data}`}
+            }
+            },
             { data: 'id_diagnostic_report_lab_pk', 
             render:function(data, type, row) {
                 if(row.id_diagnostic_report_lab_pk == '' && row.diagnostic_report_lab_pk != ''){
@@ -456,9 +536,33 @@
                 }else{return `${data}`}
             }
             },
-            { data: 'id_diagnostic_report_lab_pa' },
-            { data: 'id_diagnostic_report_lab_mb' },
-            { data: 'id_care_plan' },
+            { data: 'id_diagnostic_report_lab_pa', 
+            render:function(data, type, row) {
+                if(row.id_diagnostic_report_lab_pa == '' && row.diagnostic_report_lab_pa != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_diagnostic_report_lab_pa == '' && row.diagnostic_report_lab_pa == ''){
+                    return `<span class="text-success">Diagnostic Lab PA</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_diagnostic_report_lab_mb', 
+            render:function(data, type, row) {
+                if(row.id_diagnostic_report_lab_mb == '' && row.diagnostic_report_lab_mb != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_diagnostic_report_lab_mb == '' && row.diagnostic_report_lab_mb == ''){
+                    return `<span class="text-success">Diagnostic Report Lab MB</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_care_plan', 
+            render:function(data, type, row) {
+                if(row.id_care_plan == '' && row.care_plan != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_care_plan == '' && row.care_plan == ''){
+                    return `<span class="text-success">Care Plan</span>`; 
+                }else{return `${data}`}
+            }
+            },
         ],
         "lengthChange": false,
         dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"

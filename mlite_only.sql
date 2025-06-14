@@ -1178,7 +1178,6 @@ CREATE TABLE `mlite_satu_sehat_response` (
 # ------------------------------------------------------------
 
 CREATE TABLE `mlite_satu_sehat_mapping_obat` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
   `kode_brng` varchar(50) DEFAULT NULL,
   `kode_kfa` varchar(50) DEFAULT NULL,
   `nama_kfa` varchar(100) DEFAULT NULL,

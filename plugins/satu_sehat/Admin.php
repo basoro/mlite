@@ -5583,7 +5583,7 @@ class Admin extends AdminModule
         ->where('no_rawat', $row['no_rawat'])
         ->oneArray();
 
-      $row['service_request_lab_pk'] = $row['permintaan_lab']['tgl_permintaan'];
+      $row['service_request_lab_pk'] = isset_or($row['permintaan_lab']['tgl_permintaan']);
 
       $row['service_request_lab_pa'] = $row['permintaan_lab'];
 
