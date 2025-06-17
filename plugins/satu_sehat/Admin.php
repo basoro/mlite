@@ -5424,25 +5424,25 @@ class Admin extends AdminModule
         ->where('mlite_satu_sehat_mapping_obat.type', 'vaksin')
         ->where('no_rawat', $row['no_rawat'])->oneArray();
 
-      $row['clinical_impression'] = isset_or($row['pemeriksaan']['penilaian']);
+      $row['clinical_impression'] = isset_or($row['pemeriksaan']['penilaian'], '');
 
       $row['medications'] = $this->db('resep_obat')
         ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $row['no_rawat'])->oneArray();
 
-      $row['medication_request'] = isset_or($row['medications']['tgl_peresepan']);
+      $row['medication_request'] = isset_or($row['medications']['tgl_peresepan'], '');
 
-      $row['medication_dispense'] = isset_or($row['medications']['tgl_perawatan']);
+      $row['medication_dispense'] = isset_or($row['medications']['tgl_perawatan'], '');
 
       $row['permintaan_radiologi'] = $this->db('permintaan_radiologi')
         ->where('no_rawat', $row['no_rawat'])
         ->oneArray();
 
-      $row['service_request_radiologi'] = $row['permintaan_radiologi'];
+      $row['service_request_radiologi'] = isset_or($row['permintaan_radiologi']['tgl_permintaan'], '');
 
-      $row['specimen_radiologi'] = $row['permintaan_radiologi'];
+      $row['specimen_radiologi'] = isset_or($row['permintaan_radiologi']['tgl_sampel'], '');
 
-      $row['observation_radiologi'] = $row['permintaan_radiologi'];
+      $row['observation_radiologi'] = isset_or($row['permintaan_radiologi']['tgl_hasil'], '');
 
       $row['diagnostic_report_radiologi'] = $row['permintaan_radiologi'];
 
@@ -5450,11 +5450,11 @@ class Admin extends AdminModule
         ->where('no_rawat', $row['no_rawat'])
         ->oneArray();
 
-      $row['service_request_lab_pk'] = isset_or($row['permintaan_lab']['tgl_permintaan']);
+      $row['service_request_lab_pk'] = isset_or($row['permintaan_lab']['tgl_permintaan'], '');
 
-      $row['service_request_lab_pa'] = $row['permintaan_lab'];
+      $row['service_request_lab_pa'] = isset_or($row['permintaan_lab']['tgl_perimtaan'], '');
 
-      $row['service_request_lab_mb'] = $row['permintaan_lab'];
+      $row['service_request_lab_mb'] = isset_or($row['permintaan_lab']['tgl_perimtaan'], '');
 
       $row['specimen_lab_pk'] = $row['permintaan_lab'];
 
