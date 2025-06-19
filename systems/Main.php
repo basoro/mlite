@@ -123,11 +123,13 @@ abstract class Main
 
     private function setSession()
     {
-        ini_set('session.use_only_cookies', 1);
-        session_name('mlite');
-        session_set_cookie_params(0, (mlite_dir() === '/' ? '/' : mlite_dir().'/'));
-        session_start();
-    }
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            ini_set('session.use_only_cookies', 1);
+            session_name('mlite');
+            session_set_cookie_params(0, (mlite_dir() === '/' ? '/' : mlite_dir().'/'));
+            session_start();
+        }
+    }    
 
     public function setNotify($type, $text, $args = null)
     {

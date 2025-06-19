@@ -15,6 +15,9 @@ class Autoloader
         if (strpos($_SERVER['SCRIPT_NAME'], '/'.ADMIN.'/') !== false) {
             $file = '../'.$file;
         }
+        if (strpos($_SERVER['SCRIPT_NAME'], '/api/v2/') !== false) {
+            $file = '../../'.$file;
+        }
         if (is_readable($file)) {
             require_once($file);
         }
