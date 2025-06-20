@@ -17,17 +17,36 @@
                         <label>Pilih Perawatan</label>
                         <select name="id_template" id="id_template" class="form-control" data-use-search="true">
                             {loop: $template_laboratorium}
-                            <option value="{$value.id_template}">[{$value.id_template}] - {$value.Pemeriksaan}</option>
+                            <option value="{$value.id_template} : {$value.kd_jenis_prw}">[{$value.id_template} => {$value.kd_jenis_prw} => {$value.nm_perawatan}] - {$value.Pemeriksaan}</option>
                             {/loop}
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Pilih Perawatan Json</label>
+                        <select name="id_template_json" id="id_template_json" class="form-control" data-use-search="true">
+                            {loop: $filtered}
+                            <option value="{$value.No}">[{$value.Kategori_Kelompok_Pemeriksaan}] - {$value.Nama_Pemeriksaan}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Jenis Pemeriksaan</label>
+                        <select name="type" id="type" class="form-control">
+                            <option value="tunggal">Tunggal</option>
+                            <option value="paket">Paket</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="">is Template?</label>
+                        <input type="checkbox" name="is_template" id="is_template" value="1" />
+                    </div>
+                    <!-- <div class="form-group">
                         <p>
                             <label>Terminologi Loinc Laboratorium</label>
                             <select id="select_lab" name="select_lab" class="form-control" placeholder="Silahkan cari terminologi..."></select>
                         </p>
                         <div id="detail_lab"></div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="col-md-12" style="padding-top: 20px;">
                     <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
@@ -45,9 +64,9 @@
         <tr>
             <th>Kode Perawatan</th>
             <th>Nama Perawatan</th>
-            <th>Code</th>
-            <th>Code System</th>
-            <th>Display</th>
+            <th>Code LOINC</th>
+            <th>Display LOINC</th>
+            <th>Unit of Measurement</th>
             <th>Sample Code</th>
             <th>Sample System</th>
             <th>Sample Display</th>
@@ -60,9 +79,9 @@
         >
             <td>{$value.id_template}</td>
             <td>{$value.Pemeriksaan}</td>
-            <td>{$value.code}</td>
-            <td>{$value.code_system}</td>
-            <td>{$value.display}</td>
+            <td>{$value.code_loinc}</td>
+            <td>{$value.display_loinc}</td>
+            <td>{$value.unit_of_measure}</td>
             <td>{$value.sample_code}</td>
             <td>{$value.sample_system}</td>
             <td>{$value.sample_display}</td>
