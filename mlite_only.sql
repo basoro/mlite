@@ -1178,7 +1178,7 @@ CREATE TABLE `mlite_satu_sehat_response` (
 # ------------------------------------------------------------
 
 CREATE TABLE `mlite_satu_sehat_mapping_obat` (
-  `kode_brng` varchar(50) DEFAULT NULL,
+  `kode_brng` varchar(15) NOT NULL DEFAULT '',
   `kode_kfa` varchar(50) DEFAULT NULL,
   `nama_kfa` varchar(100) DEFAULT NULL,
   `kode_bahan` varchar(50) DEFAULT NULL,

@@ -532,31 +532,6 @@ CREATE TABLE `catatan_adime_gizi` (
   CONSTRAINT `catatan_adime_gizi_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-
-CREATE TABLE `mlite_satu_sehat_mapping_obat` (
-  `kode_brng` varchar(15) NOT NULL,
-  `obat_code` varchar(15) DEFAULT NULL,
-  `obat_system` varchar(100) NOT NULL,
-  `obat_display` varchar(80) DEFAULT NULL,
-  `form_code` varchar(30) DEFAULT NULL,
-  `form_system` varchar(100) DEFAULT NULL,
-  `form_display` varchar(80) DEFAULT NULL,
-  `numerator_code` varchar(15) DEFAULT NULL,
-  `numerator_system` varchar(80) DEFAULT NULL,
-  `denominator_code` varchar(15) DEFAULT NULL,
-  `denominator_system` varchar(80) DEFAULT NULL,
-  `route_code` varchar(30) DEFAULT NULL,
-  `route_system` varchar(100) DEFAULT NULL,
-  `route_display` varchar(80) DEFAULT NULL,
-  `dose_quantity_code` varchar(15) DEFAULT NULL,
-  `dose_quantity_system` varchar(80) DEFAULT NULL,
-  `dose_quantity_unit` varchar(15) DEFAULT NULL,
-  `type` enum('obat','vaksin') NOT NULL,
-  PRIMARY KEY (`kode_brng`),
-  CONSTRAINT `mlite_satu_sehat_mapping_obat_ibfk_1` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
 CREATE TABLE `mlite_satu_sehat_mapping_lab` (
   `id_template` int(11) NOT NULL,
   `code` varchar(15) DEFAULT NULL,
@@ -3106,7 +3081,7 @@ CREATE TABLE `mlite_satu_sehat_response` (
 # ------------------------------------------------------------
 
 CREATE TABLE `mlite_satu_sehat_mapping_obat` (
-  `kode_brng` varchar(50) DEFAULT NULL,
+  `kode_brng` varchar(15) NOT NULL DEFAULT '',
   `kode_kfa` varchar(50) DEFAULT NULL,
   `nama_kfa` varchar(100) DEFAULT NULL,
   `kode_bahan` varchar(50) DEFAULT NULL,
@@ -3124,8 +3099,7 @@ CREATE TABLE `mlite_satu_sehat_mapping_obat` (
   `id_medication` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`kode_brng`),
   CONSTRAINT `mlite_satu_sehat_mapping_obat_ibfk_1` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=166 DEFAULT CHARSET=utf8;
-
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 # Dump of table mlite_settings
