@@ -35,6 +35,14 @@
                             <label>Longitude</label>
                             <input type="text" name="satu_sehat[longitude]" id="longitude" class="form-control" value="{$satu_sehat.longitude}" />
                         </div>
+                        <div class="form-group">
+                            <label>Mapping Instalasi Praktisi Apoteker</label>
+                            <select name="satu_sehat[praktisiapotek]" class="form-control">
+                                {loop: $bidang} 
+                                    <option value="{$value.nama}" {if: $value.nama == $satu_sehat.praktisiapotek}selected{/if} >{$value.nama}</option>
+                                {/loop}
+                            </select>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
@@ -73,7 +81,15 @@
                             <label>Departemen Farmasi</label>
                             <select name="satu_sehat[farmasi]" class="form-control">
                                 {loop: $mapping_lokasi} 
-                                    <option value="{$value.kode}">{$value.lokasi}</option>
+                                    <option value="{$value.kode}" {if: $value.kode == $satu_sehat.farmasi}selected{/if} >{$value.lokasi}</option>
+                                {/loop}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Mapping Instalasi Praktisi Laboratorium</label>
+                            <select name="satu_sehat[praktisilab]" class="form-control">
+                                {loop: $bidang} 
+                                    <option value="{$value.nama}" {if: $value.nama == $satu_sehat.praktisilab}selected{/if} >{$value.nama}</option>
                                 {/loop}
                             </select>
                         </div>

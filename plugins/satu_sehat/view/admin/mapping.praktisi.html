@@ -11,7 +11,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Dokter</label>
-                        <select name="dokter" id="dokter" class="form-control">
+                        <select name="dokter" id="dokter" class="form-control" data-use-search="true">
                             <option value="">Pilih Dokter</option>
                             {loop: $dokter}
                             <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
@@ -21,9 +21,9 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>Apoteker</label>
-                        <select name="dokter" id="dokter" class="form-control">
-                            <option value="">Pilih Apoteker</option>
+                        <label>Tenaga Medis</label>
+                        <select name="dokter" id="dokter" class="form-control" data-use-search="true">
+                            <option value="">Pilih Praktisi</option>
                             {loop: $apoteker}
                             <option value="{$value.nik}">{$value.nama}</option>
                             {/loop}
