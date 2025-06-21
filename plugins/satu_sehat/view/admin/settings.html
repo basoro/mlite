@@ -39,7 +39,7 @@
                             <label>Mapping Instalasi Praktisi Apoteker</label>
                             <select name="satu_sehat[praktisiapotek]" class="form-control">
                                 {loop: $bidang} 
-                                    <option value="{$value.nama}" {if: $value.kode == $satu_sehat.praktisiapotek}selected{/if} >{$value.nama}</option>
+                                    <option value="{$value.nama}" {if: $value.nama == $satu_sehat.praktisiapotek}selected{/if} >{$value.nama}</option>
                                 {/loop}
                             </select>
                         </div>
@@ -89,7 +89,7 @@
                             <label>Mapping Instalasi Praktisi Laboratorium</label>
                             <select name="satu_sehat[praktisilab]" class="form-control">
                                 {loop: $bidang} 
-                                    <option value="{$value.nama}" {if: $value.kode == $satu_sehat.praktisilab}selected{/if} >{$value.nama}</option>
+                                    <option value="{$value.nama}" {if: $value.nama == $satu_sehat.praktisilab}selected{/if} >{$value.nama}</option>
                                 {/loop}
                             </select>
                         </div>

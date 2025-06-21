@@ -1121,7 +1121,7 @@ CREATE TABLE `mlite_satu_sehat_lokasi` (
 CREATE TABLE `mlite_satu_sehat_mapping_praktisi` (
   `practitioner_id` varchar(40) NOT NULL,
   `kd_dokter` varchar(20) NOT NULL,
-  `jenis_praktisi` varchar(10) NOT NULL,
+  `jenis_praktisi` varchar(20) NOT NULL,
   PRIMARY KEY (`practitioner_id`),
   KEY `kd_dokter` (`kd_dokter`),
   CONSTRAINT `mlite_satu_sehat_mapping_praktisi_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
