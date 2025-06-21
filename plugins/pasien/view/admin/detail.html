@@ -1,0 +1,105 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Detail pasien</h4>
+</div>
+<div class="modal-body">
+    <table id="tbl_detail_pasien" class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        </thead>
+        <tbody>
+            {loop: $detail}
+            <tr><td>No Rkm Medis</td><td>{$value.no_rkm_medis}</td><tr>
+<tr><td>Nm Pasien</td><td>{$value.nm_pasien}</td><tr>
+<tr><td>No Ktp</td><td>{$value.no_ktp}</td><tr>
+<tr><td>Jk</td><td>{$value.jk}</td><tr>
+<tr><td>Tmp Lahir</td><td>{$value.tmp_lahir}</td><tr>
+<tr><td>Tgl Lahir</td><td>{$value.tgl_lahir}</td><tr>
+<tr><td>Nm Ibu</td><td>{$value.nm_ibu}</td><tr>
+<tr><td>Alamat</td><td>{$value.alamat}</td><tr>
+<tr><td>Gol Darah</td><td>{$value.gol_darah}</td><tr>
+<tr><td>Pekerjaan</td><td>{$value.pekerjaan}</td><tr>
+<tr><td>Stts Nikah</td><td>{$value.stts_nikah}</td><tr>
+<tr><td>Agama</td><td>{$value.agama}</td><tr>
+<tr><td>Tgl Daftar</td><td>{$value.tgl_daftar}</td><tr>
+<tr><td>No Tlp</td><td>{$value.no_tlp}</td><tr>
+<tr><td>Umur</td><td>{$value.umur}</td><tr>
+<tr><td>Pnd</td><td>{$value.pnd}</td><tr>
+<tr><td>Keluarga</td><td>{$value.keluarga}</td><tr>
+<tr><td>Namakeluarga</td><td>{$value.namakeluarga}</td><tr>
+<tr><td>Kd Pj</td><td>{$value.kd_pj}</td><tr>
+<tr><td>No Peserta</td><td>{$value.no_peserta}</td><tr>
+<tr><td>Kd Kel</td><td>{$value.kd_kel}</td><tr>
+<tr><td>Kd Kec</td><td>{$value.kd_kec}</td><tr>
+<tr><td>Kd Kab</td><td>{$value.kd_kab}</td><tr>
+<tr><td>Pekerjaanpj</td><td>{$value.pekerjaanpj}</td><tr>
+<tr><td>Alamatpj</td><td>{$value.alamatpj}</td><tr>
+<tr><td>Kelurahanpj</td><td>{$value.kelurahanpj}</td><tr>
+<tr><td>Kecamatanpj</td><td>{$value.kecamatanpj}</td><tr>
+<tr><td>Kabupatenpj</td><td>{$value.kabupatenpj}</td><tr>
+<tr><td>Perusahaan Pasien</td><td>{$value.perusahaan_pasien}</td><tr>
+<tr><td>Suku Bangsa</td><td>{$value.suku_bangsa}</td><tr>
+<tr><td>Bahasa Pasien</td><td>{$value.bahasa_pasien}</td><tr>
+<tr><td>Cacat Fisik</td><td>{$value.cacat_fisik}</td><tr>
+<tr><td>Email</td><td>{$value.email}</td><tr>
+<tr><td>Nip</td><td>{$value.nip}</td><tr>
+<tr><td>Kd Prop</td><td>{$value.kd_prop}</td><tr>
+<tr><td>Propinsipj</td><td>{$value.propinsipj}</td><tr>
+
+            {/loop}
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" id="export_pdf_detail" class="btn btn-danger">PDF</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script>
+$(document).ready(function() {
+
+    // ===========================================
+    // Ketika tombol export pdf di tekan
+    // ===========================================
+    $("#export_pdf_detail").click(function () {
+        var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
+        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        doc.addImage(img, 'JPEG', 20, 10, 50, 50);
+        doc.setFontSize(20);
+        doc.text("{$settings.nama_instansi}", 80, 35, null, null, null);
+        doc.setFontSize(10);
+        doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
+        doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
+        doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
+        doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
+        doc.setFontSize(14);
+        doc.text("Data Detail", 20, 95, null, null, null);
+        const totalPagesExp = "{total_pages_count_string}";        
+        doc.autoTable({
+            html: '#tbl_detail_pasien',
+            startY: 105,
+            margin: {
+                left: 20, 
+                right: 20
+            }, 
+            styles: {
+                fontSize: 10,
+                cellPadding: 5
+            }, 
+            didDrawPage: data => {
+                let footerStr = "Page " + doc.internal.getNumberOfPages();
+                if (typeof doc.putTotalPages === 'function') {
+                footerStr = footerStr + " of " + totalPagesExp;
+                }
+                doc.setFontSize(10);
+                doc.text(`© ${new Date().getFullYear()} {$settings.nama_instansi}.`, data.settings.margin.left, doc.internal.pageSize.height - 10);                
+                doc.text(footerStr, data.settings.margin.left + 480, doc.internal.pageSize.height - 10);
+           }
+        });
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPagesExp);
+        }
+        // doc.save('detail_data_pasien.pdf')
+        window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
+              
+    }) 
+}); 
+</script>
