@@ -323,20 +323,29 @@ jQuery().ready(function () {
             $.ajax({
                 url: "{?=url([ADMIN,'pasien','aksi'])?}",
                 method: "POST",
-                contentType: false, // tambahan
-                processData: false, // tambahan
+                contentType: false,
+                processData: false,
                 data: formData,
                 success: function (data) {
-                    if (typeact == "add") {
-                        bootbox.alert("Data Berhasil Ditambah");
+                    try {
+                        let response = typeof data === 'string' ? JSON.parse(data) : data;
+            
+                        if (response.status === 'success') {
+                            bootbox.alert(response.message);
+                            $("#modal_pasien").modal('hide');
+                            var_tbl_pasien.draw();
+                        } else {
+                            bootbox.alert("Gagal: " + response.message);
+                        }
+                    } catch (e) {
+                        bootbox.alert("Terjadi kesalahan pada response server.");
+                        console.error("Invalid JSON response:", data);
                     }
-                    else if (typeact == "edit") {
-                        bootbox.alert("Data Berhasil Diubah");
-                    }
-                    $("#modal_pasien").modal('hide');
-                    var_tbl_pasien.draw();
+                },
+                error: function (xhr, status, error) {
+                    bootbox.alert("Terjadi kesalahan AJAX: " + error);
                 }
-            })
+            });            
         }
     });
 
@@ -463,31 +472,50 @@ jQuery().ready(function () {
 
         if (rowData) {
             var no_rkm_medis = rowData['no_rkm_medis'];
-            var a = confirm("Anda yakin akan menghapus data dengan no_rkm_medis=" + no_rkm_medis);
-            if (a) {
-
-                $.ajax({
-                    url: "{?=url([ADMIN,'pasien','aksi'])?}",
-                    method: "POST",
-                    data: {
-                        no_rkm_medis: no_rkm_medis,
-                        typeact: 'del'
+        
+            bootbox.confirm({
+                title: "Konfirmasi Hapus",
+                message: "Anda yakin ingin menghapus data pasien dengan No. RM: <strong>" + no_rkm_medis + "</strong>?",
+                buttons: {
+                    confirm: {
+                        label: 'Ya, Hapus',
+                        className: 'btn-danger'
                     },
-                    success: function (data) {
-                        data = JSON.parse(data);
-                        if(data.status === 'success') {
-                            alert(data.msg);
-                        } else {
-                            alert(data.msg);
-                        }
-                        location.reload(true);
+                    cancel: {
+                        label: 'Batal',
+                        className: 'btn-secondary'
                     }
-                })
-            }
-        }
-        else {
-            alert("Pilih satu baris untuk dihapus");
-        }
+                },
+                callback: function(result) {
+                    if (result) {
+                        $.ajax({
+                            url: "{?=url([ADMIN,'pasien','aksi'])?}",
+                            method: "POST",
+                            data: {
+                                no_rkm_medis: no_rkm_medis,
+                                typeact: 'del'
+                            },
+                            success: function(response) {
+                                var data = JSON.parse(response);
+                                bootbox.alert({
+                                    message: data.message,
+                                    callback: function() {
+                                        if (data.status === 'success') {
+                                            var_tbl_pasien.draw();
+                                        }
+                                    }
+                                });
+                            },
+                            error: function() {
+                                bootbox.alert("Terjadi kesalahan saat menghapus data.");
+                            }
+                        });
+                    }
+                }
+            });
+        } else {
+            bootbox.alert("Silakan pilih satu baris data untuk dihapus.");
+        }        
     });
 
     // ==============================================================

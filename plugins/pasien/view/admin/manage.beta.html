@@ -9,18 +9,19 @@
                     <div class='col-md-6 text-left'>
                       <div class="btn-group" role="group" aria-label="Toolbar">
                           <button id='lihat_data_pasien' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Lihat Data pasien' style='color:white;'>
-                          <i class='fa fa-eye' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> </button>
+                          <i class='fa fa-eye' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
+                          </button>
                           <button id='tambah_data_pasien' class='btn btn-success' data-toggle='tooltip' data-placement='top' title='Edit Data'>
                           <i class='fa fa-plus-square' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
                           </button>
                           <button id='edit_data_pasien' class='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Edit Data'>
                           <i class='fa fa-edit' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
                           </button>
+                          <button id='lihat_detail_pasien' class='btn btn-warning' data-toggle='tooltip' data-placement='top' title='Detail Data'>
+                          <i class='fa fa-search' style='font-size: 15px;'></i><span class="hidden-xs"> Detail</span>
+                          </button>
                           <button id='hapus_data_pasien' class='btn btn-danger' data-toggle='tooltip' data-placement='top' title='Hapus Data' {if: $this->core->getUserInfo('role') !='admin'}disabled{/if}>
                           <i class='fa fa-trash' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
-                          </button>
-                          <button id='lihat_detail_pasien' class='btn btn-default' data-toggle='tooltip' data-placement='top' title='Detail Data'>
-                          <i class='fa fa-search' style='font-size: 15px;'></i><span class="hidden-xs"> Detail</span>
                           </button>
                       </div>
                     </div>

@@ -1266,9 +1266,42 @@ class Admin extends AdminModule
             $kd_prop = $_POST['kd_prop'];
             $propinsipj = $_POST['propinsipj'];
             
-            $pasien_add = $this->db()->pdo()->prepare('INSERT INTO pasien VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-            $pasien_add->execute([$no_rkm_medis, $nm_pasien, $no_ktp, $jk, $tmp_lahir, $tgl_lahir, $nm_ibu, $alamat, $gol_darah, $pekerjaan, $stts_nikah, $agama, $tgl_daftar, $no_tlp, $umur, $pnd, $keluarga, $namakeluarga, $kd_pj, $no_peserta, $kd_kel, $kd_kec, $kd_kab, $pekerjaanpj, $alamatpj, $kelurahanpj, $kecamatanpj, $kabupatenpj, $perusahaan_pasien, $suku_bangsa, $bahasa_pasien, $cacat_fisik, $email, $nip, $kd_prop, $propinsipj]);
-
+            try {
+              $pasien_add = $this->db()->pdo()->prepare("
+                  INSERT INTO pasien (
+                      no_rkm_medis, nm_pasien, no_ktp, jk, tmp_lahir, tgl_lahir, nm_ibu, alamat, gol_darah, 
+                      pekerjaan, stts_nikah, agama, tgl_daftar, no_tlp, umur, pnd, keluarga, namakeluarga, 
+                      kd_pj, no_peserta, kd_kel, kd_kec, kd_kab, pekerjaanpj, alamatpj, kelurahanpj, 
+                      kecamatanpj, kabupatenpj, perusahaan_pasien, suku_bangsa, bahasa_pasien, cacat_fisik, 
+                      email, nip, kd_prop, propinsipj
+                  ) VALUES (
+                      ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                      ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                      ?, ?, ?, ?, ?, ?, ?, ?, 
+                      ?, ?, ?, ?, ?, ?, ?, 
+                      ?, ?, ?, ?
+                  )
+              ");
+          
+              $pasien_add->execute([
+                  $no_rkm_medis, $nm_pasien, $no_ktp, $jk, $tmp_lahir, $tgl_lahir, $nm_ibu, $alamat, $gol_darah,
+                  $pekerjaan, $stts_nikah, $agama, $tgl_daftar, $no_tlp, $umur, $pnd, $keluarga, $namakeluarga,
+                  $kd_pj, $no_peserta, $kd_kel, $kd_kec, $kd_kab, $pekerjaanpj, $alamatpj, $kelurahanpj,
+                  $kecamatanpj, $kabupatenpj, $perusahaan_pasien, $suku_bangsa, $bahasa_pasien, $cacat_fisik,
+                  $email, $nip, $kd_prop, $propinsipj
+              ]);
+          
+              echo json_encode([
+                  'status' => 'success',
+                  'message' => 'Data pasien berhasil ditambahkan.'
+              ]);
+            } catch (\PDOException $e) {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Gagal menambahkan data pasien: ' . $e->getMessage()
+                ]);
+            }
+            
         }
         if ($act=="edit") {
 
@@ -1311,28 +1344,57 @@ class Admin extends AdminModule
 
             // BUANG FIELD PERTAMA
 
-            $pasien_edit = $this->db()->pdo()->prepare("UPDATE pasien SET no_rkm_medis=?, nm_pasien=?, no_ktp=?, jk=?, tmp_lahir=?, tgl_lahir=?, nm_ibu=?, alamat=?, gol_darah=?, pekerjaan=?, stts_nikah=?, agama=?, tgl_daftar=?, no_tlp=?, umur=?, pnd=?, keluarga=?, namakeluarga=?, kd_pj=?, no_peserta=?, kd_kel=?, kd_kec=?, kd_kab=?, pekerjaanpj=?, alamatpj=?, kelurahanpj=?, kecamatanpj=?, kabupatenpj=?, perusahaan_pasien=?, suku_bangsa=?, bahasa_pasien=?, cacat_fisik=?, email=?, nip=?, kd_prop=?, propinsipj=? WHERE no_rkm_medis=?");
-            $pasien_edit->execute([$no_rkm_medis, $nm_pasien, $no_ktp, $jk, $tmp_lahir, $tgl_lahir, $nm_ibu, $alamat, $gol_darah, $pekerjaan, $stts_nikah, $agama, $tgl_daftar, $no_tlp, $umur, $pnd, $keluarga, $namakeluarga, $kd_pj, $no_peserta, $kd_kel, $kd_kec, $kd_kab, $pekerjaanpj, $alamatpj, $kelurahanpj, $kecamatanpj, $kabupatenpj, $perusahaan_pasien, $suku_bangsa, $bahasa_pasien, $cacat_fisik, $email, $nip, $kd_prop, $propinsipj,$no_rkm_medis]);
+            try {
+              $pasien_edit = $this->db()->pdo()->prepare("UPDATE pasien SET no_rkm_medis=?, nm_pasien=?, no_ktp=?, jk=?, tmp_lahir=?, tgl_lahir=?, nm_ibu=?, alamat=?, gol_darah=?, pekerjaan=?, stts_nikah=?, agama=?, tgl_daftar=?, no_tlp=?, umur=?, pnd=?, keluarga=?, namakeluarga=?, kd_pj=?, no_peserta=?, kd_kel=?, kd_kec=?, kd_kab=?, pekerjaanpj=?, alamatpj=?, kelurahanpj=?, kecamatanpj=?, kabupatenpj=?, perusahaan_pasien=?, suku_bangsa=?, bahasa_pasien=?, cacat_fisik=?, email=?, nip=?, kd_prop=?, propinsipj=? WHERE no_rkm_medis=?");
+          
+              $pasien_edit->execute([
+                  $no_rkm_medis, $nm_pasien, $no_ktp, $jk, $tmp_lahir, $tgl_lahir, $nm_ibu,
+                  $alamat, $gol_darah, $pekerjaan, $stts_nikah, $agama, $tgl_daftar,
+                  $no_tlp, $umur, $pnd, $keluarga, $namakeluarga, $kd_pj, $no_peserta,
+                  $kd_kel, $kd_kec, $kd_kab, $pekerjaanpj, $alamatpj, $kelurahanpj,
+                  $kecamatanpj, $kabupatenpj, $perusahaan_pasien, $suku_bangsa,
+                  $bahasa_pasien, $cacat_fisik, $email, $nip, $kd_prop, $propinsipj,
+                  $no_rkm_medis
+              ]);
+          
+              echo json_encode([
+                  'status' => 'success',
+                  'message' => 'Data pasien berhasil diperbarui.',
+                  'no_rkm_medis' => $no_rkm_medis
+              ]);
+            } catch (\PDOException $e) {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Gagal update data pasien: ' . $e->getMessage()
+                ]);
+            }          
         
         }
 
         if ($act=="del") {
-            $no_rkm_medis= $_POST['no_rkm_medis'];
-            $check_db = $this->db()->pdo()->prepare("DELETE FROM pasien WHERE no_rkm_medis='$no_rkm_medis'");
-            $result = $check_db->execute();
-            $error = $check_db->errorInfo();
-            if (!empty($result)){
-              $data = array(
-                'status' => 'success', 
-                'msg' => $no_rkm_medis
-              );
+          try {
+            $no_rkm_medis = $_POST['no_rkm_medis'];
+        
+            $stmt = $this->db()->pdo()->prepare("DELETE FROM pasien WHERE no_rkm_medis = ?");
+            $stmt->execute([$no_rkm_medis]);
+        
+            if ($stmt->rowCount() > 0) {
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => "Data pasien dengan No. RM {$no_rkm_medis} berhasil dihapus."
+                ]);
             } else {
-              $data = array(
-                'status' => 'error', 
-                'msg' => $error['2']
-              );
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => "Data pasien tidak ditemukan atau sudah dihapus."
+                ]);
             }
-            echo json_encode($data);                    
+          } catch (\PDOException $e) {
+              echo json_encode([
+                  'status' => 'error',
+                  'message' => 'Gagal menghapus data pasien: ' . $e->getMessage()
+              ]);
+          }                           
         }
 
         if ($act=="lihat") {
