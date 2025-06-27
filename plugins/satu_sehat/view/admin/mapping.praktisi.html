@@ -22,7 +22,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Tenaga Medis</label>
-                        <select name="dokter" id="dokter" class="form-control" data-use-search="true">
+                        <select name="medis" id="medis" class="form-control" data-use-search="true">
                             <option value="">Pilih Praktisi</option>
                             {loop: $apoteker}
                             <option value="{$value.nik}">{$value.nama}</option>
@@ -44,8 +44,8 @@
     <table class="table table-striped table-bordered no-padding nowrap display_praktisi" width="100%">
         <thead>
         <tr>
-            <th>ID Dokter</th>
-            <th>Nama Dokter</th>
+            <th>ID Dokter & Tenaga Medis</th>
+            <th>Nama Dokter & Tenaga Medis</th>
             <th>ID Praktisi Satu Sehat</th>
         </tr>
         </thead>

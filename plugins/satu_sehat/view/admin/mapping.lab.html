@@ -63,13 +63,11 @@
         <thead>
         <tr>
             <th>Kode Perawatan</th>
+            <th>Id Template Perawatan</th>
             <th>Nama Perawatan</th>
             <th>Code LOINC</th>
             <th>Display LOINC</th>
             <th>Unit of Measurement</th>
-            <th>Sample Code</th>
-            <th>Sample System</th>
-            <th>Sample Display</th>
         </tr>
         </thead>
         <tbody>
@@ -77,14 +75,12 @@
         <tr class="mapping_lab_satu_sehat"
         data-id_template="{$value.id_template}"
         >
+            <td>{$value.kd_jenis_prw}</td>
             <td>{$value.id_template}</td>
             <td>{$value.Pemeriksaan}</td>
             <td>{$value.code_loinc}</td>
             <td>{$value.display_loinc}</td>
             <td>{$value.unit_of_measure}</td>
-            <td>{$value.sample_code}</td>
-            <td>{$value.sample_system}</td>
-            <td>{$value.sample_display}</td>
         </tr>
         {/loop}
         </tbody>
