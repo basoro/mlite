@@ -2313,10 +2313,18 @@ class Admin extends AdminModule
     }
     // });
     $mapping_lab = $this->db('mlite_satu_sehat_mapping_lab')
-      ->join('template_laboratorium', 'template_laboratorium.id_template = mlite_satu_sehat_mapping_lab.id_template')
+      ->select([
+        'kd_jenis_prw' => 'mlite_satu_sehat_mapping_lab.kd_jenis_prw',
+        'id_template'=>'mlite_satu_sehat_mapping_lab.id_template',
+        'Pemeriksaan'=>'template_laboratorium.Pemeriksaan',
+        'code_loinc'=>'mlite_satu_sehat_mapping_lab.code_loinc',
+        'display_loinc'=>'mlite_satu_sehat_mapping_lab.display_loinc',
+        'unit_of_measure'=>'mlite_satu_sehat_mapping_lab.unit_of_measure',
+      ])
+      ->leftJoin('template_laboratorium', 'template_laboratorium.id_template = mlite_satu_sehat_mapping_lab.id_template')
       ->toArray();
     // $filtered = json_decode($filtered,true);
-    $template_laboratorium = $this->db('template_laboratorium')->select(['id_template'=>'template_laboratorium.id_template','kd_jenis_prw' => 'template_laboratorium.kd_jenis_prw','Pemeriksaan'=>'template_laboratorium.Pemeriksaan','nm_perawatan'=>'jns_perawatan_lab.nm_perawatan'])->join('jns_perawatan_lab','jns_perawatan_lab.kd_jenis_prw = template_laboratorium.kd_jenis_prw')->where('jns_perawatan_lab.status','1')->toArray();
+    $template_laboratorium = $this->db('template_laboratorium')->select(['id_template'=>'template_laboratorium.id_template','kd_jenis_prw' => 'template_laboratorium.kd_jenis_prw','Pemeriksaan'=>'template_laboratorium.Pemeriksaan','nm_perawatan'=>'jns_perawatan_lab.nm_perawatan'])->leftJoin('jns_perawatan_lab','jns_perawatan_lab.kd_jenis_prw = template_laboratorium.kd_jenis_prw')->where('jns_perawatan_lab.status','1')->toArray();
     return $this->draw('mapping.lab.html', ['mapping_lab_satu_sehat' => $mapping_lab, 'template_laboratorium' => $template_laboratorium , 'filtered' => $data_json]);
     // echo json_encode($data_json);
     // exit();
@@ -2396,16 +2404,18 @@ class Admin extends AdminModule
       }
       $data_json = json_encode($data_json);
       $return_json = json_decode($data_json, true);
-      echo $_POST['id_template'];
-      echo $_POST['is_template'];
       $parts = explode(":", $_POST['id_template']);
       $id_template = trim($parts[0]);
       $kd_jenis_prw = trim($parts[1]);
-
-      if ($_POST['is_template'] == '1') {
+      
+      if ($_POST['is_template'] == '') {
         $id_template = "";
       }
-
+      
+      // echo $_POST['id_template'];
+      // echo '<br>';
+      // echo $_POST['is_template'];
+      // exit();
       $query = $this->db('mlite_satu_sehat_mapping_lab')->save(
         [
           'id_template' => $id_template,
@@ -5329,7 +5339,7 @@ class Admin extends AdminModule
   public function postSaveMappingPraktisi()
   {
     if (isset($_POST['simpan'])) {
-      $kd_dokter = $_POST['dokter'];
+      $kd_dokter = (is_null($_POST['dokter'])) ? $_POST['medis'] : $_POST['dokter'];
       $nik = $this->core->getPegawaiInfo('no_ktp', $kd_dokter);
       $bidang = $this->core->getPegawaiInfo('bidang', $kd_dokter);
       $send_json = json_decode($this->getPractitioner($nik))->entry[0]->resource->id;
