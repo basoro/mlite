@@ -254,7 +254,7 @@
   <script src="{?=url(MODULES)?}/anjungan/js/jquery.keyboard.js"></script>
   <script src="{?=url(MODULES)?}/anjungan/js/jquery.mousewheel.js"></script>
   <script>
-  {if: !empty($biometrik)}
+  {if: $biometrik == 'Peserta belum melakukan validasi finger print'}
     $('#biometrikModal').modal('show');
     $(".modal-backdrop").addClass("modal-backdrop-transparent");
   {/if}  

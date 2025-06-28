@@ -2497,6 +2497,7 @@ class Site extends SiteModule
 
     public function getSepMandiriNokaNorm()
     {
+      $dateNow = date('Y-m-d');
       date_default_timezone_set('UTC');
       $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
       $key = $this->consid.$this->secretkey.$tStamp;
@@ -2523,6 +2524,7 @@ class Site extends SiteModule
           $message = $json['metaData']['message'];
           $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
+          $biometrik = '';
 
           if(!empty($json)):
             if ($code != "200") {
@@ -2531,6 +2533,22 @@ class Site extends SiteModule
               if(!empty($stringDecrypt)) {
                 $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
                 $sep_response = json_decode($decompress, true);
+
+                $url = $this->api_url . '/SEP/FingerPrint/Peserta/' . $slug[2] . '/TglPelayanan/'.$dateNow.'';
+                $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+                $json = json_decode($output, true);
+                //echo json_encode($json);
+                $code = $json['metaData']['code'];
+                $message = $json['metaData']['message'];
+                $stringDecrypt = stringDecrypt($key, $json['response']);
+                $decompress = '""';
+                if (!empty($stringDecrypt)) {
+                  $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+                }
+                if ($json != null) {
+                  $biometrik = json_decode($decompress, true)['status'];
+                }                
+
               } else {
                 $sep_response = "Sambungan ke server BPJS sedang ada gangguan. Silahkan ulangi lagi dengan menekan tombol REFRESH";
               }
@@ -2538,6 +2556,7 @@ class Site extends SiteModule
           else:
             $sep_response = "Sambungan ke server BPJS sedang ada gangguan. Silahkan ulangi lagi dengan menekan tombol REFRESH";
           endif;
+
       }
 
       $title = 'Display SEP Mandiri';
@@ -2560,7 +2579,8 @@ class Site extends SiteModule
         'tanggal' => $tanggal,
         'running_text' => $this->settings->get('anjungan.text_anjungan'),
         'no_rkm_medis' => $slug[3],
-        'sep_response' => $sep_response
+        'sep_response' => $sep_response, 
+        'biometrik' => $biometrik
       ]);
 
       $assign = [
