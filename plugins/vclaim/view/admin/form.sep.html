@@ -749,7 +749,7 @@
     var url = baseURL + '/vclaim/frista/' + no_kartu + '?t=' + mlite.token
     $.get(url,function (data) {
       var data = JSON.parse(data);
-      if(data.response.status == 'Peserta belum melakukan validasi frista') {
+      if(data.response.status == 'Peserta belum melakukan validasi finger print') {
         openFrista(no_kartu);
       } else {
         alert(data.response.status)
@@ -769,7 +769,7 @@
 </script>
 <script>
 async function openFingerprint(noka) {
-	const response = await fetch(`http://localhost:3000`, {
+	const response = await fetch(`http://localhost:3000/?app=finger`, {
 		method: 'POST',
 		body: new URLSearchParams({
 			username: "{?=isset_or($username_fp, '')?}",
@@ -788,7 +788,7 @@ async function openFingerprint(noka) {
 	}
 } 
 async function openFrista(noka) {
-	const response = await fetch(`http://localhost:3001`, {
+	const response = await fetch(`http://localhost:3000/?app=frista`, {
 		method: 'POST',
 		body: new URLSearchParams({
 			username: "{?=isset_or($username_frista, '')?}",
