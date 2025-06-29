@@ -553,9 +553,8 @@ var no_rawat = rowData['no_rawat'];
     // TOMBOL TAMBAH DATA DI CLICK
     // ==============================================================
 
-    let searchParams = new URLSearchParams(window.location.search)
-
     if(window.location.search.indexOf('no_rawat') !== -1) { 
+        let searchParams = new URLSearchParams(window.location.search)
         $('#search_text_mlite_penilaian_awal_keperawatan_gigi').val(searchParams.get('no_rawat'));
         var_tbl_mlite_penilaian_awal_keperawatan_gigi.draw();
         if(searchParams.get('modal') == 'true') {

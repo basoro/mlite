@@ -147,7 +147,7 @@ h5 {
                                 {if: $this->core->getUserInfo('role') == 'admin'}
                                 <a href="" class="file-close hapus_berkas_digital" data-lokasi_file="{$value.lokasi_file}"><i class="fa fa-times-circle"></i></a>
                                 {/if}
-                                <div class="file-img-box"><a href="{?=url('uploads/berkasrawat/')?}/{$value.lokasi_file}" target="_blank"><img src="{?=url()?}/assets/svg/{?=explode('.',$value.lokasi_file)[1]?}.svg" alt="icon"></a></div><a href="#" class="file-download download_berkas_digital" data-lokasi_file="{$value.lokasi_file}"><i class="fa fa-download"></i></a>
+                                <div class="file-img-box"><a href="{?=WEBAPPS_URL.'/berkasrawat/'.$value.lokasi_file?}" target="_blank"><img src="{?=url()?}/assets/svg/{?=explode('.',$value.lokasi_file)[1]?}.svg" alt="icon"></a></div><a href="#" class="file-download download_berkas_digital" data-lokasi_file="{$value.lokasi_file}"><i class="fa fa-download"></i></a>
                                 <div class="file-man-title">
                                     <h5 class="mb-0 text-overflow">{$value.no_rawat}</h5>
                                     <p class="mb-0"><small>{$value.nama}</small></p>
@@ -162,7 +162,7 @@ h5 {
                                 {if: $this->core->getUserInfo('role') == 'admin'}
                                 <a href="" class="file-close hapus_berkas_digital" data-lokasi_file="{$value.lokasi_file}"><i class="fa fa-times-circle"></i></a>
                                 {/if}
-                                <div class="file-img-box"><a href="{?=url('uploads/berkasrawat/')?}/{$value.lokasi_file}" target="_blank"><img src="{?=url()?}/assets/svg/{?=explode('.',$value.lokasi_file)[1]?}.svg" alt="icon"></a></div><a href="#" class="file-download download_berkas_digital" data-lokasi_file="{$value.lokasi_file}"><i class="fa fa-download"></i></a>
+                                <div class="file-img-box"><a href="{?=WEBAPPS_URL.'/berkasrawat/'.$value.lokasi_file?}" target="_blank"><img src="{?=url()?}/assets/svg/{?=explode('.',$value.lokasi_file)[1]?}.svg" alt="icon"></a></div><a href="#" class="file-download download_berkas_digital" data-lokasi_file="{$value.lokasi_file}"><i class="fa fa-download"></i></a>
                                 <div class="file-man-title">
                                     <h5 class="mb-0 text-overflow">{$value.no_rawat}</h5>
                                     <p class="mb-0"><small>{$value.nama}</small></p>

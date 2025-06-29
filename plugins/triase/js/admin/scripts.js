@@ -287,9 +287,8 @@ var no_rawat = rowData['no_rawat'];
     // TOMBOL TAMBAH DATA DI CLICK
     // ==============================================================
 
-    let searchParams = new URLSearchParams(window.location.search)
-
     if(window.location.search.indexOf('no_rawat') !== -1) { 
+        let searchParams = new URLSearchParams(window.location.search)
         $('#search_text_mlite_triase').val(searchParams.get('no_rawat'));
         var_tbl_mlite_triase.draw();
         if(searchParams.get('modal') == 'true') {
