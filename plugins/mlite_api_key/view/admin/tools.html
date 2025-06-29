@@ -1,0 +1,78 @@
+<h3>Alat Pengujian</h3>
+<div class="container-fluid" style="margin-top: 30px;">
+    <form action="" method="POST" class="--api-debug">
+        <div class="row --apply-increase-one border-bottom" style="margin-bottom: 20px;">
+            <div class="col-md-12">
+                <div class="input-group" style="width:100%">
+                    <span class="input-group-addon">Cari :</span>
+                    <span class="input-group-addon" style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                        <select name="method" class="form-control"> 
+                        <option value='GET'>GET</option>
+                        <option value='POST'>POST</option>
+                    </select>
+                    </span>
+                    <input type="text" name="url" class="form-control" placeholder="Enter service URL" /> 
+                    <span class="input-group-addon" style="margin: 0 !important;padding: 0 !important;border: 0px !important;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-send"></i>
+                            Send
+                        </button>    
+                    </span>
+                </div>
+            </div>
+        </div>
+        <ul class="nav nav-tabs" role="tablist" style="margin-bottom: 15px;">
+            <li><a href="#params-headers" role="tab" data-toggle="tab">Request Header</a></li>
+            <li><a href="#params-body" role="tab" data-toggle="tab">Request Body</a></li>
+            <li class="active"><a href="#results-pretty" role="tab" data-toggle="tab">Response</a></li>
+        </ul>
+    
+        <div class="tab-content">
+            <div class="tab-pane" id="params-headers">
+                <div class="row" style="margin-bottom: 10px;">
+                    <div class="col-md-4 text-muted">
+                        <input type="text" name="header_key[]" class="form-control" placeholder="Key" />
+                    </div>
+                    <div class="col-md-8 text-muted">
+                        <div class="input-group">
+                            <input type="text" name="header_value[]" class="form-control" placeholder="Value" />
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default btn-sm" onclick="$(this).closest('.row').remove()">
+                                    <i class="glyphicon glyphicon-remove"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-default btn-sm --add-parameter" data-parameter="header">
+                    <i class="glyphicon glyphicon-plus"></i> Add Parameter
+                </button>
+            </div>
+    
+            <div class="tab-pane" id="params-body">
+                <div class="row">
+                    <div class="col-md-4" style="margin-bottom: 10px;">
+                        <input type="text" name="body_key[]" class="form-control" placeholder="Key" />
+                    </div>
+                    <div class="col-md-8" style="margin-bottom: 10px;">
+                        <div class="input-group">
+                            <input type="text" name="body_value[]" class="form-control" placeholder="Value" />
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default btn-sm" onclick="$(this).closest('.row').remove()">
+                                    <i class="fa fa-close"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-default btn-sm --add-parameter" data-parameter="body">
+                    <i class="fa fa-plus"></i> Add Parameter
+                </button>
+            </div>
+    
+            <div class="tab-pane active" id="results-pretty">
+                <pre style="border: 1px solid #ddd; padding: 10px;"><code>{}</code></pre>
+            </div>
+        </div>
+    </form>
+</div>

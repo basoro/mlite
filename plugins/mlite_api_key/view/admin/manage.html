@@ -1,0 +1,180 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row" style="padding-bottom: 10px;">
+                    <div class='col-md-6 text-left'>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_mlite_api_key' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Lihat Data mlite_api_key' style='color:white;'>
+                            <i class='fa fa-eye' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span>
+                          </button>
+                          <button id='tambah_data_mlite_api_key' class='btn btn-success' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                            <i class='fa fa-plus-square' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
+                          </button>
+                          <button id='edit_data_mlite_api_key' class='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                            <i class='fa fa-edit' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
+                          </button>
+                          <button id='lihat_detail_mlite_api_key' class='btn btn-warning' data-toggle='tooltip' data-placement='top' title='Detail Data'>
+                            <i class='fa fa-search' style='font-size: 15px;'></i><span class="hidden-xs"> Detail</span>
+                          </button>
+                          <button id='hapus_data_mlite_api_key' class='btn btn-danger' data-toggle='tooltip' data-placement='top' title='Hapus Data' {if: $this->core->getUserInfo('role') !='admin'}disabled{/if}>
+                            <i class='fa fa-trash' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
+                          </button>
+                      </div>
+                    </div>
+                    <div class='col-md-6 text-right'>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-addon">Cari :</span>
+                          <span class="input-group-addon" style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
+                          <select class="form-control" id='search_field_mlite_api_key' name='search_field_mlite_api_key' style="margin: 0 !important;"> 
+                              <option value='id'>Id</option>
+<option value='api_key'>Api Key</option>
+<option value='username'>Username</option>
+<option value='method'>Method</option>
+<option value='ip_range'>Ip Range</option>
+<option value='exp_time'>Exp Time</option>
+
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_mlite_api_key' id='search_text_mlite_api_key' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-addon">
+                          <span id='search_mlite_api_key' data-toggle='tooltip' data-placement='top' title='Cari'><i class="fa fa-search text-danger"></i></span>
+                          </span>
+                      </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="tbl_mlite_api_key" class="table table-bordered table-striped display dataTable" style="width:100%">
+                        <thead>
+                        <tr> 
+                            <th>Id</th>
+<th>Api Key</th>
+<th>Username</th>
+<th>Method</th>
+<th>Ip Range</th>
+<th>Exp Time</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>        
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal_mlite_api_key" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Edit Data mLITE API Key</span>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <form name="form_mlite_api_key">
+          <input type="hidden" class="form-control" id="typeact" /> 
+  <div class='col-xxl-3 col-lg-4 col-sm-6 hidden'>
+  <div class='form-group'>
+      <label class='form-label' for='id'>Id</label>
+      <input type='text' class='form-control' id='id' name='id' />
+    <div class='error'></div>
+  </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+  <div class='form-group'>
+      <label class='form-label' for='api_key'>Api Key</label>
+      <input type='text' class='form-control' id='api_key' name='api_key' />
+    <div class='error'></div>
+  </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+  <div class='form-group'>
+      <label class='form-label' for='username'>Username</label>
+      <select class="form-control" name="username" id="username" data-use-search="true">
+        <option value="">Select</option>
+        {loop: $mlite_users}
+          <option value="{$value.username}">{$value.fullname}</option>
+        {/loop}
+      </select>
+    <div class='error'></div>
+  </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+  <div class='form-group'>
+      <label class='form-label' for='method'>Method</label>
+      <select class="form-control" name="method[]" id="method" multiple>
+        <option value="GET">GET</option>
+        <option value="POST">POST</option>
+      </select>
+      <div class='error'></div>
+  </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+  <div class='form-group'>
+      <label class='form-label' for='ip_range'>Ip Range</label>
+      <input type='text' class='form-control' id='ip_range' name='ip_range' />
+    <div class='error'></div>
+  </div>
+  </div>
+  <div class='col-xxl-3 col-lg-4 col-sm-6'>
+  <div class='form-group'>
+      <label class='form-label' for='exp_time'>Exp Time</label>
+      <input type='text' class='form-control tanggaljam' id='exp_time' name='exp_time' />
+    <div class='error'></div>
+  </div>
+  </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-error" type="button" data-dismiss="modal"><i class="fa fa-times"></i> Tutup</button>
+        <button type="submit" id="simpan_data_mlite_api_key" class="btn btn-primary"><i class="fa fa-save"></i> Simpan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_lihat_mlite_api_key" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Data mLITE API Key</span>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div id="forTable_mlite_api_key"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+        <button type="submit" id="view_chart" class="btn btn-primary">
+          <i class="fa fa-chart"></i> Chart </button>
+        <button type="submit" id="export_pdf" class="btn btn-primary">
+          <i class="fa fa-file-pdf-o"></i>&nbsp;PDF </button>
+        <button type="submit" id="export_xlsx" class="btn btn-primary">
+          <i class="fa fa-file-excel-o"></i>&nbsp;XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_mlite_api_key" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>

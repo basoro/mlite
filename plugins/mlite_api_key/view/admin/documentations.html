@@ -1,0 +1,656 @@
+<h3>Alat Pengujian</h3>
+<div class="container-fluid" style="margin-top: 30px;">
+    <div class="row">
+        <div class="col-md-3">
+            <ul class="sidebar-api">
+                <li class="{if: empty($slug[2])}active-api{/if}"><a href="{?=url([ADMIN, 'mlite_api_key', 'documentations'])?}">Memulai</a></li>
+                {loop: $modules}
+                   {if: !in_array($value, array('dashboard','crud_generator','mlite_api_key'))}
+                        {if: $this->core->getUserInfo('role') == 'admin'}
+                            {if: $value == 'master'}
+                              <li class="{if: str_contains($slug[2],'master')}active-api{/if} has-submenu">
+                                <a href="#" class="toggle-submenu">Master Data</a>
+                                <ul class="submenu">
+                                  {loop: $masterNav as $key => $val}
+                                  <li><a href="{?=url([ADMIN, 'mlite_api_key', 'documentations', 'master_'.$val])?}">{$key}</a></li>
+                                  {/loop}
+                                </ul>
+                              </li>
+                            {else}
+                                <li class="{if: $slug[2] == $value}active-api{/if}"><a href="{?=url([ADMIN, 'mlite_api_key', 'documentations', $value])?}">{?=$this->core->getModuleInfo($value)['name']?}</a></li>
+                            {/if}
+                        {else}
+                            <li class="{if: $slug[2] == $value}active-api{/if}"><a href="{?=url([ADMIN, 'mlite_api_key', 'documentations', $value])?}">{?=$this->core->getModuleInfo($value)['name']?}</a></li>
+                        {/if}
+                    {/if}
+                {/loop}
+            </ul>
+        </div>
+        <div class="col-md-9">
+                {if: isset($slug[2]) && $slug[2] !='' && $slug[2] !='master'}
+                {if: $hasPostData == true}
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4 class="mb-3 --title">
+                            {$slug[2]}
+                        </h4>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th>
+                                   API Method
+                                </th>
+                                <th>
+                                    Privileges
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td width="250">
+                                    <a href="#--post"><span class="badge bg-primary"><i class="ri-upload-cloud-2-line"></i> POST</span></a> <a href="#--get"><span class="badge bg-primary"><i class="ri-download-cloud-2-line"></i> GET</span></a>
+                                </td>
+                                <td>
+                                    {if: $mlite_disabled_menu.can_read == 'false'}
+                                    <a href="#--data"><span class="badge bg-success"><i class="ri-link-m"></i> data</span></a>
+                                    {/if}
+                                    {if: $mlite_disabled_menu.can_create == 'false'}
+                                    <a href="#--aksi"><span class="badge bg-success"><i class="ri-file-line"></i> create</span></a>
+                                    {/if}
+                                    {if: $mlite_disabled_menu.can_read == 'false'}
+                                    <a href="#--read"><span class="badge bg-success"><i class="ri-file-text-line"></i> read</span></a>
+                                    {/if}
+                                    {if: $mlite_disabled_menu.can_update == 'false'}
+                                    <a href="#--aksi"><span class="badge bg-success"><i class="ri-file-edit-line"></i> update</span></a>
+                                    {/if}
+                                    {if: $mlite_disabled_menu.can_delete == 'false'}
+                                    <a href="#--aksi"><span class="badge bg-danger"><i class="ri-delete-bin-6-line"></i> delete</span></a> 
+                                    {/if}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h5 class="mt-3">
+                    Request Method
+                </h5>
+                <div class="mb-3" id="--post">
+                    <h5 class="mb-1">
+                        <span class="badge bg-primary bg-md">
+                            POST
+                        </span>
+                    </h5>
+                    <div class="rounded pt-2 pe-3 pb-2 ps-3 bg-dark">
+                        {if: str_contains($slug[2], 'master')} 
+                        <code class="text-light">{?=url()?}/api/v2/master/{?=explode('_', $slug['2'])[1]?}data/</code>
+                        {else}
+                        <code class="text-light">{?=url()?}/api/v2/{$slug[2]}/data/</code>
+                        {/if}
+                    </div>
+                </div>
+                <h5 class="mt-3">
+                    Header
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>
+                                Field
+                                </th>
+                                <th>
+                                Type
+                                </th>
+                                <th>
+                                Description
+                                </th>
+                                <th width="100" class="text-center">
+                                Required
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <code>
+                                        X-API-KEY
+                                    </code>
+                                </td>
+                                <td>
+                                    String
+                                </td>
+                                <td>
+                                Valid API Key added in API Service
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger">
+                                    Required
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <code>
+                                        X-ACCESS-TOKEN
+                                    </code>
+                                </td>
+                                <td>
+                                    String
+                                </td>
+                                <td>
+                                The given token from authentication response
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger">
+                                    Required
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h5 class="mt-3">
+                    Body
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Key
+                                </th>
+                                <th>
+                                    Type
+                                </th>
+                                <th>
+                                    Description
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <code>
+                                        start
+                                    </code>
+                                </td>
+                                <td>
+                                    int
+                                </td>
+                                <td>
+                                    Menerapkan di baris ke berapa pengambilan data di mulai
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <code>
+                                        length
+                                    </code>
+                                </td>
+                                <td>
+                                    int
+                                </td>
+                                <td>
+                                    Menerapkan jumlah data yang dihasilkan
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <code>
+                                        column_order
+                                    </code>
+                                </td>
+                                <td>
+                                    string
+                                </td>
+                                <td>
+                                    Pengurutan berdasarkan nama kolom
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <code>
+                                        column_sort
+                                    </code>
+                                </td>
+                                <td>
+                                    string <code>ASC|DESC</code>
+                                </td>
+                                <td>
+                                    Pengurutan berdasarkan abjad, angka atau waktu
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <code>
+                                        {if: str_contains($slug[2], 'master')} 
+                                        search_field_{?=explode('_', $slug['2'])[1]?}
+                                        {else}
+                                        search_field_{$slug[2]}
+                                        {/if}
+                                    </code>
+                                </td>
+                                <td>
+                                    string
+                                </td>
+                                <td>
+                                   Kata kunci untuk menerapkan pencarian (nama kolom)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <code>
+                                        {if: str_contains($slug[2], 'master')} 
+                                        search_text_{?=explode('_', $slug['2'])[1]?}
+                                        {else}
+                                        search_text_{$slug[2]}
+                                        {/if}
+                                    </code>
+                                </td>
+                                <td>
+                                    string
+                                </td>
+                                <td>
+                                    Isi kolom yang dilakukan pencarian.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>                
+                <div class="--response-success">
+                    <h5 class="mt-3">
+                    Success Response
+                    </h5>
+                    <pre class="language-javascript rounded mt-0">
+                        <code>
+{$data_json}
+                        </code>
+                    </pre>
+                </div>
+                <div class="--response-error">
+                    <h5 class="mt-3">
+                    Error Response
+                    </h5>
+                    <pre class="language-javascript rounded mt-0">
+                        <code>
+{
+    "status": "error"
+    "message": "Pesan Pengecualian"
+}
+                        </code>
+                    </pre>
+                </div>
+                <br />   
+                <div class="mb-3" id="--aksi">
+                    <h5 class="mb-1">
+                        <span class="badge bg-primary bg-md">
+                            POST
+                        </span>
+                    </h5>
+                    <div class="rounded pt-2 pe-3 pb-2 ps-3 bg-dark">
+                        {if: str_contains($slug[2], 'master')} 
+                        <code class="text-light">{?=url()?}/api/v2/master/{?=explode('_', $slug['2'])[1]?}aksi/</code>
+                        {else}
+                        <code class="text-light">{?=url()?}/api/v2/{$slug[2]}/aksi/</code>
+                        {/if}
+                    </div>
+                </div>
+                <h5 class="mt-3">
+                    Header
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>
+                                Field
+                                </th>
+                                <th>
+                                Type
+                                </th>
+                                <th>
+                                Description
+                                </th>
+                                <th width="100" class="text-center">
+                                Required
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <code>
+                                        X-API-KEY
+                                    </code>
+                                </td>
+                                <td>
+                                    String
+                                </td>
+                                <td>
+                                Valid API Key added in API Service
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger">
+                                    Required
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <code>
+                                        X-ACCESS-TOKEN
+                                    </code>
+                                </td>
+                                <td>
+                                    String
+                                </td>
+                                <td>
+                                The given token from authentication response
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger">
+                                    Required
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h5 class="mt-3">
+                    Body
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Key
+                                </th>
+                                <th>
+                                    Type
+                                </th>
+                                <th>
+                                    Description
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <code>
+                                        typeact
+                                    </code>
+                                </td>
+                                <td>
+                                    string
+                                </td>
+                                <td>
+                                    Tipe aksi (add | edit | delete )
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <code>
+                                        nama_kolom
+                                    </code>
+                                </td>
+                                <td>
+                                    string | number | int
+                                </td>
+                                <td>
+                                    Kolom yang dilakukan penambahan, perubahan atau penghapusan
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>                  
+                <div class="--response-success">
+                    <h5 class="mt-3">
+                    Success Response
+                    </h5>
+                    <pre class="language-javascript rounded mt-0">
+                        <code>
+{
+    "status": "success", 
+    "message": "Isi hasil query"
+}                            
+                        </code>
+                    </pre>
+                </div>
+                <div class="--response-error">
+                    <h5 class="mt-3">
+                    Error Response
+                    </h5>
+                    <pre class="language-javascript rounded mt-0">
+                        <code>
+{
+    "status": "error"
+    "message": "Pesan Pengecualian"
+}
+                        </code>
+                    </pre>
+                </div>
+                <br /> 
+                {else}
+                 fungsi postData() Tidak Ada 
+                {/if} 
+                {else}
+                <h4 class="mb-3">
+                    Pengenalan
+                </h4>
+                <p>
+                    <a href="//mlite.id" target="_blank"><b class="text-primary">mLITE</b></a> dilengkapi dengan fitur <a href="//en.wikipedia.org/wiki/API" target="_blank"><b>API</b></a> tanpa harus membangun ulang <i>controller</i>. Konsep dan alur kerja implementasi <a href="//en.wikipedia.org/wiki/API" target="_blank"><b>API</b></a> sama dengan cara Anda mengakses aplikasi yang dibangun menggunakan <a href="//mlite.id" target="_blank"><b class="text-primary">mLITE</b></a>, yang sedang Anda buka saat ini.
+                </p>
+                <p>
+                    Anda tidak perlu lagi memikirkan hal rumit yang membebani pekerjaan Anda. Semua permintaan <a href="//en.wikipedia.org/wiki/API" target="_blank"><b>API</b></a> akan dikirimkan melalui otentikasi (handshake), pengecekan otorisasi, termasuk validasi yang telah Anda tetapkan untuk setiap modul yang ada.
+                </p>
+                <p>
+                    Semudah itukah? Ya, karena ini <a href="//mlite.id" target="_blank"><b class="text-primary">mLITE</b></a>!
+                </p>
+                <hr />
+                <h4 class="mb-3">
+                    Memulai
+                </h4>
+                <p>
+                    Untuk dapat menggunakan fitur API, Anda perlu menambahkan kunci API dari menu <a href="" class="text-primary"><b>Pengelola Layanan API</b></a>. Tentukan metode permintaan yang diizinkan, rentang IP yang diizinkan, dan juga tanggal kedaluwarsa kunci API yang dibuat.
+                </p>
+                <p>
+                    Gunakan kunci API yang dihasilkan pada properti HEADER saat membuat permintaan.
+                </p>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Field
+                                </th>
+                                <th>
+                                    Type
+                                </th>
+                                <th>
+                                    Description
+                                </th>
+                                <th width="100" class="text-center">
+                                    Required
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <code>
+                                        X-API-KEY
+                                    </code>
+                                </td>
+                                <td>
+                                    string
+                                </td>
+                                <td>
+                                    Valid API Key added in API Service
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger">
+                                        Required
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    Untuk modul yang memerlukan izin sebagaimana ditentukan untuk kelompok pengguna tertentu, tambahkan parameter <code>X-ACCESS-TOKEN</code> ke dalam HEADER dan isi nilai dengan token yang diperoleh dari permintaan otentikasi (log-in).
+                </p>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Field
+                                </th>
+                                <th>
+                                    Type
+                                </th>
+                                <th>
+                                Description
+                                </th>
+                                <th width="100" class="text-center">
+                                Required
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <code>
+                                        X-ACCESS-TOKEN
+                                    </code>
+                                </td>
+                                <td>
+                                    string
+                                </td>
+                                <td>
+                                The given token from authentication response
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger">
+                                    Required
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    Proses otentikasi dapat POST ke <code>{?=url()?}/api/v2/auth</code> dengan menambahkan <code>X-API-KEY</code> pada HEADER, termasuk data formulir (form-data) untuk mengirimkan <code>nama pengguna</code> dan <code>kata sandi</code>.
+                </p>
+                <hr />
+                <h4>
+                    Pengambilan Data
+                </h4>
+                <p>
+                    Saat Anda meminta data, anda akan diminta menyematkan properti pada data formulir (form-data) yang akan membantu Anda mengambil data untuk dicocokkan dengan kata kunci. Selain itu, terdapat juga parameter <i>query string</i> untuk mengambil hasil dengan <i>filter</i>.
+                </p>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Key
+                                </th>
+                                <th>
+                                    Type
+                                </th>
+                                <th>
+                                    Description
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <code>
+                                        start
+                                    </code>
+                                </td>
+                                <td>
+                                    int
+                                </td>
+                                <td>
+                                    Menerapkan di baris ke berapa pengambilan data di mulai
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <code>
+                                        length
+                                    </code>
+                                </td>
+                                <td>
+                                    int
+                                </td>
+                                <td>
+                                    Menerapkan jumlah baris data yang dihasilkan
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <code>
+                                        column_order
+                                    </code>
+                                </td>
+                                <td>
+                                    string
+                                </td>
+                                <td>
+                                    Pengurutan berdasarkan nama kolom
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <code>
+                                        column_sort
+                                    </code>
+                                </td>
+                                <td>
+                                    string <code>ASC|DESC</code>
+                                </td>
+                                <td>
+                                    Pengurutan berdasarkan abjad, angka atau waktu
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <code>
+                                        search_field_nama_tabel
+                                    </code>
+                                </td>
+                                <td>
+                                    string
+                                </td>
+                                <td>
+                                   Kata kunci untuk menerapkan pencarian (nama kolom)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <code>
+                                        search_text_nama_tabel
+                                    </code>
+                                </td>
+                                <td>
+                                    string
+                                </td>
+                                <td>
+                                    Isi kolom yang dilakukan pencarian.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {/if}
+        </div>
+    </div>
+</div>

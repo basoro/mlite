@@ -152,4 +152,72 @@ class JnsPerawatanLab
       exit();
     }
 
+    public function postData()
+    {
+        $draw = $_POST['draw'] ?? 0;
+        $row1 = $_POST['start'] ?? 0;
+        $rowperpage = $_POST['length'] ?? 10;
+        $columnIndex = $_POST['order'][0]['column'] ?? 0;
+        $columnName = $_POST['columns'][$columnIndex]['data'] ?? 'kd_jenis_prw';
+        $columnSortOrder = $_POST['order'][0]['dir'] ?? 'asc';
+        $searchValue = $_POST['search']['value'] ?? '';
+
+        $search_field = $_POST['search_field_jns_perawatan_lab'] ?? '';
+        $search_text = $_POST['search_text_jns_perawatan_lab'] ?? '';
+
+        $searchQuery = "";
+        if (!empty($search_text)) {
+            $searchQuery .= " AND (" . $search_field . " LIKE :search_text) ";
+        }
+
+        $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS allcount FROM jns_perawatan_lab");
+        $stmt->execute();
+        $records = $stmt->fetch();
+        $totalRecords = $records['allcount'];
+
+        $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS allcount FROM jns_perawatan_lab WHERE 1=1 $searchQuery");
+        if (!empty($search_text)) {
+            $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
+        }
+        $stmt->execute();
+        $records = $stmt->fetch();
+        $totalRecordwithFilter = $records['allcount'];
+
+        $sql = "SELECT * FROM jns_perawatan_lab WHERE 1=1 $searchQuery ORDER BY $columnName $columnSortOrder LIMIT $row1, $rowperpage";
+        $stmt = $this->db()->pdo()->prepare($sql);
+        if (!empty($search_text)) {
+            $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
+        }
+        $stmt->execute();
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $data = [];
+        foreach ($result as $row) {
+            $data[] = [
+                'kd_jenis_prw'=>$row['kd_jenis_prw'],
+                'nm_perawatan'=>$row['nm_perawatan'],
+                'bagian_rs'=>$row['bagian_rs'],
+                'bhp'=>$row['bhp'],
+                'tarif_perujuk'=>$row['tarif_perujuk'],
+                'tarif_tindakan_dokter'=>$row['tarif_tindakan_dokter'],
+                'tarif_tindakan_petugas'=>$row['tarif_tindakan_petugas'],
+                'kso'=>$row['kso'],
+                'menejemen'=>$row['menejemen'],
+                'total_byr'=>$row['total_byr'],
+                'kd_pj'=>$row['kd_pj'],
+                'status'=>$row['status'],
+                'kelas'=>$row['kelas'],
+                'kategori'=>$row['kategori']
+            ];
+        }
+
+        echo json_encode([
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordwithFilter,
+            "aaData" => $data
+        ]);
+        exit();
+    }
+
 }
