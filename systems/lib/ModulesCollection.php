@@ -72,4 +72,10 @@ class ModulesCollection
             return null;
         }
     }
+
+    public function exists($module)
+    {
+        return isset($this->modules[$module]);
+    }
+    
 }

@@ -34,6 +34,8 @@ class QueryWrapper
 
     protected $offset = '';
 
+    protected static $query_logs = [];
+
     public function __construct($table = null)
     {
         if ($table) {
@@ -49,6 +51,11 @@ class QueryWrapper
     public static function lastSqls()
     {
         return static::$last_sqls;
+    }
+
+    public static function queryLogs()
+    {
+        return static::$query_logs;
     }
 
     public static function connect($dsn, $user = '', $pass = '', $options = [])
@@ -540,16 +547,104 @@ class QueryWrapper
             if (is_int($bind)) {
                 $pdo_param = \PDO::PARAM_INT;
             }
-            $st->bindValue($key+1, $bind, $pdo_param);
+            $st->bindValue($key + 1, $bind, $pdo_param);
         }
-        $st->execute();
+    
+        try {
+            $st->execute();
+        } catch (\PDOException $e) {
+            // Simpan log jika terjadi error
+            self::logQueryToDatabase($sql, $binds, $e->getMessage());
+            throw $e; // lempar ulang agar error tetap ditangani di luar
+        }
+
+        $settings = $this->pdo()->query("SELECT * FROM mlite_settings WHERE module = 'settings' AND field = 'log_query'")->fetchAll();
+
+        // Log hanya untuk INSERT / UPDATE / DELETE
+        if (preg_match('/^\s*(INSERT|UPDATE|DELETE)/i', $sql)) {
+            if($settings[0]['value'] == 'ya') {
+                self::logQueryToDatabase($sql, $binds);
+            }
+        }
+    
         static::$last_sqls[] = $sql;
         return $st;
-    }
+    } 
+    
+    protected static function logQueryToDatabase($sql, $binds = [], $error = null)
+    {
+
+        // Ambil username dari session login, default 'unknown'
+        $username = 'unknown';
+        if (!empty($_SESSION['mlite_user'])) {
+            try {
+                $user = (new self('mlite_users'))
+                    ->where('id', $_SESSION['mlite_user'])
+                    ->oneArray();
+                if (isset($user['username'])) {
+                    $username = $user['username'];
+                }
+            } catch (\Exception $e) {
+                error_log('Gagal mendapatkan username: ' . $e->getMessage());
+            }
+        }
+
+        try {
+            $log_stmt = static::$db->prepare("
+                INSERT INTO mlite_query_logs (sql_text, bindings, error_message, username, created_at)
+                VALUES (:sql_text, :bindings, :error_message, :username, NOW())
+            ");
+            $log_stmt->execute([
+                ':sql_text' => $sql,
+                ':bindings' => json_encode($binds),
+                ':error_message' => $error,
+                ':username' => $username
+            ]);
+        } catch (\PDOException $e) {
+            // Optional fallback to file log
+            error_log("Failed to log query: " . $e->getMessage());
+        }
+    }        
 
     protected function _getColumns()
     {
         $q = $this->pdo()->query("DESCRIBE $this->table;")->fetchAll();
         return array_column($q, 'Field');
     }
+
+    public static function logPdoQuery($sql, $bindings = [], $error = null)
+    {
+        if (!static::$db) return;
+
+        // Ambil username dari session login, default 'unknown'
+        $username = 'unknown';
+        if (!empty($_SESSION['mlite_user'])) {
+            try {
+                $user = (new self('mlite_users'))
+                    ->where('id', $_SESSION['mlite_user'])
+                    ->oneArray();
+                if (isset($user['username'])) {
+                    $username = $user['username'];
+                }
+            } catch (\Exception $e) {
+                error_log('Gagal mendapatkan username: ' . $e->getMessage());
+            }
+        }
+    
+        try {
+            $stmt = static::$db->prepare("
+                INSERT INTO mlite_query_logs (sql_text, bindings, error_message, username, created_at)
+                VALUES (:sql_text, :bindings, :error_message, :username, NOW())
+            ");
+            $stmt->execute([
+                ':sql_text' => $sql,
+                ':bindings' => json_encode($bindings),
+                ':error_message' => $error,
+                ':username' => $username
+            ]);
+        } catch (\PDOException $e) {
+            error_log('Gagal menyimpan log query manual: ' . $e->getMessage());
+        }
+    }    
+
 }
