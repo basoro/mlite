@@ -106,8 +106,8 @@
 </div>
 <script type="text/javascript">
   
-  let searchParams = new URLSearchParams(window.location.search)
   if(window.location.search.indexOf('no_rkm_medis') !== -1) { 
+      let searchParams = new URLSearchParams(window.location.search)
       $('input:text[name=pasien]').val(searchParams.get('no_rkm_medis'));
       var baseURL = mlite.url + '/' + mlite.admin;
       var url    = baseURL + '/igd/pasien?t=' + mlite.token;

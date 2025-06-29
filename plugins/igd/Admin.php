@@ -36,7 +36,16 @@ class Admin extends AdminModule
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
-        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
+        return $this->draw('manage.html', [
+          'rawat_jalan' => $this->assign, 
+          'cek_vclaim' => $cek_vclaim, 
+          'master_berkas_digital' => $master_berkas_digital, 
+          'admin_mode' => $this->settings->get('settings.admin_mode'), 
+          'username_fp' => $this->settings->get('settings.username_fp'), 
+          'password_fp' => $this->settings->get('settings.password_fp'), 
+          'username_frista' => $this->settings->get('settings.username_frista'), 
+          'password_frista' => $this->settings->get('settings.password_frista')
+        ]);
     }
 
     public function anyDisplay()
@@ -305,7 +314,7 @@ class Admin extends AdminModule
         ]);
       }
 
-      if($query->errorInfo()['0'] == '00000') {
+      if($query) {
         $data['status'] = 'success';
         echo json_encode($data);
       } else {
