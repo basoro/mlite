@@ -10,8 +10,7 @@ define('DBPASS', '');
 define('DBNAME', 'mlite');
 
 // URL Webapps
-//define('WEBAPPS_URL', 'http://mlite.loc/uploads');
-define('WEBAPPS_URL', $_SERVER['REQUEST_URI'].'/uploads');
+define('WEBAPPS_URL', 'http://mlite.loc/uploads'); // Sesuaikan http://mlite.loc dengan domain atau IP Address server
 define('WEBAPPS_PATH', BASE_DIR . '/uploads');
 
 // Multi APP
