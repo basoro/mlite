@@ -564,6 +564,19 @@ abstract class Main
         return $css;
     }
     
+    public function loadDisabledMenu($module)
+    {
+        $disable_menu = $this->db('mlite_disabled_menu')->where('user', $this->getUserInfo('username', $_SESSION['mlite_user'], true))->where('module', $module)->oneArray();
+        if(!$disable_menu) {
+            $disable_menu = array('can_create' => 'true', 'can_read' => 'true', 'can_update' => 'true', 'can_delete' => 'true');
+        }
+        if($this->getUserInfo('role', $_SESSION['mlite_user'], true) == 'admin') {
+            $disable_menu = array('can_create' => 'false', 'can_read' => 'false', 'can_update' => 'false', 'can_delete' => 'false');
+        }    
+
+        return $disable_menu;
+    }
+
     public function loadModules()
     {
         if ($this->module == null) {
