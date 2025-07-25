@@ -251,7 +251,7 @@
                     </div>
                     <div class="form-group">
                         <label>Set Nomor Surat Terakhir</label>
-                        <input type="text" name="set_nomor_surat" class="form-control" value="{$set_nomor_surat.nomor_surat}" />
+                        <input type="text" name="set_nomor_surat" class="form-control" value="{$settings.set_nomor_surat}" />
                     </div>
                     {if: $settings.bridging_sep}
                     <div class="form-group">
@@ -311,6 +311,28 @@
                          </div>
                     </div>
                     <div class="form-group">
+                        <label>Aktifkan Versi Beta</label>
+                        <div class="radio">
+                            <label class="radio-inline">
+                               <input type="radio" name="versi_beta" value="ya" {if: $settings.versi_beta == 'ya'}checked{/if} /> Ya
+                            </label>
+                            <label class="radio-inline">
+                               <input type="radio" name="versi_beta" value="tidak" {if: $settings.versi_beta == 'tidak'}checked{/if} /> Tidak
+                            </label>
+                        </div>
+                   </div>
+                   <div class="form-group">
+                       <label>Aktifkan Log Query</label>
+                       <div class="radio">
+                           <label class="radio-inline">
+                              <input type="radio" name="log_query" value="ya" {if: $settings.log_query == 'ya'}checked{/if} /> Ya
+                           </label>
+                           <label class="radio-inline">
+                              <input type="radio" name="log_query" value="tidak" {if: $settings.log_query == 'tidak'}checked{/if} /> Tidak
+                           </label>
+                       </div>
+                  </div>
+                   <div class="form-group">
                          <label>Footer</label>
                          <input type="text" name="footer" class="form-control" value="{$settings.footer}" required />
                     </div>

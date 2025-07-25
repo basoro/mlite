@@ -46,3 +46,5 @@ config.php
 composer.lock
 backups
 themes/atilamedika
+.vercel
+api/

@@ -96,7 +96,7 @@ class Admin extends AdminModule
     {
         $this->dokter = new Dokter();
         $this->petugas = new Petugas();
-        $this->poliklinik = new Poliklinik();
+        $this->poliklinik = new Poliklinik($this->core);
         $this->bangsal = new Bangsal();
         $this->kamar = new Kamar();
         $this->databarang = new DataBarang();
@@ -331,12 +331,19 @@ class Admin extends AdminModule
     /* Start Poliklinik Section */
     public function getPoliklinik()
     {
-      $this->_addHeaderFiles();
-      $this->core->addJS(url([ADMIN, 'master', 'poliklinikjs']), 'footer');
-      $return = $this->poliklinik->getIndex();
-      return $this->draw('poliklinik.html', [
-        'poliklinik' => $return
-      ]);
+      if($this->settings->get('settings.versi_beta') == 'ya') {
+        $this->poliklinik->_addHeaderFiles();
+        $this->core->addCSS(url([ADMIN, 'master', 'poliklinikcss']));
+        $this->core->addJS(url([ADMIN, 'master', 'poliklinikjs']), 'footer');
+        return $this->draw('poliklinik.beta.html');  
+      } else {
+        $this->_addHeaderFiles();
+        $this->core->addJS(url([ADMIN, 'master', 'poliklinikjs']), 'footer');
+        $return = $this->poliklinik->getIndex();
+        return $this->draw('poliklinik.html', [
+          'poliklinik' => $return
+        ]);
+      }
 
     }
 
@@ -369,9 +376,52 @@ class Admin extends AdminModule
     public function getPoliklinikJS()
     {
         header('Content-type: text/javascript');
-        echo $this->draw(MODULES.'/master/js/admin/poliklinik.js');
+        $settings = $this->settings('settings');
+        echo $this->draw(MODULES.'/master/js/admin/poliklinik.js', ['settings' => $settings]);
         exit();
     }
+
+    public function getPoliklinikBeta()
+    {
+      $this->poliklinik->_addHeaderFiles();
+      $this->core->addCSS(url([ADMIN, 'master', 'poliklinikcss']));
+      $this->core->addJS(url([ADMIN, 'master', 'poliklinikjs']), 'footer');
+      return $this->draw('poliklinik.beta.html');
+    }
+
+    public function postPoliklinikData()
+    {
+      echo $this->poliklinik->postData();
+    }
+
+    public function postPoliklinikAksi()
+    {
+      echo $this->poliklinik->postAksi();
+    }
+
+    public function getPoliklinikDetail($kd_poli)
+    {
+      $detail = $this->db('poliklinik')->where('kd_poli', $kd_poli)->toArray();
+      $settings =  $this->settings('settings');
+      echo $this->draw('poliklinik.detail.html', ['detail' => $detail, 'settings' => $settings]);
+      exit();
+    }
+    
+    public function getPoliklinikChart($type = '', $column = '')
+    {
+      $data = $this->poliklinik->getChart($type, $column);
+      echo $this->draw('poliklinik.chart.html', $data);
+      exit();
+
+    }
+    
+    public function getPoliklinikCSS()
+    {
+        header('Content-type: text/css');
+        echo $this->draw(MODULES.'/master/css/admin/poliklinik.css');
+        exit();
+    }
+
     /* End Poliklinik Section */
 
     /* Start Bangsal Section */
@@ -495,7 +545,7 @@ class Admin extends AdminModule
     {
       $query = $this->databarang->postSave();
       
-      if($query->errorInfo()['0'] == '00000') {
+      if($query) {
         $data['status'] = 'success';
         echo json_encode($data);
       } else {
@@ -863,10 +913,10 @@ class Admin extends AdminModule
 
     public function getImportPropinsi()
     {
-      $fileName = 'https://basoro.id/downloads/provinces.csv';
+      $filename = 'https://basoro.id/downloads/provinces.csv';
       echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
 
-      $csvData = file_get_contents($fileName);
+      $csvData = file_get_contents($filename);
       if($csvData) {
         echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
       } else {
@@ -946,10 +996,10 @@ class Admin extends AdminModule
 
     public function getImportKabupaten()
     {
-      $fileName = 'https://basoro.id/downloads/regencies.csv';
+      $filename = 'https://basoro.id/downloads/regencies.csv';
       echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
 
-      $csvData = file_get_contents($fileName);
+      $csvData = file_get_contents($filename);
       if($csvData) {
         echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
       } else {
@@ -1029,10 +1079,10 @@ class Admin extends AdminModule
 
     public function getImportKecamatan()
     {
-      $fileName = 'https://basoro.id/downloads/districts.csv';
+      $filename = 'https://basoro.id/downloads/districts.csv';
       echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
 
-      $csvData = file_get_contents($fileName);
+      $csvData = file_get_contents($filename);
       if($csvData) {
         echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
       } else {
@@ -1112,10 +1162,10 @@ class Admin extends AdminModule
 
     public function getImportKelurahan()
     {
-      $fileName = 'https://basoro.id/downloads/villages.csv';
+      $filename = 'https://basoro.id/downloads/villages.csv';
       echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
 
-      $csvData = file_get_contents($fileName);
+      $csvData = file_get_contents($filename);
       if($csvData) {
         echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
       } else {

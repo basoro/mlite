@@ -17,6 +17,17 @@ class Admin extends AdminModule
 
     public function getManage()
     {
+      if($this->settings->get('settings.versi_beta') == 'ya') {
+        $this->_addHeaderFilesBeta();
+        $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
+        $this->assign['stts_nikah'] = $this->core->getEnum('pasien', 'stts_nikah');
+        $this->assign['gol_darah'] = $this->core->getEnum('pasien', 'gol_darah');
+        $this->assign['agama'] = array('ISLAM', 'KRISTEN', 'PROTESTAN', 'HINDU', 'BUDHA', 'KONGHUCU', 'KEPERCAYAAN');
+        $this->assign['pnd'] = $this->core->getEnum('pasien', 'pnd');
+        $this->assign['keluarga'] = $this->core->getEnum('pasien', 'keluarga');
+  
+        return $this->draw('manage.beta.html', ['pasien' => $this->assign]);  
+      }else {
         $this->core->addJS(url(MODULES.'/dashboard/js/admin/webcam.js?v={$mlite.version}'));
         $this->_addHeaderFiles();
 
@@ -56,7 +67,7 @@ class Admin extends AdminModule
           'offset' => $offset,
           'admin_mode' => $this->settings->get('settings.admin_mode')
         ]);
-
+      }
     }
 
     public function anyDisplay()
@@ -338,7 +349,7 @@ class Admin extends AdminModule
         unset($_POST['nm_kel']);
         $query = $this->db('pasien')->save($_POST);
 
-        if($query->errorInfo()['0'] == '00000') {
+        if($query) {
           if($manual == '0') {
             $this->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
           }
@@ -358,7 +369,7 @@ class Admin extends AdminModule
         $_POST['umur'] = $this->hitungUmur($_POST['tgl_lahir']);
         $query = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->update($_POST);
 
-        if($query->errorInfo()['0'] == '00000') {
+        if($query) {
           $data['status'] = 'success';
           echo json_encode($data);
         } else {
@@ -588,7 +599,7 @@ class Admin extends AdminModule
     {
       $file = explode('/', $_GET['lokasi_file']);
       $file_name = $file['2'];
-      $file_url = '{?=url()?}/uploads/berkasrawat/' . $_GET['lokasi_file'];
+      $file_url = WEBAPPS_URL.'/berkasrawat/' . $_GET['lokasi_file'];
       
       // Configure.
       header('Content-Type: application/octet-stream');
@@ -1111,7 +1122,7 @@ class Admin extends AdminModule
         $searchValue = $_POST['search']['value'] ?? '';
     
         $search_field_pasien = $_POST['search_field_pasien'] ?? 'pasien.nm_pasien';
-        $search_text_pasien = $_POST['search_text_pasien'] ?? '';
+        $search_text = $_POST['search_text_pasien'] ?? '';
 
         $tgl_dari = $_POST['tgl_dari'] ?? '';
         $tgl_sampai = $_POST['tgl_sampai'] ?? '';
@@ -1126,8 +1137,7 @@ class Admin extends AdminModule
         } elseif (!empty($tgl_sampai)) {
             $searchQuery .= " AND pasien.tgl_daftar <= :tgl_sampai ";
         }
-        
-        if (!empty($search_text_pasien)) {
+        if (!empty($search_text)) {
             $searchQuery .= " AND ($search_field_pasien LIKE :search_text)";
         }
     
@@ -1151,17 +1161,14 @@ class Admin extends AdminModule
             WHERE 1=1 $searchQuery
         ";
         $sel = $pdo->prepare($sqlCount);
-        if (!empty($search_text_pasien)) {
-            $sel->bindValue(':search_text', "%{$search_text_pasien}%");
+        if (!empty($search_text)) {
+            $sel->bindValue(':search_text', "%{$search_text}%");
         }
         if (!empty($tgl_dari)) {
             $sel->bindValue(':tgl_dari', $tgl_dari);
         }
         if (!empty($tgl_sampai)) {
             $sel->bindValue(':tgl_sampai', $tgl_sampai);
-        }
-        if (!empty($search_text_pasien)) {
-            $sel->bindValue(':search_text', "%{$search_text_pasien}%");
         }
         $sel->execute();
         $records = $sel->fetch();
@@ -1188,8 +1195,8 @@ class Admin extends AdminModule
         ";
     
         $sel = $pdo->prepare($sql);
-        if (!empty($search_text_pasien)) {
-            $sel->bindValue(':search_text', "%{$search_text_pasien}%");
+        if (!empty($search_text)) {
+            $sel->bindValue(':search_text', "%{$search_text}%");
         }
         if (!empty($tgl_dari)) {
             $sel->bindValue(':tgl_dari', $tgl_dari);
@@ -1197,12 +1204,9 @@ class Admin extends AdminModule
         if (!empty($tgl_sampai)) {
             $sel->bindValue(':tgl_sampai', $tgl_sampai);
         }
-        if (!empty($search_text_pasien)) {
-            $sel->bindValue(':search_text', "%{$search_text_pasien}%");
-        }
         $sel->execute();
         $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
-    
+
         $data = array();
         foreach ($result as $row) {
             $data[] = $row;
@@ -1221,284 +1225,301 @@ class Admin extends AdminModule
     
     public function postAksi()
     {
-        if(isset($_POST['typeact'])){ 
-            $act = $_POST['typeact']; 
-        }else{ 
-            $act = ''; 
+        $act = $_POST['typeact'] ?? '';
+
+        if (!in_array($act, ['add', 'edit', 'del', 'lihat'])) {
+            echo json_encode(["status" => "error", "message" => "Aksi tidak dikenali."]);
+            exit();
         }
 
-        if ($act=='add') {
+        try {
+            if ($act == 'add') {
 
-            $no_rkm_medis = $_POST['no_rkm_medis'];
-            $nm_pasien = $_POST['nm_pasien'];
-            $no_ktp = $_POST['no_ktp'];
-            $jk = $_POST['jk'];
-            $tmp_lahir = $_POST['tmp_lahir'];
-            $tgl_lahir = $_POST['tgl_lahir'];
-            $nm_ibu = $_POST['nm_ibu'];
-            $alamat = $_POST['alamat'];
-            $gol_darah = $_POST['gol_darah'];
-            $pekerjaan = $_POST['pekerjaan'];
-            $stts_nikah = $_POST['stts_nikah'];
-            $agama = $_POST['agama'];
-            $tgl_daftar = $_POST['tgl_daftar'];
-            $no_tlp = $_POST['no_tlp'];
-            $umur = $_POST['umur'];
-            $pnd = $_POST['pnd'];
-            $keluarga = $_POST['keluarga'];
-            $namakeluarga = $_POST['namakeluarga'];
-            $kd_pj = $_POST['kd_pj'];
-            $no_peserta = $_POST['no_peserta'];
-            $kd_kel = $_POST['kd_kel'];
-            $kd_kec = $_POST['kd_kec'];
-            $kd_kab = $_POST['kd_kab'];
-            $pekerjaanpj = $_POST['pekerjaanpj'];
-            $alamatpj = $_POST['alamatpj'];
-            $kelurahanpj = $_POST['kelurahanpj'];
-            $kecamatanpj = $_POST['kecamatanpj'];
-            $kabupatenpj = $_POST['kabupatenpj'];
-            $perusahaan_pasien = $_POST['perusahaan_pasien'];
-            $suku_bangsa = $_POST['suku_bangsa'];
-            $bahasa_pasien = $_POST['bahasa_pasien'];
-            $cacat_fisik = $_POST['cacat_fisik'];
-            $email = $_POST['email'];
-            $nip = $_POST['nip'];
-            $kd_prop = $_POST['kd_prop'];
-            $propinsipj = $_POST['propinsipj'];
-            
-            try {
-              $pasien_add = $this->db()->pdo()->prepare("
-                  INSERT INTO pasien (
-                      no_rkm_medis, nm_pasien, no_ktp, jk, tmp_lahir, tgl_lahir, nm_ibu, alamat, gol_darah, 
-                      pekerjaan, stts_nikah, agama, tgl_daftar, no_tlp, umur, pnd, keluarga, namakeluarga, 
-                      kd_pj, no_peserta, kd_kel, kd_kec, kd_kab, pekerjaanpj, alamatpj, kelurahanpj, 
-                      kecamatanpj, kabupatenpj, perusahaan_pasien, suku_bangsa, bahasa_pasien, cacat_fisik, 
-                      email, nip, kd_prop, propinsipj
-                  ) VALUES (
-                      ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                      ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                      ?, ?, ?, ?, ?, ?, ?, ?, 
-                      ?, ?, ?, ?, ?, ?, ?, 
-                      ?, ?, ?, ?
-                  )
-              ");
-          
-              $pasien_add->execute([
-                  $no_rkm_medis, $nm_pasien, $no_ktp, $jk, $tmp_lahir, $tgl_lahir, $nm_ibu, $alamat, $gol_darah,
-                  $pekerjaan, $stts_nikah, $agama, $tgl_daftar, $no_tlp, $umur, $pnd, $keluarga, $namakeluarga,
-                  $kd_pj, $no_peserta, $kd_kel, $kd_kec, $kd_kab, $pekerjaanpj, $alamatpj, $kelurahanpj,
-                  $kecamatanpj, $kabupatenpj, $perusahaan_pasien, $suku_bangsa, $bahasa_pasien, $cacat_fisik,
-                  $email, $nip, $kd_prop, $propinsipj
-              ]);
-          
-              echo json_encode([
-                  'status' => 'success',
-                  'message' => 'Data pasien berhasil ditambahkan.'
-              ]);
-            } catch (\PDOException $e) {
+                if($this->core->loadDisabledMenu('pasien')['can_create'] == 'true') {
+                  http_response_code(403);
+                  $data = array(
+                    'code' => '403', 
+                    'status' => 'error', 
+                    'msg' => 'Maaf, akses dibatasi!'
+                  );
+                  echo json_encode($data);    
+                  exit();
+                }
+
+                $no_rkm_medis = $_POST['no_rkm_medis'];
+                $nm_pasien = $_POST['nm_pasien'];
+                $no_ktp = $_POST['no_ktp'];
+                $jk = $_POST['jk'];
+                $tmp_lahir = $_POST['tmp_lahir'];
+                $tgl_lahir = $_POST['tgl_lahir'];
+                $nm_ibu = $_POST['nm_ibu'];
+                $alamat = $_POST['alamat'];
+                $gol_darah = $_POST['gol_darah'];
+                $pekerjaan = $_POST['pekerjaan'];
+                $stts_nikah = $_POST['stts_nikah'];
+                $agama = $_POST['agama'];
+                $tgl_daftar = $_POST['tgl_daftar'];
+                $no_tlp = $_POST['no_tlp'];
+                $umur = $_POST['umur'];
+                $pnd = $_POST['pnd'];
+                $keluarga = $_POST['keluarga'];
+                $namakeluarga = $_POST['namakeluarga'];
+                $kd_pj = $_POST['kd_pj'];
+                $no_peserta = $_POST['no_peserta'];
+                $kd_kel = $_POST['kd_kel'];
+                $kd_kec = $_POST['kd_kec'];
+                $kd_kab = $_POST['kd_kab'];
+                $pekerjaanpj = $_POST['pekerjaanpj'];
+                $alamatpj = $_POST['alamatpj'];
+                $kelurahanpj = $_POST['kelurahanpj'];
+                $kecamatanpj = $_POST['kecamatanpj'];
+                $kabupatenpj = $_POST['kabupatenpj'];
+                $perusahaan_pasien = $_POST['perusahaan_pasien'];
+                $suku_bangsa = $_POST['suku_bangsa'];
+                $bahasa_pasien = $_POST['bahasa_pasien'];
+                $cacat_fisik = $_POST['cacat_fisik'];
+                $email = $_POST['email'];
+                $nip = $_POST['nip'];
+                $kd_prop = $_POST['kd_prop'];
+                $propinsipj = $_POST['propinsipj'];
+
+
+                $sql = "INSERT INTO pasien VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                $binds = [$no_rkm_medis, $nm_pasien, $no_ktp, $jk, $tmp_lahir, $tgl_lahir, $nm_ibu, $alamat, $gol_darah, $pekerjaan, $stts_nikah, $agama, $tgl_daftar, $no_tlp, $umur, $pnd, $keluarga, $namakeluarga, $kd_pj, $no_peserta, $kd_kel, $kd_kec, $kd_kab, $pekerjaanpj, $alamatpj, $kelurahanpj, $kecamatanpj, $kabupatenpj, $perusahaan_pasien, $suku_bangsa, $bahasa_pasien, $cacat_fisik, $email, $nip, $kd_prop, $propinsipj];
+                $stmt = $this->db()->pdo()->prepare($sql);
+                $stmt->execute($binds);
+
+                if($this->settings->get('settings.log_query') == 'ya') {
+                  \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
+                }
+
+                http_response_code(200);
                 echo json_encode([
-                    'status' => 'error',
-                    'message' => 'Gagal menambahkan data pasien: ' . $e->getMessage()
+                  "code" => "200", 
+                  "status" => "success", 
+                  "message" => "Data berhasil ditambahkan."
                 ]);
+
+            } elseif ($act == 'edit') {
+
+                if($this->core->loadDisabledMenu('pasien')['can_update'] == 'true') {
+                  http_response_code(403);
+                  $data = array(
+                    'code' => '403', 
+                    'status' => 'error', 
+                    'msg' => 'Maaf, akses dibatasi!'
+                  );
+                  echo json_encode($data);    
+                  exit();
+                }
+
+                $no_rkm_medis = $_POST['no_rkm_medis'];
+                $nm_pasien = $_POST['nm_pasien'];
+                $no_ktp = $_POST['no_ktp'];
+                $jk = $_POST['jk'];
+                $tmp_lahir = $_POST['tmp_lahir'];
+                $tgl_lahir = $_POST['tgl_lahir'];
+                $nm_ibu = $_POST['nm_ibu'];
+                $alamat = $_POST['alamat'];
+                $gol_darah = $_POST['gol_darah'];
+                $pekerjaan = $_POST['pekerjaan'];
+                $stts_nikah = $_POST['stts_nikah'];
+                $agama = $_POST['agama'];
+                $tgl_daftar = $_POST['tgl_daftar'];
+                $no_tlp = $_POST['no_tlp'];
+                $umur = $_POST['umur'];
+                $pnd = $_POST['pnd'];
+                $keluarga = $_POST['keluarga'];
+                $namakeluarga = $_POST['namakeluarga'];
+                $kd_pj = $_POST['kd_pj'];
+                $no_peserta = $_POST['no_peserta'];
+                $kd_kel = $_POST['kd_kel'];
+                $kd_kec = $_POST['kd_kec'];
+                $kd_kab = $_POST['kd_kab'];
+                $pekerjaanpj = $_POST['pekerjaanpj'];
+                $alamatpj = $_POST['alamatpj'];
+                $kelurahanpj = $_POST['kelurahanpj'];
+                $kecamatanpj = $_POST['kecamatanpj'];
+                $kabupatenpj = $_POST['kabupatenpj'];
+                $perusahaan_pasien = $_POST['perusahaan_pasien'];
+                $suku_bangsa = $_POST['suku_bangsa'];
+                $bahasa_pasien = $_POST['bahasa_pasien'];
+                $cacat_fisik = $_POST['cacat_fisik'];
+                $email = $_POST['email'];
+                $nip = $_POST['nip'];
+                $kd_prop = $_POST['kd_prop'];
+                $propinsipj = $_POST['propinsipj'];
+
+                $sql = "UPDATE pasien SET no_rkm_medis=?, nm_pasien=?, no_ktp=?, jk=?, tmp_lahir=?, tgl_lahir=?, nm_ibu=?, alamat=?, gol_darah=?, pekerjaan=?, stts_nikah=?, agama=?, tgl_daftar=?, no_tlp=?, umur=?, pnd=?, keluarga=?, namakeluarga=?, kd_pj=?, no_peserta=?, kd_kel=?, kd_kec=?, kd_kab=?, pekerjaanpj=?, alamatpj=?, kelurahanpj=?, kecamatanpj=?, kabupatenpj=?, perusahaan_pasien=?, suku_bangsa=?, bahasa_pasien=?, cacat_fisik=?, email=?, nip=?, kd_prop=?, propinsipj=? WHERE no_rkm_medis=?";
+                $binds = [$no_rkm_medis, $nm_pasien, $no_ktp, $jk, $tmp_lahir, $tgl_lahir, $nm_ibu, $alamat, $gol_darah, $pekerjaan, $stts_nikah, $agama, $tgl_daftar, $no_tlp, $umur, $pnd, $keluarga, $namakeluarga, $kd_pj, $no_peserta, $kd_kel, $kd_kec, $kd_kab, $pekerjaanpj, $alamatpj, $kelurahanpj, $kecamatanpj, $kabupatenpj, $perusahaan_pasien, $suku_bangsa, $bahasa_pasien, $cacat_fisik, $email, $nip, $kd_prop, $propinsipj,$no_rkm_medis];
+                $stmt = $this->db()->pdo()->prepare($sql);
+                $stmt->execute($binds);
+
+                if($this->settings->get('settings.log_query') == 'ya') {
+                  \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
+                }
+
+                http_response_code(200);
+                echo json_encode([
+                  "code" => "200", 
+                  "status" => "success", 
+                  "message" => "Data berhasil diperbarui."
+                ]);
+
+            } elseif ($act == 'del') {
+
+                if($this->core->loadDisabledMenu('pasien')['can_delete'] == 'true') {
+                  http_response_code(403);
+                  $data = array(
+                    'code' => '403', 
+                    'status' => 'error', 
+                    'msg' => 'Maaf, akses dibatasi!'
+                  );
+                  echo json_encode($data);    
+                  exit();
+                }
+
+                $no_rkm_medis= $_POST['no_rkm_medis'];
+
+                $sql = "DELETE FROM pasien WHERE no_rkm_medis='$no_rkm_medis'";
+                $binds = [];
+
+                $stmt = $this->db()->pdo()->prepare($sql);
+                $stmt->execute();
+
+                if($this->settings->get('settings.log_query') == 'ya') {
+                  \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
+                }
+
+                if ($stmt->rowCount() > 0) {
+                    echo json_encode(["status" => "success", "message" => "Data berhasil dihapus."]);
+                } else {
+                    echo json_encode(["status" => "error", "message" => "Data tidak ditemukan atau gagal dihapus."]);
+                }
+
+            } elseif ($act == 'lihat') {
+
+                if($this->core->loadDisabledMenu('pasien')['can_read'] == 'true') {
+                  http_response_code(403);
+                  $data = array(
+                    'code' => '403', 
+                    'status' => 'error', 
+                    'msg' => 'Maaf, akses dibatasi!'
+                  );
+                  echo json_encode($data);    
+                  exit();
+                }
+
+                $search_field_pasien = $_POST['search_field_pasien'];
+                $search_text  = $_POST['search_text_pasien'];
+                $tgl_dari = $_POST['tgl_dari'] ?? '';
+                $tgl_sampai = $_POST['tgl_sampai'] ?? '';
+                
+                $searchQuery = "";
+                if (!empty($tgl_dari) && !empty($tgl_sampai)) {
+                    $searchQuery .= " AND tgl_daftar BETWEEN :tgl_dari AND :tgl_sampai ";
+                }          
+                if ($search_text != '') {
+                    // Pastikan field dicari dari alias tabel yang sesuai
+                    $searchQuery .= " AND ($search_field_pasien LIKE :search_text_pasien)";
+                }
+                
+                
+                $sql = "
+                    SELECT 
+                        pasien.*,
+                        penjab.png_jawab AS nama_penjab,
+                        propinsi.nm_prop AS nama_propinsi,
+                        kabupaten.nm_kab AS nama_kabupaten,
+                        kecamatan.nm_kec AS nama_kecamatan,
+                        kelurahan.nm_kel AS nama_kelurahan
+                    FROM pasien
+                    LEFT JOIN penjab ON pasien.kd_pj = penjab.kd_pj
+                    LEFT JOIN propinsi ON pasien.kd_prop = propinsi.kd_prop
+                    LEFT JOIN kabupaten ON pasien.kd_kab = kabupaten.kd_kab
+                    LEFT JOIN kecamatan ON pasien.kd_kec = kecamatan.kd_kec
+                    LEFT JOIN kelurahan ON pasien.kd_kel = kelurahan.kd_kel
+                    WHERE 1=1
+                    $searchQuery
+                ";
+                
+                $user_lihat = $this->db()->pdo()->prepare($sql);
+                
+                if (!empty($tgl_dari) && !empty($tgl_sampai)) {
+                    $user_lihat->bindValue(':tgl_dari', $tgl_dari);
+                    $user_lihat->bindValue(':tgl_sampai', $tgl_sampai);
+                }
+              
+                if ($search_text != '') {
+                    $user_lihat->bindValue(':search_text_pasien', '%' . $search_text . '%');
+                }
+                
+                $user_lihat->execute();
+                $result = $user_lihat->fetchAll(\PDO::FETCH_ASSOC);
+                
+                $data = array();
+                foreach ($result as $row) {
+                    $data[] = array(
+                        'no_rkm_medis'     => $row['no_rkm_medis'],
+                        'nm_pasien'        => $row['nm_pasien'],
+                        'no_ktp'           => $row['no_ktp'],
+                        'jk'               => $row['jk'],
+                        'tmp_lahir'        => $row['tmp_lahir'],
+                        'tgl_lahir'        => $row['tgl_lahir'],
+                        'nm_ibu'           => $row['nm_ibu'],
+                        'alamat'           => $row['alamat'],
+                        'gol_darah'        => $row['gol_darah'],
+                        'pekerjaan'        => $row['pekerjaan'],
+                        'stts_nikah'       => $row['stts_nikah'],
+                        'agama'            => $row['agama'],
+                        'tgl_daftar'       => $row['tgl_daftar'],
+                        'no_tlp'           => $row['no_tlp'],
+                        'umur'             => $row['umur'],
+                        'pnd'              => $row['pnd'],
+                        'keluarga'         => $row['keluarga'],
+                        'namakeluarga'     => $row['namakeluarga'],
+                        'kd_pj'            => $row['kd_pj'],
+                        'nama_penjab'      => $row['nama_penjab'],      // dari penjab
+                        'no_peserta'       => $row['no_peserta'],
+                        'kd_kel'           => $row['kd_kel'],
+                        'kd_kec'           => $row['kd_kec'],
+                        'kd_kab'           => $row['kd_kab'],
+                        'kd_prop'          => $row['kd_prop'],
+                        'nama_kelurahan'   => $row['nama_kelurahan'],   // dari kelurahan
+                        'nama_kecamatan'   => $row['nama_kecamatan'],   // dari kecamatan
+                        'nama_kabupaten'   => $row['nama_kabupaten'],   // dari kabupaten
+                        'nama_propinsi'    => $row['nama_propinsi'],    // dari propinsi
+                        'pekerjaanpj'      => $row['pekerjaanpj'],
+                        'alamatpj'         => $row['alamatpj'],
+                        'kelurahanpj'      => $row['kelurahanpj'],
+                        'kecamatanpj'      => $row['kecamatanpj'],
+                        'kabupatenpj'      => $row['kabupatenpj'],
+                        'propinsipj'       => $row['propinsipj'],
+                        'perusahaan_pasien'=> $row['perusahaan_pasien'],
+                        'suku_bangsa'      => $row['suku_bangsa'],
+                        'bahasa_pasien'    => $row['bahasa_pasien'],
+                        'cacat_fisik'      => $row['cacat_fisik'],
+                        'email'            => $row['email'],
+                        'nip'              => $row['nip']
+                    );
+                }
+                
+                http_response_code(200);
+                echo json_encode($data);
             }
-            
-        }
-        if ($act=="edit") {
-
-            $no_rkm_medis = $_POST['no_rkm_medis'];
-            $nm_pasien = $_POST['nm_pasien'];
-            $no_ktp = $_POST['no_ktp'];
-            $jk = $_POST['jk'];
-            $tmp_lahir = $_POST['tmp_lahir'];
-            $tgl_lahir = $_POST['tgl_lahir'];
-            $nm_ibu = $_POST['nm_ibu'];
-            $alamat = $_POST['alamat'];
-            $gol_darah = $_POST['gol_darah'];
-            $pekerjaan = $_POST['pekerjaan'];
-            $stts_nikah = $_POST['stts_nikah'];
-            $agama = $_POST['agama'];
-            $tgl_daftar = $_POST['tgl_daftar'];
-            $no_tlp = $_POST['no_tlp'];
-            $umur = $_POST['umur'];
-            $pnd = $_POST['pnd'];
-            $keluarga = $_POST['keluarga'];
-            $namakeluarga = $_POST['namakeluarga'];
-            $kd_pj = $_POST['kd_pj'];
-            $no_peserta = $_POST['no_peserta'];
-            $kd_kel = $_POST['kd_kel'];
-            $kd_kec = $_POST['kd_kec'];
-            $kd_kab = $_POST['kd_kab'];
-            $pekerjaanpj = $_POST['pekerjaanpj'];
-            $alamatpj = $_POST['alamatpj'];
-            $kelurahanpj = $_POST['kelurahanpj'];
-            $kecamatanpj = $_POST['kecamatanpj'];
-            $kabupatenpj = $_POST['kabupatenpj'];
-            $perusahaan_pasien = $_POST['perusahaan_pasien'];
-            $suku_bangsa = $_POST['suku_bangsa'];
-            $bahasa_pasien = $_POST['bahasa_pasien'];
-            $cacat_fisik = $_POST['cacat_fisik'];
-            $email = $_POST['email'];
-            $nip = $_POST['nip'];
-            $kd_prop = $_POST['kd_prop'];
-            $propinsipj = $_POST['propinsipj'];
-
-            // BUANG FIELD PERTAMA
-
-            try {
-              $pasien_edit = $this->db()->pdo()->prepare("UPDATE pasien SET no_rkm_medis=?, nm_pasien=?, no_ktp=?, jk=?, tmp_lahir=?, tgl_lahir=?, nm_ibu=?, alamat=?, gol_darah=?, pekerjaan=?, stts_nikah=?, agama=?, tgl_daftar=?, no_tlp=?, umur=?, pnd=?, keluarga=?, namakeluarga=?, kd_pj=?, no_peserta=?, kd_kel=?, kd_kec=?, kd_kab=?, pekerjaanpj=?, alamatpj=?, kelurahanpj=?, kecamatanpj=?, kabupatenpj=?, perusahaan_pasien=?, suku_bangsa=?, bahasa_pasien=?, cacat_fisik=?, email=?, nip=?, kd_prop=?, propinsipj=? WHERE no_rkm_medis=?");
-          
-              $pasien_edit->execute([
-                  $no_rkm_medis, $nm_pasien, $no_ktp, $jk, $tmp_lahir, $tgl_lahir, $nm_ibu,
-                  $alamat, $gol_darah, $pekerjaan, $stts_nikah, $agama, $tgl_daftar,
-                  $no_tlp, $umur, $pnd, $keluarga, $namakeluarga, $kd_pj, $no_peserta,
-                  $kd_kel, $kd_kec, $kd_kab, $pekerjaanpj, $alamatpj, $kelurahanpj,
-                  $kecamatanpj, $kabupatenpj, $perusahaan_pasien, $suku_bangsa,
-                  $bahasa_pasien, $cacat_fisik, $email, $nip, $kd_prop, $propinsipj,
-                  $no_rkm_medis
-              ]);
-          
-              echo json_encode([
-                  'status' => 'success',
-                  'message' => 'Data pasien berhasil diperbarui.',
-                  'no_rkm_medis' => $no_rkm_medis
-              ]);
-            } catch (\PDOException $e) {
-                echo json_encode([
-                    'status' => 'error',
-                    'message' => 'Gagal update data pasien: ' . $e->getMessage()
-                ]);
-            }          
-        
-        }
-
-        if ($act=="del") {
-          try {
-            $no_rkm_medis = $_POST['no_rkm_medis'];
-        
-            $stmt = $this->db()->pdo()->prepare("DELETE FROM pasien WHERE no_rkm_medis = ?");
-            $stmt->execute([$no_rkm_medis]);
-        
-            if ($stmt->rowCount() > 0) {
-                echo json_encode([
-                    'status' => 'success',
-                    'message' => "Data pasien dengan No. RM {$no_rkm_medis} berhasil dihapus."
-                ]);
-            } else {
-                echo json_encode([
-                    'status' => 'error',
-                    'message' => "Data pasien tidak ditemukan atau sudah dihapus."
-                ]);
+        } catch (\PDOException $e) {
+            if($this->settings->get('settings.log_query') == 'ya') {
+              if (in_array($act, ['add', 'edit', 'del'])) {
+                \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds, $e->getMessage());   
+              } 
             }
-          } catch (\PDOException $e) {
-              echo json_encode([
-                  'status' => 'error',
-                  'message' => 'Gagal menghapus data pasien: ' . $e->getMessage()
-              ]);
-          }                           
-        }
 
-        if ($act=="lihat") {
-
-          $search_field_pasien = $_POST['search_field_pasien'];
-          $search_text_pasien  = $_POST['search_text_pasien'];
-          $tgl_dari = $_POST['tgl_dari'] ?? '';
-          $tgl_sampai = $_POST['tgl_sampai'] ?? '';
-          
-          $searchQuery = "";
-          if (!empty($tgl_dari) && !empty($tgl_sampai)) {
-              $searchQuery .= " AND tgl_daftar BETWEEN :tgl_dari AND :tgl_sampai ";
-          }          
-          if ($search_text_pasien != '') {
-              // Pastikan field dicari dari alias tabel yang sesuai
-              $searchQuery .= " AND ($search_field_pasien LIKE :search_text_pasien)";
-          }
-          
-          
-          $sql = "
-              SELECT 
-                  pasien.*,
-                  penjab.png_jawab AS nama_penjab,
-                  propinsi.nm_prop AS nama_propinsi,
-                  kabupaten.nm_kab AS nama_kabupaten,
-                  kecamatan.nm_kec AS nama_kecamatan,
-                  kelurahan.nm_kel AS nama_kelurahan
-              FROM pasien
-              LEFT JOIN penjab ON pasien.kd_pj = penjab.kd_pj
-              LEFT JOIN propinsi ON pasien.kd_prop = propinsi.kd_prop
-              LEFT JOIN kabupaten ON pasien.kd_kab = kabupaten.kd_kab
-              LEFT JOIN kecamatan ON pasien.kd_kec = kecamatan.kd_kec
-              LEFT JOIN kelurahan ON pasien.kd_kel = kelurahan.kd_kel
-              WHERE 1=1
-              $searchQuery
-          ";
-          
-          $user_lihat = $this->db()->pdo()->prepare($sql);
-          
-          if (!empty($tgl_dari) && !empty($tgl_sampai)) {
-              $user_lihat->bindValue(':tgl_dari', $tgl_dari);
-              $user_lihat->bindValue(':tgl_sampai', $tgl_sampai);
-          }
-        
-          if ($search_text_pasien != '') {
-              $user_lihat->bindValue(':search_text_pasien', '%' . $search_text_pasien . '%');
-          }
-          
-          $user_lihat->execute();
-          $result = $user_lihat->fetchAll(\PDO::FETCH_ASSOC);
-          
-          $data = array();
-          foreach ($result as $row) {
-              $data[] = array(
-                  'no_rkm_medis'     => $row['no_rkm_medis'],
-                  'nm_pasien'        => $row['nm_pasien'],
-                  'no_ktp'           => $row['no_ktp'],
-                  'jk'               => $row['jk'],
-                  'tmp_lahir'        => $row['tmp_lahir'],
-                  'tgl_lahir'        => $row['tgl_lahir'],
-                  'nm_ibu'           => $row['nm_ibu'],
-                  'alamat'           => $row['alamat'],
-                  'gol_darah'        => $row['gol_darah'],
-                  'pekerjaan'        => $row['pekerjaan'],
-                  'stts_nikah'       => $row['stts_nikah'],
-                  'agama'            => $row['agama'],
-                  'tgl_daftar'       => $row['tgl_daftar'],
-                  'no_tlp'           => $row['no_tlp'],
-                  'umur'             => $row['umur'],
-                  'pnd'              => $row['pnd'],
-                  'keluarga'         => $row['keluarga'],
-                  'namakeluarga'     => $row['namakeluarga'],
-                  'kd_pj'            => $row['kd_pj'],
-                  'nama_penjab'      => $row['nama_penjab'],      // dari penjab
-                  'no_peserta'       => $row['no_peserta'],
-                  'kd_kel'           => $row['kd_kel'],
-                  'kd_kec'           => $row['kd_kec'],
-                  'kd_kab'           => $row['kd_kab'],
-                  'kd_prop'          => $row['kd_prop'],
-                  'nama_kelurahan'   => $row['nama_kelurahan'],   // dari kelurahan
-                  'nama_kecamatan'   => $row['nama_kecamatan'],   // dari kecamatan
-                  'nama_kabupaten'   => $row['nama_kabupaten'],   // dari kabupaten
-                  'nama_propinsi'    => $row['nama_propinsi'],    // dari propinsi
-                  'pekerjaanpj'      => $row['pekerjaanpj'],
-                  'alamatpj'         => $row['alamatpj'],
-                  'kelurahanpj'      => $row['kelurahanpj'],
-                  'kecamatanpj'      => $row['kecamatanpj'],
-                  'kabupatenpj'      => $row['kabupatenpj'],
-                  'propinsipj'       => $row['propinsipj'],
-                  'perusahaan_pasien'=> $row['perusahaan_pasien'],
-                  'suku_bangsa'      => $row['suku_bangsa'],
-                  'bahasa_pasien'    => $row['bahasa_pasien'],
-                  'cacat_fisik'      => $row['cacat_fisik'],
-                  'email'            => $row['email'],
-                  'nip'              => $row['nip']
-              );
-          }
-          
-          echo json_encode($data);
-          
-        }
-
-        if ($act=='last_rm') {
-          echo json_encode($this->core->setNoRM());
+            http_response_code(201);
+            echo json_encode([
+              "code" => "201", 
+              "status" => "error", 
+              "message" => $e->getMessage()
+            ]);
         }
 
         exit();
@@ -1548,8 +1569,13 @@ class Admin extends AdminModule
       $this->assign['agama'] = array('ISLAM', 'KRISTEN', 'PROTESTAN', 'HINDU', 'BUDHA', 'KONGHUCU', 'KEPERCAYAAN');
       $this->assign['pnd'] = array('TS','TK','SD','SMP','SMA','SLTA/SEDERAJAT','D1','D2','D3','D4','S1','S2','S3','-');
       $this->assign['keluarga'] = array('AYAH','IBU','ISTRI','SUAMI','SAUDARA','ANAK');
+      $disabled_menu = $this->core->loadDisabledMenu('pasien'); 
+      foreach ($disabled_menu as &$row) { 
+        if ($row == "true" ) $row = "disabled"; 
+      } 
+      unset($row);
 
-      return $this->draw('manage.beta.html', ['pasien' => $this->assign]);
+      return $this->draw('manage.beta.html', ['pasien' => $this->assign, 'disabled_menu' => $disabled_menu]);
     }
 
     public function getCssBeta()

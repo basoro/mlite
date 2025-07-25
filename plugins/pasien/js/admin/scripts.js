@@ -142,6 +142,9 @@ jQuery().ready(function () {
             let data = table.row(this).data();
     
             switch(key) {
+                case "kartu_pasien":
+                    kartu_pasien(data);
+                    break;
                 case "cek_no_kartu":
                     vclaim_cek_kartu_pasien(data);
                     break;
@@ -157,12 +160,16 @@ jQuery().ready(function () {
                 case "pendaftaran_poliklinik":
                     pendaftaran_poliklinik(data);
                     break;
+                case "kirim_whatsapp":
+                    kirim_whatsapp(data);
+                    break;
                 case "folder_rm":
                     folder_rm(data);
                     break;
             }
         },
         items: {
+            "kartu_pasien": { name: "Kartu Berobat", icon: "fa-envelope-o" },
             "vclaim": {
                 name: "Bridging VClaim BPJS",
                 icon: "fa-hospital-o",
@@ -180,6 +187,7 @@ jQuery().ready(function () {
                 }
             },
             "tampil_erm": { name: "Elektronik Rekam Medis", icon: "fa-file-text-o" },
+            "kirim_whatsapp": { name: "Kirim Whatsapp", icon: "fa-whatsapp" },
             "folder_rm": { name: "Folder Rekam Medis", icon: "fa-folder-o" }
         }
     });
@@ -329,6 +337,8 @@ jQuery().ready(function () {
                 success: function (data) {
                     try {
                         let response = typeof data === 'string' ? JSON.parse(data) : data;
+                        var audio = new Audio('{?=url()?}/assets/sound/' + response.status + '.mp3');
+                        audio.play();    
             
                         if (response.status === 'success') {
                             bootbox.alert(response.message);
@@ -350,10 +360,17 @@ jQuery().ready(function () {
     });
 
     // ==============================================================
-    // CLICK TANDA X DI INPUT SEARCH
+    // CLICK ICON SEARCH DI INPUT SEARCH ATAU TEKAN ENTER
     // ==============================================================
     $("#search_pasien").click(function () {
         var_tbl_pasien.draw();
+    });
+
+    $("#search_text_pasien").on("keydown", function(e) {
+        if (e.keyCode == 13) { // jika tekan enter
+            e.preventDefault(); // cegah form submit kalau ada
+            var_tbl_pasien.draw();
+        }
     });
 
     // ===========================================
@@ -497,6 +514,8 @@ jQuery().ready(function () {
                             },
                             success: function(response) {
                                 var data = JSON.parse(response);
+                                var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
+                                audio.play();            
                                 bootbox.alert({
                                     message: data.message,
                                     callback: function() {
@@ -522,9 +541,9 @@ jQuery().ready(function () {
     // TOMBOL TAMBAH DATA DI CLICK
     // ==============================================================
 
-    let searchParams = new URLSearchParams(window.location.search)
-
+    
     if(window.location.search.indexOf('no_rawat') !== -1) { 
+        let searchParams = new URLSearchParams(window.location.search)
         $('#search_text_pasien').val(searchParams.get('no_rawat'));
         var_tbl_pasien.draw();
         if(searchParams.get('modal') == 'true') {
@@ -609,47 +628,12 @@ jQuery().ready(function () {
                     <div class='table-responsive'>
                         <table id='tbl_lihat_pasien' class='table display dataTable' style='width:100%'>
                             <thead>
-                                <tr>
-                                    <th>No Rkm Medis</th>
-                                    <th>Nama Pasien</th>
-                                    <th>No KTP</th>
-                                    <th>JK</th>
-                                    <th>Tempat Lahir</th>
-                                    <th>Tanggal Lahir</th>
-                                    <th>Nama Ibu</th>
-                                    <th>Alamat</th>
-                                    <th>Gol Darah</th>
-                                    <th>Pekerjaan</th>
-                                    <th>Status Nikah</th>
-                                    <th>Agama</th>
-                                    <th>Tanggal Daftar</th>
-                                    <th>No Telepon</th>
-                                    <th>Umur</th>
-                                    <th>Pendidikan</th>
-                                    <th>Keluarga</th>
-                                    <th>Nama Keluarga</th>
-                                    <th>Kode Penjab</th>
-                                    <th>Nama Penjab</th>
-                                    <th>No Peserta</th>
-                                    <th>Kode Kelurahan</th>
-                                    <th>Nama Kelurahan</th>
-                                    <th>Nama Kecamatan</th>
-                                    <th>Nama Kabupaten</th>
-                                    <th>Nama Provinsi</th>
-                                    <th>Pekerjaan PJ</th>
-                                    <th>Alamat PJ</th>
-                                    <th>Kelurahan PJ</th>
-                                    <th>Kecamatan PJ</th>
-                                    <th>Kabupaten PJ</th>
-                                    <th>Perusahaan Pasien</th>
-                                    <th>Suku Bangsa</th>
-                                    <th>Bahasa Pasien</th>
-                                    <th>Cacat Fisik</th>
-                                    <th>Email</th>
-                                    <th>NIP</th>
-                                    <th>Kode Provinsi</th>
-                                    <th>Provinsi PJ</th>
-                                </tr>
+                            <tr>
+                                <th>Informasi Dasar Pasien</th>
+                                <th>Alamat dan Kontak</th>
+                                <th>Informasi Pendaftaran</th>
+                                <th>Data Penanggung Jawab</th>
+                            </tr>
                             </thead>
                             <tbody>
                 `;
@@ -657,45 +641,52 @@ jQuery().ready(function () {
                 res.forEach(row => {
                     eTable += `
                         <tr>
-                            <td>${row.no_rkm_medis}</td>
-                            <td>${row.nm_pasien}</td>
-                            <td>${row.no_ktp}</td>
-                            <td>${row.jk}</td>
-                            <td>${row.tmp_lahir}</td>
-                            <td>${row.tgl_lahir}</td>
-                            <td>${row.nm_ibu}</td>
-                            <td>${row.alamat}</td>
-                            <td>${row.gol_darah}</td>
-                            <td>${row.pekerjaan}</td>
-                            <td>${row.stts_nikah}</td>
-                            <td>${row.agama}</td>
-                            <td>${row.tgl_daftar}</td>
-                            <td>${row.no_tlp}</td>
-                            <td>${row.umur}</td>
-                            <td>${row.pnd}</td>
-                            <td>${row.keluarga}</td>
-                            <td>${row.namakeluarga}</td>
-                            <td>${row.kd_pj}</td>
-                            <td>${row.nama_penjab}</td>
-                            <td>${row.no_peserta}</td>
-                            <td>${row.kd_kel}</td>
-                            <td>${row.nama_kelurahan}</td>
-                            <td>${row.nama_kecamatan}</td>
-                            <td>${row.nama_kabupaten}</td>
-                            <td>${row.nama_propinsi}</td>
-                            <td>${row.pekerjaanpj}</td>
-                            <td>${row.alamatpj}</td>
-                            <td>${row.kelurahanpj}</td>
-                            <td>${row.kecamatanpj}</td>
-                            <td>${row.kabupatenpj}</td>
-                            <td>${row.perusahaan_pasien}</td>
-                            <td>${row.suku_bangsa}</td>
-                            <td>${row.bahasa_pasien}</td>
-                            <td>${row.cacat_fisik}</td>
-                            <td>${row.email}</td>
-                            <td>${row.nip}</td>
-                            <td>${row.kd_prop}</td>
-                            <td>${row.propinsipj}</td>
+                            <td style="vertical-align: top;">
+                                <strong>No Rkm Medis:</strong> ${row.no_rkm_medis}<br>
+                                <strong>Nama Pasien:</strong> ${row.nm_pasien}<br>
+                                <strong>No KTP:</strong> ${row.no_ktp}<br>
+                                <strong>JK:</strong> ${(row.jk === 'L' ? 'Laki-Laki' : 'Perempuan')}<br>
+                                <strong>Tempat Lahir:</strong> ${row.tmp_lahir}<br>
+                                <strong>Tanggal Lahir:</strong> ${row.tgl_lahir}<br>
+                                <strong>Nama Ibu:</strong> ${row.nm_ibu}<br>
+                                <strong>Gol Darah:</strong> ${row.gol_darah}<br>
+                                <strong>Pekerjaan:</strong> ${row.pekerjaan}<br>
+                                <strong>Status Nikah:</strong> ${row.stts_nikah}<br>
+                                <strong>Agama:</strong> ${row.agama}<br>
+                                <strong>Umur:</strong> ${row.umur}<br>
+                                <strong>Pendidikan:</strong> ${row.pnd}<br>
+                                <strong>Suku Bangsa:</strong> ${row.suku_bangsa}<br>
+                                <strong>Bahasa Pasien:</strong> ${row.bahasa_pasien}<br>
+                                <strong>Cacat Fisik:</strong> ${row.cacat_fisik}<br>
+                            </td>
+                            <td style="vertical-align: top;">
+                                <strong>Alamat:</strong> ${row.alamat}<br>
+                                <strong>No Telepon:</strong> ${row.no_tlp}<br>
+                                <strong>Email:</strong> ${row.email}<br>
+                                <strong>Kelurahan:</strong> ${row.nama_kelurahan}<br>
+                                <strong>Kecamatan:</strong> ${row.nama_kecamatan}<br>
+                                <strong>Kabupaten:</strong> ${row.nama_kabupaten}<br>
+                                <strong>Provinsi:</strong> ${row.nama_propinsi}
+                            </td>
+                            <td style="vertical-align: top;">
+                                <strong>Tanggal Daftar:</strong> ${row.tgl_daftar}<br>
+                                <strong>Kode Penjab:</strong> ${row.kd_pj}<br>
+                                <strong>Nama Penjab:</strong> ${row.nama_penjab}<br>
+                                <strong>No Peserta:</strong> ${row.no_peserta}<br>
+                                <strong>Perusahaan Pasien:</strong> ${row.perusahaan_pasien}<br>
+                                <strong>NIP:</strong> ${row.nip}
+                            </td>
+                            <td style="vertical-align: top;">
+                                <strong>Keluarga:</strong> ${row.keluarga}<br>
+                                <strong>Nama Keluarga:</strong> ${row.namakeluarga}<br>
+                                <strong>Pekerjaan PJ:</strong> ${row.pekerjaanpj}<br>
+                                <strong>Alamat PJ:</strong> ${row.alamatpj}<br>
+                                <strong>Kelurahan PJ:</strong> ${row.kelurahanpj}<br>
+                                <strong>Kecamatan PJ:</strong> ${row.kecamatanpj}<br>
+                                <strong>Kabupaten PJ:</strong> ${row.kabupatenpj}<br>
+                                <strong>Kode Provinsi:</strong> ${row.kd_prop}<br>
+                                <strong>Provinsi PJ:</strong> ${row.propinsipj}
+                            </td>
                         </tr>
                     `;
                 });
@@ -740,7 +731,7 @@ jQuery().ready(function () {
         
         }
         else {
-            alert("Pilih satu baris untuk detail");
+            bootbox.alert("Pilih satu baris untuk detail");
         }
     });
         
@@ -810,6 +801,30 @@ jQuery().ready(function () {
 
 });
 
+function kartu_pasien(rowData) {
+    if (rowData != null) {
+        var no_rkm_medis = rowData['no_rkm_medis'];
+        var baseURL = mlite.url + '/' + mlite.admin;
+        event.preventDefault();
+        $("#modal_detail_pasien").modal('show').html('<div style="text-align:center;margin:20px auto;width:50%;height:50%;"><iframe src="' + baseURL + '/pasien/cetakkartu/' + no_rkm_medis + '?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+
+        // var loadURL =  baseURL + '/pasien/riwayatperawatan/' + no_rkm_medis + '?t=' + mlite.token;
+    
+        // var modal = $('#modal_detail_pasien');
+        // var modalContent = $('#modal_detail_pasien .modal-content');
+    
+        // modal.off('show.bs.modal');
+        // modal.on('show.bs.modal', function () {
+        //     modalContent.load(loadURL);
+        // }).modal();
+        return false;
+
+    }
+    else {
+        bootbox.alert("Silakan pilih data yang akan di edit.");
+    }
+}
+
 function vclaim_cek_kartu_pasien(rowData) {
     if (rowData != null) {
         var no_peserta = rowData['no_peserta'];
@@ -828,7 +843,7 @@ function vclaim_cek_kartu_pasien(rowData) {
 
     }
     else {
-        alert("Silakan pilih data yang akan di edit.");
+        bootbox.alert("Silakan pilih data yang akan di edit.");
     }
 }
 
@@ -850,7 +865,7 @@ function vclaim_cek_nik_pasien(rowData) {
 
     }
     else {
-        alert("Silakan pilih data yang akan di edit.");
+        bootbox.alert("Silakan pilih data yang akan di edit.");
     }
 }
 
@@ -872,7 +887,7 @@ function tampil_erm(rowData) {
 
     }
     else {
-        alert("Silakan pilih data yang akan di edit.");
+        bootbox.alert("Silakan pilih data yang akan di edit.");
     }
 }
 
@@ -887,7 +902,7 @@ function pendaftaran_igd(rowData) {
 
     }
     else {
-        alert("Silakan pilih data yang akan di edit.");
+        bootbox.alert("Silakan pilih data yang akan di edit.");
     }
 }
 
@@ -902,7 +917,24 @@ function pendaftaran_poliklinik(rowData) {
 
     }
     else {
-        alert("Silakan pilih data yang akan di edit.");
+        bootbox.alert("Silakan pilih data yang akan di edit.");
+    }
+}
+
+function kirim_whatsapp(rowData) {
+    if (rowData != null) {
+        var no_tlp = rowData['no_tlp'];    
+        var modal = $('#waModal');
+    
+        modal.off('show.bs.modal');
+        modal.on('show.bs.modal', function (e) {
+            $(e.currentTarget).find('input[name="number"]').val(no_tlp);
+        }).modal();
+        return false;
+
+    }
+    else {
+        bootbox.alert("Silakan pilih data yang akan di edit.");
     }
 }
 
@@ -917,7 +949,7 @@ function folder_rm(rowData) {
 
     }
     else {
-        alert("Silakan pilih data yang akan di edit.");
+        bootbox.alert("Silakan pilih data yang akan di edit.");
     }
 }
 

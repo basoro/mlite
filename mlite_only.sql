@@ -1781,8 +1781,4 @@ CREATE TABLE `mlite_veronisa_feedback` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `mlite_set_nomor_surat` (
-  `nomor_surat` varchar(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 SET FOREIGN_KEY_CHECKS=1;

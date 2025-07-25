@@ -8,19 +8,19 @@
                 <div class="row" style="padding-bottom: 10px;">
                     <div class='col-md-6 text-left'>
                       <div class="btn-group" role="group" aria-label="Toolbar">
-                          <button id='lihat_data_pasien' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Lihat Data pasien' style='color:white;'>
+                          <button id='lihat_data_pasien' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Lihat Data pasien' {?=isset_or($disabled_menu.can_read)?}>
                           <i class='fa fa-eye' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> 
                           </button>
-                          <button id='tambah_data_pasien' class='btn btn-success' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                          <button id='tambah_data_pasien' class='btn btn-success' data-toggle='tooltip' data-placement='top' title='Tambah Data' {?=isset_or($disabled_menu.can_create)?}>
                           <i class='fa fa-plus-square' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
                           </button>
-                          <button id='edit_data_pasien' class='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                          <button id='edit_data_pasien' class='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Edit Data' {?=isset_or($disabled_menu.can_update)?}>
                           <i class='fa fa-edit' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
                           </button>
-                          <button id='lihat_detail_pasien' class='btn btn-warning' data-toggle='tooltip' data-placement='top' title='Detail Data'>
+                          <button id='lihat_detail_pasien' class='btn btn-warning' data-toggle='tooltip' data-placement='top' title='Detail Data' {?=isset_or($disabled_menu.can_read)?}>
                           <i class='fa fa-search' style='font-size: 15px;'></i><span class="hidden-xs"> Detail</span>
                           </button>
-                          <button id='hapus_data_pasien' class='btn btn-danger' data-toggle='tooltip' data-placement='top' title='Hapus Data' {if: $this->core->getUserInfo('role') !='admin'}disabled{/if}>
+                          <button id='hapus_data_pasien' class='btn btn-danger' data-toggle='tooltip' data-placement='top' title='Hapus Data' {?=isset_or($disabled_menu.can_delete)?}>
                           <i class='fa fa-trash' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
                           </button>
                       </div>
@@ -209,13 +209,11 @@
               </div>
               <div class="form-group col-md-4">
                 <label for="gol_darah">Golongan Darah</label>
-                <select name="gol_darah" id="gol_darah" class="form-control">
+                <select name="gol_darah" id="gol_darah" class="form-control" data-use-search="true">
                   <option value="">Silahkan pilih</option>
-                  <option value="O">O</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="AB">AB</option>
-                  <option value="-">-</option>
+                  {loop: $pasien.gol_darah} 
+                  <option value="{$value}">{$value}</option>
+                  {/loop}
                 </select>
               </div>
               <div class="form-group col-md-4">
@@ -231,7 +229,12 @@
             <div class="row">
               <div class="form-group col-md-4">
                 <label for="pnd">Pendidikan</label>
-                <input type="text" class="form-control" name="pnd" id="pnd" />
+                <select name="pnd" id="pnd" class="form-control">
+                  <option value="">Silahkan pilih</option>
+                  {loop: $pasien.pnd} 
+                  <option value="{$value}">{$value}</option>
+                  {/loop}
+                </select>
               </div>
               <div class="form-group col-md-4">
                 <label for="pekerjaan">Pekerjaan</label>
@@ -335,7 +338,12 @@
             <div class="row">
               <div class="form-group col-md-4">
                 <label for="keluarga">Hubungan Keluarga</label>
-                <input type="text" class="form-control" name="keluarga" id="keluarga" />
+                <select name="keluarga" id="keluarga" class="form-control">
+                  <option value="">Silahkan pilih</option>
+                  {loop: $pasien.keluarga}
+                  <option value="{$value}">{$value}</option> 
+                  {/loop}
+                </select>
               </div>
               <div class="form-group col-md-4">
                 <label for="namakeluarga">Nama Penanggung Jawab</label>
@@ -370,9 +378,9 @@
 
           <!-- Navigasi Step -->
           <div class="text-right">
-            <button type="button" class="btn btn-secondary" id="prevBtn">Sebelumnya</button>
-            <button type="button" class="btn btn-primary" id="nextBtn">Selanjutnya</button>
-            <button type="submit" id="simpan_data_pasien" class="btn btn-success d-none">Simpan Data</button>
+            <button type="button" class="btn btn-secondary" id="prevBtn"><i class="fa fa-arrow-left"></i> Sebelumnya</button>
+            <button type="button" class="btn btn-primary" id="nextBtn"><i class="fa fa-arrow-right"></i> Selanjutnya</button>
+            <button type="submit" id="simpan_data_pasien" class="btn btn-success d-none"><i class="fa fa-save"></i> Simpan Data</button>
           </div>
         </form>
       </div>
@@ -414,3 +422,27 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="waModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Kirim WhatsApp</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating number">
+          <label for="floatingPassword">Nomor</label>
+          <input type="text" name="number" class="form-control" id="number" placeholder="Nomor WhatsApp Tujuan">
+        </div>
+        <div class="form-floating message">
+          <label for="floatingPassword">Pesan</label>
+          <textarea name="message" rows="14" cols="100" class="form-control" id="message" placeholder="Tulis pesan anda.."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="KirimWA()" data-dismiss="modal">Kirim</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

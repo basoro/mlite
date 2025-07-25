@@ -1,0 +1,49 @@
+<div class="row gx-3">
+    <div class="col-xxl-12 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Disable Menu Individual {$fullname}</h5>
+            </div>
+            <div class="card-body">
+                <form name="form_mlite_users_menu">
+                    <input type="hidden" name="user" value="{$user}">
+                    <table id="tbl_mlite_users_menu" class="table table-bordered table-striped" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Modul </th>
+                            <th>Create</th>
+                            <th>Read</th>
+                            <th>Update</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loop: $access}
+                        {if: $value.module !='dashboard'}
+                        <tr>
+                            <td>{$value.module}<input type="hidden" name="module[]" value="{$value.module}"></td>
+                            <td>
+                                <div class="form-switch"><input class="form-check-input" type="checkbox" name="{$value.module}-create" id="{$value.module}-create" {if: $value.create == 'true'}checked="checked"{/if}></div>
+                            </td>
+                            <td>
+                                <div class="form-switch"><input class="form-check-input" type="checkbox" name="{$value.module}-read" id="{$value.module}-read" {if: $value.read == 'true'}checked="checked"{/if}"></div>
+                            </td>
+                            <td>
+                                <div class="form-switch"><input class="form-check-input" type="checkbox" name="{$value.module}-update" id="{$value.module}-update" {if: $value.update == 'true'}checked="checked"{/if}"></div>
+                            </td>
+                            <td>
+                                <div class="form-switch"><input class="form-check-input" type="checkbox" name="{$value.module}-delete" id="{$value.module}-delete" {if: $value.delete == 'true'}checked="checked"{/if}"></div>
+                            </td>
+                        </tr>
+                        {/if}
+                        {/loop}
+                    </tbody>
+                </table>
+                <div class="float-end">
+                    <button type="submit" id="simpan_data_mlite_users" class="btn btn-primary"><i class="ri-save-3-line"></i> Simpan</button>    
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
