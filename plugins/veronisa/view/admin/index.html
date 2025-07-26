@@ -70,9 +70,18 @@
       											<i class="fa fa-print"></i> Lihat Data Klaim
       										</a>
                           <br>
-                          <a href="#" class="btn btn-danger btn-xs kirim_apotik_online" data-no_rawat="{?=convertNorawat($value.no_rawat)?}">
-                            <i class="fa fa-refresh"></i> Kirim Apotik Online 
-                          </a>
+                          {if: $value.resep_response_exists}
+                            <button class="btn btn-primary btn-xs" disabled>
+                              <i class="fa fa-check"></i> Sudah Dikirim
+                            </button>
+                            <a href="#" class="badge badge-error hapus_resep_response" data-no_rawat="{$value.no_rawat}">
+                              <i class="fa fa-trash"></i> Hapus
+                            </a>
+                          {else}
+                            <a href="#" class="btn btn-danger btn-xs kirim_apotik_online" data-no_rawat="{?=convertNorawat($value.no_rawat)?}">
+                              <i class="fa fa-refresh"></i> Kirim Apotik Online 
+                            </a>
+                          {/if}
                           <br/>
                           {if: $value.nosep == ''}
                             <button class="btn btn-warning btn-xs">
@@ -173,7 +182,7 @@
 <script>
   $( function() {
     $('.tanggal').datetimepicker({
-      defaultDate: '{?=date('Y-m-d')?}',
+      defaultDate: '{?=date("Y-m-d")?}',
       format: 'YYYY-MM-DD',
       locale: 'id'
     });
@@ -194,6 +203,54 @@
     modal.on('show.bs.modal', function () {
         modalContent.load(loadURL);
     }).modal();
+    return false;
+  });
+
+  $("#display").on("click",".hapus_resep_response", function(event){
+    event.preventDefault();
+    var no_rawat = $(this).attr("data-no_rawat");
+    
+    if(confirm('Apakah Anda yakin ingin menghapus data resep yang sudah dikirim untuk no rawat: ' + no_rawat + '?')) {
+      var baseURL = mlite.url + '/' + mlite.admin;
+      
+      $.ajax({
+        url: baseURL + '/veronisa/hapusresepresponse/?t=' + mlite.token,
+        type: 'POST',
+        data: {
+          no_rawat: no_rawat
+        },
+        success: function(response) {
+          if(response.success) {
+            alert('Data berhasil dihapus');
+            location.reload();
+          } else {
+            var errorMsg = 'Gagal menghapus data: ' + response.message;
+            if(response.debug_info) {
+              errorMsg += '\n\nDebug Info:';
+              errorMsg += '\nFile: ' + response.debug_info.file;
+              errorMsg += '\nLine: ' + response.debug_info.line;
+              errorMsg += '\nNo Rawat: ' + response.debug_info.no_rawat;
+            }
+            alert(errorMsg);
+          }
+        },
+        error: function(xhr, status, error) {
+          var errorMsg = 'Terjadi kesalahan saat menghapus data';
+          if(xhr.responseText) {
+            try {
+              var response = JSON.parse(xhr.responseText);
+              if(response.message) {
+                errorMsg += ': ' + response.message;
+              }
+            } catch(e) {
+              errorMsg += '\n\nResponse: ' + xhr.responseText;
+            }
+          }
+          errorMsg += '\n\nStatus: ' + status + '\nError: ' + error;
+          alert(errorMsg);
+        }
+      });
+    }
     return false;
   });
 </script>

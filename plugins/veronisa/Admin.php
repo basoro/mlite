@@ -203,6 +203,12 @@ class Admin extends AdminModule
         $row['status_pengajuan'] = $this->db('mlite_veronisa')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
         $row['berkasPasien'] = url([ADMIN, 'veronisa', 'berkaspasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
         $row['berkasPerawatan'] = url([ADMIN, 'veronisa', 'berkasperawatan', $this->convertNorawat($row['no_rawat'])]);
+        
+        // Cek apakah data sudah ada di tabel mlite_resep_response_log
+        $resep_response_exists = $this->db('mlite_resep_response_log')
+          ->where('no_rawat', $row['no_rawat'])
+          ->oneArray();
+        $row['resep_response_exists'] = !empty($resep_response_exists);
         $this->assign['list'][] = $row;
       }
     }
@@ -279,7 +285,161 @@ class Admin extends AdminModule
     exit();
   }
 
-public function postKirimApotikOnline()
+public function postHapusResepResponse()
+  {
+    if (ob_get_level()) {
+      ob_clean();
+    }
+    header('Content-Type: application/json');
+    http_response_code(200);
+
+    try {
+      $no_rawat = $_POST['no_rawat'] ?? '';
+      
+      if (empty($no_rawat)) {
+        throw new \Exception('No rawat tidak boleh kosong');
+      }
+
+      // Ambil data resep yang akan dihapus untuk bridging API
+      $resep_data = $this->db('mlite_resep_response_log')
+        ->where('no_rawat', $no_rawat)
+        ->oneArray();
+
+      if (!$resep_data) {
+        throw new \Exception('Data resep tidak ditemukan');
+      }
+
+      // Bridging API hapus pelayanan obat dan resep ke BPJS
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+      
+      // Parse raw response untuk mendapatkan data yang diperlukan
+      // $raw_response = json_decode($resep_data['raw_response'], true);
+      // $response = $raw_response['response'] ?? [];
+      
+      $hapus_resep_data = [
+        'nosjp' => $resep_data['no_sep_kunjungan'] ?? '',
+        'refasalsjp' => $resep_data['faskes_asal'] ?? '',
+        'noresep' => $resep_data['no_resep'] ?? ''
+      ];
+
+      // Validasi data yang diperlukan untuk API hapus
+      if (empty($hapus_resep_data['nosjp']) || empty($hapus_resep_data['noresep'])) {
+        throw new \Exception('Data tidak lengkap untuk menghapus resep di BPJS');
+      }
+
+      // Ambil data obat dari resep untuk dihapus satu per satu
+      $obat_resep = $this->db('mlite_resep_response_log')
+        ->join('detail_pemberian_obat', 'detail_pemberian_obat.no_rawat=mlite_resep_response_log.no_rawat')
+        ->join('mlite_maping_obat_apotek_online', 'mlite_maping_obat_apotek_online.kode_brng=detail_pemberian_obat.kode_brng')
+        ->where('mlite_resep_response_log.no_rawat', $no_rawat)
+        ->toArray();
+
+      $hapus_obat_responses = [];
+      
+      // Hapus setiap pelayanan obat terlebih dahulu
+      foreach ($obat_resep as $index => $obat) {
+        $hapus_obat_data = [
+          'nosepapotek' => $resep_data['no_sep_kunjungan'] ?? '',
+          'noresep' => $resep_data['no_resep'] ?? '',
+          'kodeobat' => $obat['kd_obat_bpjs'] ?? '',
+          'tipeobat' => 'N' // Default tipe obat Non-Racikan
+        ];
+
+        $url_hapus_obat = $this->api_url . 'pelayanan/obat/hapus';
+        $output_hapus_obat = BpjsService::delete($url_hapus_obat, json_encode($hapus_obat_data), $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        $json_hapus_obat = json_decode($output_hapus_obat, true);
+        
+        $hapus_obat_responses[] = [
+          'kode_obat' => $obat['kode_brng'],
+          'nama_obat' => $obat['nama_brng'] ?? 'Unknown',
+          'kd_obat_bpjs' => $obat['kd_obat_bpjs'] ?? '',
+          'response' => $json_hapus_obat
+        ];
+
+        // Debug log untuk troubleshooting
+        file_put_contents("debug_hapus_obat_{$index}.json", json_encode([
+          'nosepapotek' => $resep_data['no_sep_kunjungan'] ?? '',
+          'noresep' => $resep_data['no_resep'] ?? '',
+          'kodeobat' => $obat['kd_obat_bpjs'] ?? '',
+          'tipeobat' => 'N' // Default tipe obat Non-Racikan
+        ], JSON_PRETTY_PRINT));
+
+        // Jika ada error saat hapus obat, catat tapi lanjutkan
+        if ($json_hapus_obat['metaData']['code'] !== '200') {
+          error_log('Gagal hapus obat ' . $obat['kode_brng'] . ': ' . $json_hapus_obat['metaData']['message']);
+        }
+      }
+
+      // Setelah hapus semua obat, baru hapus resep
+      $url_hapus_resep = $this->api_url . 'hapusresep';
+      $output_hapus = BpjsService::delete($url_hapus_resep, json_encode($hapus_resep_data), $this->consid, $this->secretkey, $this->user_key, $tStamp);
+      $json_hapus = json_decode($output_hapus, true);
+
+      // Cek response dari BPJS
+      if ($json_hapus['metaData']['code'] !== '200') {
+        throw new \Exception('Gagal menghapus resep di BPJS: ' . $json_hapus['metaData']['message']);
+      }
+
+      // Hapus data dari tabel mlite_resep_response_log setelah berhasil hapus di BPJS
+      $deleted = $this->db('mlite_resep_response_log')
+        ->where('no_rawat', $no_rawat)
+        ->delete();
+
+      if ($deleted) {
+        // Log aktivitas hapus
+        $this->db('mlite_apotek_online_log')->save([
+          'no_rawat' => $no_rawat,
+          'noresep' => $hapus_resep_data['noresep'],
+          'tanggal_kirim' => date('Y-m-d H:i:s'),
+          'status' => 'success',
+          'response_resep' => 'Data resep berhasil dihapus dari BPJS dan lokal. Response BPJS: ' . json_encode($json_hapus),
+          'response_obat' => 'Hapus obat responses: ' . json_encode($hapus_obat_responses),
+          'user' => $this->core->getUserInfo('username', $_SESSION['mlite_user'])
+        ]);
+
+        echo json_encode([
+          'success' => true,
+          'message' => 'Data resep dan obat berhasil dihapus dari BPJS dan database lokal',
+          'bpjs_response' => $json_hapus,
+          'obat_responses' => $hapus_obat_responses
+        ]);
+      } else {
+        throw new \Exception('Berhasil hapus di BPJS tapi gagal hapus data lokal');
+      }
+    } catch (\Exception $e) {
+      // Log error untuk debugging
+      error_log('Error hapus resep response: ' . $e->getMessage());
+      error_log('Stack trace: ' . $e->getTraceAsString());
+      
+      echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage(),
+        'debug_info' => [
+          'file' => $e->getFile(),
+          'line' => $e->getLine(),
+          'no_rawat' => $_POST['no_rawat'] ?? 'not set'
+        ]
+      ]);
+    } catch (\Error $e) {
+      // Log error untuk debugging
+      error_log('Fatal error hapus resep response: ' . $e->getMessage());
+      error_log('Stack trace: ' . $e->getTraceAsString());
+      
+      echo json_encode([
+        'success' => false,
+        'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage(),
+        'debug_info' => [
+          'file' => $e->getFile(),
+          'line' => $e->getLine(),
+          'no_rawat' => $_POST['no_rawat'] ?? 'not set'
+        ]
+      ]);
+    }
+    exit();
+  }
+
+  public function postKirimApotikOnline()
 {
   if (ob_get_level()) {
     ob_clean();
@@ -340,6 +500,29 @@ public function postKirimApotikOnline()
 
     if ($json_resep['metaData']['code'] !== '200') {
       throw new \Exception('Gagal mengirim data resep: ' . $json_resep['metaData']['message']);
+    }
+
+    // Simpan respons resep ke tabel khusus
+    if (isset($json_resep['response'])) {
+      $response = $json_resep['response'];
+      $this->db('mlite_resep_response_log')->save([
+        'no_rawat' => $_POST['no_rawat'],
+        'no_sep_kunjungan' => $response['noSep_Kunjungan'] ?? null,
+        'no_kartu' => $response['noKartu'] ?? null,
+        'nama' => $response['nama'] ?? null,
+        'faskes_asal' => $response['faskesAsal'] ?? null,
+        'no_apotik' => $response['noApotik'] ?? null,
+        'no_resep' => $response['noResep'] ?? null,
+        'tgl_resep' => $response['tglResep'] ?? null,
+        'kd_jns_obat' => $response['kdJnsObat'] ?? null,
+        'by_tag_rsp' => $response['byTagRsp'] ?? null,
+        'by_ver_rsp' => $response['byVerRsp'] ?? null,
+        'tgl_entry' => $response['tglEntry'] ?? null,
+        'meta_code' => $json_resep['metaData']['code'],
+        'meta_message' => $json_resep['metaData']['message'],
+        'raw_response' => json_encode($json_resep),
+        'user' => $this->core->getUserInfo('username', null, true)
+      ]);
     }
 
     // === Kirim Obat

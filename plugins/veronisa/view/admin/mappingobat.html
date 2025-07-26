@@ -30,7 +30,7 @@
             <div class="col-md-4">
               <div class="form-group">
                 <label>Nama Obat RS</label>
-                <select name="kode_obat_rs" class="form-control">
+                <select name="kode_obat_rs" class="form-control" data-use-search="true">
                   {loop: $obat}
                   <option value="{$value.kode_brng}">{$value.nama_brng}</option>
                   {/loop}
