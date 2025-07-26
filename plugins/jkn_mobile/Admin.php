@@ -27,6 +27,7 @@ class Admin extends AdminModule
     {
         return [
             'Kelola' => 'manage',
+            'WS BPJS' => 'wsbpjs',
             'Katalog' => 'index',
             'Mapping Poliklinik' => 'mappingpoli',
             'Add Mapping Poliklinik' => 'addmappingpoli',
@@ -45,7 +46,7 @@ class Admin extends AdminModule
     {
       $sub_modules = [
         ['name' => 'Katalog', 'url' => url([ADMIN, 'jkn_mobile', 'index']), 'icon' => 'tasks', 'desc' => 'Index JKN Mobile'],
-        ['name' => 'Referensi', 'url' => url([ADMIN, 'jkn_mobile', 'ref']), 'icon' => 'tasks', 'desc' => 'Referensi JKN Mobile'],
+        ['name' => 'WS BPJS', 'url' => url([ADMIN, 'jkn_mobile', 'wsbpjs']), 'icon' => 'tasks', 'desc' => 'WS BPJS JKN Mobile'],
         ['name' => 'Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile', 'mappingpoli']), 'icon' => 'tasks', 'desc' => 'Mapping Poliklinik JKN Mobile'],
         ['name' => 'Add Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile', 'addmappingpoli']), 'icon' => 'tasks', 'desc' => 'Add mapping poliklinik JKN Mobile'],
         ['name' => 'Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile', 'mappingdokter']), 'icon' => 'tasks', 'desc' => 'Mapping Dokter JKN Mobile'],
@@ -67,9 +68,13 @@ class Admin extends AdminModule
         return $this->draw('index.html');
     }
 
-    public function getRef()
+    public function getWSBpjs()
     {
-        return $this->draw('ref.html');
+        $this->getCssCard();
+        $parsedown = new \Systems\Lib\Parsedown();
+        $readme_file = MODULES . '/jkn_mobile/Help.md';
+        $readme =  $parsedown->text($this->tpl->noParse(file_get_contents($readme_file)));
+        return $this->draw('wsbpjs.html', ['readme' => $readme]);
     }
 
     public function getRefPoliFinger()

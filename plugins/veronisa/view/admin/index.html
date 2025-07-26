@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row" id="display">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -68,7 +68,12 @@
                           <br/>
                           <a href="{$value.pdfURL}" target="_blank" class="btn btn-primary btn-xs">
       											<i class="fa fa-print"></i> Lihat Data Klaim
-      										</a><br/>
+      										</a>
+                          <br>
+                          <a href="#" class="btn btn-danger btn-xs kirim_apotik_online" data-no_rawat="{?=convertNorawat($value.no_rawat)?}">
+                            <i class="fa fa-refresh"></i> Kirim Apotik Online 
+                          </a>
+                          <br/>
                           {if: $value.nosep == ''}
                             <button class="btn btn-warning btn-xs">
         											<i class="fa fa-check"></i> Status
@@ -158,6 +163,13 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="kirimApotikModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
 <script>
   $( function() {
     $('.tanggal').datetimepicker({
@@ -167,4 +179,21 @@
     });
   } );
   $('.gallery').lightbox();
+</script>
+<script type="text/javascript">
+  $("#display").on("click",".kirim_apotik_online", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $(this).attr("data-no_rawat");
+    var loadURL =  baseURL + '/veronisa/kirimapotikonline/' + no_rawat + '?t=' + mlite.token;
+
+    var modal = $('#kirimApotikModal');
+    var modalContent = $('#kirimApotikModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
 </script>

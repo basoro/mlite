@@ -83,6 +83,7 @@ class Admin extends AdminModule
         }
         $this->_addHeaderFiles();
         $username = $this->core->getUserInfo('username', null, true);
+        $this->assign = [];
         $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->toArray();
         $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
         $this->assign['penjab']       = $this->db('penjab')->where('status', '1')->toArray();
@@ -1868,6 +1869,7 @@ class Admin extends AdminModule
         if($cek_pegawai) {
           $cek_role = $this->core->getPegawaiInfo('nik', $this->core->getUserInfo('username', $_SESSION['mlite_user']));
         }
+        $this->assign = [];
         $this->assign['websocket'] = $this->settings->get('settings.websocket');
         $this->assign['websocket_proxy'] = $this->settings->get('settings.websocket_proxy');
         echo $this->draw(MODULES.'/dokter_ralan/js/admin/dokter_ralan.js', ['cek_role' => $cek_role, 'mlite' => $this->assign]);

@@ -1,0 +1,226 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Kelola Mapping Obat</h3>
+      </div>
+      <div class="panel-body">
+        <form name="mapping_obat" action="{?=url(ADMIN.'/veronisa/saveobat')?}" method="POST">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Nama Obat BPJS</label>
+                <div class="input-group">
+                  <input type="text" name="obat_nama" id="obat_nama" class="form-control" value="" placeholder="Masukkan nama obat BPJS">
+                  <span class="input-group-btn">
+                    <button type="button" class="btn btn-info" id="btnDPHO" data-toggle="modal" data-target="#modalDPHO">
+                      <i class="fa fa-search"></i> DPHO
+                    </button>
+                  </span>
+                </div>
+                <ul class="list-group" id="obatList" style="z-index:1000;position:absolute;width:100%;"></ul>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Kode Obat BPJS</label>
+                <input type="text" name="obat_kode" id="obat_kode" class="form-control" value="">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Nama Obat RS</label>
+                <select name="kode_obat_rs" class="form-control">
+                  {loop: $obat}
+                  <option value="{$value.kode_brng}">{$value.nama_brng}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabel Data Mapping -->
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Data Mapping Obat</h3>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive no-margin">
+          <table class="table table-striped no-margin display no-wrap" width="100%">
+            <thead>
+              <tr>
+                <th>Kode Obat RS</th>
+                <th>Kode Obat BPJS</th>
+                <th>Nama Obat BPJS</th>
+                <th class="text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $row}
+              <tr>
+                <td>{$value.kode_brng}</td>
+                <td>{$value.kd_obat_bpjs}</td>
+                <td>{$value.nama_obat_bpjs}</td>
+                <td class="text-right">
+                  <a href="{?=url([ADMIN, 'veronisa', 'obatdelete', $value.kode_brng])?}" class="btn btn-xs btn-danger" data-confirm="Anda yakin akan menghapus mapping ini?">
+                    <i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+                  </a>
+                </td>
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script untuk autocomplete -->
+<script type="text/javascript">
+  $('#obat_nama').keyup(function(e){
+    var obat_nama = $('#obat_nama').val().replace(/\s+$/, '');
+    var url = "{?=url(ADMIN)?}/vclaim/obat_bpjs_search/" + obat_nama + "?t={?=$_SESSION['token']?}";
+
+    if(e.which == 32) {
+      $.ajax({
+        url: url,
+        method: "GET",
+        data: {},
+        success: function(data) {
+          var data = JSON.parse(data);
+          var json_obj = [data];
+          var output = '';
+
+          if(json_obj[0].metaData.code == 200) {
+            var response = json_obj[0].response.list;
+            for (var i in response) {
+              output += '<li class="list-group-item link-class">' + response[i].kode + ': ' + response[i].nama + '</li>';
+            }
+          } else {
+            output += '<li class="list-group-item link-class">' + json_obj[0].metaData.message + '</li>';
+          }
+
+          $('#obatList').fadeIn().html(output).show();
+        }
+      });
+    }
+  });
+
+  $('#obatList').on('click', 'li', function(){
+    var parts = $(this).text().split(': ');
+    $('#obat_kode').val(parts[0]);
+    $('#obat_nama').val(parts[1]);
+    $('#obatList').fadeOut();
+  });
+
+  // DPHO Modal functionality
+  $('#btnDPHO').click(function(){
+    $('#dphoTable tbody').html('<tr><td colspan="6" class="text-center">Loading...</td></tr>');
+    
+    $.ajax({
+      url: "{?=url(ADMIN)?}/veronisa/dpho?t={?=$_SESSION['token']?}",
+      method: "GET",
+      dataType: "json",
+      success: function(data) {
+        var output = '';
+        
+        if(data.metaData.code == 200) {
+          var response = data.response.list;
+          for (var i in response) {
+            output += '<tr class="dpho-row" data-kode="' + response[i].kodeobat + '" data-nama="' + response[i].namaobat + '">';
+            output += '<td>' + response[i].kodeobat + '</td>';
+            output += '<td>' + response[i].namaobat + '</td>';
+            output += '<td>' + response[i].generik + '</td>';
+            output += '<td>Rp ' + parseInt(response[i].harga).toLocaleString('id-ID') + '</td>';
+            output += '<td>' + response[i].restriksi + '</td>';
+            output += '<td><span class="label label-' + (response[i].prb == 'True' ? 'success' : 'default') + '">PRB</span> ';
+            output += '<span class="label label-' + (response[i].kronis == 'True' ? 'warning' : 'default') + '">Kronis</span> ';
+            output += '<span class="label label-' + (response[i].kemo == 'True' ? 'danger' : 'default') + '">Kemo</span></td>';
+            output += '</tr>';
+          }
+        } else {
+          output = '<tr><td colspan="6" class="text-center text-danger">' + data.metaData.message + '</td></tr>';
+        }
+        
+        $('#dphoTable tbody').html(output);
+        
+        // Initialize search functionality after data is loaded
+        $('#searchDPHO').off('keyup').keyup(function(){
+          var value = $(this).val().toLowerCase();
+          $('#dphoTable tbody tr').filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+          });
+        });
+      },
+      error: function() {
+        $('#dphoTable tbody').html('<tr><td colspan="6" class="text-center text-danger">Terjadi kesalahan saat mengambil data DPHO</td></tr>');
+      }
+    });
+  });
+
+  // Handle DPHO row selection
+   $(document).on('click', '.dpho-row', function(){
+     var kode = $(this).data('kode');
+     var nama = $(this).data('nama');
+     
+     $('#obat_kode').val(kode);
+     $('#obat_nama').val(nama);
+     $('#modalDPHO').modal('hide');
+   });
+
+   // Clear search when modal is closed
+   $('#modalDPHO').on('hidden.bs.modal', function () {
+     $('#searchDPHO').val('');
+     $('#dphoTable tbody tr').show();
+   });
+</script>
+
+<!-- Modal DPHO -->
+<div class="modal fade" id="modalDPHO" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Daftar Obat DPHO BPJS</h4>
+      </div>
+      <div class="modal-body">
+         <div class="form-group">
+           <input type="text" id="searchDPHO" class="form-control" placeholder="Cari obat berdasarkan nama atau kode...">
+         </div>
+         <div class="table-responsive">
+           <table class="table table-striped table-hover" id="dphoTable">
+            <thead>
+              <tr>
+                <th>Kode Obat</th>
+                <th>Nama Obat</th>
+                <th>Generik</th>
+                <th>Harga</th>
+                <th>Restriksi</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="6" class="text-center">Klik tombol DPHO untuk memuat data</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>

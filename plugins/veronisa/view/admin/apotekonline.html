@@ -1,0 +1,1131 @@
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3">
+      <div class="panel panel-default" style="margin-top: 20px;">
+        <div class="panel-heading">
+          <h4 class="panel-title">Menu Antrean</h4>
+        </div>
+        <div class="panel-body" style="padding: 0;">
+          <ul class="nav nav-pills nav-stacked" style="margin: 0;">
+            <ul class="nav nav-pills nav-stacked" style="margin: 0;">
+            <li><a href="#" onclick="showForm('Referensi')"><span class="glyphicon glyphicon-book"></span> Referensi</a></li>
+            <li><a href="#" onclick="showForm('Obat')"><span class="glyphicon glyphicon-plus-sign"></span> Obat</a></li>
+            <li><a href="#" onclick="showForm('Pelayanan Obat')"><span class="glyphicon glyphicon-briefcase"></span> Pelayanan Obat</a></li>
+            <li><a href="#" onclick="showForm('Resep')"><span class="glyphicon glyphicon-list-alt"></span> Resep</a></li>
+            <li><a href="#" onclick="showForm('Cari SEP')"><span class="glyphicon glyphicon-search"></span> Cari SEP</a></li>
+            <li><a href="#" onclick="showForm('Monitoring Klaim')"><span class="glyphicon glyphicon-stats"></span> Monitoring Klaim</a></li>
+            </ul>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Area -->
+    <div class="col-md-9">
+      <div class="panel panel-default" style="margin-top: 20px;">
+        <div class="panel-body" id="formArea">
+            {$readme}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showForm(title) {
+    var formHtml = '';
+    
+    if (title === 'Referensi') {
+      formHtml = `
+        <h4>Form Pengetesan Referensi</h4>
+        <form role="form" id="referensiForm">
+          <div class="form-group">
+            <label for="baseUrl">Base URL</label>
+            <select class="form-control" id="baseUrl">
+              <option value="dev">Development</option>
+              <option value="prod">Production</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+             <label for="endpoint">Endpoint</label>
+             <select class="form-control" id="endpoint" onchange="updateEndpoint()">
+               <option value="">Pilih Endpoint</option>
+               <option value="referensi/dpho">referensi/dpho</option>
+               <option value="referensi/poli">referensi/poli/{Kode atau Nama Poli}</option>
+               <option value="referensi/ppk">referensi/ppk/{Jenis Faskes}/{Nama Faskes}</option>
+               <option value="referensi/settingppk">referensi/settingppk/read/{Kode Apotek}</option>
+               <option value="referensi/spesialistik">referensi/spesialistik</option>
+               <option value="referensi/obat">referensi/obat/{Kode Jenis Obat}/{Tgl Resep}/{Filter Pencarian}</option>
+             </select>
+           </div>
+           
+           <div class="form-group">
+             <label for="fullUrl">URL</label>
+             <input type="text" class="form-control" id="fullUrl" readonly placeholder="{Base URL}/{endpoint}">
+           </div>
+           
+           <div class="form-group">
+             <label for="method">Method</label>
+             <select class="form-control" id="method">
+               <option value="GET">GET</option>
+               <option value="POST">POST</option>
+             </select>
+           </div>
+           
+           <div id="parametersContainer">
+             <!-- Parameter inputs akan ditambahkan secara dinamis di sini -->
+           </div>
+          
+          <div class="form-group">
+            <label for="requestForm">Form</label>
+            <textarea rows="10" class="form-control" id="requestForm" placeholder="Masukkan data request dalam format JSON"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="response">Response</label>
+            <textarea rows="10" class="form-control" id="response" readonly placeholder="Response akan ditampilkan di sini"></textarea>
+          </div>
+          
+          <button type="button" class="btn btn-primary" onclick="submitRequest()">Submit</button>
+          <button type="button" class="btn btn-default" onclick="clearForm()">Clear</button>
+        </form>
+      `;
+    } else if (title === 'Obat') {
+      formHtml = `
+        <h4>Form Pengetesan Obat</h4>
+        <form role="form" id="obatForm">
+          <div class="form-group">
+            <label for="baseUrlObat">Base URL</label>
+            <select class="form-control" id="baseUrlObat" onchange="updateObatUrl()">
+              <option value="dev">Development</option>
+              <option value="prod">Production</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+             <label for="endpointObat">Endpoint</label>
+             <select class="form-control" id="endpointObat" onchange="updateObatUrl()">
+               <option value="">Pilih Endpoint</option>
+               <option value="obatnonracikan/v3/insert">obatnonracikan/v3/insert</option>
+               <option value="obatracikan/v3/insert">obatracikan/v3/insert</option>
+             </select>
+           </div>
+           
+           <div class="form-group">
+             <label for="fullUrlObat">URL</label>
+             <input type="text" class="form-control" id="fullUrlObat" readonly placeholder="{Base URL}/{endpoint}">
+           </div>
+           
+           <div class="form-group">
+             <label for="methodObat">Method</label>
+             <select class="form-control" id="methodObat">
+               <option value="GET">GET</option>
+               <option value="POST" selected>POST</option>
+             </select>
+           </div>
+           
+           <div class="form-group">
+             <label for="parameterObat">Parameter</label>
+             <input type="text" class="form-control" id="parameterObat" placeholder="Masukkan parameter jika diperlukan">
+           </div>
+          
+          <div class="form-group">
+            <label for="requestFormObat">Form</label>
+            <textarea rows="10" class="form-control" id="requestFormObat" placeholder="Masukkan data request dalam format JSON"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="responseObat">Response</label>
+            <textarea rows="10" class="form-control" id="responseObat" readonly placeholder="Response akan ditampilkan di sini"></textarea>
+          </div>
+          
+          <button type="button" class="btn btn-primary" onclick="submitObatRequest()">Submit</button>
+          <button type="button" class="btn btn-default" onclick="clearObatForm()">Clear</button>
+        </form>
+      `;
+    } else if (title === 'Resep') {
+      formHtml = `
+        <h4>Form Pengetesan Resep</h4>
+        <form role="form" id="resepForm">
+          <div class="form-group">
+            <label for="baseUrlResep">Base URL</label>
+            <select class="form-control" id="baseUrlResep" onchange="updateResepUrl()">
+              <option value="dev">Development</option>
+              <option value="prod">Production</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+             <label for="endpointResep">Endpoint</label>
+             <select class="form-control" id="endpointResep" onchange="updateResepEndpoint()">
+               <option value="">Pilih Endpoint</option>
+               <option value="sjpresep/v3/insert">sjpresep/v3/insert</option>
+               <option value="hapusresep">hapusresep</option>
+               <option value="daftarresep">daftarresep</option>
+             </select>
+           </div>
+           
+           <div class="form-group">
+             <label for="fullUrlResep">URL</label>
+             <input type="text" class="form-control" id="fullUrlResep" readonly placeholder="{Base URL}/{endpoint}">
+           </div>
+           
+           <div class="form-group">
+             <label for="methodResep">Method</label>
+             <select class="form-control" id="methodResep">
+               <option value="GET">GET</option>
+               <option value="POST" selected>POST</option>
+               <option value="DELETE">DELETE</option>
+             </select>
+           </div>
+           
+           <div class="form-group">
+             <label for="parameterResep">Parameter</label>
+             <input type="text" class="form-control" id="parameterResep" placeholder="Masukkan parameter jika diperlukan">
+           </div>
+          
+          <div class="form-group">
+            <label for="requestFormResep">Form</label>
+            <textarea rows="10" class="form-control" id="requestFormResep" placeholder="Masukkan data request dalam format JSON"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="responseResep">Response</label>
+            <textarea rows="10" class="form-control" id="responseResep" readonly placeholder="Response akan ditampilkan di sini"></textarea>
+          </div>
+          
+          <button type="button" class="btn btn-primary" onclick="submitResepRequest()">Submit</button>
+          <button type="button" class="btn btn-default" onclick="clearResepForm()">Clear</button>
+        </form>
+      `;
+    } else if (title === 'Pelayanan Obat') {
+      formHtml = `
+        <h4>Form Pengetesan Pelayanan Obat</h4>
+        <form role="form" id="pelayananObatForm">
+          <div class="form-group">
+            <label for="baseUrlPelayananObat">Base URL</label>
+            <select class="form-control" id="baseUrlPelayananObat" onchange="updatePelayananObatUrl()">
+              <option value="dev">Development</option>
+              <option value="prod">Production</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+             <label for="endpointPelayananObat">Endpoint</label>
+             <select class="form-control" id="endpointPelayananObat" onchange="updatePelayananObatEndpoint()">
+               <option value="">Pilih Endpoint</option>
+               <option value="pelayanan/obat/hapus">pelayanan/obat/hapus/</option>
+               <option value="obat/daftar">obat/daftar/{Nomor Kunjungan/SEP}</option>
+               <option value="riwayatobat">riwayatobat/{Tgl Awal}/{Tgl Akhir}/{NoKartu}</option>
+             </select>
+           </div>
+           
+           <div class="form-group">
+             <label for="fullUrlPelayananObat">URL</label>
+             <input type="text" class="form-control" id="fullUrlPelayananObat" readonly placeholder="{Base URL}/{endpoint}">
+           </div>
+           
+           <div class="form-group">
+             <label for="methodPelayananObat">Method</label>
+             <select class="form-control" id="methodPelayananObat">
+               <option value="GET">GET</option>
+               <option value="POST" selected>POST</option>
+               <option value="DELETE">DELETE</option>
+             </select>
+           </div>
+           
+           <div id="parametersContainerPelayananObat">
+             <!-- Parameter inputs akan ditambahkan secara dinamis di sini -->
+           </div>
+          
+          <div class="form-group">
+            <label for="requestFormPelayananObat">Form</label>
+            <textarea rows="10" class="form-control" id="requestFormPelayananObat" placeholder="Masukkan data request dalam format JSON"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="responsePelayananObat">Response</label>
+            <textarea rows="10" class="form-control" id="responsePelayananObat" readonly placeholder="Response akan ditampilkan di sini"></textarea>
+          </div>
+          
+          <button type="button" class="btn btn-primary" onclick="submitPelayananObatRequest()">Submit</button>
+          <button type="button" class="btn btn-default" onclick="clearPelayananObatForm()">Clear</button>
+        </form>
+      `;
+    } else if (title === 'Cari SEP') {
+      formHtml = `
+        <h4>Form Pengetesan Cari SEP</h4>
+        <form role="form" id="cariSepForm">
+          <div class="form-group">
+            <label for="baseUrlCariSep">Base URL</label>
+            <select class="form-control" id="baseUrlCariSep" onchange="updateCariSepUrl()">
+              <option value="dev">Development</option>
+              <option value="prod">Production</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+             <label for="endpointCariSep">Endpoint</label>
+             <select class="form-control" id="endpointCariSep" onchange="updateCariSepEndpoint()">
+               <option value="">Pilih Endpoint</option>
+               <option value="sep">sep/{Nomor Kunjungan/SEP}</option>
+             </select>
+           </div>
+           
+           <div class="form-group">
+             <label for="fullUrlCariSep">URL</label>
+             <input type="text" class="form-control" id="fullUrlCariSep" readonly placeholder="{Base URL}/{endpoint}">
+           </div>
+           
+           <div class="form-group">
+             <label for="methodCariSep">Method</label>
+             <select class="form-control" id="methodCariSep">
+               <option value="GET" selected>GET</option>
+               <option value="POST">POST</option>
+             </select>
+           </div>
+           
+           <div id="parametersContainerCariSep">
+             <!-- Parameter inputs akan ditambahkan secara dinamis di sini -->
+           </div>
+          
+          <div class="form-group">
+            <label for="requestFormCariSep">Form</label>
+            <textarea rows="10" class="form-control" id="requestFormCariSep" placeholder="Masukkan data request dalam format JSON"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="responseCariSep">Response</label>
+            <textarea rows="10" class="form-control" id="responseCariSep" readonly placeholder="Response akan ditampilkan di sini"></textarea>
+          </div>
+          
+          <button type="button" class="btn btn-primary" onclick="submitCariSepRequest()">Submit</button>
+          <button type="button" class="btn btn-default" onclick="clearCariSepForm()">Clear</button>
+        </form>
+      `;
+    } else if (title === 'Monitoring Klaim') {
+      formHtml = `
+        <h4>Form Pengetesan Monitoring Klaim</h4>
+        <form role="form" id="monitoringKlaimForm">
+          <div class="form-group">
+            <label for="baseUrlMonitoringKlaim">Base URL</label>
+            <select class="form-control" id="baseUrlMonitoringKlaim" onchange="updateMonitoringKlaimUrl()">
+              <option value="dev">Development</option>
+              <option value="prod">Production</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+             <label for="endpointMonitoringKlaim">Endpoint</label>
+             <select class="form-control" id="endpointMonitoringKlaim" onchange="updateMonitoringKlaimEndpoint()">
+               <option value="">Pilih Endpoint</option>
+               <option value="monitoring/klaim">monitoring/klaim/{Bulan}/{Tahun}/{Jenis Obat}/{Status}</option>
+             </select>
+           </div>
+           
+           <div class="form-group">
+             <label for="fullUrlMonitoringKlaim">URL</label>
+             <input type="text" class="form-control" id="fullUrlMonitoringKlaim" readonly placeholder="{Base URL}/{endpoint}">
+           </div>
+           
+           <div class="form-group">
+             <label for="methodMonitoringKlaim">Method</label>
+             <select class="form-control" id="methodMonitoringKlaim">
+               <option value="GET" selected>GET</option>
+               <option value="POST">POST</option>
+             </select>
+           </div>
+           
+           <div id="parametersContainerMonitoringKlaim">
+             <!-- Parameter inputs akan ditambahkan secara dinamis di sini -->
+           </div>
+          
+          <div class="form-group">
+            <label for="requestFormMonitoringKlaim">Form</label>
+            <textarea rows="10" class="form-control" id="requestFormMonitoringKlaim" placeholder="Masukkan data request dalam format JSON"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="responseMonitoringKlaim">Response</label>
+            <textarea rows="10" class="form-control" id="responseMonitoringKlaim" readonly placeholder="Response akan ditampilkan di sini"></textarea>
+          </div>
+          
+          <button type="button" class="btn btn-primary" onclick="submitMonitoringKlaimRequest()">Submit</button>
+          <button type="button" class="btn btn-default" onclick="clearMonitoringKlaimForm()">Clear</button>
+        </form>
+      `;
+    } else {
+      formHtml = `
+        <h4>` + title + `</h4>
+        <form role="form">
+          <div class="form-group">
+            <label for="input2">Json Form</label>
+            <textarea rows="10" class="form-control" id="input2" placeholder="Masukkan json"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      `;
+    }
+    
+    document.getElementById('formArea').innerHTML = formHtml;
+  }
+  
+  function updateEndpoint() {
+     var endpoint = document.getElementById('endpoint').value;
+     var parametersContainer = document.getElementById('parametersContainer');
+     
+     // Clear existing parameters
+     parametersContainer.innerHTML = '';
+     
+     // Define parameters for each endpoint
+     var endpointParams = {
+       'referensi/dpho': [],
+       'referensi/poli': [
+         {name: 'kode_nama_poli', label: 'Kode atau Nama Poli', placeholder: 'Masukkan kode atau nama poli'}
+       ],
+       'referensi/ppk': [
+         {name: 'jenis_faskes', label: 'Jenis Faskes', placeholder: '1 untuk Faskes 1, 2 untuk Faskes 2/RS'},
+         {name: 'nama_faskes', label: 'Nama Faskes', placeholder: 'Masukkan nama faskes'}
+       ],
+       'referensi/settingppk': [
+         {name: 'kode_apotek', label: 'Kode Apotek', placeholder: 'Masukkan kode apotek'}
+       ],
+       'referensi/spesialistik': [],
+       'referensi/obat': [
+         {name: 'kode_jenis_obat', label: 'Kode Jenis Obat', placeholder: 'Masukkan kode jenis obat'},
+         {name: 'tgl_resep', label: 'Tanggal Resep', placeholder: 'Format: YYYY-MM-DD'},
+         {name: 'filter_pencarian', label: 'Filter Pencarian', placeholder: 'Masukkan filter pencarian'}
+       ]
+     };
+     
+     // Add parameter inputs based on selected endpoint
+     if (endpoint && endpointParams[endpoint]) {
+       endpointParams[endpoint].forEach(function(param) {
+         var paramDiv = document.createElement('div');
+         paramDiv.className = 'form-group';
+         paramDiv.innerHTML = `
+           <label for="${param.name}">${param.label}</label>
+           <input type="text" class="form-control" id="${param.name}" name="${param.name}" placeholder="${param.placeholder}" onchange="updateUrl()">
+         `;
+         parametersContainer.appendChild(paramDiv);
+       });
+     }
+     
+     updateUrl();
+   }
+   
+   function updateUrl() {
+     var baseUrl = document.getElementById('baseUrl').value;
+     var endpoint = document.getElementById('endpoint').value;
+     var fullUrl = '';
+     
+     if (baseUrl && endpoint) {
+       var baseUrlValue = baseUrl === 'dev' ? 'https://apijkn-dev.bpjs-kesehatan.go.id/apotek-rest-dev' : 'https://apijkn.bpjs-kesehatan.go.id/apotek-rest';
+       var finalEndpoint = endpoint;
+       
+       // Replace placeholders with actual parameter values
+       if (endpoint === 'referensi/poli') {
+         var kodePoli = document.getElementById('kode_nama_poli');
+         if (kodePoli && kodePoli.value) {
+           finalEndpoint = 'referensi/poli/' + encodeURIComponent(kodePoli.value);
+         }
+       } else if (endpoint === 'referensi/ppk') {
+         var jenisFaskes = document.getElementById('jenis_faskes');
+         var namaFaskes = document.getElementById('nama_faskes');
+         if (jenisFaskes && jenisFaskes.value && namaFaskes && namaFaskes.value) {
+           finalEndpoint = 'referensi/ppk/' + encodeURIComponent(jenisFaskes.value) + '/' + encodeURIComponent(namaFaskes.value);
+         }
+       } else if (endpoint === 'referensi/settingppk') {
+         var kodeApotek = document.getElementById('kode_apotek');
+         if (kodeApotek && kodeApotek.value) {
+           finalEndpoint = 'referensi/settingppk/read/' + encodeURIComponent(kodeApotek.value);
+         }
+       } else if (endpoint === 'referensi/obat') {
+         var kodeJenisObat = document.getElementById('kode_jenis_obat');
+         var tglResep = document.getElementById('tgl_resep');
+         var filterPencarian = document.getElementById('filter_pencarian');
+         if (kodeJenisObat && kodeJenisObat.value && tglResep && tglResep.value && filterPencarian && filterPencarian.value) {
+           finalEndpoint = 'referensi/obat/' + encodeURIComponent(kodeJenisObat.value) + '/' + encodeURIComponent(tglResep.value) + '/' + encodeURIComponent(filterPencarian.value);
+         }
+       }
+       
+       fullUrl = baseUrlValue + '/' + finalEndpoint;
+     }
+     
+     document.getElementById('fullUrl').value = fullUrl;
+   }
+  
+  function submitRequest() {
+     var baseUrl = document.getElementById('baseUrl').value;
+     var endpoint = document.getElementById('endpoint').value;
+     var method = document.getElementById('method').value;
+     var requestForm = document.getElementById('requestForm').value;
+     var fullUrl = document.getElementById('fullUrl').value;
+     
+     if (!endpoint) {
+       alert('Silakan pilih endpoint terlebih dahulu');
+       return;
+     }
+     
+     // Collect all dynamic parameters
+     var parameters = {};
+     var parameterInputs = document.querySelectorAll('#parametersContainer input');
+     parameterInputs.forEach(function(input) {
+       if (input.value) {
+         parameters[input.name] = input.value;
+       }
+     });
+     
+     // Validate required parameters based on endpoint
+     var requiredParams = {
+       'referensi/poli': ['kode_nama_poli'],
+       'referensi/ppk': ['jenis_faskes', 'nama_faskes'],
+       'referensi/settingppk': ['kode_apotek'],
+       'referensi/obat': ['kode_jenis_obat', 'tgl_resep', 'filter_pencarian']
+     };
+     
+     if (requiredParams[endpoint]) {
+       var missingParams = requiredParams[endpoint].filter(function(param) {
+         return !parameters[param];
+       });
+       
+       if (missingParams.length > 0) {
+         alert('Parameter berikut harus diisi: ' + missingParams.join(', '));
+         return;
+       }
+     }
+     
+     // Kirim request ke API nyata
+     var formData = new FormData();
+     formData.append('base_url', baseUrl);
+     formData.append('endpoint', endpoint);
+     formData.append('method', method);
+     formData.append('form', requestForm);
+     
+     // Tambahkan parameter sebagai array
+     Object.keys(parameters).forEach(function(key) {
+       formData.append('parameters[' + key + ']', parameters[key]);
+     });
+     
+     // Tampilkan loading
+     document.getElementById('response').value = 'Loading...';
+     
+     // Kirim AJAX request
+     fetch('{?=url([ADMIN, "veronisa", "testreferensi"])?}', {
+       method: 'POST',
+       body: formData
+     })
+     .then(function(response) {
+       return response.json();
+     })
+     .then(function(data) {
+       document.getElementById('response').value = JSON.stringify(data, null, 2);
+     })
+     .catch(function(error) {
+       document.getElementById('response').value = JSON.stringify({
+         metaData: {
+           code: "5000",
+           message: "Network Error: " + error.message
+         },
+         response: "Gagal menghubungi server"
+       }, null, 2);
+     });
+   }
+  
+  function clearForm() {
+    document.getElementById('referensiForm').reset();
+    document.getElementById('fullUrl').value = '';
+    document.getElementById('response').value = '';
+  }
+  
+  // Fungsi untuk form obat
+  function updateObatUrl() {
+    var baseUrl = document.getElementById('baseUrlObat').value;
+    var endpoint = document.getElementById('endpointObat').value;
+    var fullUrl = '';
+    
+    if (baseUrl && endpoint) {
+      var baseUrlValue = baseUrl === 'dev' ? 'https://apijkn-dev.bpjs-kesehatan.go.id/apotek-rest-dev' : 'https://apijkn.bpjs-kesehatan.go.id/apotek-rest';
+      fullUrl = baseUrlValue + '/' + endpoint;
+    }
+    
+    document.getElementById('fullUrlObat').value = fullUrl;
+  }
+  
+  function submitObatRequest() {
+    var baseUrl = document.getElementById('baseUrlObat').value;
+    var endpoint = document.getElementById('endpointObat').value;
+    var method = document.getElementById('methodObat').value;
+    var parameter = document.getElementById('parameterObat').value;
+    var requestForm = document.getElementById('requestFormObat').value;
+    var fullUrl = document.getElementById('fullUrlObat').value;
+    
+    if (!endpoint) {
+      alert('Silakan pilih endpoint terlebih dahulu');
+      return;
+    }
+    
+    // Kirim request ke endpoint yang baru
+    var formData = new FormData();
+    formData.append('base_url', baseUrl);
+    formData.append('endpoint', endpoint);
+    formData.append('method', method);
+    formData.append('parameter', parameter);
+    formData.append('form', requestForm);
+    
+    // Tampilkan loading
+    document.getElementById('responseObat').value = 'Loading...';
+    
+    // Kirim AJAX request ke endpoint Site.php
+     fetch('{?=url([ADMIN, "veronisa", "testreferensi"])?}', {
+       method: 'POST',
+       body: formData
+     })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      document.getElementById('responseObat').value = JSON.stringify(data, null, 2);
+    })
+    .catch(function(error) {
+      document.getElementById('responseObat').value = JSON.stringify({
+        metaData: {
+          code: "5000",
+          message: "Network Error: " + error.message
+        },
+        response: "Gagal menghubungi server xx"
+      }, null, 2);
+    });
+  }
+  
+  function clearObatForm() {
+    document.getElementById('obatForm').reset();
+    document.getElementById('fullUrlObat').value = '';
+    document.getElementById('responseObat').value = '';
+  }
+  
+  // Fungsi untuk form resep
+  function updateResepEndpoint() {
+    var endpoint = document.getElementById('endpointResep').value;
+    var methodSelect = document.getElementById('methodResep');
+    
+    // Set method to DELETE for hapusresep endpoint
+    if (endpoint === 'hapusresep') {
+      methodSelect.value = 'DELETE';
+    } else {
+      methodSelect.value = 'POST';
+    }
+    
+    updateResepUrl();
+  }
+  
+  function updateResepUrl() {
+    var baseUrl = document.getElementById('baseUrlResep').value;
+    var endpoint = document.getElementById('endpointResep').value;
+    var fullUrl = '';
+    
+    if (baseUrl && endpoint) {
+      var baseUrlValue = baseUrl === 'dev' ? 'https://apijkn-dev.bpjs-kesehatan.go.id/apotek-rest-dev' : 'https://apijkn.bpjs-kesehatan.go.id/apotek-rest';
+      fullUrl = baseUrlValue + '/' + endpoint;
+    }
+    
+    document.getElementById('fullUrlResep').value = fullUrl;
+  }
+  
+  function submitResepRequest() {
+    var baseUrl = document.getElementById('baseUrlResep').value;
+    var endpoint = document.getElementById('endpointResep').value;
+    var method = document.getElementById('methodResep').value;
+    var parameter = document.getElementById('parameterResep').value;
+    var requestForm = document.getElementById('requestFormResep').value;
+    var fullUrl = document.getElementById('fullUrlResep').value;
+    
+    if (!endpoint) {
+      alert('Silakan pilih endpoint terlebih dahulu');
+      return;
+    }
+    
+    // Kirim request ke endpoint
+    var formData = new FormData();
+    formData.append('base_url', baseUrl);
+    formData.append('endpoint', endpoint);
+    formData.append('method', method);
+    formData.append('parameter', parameter);
+    formData.append('form', requestForm);
+    
+    // Tampilkan loading
+    document.getElementById('responseResep').value = 'Loading...';
+    
+    // Kirim AJAX request
+     fetch('{?=url([ADMIN, "veronisa", "testreferensi"])?}', {
+       method: 'POST',
+       body: formData
+     })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      document.getElementById('responseResep').value = JSON.stringify(data, null, 2);
+    })
+    .catch(function(error) {
+      document.getElementById('responseResep').value = JSON.stringify({
+        metaData: {
+          code: "5000",
+          message: "Network Error: " + error.message
+        },
+        response: "Gagal menghubungi server"
+      }, null, 2);
+    });
+  }
+  
+  function clearResepForm() {
+    document.getElementById('resepForm').reset();
+    document.getElementById('fullUrlResep').value = '';
+    document.getElementById('responseResep').value = '';
+  }
+  
+  // Fungsi untuk form pelayanan obat
+  function updatePelayananObatEndpoint() {
+    var endpoint = document.getElementById('endpointPelayananObat').value;
+    var parametersContainer = document.getElementById('parametersContainerPelayananObat');
+    var methodSelect = document.getElementById('methodPelayananObat');
+    
+    // Clear existing parameters
+    parametersContainer.innerHTML = '';
+    
+    // Set method to DELETE for hapus endpoint
+    if (endpoint === 'pelayanan/obat/hapus') {
+      methodSelect.value = 'DELETE';
+    } else {
+      methodSelect.value = 'POST';
+    }
+    
+    // Define parameters for each endpoint
+    var endpointParams = {
+      'pelayanan/obat/hapus': [],
+      'obat/daftar': [
+        {name: 'nomor_sep', label: 'Nomor Kunjungan/SEP', placeholder: 'Masukkan nomor kunjungan atau SEP'}
+      ],
+      'riwayatobat': [
+        {name: 'tgl_awal', label: 'Tanggal Awal', placeholder: 'Format: YYYY-MM-DD'},
+        {name: 'tgl_akhir', label: 'Tanggal Akhir', placeholder: 'Format: YYYY-MM-DD'},
+        {name: 'no_kartu', label: 'Nomor Kartu', placeholder: 'Masukkan nomor kartu BPJS'}
+      ]
+    };
+    
+    // Add parameter inputs based on selected endpoint
+    if (endpoint && endpointParams[endpoint]) {
+      endpointParams[endpoint].forEach(function(param) {
+        var paramDiv = document.createElement('div');
+        paramDiv.className = 'form-group';
+        paramDiv.innerHTML = `
+          <label for="${param.name}">${param.label}</label>
+          <input type="text" class="form-control" id="${param.name}" name="${param.name}" placeholder="${param.placeholder}" onchange="updatePelayananObatUrl()">
+        `;
+        parametersContainer.appendChild(paramDiv);
+      });
+    }
+    
+    updatePelayananObatUrl();
+  }
+  
+  function updatePelayananObatUrl() {
+    var baseUrl = document.getElementById('baseUrlPelayananObat').value;
+    var endpoint = document.getElementById('endpointPelayananObat').value;
+    var fullUrl = '';
+    
+    if (baseUrl && endpoint) {
+      var baseUrlValue = baseUrl === 'dev' ? 'https://apijkn-dev.bpjs-kesehatan.go.id/apotek-rest-dev' : 'https://apijkn.bpjs-kesehatan.go.id/apotek-rest';
+      var finalEndpoint = endpoint;
+      
+      // Replace placeholders with actual parameter values
+      if (endpoint === 'obat/daftar') {
+        var nomorSep = document.getElementById('nomor_sep');
+        if (nomorSep && nomorSep.value) {
+          finalEndpoint = 'obat/daftar/' + encodeURIComponent(nomorSep.value);
+        }
+      } else if (endpoint === 'riwayatobat') {
+        var tglAwal = document.getElementById('tgl_awal');
+        var tglAkhir = document.getElementById('tgl_akhir');
+        var noKartu = document.getElementById('no_kartu');
+        if (tglAwal && tglAwal.value && tglAkhir && tglAkhir.value && noKartu && noKartu.value) {
+          finalEndpoint = 'riwayatobat/' + encodeURIComponent(tglAwal.value) + '/' + encodeURIComponent(tglAkhir.value) + '/' + encodeURIComponent(noKartu.value);
+        }
+      }
+      
+      fullUrl = baseUrlValue + '/' + finalEndpoint;
+    }
+    
+    document.getElementById('fullUrlPelayananObat').value = fullUrl;
+  }
+  
+  function submitPelayananObatRequest() {
+    var baseUrl = document.getElementById('baseUrlPelayananObat').value;
+    var endpoint = document.getElementById('endpointPelayananObat').value;
+    var method = document.getElementById('methodPelayananObat').value;
+    var requestForm = document.getElementById('requestFormPelayananObat').value;
+    var fullUrl = document.getElementById('fullUrlPelayananObat').value;
+    
+    if (!endpoint) {
+      alert('Silakan pilih endpoint terlebih dahulu');
+      return;
+    }
+    
+    // Collect all dynamic parameters
+    var parameters = {};
+    var parameterInputs = document.querySelectorAll('#parametersContainerPelayananObat input');
+    parameterInputs.forEach(function(input) {
+      if (input.value) {
+        parameters[input.name] = input.value;
+      }
+    });
+    
+    // Validate required parameters based on endpoint
+    var requiredParams = {
+      'obat/daftar': ['nomor_sep'],
+      'riwayatobat': ['tgl_awal', 'tgl_akhir', 'no_kartu']
+    };
+    
+    if (requiredParams[endpoint]) {
+      var missingParams = requiredParams[endpoint].filter(function(param) {
+        return !parameters[param];
+      });
+      
+      if (missingParams.length > 0) {
+        alert('Parameter berikut harus diisi: ' + missingParams.join(', '));
+        return;
+      }
+    }
+    
+    // Kirim request ke endpoint
+    var formData = new FormData();
+    formData.append('base_url', baseUrl);
+    formData.append('endpoint', endpoint);
+    formData.append('method', method);
+    formData.append('form', requestForm);
+    
+    // Tambahkan parameter sebagai array
+    Object.keys(parameters).forEach(function(key) {
+      formData.append('parameters[' + key + ']', parameters[key]);
+    });
+    
+    // Tampilkan loading
+    document.getElementById('responsePelayananObat').value = 'Loading...';
+    
+    // Kirim AJAX request
+     fetch('{?=url([ADMIN, "veronisa", "testreferensi"])?}', {
+       method: 'POST',
+       body: formData
+     })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      document.getElementById('responsePelayananObat').value = JSON.stringify(data, null, 2);
+    })
+    .catch(function(error) {
+      document.getElementById('responsePelayananObat').value = JSON.stringify({
+        metaData: {
+          code: "5000",
+          message: "Network Error: " + error.message
+        },
+        response: "Gagal menghubungi server"
+      }, null, 2);
+    });
+  }
+  
+  function clearPelayananObatForm() {
+    document.getElementById('pelayananObatForm').reset();
+    document.getElementById('fullUrlPelayananObat').value = '';
+    document.getElementById('responsePelayananObat').value = '';
+  }
+  
+  // Fungsi untuk form cari SEP
+  function updateCariSepEndpoint() {
+    var endpoint = document.getElementById('endpointCariSep').value;
+    var parametersContainer = document.getElementById('parametersContainerCariSep');
+    
+    // Clear existing parameters
+    parametersContainer.innerHTML = '';
+    
+    // Define parameters for each endpoint
+    var endpointParams = {
+      'sep': [
+        {name: 'nomor_kunjungan_sep', label: 'Nomor Kunjungan/SEP', placeholder: 'Masukkan nomor kunjungan atau SEP'}
+      ]
+    };
+    
+    // Add parameter inputs based on selected endpoint
+    if (endpoint && endpointParams[endpoint]) {
+      endpointParams[endpoint].forEach(function(param) {
+        var paramDiv = document.createElement('div');
+        paramDiv.className = 'form-group';
+        paramDiv.innerHTML = `
+          <label for="${param.name}">${param.label}</label>
+          <input type="text" class="form-control" id="${param.name}" name="${param.name}" placeholder="${param.placeholder}" onchange="updateCariSepUrl()">
+        `;
+        parametersContainer.appendChild(paramDiv);
+      });
+    }
+    
+    updateCariSepUrl();
+  }
+  
+  function updateCariSepUrl() {
+    var baseUrl = document.getElementById('baseUrlCariSep').value;
+    var endpoint = document.getElementById('endpointCariSep').value;
+    var fullUrl = '';
+    
+    if (baseUrl && endpoint) {
+      var baseUrlValue = baseUrl === 'dev' ? 'https://apijkn-dev.bpjs-kesehatan.go.id/apotek-rest-dev' : 'https://apijkn.bpjs-kesehatan.go.id/apotek-rest';
+      var finalEndpoint = endpoint;
+      
+      // Replace placeholders with actual parameter values
+      if (endpoint === 'sep') {
+        var nomorKunjunganSep = document.getElementById('nomor_kunjungan_sep');
+        if (nomorKunjunganSep && nomorKunjunganSep.value) {
+          finalEndpoint = 'sep/' + encodeURIComponent(nomorKunjunganSep.value);
+        }
+      }
+      
+      fullUrl = baseUrlValue + '/' + finalEndpoint;
+    }
+    
+    document.getElementById('fullUrlCariSep').value = fullUrl;
+  }
+  
+  function submitCariSepRequest() {
+    var baseUrl = document.getElementById('baseUrlCariSep').value;
+    var endpoint = document.getElementById('endpointCariSep').value;
+    var method = document.getElementById('methodCariSep').value;
+    var requestForm = document.getElementById('requestFormCariSep').value;
+    var fullUrl = document.getElementById('fullUrlCariSep').value;
+    
+    if (!endpoint) {
+      alert('Silakan pilih endpoint terlebih dahulu');
+      return;
+    }
+    
+    // Collect all dynamic parameters
+    var parameters = {};
+    var parameterInputs = document.querySelectorAll('#parametersContainerCariSep input');
+    parameterInputs.forEach(function(input) {
+      if (input.value) {
+        parameters[input.name] = input.value;
+      }
+    });
+    
+    // Validate required parameters based on endpoint
+    var requiredParams = {
+      'sep': ['nomor_kunjungan_sep']
+    };
+    
+    if (requiredParams[endpoint]) {
+      var missingParams = requiredParams[endpoint].filter(function(param) {
+        return !parameters[param];
+      });
+      
+      if (missingParams.length > 0) {
+        alert('Parameter berikut harus diisi: ' + missingParams.join(', '));
+        return;
+      }
+    }
+    
+    // Kirim request ke endpoint
+    var formData = new FormData();
+    formData.append('base_url', baseUrl);
+    formData.append('endpoint', endpoint);
+    formData.append('method', method);
+    formData.append('form', requestForm);
+    
+    // Tambahkan parameter sebagai array
+    Object.keys(parameters).forEach(function(key) {
+      formData.append('parameters[' + key + ']', parameters[key]);
+    });
+    
+    // Tampilkan loading
+    document.getElementById('responseCariSep').value = 'Loading...';
+    
+    // Kirim AJAX request
+     fetch('{?=url([ADMIN, "veronisa", "testreferensi"])?}', {
+       method: 'POST',
+       body: formData
+     })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      document.getElementById('responseCariSep').value = JSON.stringify(data, null, 2);
+    })
+    .catch(function(error) {
+      document.getElementById('responseCariSep').value = JSON.stringify({
+        metaData: {
+          code: "5000",
+          message: "Network Error: " + error.message
+        },
+        response: "Gagal menghubungi server"
+      }, null, 2);
+    });
+  }
+  
+  function clearCariSepForm() {
+    document.getElementById('cariSepForm').reset();
+    document.getElementById('fullUrlCariSep').value = '';
+    document.getElementById('responseCariSep').value = '';
+  }
+  
+  // Fungsi untuk form monitoring klaim
+  function updateMonitoringKlaimEndpoint() {
+    var endpoint = document.getElementById('endpointMonitoringKlaim').value;
+    var parametersContainer = document.getElementById('parametersContainerMonitoringKlaim');
+    
+    // Clear existing parameters
+    parametersContainer.innerHTML = '';
+    
+    // Define parameters for each endpoint
+    var endpointParams = {
+      'monitoring/klaim': [
+        {name: 'bulan', label: 'Bulan', placeholder: 'Masukkan bulan (1-12)'},
+        {name: 'tahun', label: 'Tahun', placeholder: 'Masukkan tahun (YYYY)'},
+        {name: 'jenis_obat', label: 'Jenis Obat (0. Semua 1. Obat PRB 2. Obat Kronis Blm Stabil 3. Obat Kemoterapi)', placeholder: 'Masukkan jenis obat'},
+        {name: 'status', label: 'Status (1. Belum diverifikasi 2. Sudah Verifikasi)', placeholder: 'Masukkan status'}
+      ]
+    };
+    
+    // Add parameter inputs based on selected endpoint
+    if (endpoint && endpointParams[endpoint]) {
+      endpointParams[endpoint].forEach(function(param) {
+        var paramDiv = document.createElement('div');
+        paramDiv.className = 'form-group';
+        paramDiv.innerHTML = `
+          <label for="${param.name}">${param.label}</label>
+          <input type="text" class="form-control" id="${param.name}" name="${param.name}" placeholder="${param.placeholder}" onchange="updateMonitoringKlaimUrl()">
+        `;
+        parametersContainer.appendChild(paramDiv);
+      });
+    }
+    
+    updateMonitoringKlaimUrl();
+  }
+  
+  function updateMonitoringKlaimUrl() {
+    var baseUrl = document.getElementById('baseUrlMonitoringKlaim').value;
+    var endpoint = document.getElementById('endpointMonitoringKlaim').value;
+    var fullUrl = '';
+    
+    if (baseUrl && endpoint) {
+      var baseUrlValue = baseUrl === 'dev' ? 'https://apijkn-dev.bpjs-kesehatan.go.id/apotek-rest-dev' : 'https://apijkn.bpjs-kesehatan.go.id/apotek-rest';
+      var finalEndpoint = endpoint;
+      
+      // Replace placeholders with actual parameter values
+      if (endpoint === 'monitoring/klaim') {
+        var bulan = document.getElementById('bulan');
+        var tahun = document.getElementById('tahun');
+        var jenisObat = document.getElementById('jenis_obat');
+        var status = document.getElementById('status');
+        if (bulan && bulan.value && tahun && tahun.value && jenisObat && jenisObat.value && status && status.value) {
+          finalEndpoint = 'monitoring/klaim/' + encodeURIComponent(bulan.value) + '/' + encodeURIComponent(tahun.value) + '/' + encodeURIComponent(jenisObat.value) + '/' + encodeURIComponent(status.value);
+        }
+      }
+      
+      fullUrl = baseUrlValue + '/' + finalEndpoint;
+    }
+    
+    document.getElementById('fullUrlMonitoringKlaim').value = fullUrl;
+  }
+  
+  function submitMonitoringKlaimRequest() {
+    var baseUrl = document.getElementById('baseUrlMonitoringKlaim').value;
+    var endpoint = document.getElementById('endpointMonitoringKlaim').value;
+    var method = document.getElementById('methodMonitoringKlaim').value;
+    var requestForm = document.getElementById('requestFormMonitoringKlaim').value;
+    var fullUrl = document.getElementById('fullUrlMonitoringKlaim').value;
+    
+    if (!endpoint) {
+      alert('Silakan pilih endpoint terlebih dahulu');
+      return;
+    }
+    
+    // Collect all dynamic parameters
+    var parameters = {};
+    var parameterInputs = document.querySelectorAll('#parametersContainerMonitoringKlaim input');
+    parameterInputs.forEach(function(input) {
+      if (input.value) {
+        parameters[input.name] = input.value;
+      }
+    });
+    
+    // Validate required parameters based on endpoint
+    var requiredParams = {
+      'monitoring/klaim': ['bulan', 'tahun', 'jenis_obat', 'status']
+    };
+    
+    if (requiredParams[endpoint]) {
+      var missingParams = requiredParams[endpoint].filter(function(param) {
+        return !parameters[param];
+      });
+      
+      if (missingParams.length > 0) {
+        alert('Parameter berikut harus diisi: ' + missingParams.join(', '));
+        return;
+      }
+    }
+    
+    // Kirim request ke endpoint
+    var formData = new FormData();
+    formData.append('base_url', baseUrl);
+    formData.append('endpoint', endpoint);
+    formData.append('method', method);
+    formData.append('form', requestForm);
+    
+    // Tambahkan parameter sebagai array
+    Object.keys(parameters).forEach(function(key) {
+      formData.append('parameters[' + key + ']', parameters[key]);
+    });
+    
+    // Tampilkan loading
+    document.getElementById('responseMonitoringKlaim').value = 'Loading...';
+    
+    // Kirim AJAX request
+     fetch('{?=url([ADMIN, "veronisa", "testreferensi"])?}', {
+       method: 'POST',
+       body: formData
+     })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      document.getElementById('responseMonitoringKlaim').value = JSON.stringify(data, null, 2);
+    })
+    .catch(function(error) {
+      document.getElementById('responseMonitoringKlaim').value = JSON.stringify({
+        metaData: {
+          code: "5000",
+          message: "Network Error: " + error.message
+        },
+        response: "Gagal menghubungi server"
+      }, null, 2);
+    });
+  }
+  
+  function clearMonitoringKlaimForm() {
+    document.getElementById('monitoringKlaimForm').reset();
+    document.getElementById('fullUrlMonitoringKlaim').value = '';
+    document.getElementById('responseMonitoringKlaim').value = '';
+  }
+
+  // Update URL saat base URL berubah
+  document.addEventListener('change', function(e) {
+    if (e.target.id === 'baseUrl') {
+      updateUrl();
+    } else if (e.target.id === 'baseUrlPelayananObat') {
+      updatePelayananObatUrl();
+    } else if (e.target.id === 'baseUrlCariSep') {
+      updateCariSepUrl();
+    } else if (e.target.id === 'baseUrlMonitoringKlaim') {
+      updateMonitoringKlaimUrl();
+    }
+  });
+</script>

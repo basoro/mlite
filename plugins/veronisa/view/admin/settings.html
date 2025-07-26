@@ -5,13 +5,13 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">{$settings.title}</h3>
                 </div>
-            	  <div class="panel-body">
+            	<div class="panel-body">
                     <div class="form-group">
-                        <label>Username</label>
+                        <label>Username Vero</label>
                         <input type="text" name="veronisa[username]" class="form-control" value="{$settings.veronisa.username}" />
                     </div>
                     <div class="form-group">
-                        <label>Password</label>
+                        <label>Password Vero</label>
                         <input type="text" name="veronisa[password]" class="form-control" value="{$settings.veronisa.password}" />
                     </div>
                     <div class="form-group">
@@ -21,6 +21,29 @@
                             <option value="{$value.kode}" {if: $value.kode == $settings.veronisa.obat_kronis}selected{/if}>{$value.nama}</option>
                           {/loop}
                         </select>
+                    </div>
+                </div>
+            </div>            
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Pengaturan Bridging Apotek Online</h3>
+                </div>
+            	<div class="panel-body">
+                    <div class="form-group">
+                        <label>Kode PPK</label>
+                        <input type="text" name="veronisa[kode_ppk]" class="form-control" value="{$settings.veronisa.kode_ppk}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Cons ID</label>
+                        <input type="text" name="veronisa[cons_id]" class="form-control" value="{$settings.veronisa.cons_id}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Secret Key</label>
+                        <input type="text" name="veronisa[secret_key]" class="form-control" value="{$settings.veronisa.secret_key}" />
+                    </div>
+                    <div class="form-group">
+                        <label>User Key</label>
+                        <input type="text" name="veronisa[user_key]" class="form-control" value="{$settings.veronisa.user_key}" />
                     </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>

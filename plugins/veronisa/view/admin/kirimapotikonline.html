@@ -1,0 +1,317 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Kirim Data ke Apotek Online BPJS</h4>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h5 class="panel-title">Data Pasien</h5>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-md-4">
+              <strong>No. Rawat:</strong> {$veronisa.no_rawat}
+            </div>
+            <div class="col-md-4">
+              <strong>No. RM:</strong> {$veronisa.sep_data.nomr}
+            </div>
+            <div class="col-md-4">
+              <strong>Nama Pasien:</strong> {$veronisa.sep_data.nama_pasien}
+            </div>
+          </div>
+          <div class="row" style="margin-top: 10px;">
+            <div class="col-md-4">
+              <strong>No. SEP:</strong> {$veronisa.sep_data.no_sep}
+            </div>
+            <div class="col-md-4">
+              <strong>Tgl. SEP:</strong> {$veronisa.sep_data.tglsep}
+            </div>
+            <div class="col-md-4">
+              <strong>Poli:</strong> {$veronisa.sep_data.nmppkpelayanan}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <form id="kirimApotikForm" method="POST">
+    <input type="hidden" name="no_rawat" value="{$veronisa.no_rawat}">
+    <input type="hidden" name="KdDokter" value="{$veronisa.sep_data.kddpjplayanan}" class="form-control" value="0" placeholder="Kode Dokter">
+    <input type="hidden" name="IDUSERSJP" value="{$veronisa.sep_data.user}" class="form-control" required placeholder="Contoh: USR-01">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h5 class="panel-title">Informasi Resep</h5>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Tanggal SJP <span class="text-danger">*</span></label>
+              <input type="datetime-local" name="TGLSJP" class="form-control" required value="{?=date('Y-m-d\TH:i:s')?}">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Referensi Asal SJP <span class="text-danger">*</span></label>
+              <input type="text" name="REFASALSJP" value="{$veronisa.sep_data.no_sep}" class="form-control" required placeholder="Contoh: 1202R0010318V000092">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Poli RSP <span class="text-danger">*</span></label>
+              <select name="POLIRSP" class="form-control" required>
+                <option value="">Pilih Poli</option>
+                <option value="IPD" {if: $veronisa.sep_data.jnspelayanan == '1'} selected {/if}>IPD (Rawat Inap)</option>
+                <option value="OPD" {if: $veronisa.sep_data.jnspelayanan == '2'} selected {/if}>OPD (Rawat Jalan)</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Jenis Obat <span class="text-danger">*</span></label>
+              <select name="KDJNSOBAT" class="form-control" required>
+                <option value="">Pilih Jenis Obat</option>
+                <option value="1" {if: $veronisa.sep_data.prb == 'PRB'} selected {/if}>1. Obat PRB</option>
+                <option value="2">2. Obat Kronis Belum Stabil</option>
+                <option value="3">3. Obat Kemoterapi</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>No. Resep <span class="text-danger">*</span></label>
+              <input type="text" name="NORESEP" value="{$veronisa.obat_data.0.no_resep}" class="form-control" required placeholder="Contoh: 12346">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Iterasi</label>
+              <select name="iterasi" class="form-control">
+                <option value="0">0. Non Iterasi</option>
+                <option value="1">1. Iterasi</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Tanggal Resep <span class="text-danger">*</span></label>
+              <input type="datetime-local" name="TGLRSP" class="form-control" required value="{$veronisa.obat_data.0.tgl_peresepan} {$veronisa.obat_data.0.jam_peresepan}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Tanggal Pelayanan Resep <span class="text-danger">*</span></label>
+              <input type="datetime-local" name="TGLPELRSP" class="form-control" required value="{$veronisa.obat_data.0.tgl_perawatan} {$veronisa.obat_data.0.jam}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>      
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h5 class="panel-title">Daftar Obat</h5>
+        <div class="clearfix"></div>
+      </div>
+      <div class="panel-body">
+        {if: isset($veronisa['obat_data']) && count($veronisa['obat_data']) > 0}
+        {loop: $veronisa['obat_data']}
+        <div class="panel panel-default obat-item" style="margin-bottom: 15px;">
+          <div class="panel-heading">
+            <h6 class="panel-title">Obat #{?=$key+1?}</h6>
+          </div>
+          <div class="panel-body">
+            <!-- Hidden fields for obat data -->
+            <input type="hidden" name="obat[{?=$key?}][type]" value="non_racikan">
+            <input type="hidden" name="obat[{?=$key?}][NOSJP]" value="{$veronisa.sep_data.no_sep}">
+            <input type="hidden" name="obat[{?=$key?}][NORESEP]" value="{$veronisa.obat_data.0.no_resep}">
+            <input type="hidden" name="obat[{?=$key?}][CatKhsObt]" value="">
+            
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Kode Obat <span class="text-danger">*</span></label>
+                  <input type="text" name="obat[{?=$key?}][KDOBT]" class="form-control" required placeholder="Contoh: 012131" value="{?=cv($value)['kd_obat_bpjs'] ?? cv($value)['kode_brng'] ?? ''?}">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Nama Obat <span class="text-danger">*</span></label>
+                  <input type="text" name="obat[{?=$key?}][NMOBAT]" class="form-control" required placeholder="Nama Obat" value="{?=cv($value)['nama_obat_bpjs'] ?? cv($value)['nama_brng'] ?? ''?}">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Jumlah Obat <span class="text-danger">*</span></label>
+                  <input type="number" name="obat[{?=$key?}][JMLOBT]" class="form-control" required min="1" value="{?=cv($value)['jml'] ?? '1'?}">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Signa 1 <span class="text-danger">*</span></label>
+                  <input type="number" name="obat[{?=$key?}][SIGNA1OBT]" class="form-control signa1-input" required min="1" value="1" data-aturan="{?=cv($value)['aturan'] ?? ''?}">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Signa 2 <span class="text-danger">*</span></label>
+                  <input type="number" name="obat[{?=$key?}][SIGNA2OBT]" class="form-control signa2-input" required min="1" value="1" data-aturan="{?=cv($value)['aturan'] ?? ''?}">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>JHO <span class="text-danger">*</span></label>
+                  <input type="number" name="obat[{?=$key?}][JHO]" class="form-control jho-input" required min="1" value="1" data-jml="{?=cv($value)['jml'] ?? '1'?}">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/loop}
+        {else}
+        <div class="alert alert-warning">
+          <i class="fa fa-exclamation-triangle"></i> Tidak ada data obat yang tersedia.
+        </div>
+        {/if}        
+      </div>
+    </div>
+  
+    <!-- Form Actions -->
+    <div class="form-group" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        <i class="fa fa-paper-plane"></i> Kirim ke Apotek Online
+      </button>
+      <button type="button" class="btn btn-default" data-dismiss="modal">
+        <i class="fa fa-times"></i> Batal
+      </button>
+    </div>
+  </form>
+
+<script>
+// Function to parse aturan string like "3 x 1" into SIGNA1 and SIGNA2
+function parseAturan(aturanString) {
+  if (!aturanString) return { signa1: 1, signa2: 1 };
+  
+  // Match patterns like "3 x 1", "3x1", "3 X 1", etc.
+  const match = aturanString.match(/(\d+)\s*[xX]\s*(\d+)/i);
+  
+  if (match) {
+    return {
+      signa1: parseInt(match[1]) || 1,
+      signa2: parseInt(match[2]) || 1
+    };
+  }
+  
+  // If no pattern matches, try to extract first number as signa1
+  const numberMatch = aturanString.match(/(\d+)/);
+  if (numberMatch) {
+    return {
+      signa1: parseInt(numberMatch[1]) || 1,
+      signa2: 1
+    };
+  }
+  
+  return { signa1: 1, signa2: 1 };
+}
+
+// Function to calculate JHO value
+function calculateJHO(jmlObat, signa1) {
+  const jml = parseInt(jmlObat) || 1;
+  const signa = parseInt(signa1) || 1;
+  return Math.ceil(jml / signa);
+}
+
+// Initialize signa values and JHO when modal is shown
+$('#kirimApotikModal').on('shown.bs.modal', function() {
+  const signa1Inputs = document.querySelectorAll('.signa1-input');
+  const signa2Inputs = document.querySelectorAll('.signa2-input');
+  const jhoInputs = document.querySelectorAll('.jho-input');
+  
+  signa1Inputs.forEach(function(input) {
+    const aturan = input.getAttribute('data-aturan');
+    const parsed = parseAturan(aturan);
+    input.value = parsed.signa1;
+  });
+  
+  signa2Inputs.forEach(function(input) {
+    const aturan = input.getAttribute('data-aturan');
+    const parsed = parseAturan(aturan);
+    input.value = parsed.signa2;
+  });
+  
+  // Calculate initial JHO values
+  jhoInputs.forEach(function(jhoInput) {
+    const jmlObat = jhoInput.getAttribute('data-jml');
+    const signa1Input = jhoInput.closest('.panel-body').querySelector('.signa1-input');
+    const signa1Value = signa1Input ? signa1Input.value : 1;
+    jhoInput.value = calculateJHO(jmlObat, signa1Value);
+  });
+  
+  // Add event listeners to SIGNA1 inputs to update JHO when changed
+  signa1Inputs.forEach(function(signa1Input) {
+    signa1Input.addEventListener('input', function() {
+      const jhoInput = this.closest('.panel-body').querySelector('.jho-input');
+      if (jhoInput) {
+        const jmlObat = jhoInput.getAttribute('data-jml');
+        jhoInput.value = calculateJHO(jmlObat, this.value);
+      }
+    });
+  });
+});
+
+// Form submission
+document.getElementById('kirimApotikForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Mengirim...';
+
+  const formData = new FormData(this);
+
+  fetch('{?=url([ADMIN, "veronisa", "kirimapotikonline"])?}', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      let pesan = `✅ Resep berhasil dikirim:\n`;
+      pesan += `Kode: ${data.resep_response.metaData.code}\n`;
+      pesan += `Pesan: ${data.resep_response.metaData.message}\n\n`;
+
+      if (Array.isArray(data.obat_responses)) {
+        data.obat_responses.forEach((obat, index) => {
+          pesan += `🔹 Obat ${index + 1}:\n`;
+          pesan += `Kode: ${obat.metaData.code}\n`;
+          pesan += `Pesan: ${obat.metaData.message}\n\n`;
+        });
+      }
+
+      alert(pesan);
+      $('#kirimApotikModal').modal('hide');
+      location.reload();
+    } else {
+      alert('❌ Gagal mengirim data:\n' + (data.message || 'Terjadi kesalahan'));
+      console.log('Response Error:', data);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Terjadi kesalahan saat mengirim data ke server.');
+  })
+  .finally(() => {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fa fa-paper-plane"></i> Kirim ke Apotek Online';
+  });
+});
+
+</script>

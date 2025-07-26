@@ -1,0 +1,58 @@
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3">
+      <div class="panel panel-default" style="margin-top: 20px;">
+        <div class="panel-heading">
+          <h4 class="panel-title">Menu Antrean</h4>
+        </div>
+        <div class="panel-body" style="padding: 0;">
+          <ul class="nav nav-pills nav-stacked" style="margin: 0;">
+            <li><a href="#" onclick="showForm('Referensi Poli')"><span class="glyphicon glyphicon-list-alt"></span> Referensi Poli</a></li>
+            <li><a href="#" onclick="showForm('Referensi Dokter')"><span class="glyphicon glyphicon-user"></span> Referensi Dokter</a></li>
+            <li><a href="#" onclick="showForm('Referensi Jadwal Dokter')"><span class="glyphicon glyphicon-time"></span> Referensi Jadwal Dokter</a></li>
+            <li><a href="#" onclick="showForm('Referensi Poli Finger Print New')"><span class="glyphicon glyphicon-th-list"></span> Referensi Poli Finger Print New</a></li>
+            <li><a href="#" onclick="showForm('Referensi Pasien Finger Print New')"><span class="glyphicon glyphicon-fingerprint"></span> Referensi Pasien Finger Print New</a></li>
+            <li><a href="#" onclick="showForm('Update Jadwal Dokter')"><span class="glyphicon glyphicon-edit"></span> Update Jadwal Dokter</a></li>
+            <li><a href="#" onclick="showForm('Tambah Antrean')"><span class="glyphicon glyphicon-plus"></span> Tambah Antrean</a></li>
+            <li><a href="#" onclick="showForm('Tambah Antrean Farmasi New')"><span class="glyphicon glyphicon-plus-sign"></span> Tambah Antrean Farmasi New</a></li>
+            <li><a href="#" onclick="showForm('Update Waktu Antrean Update')"><span class="glyphicon glyphicon-time"></span> Update Waktu Antrean</a></li>
+            <li><a href="#" onclick="showForm('Batal Antrean')"><span class="glyphicon glyphicon-remove"></span> Batal Antrean</a></li>
+            <li><a href="#" onclick="showForm('List Waktu Task Id')"><span class="glyphicon glyphicon-tasks"></span> List Waktu Task Id</a></li>
+            <li><a href="#" onclick="showForm('Dashboard Per Tanggal')"><span class="glyphicon glyphicon-calendar"></span> Dashboard Per Tanggal</a></li>
+            <li><a href="#" onclick="showForm('Dashboard Per Bulan')"><span class="glyphicon glyphicon-stats"></span> Dashboard Per Bulan</a></li>
+            <li><a href="#" onclick="showForm('Antrean Per Tanggal New')"><span class="glyphicon glyphicon-calendar"></span> Antrean Per Tanggal New</a></li>
+            <li><a href="#" onclick="showForm('Antrean Per Kode Booking New')"><span class="glyphicon glyphicon-barcode"></span> Antrean Per Kode Booking New</a></li>
+            <li><a href="#" onclick="showForm('Antrean Belum Dilayani New')"><span class="glyphicon glyphicon-hourglass"></span> Antrean Belum Dilayani New</a></li>
+            <li><a href="#" onclick="showForm('Antrean Belum Dilayani Per Poli Per Dokter Per Hari Per Jam Praktek New')"><span class="glyphicon glyphicon-time"></span> Antrean Belum Dilayani Per Poli Per Dokter Per Hari Per Jam</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Area -->
+    <div class="col-md-9">
+      <div class="panel panel-default" style="margin-top: 20px;">
+        <div class="panel-body" id="formArea">
+            {$readme}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showForm(title) {
+    var formHtml = `
+      <h4>` + title + `</h4>
+      <form role="form">
+        <div class="form-group">
+          <label for="input2">Json Form</label>
+          <textarea rows="10" class="form-control" id="input2" placeholder="Masukkan json"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    `;
+    document.getElementById('formArea').innerHTML = formHtml;
+  }
+</script>
