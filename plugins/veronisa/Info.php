@@ -13,7 +13,21 @@ return [
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('veronisa', 'username', '')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('veronisa', 'password', '')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('veronisa', 'obat_kronis', '')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('veronisa', 'cons_id', '')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('veronisa', 'kode_ppk', '')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('veronisa', 'user_key', '')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('veronisa', 'secret_key', '')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('veronisa', 'bpjs_api_url', '')");
       
+      // Tabel untuk log apotek online
+      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_maping_obat_apotek_online` (
+        `kode_brng` varchar(40) NOT NULL,
+        `kd_obat_bpjs` varchar(20) NOT NULL,
+        `nama_obat_bpjs` varchar(200) NOT NULL,
+        PRIMARY KEY (`kode_brng`),
+        KEY `kd_obat_bpjs` (`kd_obat_bpjs`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
       // Tabel untuk log apotek online
       $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_apotek_online_log` (
         `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -67,6 +81,7 @@ return [
     'uninstall'     =>  function() use($core)
     {
       $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'veronisa'");
+      $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_maping_obat_apotek_online`");
       $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_apotek_online_log`");
       $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_apotek_online_sep_data`");
     }
