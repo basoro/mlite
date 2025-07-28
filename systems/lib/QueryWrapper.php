@@ -562,7 +562,7 @@ class QueryWrapper
 
         // Log hanya untuk INSERT / UPDATE / DELETE
         if (preg_match('/^\s*(INSERT|UPDATE|DELETE)/i', $sql)) {
-            if($settings[0]['value'] == 'ya') {
+            if(!empty($settings) && isset($settings[0]['value']) && $settings[0]['value'] == 'ya') {
                 self::logQueryToDatabase($sql, $binds);
             }
         }

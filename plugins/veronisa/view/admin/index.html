@@ -21,7 +21,7 @@
                     </form>
                   </ul>
                 </div>
-                <h3 class="panel-title">Kelola e-veronisa</h3>
+                <h3 class="panel-title">Kelola e-veronisa <button type="button" class="btn btn-primary btn-xs pull-right" id="btnAddSep" style="margin-top: -2px;" data-toggle="modal" data-target="#cariSepModal"><i class="fa fa-plus"></i> ADD</button></h3>
             </div>
             <div class="panel-body">
                 <div class="row clearfix">
@@ -69,6 +69,11 @@
                           <a href="{$value.pdfURL}" target="_blank" class="btn btn-primary btn-xs">
       											<i class="fa fa-print"></i> Lihat Data Klaim
       										</a>
+                          {if: $value.bridgeStatus == ''}
+                            <a href="{$value.formSepURL}" class="badge badge-error" data-toggle="modal" data-target="#moduleModal">
+                              <i class="fa fa-download"></i> Ambil SEP dari Vclaim
+                            </a>
+                            {/if}
                           <br>
                           {if: $value.resep_response_exists}
                             <button class="btn btn-primary btn-xs" disabled>
@@ -179,15 +184,321 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="cariSepModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Form Pengetesan Cari SEP</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" id="cariSepForm">
+                    <div class="form-group">
+                        <label for="baseUrlCariSep">Base URL</label>
+                        <select class="form-control" id="baseUrlCariSep" onchange="updateCariSepUrl()">
+                            <option value="dev">Development</option>
+                            <option value="prod">Production</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="endpointCariSep">Endpoint</label>
+                        <select class="form-control" id="endpointCariSep" onchange="updateCariSepEndpoint()">
+                            <option value="">Pilih Endpoint</option>
+                            <option value="sep">sep/{Nomor Kunjungan/SEP}</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fullUrlCariSep">URL</label>
+                        <input type="text" class="form-control" id="fullUrlCariSep" readonly placeholder="{Base URL}/{endpoint}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="methodCariSep">Method</label>
+                        <select class="form-control" id="methodCariSep">
+                            <option value="GET" selected>GET</option>
+                            <option value="POST">POST</option>
+                        </select>
+                    </div>
+                    
+                    <div id="parametersContainerCariSep">
+                        <!-- Parameter inputs akan ditambahkan secara dinamis di sini -->
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="noRawatCariSep">Nomor Rawat</label>
+                        <input type="text" class="form-control" id="noRawatCariSep" placeholder="Masukkan nomor rawat">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="requestFormCariSep">Form</label>
+                        <textarea rows="10" class="form-control" id="requestFormCariSep" placeholder="Masukkan data request dalam format JSON"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="responseCariSep">Response</label>
+                        <textarea rows="10" class="form-control" id="responseCariSep" readonly placeholder="Response akan ditampilkan di sini"></textarea>
+                    </div>
+                    
+                    <button type="button" class="btn btn-primary" onclick="submitCariSepRequest()">Submit</button>
+                    <button type="button" class="btn btn-info" onclick="simulasiCariSep()">Simulasi Data SEP</button>
+                    <button type="button" class="btn btn-success" onclick="simpanSep()" id="btnSimpanSep" style="display:none;">Simpan SEP</button>
+                    <button type="button" class="btn btn-default" onclick="clearCariSepForm()">Clear</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
+  // Fungsi untuk form cari SEP - harus di luar jQuery ready function agar bisa diakses global
+  function updateCariSepEndpoint() {
+    var endpoint = document.getElementById('endpointCariSep').value;
+    var parametersContainer = document.getElementById('parametersContainerCariSep');
+    
+    // Clear existing parameters
+    parametersContainer.innerHTML = '';
+    
+    // Define parameters for each endpoint
+    var endpointParams = {
+      'sep': [
+        {name: 'nomor_kunjungan_sep', label: 'Nomor Kunjungan/SEP', placeholder: 'Masukkan nomor kunjungan atau SEP'}
+      ]
+    };
+    
+    // Add parameter inputs based on selected endpoint
+    if (endpoint && endpointParams[endpoint]) {
+      endpointParams[endpoint].forEach(function(param) {
+        var paramDiv = document.createElement('div');
+        paramDiv.className = 'form-group';
+        paramDiv.innerHTML = `
+          <label for="${param.name}">${param.label}</label>
+          <input type="text" class="form-control" id="${param.name}" name="${param.name}" placeholder="${param.placeholder}" onchange="updateCariSepUrl()">
+        `;
+        parametersContainer.appendChild(paramDiv);
+      });
+    }
+    
+    updateCariSepUrl();
+  }
+  
+  function updateCariSepUrl() {
+    var baseUrl = document.getElementById('baseUrlCariSep').value;
+    var endpoint = document.getElementById('endpointCariSep').value;
+    var fullUrl = '';
+    
+    if (baseUrl && endpoint) {
+      var baseUrlValue = baseUrl === 'dev' ? 'https://apijkn-dev.bpjs-kesehatan.go.id/apotek-rest-dev' : 'https://apijkn.bpjs-kesehatan.go.id/apotek-rest';
+      var finalEndpoint = endpoint;
+      
+      // Replace placeholders with actual parameter values
+      if (endpoint === 'sep') {
+        var nomorKunjunganSep = document.getElementById('nomor_kunjungan_sep');
+        if (nomorKunjunganSep && nomorKunjunganSep.value) {
+          finalEndpoint = 'sep/' + encodeURIComponent(nomorKunjunganSep.value);
+        }
+      }
+      
+      fullUrl = baseUrlValue + '/' + finalEndpoint;
+    }
+    
+    document.getElementById('fullUrlCariSep').value = fullUrl;
+  }
+  
+  function submitCariSepRequest() {
+    var baseUrl = document.getElementById('baseUrlCariSep').value;
+    var endpoint = document.getElementById('endpointCariSep').value;
+    var method = document.getElementById('methodCariSep').value;
+    var requestForm = document.getElementById('requestFormCariSep').value;
+    var fullUrl = document.getElementById('fullUrlCariSep').value;
+    
+    if (!endpoint) {
+      alert('Silakan pilih endpoint terlebih dahulu');
+      return;
+    }
+    
+    // Collect all dynamic parameters
+    var parameters = {};
+    var parameterInputs = document.querySelectorAll('#parametersContainerCariSep input');
+    parameterInputs.forEach(function(input) {
+      if (input.value) {
+        parameters[input.name] = input.value;
+      }
+    });
+    
+    // Validate required parameters based on endpoint
+    var requiredParams = {
+      'sep': ['nomor_kunjungan_sep']
+    };
+    
+    if (requiredParams[endpoint]) {
+      var missingParams = requiredParams[endpoint].filter(function(param) {
+        return !parameters[param];
+      });
+      
+      if (missingParams.length > 0) {
+        alert('Parameter berikut harus diisi: ' + missingParams.join(', '));
+        return;
+      }
+    }
+    
+    // Kirim request ke endpoint
+    var formData = new FormData();
+    formData.append('base_url', baseUrl);
+    formData.append('endpoint', endpoint);
+    formData.append('method', method);
+    formData.append('form', requestForm);
+    
+    // Tambahkan parameter sebagai array
+    Object.keys(parameters).forEach(function(key) {
+      formData.append('parameters[' + key + ']', parameters[key]);
+    });
+    
+    // Tampilkan loading
+    document.getElementById('responseCariSep').value = 'Loading...';
+    
+    // Kirim AJAX request
+     fetch('{?=url([ADMIN, "veronisa", "testreferensi"])?}', {
+       method: 'POST',
+       body: formData
+     })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      document.getElementById('responseCariSep').value = JSON.stringify(data, null, 2);
+      
+      // Tampilkan tombol simpan jika response berhasil dan ada data SEP
+      if (data && data.metaData && data.metaData.code == "200" && data.response && data.response.noSep) {
+        document.getElementById('btnSimpanSep').style.display = 'inline-block';
+        // Simpan data response untuk fungsi simpanSep
+        window.currentSepData = data;
+      } else {
+        document.getElementById('btnSimpanSep').style.display = 'none';
+        window.currentSepData = null;
+      }
+    })
+    .catch(function(error) {
+      document.getElementById('responseCariSep').value = JSON.stringify({
+        metaData: {
+          code: "5000",
+          message: "Network Error: " + error.message
+        },
+        response: "Gagal menghubungi server"
+      }, null, 2);
+    });
+  }
+  
+  function clearCariSepForm() {
+    document.getElementById('cariSepForm').reset();
+    document.getElementById('fullUrlCariSep').value = '';
+    document.getElementById('responseCariSep').value = '';
+    document.getElementById('btnSimpanSep').style.display = 'none';
+    window.currentSepData = null;
+  }
+  
+  // Fungsi simulasi untuk testing cariSep dan simpanSep
+  function simulasiCariSep() {
+    // Data simulasi response SEP
+    var simulasiData = {
+      "response": {
+        "noSep": "1202R0010318V000092",
+        "faskesasalresep": "1202R001",
+        "nmfaskesasalresep": "RSUP DR. SARDJITO",
+        "nokartu": "0000648450639",
+        "namapeserta": "SITI NAFISAH",
+        "jnskelamin": "P",
+        "tgllhr": "1990-10-01",
+        "pisat": "4",
+        "kdjenispeserta": "21",
+        "nmjenispeserta": "PBI (APBN)",
+        "kodebu": "00000021",
+        "namabu": "PBI (APBN)",
+        "tglsep": "2021-08-01",
+        "tglplgsep": "2021-08-01",
+        "jnspelayanan": "RJTL",
+        "nmdiag": "Supervision of normal first pregnancy",
+        "poli": "OBGYN",
+        "flagprb": "1",
+        "namaprb": "PRB",
+        "kodedokter": "123456",
+        "namadokter": 'dr. JOKO WIDODO, Sp.OG'
+      },
+      "metaData": {
+        "code": "200",
+        "message": "OK"
+      }
+    };
+    
+    // Tampilkan response di textarea
+    document.getElementById('responseCariSep').value = JSON.stringify(simulasiData, null, 2);
+    
+    // Tampilkan tombol simpan dan simpan data untuk fungsi simpanSep
+    document.getElementById('btnSimpanSep').style.display = 'inline-block';
+    window.currentSepData = simulasiData;
+    
+    alert('Simulasi data SEP berhasil dimuat!\n\nNo SEP: ' + simulasiData.response.noSep + '\nNama Peserta: ' + simulasiData.response.namapeserta + '\n\nSekarang Anda dapat mengisi "Nomor Rawat" dan klik "Simpan SEP" untuk menguji fungsi penyimpanan.');
+  }
+  
+  function simpanSep() {
+    if (!window.currentSepData) {
+      alert('Tidak ada data SEP yang akan disimpan');
+      return;
+    }
+    
+    if (!window.currentSepData.response || !window.currentSepData.response.noSep) {
+      alert('Data SEP tidak valid');
+      return;
+    }
+    
+    var noRawat = document.getElementById('noRawatCariSep').value;
+    if (!noRawat) {
+      alert('Nomor rawat harus diisi');
+      return;
+    }
+    
+    // Kirim data SEP untuk disimpan - format sesuai dengan yang diharapkan endpoint
+    var sepData = {
+      sep_data: JSON.stringify(window.currentSepData),
+      no_rawat: noRawat
+    };
+    
+    fetch('{?=url([ADMIN, "veronisa", "simpansep"])?}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams(sepData)
+    })
+    .then(response => response.json())
+    .then(saveResult => {
+      if(saveResult.status === 'success') {
+        alert('SEP berhasil disimpan!\n\nNo SEP: ' + window.currentSepData.response.noSep + '\nNo Rawat: ' + noRawat);
+        // Reset form dan tutup modal
+        clearCariSepForm();
+        $('#cariSepModal').modal('hide');
+        location.reload();
+      } else {
+        alert('Gagal menyimpan SEP: ' + saveResult.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error saving SEP:', error);
+      alert('Terjadi kesalahan saat menyimpan: ' + error.message);
+    });
+  }
+
+  // jQuery ready function untuk inisialisasi komponen
   $( function() {
     $('.tanggal').datetimepicker({
       defaultDate: '{?=date("Y-m-d")?}',
       format: 'YYYY-MM-DD',
       locale: 'id'
     });
+    $('.gallery').lightbox();
   } );
-  $('.gallery').lightbox();
 </script>
 <script type="text/javascript">
   $("#display").on("click",".kirim_apotik_online", function(event){

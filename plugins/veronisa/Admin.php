@@ -199,10 +199,12 @@ class Admin extends AdminModule
         $row['batalURL'] = url([ADMIN, 'veronisa', 'batal', $this->convertNorawat($row['no_rawat'])]);
         $row['berkas_digital'] = $berkas_digital;
         $row['formSepURL'] = url([ADMIN, 'veronisa', 'formsepvclaim', '?no_rawat=' . $row['no_rawat']]);
-        $row['setstatusURL']  = url([ADMIN, 'veronisa', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
-        $row['status_pengajuan'] = $this->db('mlite_veronisa')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
+        $row['setstatusURL']  = url([ADMIN, 'veronisa', 'setstatus', $this->convertNorawat($row['no_rawat'])]);
+        $row['status_pengajuan'] = $this->db('mlite_veronisa')->where('no_rawat', $row['no_rawat'])->desc('id')->limit(1)->toArray();
         $row['berkasPasien'] = url([ADMIN, 'veronisa', 'berkaspasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
         $row['berkasPerawatan'] = url([ADMIN, 'veronisa', 'berkasperawatan', $this->convertNorawat($row['no_rawat'])]);
+        $bridging = $this->db('bridging_sep')->where('no_rawat', $row['no_rawat'])->oneArray();
+        $row['bridgeStatus'] = isset_or($bridging['no_sep'], '');
         
         // Cek apakah data sudah ada di tabel mlite_resep_response_log
         $resep_response_exists = $this->db('mlite_resep_response_log')
@@ -261,8 +263,8 @@ class Admin extends AdminModule
   public function getKirimApotikOnline($no_rawat)
   {    
     // Ambil data SEP
-    $sep_data = $this->db('bridging_sep')
-      ->leftJoin('bpjs_prb', 'bpjs_prb.no_sep=bridging_sep.no_sep')
+    $sep_data = $this->db('mlite_apotek_online_sep_data')
+      // ->leftJoin('bpjs_prb', 'bpjs_prb.no_sep=bridging_sep.no_sep')
       ->where('no_rawat', $this->revertNorawat($no_rawat))
       ->oneArray();
     
@@ -279,7 +281,7 @@ class Admin extends AdminModule
     $this->assign['obat_data'] = $obat_data;
     $this->assign['no_rawat'] = $this->revertNorawat($no_rawat);
     $this->assign['user'] = $this->core->getUserInfo('username', $_SESSION['mlite_user']);
-    $this->assign['kd_dokter'] = $obat_data['0']['kd_dokter'];
+    $this->assign['kd_dokter'] = isset_or($obat_data['0']['kd_dokter'], '');
     
     echo $this->draw('kirimapotikonline.html', ['veronisa' => $this->assign]);
     exit();
@@ -1388,8 +1390,9 @@ public function postHapusResepResponse()
 
   public function getSetStatus($id)
   {
-    $set_status = $this->db('bridging_sep')->where('no_sep', $id)->oneArray();
-    $veronisa = $this->db('mlite_veronisa')->join('mlite_veronisa_feedback','mlite_veronisa_feedback.nosep=mlite_veronisa.nosep')->where('status','<>','')->where('mlite_veronisa.nosep', $id)->asc('mlite_veronisa.id')->toArray();
+    $id = $this->revertNorawat($id);
+    $set_status = $this->db('bridging_sep')->where('no_rawat', $id)->oneArray();
+    $veronisa = $this->db('mlite_veronisa')->join('mlite_veronisa_feedback','mlite_veronisa_feedback.nosep=mlite_veronisa.nosep')->where('status','<>','')->where('mlite_veronisa.no_rawat', $id)->asc('mlite_veronisa.id')->toArray();
     $this->tpl->set('logo', $this->settings->get('settings.logo'));
     $this->tpl->set('nama_instansi', $this->settings->get('settings.nama_instansi'));
     $this->tpl->set('set_status', $set_status);
@@ -1477,6 +1480,293 @@ public function postHapusResepResponse()
     header('Content-type: text/css');
     echo $this->draw(MODULES . '/veronisa/css/admin/styles.css');
     exit();
+  }
+
+  public function postSimpanSep()
+  {
+    // Start output buffering to prevent any warnings from corrupting JSON
+    ob_start();
+    header('Content-Type: application/json');
+    
+    try {
+      // Validasi input
+      if (!isset($_POST['sep_data']) || empty($_POST['sep_data'])) {
+        ob_clean();
+        echo json_encode([
+          'status' => 'error',
+          'message' => 'Data SEP tidak ditemukan'
+        ]);
+        exit();
+      }
+
+      if (!isset($_POST['no_rawat']) || empty($_POST['no_rawat'])) {
+        ob_clean();
+        echo json_encode([
+          'status' => 'error',
+          'message' => 'Nomor rawat tidak ditemukan'
+        ]);
+        exit();
+      }
+
+      $sep_data = json_decode($_POST['sep_data'], true);
+      $no_rawat = $_POST['no_rawat'];
+      
+      if (!$sep_data || !isset($sep_data['response'])) {
+        ob_clean();
+        echo json_encode([
+          'status' => 'error',
+          'message' => 'Format data SEP tidak valid'
+        ]);
+        exit();
+      }
+
+      $response = $sep_data['response'];
+      
+      // Cek apakah data SEP sudah ada
+      $existing_sep = $this->db('mlite_apotek_online_sep_data')
+        ->where('no_sep', $response['noSep'])
+        ->oneArray();
+      
+      if ($existing_sep) {
+        ob_clean();
+        echo json_encode([
+          'status' => 'error',
+          'message' => 'Data SEP dengan nomor ' . $response['noSep'] . ' sudah ada'
+        ]);
+        exit();
+      }
+
+      // Simpan data SEP ke database
+      $save_data = [
+        'no_sep' => $response['noSep'],
+        'faskes_asal_resep' => $response['faskesasalresep'],
+        'nm_faskes_asal_resep' => $response['nmfaskesasalresep'],
+        'no_kartu' => $response['nokartu'],
+        'nama_peserta' => $response['namapeserta'],
+        'jns_kelamin' => $response['jnskelamin'],
+        'tgl_lahir' => $response['tgllhr'],
+        'pisat' => $response['pisat'],
+        'kd_jenis_peserta' => $response['kdjenispeserta'],
+        'nm_jenis_peserta' => $response['nmjenispeserta'],
+        'kode_bu' => $response['kodebu'],
+        'nama_bu' => $response['namabu'],
+        'tgl_sep' => $response['tglsep'],
+        'tgl_plg_sep' => $response['tglplgsep'],
+        'jns_pelayanan' => $response['jnspelayanan'],
+        'nm_diag' => $response['nmdiag'],
+        'poli' => $response['poli'],
+        'flag_prb' => $response['flagprb'],
+        'nama_prb' => $response['namaprb'],
+        'kode_dokter' => $response['kodedokter'],
+        'nama_dokter' => $response['namadokter'],
+        'tanggal_simpan' => date('Y-m-d H:i:s'),
+        'user_simpan' => $this->core->getUserInfo('username', null, true),
+        'raw_response' => json_encode($sep_data),
+        'no_rawat' => $no_rawat
+      ];
+
+      $result = $this->db('mlite_apotek_online_sep_data')->save($save_data);
+      
+      if ($result) {
+        // Log aktivitas
+        $this->db('mlite_apotek_online_log')->save([
+          'no_rawat' => $no_rawat,
+          'noresep' => '',
+          'tanggal_kirim' => date('Y-m-d H:i:s'),
+          'status' => 'success',
+          'response_resep' => 'SEP Data Saved: ' . $response['noSep'],
+          'response_obat' => json_encode($save_data),
+          'user' => $this->core->getUserInfo('username', null, true)
+        ]);
+
+        $this->db('mlite_veronisa')->save([
+          'id' => NULL,
+          'tanggal' => date('Y-m-d'),
+          'no_rawat' => $no_rawat,
+          'no_rkm_medis' => $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat),
+          'tgl_registrasi' => $this->core->getRegPeriksaInfo('tgl_registrasi', $no_rawat),
+          'nosep' => $response['noSep'],
+          'status' => 'Belum', 
+          'username' => $this->core->getUserInfo('username', null, true)
+        ]);
+        
+        ob_clean();
+        echo json_encode([
+          'status' => 'success',
+          'message' => 'Data SEP berhasil disimpan',
+          'data' => [
+            'no_sep' => $response['noSep'],
+            'nama_peserta' => $response['namapeserta'],
+            'tanggal_simpan' => date('Y-m-d H:i:s')
+          ]
+        ]);
+        exit();
+      } else {
+        ob_clean();
+        echo json_encode([
+          'status' => 'error',
+          'message' => 'Gagal menyimpan data SEP ke database'
+        ]);
+        exit();
+      }
+      
+    } catch (\Exception $e) {
+      error_log('Error in postSimpanSep: ' . $e->getMessage());
+      ob_clean();
+      echo json_encode([
+        'status' => 'error',
+        'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage(),
+        'debug' => [
+          'file' => $e->getFile(),
+          'line' => $e->getLine(),
+          'trace' => $e->getTraceAsString()
+        ]
+      ]);
+      exit();
+    }
+  }
+
+  public function postCariSep()
+  {
+    header('Content-Type: application/json');
+    
+    try {
+      // Validasi input
+      if (!isset($_POST['no_kartu']) || empty($_POST['no_kartu'])) {
+        echo json_encode([
+          'success' => false,
+          'message' => 'Nomor kartu BPJS harus diisi'
+        ]);
+        exit();
+      }
+
+      if (!isset($_POST['tgl_sep']) || empty($_POST['tgl_sep'])) {
+        echo json_encode([
+          'success' => false,
+          'message' => 'Tanggal SEP harus diisi'
+        ]);
+        exit();
+      }
+
+      $no_kartu = $_POST['no_kartu'];
+      $tgl_sep = $_POST['tgl_sep'];
+      $no_sep = isset($_POST['no_sep']) ? $_POST['no_sep'] : '';
+      
+      // Cek apakah SEP sudah ada di database lokal
+      $existing_sep = null;
+      if (!empty($no_sep)) {
+        $existing_sep = $this->db('mlite_apotek_online_sep_data')
+          ->where('no_sep', $no_sep)
+          ->oneArray();
+      } else {
+        // Cari berdasarkan no_kartu dan tanggal
+        $existing_sep = $this->db('mlite_apotek_online_sep_data')
+          ->where('no_kartu', $no_kartu)
+          ->where('tgl_sep', $tgl_sep)
+          ->oneArray();
+      }
+      
+      if ($existing_sep) {
+        echo json_encode([
+          'success' => true,
+          'message' => 'SEP ditemukan di database lokal',
+          'data' => [
+            'no_sep' => $existing_sep['no_sep'],
+            'nama_peserta' => $existing_sep['nama_peserta'],
+            'tgl_sep' => $existing_sep['tgl_sep']
+          ]
+        ]);
+        exit();
+      }
+      
+      // Jika tidak ada di database lokal, cari di BPJS API
+      $bpjsService = new BpjsService();
+      
+      // Siapkan parameter pencarian
+      $search_params = [
+        'nokartu' => $no_kartu,
+        'tanggal' => $tgl_sep
+      ];
+      
+      if (!empty($no_sep)) {
+        $search_params['nosep'] = $no_sep;
+      }
+      
+      // Panggil API BPJS untuk mencari SEP
+      $endpoint = 'SEP/peserta/' . $no_kartu . '/tglSEP/' . $tgl_sep;
+      if (!empty($no_sep)) {
+        $endpoint = 'SEP/' . $no_sep;
+      }
+      
+      $response = $bpjsService->get($endpoint, $this->consid, $this->secretkey, $this->user_key, $this->api_url);
+      
+      if ($response && isset($response['response'])) {
+        // SEP ditemukan di BPJS, simpan ke database lokal
+        $sep_response = $response['response'];
+        
+        if (isset($sep_response['sep'])) {
+          $sep_data = $sep_response['sep'];
+          
+          $save_data = [
+            'no_sep' => $sep_data['noSep'],
+            'faskes_asal_resep' => isset($sep_data['faskesasalresep']) ? $sep_data['faskesasalresep'] : '',
+            'nm_faskes_asal_resep' => isset($sep_data['nmfaskesasalresep']) ? $sep_data['nmfaskesasalresep'] : '',
+            'no_kartu' => $sep_data['peserta']['noKartu'],
+            'nama_peserta' => $sep_data['peserta']['nama'],
+            'jns_kelamin' => $sep_data['peserta']['kelamin'],
+            'tgl_lahir' => $sep_data['peserta']['tglLahir'],
+            'pisat' => isset($sep_data['peserta']['pisat']) ? $sep_data['peserta']['pisat'] : '',
+            'kd_jenis_peserta' => isset($sep_data['peserta']['jenisPeserta']['kode']) ? $sep_data['peserta']['jenisPeserta']['kode'] : '',
+            'nm_jenis_peserta' => isset($sep_data['peserta']['jenisPeserta']['keterangan']) ? $sep_data['peserta']['jenisPeserta']['keterangan'] : '',
+            'kode_bu' => isset($sep_data['peserta']['hakKelas']['kode']) ? $sep_data['peserta']['hakKelas']['kode'] : '',
+            'nama_bu' => isset($sep_data['peserta']['hakKelas']['keterangan']) ? $sep_data['peserta']['hakKelas']['keterangan'] : '',
+            'tgl_sep' => $sep_data['tglSep'],
+            'tgl_plg_sep' => isset($sep_data['tglPlgSep']) ? $sep_data['tglPlgSep'] : '',
+            'jns_pelayanan' => isset($sep_data['jnsPelayanan']) ? $sep_data['jnsPelayanan'] : '',
+            'nm_diag' => isset($sep_data['diagnosa']) ? $sep_data['diagnosa'] : '',
+            'poli' => isset($sep_data['poli']) ? $sep_data['poli'] : '',
+            'flag_prb' => isset($sep_data['flagPRB']) ? $sep_data['flagPRB'] : '',
+            'nama_prb' => isset($sep_data['namaPRB']) ? $sep_data['namaPRB'] : '',
+            'kode_dokter' => isset($sep_data['dpjp']['kdDPJP']) ? $sep_data['dpjp']['kdDPJP'] : '',
+            'nama_dokter' => isset($sep_data['dpjp']['nmDPJP']) ? $sep_data['dpjp']['nmDPJP'] : '',
+            'tanggal_simpan' => date('Y-m-d H:i:s'),
+            'user_simpan' => $this->core->getUserInfo('username', null, true),
+            'raw_response' => json_encode($response),
+            'no_rawat' => '' // Akan diisi nanti saat ada rawat inap
+          ];
+          
+          $result = $this->db('mlite_apotek_online_sep_data')->save($save_data);
+          
+          if ($result) {
+            echo json_encode([
+              'success' => true,
+              'message' => 'SEP ditemukan dan berhasil disimpan',
+              'data' => [
+                'no_sep' => $sep_data['noSep'],
+                'nama_peserta' => $sep_data['peserta']['nama'],
+                'tgl_sep' => $sep_data['tglSep']
+              ]
+            ]);
+            exit();
+          }
+        }
+      }
+      
+      // Jika tidak ditemukan
+      echo json_encode([
+        'success' => false,
+        'message' => 'SEP tidak ditemukan di sistem BPJS'
+      ]);
+      exit();
+      
+    } catch (\Exception $e) {
+      error_log('Error in postCariSep: ' . $e->getMessage());
+      echo json_encode([
+        'success' => false,
+        'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+      ]);
+      exit();
+    }
   }
 
   private function _addHeaderFiles()

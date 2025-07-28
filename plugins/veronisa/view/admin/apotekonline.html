@@ -291,6 +291,11 @@
              <!-- Parameter inputs akan ditambahkan secara dinamis di sini -->
            </div>
           
+           <div class="form-group">
+             <label for="noRawatCariSep">Nomor Rawat</label>
+             <input type="text" class="form-control" id="noRawatCariSep" placeholder="Masukkan nomor rawat">
+           </div>
+
           <div class="form-group">
             <label for="requestFormCariSep">Form</label>
             <textarea rows="10" class="form-control" id="requestFormCariSep" placeholder="Masukkan data request dalam format JSON"></textarea>
@@ -302,6 +307,8 @@
           </div>
           
           <button type="button" class="btn btn-primary" onclick="submitCariSepRequest()">Submit</button>
+          <button type="button" class="btn btn-info" onclick="simulasiCariSep()">Simulasi Data SEP</button>
+          <button type="button" class="btn btn-success" onclick="simpanSep()" id="btnSimpanSep" style="display:none;">Simpan SEP</button>
           <button type="button" class="btn btn-default" onclick="clearCariSepForm()">Clear</button>
         </form>
       `;
@@ -958,6 +965,16 @@
     })
     .then(function(data) {
       document.getElementById('responseCariSep').value = JSON.stringify(data, null, 2);
+      
+      // Tampilkan tombol simpan jika response berhasil dan ada data SEP
+      if (data && data.metaData && data.metaData.code == "200" && data.response && data.response.noSep) {
+        document.getElementById('btnSimpanSep').style.display = 'inline-block';
+        // Simpan data response untuk fungsi simpanSep
+        window.currentSepData = data;
+      } else {
+        document.getElementById('btnSimpanSep').style.display = 'none';
+        window.currentSepData = null;
+      }
     })
     .catch(function(error) {
       document.getElementById('responseCariSep').value = JSON.stringify({
@@ -974,6 +991,126 @@
     document.getElementById('cariSepForm').reset();
     document.getElementById('fullUrlCariSep').value = '';
     document.getElementById('responseCariSep').value = '';
+    document.getElementById('btnSimpanSep').style.display = 'none';
+    window.currentSepData = null;
+  }
+  
+  // Fungsi simulasi untuk testing cariSep dan simpanSep
+  function simulasiCariSep() {
+    // Data simulasi response SEP
+    var simulasiData = {
+      "response": {
+        "noSep": "1202R0010318V000092",
+        "faskesasalresep": "1202R001",
+        "nmfaskesasalresep": "RSUP DR. SARDJITO",
+        "nokartu": "0000648450639",
+        "namapeserta": "SITI NAFISAH",
+        "jnskelamin": "P",
+        "tgllhr": "1990-10-01",
+        "pisat": "4",
+        "kdjenispeserta": "21",
+        "nmjenispeserta": "PBI (APBN)",
+        "kodebu": "00000021",
+        "namabu": "PBI (APBN)",
+        "tglsep": "2021-08-01",
+        "tglplgsep": "2021-08-01",
+        "jnspelayanan": "RJTL",
+        "nmdiag": "Supervision of normal first pregnancy",
+        "poli": "OBGYN",
+        "flagprb": "0",
+        "namaprb": "",
+        "kodedokter": "",
+        "namadokter": null
+      },
+      "metaData": {
+        "code": "200",
+        "message": "OK"
+      }
+    };
+    
+    // Tampilkan response di textarea
+    document.getElementById('responseCariSep').value = JSON.stringify(simulasiData, null, 2);
+    
+    // Tampilkan tombol simpan dan simpan data untuk fungsi simpanSep
+    document.getElementById('btnSimpanSep').style.display = 'inline-block';
+    window.currentSepData = simulasiData;
+    
+    alert('Simulasi data SEP berhasil dimuat!\n\nNo SEP: ' + simulasiData.response.noSep + '\nNama Peserta: ' + simulasiData.response.namapeserta + '\n\nSekarang Anda dapat mengisi "Nomor Rawat" dan klik "Simpan SEP" untuk menguji fungsi penyimpanan.');
+  }
+  
+  function simpanSep() {
+    if (!window.currentSepData) {
+      alert('Tidak ada data SEP yang akan disimpan');
+      return;
+    }
+    
+    if (!window.currentSepData.response || !window.currentSepData.response.noSep) {
+      alert('Data SEP tidak valid');
+      return;
+    }
+    
+    // Ambil nilai no_rawat dari input
+    var noRawat = document.getElementById('noRawatCariSep').value.trim();
+    if (!noRawat) {
+      alert('Nomor Rawat harus diisi!');
+      return;
+    }
+    
+    // Konfirmasi sebelum menyimpan
+    var noSep = window.currentSepData.response.noSep;
+    var namaPeserta = window.currentSepData.response.namapeserta;
+    
+    if (!confirm('Apakah Anda yakin ingin menyimpan data SEP?\n\nNo SEP: ' + noSep + '\nNama Peserta: ' + namaPeserta + '\nNo Rawat: ' + noRawat)) {
+      return;
+    }
+    
+    // Disable tombol untuk mencegah double click
+    var btnSimpan = document.getElementById('btnSimpanSep');
+    var originalText = btnSimpan.innerHTML;
+    btnSimpan.disabled = true;
+    btnSimpan.innerHTML = 'Menyimpan...';
+    
+    // Kirim data ke server
+    var formData = new FormData();
+    formData.append('sep_data', JSON.stringify(window.currentSepData));
+    formData.append('no_rawat', noRawat);
+    
+    fetch('{?=url([ADMIN, "veronisa", "simpansep"])?}', {
+      method: 'POST',
+      body: formData
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      btnSimpan.disabled = false;
+      btnSimpan.innerHTML = originalText;
+      
+      if (data.status === 'success') {
+        alert('Data SEP berhasil disimpan!\n\n' + 
+              'No SEP: ' + data.data.no_sep + '\n' +
+              'Nama Peserta: ' + data.data.nama_peserta + '\n' +
+              'Tanggal Simpan: ' + data.data.tanggal_simpan);
+        
+        // Sembunyikan tombol simpan setelah berhasil
+        btnSimpan.style.display = 'none';
+        window.currentSepData = null;
+      } else {
+        alert('Gagal menyimpan data SEP: ' + data.message);
+        
+        // Tampilkan detail error jika ada
+        if (data.debug) {
+          console.error('Debug info:', data.debug);
+        }
+      }
+    })
+    .catch(function(error) {
+      btnSimpan.disabled = false;
+      btnSimpan.innerHTML = originalText;
+      
+      alert('Terjadi kesalahan jaringan: ' + error.message);
+      console.error('Network error:', error);
+    });
   }
   
   // Fungsi untuk form monitoring klaim
@@ -999,10 +1136,9 @@
       endpointParams[endpoint].forEach(function(param) {
         var paramDiv = document.createElement('div');
         paramDiv.className = 'form-group';
-        paramDiv.innerHTML = `
-          <label for="${param.name}">${param.label}</label>
-          <input type="text" class="form-control" id="${param.name}" name="${param.name}" placeholder="${param.placeholder}" onchange="updateMonitoringKlaimUrl()">
-        `;
+        paramDiv.innerHTML = 
+          '<label for="' + param.name + '">' + param.label + '</label>' +
+          '<input type="text" class="form-control" id="' + param.name + '" name="' + param.name + '" placeholder="' + param.placeholder + '" onchange="updateMonitoringKlaimUrl()">';
         parametersContainer.appendChild(paramDiv);
       });
     }
