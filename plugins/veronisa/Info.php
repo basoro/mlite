@@ -37,6 +37,7 @@ return [
         `status` enum('success','error') NOT NULL,
         `response_resep` text DEFAULT NULL,
         `response_obat` text DEFAULT NULL,
+        `request` text DEFAULT NULL,
         `user` varchar(50) DEFAULT NULL,
         PRIMARY KEY (`id`),
         KEY `no_rawat` (`no_rawat`),

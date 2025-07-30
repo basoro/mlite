@@ -1,0 +1,382 @@
+<div class="row" id="display">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="btn-group pull-right" style="margin-top:-8px;">
+                  <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+                    <i class="fa fa-calendar"></i><span class="hidden-xs"> Filter Tanggal</span>
+                  </span>
+                  <ul class="dropdown-menu dropdown-menu-right">
+                    <form class="" action="{?=url(ADMIN.'/veronisa/logapotikonline')?}" method="">
+                    <li style="padding-left:5px;padding-right:5px;">
+                      <input type="text" id="start_date" class="form-control tanggal" name="start_date" placeholder="Tanggal Mulai" value="{if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}" required>
+                    </li>
+                    <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                      <input type="text" id="end_date" class="form-control tanggal" name="end_date" placeholder="Tanggal Akhir" value="{if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}" required>
+                    </li>
+                    <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                      <input type="submit" name="submit" class="btn btn-primary btn-block" value="Filter">
+                      <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                    </li>
+                    </form>
+                  </ul>
+                </div>
+                <h3 class="panel-title">Log Pengiriman Apotek Online BPJS</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row clearfix">
+                  <div class="col col-md-6">
+                    <h3 style="margin-top:5px;margin-bottom:15px;">Total Log: {?=count($log_apotek.totalRecords)?}</h3>
+                  </div>
+                  <div class="col col-md-6">
+                    <form action="{$log_apotek.searchUrl}" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+                        <div class="input-group">
+                            <input type="text" name="s" minlength="3" class="form-control" placeholder="Cari No.Rawat, No.Resep, atau User" value="{if: isset($_GET['s'])}{?=$_GET['s']?}{/if}" required>
+                            <input type="hidden" name="start_date" value="{if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}">
+                            <input type="hidden" name="end_date" value="{if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}">
+                            <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                            </span>
+                        </div>
+                    </form>
+                  </div>
+                </div>
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#kirim-apotik" aria-controls="kirim-apotik" role="tab" data-toggle="tab">
+                            <i class="fa fa-paper-plane"></i> Kirim Apotik Online
+                            <span class="badge" id="count-kirim-apotik">0</span>
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#log-cari-sep" aria-controls="log-cari-sep" role="tab" data-toggle="tab">
+                            <i class="fa fa-search"></i> Log Cari SEP
+                            <span class="badge" id="count-log-cari-sep">0</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" style="margin-top: 15px;">
+                    <!-- Tab Kirim Apotik Online -->
+                    <div role="tabpanel" class="tab-pane active" id="kirim-apotik">
+                        <div class="table-responsive no-margin">
+                            <table class="table table-striped table-bordered no-margin">
+                                <thead>
+                                    <tr>
+                                        <th width="120px">Tanggal Kirim</th>
+                                        <th width="120px">No. Rawat</th>
+                                        <th width="100px">No. Resep</th>
+                                        <th width="80px">Status</th>
+                                        <th width="100px">User</th>
+                                        <th>Request</th>
+                                        <th>Response Resep</th>
+                                        <th>Response Obat</th>
+                                        <th width="80px">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {if: !empty($log_apotek.list)}
+                                    {loop: $log_apotek.list}
+                                    <tr class="{if: $value.status == 'success'}success{elseif: $value.status == 'error'}danger{else}warning{/if}" style="color: black;">
+                                        <td>{?=date('d/m/Y H:i', strtotime($value.tanggal_kirim))?}</td>
+                                        <td>{?=htmlspecialchars($value.no_rawat)?}</td>
+                                        <td>{?=htmlspecialchars($value.noresep)?}</td>
+                                        <td>
+                                            {if: $value.status == 'success'}
+                                                <span class="label label-success">Berhasil</span>
+                                            {elseif: $value.status == 'error'}
+                                                <span class="label label-danger">Gagal</span>
+                                            {else}
+                                                <span class="label label-warning">Pending</span>
+                                            {/if}
+                                        </td>
+                                        <td>{?=htmlspecialchars($value.user)?}</td>
+                                        <td>
+                                            {if: $value.request}
+                                                <button class="btn btn-xs btn-primary view-response" data-type="request" data-response="{?=htmlspecialchars($value.request)?}">
+                                                    <i class="fa fa-eye"></i> Lihat
+                                                </button>
+                                            {else}
+                                                <span class="text-muted">-</span>
+                                            {/if}
+                                        </td>
+                                        <td>
+                                            {if: $value.response_resep}
+                                                <button class="btn btn-xs btn-info view-response" data-type="resep" data-response="{$value.response_resep}">
+                                                    <i class="fa fa-eye"></i> Lihat
+                                                </button>
+                                            {else}
+                                                <span class="text-muted">-</span>
+                                            {/if}
+                                        </td>
+                                        <td>
+                                            {if: $value.response_obat}
+                                                <button class="btn btn-xs btn-info view-response" data-type="obat" data-response="{?=htmlspecialchars($value.response_obat)?}">
+                                                    <i class="fa fa-eye"></i> Lihat
+                                                </button>
+                                            {else}
+                                                <span class="text-muted">-</span>
+                                            {/if}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-xs btn-danger hapus-log" data-id="{$value.id}" data-no_rawat="{$value.no_rawat}">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {/loop}
+                                {else}
+                                    <tr><td colspan="9" class="text-center">Tidak ada data log ditemukan</td></tr>
+                                {/if}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Tab Log Cari SEP -->
+                    <div role="tabpanel" class="tab-pane" id="log-cari-sep">
+                        <div class="table-responsive no-margin">
+                            <table class="table table-striped table-bordered no-margin">
+                                <thead>
+                                    <tr>
+                                        <th width="120px">Tanggal Kirim</th>
+                                        <th width="120px">No. Rawat</th>
+                                        <th width="80px">Status</th>
+                                        <th width="100px">User</th>
+                                        <th>Request</th>
+                                        <th>Response Resep</th>
+                                        <th>Response Obat</th>
+                                        <th width="80px">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="log-cari-sep-tbody">
+                                {if: !empty($log_apotek.list)}
+                                    {loop: $log_apotek.list}
+                                    {if: empty($value.noresep)}
+                                    <tr class="{if: $value.status == 'success'}success{elseif: $value.status == 'error'}danger{else}warning{/if}" style="color: black;">
+                                        <td>{?=date('d/m/Y H:i', strtotime($value.tanggal_kirim))?}</td>
+                                        <td>{?=htmlspecialchars($value.no_rawat)?}</td>
+                                        <td>
+                                            {if: $value.status == 'success'}
+                                                <span class="label label-success">Berhasil</span>
+                                            {elseif: $value.status == 'error'}
+                                                <span class="label label-danger">Gagal</span>
+                                            {else}
+                                                <span class="label label-warning">Pending</span>
+                                            {/if}
+                                        </td>
+                                        <td>{?=htmlspecialchars($value.user)?}</td>
+                                        <td>
+                                            {if: $value.request}
+                                                <button class="btn btn-xs btn-primary view-response" data-type="request" data-response="{?=htmlspecialchars($value.request)}">
+                                                    <i class="fa fa-eye"></i> Lihat
+                                                </button>
+                                            {else}
+                                                <span class="text-muted">-</span>
+                                            {/if}
+                                        </td>
+                                        <td>
+                                            {if: $value.response_resep}
+                                                <button class="btn btn-xs btn-info view-response" data-type="resep" data-response="{$value.response_resep}">
+                                                    <i class="fa fa-eye"></i> Lihat
+                                                </button>
+                                            {else}
+                                                <span class="text-muted">-</span>
+                                            {/if}
+                                        </td>
+                                        <td>
+                                            {if: $value.response_obat}
+                                                <button class="btn btn-xs btn-info view-response" data-type="obat" data-response="{?=htmlspecialchars($value.response_obat)}">
+                                                    <i class="fa fa-eye"></i> Lihat
+                                                </button>
+                                            {else}
+                                                <span class="text-muted">-</span>
+                                            {/if}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-xs btn-danger hapus-log" data-id="{$value.id}" data-no_rawat="{$value.no_rawat}">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {/if}
+                                    {/loop}
+                                {/if}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="empty-log-cari-sep" class="text-center" style="display: none; padding: 20px;">
+                            <p class="text-muted">Tidak ada data log Cari SEP ditemukan</p>
+                        </div>
+                    </div>
+                </div>
+                {$log_apotek.pagination}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal untuk melihat response -->
+<div class="modal fade" id="responseModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Response Detail</h4>
+            </div>
+            <div class="modal-body">
+                <pre id="responseContent" style="max-height: 400px; overflow-y: auto;"></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(function() {
+    // Initialize date picker
+    $('.tanggal').datetimepicker({
+        defaultDate: '{?=date("Y-m-d")?}',
+        format: 'YYYY-MM-DD',
+        locale: 'id'
+    });
+    
+    // View response handler
+    $('.view-response').on('click', function() {
+        var type = $(this).data('type');
+        var response = $(this).data('response');
+        
+        var titleText = 'Response Resep';
+        if (type === 'obat') {
+            titleText = 'Response Obat';
+        } else if (type === 'request') {
+            titleText = 'Request Data';
+        }
+        $('#responseModal .modal-title').text(titleText);
+        
+        try {
+            // Decode HTML entities first
+            var decodedResponse = $('<div>').html(response).text();
+            var jsonData = JSON.parse(decodedResponse);
+            
+            if (type === 'request') {
+                // Display request data as table
+                var tableHtml = createRequestTable(jsonData);
+                $('#responseContent').html(tableHtml);
+            } else {
+                // Display other responses as formatted JSON
+                $('#responseContent').text(JSON.stringify(jsonData, null, 2));
+            }
+        } catch (e) {
+            // If JSON parsing fails, try to decode HTML entities and display as is
+            try {
+                var decodedResponse = $('<div>').html(response).text();
+                $('#responseContent').text(decodedResponse);
+            } catch (e2) {
+                $('#responseContent').text(response);
+            }
+        }
+        
+        $('#responseModal').modal('show');
+    });
+    
+    // Function to create table from request JSON data
+    function createRequestTable(data) {
+        var html = '';
+        
+        // Resep section
+        if (data.resep) {
+            html += '<h5><strong>Data Resep</strong></h5>';
+            html += '<table class="table table-bordered table-condensed">';
+            html += '<thead><tr><th width="30%">Field</th><th>Value</th></tr></thead><tbody>';
+            
+            var resepLabels = {
+                'TGLSJP': 'Tanggal SJP',
+                'REFASALSJP': 'Referensi Asal SJP',
+                'POLIRSP': 'Poli RSP',
+                'KDJNSOBAT': 'Kode Jenis Obat',
+                'NORESEP': 'No. Resep',
+                'IDUSERSJP': 'ID User SJP',
+                'TGLRSP': 'Tanggal RSP',
+                'TGLPELRSP': 'Tanggal Pelayanan RSP',
+                'KdDokter': 'Kode Dokter',
+                'iterasi': 'Iterasi'
+            };
+            
+            for (var key in data.resep) {
+                var label = resepLabels[key] || key;
+                html += '<tr><td><strong>' + label + '</strong></td><td>' + (data.resep[key] || '-') + '</td></tr>';
+            }
+            html += '</tbody></table>';
+        }
+        
+        // Obat section
+        if (data.obat && data.obat.length > 0) {
+            html += '<h5><strong>Data Obat</strong></h5>';
+            
+            data.obat.forEach(function(obat, index) {
+                html += '<h6>Obat ' + (index + 1) + '</h6>';
+                html += '<table class="table table-bordered table-condensed">';
+                html += '<thead><tr><th width="30%">Field</th><th>Value</th></tr></thead><tbody>';
+                
+                var obatLabels = {
+                    'type': 'Tipe',
+                    'NOSJP': 'No. SJP',
+                    'NORESEP': 'No. Resep',
+                    'CatKhsObt': 'Catatan Khusus Obat',
+                    'KDOBT': 'Kode Obat',
+                    'NMOBAT': 'Nama Obat',
+                    'JMLOBT': 'Jumlah Obat',
+                    'SIGNA1OBT': 'Signa 1',
+                    'SIGNA2OBT': 'Signa 2',
+                    'JHO': 'JHO'
+                };
+                
+                for (var key in obat) {
+                    var label = obatLabels[key] || key;
+                    html += '<tr><td><strong>' + label + '</strong></td><td>' + (obat[key] || '-') + '</td></tr>';
+                }
+                html += '</tbody></table>';
+            });
+        }
+        
+        return html;
+    }
+    
+    // Delete log handler
+    $('.hapus-log').on('click', function() {
+        var id = $(this).data('id');
+        var no_rawat = $(this).data('no_rawat');
+        
+        if (confirm('Apakah Anda yakin ingin menghapus log untuk No. Rawat: ' + no_rawat + '?')) {
+            var baseURL = mlite.url + '/' + mlite.admin;
+            
+            $.ajax({
+                url: baseURL + '/veronisa/hapuslogapotikonline/?t=' + mlite.token,
+                type: 'POST',
+                data: {
+                    id: id
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Log berhasil dihapus');
+                        location.reload();
+                    } else {
+                        alert('Gagal menghapus log: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Terjadi kesalahan saat menghapus log');
+                    console.error('Error:', error);
+                }
+            });
+        }
+    });
+});
+</script>

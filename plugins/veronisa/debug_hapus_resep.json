@@ -1,0 +1,25 @@
+[
+    {
+        "timestamp": "2025-07-28 15:02:07",
+        "user": "DR001",
+        "hapus_data": {
+            "nosjp": "",
+            "refasalsjp": "1708R0080725V000002",
+            "noresep": "80002"
+        },
+        "resep_data": {
+            "TGLSJP": "2025-07-28 14:43:10",
+            "REFASALSJP": "1708R0080725V000002",
+            "POLIRSP": "IPD",
+            "KDJNSOBAT": "2",
+            "NORESEP": "80002",
+            "IDUSERSJP": "DR001",
+            "TGLRSP": "2025-07-28 14:17:02",
+            "TGLPELRSP": "2025-07-28 14:17:28",
+            "KdDokter": "372921",
+            "iterasi": "0"
+        },
+        "log_noresep": "80002",
+        "log_id": "82"
+    }
+]
