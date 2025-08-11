@@ -66,8 +66,8 @@
               <label>Poli RSP <span class="text-danger">*</span></label>
               <select name="POLIRSP" class="form-control" required>
                 <option value="">Pilih Poli</option>
-                <option value="IPD" {if: $veronisa.sep_data.jns_pelayanan == 'RITL'} selected {/if}>IPD (Rawat Inap)</option>
-                <option value="OPD" {if: $veronisa.sep_data.jns_pelayanan == 'RJTL'} selected {/if}>OPD (Rawat Jalan)</option>
+                <option value="IPD" {if: $veronisa.sep_data.jns_pelayanan == 'RJTL'} selected {/if}>IPD (Rawat Jalam)</option>
+                <option value="OPD" {if: $veronisa.sep_data.jns_pelayanan == 'RITL'} selected {/if}>OPD (Rawat Inap)</option>
               </select>
             </div>
           </div>
@@ -226,7 +226,7 @@ function parseAturan(aturanString) {
 function calculateJHO(jmlObat, signa1) {
   const jml = parseInt(jmlObat) || 1;
   const signa = parseInt(signa1) || 1;
-  return Math.ceil(jml / signa);
+  return Math.floor(jml / signa);
 }
 
 // Initialize signa values and JHO when modal is shown

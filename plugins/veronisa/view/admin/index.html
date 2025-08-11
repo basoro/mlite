@@ -64,6 +64,9 @@
                             <button class="btn btn-info btn-xs">
                               <i class="fa fa-file-o"></i> {$value.nosep}
                             </button>
+                            <a href="#" class="badge badge-error hapus_veronisa" data-no_rawat="{$value.no_rawat}">
+                              <i class="fa fa-trash"></i> Hapus
+                            </a>
                           {/if}
                           <br/>
                           <a href="{$value.pdfURL}" target="_blank" class="btn btn-primary btn-xs">
@@ -233,7 +236,7 @@
                         <input type="text" class="form-control" id="noRawatCariSep" placeholder="Masukkan nomor rawat">
                     </div>
                     
-                    <div class="form-group">
+                    <div class="form-group hidden">
                         <label for="requestFormCariSep">Form</label>
                         <textarea rows="10" class="form-control" id="requestFormCariSep" placeholder="Masukkan data request dalam format JSON"></textarea>
                     </div>
@@ -244,7 +247,7 @@
                     </div>
                     
                     <button type="button" class="btn btn-primary" onclick="submitCariSepRequest()">Submit</button>
-                    <button type="button" class="btn btn-info" onclick="simulasiCariSep()">Simulasi Data SEP</button>
+                    <!-- <button type="button" class="btn btn-info" onclick="simulasiCariSep()">Simulasi Data SEP</button> -->
                     <button type="button" class="btn btn-success" onclick="simpanSep()" id="btnSimpanSep" style="display:none;">Simpan SEP</button>
                     <button type="button" class="btn btn-default" onclick="clearCariSepForm()">Clear</button>
                 </form>
@@ -545,6 +548,51 @@
             alert(errorMsg);
           }
         },
+        error: function(xhr, status, error) {
+          var errorMsg = 'Terjadi kesalahan saat menghapus data';
+          if(xhr.responseText) {
+            try {
+              var response = JSON.parse(xhr.responseText);
+              if(response.message) {
+                errorMsg += ': ' + response.message;
+              }
+            } catch(e) {
+              errorMsg += '\n\nResponse: ' + xhr.responseText;
+            }
+          }
+          errorMsg += '\n\nStatus: ' + status + '\nError: ' + error;
+          alert(errorMsg);
+        }
+      });
+    }
+    return false;
+  });
+
+  $("#display").on("click",".hapus_veronisa", function(event){
+    event.preventDefault();
+    var no_rawat = $(this).attr("data-no_rawat");
+    
+    if(confirm('Apakah Anda yakin ingin menghapus data veronisa untuk no rawat: ' + no_rawat + '?')) {
+      var baseURL = mlite.url + '/' + mlite.admin;
+      
+      $.ajax({
+        url: baseURL + '/veronisa/hapusveronisa/?t=' + mlite.token,
+        type: 'POST',
+        data: {
+          no_rawat: no_rawat
+        },
+        success: function(response) {
+           if(response.status === 'success') {
+             alert('Data veronisa berhasil dihapus');
+             location.reload();
+           } else {
+             var errorMsg = 'Gagal menghapus data';
+             if(response.message && response.message !== 'undefined') {
+               errorMsg += ': ' + response.message;
+             }
+             alert(errorMsg);
+           }
+         },
         error: function(xhr, status, error) {
           var errorMsg = 'Terjadi kesalahan saat menghapus data';
           if(xhr.responseText) {

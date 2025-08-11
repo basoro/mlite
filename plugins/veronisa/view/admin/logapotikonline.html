@@ -66,7 +66,7 @@
                             <table class="table table-striped table-bordered no-margin">
                                 <thead>
                                     <tr>
-                                        <th width="120px">Tanggal Kirim</th>
+                                        <th width="150px">Tanggal Kirim</th>
                                         <th width="120px">No. Rawat</th>
                                         <th width="100px">No. Resep</th>
                                         <th width="80px">Status</th>
@@ -80,10 +80,11 @@
                                 <tbody>
                                 {if: !empty($log_apotek.list)}
                                     {loop: $log_apotek.list}
+                                    {if: !empty($value.noresep)}
                                     <tr class="{if: $value.status == 'success'}success{elseif: $value.status == 'error'}danger{else}warning{/if}" style="color: black;">
                                         <td>{?=date('d/m/Y H:i', strtotime($value.tanggal_kirim))?}</td>
-                                        <td>{?=htmlspecialchars($value.no_rawat)?}</td>
-                                        <td>{?=htmlspecialchars($value.noresep)?}</td>
+                                        <td>{$value.no_rawat}</td>
+                                        <td>{$value.noresep}</td>
                                         <td>
                                             {if: $value.status == 'success'}
                                                 <span class="label label-success">Berhasil</span>
@@ -93,10 +94,10 @@
                                                 <span class="label label-warning">Pending</span>
                                             {/if}
                                         </td>
-                                        <td>{?=htmlspecialchars($value.user)?}</td>
+                                        <td>{$value.user}</td>
                                         <td>
                                             {if: $value.request}
-                                                <button class="btn btn-xs btn-primary view-response" data-type="request" data-response="{?=htmlspecialchars($value.request)?}">
+                                                <button class="btn btn-xs btn-primary view-response" data-type="request" data-response="{$value.request}">
                                                     <i class="fa fa-eye"></i> Lihat
                                                 </button>
                                             {else}
@@ -114,7 +115,7 @@
                                         </td>
                                         <td>
                                             {if: $value.response_obat}
-                                                <button class="btn btn-xs btn-info view-response" data-type="obat" data-response="{?=htmlspecialchars($value.response_obat)?}">
+                                                <button class="btn btn-xs btn-info view-response" data-type="obat" data-response="{$value.response_obat}">
                                                     <i class="fa fa-eye"></i> Lihat
                                                 </button>
                                             {else}
@@ -127,6 +128,7 @@
                                             </button>
                                         </td>
                                     </tr>
+                                    {/if}
                                     {/loop}
                                 {else}
                                     <tr><td colspan="9" class="text-center">Tidak ada data log ditemukan</td></tr>
@@ -141,13 +143,13 @@
                             <table class="table table-striped table-bordered no-margin">
                                 <thead>
                                     <tr>
-                                        <th width="120px">Tanggal Kirim</th>
+                                        <th width="150px">Tanggal Kirim</th>
                                         <th width="120px">No. Rawat</th>
                                         <th width="80px">Status</th>
                                         <th width="100px">User</th>
                                         <th>Request</th>
-                                        <th>Response Resep</th>
-                                        <th>Response Obat</th>
+                                        <th>Response Lokal</th>
+                                        <th>Response BPJS</th>
                                         <th width="80px">Aksi</th>
                                     </tr>
                                 </thead>
@@ -157,7 +159,7 @@
                                     {if: empty($value.noresep)}
                                     <tr class="{if: $value.status == 'success'}success{elseif: $value.status == 'error'}danger{else}warning{/if}" style="color: black;">
                                         <td>{?=date('d/m/Y H:i', strtotime($value.tanggal_kirim))?}</td>
-                                        <td>{?=htmlspecialchars($value.no_rawat)?}</td>
+                                        <td>{$value.no_rawat}</td>
                                         <td>
                                             {if: $value.status == 'success'}
                                                 <span class="label label-success">Berhasil</span>
@@ -167,10 +169,10 @@
                                                 <span class="label label-warning">Pending</span>
                                             {/if}
                                         </td>
-                                        <td>{?=htmlspecialchars($value.user)?}</td>
+                                        <td>{$value.user}</td>
                                         <td>
                                             {if: $value.request}
-                                                <button class="btn btn-xs btn-primary view-response" data-type="request" data-response="{?=htmlspecialchars($value.request)}">
+                                                <button class="btn btn-xs btn-primary view-response" data-type="request" data-response="{$value.request}">
                                                     <i class="fa fa-eye"></i> Lihat
                                                 </button>
                                             {else}
@@ -188,7 +190,7 @@
                                         </td>
                                         <td>
                                             {if: $value.response_obat}
-                                                <button class="btn btn-xs btn-info view-response" data-type="obat" data-response="{?=htmlspecialchars($value.response_obat)}">
+                                                <button class="btn btn-xs btn-info view-response" data-type="obat" data-response="{$value.response_obat}">
                                                     <i class="fa fa-eye"></i> Lihat
                                                 </button>
                                             {else}
@@ -247,6 +249,22 @@ $(function() {
         locale: 'id'
     });
     
+    // Count records for each tab
+    function updateTabCounts() {
+        // Count rows in Kirim Apotik tab (rows that have noresep - visible in first tab)
+        var countKirimApotik = $('#kirim-apotik tbody tr').not(':contains("Tidak ada data log ditemukan")').length;
+        
+        // Count rows in Log Cari SEP tab (rows that don't have noresep - visible in second tab)
+        var countLogCariSep = $('#log-cari-sep-tbody tr').not(':contains("Tidak ada data log ditemukan")').length;
+        
+        // Update badge counts
+        $('#count-kirim-apotik').text(countKirimApotik);
+        $('#count-log-cari-sep').text(countLogCariSep);
+    }
+    
+    // Initialize counts on page load
+    updateTabCounts();
+    
     // View response handler
     $('.view-response').on('click', function() {
         var type = $(this).data('type');
@@ -267,8 +285,9 @@ $(function() {
             
             if (type === 'request') {
                 // Display request data as table
-                var tableHtml = createRequestTable(jsonData);
-                $('#responseContent').html(tableHtml);
+                // var tableHtml = createRequestTable(jsonData);
+                // $('#responseContent').html(tableHtml);
+                $('#responseContent').text(JSON.stringify(jsonData, null, 2));
             } else {
                 // Display other responses as formatted JSON
                 $('#responseContent').text(JSON.stringify(jsonData, null, 2));
@@ -276,8 +295,9 @@ $(function() {
         } catch (e) {
             // If JSON parsing fails, try to decode HTML entities and display as is
             try {
-                var decodedResponse = $('<div>').html(response).text();
-                $('#responseContent').text(decodedResponse);
+                // var decodedResponse = $('<div>').html(response).text();
+                $('#responseContent').text(JSON.stringify(response, null, 2));
+                // $('#responseContent').text(response);
             } catch (e2) {
                 $('#responseContent').text(response);
             }

@@ -20,7 +20,7 @@ return [
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('veronisa', 'bpjs_api_url', '')");
       
       // Tabel untuk log apotek online
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_maping_obat_apotek_online` (
+      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_apotek_online_maping_obat` (
         `kode_brng` varchar(40) NOT NULL,
         `kd_obat_bpjs` varchar(20) NOT NULL,
         `nama_obat_bpjs` varchar(200) NOT NULL,
@@ -82,7 +82,7 @@ return [
     'uninstall'     =>  function() use($core)
     {
       $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'veronisa'");
-      $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_maping_obat_apotek_online`");
+      $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_apotek_online_maping_obat`");
       $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_apotek_online_log`");
       $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_apotek_online_sep_data`");
     }
