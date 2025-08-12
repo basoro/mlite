@@ -5440,57 +5440,6 @@ CREATE TABLE `mlite_query_logs`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE `mlite_satu_sehat_mapping_lab`  (
-  `id_template` int NOT NULL,
-  `code` varchar(15) NULL DEFAULT NULL,
-  `code_system` varchar(200) NULL DEFAULT NULL,
-  `display` varchar(200) NULL DEFAULT NULL,
-  `sample_code` varchar(15) NULL DEFAULT NULL,
-  `sample_system` varchar(500) NULL DEFAULT NULL,
-  `sample_display` varchar(80) NULL DEFAULT NULL,
-  PRIMARY KEY (`id_template`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-CREATE TABLE `mlite_satu_sehat_mapping_obat`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `kode_brng` varchar(50) NULL DEFAULT NULL,
-  `kode_kfa` varchar(50) NULL DEFAULT NULL,
-  `nama_kfa` varchar(100) NULL DEFAULT NULL,
-  `kode_bahan` varchar(50) NULL DEFAULT NULL,
-  `nama_bahan` varchar(100) NULL DEFAULT NULL,
-  `numerator` varchar(10) NULL DEFAULT NULL,
-  `satuan_num` varchar(10) NULL DEFAULT NULL,
-  `denominator` varchar(10) NULL DEFAULT NULL,
-  `satuan_den` varchar(10) NULL DEFAULT NULL,
-  `nama_satuan_den` varchar(10) NULL DEFAULT NULL,
-  `kode_sediaan` varchar(50) NULL DEFAULT NULL,
-  `nama_sediaan` varchar(100) NULL DEFAULT NULL,
-  `kode_route` varchar(10) NULL DEFAULT NULL,
-  `nama_route` varchar(50) NULL DEFAULT NULL,
-  `type` enum('obat','vaksin') NULL DEFAULT NULL,
-  `id_medication` varchar(200) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-CREATE TABLE `mlite_satu_sehat_mapping_rad`  (
-  `kd_jenis_prw` varchar(15) NOT NULL,
-  `code` varchar(15) NULL DEFAULT NULL,
-  `code_system` text NULL,
-  `display` text NULL,
-  `sample_code` text NULL,
-  `sample_system` text NULL,
-  `sample_display` text NULL,
-  PRIMARY KEY (`kd_jenis_prw`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-ALTER TABLE `catatan_adime_gizi` ADD CONSTRAINT `catatan_adime_gizi_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-ALTER TABLE `catatan_adime_gizi` ADD CONSTRAINT `catatan_adime_gizi_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-ALTER TABLE `mlite_satu_sehat_mapping_lab` ADD CONSTRAINT `mlite_satu_sehat_mapping_lab_ibfk_1` FOREIGN KEY (`id_template`) REFERENCES `template_laboratorium` (`id_template`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-ALTER TABLE `mlite_satu_sehat_mapping_rad` ADD CONSTRAINT `mlite_satu_sehat_mapping_rad_ibfk_1` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_radiologi` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE;
-
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
