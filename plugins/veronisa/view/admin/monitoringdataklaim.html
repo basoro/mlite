@@ -74,10 +74,7 @@
               </div>
             </div>
           </form>
-          
-          <!-- Response Area -->
-          <div id="responseArea" style="margin-top: 20px;"></div>
-          
+                    
           <!-- Table Container (Hidden by default) -->
           <div id="tableContainer" style="display: none; margin-top: 20px;">
             <!-- Rekap Section -->
@@ -147,6 +144,10 @@
               </div>
             </div>
           </div>
+
+          <!-- Response Area -->
+          <div id="responseArea" style="margin-top: 20px;"></div>
+
         </div>
       </div>
     </div>
@@ -223,34 +224,32 @@ function displayResponse(response) {
 }
 
 function displayResponseTable(responseData) {
-    if (!responseData || !responseData.rekap) {
+    if (!responseData) {
         $('#tableContainer').hide();
         return;
     }
     
-    var rekap = responseData.rekap;
-    
     // Update rekap info
-    $('#jumlahData').text(rekap.jumlahdata || '0');
-    $('#totalBiayaPengajuan').text(formatRupiah(rekap.totalbiayapengajuan || '0'));
-    $('#totalBiayaSetuju').text(formatRupiah(rekap.totalbiayasetuju || '0'));
+    $('#jumlahData').text(responseData.jumlahdata || '0');
+    $('#totalBiayaPengajuan').text(formatRupiah(responseData.totalbiayapengajuan || '0'));
+    $('#totalBiayaSetuju').text(formatRupiah(responseData.totalbiayasetuju || '0'));
     
     // Clear and populate table
     var tableBody = $('#dataKlaimTableBody');
     tableBody.empty();
     
-    if (rekap.listsep && rekap.listsep.length > 0) {
-        rekap.listsep.forEach(function(item) {
+    if (responseData.listsep && responseData.listsep.length > 0) {
+        responseData.listsep.forEach(function(item) {
             var row = '<tr>';
             row += '<td>' + (item.nosepapotek || '') + '</td>';
             row += '<td>' + (item.nosepaasal || '') + '</td>';
-            row += '<td>' + (item.nokartu || '') + '</td>';
-            row += '<td>' + (item.namapeserta || '') + '</td>';
+            row += '<td>' + (item.nokapst || '') + '</td>';
+            row += '<td>' + (item.nmpst || '') + '</td>';
             row += '<td>' + (item.noresep || '') + '</td>';
-            row += '<td>' + (item.jnsobat || '') + '</td>';
+            row += '<td>' + (item.nmjnsobat || '') + '</td>';
             row += '<td>' + (item.tglpelayanan || '') + '</td>';
             row += '<td>' + formatRupiah(item.biayapengajuan || '0') + '</td>';
-            row += '<td>' + formatRupiah(item.biayasetuju || '0') + '</td>';
+            row += '<td>' + formatRupiah(item.biayasetujui || '0') + '</td>';
             row += '</tr>';
             tableBody.append(row);
         });
@@ -264,6 +263,55 @@ function displayResponseTable(responseData) {
 function formatRupiah(amount) {
     var number = parseInt(amount) || 0;
     return 'Rp ' + number.toLocaleString('id-ID');
+}
+
+function displayErrorResponse(response) {
+    $('#tableContainer').hide();
+    
+    var html = '<div class="panel panel-danger">';
+    html += '<div class="panel-heading">';
+    html += '<h4 class="panel-title"><i class="fa fa-exclamation-triangle"></i> Error Response</h4>';
+    html += '</div>';
+    html += '<div class="panel-body">';
+    
+    if (response.metaData) {
+        html += '<div class="alert alert-danger">';
+        html += '<strong>Error Code:</strong> ' + (response.metaData.code || 'Unknown') + '<br>';
+        html += '<strong>Message:</strong> ' + (response.metaData.message || 'No message') + '<br>';
+        
+        if (response.response) {
+            html += '<strong>Response:</strong> ' + response.response + '<br>';
+        }
+        
+        if (response.raw_response) {
+            html += '<strong>Raw Response:</strong> ' + response.raw_response + '<br>';
+        }
+        
+        // Add specific handling for code 5000 (decrypt/decompress issues)
+        if (response.metaData.code === '5000') {
+            html += '<hr>';
+            html += '<div class="alert alert-warning">';
+            html += '<strong><i class="fa fa-info-circle"></i> Kemungkinan Penyebab:</strong><br>';
+            html += '• Masalah dekripsi atau dekompresi data dari server BPJS<br>';
+            html += '• Konfigurasi autentikasi tidak sesuai<br>';
+            html += '• Format request tidak valid<br>';
+            html += '• Server BPJS sedang mengalami gangguan';
+            html += '</div>';
+        }
+        
+        html += '</div>';
+    }
+    
+    // Show full response for debugging
+    html += '<div class="panel panel-default" style="margin-top: 15px;">';
+    html += '<div class="panel-heading"><h5>Full Response (Debug)</h5></div>';
+    html += '<div class="panel-body">';
+    html += '<pre>' + JSON.stringify(response, null, 2) + '</pre>';
+    html += '</div></div>';
+    
+    html += '</div></div>';
+    
+    $('#responseArea').html(html);
 }
 
 function clearMonitoringDataKlaimForm() {

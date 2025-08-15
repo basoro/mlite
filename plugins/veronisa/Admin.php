@@ -618,8 +618,8 @@ public function postHapusResepResponse()
         'KDJNSOBAT' => $_POST['KDJNSOBAT'],
         'NORESEP' => substr($_POST['NORESEP'], -5),
         'IDUSERSJP' => $_POST['IDUSERSJP'],
-        'TGLRSP' => $tglrsp,
-        'TGLPELRSP' => $tglpelrsp,
+        'TGLRSP' => date('Y-m-d 00:00:00', strtotime($tglrsp)),
+        'TGLPELRSP' => date('Y-m-d 00:00:00', strtotime($tglpelrsp)),
         'KdDokter' => $_POST['KdDokter'] ?? '0',
         'iterasi' => $_POST['iterasi'] ?? '0'
       ];
@@ -1906,18 +1906,18 @@ public function postHapusResepResponse()
       $response = $sep_data['response'];
       
       // Cek apakah data SEP sudah ada
-      $existing_sep = $this->db('mlite_apotek_online_sep_data')
-        ->where('no_sep', $response['noSep'])
-        ->oneArray();
+      // $existing_sep = $this->db('mlite_apotek_online_sep_data')
+      //   ->where('no_sep', $response['noSep'])
+      //   ->oneArray();
       
-      if ($existing_sep) {
-        ob_clean();
-        echo json_encode([
-          'status' => 'error',
-          'message' => 'Data SEP dengan nomor ' . $response['noSep'] . ' sudah ada'
-        ]);
-        exit();
-      }
+      // if ($existing_sep) {
+      //   ob_clean();
+      //   echo json_encode([
+      //     'status' => 'error',
+      //     'message' => 'Data SEP dengan nomor ' . $response['noSep'] . ' sudah ada'
+      //   ]);
+      //   exit();
+      // }
 
       $response['kodedokter'] = '372921';
       $response['namadokter'] = 'Tenaga Medis 372921';
