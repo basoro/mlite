@@ -55,7 +55,7 @@
                <option value="referensi/dpho">referensi/dpho</option>
                <option value="referensi/poli">referensi/poli/{Kode atau Nama Poli}</option>
                <option value="referensi/ppk">referensi/ppk/{Jenis Faskes}/{Nama Faskes}</option>
-               <option value="referensi/settingppk">referensi/settingppk/read/{Kode Apotek}</option>
+               <option value="referensi/settingppk/read">referensi/settingppk/read/{Kode Apotek}</option>
                <option value="referensi/spesialistik">referensi/spesialistik</option>
                <option value="referensi/obat">referensi/obat/{Kode Jenis Obat}/{Tgl Resep}/{Filter Pencarian}</option>
              </select>
@@ -398,7 +398,7 @@
          {name: 'jenis_faskes', label: 'Jenis Faskes', placeholder: '1 untuk Faskes 1, 2 untuk Faskes 2/RS'},
          {name: 'nama_faskes', label: 'Nama Faskes', placeholder: 'Masukkan nama faskes'}
        ],
-       'referensi/settingppk': [
+       'referensi/settingppk/read': [
          {name: 'kode_apotek', label: 'Kode Apotek', placeholder: 'Masukkan kode apotek'}
        ],
        'referensi/spesialistik': [],
@@ -446,7 +446,7 @@
          if (jenisFaskes && jenisFaskes.value && namaFaskes && namaFaskes.value) {
            finalEndpoint = 'referensi/ppk/' + encodeURIComponent(jenisFaskes.value) + '/' + encodeURIComponent(namaFaskes.value);
          }
-       } else if (endpoint === 'referensi/settingppk') {
+       } else if (endpoint === 'referensi/settingppk/read') {
          var kodeApotek = document.getElementById('kode_apotek');
          if (kodeApotek && kodeApotek.value) {
            finalEndpoint = 'referensi/settingppk/read/' + encodeURIComponent(kodeApotek.value);
@@ -491,7 +491,7 @@
      var requiredParams = {
        'referensi/poli': ['kode_nama_poli'],
        'referensi/ppk': ['jenis_faskes', 'nama_faskes'],
-       'referensi/settingppk': ['kode_apotek'],
+       'referensi/settingppk/read': ['kode_apotek'],
        'referensi/obat': ['kode_jenis_obat', 'tgl_resep', 'filter_pencarian']
      };
      
@@ -520,7 +520,8 @@
      
      // Tampilkan loading
      document.getElementById('response').value = 'Loading...';
-     
+     console.log(endpoint);
+     console.log(parameters);
      // Kirim AJAX request
      fetch('{?=url([ADMIN, "veronisa", "testreferensi"])?}', {
        method: 'POST',
