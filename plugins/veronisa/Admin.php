@@ -1054,7 +1054,7 @@ public function postHapusResepResponse()
                 $url .= '/' . implode('/', $url_params);
             }
         }
-
+        file_put_contents('debug.log', $url);
         // Panggil API BPJS
         if ($method === 'GET') {
             $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
