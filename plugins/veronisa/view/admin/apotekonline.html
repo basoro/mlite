@@ -88,6 +88,16 @@
             <textarea rows="10" class="form-control" id="response" readonly placeholder="Response akan ditampilkan di sini"></textarea>
           </div>
           
+          <!-- Card untuk tampilan tabel/card -->
+          <div id="responseCard" class="panel panel-info" style="display: none; margin-top: 15px;">
+            <div class="panel-heading">
+              <h4 class="panel-title"><i class="fa fa-table"></i> Response Data</h4>
+            </div>
+            <div class="panel-body" id="responseCardContent">
+              <!-- Content akan diisi oleh JavaScript -->
+            </div>
+          </div>
+          
           <button type="button" class="btn btn-primary" onclick="submitRequest()">Submit</button>
           <button type="button" class="btn btn-default" onclick="clearForm()">Clear</button>
         </form>
@@ -139,6 +149,16 @@
           <div class="form-group">
             <label for="responseObat">Response</label>
             <textarea rows="10" class="form-control" id="responseObat" readonly placeholder="Response akan ditampilkan di sini"></textarea>
+          </div>
+          
+          <!-- Card untuk tampilan tabel/card -->
+          <div id="responseCardObat" class="panel panel-info" style="display: none; margin-top: 15px;">
+            <div class="panel-heading">
+              <h4 class="panel-title"><i class="fa fa-table"></i> Response Data</h4>
+            </div>
+            <div class="panel-body" id="responseCardContentObat">
+              <!-- Content akan diisi oleh JavaScript -->
+            </div>
           </div>
           
           <button type="button" class="btn btn-primary" onclick="submitObatRequest()">Submit</button>
@@ -196,6 +216,16 @@
             <textarea rows="10" class="form-control" id="responseResep" readonly placeholder="Response akan ditampilkan di sini"></textarea>
           </div>
           
+          <!-- Card untuk tampilan tabel/card -->
+          <div id="responseCardResep" class="panel panel-info" style="display: none; margin-top: 15px;">
+            <div class="panel-heading">
+              <h4 class="panel-title"><i class="fa fa-table"></i> Response Data</h4>
+            </div>
+            <div class="panel-body" id="responseCardContentResep">
+              <!-- Content akan diisi oleh JavaScript -->
+            </div>
+          </div>
+          
           <button type="button" class="btn btn-primary" onclick="submitResepRequest()">Submit</button>
           <button type="button" class="btn btn-default" onclick="clearResepForm()">Clear</button>
         </form>
@@ -248,6 +278,16 @@
           <div class="form-group">
             <label for="responsePelayananObat">Response</label>
             <textarea rows="10" class="form-control" id="responsePelayananObat" readonly placeholder="Response akan ditampilkan di sini"></textarea>
+          </div>
+          
+          <!-- Card untuk tampilan tabel/card -->
+          <div id="responseCardPelayananObat" class="panel panel-info" style="display: none; margin-top: 15px;">
+            <div class="panel-heading">
+              <h4 class="panel-title"><i class="fa fa-table"></i> Response Data</h4>
+            </div>
+            <div class="panel-body" id="responseCardContentPelayananObat">
+              <!-- Content akan diisi oleh JavaScript -->
+            </div>
           </div>
           
           <button type="button" class="btn btn-primary" onclick="submitPelayananObatRequest()">Submit</button>
@@ -308,6 +348,16 @@
             <textarea rows="10" class="form-control" id="responseCariSep" readonly placeholder="Response akan ditampilkan di sini"></textarea>
           </div>
           
+          <!-- Card untuk tampilan tabel/card -->
+          <div id="responseCardCariSep" class="panel panel-info" style="display: none; margin-top: 15px;">
+            <div class="panel-heading">
+              <h4 class="panel-title"><i class="fa fa-table"></i> Response Data</h4>
+            </div>
+            <div class="panel-body" id="responseCardContentCariSep">
+              <!-- Content akan diisi oleh JavaScript -->
+            </div>
+          </div>
+          
           <button type="button" class="btn btn-primary" onclick="submitCariSepRequest()">Submit</button>
           <!--<button type="button" class="btn btn-info" onclick="simulasiCariSep()">Simulasi Data SEP</button>-->
           <button type="button" class="btn btn-success" onclick="simpanSep()" id="btnSimpanSep" style="display:none;">Simpan SEP</button>
@@ -359,6 +409,16 @@
           <div class="form-group">
             <label for="responseMonitoringKlaim">Response</label>
             <textarea rows="10" class="form-control" id="responseMonitoringKlaim" readonly placeholder="Response akan ditampilkan di sini"></textarea>
+          </div>
+          
+          <!-- Card untuk tampilan tabel/card -->
+          <div id="responseCardMonitoringKlaim" class="panel panel-info" style="display: none; margin-top: 15px;">
+            <div class="panel-heading">
+              <h4 class="panel-title"><i class="fa fa-table"></i> Response Data</h4>
+            </div>
+            <div class="panel-body" id="responseCardContentMonitoringKlaim">
+              <!-- Content akan diisi oleh JavaScript -->
+            </div>
           </div>
           
           <button type="button" class="btn btn-primary" onclick="submitMonitoringKlaimRequest()">Submit</button>
@@ -532,6 +592,7 @@
      })
      .then(function(data) {
        document.getElementById('response').value = JSON.stringify(data, null, 2);
+       displayResponseCard(data, 'responseCard', 'responseCardContent');
      })
      .catch(function(error) {
        document.getElementById('response').value = JSON.stringify({
@@ -548,6 +609,7 @@
     document.getElementById('referensiForm').reset();
     document.getElementById('fullUrl').value = '';
     document.getElementById('response').value = '';
+    document.getElementById('responseCard').style.display = 'none';
   }
   
   // Fungsi untuk form obat
@@ -598,6 +660,7 @@
     })
     .then(function(data) {
       document.getElementById('responseObat').value = JSON.stringify(data, null, 2);
+      displayResponseCard(data, 'responseCardObat', 'responseCardContentObat');
     })
     .catch(function(error) {
       document.getElementById('responseObat').value = JSON.stringify({
@@ -614,6 +677,7 @@
     document.getElementById('obatForm').reset();
     document.getElementById('fullUrlObat').value = '';
     document.getElementById('responseObat').value = '';
+    document.getElementById('responseCardObat').style.display = 'none';
   }
   
   // Fungsi untuk form resep
@@ -678,6 +742,7 @@
     })
     .then(function(data) {
       document.getElementById('responseResep').value = JSON.stringify(data, null, 2);
+      displayResponseCard(data, 'responseCardResep', 'responseCardContentResep');
     })
     .catch(function(error) {
       document.getElementById('responseResep').value = JSON.stringify({
@@ -694,6 +759,7 @@
     document.getElementById('resepForm').reset();
     document.getElementById('fullUrlResep').value = '';
     document.getElementById('responseResep').value = '';
+    document.getElementById('responseCardResep').style.display = 'none';
   }
   
   // Fungsi untuk form pelayanan obat
@@ -834,6 +900,7 @@
     })
     .then(function(data) {
       document.getElementById('responsePelayananObat').value = JSON.stringify(data, null, 2);
+      displayResponseCard(data, 'responseCardPelayananObat', 'responseCardContentPelayananObat');
     })
     .catch(function(error) {
       document.getElementById('responsePelayananObat').value = JSON.stringify({
@@ -850,6 +917,7 @@
     document.getElementById('pelayananObatForm').reset();
     document.getElementById('fullUrlPelayananObat').value = '';
     document.getElementById('responsePelayananObat').value = '';
+    document.getElementById('responseCardPelayananObat').style.display = 'none';
   }
   
   // Fungsi untuk form cari SEP
@@ -968,6 +1036,7 @@
     })
     .then(function(data) {
       document.getElementById('responseCariSep').value = JSON.stringify(data, null, 2);
+      displayResponseCard(data, 'responseCardCariSep', 'responseCardContentCariSep');
       
       // Tampilkan tombol simpan jika response berhasil dan ada data SEP
       if (data && data.metaData && data.metaData.code == "200" && data.response && data.response.noSep) {
@@ -994,6 +1063,7 @@
     document.getElementById('cariSepForm').reset();
     document.getElementById('fullUrlCariSep').value = '';
     document.getElementById('responseCariSep').value = '';
+    document.getElementById('responseCardCariSep').style.display = 'none';
     document.getElementById('btnSimpanSep').style.display = 'none';
     window.currentSepData = null;
   }
@@ -1237,6 +1307,7 @@
     })
     .then(function(data) {
       document.getElementById('responseMonitoringKlaim').value = JSON.stringify(data, null, 2);
+      displayResponseCard(data, 'responseCardMonitoringKlaim', 'responseCardContentMonitoringKlaim');
     })
     .catch(function(error) {
       document.getElementById('responseMonitoringKlaim').value = JSON.stringify({
@@ -1253,8 +1324,264 @@
     document.getElementById('monitoringKlaimForm').reset();
     document.getElementById('fullUrlMonitoringKlaim').value = '';
     document.getElementById('responseMonitoringKlaim').value = '';
+    document.getElementById('responseCardMonitoringKlaim').style.display = 'none';
   }
 
+  // Fungsi untuk menampilkan response dalam format card/tabel
+  function displayResponseCard(data, cardId, contentId) {
+    var card = document.getElementById(cardId);
+    var content = document.getElementById(contentId);
+    
+    if (!card || !content) {
+      return;
+    }
+    
+    // Reset content
+    content.innerHTML = '';
+    
+    if (!data) {
+      card.style.display = 'none';
+      return;
+    }
+    
+    // Tampilkan card
+    card.style.display = 'block';
+    
+    // Buat tabel untuk metadata
+    var metaTable = createTable('Metadata', data.metaData);
+    content.appendChild(metaTable);
+    
+    // Buat tabel untuk response data jika ada
+    if (data.response && typeof data.response === 'object') {
+      var responseTable = createTable('Response Data', data.response);
+      content.appendChild(responseTable);
+    } else if (data.response) {
+      var responseDiv = document.createElement('div');
+      responseDiv.className = 'alert alert-info';
+      responseDiv.innerHTML = '<strong>Response:</strong> ' + data.response;
+      content.appendChild(responseDiv);
+    }
+    
+    // Buat tabel untuk request info jika ada
+    if (data.request_info) {
+      var requestTable = createTable('Request Info', data.request_info);
+      content.appendChild(requestTable);
+    }
+  }
+  
+  function createTable(title, data) {
+    var container = document.createElement('div');
+    container.className = 'table-responsive';
+    container.style.marginBottom = '20px';
+    
+    var titleElement = document.createElement('h5');
+    titleElement.innerHTML = '<i class="fa fa-info-circle"></i> ' + title;
+    titleElement.style.marginBottom = '10px';
+    titleElement.style.color = '#31708f';
+    container.appendChild(titleElement);
+    
+    if (!data || typeof data !== 'object') {
+      var noDataDiv = document.createElement('div');
+      noDataDiv.className = 'alert alert-warning';
+      noDataDiv.innerHTML = 'No data available';
+      container.appendChild(noDataDiv);
+      return container;
+    }
+    
+    var table = document.createElement('table');
+    table.className = 'table table-striped table-bordered table-condensed';
+    
+    var tbody = document.createElement('tbody');
+    
+    // Jika data adalah array, tampilkan sebagai tabel dengan kolom
+    if (Array.isArray(data)) {
+      if (data.length > 0) {
+        // Buat header dari keys object pertama
+        var thead = document.createElement('thead');
+        var headerRow = document.createElement('tr');
+        headerRow.className = 'info';
+        
+        var firstItem = data[0];
+        if (typeof firstItem === 'object') {
+          Object.keys(firstItem).forEach(function(key) {
+            var th = document.createElement('th');
+            th.textContent = formatKey(key);
+            headerRow.appendChild(th);
+          });
+        }
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+        
+        // Buat baris data
+        data.forEach(function(item) {
+          var row = document.createElement('tr');
+          if (typeof item === 'object') {
+            Object.keys(firstItem).forEach(function(key) {
+              var td = document.createElement('td');
+              if (typeof item[key] === 'object' && item[key] !== null) {
+                // Untuk object/array, tampilkan sebagai tabel mini
+                td.innerHTML = formatValue(item[key]);
+              } else {
+                td.textContent = formatValue(item[key]);
+              }
+              row.appendChild(td);
+            });
+          } else {
+            var td = document.createElement('td');
+            td.textContent = formatValue(item);
+            row.appendChild(td);
+          }
+          tbody.appendChild(row);
+        });
+      } else {
+        var row = document.createElement('tr');
+        var td = document.createElement('td');
+        td.textContent = 'No data available';
+        td.className = 'text-center text-muted';
+        row.appendChild(td);
+        tbody.appendChild(row);
+      }
+    } else {
+      // Jika data adalah object, tampilkan sebagai key-value pairs
+      Object.keys(data).forEach(function(key) {
+        var row = document.createElement('tr');
+        
+        var keyTd = document.createElement('td');
+        keyTd.innerHTML = '<strong>' + formatKey(key) + '</strong>';
+        keyTd.style.width = '30%';
+        keyTd.className = 'info';
+        
+        var valueTd = document.createElement('td');
+        if (typeof data[key] === 'object' && data[key] !== null) {
+          // Untuk object/array, tampilkan sebagai tabel mini
+          valueTd.innerHTML = formatValue(data[key]);
+        } else {
+          valueTd.textContent = formatValue(data[key]);
+        }
+        
+        row.appendChild(keyTd);
+        row.appendChild(valueTd);
+        tbody.appendChild(row);
+      });
+    }
+    
+    table.appendChild(tbody);
+    container.appendChild(table);
+    
+    return container;
+  }
+  
+  function formatKey(key) {
+    // Ubah snake_case atau camelCase menjadi Title Case
+    return key.replace(/_/g, ' ')
+              .replace(/([A-Z])/g, ' $1')
+              .replace(/^./, function(str) { return str.toUpperCase(); })
+              .replace(/\s+/g, ' ')
+              .trim();
+  }
+  
+  function formatValue(value) {
+     if (value === null || value === undefined) {
+       return '-';
+     }
+     if (typeof value === 'object') {
+       // Jika object, buat tabel mini
+       if (Array.isArray(value)) {
+         if (value.length === 0) return 'Empty array';
+         return createMiniTable(value);
+       } else {
+         return createMiniTable(value);
+       }
+     }
+     return String(value);
+   }
+   
+   function createMiniTable(data) {
+     if (!data || typeof data !== 'object') {
+       return String(data);
+     }
+     
+     var table = document.createElement('table');
+     table.className = 'table table-condensed table-bordered';
+     table.style.margin = '0';
+     table.style.fontSize = '12px';
+     
+     var tbody = document.createElement('tbody');
+     
+     if (Array.isArray(data)) {
+       if (data.length > 0 && typeof data[0] === 'object') {
+         // Array of objects - create table with headers
+         var thead = document.createElement('thead');
+         var headerRow = document.createElement('tr');
+         Object.keys(data[0]).forEach(function(key) {
+           var th = document.createElement('th');
+           th.textContent = formatKey(key);
+           th.style.padding = '4px';
+           th.style.fontSize = '11px';
+           headerRow.appendChild(th);
+         });
+         thead.appendChild(headerRow);
+         table.appendChild(thead);
+         
+         data.forEach(function(item) {
+           var row = document.createElement('tr');
+           Object.keys(data[0]).forEach(function(key) {
+             var td = document.createElement('td');
+             td.style.padding = '4px';
+             if (typeof item[key] === 'object') {
+               td.textContent = JSON.stringify(item[key]);
+             } else {
+               td.textContent = item[key] || '-';
+             }
+             row.appendChild(td);
+           });
+           tbody.appendChild(row);
+         });
+       } else {
+         // Simple array
+         data.forEach(function(item, index) {
+           var row = document.createElement('tr');
+           var indexTd = document.createElement('td');
+           indexTd.textContent = index;
+           indexTd.style.padding = '4px';
+           indexTd.style.fontWeight = 'bold';
+           var valueTd = document.createElement('td');
+           valueTd.textContent = String(item);
+           valueTd.style.padding = '4px';
+           row.appendChild(indexTd);
+           row.appendChild(valueTd);
+           tbody.appendChild(row);
+         });
+       }
+     } else {
+       // Object - create key-value pairs
+       Object.keys(data).forEach(function(key) {
+         var row = document.createElement('tr');
+         var keyTd = document.createElement('td');
+         keyTd.textContent = formatKey(key);
+         keyTd.style.padding = '4px';
+         keyTd.style.fontWeight = 'bold';
+         keyTd.style.width = '40%';
+         var valueTd = document.createElement('td');
+         valueTd.style.padding = '4px';
+         if (typeof data[key] === 'object') {
+           valueTd.textContent = JSON.stringify(data[key]);
+         } else {
+           valueTd.textContent = data[key] || '-';
+         }
+         row.appendChild(keyTd);
+         row.appendChild(valueTd);
+         tbody.appendChild(row);
+       });
+     }
+     
+     table.appendChild(tbody);
+     
+     var container = document.createElement('div');
+     container.appendChild(table);
+     return container.outerHTML;
+   }
+  
   // Update URL saat base URL berubah
   document.addEventListener('change', function(e) {
     if (e.target.id === 'baseUrl') {
