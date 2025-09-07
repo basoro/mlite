@@ -1200,7 +1200,7 @@
         {name: 'bulan', label: 'Bulan', placeholder: 'Masukkan bulan (1-12)'},
         {name: 'tahun', label: 'Tahun', placeholder: 'Masukkan tahun (YYYY)'},
         {name: 'jenis_obat', label: 'Jenis Obat (0. Semua 1. Obat PRB 2. Obat Kronis Blm Stabil 3. Obat Kemoterapi)', placeholder: 'Masukkan jenis obat'},
-        {name: 'status', label: 'Status (1. Belum diverifikasi 2. Sudah Verifikasi)', placeholder: 'Masukkan status'}
+        {name: 'status', label: 'Status (0. Belum diverifikasi 1. Sudah Verifikasi)', placeholder: 'Masukkan status'}
       ]
     };
     
@@ -1399,7 +1399,7 @@
         // Buat header dari keys object pertama
         var thead = document.createElement('thead');
         var headerRow = document.createElement('tr');
-        headerRow.className = 'info';
+        headerRow.className = '';
         
         var firstItem = data[0];
         if (typeof firstItem === 'object') {
@@ -1449,7 +1449,7 @@
         var keyTd = document.createElement('td');
         keyTd.innerHTML = '<strong>' + formatKey(key) + '</strong>';
         keyTd.style.width = '30%';
-        keyTd.className = 'info';
+        keyTd.className = '';
         
         var valueTd = document.createElement('td');
         if (typeof data[key] === 'object' && data[key] !== null) {

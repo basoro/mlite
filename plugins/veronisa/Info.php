@@ -71,11 +71,38 @@ return [
         `tanggal_simpan` datetime NOT NULL,
         `user_simpan` varchar(50) DEFAULT NULL,
         `raw_response` text DEFAULT NULL,
+        `no_rawat` varchar(17) DEFAULT NULL,
         PRIMARY KEY (`id`),
         UNIQUE KEY `no_sep` (`no_sep`),
         KEY `no_kartu` (`no_kartu`),
         KEY `nama_peserta` (`nama_peserta`),
         KEY `tanggal_simpan` (`tanggal_simpan`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_apotek_online_resep_response_log` (
+      `id` int NOT NULL AUTO_INCREMENT,
+      `no_rawat` varchar(17) DEFAULT NULL,
+      `no_sep_kunjungan` varchar(50) DEFAULT NULL,
+      `no_kartu` varchar(20) DEFAULT NULL,
+      `nama` varchar(100) DEFAULT NULL,
+      `faskes_asal` varchar(20) DEFAULT NULL,
+      `no_apotik` varchar(30) DEFAULT NULL,
+      `no_resep` varchar(20) DEFAULT NULL,
+      `tgl_resep` date DEFAULT NULL,
+      `kd_jns_obat` varchar(5) DEFAULT NULL,
+      `by_tag_rsp` varchar(10) DEFAULT NULL,
+      `by_ver_rsp` varchar(10) DEFAULT NULL,
+      `tgl_entry` date DEFAULT NULL,
+      `meta_code` varchar(10) DEFAULT NULL,
+      `meta_message` text,
+      `raw_response` text,
+      `tanggal_simpan` datetime DEFAULT CURRENT_TIMESTAMP,
+      `user` varchar(50) DEFAULT NULL,
+      PRIMARY KEY (`id`) USING BTREE,
+      KEY `idx_no_rawat` (`no_rawat`) USING BTREE,
+      KEY `idx_no_sep_kunjungan` (`no_sep_kunjungan`) USING BTREE,
+      KEY `idx_no_resep` (`no_resep`) USING BTREE,
+      KEY `idx_tanggal_simpan` (`tanggal_simpan`) USING BTREE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
     },

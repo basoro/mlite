@@ -1046,7 +1046,7 @@ public function postHapusResepResponse()
         if (!empty($parameters)) {
             $url_params = [];
             foreach ($parameters as $param_key => $value) {
-                if (!empty($value)) {
+                if (isset($value) && $value !== '') {
                     $url_params[] = urlencode($value);
                 }
             }
