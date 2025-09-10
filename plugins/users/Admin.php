@@ -31,24 +31,19 @@ class Admin extends AdminModule
     */
     public function getManage()
     {
-        if($this->settings->get('settings.versi_beta') == 'ya') { 
-            $this->_addHeaderFilesBeta();
-            return $this->draw('manage.beta.html');    
-        } else {
-            $rows = $this->db('mlite_users')->toArray();
-            foreach ($rows as &$row) {
-                if (empty($row['fullname'])) {
-                    $row['fullname'] = '----';
-                }
-                $row['editURL'] = url([ADMIN, 'users', 'edit', $row['id']]);
-                $row['delURL']  = url([ADMIN, 'users', 'delete', $row['id']]);
+        $rows = $this->db('mlite_users')->toArray();
+        foreach ($rows as &$row) {
+            if (empty($row['fullname'])) {
+                $row['fullname'] = '----';
             }
-            $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
-            $this->core->addCSS(url([ADMIN, 'users', 'css']));
-            $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
-            $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
-            return $this->draw('manage.html', ['myId' => $this->core->getUserInfo('id'), 'users' => $rows]);
+            $row['editURL'] = url([ADMIN, 'users', 'edit', $row['id']]);
+            $row['delURL']  = url([ADMIN, 'users', 'delete', $row['id']]);
         }
+        $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+        $this->core->addCSS(url([ADMIN, 'users', 'css']));
+        $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
+        $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
+        return $this->draw('manage.html', ['myId' => $this->core->getUserInfo('id'), 'users' => $rows]);
     }
 
     /**
@@ -351,15 +346,10 @@ class Admin extends AdminModule
         exit();
     }
 
-    public function getManageBeta()
-    {
-        $this->_addHeaderFilesBeta();
-        return $this->draw('manage.beta.html');
-    }
+
 
     public function getMenu($id)
     {
-        $this->_addHeaderFilesBeta();
         $access = [];
         // $modules = explode(",",$this->db('mlite_users')->select('access')->where('id', $id)->oneArray());
         $modules = explode(',', $this->core->getUserInfo('access', $id, true));
@@ -657,34 +647,6 @@ $access = $_POST['access'];
         exit();
     }
 
-    public function getCssBeta()
-    {
-        header('Content-type: text/css');
-        echo $this->draw(MODULES.'/users/css/admin/styles.css');
-        exit();
-    }
 
-    public function getJavascriptBeta()
-    {
-        header('Content-type: text/javascript');
-        $settings = $this->settings('settings');
-        echo $this->draw(MODULES.'/users/js/admin/scripts.js', ['settings' => $settings]);
-        exit();
-    }
-
-    private function _addHeaderFilesBeta()
-    {
-        $this->core->addCSS(url('assets/css/datatables.min.css'));
-        $this->core->addCSS(url('assets/css/jquery.contextMenu.min.css'));
-        $this->core->addJS(url('assets/jscripts/jqueryvalidation.js'));
-        $this->core->addJS(url('assets/jscripts/xlsx.js'));
-        $this->core->addJS(url('assets/jscripts/jspdf.min.js'));
-        $this->core->addJS(url('assets/jscripts/jspdf.plugin.autotable.min.js'));
-        $this->core->addJS(url('assets/jscripts/datatables.min.js'));
-        $this->core->addJS(url('assets/jscripts/jquery.contextMenu.min.js'));
-
-        $this->core->addCSS(url([ADMIN, 'users', 'cssbeta']));
-        $this->core->addJS(url([ADMIN, 'users', 'javascriptbeta']), 'footer');
-    }
 
 }

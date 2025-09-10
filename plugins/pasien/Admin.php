@@ -17,17 +17,6 @@ class Admin extends AdminModule
 
     public function getManage()
     {
-      if($this->settings->get('settings.versi_beta') == 'ya') {
-        $this->_addHeaderFilesBeta();
-        $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
-        $this->assign['stts_nikah'] = $this->core->getEnum('pasien', 'stts_nikah');
-        $this->assign['gol_darah'] = $this->core->getEnum('pasien', 'gol_darah');
-        $this->assign['agama'] = array('ISLAM', 'KRISTEN', 'PROTESTAN', 'HINDU', 'BUDHA', 'KONGHUCU', 'KEPERCAYAAN');
-        $this->assign['pnd'] = $this->core->getEnum('pasien', 'pnd');
-        $this->assign['keluarga'] = $this->core->getEnum('pasien', 'keluarga');
-  
-        return $this->draw('manage.beta.html', ['pasien' => $this->assign]);  
-      }else {
         $this->core->addJS(url(MODULES.'/dashboard/js/admin/webcam.js?v={$mlite.version}'));
         $this->_addHeaderFiles();
 
@@ -67,7 +56,6 @@ class Admin extends AdminModule
           'offset' => $offset,
           'admin_mode' => $this->settings->get('settings.admin_mode')
         ]);
-      }
     }
 
     public function anyDisplay()
@@ -1562,53 +1550,6 @@ class Admin extends AdminModule
         exit();
     }
 
-    public function getManageBeta(){
-      $this->_addHeaderFilesBeta();
-      $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
-      $this->assign['stts_nikah'] = array('BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO');
-      $this->assign['agama'] = array('ISLAM', 'KRISTEN', 'PROTESTAN', 'HINDU', 'BUDHA', 'KONGHUCU', 'KEPERCAYAAN');
-      $this->assign['pnd'] = array('TS','TK','SD','SMP','SMA','SLTA/SEDERAJAT','D1','D2','D3','D4','S1','S2','S3','-');
-      $this->assign['keluarga'] = array('AYAH','IBU','ISTRI','SUAMI','SAUDARA','ANAK');
-      $disabled_menu = $this->core->loadDisabledMenu('pasien'); 
-      foreach ($disabled_menu as &$row) { 
-        if ($row == "true" ) $row = "disabled"; 
-      } 
-      unset($row);
-
-      return $this->draw('manage.beta.html', ['pasien' => $this->assign, 'disabled_menu' => $disabled_menu]);
-    }
-
-    public function getCssBeta()
-    {
-        header('Content-type: text/css');
-        echo $this->draw(MODULES.'/pasien/css/admin/styles.css');
-        exit();
-    }
-
-    public function getJavascriptBeta()
-    {
-        header('Content-type: text/javascript');
-        $settings = $this->settings('settings');
-        echo $this->draw(MODULES.'/pasien/js/admin/scripts.js', ['settings' => $settings]);
-        exit();
-    }
-
-    private function _addHeaderFilesBeta()
-    {
-        $this->core->addCSS(url('assets/css/datatables.min.css'));
-        $this->core->addCSS(url('assets/css/jquery.contextMenu.min.css'));
-        $this->core->addJS(url('assets/jscripts/jqueryvalidation.js'));
-        $this->core->addJS(url('assets/jscripts/xlsx.js'));
-        $this->core->addJS(url('assets/jscripts/jspdf.min.js'));
-        $this->core->addJS(url('assets/jscripts/jspdf.plugin.autotable.min.js'));
-        $this->core->addJS(url('assets/jscripts/datatables.min.js'));
-        $this->core->addJS(url('assets/jscripts/jquery.contextMenu.min.js'));
-        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
-        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
-        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
-
-        $this->core->addCSS(url([ADMIN, 'pasien', 'cssbeta']));
-        $this->core->addJS(url([ADMIN, 'pasien', 'javascriptbeta']), 'footer');
-    }  
+  
 
 }

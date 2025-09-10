@@ -3280,8 +3280,7 @@ VALUES
 	(159,'farmasi','keterangan_etiket',''),
 	(160,'pcare','consumerUserKeyAntrol',''),
 	(161,'settings','set_nomor_surat','001'),
-	(162,'settings','versi_beta','tidak'),
-	(163,'settings','log_query','tidak');
+	(162,'settings','log_query','tidak');
 
 /*!40000 ALTER TABLE `mlite_settings` ENABLE KEYS */;
 UNLOCK TABLES;

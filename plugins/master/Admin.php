@@ -331,20 +331,12 @@ class Admin extends AdminModule
     /* Start Poliklinik Section */
     public function getPoliklinik()
     {
-      if($this->settings->get('settings.versi_beta') == 'ya') {
-        $this->poliklinik->_addHeaderFiles();
-        $this->core->addCSS(url([ADMIN, 'master', 'poliklinikcss']));
-        $this->core->addJS(url([ADMIN, 'master', 'poliklinikjs']), 'footer');
-        return $this->draw('poliklinik.beta.html');  
-      } else {
         $this->_addHeaderFiles();
         $this->core->addJS(url([ADMIN, 'master', 'poliklinikjs']), 'footer');
         $return = $this->poliklinik->getIndex();
         return $this->draw('poliklinik.html', [
           'poliklinik' => $return
         ]);
-      }
-
     }
 
     public function anyPoliklinikForm()
@@ -379,14 +371,6 @@ class Admin extends AdminModule
         $settings = $this->settings('settings');
         echo $this->draw(MODULES.'/master/js/admin/poliklinik.js', ['settings' => $settings]);
         exit();
-    }
-
-    public function getPoliklinikBeta()
-    {
-      $this->poliklinik->_addHeaderFiles();
-      $this->core->addCSS(url([ADMIN, 'master', 'poliklinikcss']));
-      $this->core->addJS(url([ADMIN, 'master', 'poliklinikjs']), 'footer');
-      return $this->draw('poliklinik.beta.html');
     }
 
     public function postPoliklinikData()
