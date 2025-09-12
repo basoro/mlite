@@ -6,6 +6,7 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    public $assign = [];
 
     public function navigation()
     {
@@ -13,6 +14,8 @@ class Admin extends AdminModule
             'Kelola' => 'manage',
             'Obat & BHP' => 'mutasi',
             'Stok Opname' => 'opname',
+            'Detail Pemberian Obat' => 'detailpemberianobat',
+            'Riwayat Barang Medis' => 'riwayatbarangmedis',
             'Pengaturan' => 'settings',
         ];
     }
@@ -22,6 +25,8 @@ class Admin extends AdminModule
       $sub_modules = [
         ['name' => 'Mutasi Obat', 'url' => url([ADMIN, 'farmasi', 'mutasi']), 'icon' => 'medkit', 'desc' => 'Data obat dan barang habis pakai'],
         ['name' => 'Stok Opname', 'url' => url([ADMIN, 'farmasi', 'opname']), 'icon' => 'medkit', 'desc' => 'Tambah stok opname'],
+        ['name' => 'Detail Pemberian Obat', 'url' => url([ADMIN, 'farmasi', 'detailpemberianobat']), 'icon' => 'medkit', 'desc' => 'Detail pemberian obat pasien'],
+        ['name' => 'Riwayat Barang Medis', 'url' => url([ADMIN, 'farmasi', 'riwayatbarangmedis']), 'icon' => 'medkit', 'desc' => 'Riwayat pergerakan barang medis'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'farmasi', 'settings']), 'icon' => 'medkit', 'desc' => 'Pengaturan farmasi dan depo'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
@@ -441,6 +446,195 @@ class Admin extends AdminModule
         redirect(url([ADMIN, 'farmasi', 'settings']));
     }
     /* End Settings Farmasi Section */
+
+    /* Detail Pemberian Obat Section */
+    public function getDetailpemberianobat()
+    {
+        $this->_addHeaderFiles();
+        $this->core->addJS(url([ADMIN, 'farmasi', 'detailpemberianobatjs']), 'footer');
+        return $this->draw('detailpemberianobat.html');
+    }
+
+    public function postDetailpemberianobatData()
+    {
+        $draw = $_POST['draw'];
+        $row1 = $_POST['start'];
+        $rowperpage = $_POST['length']; // Rows display per page
+        $columnIndex = $_POST['order'][0]['column']; // Column index
+        $columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+        $columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+        $searchValue = $_POST['search']['value']; // Search value
+
+        ## Custom Field value
+        $search_field_detail_pemberian_obat= $_POST['search_field_detail_pemberian_obat'];
+        $search_text_detail_pemberian_obat = $_POST['search_text_detail_pemberian_obat'];
+
+        $tgl_awal = isset_or($_POST['tgl_awal'], date('Y-m-d'));
+        $tgl_akhir = isset_or($_POST['tgl_akhir'], date('Y-m-d'));
+
+        $searchQuery = " ";
+        if($search_text_detail_pemberian_obat != ''){
+            $searchQuery .= " and (".$search_field_detail_pemberian_obat." like '%".$search_text_detail_pemberian_obat."%' ) ";
+        }
+
+        $searchQuery .= " and (tgl_perawatan between '".$tgl_awal."' and '".$tgl_akhir."') ";
+
+        ## Total number of records without filtering
+        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from detail_pemberian_obat");
+        $sel->execute();
+        $records = $sel->fetch();
+        $totalRecords = $records['allcount'];
+
+        ## Total number of records with filtering
+        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from detail_pemberian_obat WHERE 1 ".$searchQuery);
+        $sel->execute();
+        $records = $sel->fetch();
+        $totalRecordwithFilter = $records['allcount'];
+
+        ## Fetch records
+        $sel = $this->db()->pdo()->prepare("select * from detail_pemberian_obat WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row1.",".$rowperpage);
+        $sel->execute();
+        $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
+
+        $data = array();
+        foreach($result as $row) {
+            $databarang = $this->db('databarang')->select('nama_brng')->where('kode_brng', $row['kode_brng'])->oneArray();
+            $bangsal = $this->db('bangsal')->select('nm_bangsal')->where('kd_bangsal', $row['kd_bangsal'])->oneArray();
+            $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat']);
+            $data[] = array(
+                'tgl_perawatan'=>$row['tgl_perawatan'],
+                'jam'=>$row['jam'],
+                'no_rkm_medis' => $no_rkm_medis,
+                'nm_pasien' => $this->core->getPasienInfo('nm_pasien', $no_rkm_medis),
+                'no_rawat'=>$row['no_rawat'],
+                'kode_brng'=>$row['kode_brng'],
+                'nama_brng'=>$databarang['nama_brng'],
+                'h_beli'=>$row['h_beli'],
+                'biaya_obat'=>$row['biaya_obat'],
+                'jml'=>$row['jml'],
+                'embalase'=>$row['embalase'],
+                'tuslah'=>$row['tuslah'],
+                'total'=>$row['total'],
+                'status'=>$row['status'],
+                'kd_bangsal'=>$row['kd_bangsal'],
+                'nm_bangsal'=>$bangsal['nm_bangsal'],
+                'no_batch'=>$row['no_batch'],
+                'no_faktur'=>$row['no_faktur']
+            );
+        }
+
+        ## Response
+        $response = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordwithFilter,
+            "aaData" => $data
+        );
+
+        echo json_encode($response);
+        exit();
+    }
+
+    public function getDetailpemberianobatJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/farmasi/js/admin/detailpemberianobat.js');
+        exit();
+    }
+    /* End Detail Pemberian Obat Section */
+
+    /* Riwayat Barang Medis Section */
+    public function getRiwayatbarangmedis()
+    {
+        $this->_addHeaderFiles();
+        $this->core->addJS(url([ADMIN, 'farmasi', 'riwayatbarangmedisjs']), 'footer');
+        return $this->draw('riwayatbarangmedis.html');
+    }
+
+    public function postRiwayatbarangmedisData()
+    {
+        $draw = $_POST['draw'];
+        $row1 = $_POST['start'];
+        $rowperpage = $_POST['length']; // Rows display per page
+        $columnIndex = $_POST['order'][0]['column']; // Column index
+        $columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+        $columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+        $searchValue = $_POST['search']['value']; // Search value
+
+        ## Custom Field value
+        $search_field_riwayat_barang_medis= $_POST['search_field_riwayat_barang_medis'];
+        $search_text_riwayat_barang_medis = $_POST['search_text_riwayat_barang_medis'];
+
+        $tgl_awal = isset_or($_POST['tgl_awal'], date('Y-m-d'));
+        $tgl_akhir = isset_or($_POST['tgl_akhir'], date('Y-m-d'));
+
+        $searchQuery = " ";
+        if($search_text_riwayat_barang_medis != ''){
+            $searchQuery .= " and (".$search_field_riwayat_barang_medis." like '%".$search_text_riwayat_barang_medis."%' ) ";
+        }
+
+        $searchQuery .= " and (tanggal between '".$tgl_awal."' and '".$tgl_akhir."') ";
+
+        ## Total number of records without filtering
+        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from riwayat_barang_medis");
+        $sel->execute();
+        $records = $sel->fetch();
+        $totalRecords = $records['allcount'];
+
+        ## Total number of records with filtering
+        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from riwayat_barang_medis WHERE 1 ".$searchQuery);
+        $sel->execute();
+        $records = $sel->fetch();
+        $totalRecordwithFilter = $records['allcount'];
+
+        ## Fetch records
+        $sel = $this->db()->pdo()->prepare("select * from riwayat_barang_medis WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row1.",".$rowperpage);
+        $sel->execute();
+        $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
+
+        $data = array();
+        foreach($result as $row) {
+            $databarang = $this->db('databarang')->select('nama_brng')->where('kode_brng', $row['kode_brng'])->oneArray();
+            $bangsal = $this->db('bangsal')->select('nm_bangsal')->where('kd_bangsal', $row['kd_bangsal'])->oneArray();
+            $data[] = array(
+                'kode_brng'=>$row['kode_brng'],
+                'nama_brng'=>$databarang['nama_brng'],
+                'stok_awal'=>$row['stok_awal'],
+                'masuk'=>$row['masuk'],
+                'keluar'=>$row['keluar'],
+                'stok_akhir'=>$row['stok_akhir'],
+                'posisi'=>$row['posisi'],
+                'tanggal'=>$row['tanggal'],
+                'jam'=>$row['jam'],
+                'petugas'=>$row['petugas'],
+                'kd_bangsal'=>$row['kd_bangsal'],
+                'nm_bangsal'=>$bangsal['nm_bangsal'],
+                'status'=>$row['status'],
+                'no_batch'=>$row['no_batch'],
+                'no_faktur'=>$row['no_faktur'],
+                'keterangan'=>$row['keterangan']
+            );
+        }
+
+        ## Response
+        $response = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordwithFilter,
+            "aaData" => $data
+        );
+
+        echo json_encode($response);
+        exit();
+    }
+
+    public function getRiwayatbarangmedisJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/farmasi/js/admin/riwayatbarangmedis.js');
+        exit();
+    }
+    /* End Riwayat Barang Medis Section */
 
     public function getCSS()
     {

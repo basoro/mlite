@@ -2314,12 +2314,8 @@ class Admin extends AdminModule
     // });
     $mapping_lab = $this->db('mlite_satu_sehat_mapping_lab')
       ->select([
-        'kd_jenis_prw' => 'mlite_satu_sehat_mapping_lab.kd_jenis_prw',
         'id_template'=>'mlite_satu_sehat_mapping_lab.id_template',
-        'Pemeriksaan'=>'template_laboratorium.Pemeriksaan',
-        'code_loinc'=>'mlite_satu_sehat_mapping_lab.code_loinc',
-        'display_loinc'=>'mlite_satu_sehat_mapping_lab.display_loinc',
-        'unit_of_measure'=>'mlite_satu_sehat_mapping_lab.unit_of_measure',
+        'Pemeriksaan'=>'template_laboratorium.Pemeriksaan'
       ])
       ->leftJoin('template_laboratorium', 'template_laboratorium.id_template = mlite_satu_sehat_mapping_lab.id_template')
       ->toArray();
@@ -6033,20 +6029,57 @@ class Admin extends AdminModule
     // auth to satusehat
     $auth_result = $this->authenticateWithOAuth2($client_id, $client_secret, $auth_url);
 
+    // Validate authentication result
+    if ($auth_result === null) {
+      error_log('Satu Sehat authentication failed: Invalid client credentials or auth URL');
+      return $this->draw('error.html', [
+        'title' => 'Authentication Error',
+        'message' => 'Failed to authenticate with Satu Sehat API. Please check your client credentials and try again.'
+      ]);
+    }
+
+    // Log successful authentication
+    error_log('Satu Sehat authentication successful');
+
     // Example usage
-    $kyc = new Kyc;
-    $json = $kyc->generateUrl($agent_name, $agent_nik, $auth_result, $api_url, $environment);
+    try {
+      $kyc = new Kyc;
+      $json = $kyc->generateUrl($agent_name, $agent_nik, $auth_result, $api_url, $environment);
 
-    $validation_web = json_decode($json, TRUE);
+      $validation_web = json_decode($json, TRUE);
+      
+      if (json_last_error() !== JSON_ERROR_NONE) {
+        error_log('Satu Sehat KYC JSON Parse Error: ' . json_last_error_msg() . ' - Response: ' . $json);
+        return $this->draw('error.html', [
+          'title' => 'KYC Response Error',
+          'message' => 'Failed to parse KYC response from Satu Sehat API. Please try again later.'
+        ]);
+      }
 
-    $url = $validation_web["data"]["url"];
+      if (!isset($validation_web["data"]["url"])) {
+        error_log('Satu Sehat KYC Error: No URL in response - ' . $json);
+        return $this->draw('error.html', [
+          'title' => 'KYC URL Error',
+          'message' => 'KYC URL not found in Satu Sehat API response. Please check your configuration.'
+        ]);
+      }
 
-    return $this->draw('kyc.html', ['url' => $url]);
+      $url = $validation_web["data"]["url"];
+      error_log('Satu Sehat KYC URL generated successfully');
+
+      return $this->draw('kyc.html', ['url' => $url]);
+      
+    } catch (Exception $e) {
+      error_log('Satu Sehat KYC Exception: ' . $e->getMessage());
+      return $this->draw('error.html', [
+        'title' => 'KYC Generation Error',
+        'message' => 'An error occurred while generating KYC URL: ' . $e->getMessage()
+      ]);
+    }
   }
 
   public function authenticateWithOAuth2($clientId, $clientSecret, $tokenUrl)
   {
-
     $curl = curl_init();
     $params = [
       'grant_type' => 'client_credentials',
@@ -6059,7 +6092,7 @@ class Admin extends AdminModule
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 0,
+      CURLOPT_TIMEOUT => 30,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
       CURLOPT_CUSTOMREQUEST => 'POST',
@@ -6070,12 +6103,40 @@ class Admin extends AdminModule
     ));
 
     $response = curl_exec($curl);
-
+    $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($curl);
+    
     curl_close($curl);
-    // echo $response;
+
+    // Check for cURL errors
+    if ($curlError) {
+      error_log('Satu Sehat OAuth2 cURL Error: ' . $curlError);
+      return null;
+    }
+
+    // Check HTTP status code
+    if ($httpCode !== 200) {
+      error_log('Satu Sehat OAuth2 HTTP Error: ' . $httpCode . ' - Response: ' . $response);
+      return null;
+    }
+
     // Parse the response body
     $data = json_decode($response, true);
+    
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      error_log('Satu Sehat OAuth2 JSON Parse Error: ' . json_last_error_msg() . ' - Response: ' . $response);
+      return null;
+    }
 
+    // Check if access token exists in response
+    if (!isset($data['access_token'])) {
+      error_log('Satu Sehat OAuth2 Error: No access token in response - ' . json_encode($data));
+      return null;
+    }
+
+    // Log successful authentication (without exposing the token)
+    error_log('Satu Sehat OAuth2 authentication successful');
+    
     // Return the access token
     return $data['access_token'];
   }

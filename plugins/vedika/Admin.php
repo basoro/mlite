@@ -50,80 +50,112 @@ class Admin extends AdminModule
       $date = $_GET['periode'];
     }
 
-    $KlaimRalan = $this->db()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, penjab WHERE reg_periksa.kd_pj = penjab.kd_pj AND penjab.kd_pj IN ('$carabayar') AND reg_periksa.tgl_registrasi LIKE '{$date}%' AND reg_periksa.status_lanjut = 'Ralan'");
-    $KlaimRalan->execute();
-    $KlaimRalan = $KlaimRalan->fetchAll();
-    $stats['KlaimRalan'] = 0;
-    if(count($KlaimRalan) > 0) {
-      $stats['KlaimRalan'] = count($KlaimRalan);
+    // Validasi dan normalisasi format tanggal
+    if (strlen($date) == 7 && preg_match('/^\d{4}-\d{2}$/', $date)) {
+        // Format YYYY-MM, konversi ke YYYY-MM-01
+        $date = $date . '-01';
+    } elseif (strlen($date) == 4 && preg_match('/^\d{4}$/', $date)) {
+        // Format YYYY, konversi ke YYYY-01-01
+        $date = $date . '-01-01';
+    } elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+        // Format tidak valid, gunakan bulan current
+        $date = date('Y-m-01');
     }
 
-    $KlaimRanap = $this->db()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, penjab, kamar_inap WHERE reg_periksa.no_rawat = kamar_inap.no_rawat AND reg_periksa.kd_pj = penjab.kd_pj AND penjab.kd_pj IN ('$carabayar') AND kamar_inap.tgl_keluar LIKE '{$date}%' AND reg_periksa.status_lanjut = 'Ranap'");
-    $KlaimRanap->execute();
-    $KlaimRanap = $KlaimRanap->fetchAll();
-    $stats['KlaimRanap'] = 0;
-    if(count($KlaimRanap) > 0) {
-      $stats['KlaimRanap'] = count($KlaimRanap);
+    // Cache key untuk statistik
+    $cache_key = 'vedika_stats_' . md5($date . $carabayar);
+    
+    // Cek cache terlebih dahulu
+    if(function_exists('apcu_fetch') && \apcu_exists($cache_key)) {
+      $stats = array_merge($stats, \apcu_fetch($cache_key));
+    } else {
+      // Optimized single query untuk semua statistik klaim
+      $sql_klaim = "
+        SELECT 
+          COUNT(CASE WHEN reg_periksa.status_lanjut = 'Ralan' THEN 1 END) as KlaimRalan,
+          COUNT(CASE WHEN reg_periksa.status_lanjut = 'Ranap' AND kamar_inap.no_rawat IS NOT NULL THEN 1 END) as KlaimRanap
+        FROM reg_periksa 
+        JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+        LEFT JOIN kamar_inap ON reg_periksa.no_rawat = kamar_inap.no_rawat 
+          AND kamar_inap.tgl_keluar >= ? AND kamar_inap.tgl_keluar < DATE_ADD(?, INTERVAL 1 MONTH)
+        WHERE penjab.kd_pj IN ('$carabayar') 
+        AND (
+          (reg_periksa.status_lanjut = 'Ralan' AND reg_periksa.tgl_registrasi >= ? AND reg_periksa.tgl_registrasi < DATE_ADD(?, INTERVAL 1 MONTH))
+          OR 
+          (reg_periksa.status_lanjut = 'Ranap' AND kamar_inap.no_rawat IS NOT NULL)
+        )
+      ";
+      
+      $stmt_klaim = $this->db()->pdo()->prepare($sql_klaim);
+      $stmt_klaim->execute([$date, $date, $date, $date]);
+      $klaim_result = $stmt_klaim->fetch(\PDO::FETCH_ASSOC);
+      
+      $stats['KlaimRalan'] = (int)$klaim_result['KlaimRalan'];
+      $stats['KlaimRanap'] = (int)$klaim_result['KlaimRanap'];
+      $stats['totalKlaim'] = $stats['KlaimRalan'] + $stats['KlaimRanap'];
+
+      // Optimized query untuk statistik vedika dengan JOIN instead of subquery
+      $sql_vedika = "
+        SELECT 
+          COUNT(CASE WHEN v.status = 'Lengkap' AND v.jenis = '2' THEN 1 END) as LengkapRalan,
+          COUNT(CASE WHEN v.status = 'Lengkap' AND v.jenis = '1' AND ki.no_rawat IS NOT NULL THEN 1 END) as LengkapRanap,
+          COUNT(CASE WHEN v.status = 'Pengajuan' AND v.jenis = '2' THEN 1 END) as PengajuanRalan,
+          COUNT(CASE WHEN v.status = 'Pengajuan' AND v.jenis = '1' AND ki.no_rawat IS NOT NULL THEN 1 END) as PengajuanRanap,
+          COUNT(CASE WHEN v.status = 'Perbaiki' AND v.jenis = '2' AND uv.username IS NOT NULL THEN 1 END) as PerbaikanRalan,
+          COUNT(CASE WHEN v.status = 'Perbaiki' AND v.jenis = '2' AND uv.username IS NULL THEN 1 END) as PerbaikanRalan1,
+          COUNT(CASE WHEN v.status = 'Perbaiki' AND v.jenis = '1' AND ki.no_rawat IS NOT NULL AND uv.username IS NOT NULL THEN 1 END) as PerbaikanRanap,
+          COUNT(CASE WHEN v.status = 'Perbaiki' AND v.jenis = '1' AND ki.no_rawat IS NOT NULL AND uv.username IS NULL THEN 1 END) as PerbaikanRanap1
+        FROM mlite_vedika v
+        LEFT JOIN kamar_inap ki ON v.no_rawat = ki.no_rawat 
+          AND ki.tgl_keluar >= ? AND ki.tgl_keluar < DATE_ADD(?, INTERVAL 1 MONTH)
+        LEFT JOIN mlite_users_vedika uv ON v.username = uv.username
+        WHERE v.tgl_registrasi >= ? AND v.tgl_registrasi < DATE_ADD(?, INTERVAL 1 MONTH)
+      ";
+      
+      $stmt_vedika = $this->db()->pdo()->prepare($sql_vedika);
+      $stmt_vedika->execute([$date, $date, $date, $date]);
+      $vedika_result = $stmt_vedika->fetch(\PDO::FETCH_ASSOC);
+      
+      $stats['LengkapRalan'] = (int)$vedika_result['LengkapRalan'];
+      $stats['LengkapRanap'] = (int)$vedika_result['LengkapRanap'];
+      $stats['totalLengkap'] = $stats['LengkapRalan'] + $stats['LengkapRanap'];
+      
+      $stats['PengajuanRalan'] = (int)$vedika_result['PengajuanRalan'];
+      $stats['PengajuanRanap'] = (int)$vedika_result['PengajuanRanap'];
+      $stats['totalPengajuan'] = $stats['PengajuanRalan'] + $stats['PengajuanRanap'];
+      
+      $stats['PerbaikanRalan'] = (int)$vedika_result['PerbaikanRalan'];
+      $stats['PerbaikanRalan1'] = (int)$vedika_result['PerbaikanRalan1'];
+      $stats['PerbaikanRanap'] = (int)$vedika_result['PerbaikanRanap'];
+      $stats['PerbaikanRanap1'] = (int)$vedika_result['PerbaikanRanap1'];
+      $stats['totalPerbaikan'] = $stats['PerbaikanRalan'] + $stats['PerbaikanRanap'];
+      
+      $stats['rencanaRalan'] = $stats['KlaimRalan'];
+      $stats['rencanaRanap'] = $stats['KlaimRanap'];
+      
+      // Cache hasil untuk 5 menit
+      if(function_exists('apcu_store')) {
+        $cache_data = [
+          'KlaimRalan' => $stats['KlaimRalan'],
+          'KlaimRanap' => $stats['KlaimRanap'],
+          'totalKlaim' => $stats['totalKlaim'],
+          'LengkapRalan' => $stats['LengkapRalan'],
+          'LengkapRanap' => $stats['LengkapRanap'],
+          'totalLengkap' => $stats['totalLengkap'],
+          'PengajuanRalan' => $stats['PengajuanRalan'],
+          'PengajuanRanap' => $stats['PengajuanRanap'],
+          'totalPengajuan' => $stats['totalPengajuan'],
+          'PerbaikanRalan' => $stats['PerbaikanRalan'],
+          'PerbaikanRalan1' => $stats['PerbaikanRalan1'],
+          'PerbaikanRanap' => $stats['PerbaikanRanap'],
+          'PerbaikanRanap1' => $stats['PerbaikanRanap1'],
+          'totalPerbaikan' => $stats['totalPerbaikan'],
+          'rencanaRalan' => $stats['rencanaRalan'],
+          'rencanaRanap' => $stats['rencanaRanap']
+        ];
+        \apcu_store($cache_key, $cache_data, 300); // Cache 5 menit
+      }
     }
-
-    $stats['totalKlaim'] = $stats['KlaimRalan'] + $stats['KlaimRanap'];
-
-    $LengkapRalan = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Lengkap' AND jenis = '2' AND tgl_registrasi LIKE '{$date}%'");
-    $LengkapRalan->execute();
-    $LengkapRalan = $LengkapRalan->fetchAll();
-    $stats['LengkapRalan'] = 0;
-    if(count($LengkapRalan) > 0) {
-      $stats['LengkapRalan'] = count($LengkapRalan);
-    }
-
-    $LengkapRanap = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Lengkap' AND jenis = '1' AND no_rawat IN (SELECT no_rawat FROM kamar_inap WHERE tgl_keluar LIKE '{$date}%')");
-    $LengkapRanap->execute();
-    $LengkapRanap = $LengkapRanap->fetchAll();
-    $stats['LengkapRanap'] = 0;
-    if(count($LengkapRanap) > 0) {
-      $stats['LengkapRanap'] = count($LengkapRanap);
-    }
-
-    $stats['totalLengkap'] = $stats['LengkapRalan'] + $stats['LengkapRanap'];
-
-    $PengajuanRalan = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '2' AND tgl_registrasi LIKE '{$date}%'");
-    $PengajuanRalan->execute();
-    $PengajuanRalan = $PengajuanRalan->fetchAll();
-    $stats['PengajuanRalan'] = count($PengajuanRalan);
-
-    $PengajuanRanap = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND no_rawat IN (SELECT no_rawat FROM kamar_inap WHERE tgl_keluar LIKE '{$date}%')");
-    $PengajuanRanap->execute();
-    $PengajuanRanap = $PengajuanRanap->fetchAll();
-    $stats['PengajuanRanap'] = count($PengajuanRanap);
-
-    $stats['totalPengajuan'] = $stats['PengajuanRalan'] + $stats['PengajuanRanap'];
-
-    $PerbaikanRalan = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Perbaiki' AND jenis = '2' AND tgl_registrasi LIKE '{$date}%' AND username IN (SELECT username FROM mlite_users_vedika)");
-    $PerbaikanRalan->execute();
-    $PerbaikanRalan = $PerbaikanRalan->fetchAll();
-    $stats['PerbaikanRalan'] = count($PerbaikanRalan);
-
-    $PerbaikanRalan1 = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Perbaiki' AND jenis = '2' AND tgl_registrasi LIKE '{$date}%' AND username NOT IN (SELECT username FROM mlite_users_vedika)");
-    $PerbaikanRalan1->execute();
-    $PerbaikanRalan1 = $PerbaikanRalan1->fetchAll();
-    $stats['PerbaikanRalan1'] = count($PerbaikanRalan1);
-
-    $PerbaikanRanap = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Perbaiki' AND jenis = '1' AND tgl_registrasi LIKE '{$date}%' AND username IN (SELECT username FROM mlite_users_vedika)");
-    $PerbaikanRanap->execute();
-    $PerbaikanRanap = $PerbaikanRanap->fetchAll();
-    $stats['PerbaikanRanap'] = count($PerbaikanRanap);
-
-    $PerbaikanRanap1 = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Perbaiki' AND jenis = '1' AND tgl_registrasi LIKE '{$date}%' AND username NOT IN (SELECT username FROM mlite_users_vedika)");
-    $PerbaikanRanap1->execute();
-    $PerbaikanRanap1 = $PerbaikanRanap1->fetchAll();
-    $stats['PerbaikanRanap1'] = count($PerbaikanRanap1);
-
-    $stats['totalPerbaikan'] = $stats['PerbaikanRalan'] + $stats['PerbaikanRanap'];
-
-    //$stats['rencanaRalan'] = $stats['LengkapRalan'] + $stats['PengajuanRalan'];
-    //$stats['rencanaRanap'] = $stats['LengkapRanap'] + $stats['PengajuanRanap'];
-    $stats['rencanaRalan'] = $stats['KlaimRalan'];
-    $stats['rencanaRanap'] = $stats['KlaimRanap'];
 
     $sub_modules = [
       ['name' => 'Index', 'url' => url([ADMIN, 'vedika', 'index']), 'icon' => 'code', 'desc' => 'Index Vedika'],
@@ -146,10 +178,9 @@ class Admin extends AdminModule
             'count'       => 'COUNT(DISTINCT kd_pj)',
             'tgl_registrasi'     => 'tgl_registrasi',
           ])
-          //->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
-          ->where('tgl_registrasi', '>=', date('Y-m'))
-          //->group(['reg_periksa.kd_pj'])
-          ->desc('kd_pj');
+          ->where('tgl_registrasi', '>=', date('Y-m-01'))
+          ->group('tgl_registrasi')
+          ->desc('tgl_registrasi');
 
 
           $data = $query->toArray();

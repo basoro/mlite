@@ -21,8 +21,9 @@ class Dokter
         ->toArray();
       $offset         = 10;
       $return['halaman']    = 1;
-      $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
-      $return['jumlah_data']    = count($totalRecords);
+      $totalRecordsCount = is_array($totalRecords) ? count($totalRecords) : 0;
+      $return['jml_halaman']    = ceil($totalRecordsCount / $offset);
+      $return['jumlah_data']    = $totalRecordsCount;
 
       $return['list'] = $this->db('dokter')
         ->join('spesialis', 'spesialis.kd_sps=dokter.kd_sps')
@@ -74,8 +75,9 @@ class Dokter
           ->toArray();
         $offset         = 10;
         $return['halaman']    = 1;
-        $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
-        $return['jumlah_data']    = count($totalRecords);
+        $totalRecordsCount = is_array($totalRecords) ? count($totalRecords) : 0;
+        $return['jml_halaman']    = ceil($totalRecordsCount / $offset);
+        $return['jumlah_data']    = $totalRecordsCount;
 
         $return['list'] = $this->db('dokter')
           ->join('spesialis', 'spesialis.kd_sps=dokter.kd_sps')
@@ -93,7 +95,7 @@ class Dokter
             ->offset(0)
             ->limit($perpage)
             ->toArray();
-          $jumlah_data = count($return['list']);
+          $jumlah_data = is_array($return['list']) ? count($return['list']) : 0;
           $jml_halaman = ceil($jumlah_data / $offset);
         }
         if(isset($_POST['halaman'])){

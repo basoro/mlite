@@ -9,6 +9,7 @@ use PHPMailer\PHPMailer\Exception;
 
 class Admin extends AdminModule
 {
+    protected array $assign = [];
 
     public function navigation()
     {
@@ -324,7 +325,11 @@ class Admin extends AdminModule
         $rawat = $this->db('reg_periksa')
           ->where('no_rawat', $_POST['no_rawat'])
           ->oneArray();
-        echo $this->draw('stts.daftar.html', ['stts_daftar' => $rawat['stts_daftar']]);
+        echo $this->draw('stts.daftar.html', [
+          'stts_daftar' => $rawat['stts_daftar'],
+          'stts_daftar_hidden' => $rawat['stts_daftar'],
+          'bg_status' => ''
+        ]);
       }
       exit();
     }

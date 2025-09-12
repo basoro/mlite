@@ -6,6 +6,7 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    public $assign;
     public function navigation()
     {
         return [

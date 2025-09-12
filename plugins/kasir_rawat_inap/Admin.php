@@ -9,6 +9,7 @@ use PHPMailer\PHPMailer\Exception;
 
 class Admin extends AdminModule
 {
+    public $assign = [];
 
     public function navigation()
     {

@@ -56,7 +56,7 @@ class Admin extends AdminModule
         }
         $this->_getInfoRole();
         if (!empty($redirectData = getRedirectData())) {
-            $this->assign['form'] = filter_var_array($redirectData, FILTER_SANITIZE_STRING);
+            $this->assign['form'] = array_map('htmlspecialchars', $redirectData);
         } else {
             $this->assign['form'] = ['username' => '', 'email' => '', 'fullname' => '', 'description' => '', 'role' => '', 'cap' => ''];
         }
@@ -125,10 +125,13 @@ class Admin extends AdminModule
         }
 
         // check if user already exists
-        if ($this->_userAlreadyExists($id)) {
+        if($id == null) {
+          if ($this->_userAlreadyExists($_POST['username'])) {
             $errors++;
             $this->notify('failure', 'Pengguna sudah terdaftar.');
+          }
         }
+        
         // chech if e-mail adress is correct
         $_POST['email'] = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
         if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
@@ -325,13 +328,9 @@ class Admin extends AdminModule
     * check if user already exists
     * @return array
     */
-    private function _userAlreadyExists($id = null)
+    private function _userAlreadyExists($username)
     {
-        if (!$id) {    // new
-            $count = $this->db('mlite_users')->where('username', $_POST['username'])->count();
-        } else {        // edit
-            $count = $this->db('mlite_users')->where('username', $_POST['username'])->where('id', '<>', $id)->count();
-        }
+        $count = $this->db('mlite_users')->where('username', $username)->count();
         if ($count > 0) {
             return true;
         } else {
@@ -345,308 +344,5 @@ class Admin extends AdminModule
         echo $this->draw(MODULES.'/users/css/admin/users.css');
         exit();
     }
-
-
-
-    public function getMenu($id)
-    {
-        $access = [];
-        // $modules = explode(",",$this->db('mlite_users')->select('access')->where('id', $id)->oneArray());
-        $modules = explode(',', $this->core->getUserInfo('access', $id, true));
-        foreach($modules as $value) {
-            $row['module'] = $value;
-            $mlite_disabled_menu = $this->db('mlite_disabled_menu')->where('user', $this->core->getUserInfo('username', $id, true))->where('module', $value)->oneArray();
-            $row['create'] = isset_or($mlite_disabled_menu['can_create']);
-            $row['read'] = isset_or($mlite_disabled_menu['can_read']);
-            $row['update'] = isset_or($mlite_disabled_menu['can_update']);
-            $row['delete'] = isset_or($mlite_disabled_menu['can_delete']);
-            $access[] = $row;
-        }
-        return $this->draw('menu.html', ['settings' => $this->settings('settings'), 'access' => $access, 'user' =>  $this->core->getUserInfo('username', $id, true), 'fullname' =>  $this->core->getUserInfo('fullname', $id, true)]);
-    }
-
-    public function postAksiMenu()
-    {
-        $user = $_POST['user'];
-        $modules = $_POST['module'];
-
-        $this->db('mlite_disabled_menu')->where('user', $user)->delete();
-        
-        foreach($modules as $module) {
-            $create = 'false';
-            $read = 'false';
-            $update = 'false';
-            $delete = 'false';
-            if(isset($_POST[$module.'-create']) && $_POST[$module.'-create'] == 'on') {
-                $create = 'true';
-            }
-            if(isset($_POST[$module.'-read']) && $_POST[$module.'-read'] == 'on') {
-                $read = 'true';
-            }
-            if(isset($_POST[$module.'-update']) && $_POST[$module.'-update'] == 'on') {
-                $update = 'true';
-            }
-            if(isset($_POST[$module.'-delete']) && $_POST[$module.'-delete'] == 'on') {
-                $delete = 'true';
-            }
-
-            $result = $this->db('mlite_disabled_menu')->save([
-                'id' => NULL, 
-                'user' => $user, 
-                'module' => $module, 
-                'can_create' => $create, 
-                'can_read' => $read, 
-                'can_update' => $update, 
-                'can_delete' => $delete
-            ]);
-            if (!empty($result)){
-                http_response_code(200);
-                $data = array(
-                    'code' => '200', 
-                    'status' => 'success', 
-                    'msg' => $user
-                );
-            } else {
-                http_response_code(201);
-                $data = array(
-                    'code' => '201', 
-                    'status' => 'error', 
-                    'msg' => 'error'
-                );
-            }
-
-        }
-        echo json_encode($data);
-
-        exit();
-    }
-
-    public function postData()
-    {
-        $draw = $_POST['draw'] ?? 0;
-        $row1 = $_POST['start'] ?? 0;
-        $rowperpage = $_POST['length'] ?? 10;
-        $columnIndex = $_POST['order'][0]['column'] ?? 0;
-        $columnName = $_POST['columns'][$columnIndex]['data'] ?? 'role';
-        $columnSortOrder = $_POST['order'][0]['dir'] ?? 'asc';
-        $searchValue = $_POST['search']['value'] ?? '';
-
-        $search_field = $_POST['search_field_mlite_users'] ?? '';
-        $search_text = $_POST['search_text_mlite_users'] ?? '';
-
-        $searchQuery = "";
-        if (!empty($search_text)) {
-            $searchQuery .= " AND (" . $search_field . " LIKE :search_text) ";
-        }
-
-        $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS allcount FROM mlite_users");
-        $stmt->execute();
-        $records = $stmt->fetch();
-        $totalRecords = $records['allcount'];
-
-        $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS allcount FROM mlite_users WHERE 1=1 $searchQuery");
-        if (!empty($search_text)) {
-            $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
-        }
-        $stmt->execute();
-        $records = $stmt->fetch();
-        $totalRecordwithFilter = $records['allcount'];
-
-        $sql = "SELECT * FROM mlite_users WHERE 1=1 $searchQuery ORDER BY $columnName $columnSortOrder LIMIT $row1, $rowperpage";
-        $stmt = $this->db()->pdo()->prepare($sql);
-        if (!empty($search_text)) {
-            $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
-        }
-        $stmt->execute();
-        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-        $data = [];
-        foreach ($result as $row) {
-            $data[] = [
-                'id'=>$row['id'],
-'username'=>$row['username'],
-'fullname'=>$row['fullname'],
-'description'=>$row['description'],
-'password'=>$row['password'],
-'avatar'=>$row['avatar'],
-'email'=>$row['email'],
-'role'=>$row['role'],
-'cap'=>$row['cap'],
-'access'=>$row['access']
-
-            ];
-        }
-
-        echo json_encode([
-            "draw" => intval($draw),
-            "iTotalRecords" => $totalRecords,
-            "iTotalDisplayRecords" => $totalRecordwithFilter,
-            "aaData" => $data
-        ]);
-        exit();
-    }
-
-    public function postAksi()
-    {
-        $act = $_POST['typeact'] ?? '';
-
-        if (!in_array($act, ['add', 'edit', 'del', 'lihat'])) {
-            echo json_encode(["status" => "error", "message" => "Aksi tidak dikenali."]);
-            exit();
-        }
-
-        try {
-            if ($act == 'add') {
-                $id = $_POST['id'];
-$username = $_POST['username'];
-$fullname = $_POST['fullname'];
-$description = $_POST['description'];
-$password = $_POST['password'];
-$avatar = $_POST['avatar'];
-$email = $_POST['email'];
-$role = $_POST['role'];
-$cap = $_POST['cap'];
-$access = $_POST['access'];
-
-
-                $sql = "INSERT INTO mlite_users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                $binds = [$id, $username, $fullname, $description, $password, $avatar, $email, $role, $cap, $access];
-                $stmt = $this->db()->pdo()->prepare($sql);
-                $stmt->execute($binds);
-
-                if($this->settings->get('settings.log_query') == 'ya') {
-                    \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
-                }
-
-                echo json_encode(["status" => "success", "message" => "Data berhasil ditambahkan."]);
-
-            } elseif ($act == 'edit') {
-                $id = $_POST['id'];
-$username = $_POST['username'];
-$fullname = $_POST['fullname'];
-$description = $_POST['description'];
-$password = $_POST['password'];
-$avatar = $_POST['avatar'];
-$email = $_POST['email'];
-$role = $_POST['role'];
-$cap = $_POST['cap'];
-$access = $_POST['access'];
-
-
-                $sql = "UPDATE mlite_users SET id=?, username=?, fullname=?, description=?, password=?, avatar=?, email=?, role=?, cap=?, access=? WHERE id=?";
-                $binds = [$id, $username, $fullname, $description, $password, $avatar, $email, $role, $cap, $access,$id];
-                $stmt = $this->db()->pdo()->prepare($sql);
-                $stmt->execute($binds);
-
-                if($this->settings->get('settings.log_query') == 'ya') {
-                    \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
-                }
-                echo json_encode(["status" => "success", "message" => "Data berhasil diperbarui."]);
-
-            } elseif ($act == 'del') {
-                $id= $_POST['id'];
-
-                $sql = "DELETE FROM mlite_users WHERE id='$id'";
-                $binds = [];
-
-                $stmt = $this->db()->pdo()->prepare($sql);
-                $stmt->execute();
-
-                if($this->settings->get('settings.log_query') == 'ya') {
-                    \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
-                }
-
-                if ($stmt->rowCount() > 0) {
-                    echo json_encode(["status" => "success", "message" => "Data berhasil dihapus."]);
-                } else {
-                    echo json_encode(["status" => "error", "message" => "Data tidak ditemukan atau gagal dihapus."]);
-                }
-
-            } elseif ($act == 'lihat') {
-                $search_field = $_POST['search_field_mlite_users'] ?? '';
-                $search_text = $_POST['search_text_mlite_users'] ?? '';
-
-                $searchQuery = "";
-                if (!empty($search_text)) {
-                    $searchQuery .= " AND (" . $search_field . " LIKE :search_text) ";
-                }
-
-                $stmt = $this->db()->pdo()->prepare("SELECT * FROM mlite_users WHERE 1=1 $searchQuery");
-
-                if (!empty($search_text)) {
-                    $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
-                }
-
-                $stmt->execute();
-                $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-                $data = [];
-                foreach ($result as $row) {
-                    $data[] = [
-                        'id'=>$row['id'],
-'username'=>$row['username'],
-'fullname'=>$row['fullname'],
-'description'=>$row['description'],
-'password'=>$row['password'],
-'avatar'=>$row['avatar'],
-'email'=>$row['email'],
-'role'=>$row['role'],
-'cap'=>$row['cap'],
-'access'=>$row['access']
-                    ];
-                }
-
-                echo json_encode($data);
-            }
-        } catch (\PDOException $e) {
-            if($this->settings->get('settings.log_query') == 'ya') {            
-                if (in_array($act, ['add', 'edit', 'del'])) {
-                \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds, $e->getMessage());   
-                } 
-            }
-            echo json_encode(["status" => "error", "message" => $e->getMessage()]);
-        }
-
-        exit();
-    }
-
-    public function getDetail($id)
-    {
-        $detail = $this->db('mlite_users')->where('id', $id)->toArray();
-        $settings =  $this->settings('settings');
-        echo $this->draw('detail.html', ['detail' => $detail, 'settings' => $settings]);
-        exit();
-    }
-
-    public function getChart($type = '', $column = '')
-    {
-        if ($type == '') {
-            $type = 'pie';
-        }
-
-        $labels = $this->db('mlite_users')->select('role')->group('role')->toArray();
-        $labels = json_encode(array_column($labels, 'role'));
-        $datasets = $this->db('mlite_users')->select('COUNT(role)')->group('role')->toArray();
-        $datasets = json_encode(array_column($datasets, 'COUNT(role)'));
-
-        if (!empty($column)) {
-            $labels = $this->db('mlite_users')->select($column)->group($column)->toArray();
-            $labels = json_encode(array_column($labels, $column));
-            $datasets = $this->db('mlite_users')->select("COUNT($column)")->group($column)->toArray();
-            $datasets = json_encode(array_column($datasets, "COUNT($column)"));
-        }
-
-        $database = DBNAME;
-        $nama_table = 'mlite_users';
-
-        $stmt = $this->db()->pdo()->prepare("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME=?");
-        $stmt->execute([$database, $nama_table]);
-        $result = $stmt->fetchAll();
-
-        echo $this->draw('chart.html', ['type' => $type, 'column' => $result, 'labels' => $labels, 'datasets' => $datasets]);
-        exit();
-    }
-
-
 
 }

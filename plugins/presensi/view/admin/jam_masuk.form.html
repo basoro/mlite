@@ -1,0 +1,48 @@
+<div class="row">
+  <div class="col-md-12">
+      <div class="panel panel-default">
+          <div class="panel-heading">
+              <h3 class="panel-title">{$jam_masuk.title}</h3>
+              <ul class="nav nav-tabs">
+                  <li class="{if: !empty($jam_masuk.getStatus)}{/if}">
+                      <a href="{?=url(ADMIN.'/presensi/jammasuk')?}" role="tab">Jam Masuk</a>
+                  </li>
+                  <li class="{if: empty($jam_masuk.addUrl)}active{/if}">
+                      <a href="{?=url(ADMIN.'/presensi/jam_masuk_add')?}" role="tab">Tambah</a>
+                  </li>
+              </ul>
+          </div>
+          <div class="panel-body">
+            <form name="jam_masuk_form" action="{?=url(ADMIN.'/presensi/jammasuksave/'.@$jam_masuk.form.shift)?}" method="POST">
+              <div class="form-group">
+                <label>Shift</label>
+                <select name="shift" id="shift" data-use-search="true" data-options-height="10px" class="form-control" required>
+                  <option value="">Pilih Shift</option>
+                  {loop: $jam_masuk.shift_options}
+                    <option value="{$value}"{if: $value == $jam_masuk.form.shift} selected{/if}>{$value}</option>
+                  {/loop}
+                </select>
+              </div>
+              <div class="row clearfix">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Jam Masuk</label>
+                    <input type="time" name="jam_masuk" id="jam_masuk" class="form-control" value="{$jam_masuk.form.jam_masuk}" required/>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Jam Pulang</label>
+                    <input type="time" name="jam_pulang" id="jam_pulang" class="form-control" value="{$jam_masuk.form.jam_pulang}" required/>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                <a href="{?=url(ADMIN.'/presensi/jammasuk')?}" class="btn btn-default">Batal</a>
+              </div>
+            </form>
+          </div>
+      </div>
+  </div>
+</div>

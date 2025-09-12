@@ -131,19 +131,20 @@ abstract class Main
         }
     }    
 
-    public function setNotify($type, $text, $args = null)
+    /**
+     * Set notification message with sprintf formatting
+     * Compatible with PHP 8+ variadic parameters
+     * 
+     * @param string $type Notification type
+     * @param string $text Message text with sprintf placeholders
+     * @param mixed ...$args Arguments for sprintf formatting
+     */
+    public function setNotify(string $type, string $text, ...$args): void
     {
-        $variables = [];
-        $numargs = func_num_args();
-        $arguments = func_get_args();
-
-        if ($numargs > 1) {
-            for ($i = 1; $i < $numargs; $i++) {
-                $variables[] = $arguments[$i];
-            }
-            $text = call_user_func_array('sprintf', $variables);
-            $_SESSION[$arguments[0]] = $text;
+        if (!empty($args)) {
+            $text = sprintf($text, ...$args);
         }
+        $_SESSION[$type] = $text;
     }
 
     public function getNotify()
@@ -264,22 +265,28 @@ abstract class Main
         return false;
     }
 
-    public function getUserInfo($field, $id = null, $refresh = false)
+    /**
+     * Get user information by field
+     * Compatible with PHP 8+ with proper null handling
+     * 
+     * @param string $field Field name to retrieve
+     * @param int|null $id User ID (defaults to current session user)
+     * @param bool $refresh Whether to refresh cache
+     * @return mixed|null Field value or null if not found
+     */
+    public function getUserInfo(string $field, ?int $id = null, bool $refresh = false)
     {
         if (!$id) {
             $id = isset_or($_SESSION['mlite_user'], 0);
         }
 
         if (empty(self::$userCache) || $refresh) {
-            self::$userCache = $this->db('mlite_users')->where('id', $id)->oneArray();
+            $userData = $this->db('mlite_users')->where('id', $id)->oneArray();
+            self::$userCache = is_array($userData) ? $userData : [];
         }
 
-        // Tambahkan pengecekan untuk key yang tidak ada
-        if (!isset(self::$userCache[$field])) {
-            return null; // atau nilai default yang sesuai
-        }
-
-        return self::$userCache[$field];
+        // Safe field access with null coalescing
+        return self::$userCache[$field] ?? null;
     }
 
     public function getEnum($table_name, $column_name) {

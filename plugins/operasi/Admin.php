@@ -6,6 +6,8 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    // Property declarations to fix PHP 8.3 deprecation warnings
+    public $assign;
 
     public function navigation()
     {

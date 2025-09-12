@@ -45,6 +45,8 @@ use Plugins\Master\Src\StatusKerja;
 use Plugins\Master\Src\StatusWP;
 use Plugins\Master\Src\MetodeRacik;
 use Plugins\Master\Src\RuangOk;
+use Plugins\Master\Src\Penyakit;
+use Plugins\Master\Src\Icd9;
 
 class Admin extends AdminModule
 {
@@ -91,6 +93,8 @@ class Admin extends AdminModule
   protected $statuswp;
   protected $metoderacik;
   protected $ruangok;
+  protected $penyakit;
+  protected $icd9;
 
     public function init()
     {
@@ -136,6 +140,8 @@ class Admin extends AdminModule
         $this->statuswp = new StatusWP();
         $this->metoderacik = new MetodeRacik();
         $this->ruangok = new RuangOk();
+        $this->penyakit = new Penyakit();
+        $this->icd9 = new Icd9();
     }
 
     public function navigation()
@@ -166,6 +172,8 @@ class Admin extends AdminModule
             'Jenis Barang' => 'jenis',
             'Kategori Barang' => 'kategoribarang',
             'Kategori Penyakit' => 'kategoripenyakit',
+            'ICD 10' => 'penyakit',
+            'ICD 9' => 'icd9',
             'Kategori Perawatan' => 'kategoriperawatan',
             'Kode Satuan' => 'kodesatuan',
             'Master Aturan Pakai' => 'masteraturanpakai',
@@ -214,6 +222,8 @@ class Admin extends AdminModule
         ['name' => 'Jenis Barang', 'url' => url([ADMIN, 'master', 'jenis']), 'icon' => 'cubes', 'desc' => 'Master jenis barang'],
         ['name' => 'Kategori Barang', 'url' => url([ADMIN, 'master', 'kategoribarang']), 'icon' => 'cubes', 'desc' => 'Master kategori barang'],
         ['name' => 'Kategori Penyakit', 'url' => url([ADMIN, 'master', 'kategoripenyakit']), 'icon' => 'cubes', 'desc' => 'Master kategori penyakit'],
+        ['name' => 'ICD 10', 'url' => url([ADMIN, 'master', 'penyakit']), 'icon' => 'cubes', 'desc' => 'Master ICD 10 penyakit'],
+        ['name' => 'ICD 9', 'url' => url([ADMIN, 'master', 'icd9']), 'icon' => 'cubes', 'desc' => 'Master ICD 9'],
         ['name' => 'Kategori Perawatan', 'url' => url([ADMIN, 'master', 'kategoriperawatan']), 'icon' => 'cubes', 'desc' => 'Master kategori perawatan'],
         ['name' => 'Kode Satuan', 'url' => url([ADMIN, 'master', 'kodesatuan']), 'icon' => 'cubes', 'desc' => 'Master kode satuan'],
         ['name' => 'Master Aturan Pakai', 'url' => url([ADMIN, 'master', 'masteraturanpakai']), 'icon' => 'cubes', 'desc' => 'Master aturan pakai'],
@@ -2397,6 +2407,173 @@ class Admin extends AdminModule
         exit();
     }
     /* End Ruang OK Section */
+
+    /* Start Penyakit Section */
+    public function getPenyakit()
+    {
+      $this->_addHeaderFiles();
+      $this->core->addJS(url([ADMIN, 'master', 'penyakitjs']), 'footer');
+      $return = $this->penyakit->getIndex();
+      return $this->draw('penyakit.html', [
+        'penyakit' => $return
+      ]);
+
+    }
+
+    public function anyPenyakitForm()
+    {
+        $return = $this->penyakit->anyForm();
+        echo $this->draw('penyakit.form.html', ['penyakit' => $return]);
+        exit();
+    }
+
+    public function anyPenyakitDisplay()
+    {
+        $return = $this->penyakit->anyDisplay();
+        echo $this->draw('penyakit.display.html', ['penyakit' => $return]);
+        exit();
+    }
+
+    public function postPenyakitSave()
+    {
+      $this->penyakit->postSave();
+      exit();
+    }
+
+    public function postPenyakitHapus()
+    {
+      $this->penyakit->postHapus();
+      exit();
+    }
+
+    public function getImportICD10()
+    {
+      $fileName = 'https://basoro.id/downloads/icd10.csv';
+      echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
+
+      $csvData = file_get_contents($fileName);
+      if($csvData) {
+        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] File '.$filename.' tidak ditemukan'."<br>";
+        exit();
+      }
+
+      $lines = explode(PHP_EOL, $csvData);
+      $array = array();
+      foreach ($lines as $line) {
+          $array[] = str_getcsv($line);
+      }
+
+      foreach ($array as $data){   
+        $kode = $data[0];
+        $nama = isset_or($data[1], '');
+        $nama = str_replace('"','',$nama);
+        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."','','','-','Tidak Menular')";
+      }
+      $str = implode(",", $value_query);
+      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
+      $result = $this->core->db()->pdo()->exec("INSERT INTO penyakit (kd_penyakit, nm_penyakit, ciri_ciri, keterangan, kd_ktg, status) VALUES $str ON DUPLICATE KEY UPDATE kd_penyakit=VALUES(kd_penyakit)");
+      if($result) {
+        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
+        exit();
+      }
+      
+      exit();
+    }
+
+    public function getPenyakitJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/penyakit.js');
+        exit();
+    }
+    /* End Penyakit Section */
+
+    /* Start ICD 9 Section */
+    public function getIcd9()
+    {
+      $this->_addHeaderFiles();
+      $this->core->addJS(url([ADMIN, 'master', 'icd9js']), 'footer');
+      $return = $this->icd9->getIndex();
+      return $this->draw('icd9.html', [
+        'icd9' => $return
+      ]);
+
+    }
+
+    public function anyIcd9Form()
+    {
+        $return = $this->icd9->anyForm();
+        echo $this->draw('icd9.form.html', ['icd9' => $return]);
+        exit();
+    }
+
+    public function anyIcd9Display()
+    {
+        $return = $this->icd9->anyDisplay();
+        echo $this->draw('icd9.display.html', ['icd9' => $return]);
+        exit();
+    }
+
+    public function postIcd9Save()
+    {
+      $this->icd9->postSave();
+      exit();
+    }
+
+    public function postIcd9Hapus()
+    {
+      $this->icd9->postHapus();
+      exit();
+    }
+
+    public function getImportICD9()
+    {
+      $fileName = 'https://basoro.id/downloads/icd9cm.csv';
+      echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
+
+      $csvData = file_get_contents($fileName);
+      if($csvData) {
+        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] File '.$filename.' tidak ditemukan'."<br>";
+        exit();
+      }
+
+      $lines = explode(PHP_EOL, $csvData);
+      $array = array();
+      foreach ($lines as $line) {
+          $array[] = str_getcsv($line);
+      }
+
+      foreach ($array as $data){   
+        $kode = $data[0];
+        $nama = isset_or($data[1], '');
+        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."','')";
+      }
+      $str = implode(",", $value_query);
+      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
+      $result = $this->core->db()->pdo()->exec("INSERT INTO icd9 (kode, deskripsi_panjang, deskripsi_pendek) VALUES $str ON DUPLICATE KEY UPDATE kode=VALUES(kode)");
+      if($result) {
+        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
+      } else {
+        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
+        exit();
+      }
+      
+      exit();
+    }
+
+    public function getIcd9JS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/icd9.js');
+        exit();
+    }
+    /* End ICD 9 Section */
 
     public function getCSS()
     {

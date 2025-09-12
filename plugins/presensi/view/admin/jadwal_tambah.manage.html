@@ -4,10 +4,10 @@
             <div class="panel-heading">
                 <h3 class="panel-title">Kelola Jadwal Tambahan Presensi</h3>
                 <ul class="nav nav-tabs">
-                    <li class="{if: empty($jadwal.getStatus)}active{/if}">
+                    <li class="{if: empty($jadwal_tambah.getStatus)}active{/if}">
                         <a href="{?=url(ADMIN.'/presensi/jadwal_tambahan')?}" role="tab">Jadwal</a>
                     </li>
-                    <li class="{if: $jadwal.addUrl}active{/if}">
+                    <li class="{if: $jadwal_tambah.addURL}active{/if}">
                         <a href="{$jadwal_tambah.addURL}" role="tab">Tambah</a>
                     </li>
                 </ul>

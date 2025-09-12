@@ -212,12 +212,3 @@
       $(this).removeData('bs.modal');
   });
 </script>
-<script>
-  $("#btn_repot_awalmedisigd").click(function() {
-    var baseURL = mlite.url + '/' + mlite.admin;
-    var no_rawat = $(this).attr("data-no_rawat");
-
-    $("#printModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + baseURL + '/jasper/awalmedisigd/' + no_rawat + '?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
-		return false;
-  });
-</script>

@@ -1,0 +1,25 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <i class="fa fa-exclamation-triangle text-danger"></i> {$title}
+        </h3>
+      </div>
+      <div class="panel-body">
+        <div class="alert alert-danger" role="alert">
+          <h4><i class="fa fa-exclamation-triangle"></i> Error!</h4>
+          <p>{$message}</p>
+        </div>
+        <div class="text-center">
+          <a href="{?=url([ADMIN, 'satu_sehat', 'settings'])?}" class="btn btn-primary">
+            <i class="fa fa-cog"></i> Check Settings
+          </a>
+          <a href="{?=url([ADMIN, 'satu_sehat', 'manage'])?}" class="btn btn-default">
+            <i class="fa fa-arrow-left"></i> Back to Satu Sehat
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

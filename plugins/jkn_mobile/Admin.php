@@ -270,7 +270,7 @@ class Admin extends AdminModule
 
     public function getJadwalDokter()
     {
-        $poli = $this->db('maping_poli_bpjs')->group('kd_poli_bpjs')->toArray();
+        $poli = $this->db('maping_poli_bpjs')->select('kd_poli_bpjs')->group('kd_poli_bpjs')->toArray();
         return $this->draw('jadwaldokter.html',['poli'=>$poli]);
     }
 
@@ -327,8 +327,8 @@ class Admin extends AdminModule
           if(!$mlite_antrian_referensi) {
               $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
           }
-          $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
-          $mutasi_berkas2 = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
+          $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '>', '1970-01-01 00:00:00')->oneArray();
+          $mutasi_berkas2 = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '>', '1970-01-01 00:00:00')->oneArray();
           $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
           $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
           $resep_obat2 = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
@@ -358,6 +358,7 @@ class Admin extends AdminModule
           $taskid5['waktu'] = '';
           $taskid6['waktu'] = '';
           $taskid7['waktu'] = '';
+          $taskid99['waktu'] = '';
 
           if(!empty($q['nomor_referensi'])) {
             $taskid1 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', '1')->oneArray();
@@ -467,8 +468,8 @@ class Admin extends AdminModule
       $taskid['99'] = date('Y-m-d H:i:s', $taskid99['waktu'] / 1000 );
       
       $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('postdate', $pasien['tgl_registrasi'])->oneArray();
-      $berkas_dikirim = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $pasien['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
-      $berkas_diterima = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $pasien['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
+      $berkas_dikirim = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $pasien['no_rawat'])->where('dikirim', '>', '1970-01-01 00:00:00')->oneArray();
+      $berkas_diterima = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $pasien['no_rawat'])->where('diterima', '>', '1970-01-01 00:00:00')->oneArray();
       $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $pasien['no_rawat'])->oneArray();
       $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)', 'datajam2' => 'concat(tgl_perawatan," ",jam)', 'no_resep' => 'no_resep'])->where('no_rawat', $pasien['no_rawat'])->oneArray();
 
@@ -1082,6 +1083,7 @@ class Admin extends AdminModule
       $rows = [];
       $a = [];
       $a['jumlah'] = 0;
+      $a['keterangan'] = '';
       foreach ($query as $q) {
         if (strpos($q['keterangan'], 'Rujukan nomor ') !== false) {
           $s = explode(" ", $q['keterangan']);
@@ -1204,7 +1206,7 @@ class Admin extends AdminModule
             $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
             $json = json_decode($output, true);
             $response = [];
-            if($json['metadata']['code'] == '200') {
+            if($json && isset($json['metadata']['code']) && $json['metadata']['code'] == '200') {
               $response = $json['response']['list'];
             }
             $this->assign['list'] = $response;
@@ -1215,7 +1217,7 @@ class Admin extends AdminModule
             $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
             $json = json_decode($output, true);
             $response = [];
-            if($json['metadata']['code'] == '200') {
+            if($json && isset($json['metadata']['code']) && $json['metadata']['code'] == '200') {
               $response = $json['response']['list'];
             }
             $this->assign['list'] = $response;

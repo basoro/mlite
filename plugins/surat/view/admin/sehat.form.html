@@ -1,0 +1,101 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{if: $sehat.form.id}Edit{else}Tambah{/if} Surat Sehat</h3>
+            </div>
+            <div class="panel-body">
+                <form name="sehat_form" action="{?=url(ADMIN.'/surat/sehatsave/'.@$sehat.form.id)?}" method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Nomor Surat</label>
+                                <input type="text" name="nomor_surat" class="form-control" value="{$sehat.form.nomor_surat}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>No. Rawat</label>
+                                <input type="text" name="no_rawat" class="form-control" value="{$sehat.form.no_rawat}">
+                            </div>
+                            <div class="form-group">
+                                <label>No. Rekam Medis</label>
+                                <input type="text" name="no_rkm_medis" class="form-control" value="{$sehat.form.no_rkm_medis}">
+                            </div>
+                            <div class="form-group">
+                                <label>Nama Pasien</label>
+                                <input type="text" name="nm_pasien" class="form-control" value="{$sehat.form.nm_pasien}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal Lahir</label>
+                                <input type="date" name="tgl_lahir" class="form-control" value="{$sehat.form.tgl_lahir}">
+                            </div>
+                            <div class="form-group">
+                                <label>Umur</label>
+                                <input type="text" name="umur" class="form-control" value="{$sehat.form.umur}">
+                            </div>
+                            <div class="form-group">
+                                <label>Jenis Kelamin</label>
+                                <select name="jk" class="form-control">
+                                    <option value="">Pilih Jenis Kelamin</option>
+                                    <option value="L" {if: $sehat.form.jk == 'L'}selected{/if}>Laki-laki</option>
+                                    <option value="P" {if: $sehat.form.jk == 'P'}selected{/if}>Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Alamat</label>
+                                <textarea name="alamat" class="form-control" rows="3">{$sehat.form.alamat}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal Pemeriksaan</label>
+                                <input type="date" name="tanggal" class="form-control" value="{$sehat.form.tanggal}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Berat Badan (kg)</label>
+                                <input type="number" step="0.1" name="berat_badan" class="form-control" value="{$sehat.form.berat_badan}">
+                            </div>
+                            <div class="form-group">
+                                <label>Tinggi Badan (cm)</label>
+                                <input type="number" name="tinggi_badan" class="form-control" value="{$sehat.form.tinggi_badan}">
+                            </div>
+                            <div class="form-group">
+                                <label>Tensi (mmHg)</label>
+                                <input type="text" name="tensi" class="form-control" value="{$sehat.form.tensi}" placeholder="contoh: 120/80">
+                            </div>
+                            <div class="form-group">
+                                <label>Golongan Darah</label>
+                                <select name="gol_darah" class="form-control">
+                                    <option value="">Pilih Golongan Darah</option>
+                                    <option value="A" {if: $sehat.form.gol_darah == 'A'}selected{/if}>A</option>
+                                    <option value="B" {if: $sehat.form.gol_darah == 'B'}selected{/if}>B</option>
+                                    <option value="AB" {if: $sehat.form.gol_darah == 'AB'}selected{/if}>AB</option>
+                                    <option value="O" {if: $sehat.form.gol_darah == 'O'}selected{/if}>O</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Riwayat Penyakit</label>
+                                <textarea name="riwayat_penyakit" class="form-control" rows="3">{$sehat.form.riwayat_penyakit}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Keperluan</label>
+                                <input type="text" name="keperluan" class="form-control" value="{$sehat.form.keperluan}">
+                            </div>
+                            <div class="form-group">
+                                <label>Dokter</label>
+                                <input type="text" name="dokter" class="form-control" value="{$sehat.form.dokter}">
+                            </div>
+                            <div class="form-group">
+                                <label>Petugas</label>
+                                <input type="text" name="petugas" class="form-control" value="{$sehat.form.petugas}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" name="save" class="btn btn-primary"><i class="fa fa-save"></i> Simpan</button>
+                        <a href="{?=url(ADMIN.'/surat/sehat')?}" class="btn btn-default"><i class="fa fa-arrow-left"></i> Kembali</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

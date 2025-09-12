@@ -37,7 +37,7 @@
               {/loop}
               {else}
               <tr>
-                <td colspan="2" class="text-center">Tidak ada data pembayaran Duitku.COM.</td>
+                <td colspan="9" class="text-center">Tidak ada data pembayaran Duitku.COM.</td>
               </tr>
               {/if}
             </tbody>
@@ -50,11 +50,26 @@
 <script type="text/javascript">
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
   $(document).ready(function(){
-    $('.display').DataTable({
-      "language": { "search": "", "searchPlaceholder": "Search..." },
-      "lengthChange": false,
-      "scrollX": true,
-      dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
-    });
+    // Check if table has data rows before initializing DataTables
+    var $table = $('.display');
+    var hasData = $table.find('tbody tr').length > 0 && !$table.find('tbody tr').first().find('td[colspan]').length;
+    
+    if (hasData) {
+      try {
+        $table.DataTable({
+          "language": { "search": "", "searchPlaceholder": "Search..." },
+          "lengthChange": false,
+          "scrollX": true,
+          "autoWidth": false,
+          "destroy": true,
+          dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+        });
+      } catch (e) {
+        console.warn('DataTables initialization failed:', e);
+      }
+    } else {
+      // If no data, just show the table without DataTables functionality
+      console.log('No data available, skipping DataTables initialization');
+    }
   });
 </script>

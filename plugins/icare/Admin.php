@@ -8,6 +8,10 @@ use LZCompressor\LZString;
 
 class Admin extends AdminModule
 {
+  private $consid;
+  private $secretkey;
+  private $user_key;
+  private $api_url;
 
   public function init()
   {

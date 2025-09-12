@@ -12,7 +12,7 @@ Persyaratan
 Persyaratan sistem untuk mLITE sangat sederhana, jadi setiap server modern sudah mencukupi.
 
 + Apache 2.2+ or Nginx dengan `mod_rewrite`
-+ PHP version 7.0+
++ PHP version 7.4+
 + MySQL Server 5.5+
 + Akses ke MySQL dan SQLite
 

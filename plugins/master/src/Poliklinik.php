@@ -28,8 +28,9 @@ class Poliklinik
         ->toArray();
       $offset         = 10;
       $return['halaman']    = 1;
-      $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
-      $return['jumlah_data']    = count($totalRecords);
+      $totalRecordsCount = is_array($totalRecords) ? count($totalRecords) : 0;
+      $return['jml_halaman']    = ceil($totalRecordsCount / $offset);
+      $return['jumlah_data']    = $totalRecordsCount;
 
       $return['list'] = $this->db('poliklinik')
         ->desc('kd_poli')
@@ -66,8 +67,9 @@ class Poliklinik
           ->toArray();
         $offset         = 10;
         $return['halaman']    = 1;
-        $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
-        $return['jumlah_data']    = count($totalRecords);
+        $totalRecordsCount = is_array($totalRecords) ? count($totalRecords) : 0;
+        $return['jml_halaman']    = ceil($totalRecordsCount / $offset);
+        $return['jumlah_data']    = $totalRecordsCount;
 
         $return['list'] = $this->db('poliklinik')
           ->desc('kd_poli')
@@ -83,7 +85,7 @@ class Poliklinik
             ->offset(0)
             ->limit($perpage)
             ->toArray();
-          $jumlah_data = count($return['list']);
+          $jumlah_data = is_array($return['list']) ? count($return['list']) : 0;
           $jml_halaman = ceil($jumlah_data / $offset);
         }
         if(isset($_POST['halaman'])){

@@ -136,7 +136,15 @@ class Templates
             }
             file_put_contents($tmpFile, $this->parse($content));
 
-            extract($this->data, EXTR_SKIP);
+            // Safely extract template data with security checks
+            if (is_array($this->data) && !empty($this->data)) {
+                // Filter out potentially dangerous variables
+                $safeData = array_filter($this->data, function($key) {
+                    return !in_array($key, ['GLOBALS', '_SERVER', '_GET', '_POST', '_FILES', '_COOKIE', '_SESSION', '_ENV']);
+                }, ARRAY_FILTER_USE_KEY);
+                
+                extract($safeData, EXTR_SKIP);
+            }
 
             ob_start();
             include($tmpFile);
@@ -176,6 +184,12 @@ class Templates
         if (is_array($content)) {
             $content = $content[1];
         }
+        
+        // Add null check to prevent deprecated warning
+        if ($content === null) {
+            return '';
+        }
+        
         $content = str_replace(['{', '}'], ['*bracket*', '*/bracket*'], $content);
         return str_replace('$', '*dollar*', $content);
     }

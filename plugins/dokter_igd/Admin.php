@@ -5,6 +5,7 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    protected array $assign = [];
 
     private $_uploads = WEBAPPS_PATH.'/berkasrawat/pages/upload';
     public function navigation()
@@ -204,7 +205,8 @@ class Admin extends AdminModule
               ]);
             $_POST['kode_brng'] = json_decode($_POST['kode_brng'], true);
             $_POST['kandungan'] = json_decode($_POST['kandungan'], true);
-            for ($i = 0; $i < count($_POST['kode_brng']); $i++) {
+            $kode_brng_count = count($_POST['kode_brng']);
+            for ($i = 0; $i < $kode_brng_count; $i++) {
               $kapasitas = $this->db('databarang')->where('kode_brng', $_POST['kode_brng'][$i]['value'])->oneArray();
               $jml = $_POST['jml']*$_POST['kandungan'][$i]['value'];
               $jml = round(($jml/$kapasitas['kapasitas']),1);
@@ -239,7 +241,8 @@ class Admin extends AdminModule
             ]);
           $_POST['kode_brng'] = json_decode($_POST['kode_brng'], true);
           $_POST['kandungan'] = json_decode($_POST['kandungan'], true);
-          for ($i = 0; $i < count($_POST['kode_brng']); $i++) {
+          $kode_brng_count = count($_POST['kode_brng']);
+          for ($i = 0; $i < $kode_brng_count; $i++) {
             $kapasitas = $this->db('databarang')->where('kode_brng', $_POST['kode_brng'][$i]['value'])->oneArray();
             $jml = $_POST['jml']*$_POST['kandungan'][$i]['value'];
             $jml = round(($jml/$kapasitas['kapasitas']),1);
@@ -291,7 +294,8 @@ class Admin extends AdminModule
               'stts_bayar' => 'Belum'
             ]);
           $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
-          for ($i = 0; $i < count($template_laboratorium); $i++) {
+          $template_count = count($template_laboratorium);
+          for ($i = 0; $i < $template_count; $i++) {
             $this->db('permintaan_detail_permintaan_lab')
               ->save([
                 'noorder' => $noorder,
@@ -309,7 +313,8 @@ class Admin extends AdminModule
               'stts_bayar' => 'Belum'
             ]);
           $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
-          for ($i = 0; $i < count($template_laboratorium); $i++) {
+          $template_count = count($template_laboratorium);
+          for ($i = 0; $i < $template_count; $i++) {
             $this->db('permintaan_detail_permintaan_lab')
               ->save([
                 'noorder' => $noorder,
@@ -449,7 +454,8 @@ class Admin extends AdminModule
           'jam_penyerahan' => '00:00:00'
         ]);
 
-      for ($i = 0; $i < count($_POST['kode_brng']); $i++) {
+      $kode_brng_count = count($_POST['kode_brng']);
+      for ($i = 0; $i < $kode_brng_count; $i++) {
         /*$cek_stok = $this->db('gudangbarang')
           ->join('databarang', 'databarang.kode_brng=gudangbarang.kode_brng')
           ->where('gudangbarang.kode_brng', $_POST['kode_brng'][$i]['value'])
@@ -519,7 +525,9 @@ class Admin extends AdminModule
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
-        ->group('resep_dokter.no_resep')
+        ->group('resep_obat.no_resep')
+        ->group('resep_obat.no_rawat')
+        ->group('resep_obat.kd_dokter')
         ->toArray();
       $resep = [];
       $jumlah_total_resep = 0;
@@ -537,7 +545,9 @@ class Admin extends AdminModule
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
-        ->group('resep_dokter_racikan.no_resep')
+        ->group('resep_obat.no_resep')
+        ->group('resep_obat.no_rawat')
+        ->group('resep_obat.kd_dokter')
         ->toArray();
       $resep_racikan = [];
       $jumlah_total_resep_racikan = 0;
@@ -647,7 +657,9 @@ class Admin extends AdminModule
         ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('resep_obat.status', 'ralan')
-        ->group('resep_dokter.no_resep')
+        ->group('resep_obat.no_resep')
+        ->group('resep_obat.no_rawat')
+        ->group('resep_obat.kd_dokter')
         ->toArray();
       $resep = [];
       $jumlah_total_resep = 0;
@@ -665,7 +677,9 @@ class Admin extends AdminModule
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
-        ->group('resep_dokter_racikan.no_resep')
+        ->group('resep_obat.no_resep')
+        ->group('resep_obat.no_rawat')
+        ->group('resep_obat.kd_dokter')
         ->where('resep_obat.status', 'ralan')
         ->toArray();
       $resep_racikan = [];
@@ -1136,7 +1150,9 @@ class Admin extends AdminModule
         ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $no_rawat)
         ->where('resep_obat.status', 'ralan')
-        ->group('resep_dokter.no_resep')
+        ->group('resep_obat.no_resep')
+        ->group('resep_obat.no_rawat')
+        ->group('resep_obat.kd_dokter')
         ->toArray();
       $resep = [];
       $jumlah_total_resep = 0;
@@ -1154,7 +1170,9 @@ class Admin extends AdminModule
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $no_rawat)
-        ->group('resep_dokter_racikan.no_resep')
+        ->group('resep_obat.no_resep')
+        ->group('resep_obat.no_rawat')
+        ->group('resep_obat.kd_dokter')
         ->where('resep_obat.status', 'ralan')
         ->toArray();
       $resep_racikan = [];
@@ -1208,6 +1226,106 @@ class Admin extends AdminModule
       exit();
     }
   
+    public function postSaveICD10()
+    {
+      $_POST['status_penyakit'] = 'Baru';
+      unset($_POST['nama']);
+      $this->db('diagnosa_pasien')->save($_POST);
+      exit();
+    }  
+
+    public function postHapusICD10()
+    {
+      $this->db('diagnosa_pasien')->where('no_rawat', $_POST['no_rawat'])->where('prioritas', $_POST['prioritas'])->delete();
+      exit();
+    }
+  
+    public function postICD10()
+    {
+  
+      if(isset($_POST["query"])){
+        $output = '';
+        $key = "%".$_POST["query"]."%";
+        $rows = $this->db('penyakit')->like('kd_penyakit', $key)->orLike('nm_penyakit', $key)->asc('kd_penyakit')->limit(10)->toArray();
+        $output = '';
+        if(count($rows)){
+          foreach ($rows as $row) {
+            $output .= '<li class="list-group-item link-class">'.$row["kd_penyakit"].': '.$row["nm_penyakit"].'</li>';
+          }
+        } else {
+          $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
+        }
+        echo $output;
+      }
+  
+      exit();
+  
+    }
+
+    public function postSaveICD9()
+    {
+      unset($_POST['nama']);
+      $this->db('prosedur_pasien')->save($_POST);
+      exit();
+    }
+
+    public function postHapusICD9()
+    {
+      $this->db('prosedur_pasien')->where('no_rawat', $_POST['no_rawat'])->where('prioritas', $_POST['prioritas'])->delete();
+      exit();
+    }
+
+    public function postICD9()
+    {
+  
+      if(isset($_POST["query"])){
+        $output = '';
+        $key = "%".$_POST["query"]."%";
+        $rows = $this->db('icd9')->like('kode', $key)->orLike('deskripsi_panjang', $key)->asc('kode')->limit(10)->toArray();
+        $output = '';
+        if(count($rows)){
+          foreach ($rows as $row) {
+            $output .= '<li class="list-group-item link-class">'.$row["kode"].': '.$row["deskripsi_panjang"].'</li>';
+          }
+        } else {
+          $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
+        }
+        echo $output;
+      }
+  
+      exit();
+  
+    }
+
+    public function getDisplayICD()
+    {
+      $no_rawat = $_GET['no_rawat'];
+      $prosedurs = $this->db('prosedur_pasien')
+        ->where('no_rawat', $no_rawat)
+        ->asc('prioritas')
+        ->toArray();
+      $prosedur = [];
+      foreach ($prosedurs as $row_prosedur) {
+        $icd9 = $this->db('icd9')->where('kode', $row_prosedur['kode'])->oneArray();
+        $row_prosedur['nama'] = $icd9['deskripsi_panjang'];
+        $prosedur[] = $row_prosedur;
+      }
+  
+      $diagnosas = $this->db('diagnosa_pasien')
+        ->where('no_rawat', $no_rawat)
+        ->asc('prioritas')
+        ->toArray();
+      $diagnosa = [];
+      foreach ($diagnosas as $row_diagnosa) {
+        $icd10 = $this->db('penyakit')->where('kd_penyakit', $row_diagnosa['kd_penyakit'])->oneArray();
+        $row_diagnosa['nama'] = $icd10['nm_penyakit'];
+        $diagnosa[] = $row_diagnosa;
+      }
+  
+      echo $this->draw('display.icd.html', ['diagnosa' => $diagnosa, 'prosedur' => $prosedur]);
+      exit();
+    }
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');

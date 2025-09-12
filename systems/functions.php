@@ -242,9 +242,17 @@ function mlite_dir() {
     return dirname(str_replace(ADMIN, '', $_SERVER['SCRIPT_NAME']));
 }
 
+/**
+ * Check if variable is set and return it or alternate value
+ * Compatible with PHP 8+ strict types
+ * 
+ * @param mixed $var Variable to check
+ * @param mixed $alternate Alternate value if variable is not set
+ * @return mixed
+ */
 function isset_or(&$var, $alternate = null)
 {
-    return (isset($var)) ? $var : $alternate;
+    return isset($var) ? $var : $alternate;
 }
 
 function cmpver($a, $b)

@@ -1,0 +1,66 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Riwayat Barang Medis</h3>
+            </div>
+            <div class="panel-body">
+                <form class="form-inline" style="margin-bottom: 15px;">
+                    <div class="form-group">
+                        <label for="tgl_awal">Tanggal Awal:</label>
+                        <input type="date" class="form-control" id="tgl_awal" name="tgl_awal" value="{?=date('Y-m-d')?}">
+                    </div>
+                    <div class="form-group" style="margin-left: 10px;">
+                        <label for="tgl_akhir">Tanggal Akhir:</label>
+                        <input type="date" class="form-control" id="tgl_akhir" name="tgl_akhir" value="{?=date('Y-m-d')?}">
+                    </div>
+                    <div class="form-group" style="margin-left: 10px;">
+                        <select class="form-control" id="search_field_riwayat_barang_medis" name="search_field_riwayat_barang_medis">
+                            <option value="kode_brng">Kode Barang</option>
+                            <option value="tanggal">Tanggal</option>
+                            <option value="posisi">Posisi</option>
+                            <option value="petugas">Petugas</option>
+                            <option value="status">Status</option>
+                            <option value="keterangan">Keterangan</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-left: 10px;">
+                        <input type="text" class="form-control" id="search_text_riwayat_barang_medis" name="search_text_riwayat_barang_medis" placeholder="Cari...">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="btn_cari" style="margin-left: 10px;">
+                        <i class="fa fa-search"></i> Cari
+                    </button>
+                    <button type="button" class="btn btn-default" id="btn_reset" style="margin-left: 5px;">
+                        <i class="fa fa-refresh"></i> Reset
+                    </button>
+                </form>
+                
+                <div class="table-responsive">
+                    <table id="riwayatbarangmedis_table" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Kode Barang</th>
+                                <th>Nama Barang</th>
+                                <th>Stok Awal</th>
+                                <th>Masuk</th>
+                                <th>Keluar</th>
+                                <th>Stok Akhir</th>
+                                <th>Posisi</th>
+                                <th>Tanggal</th>
+                                <th>Jam</th>
+                                <th>Petugas</th>
+                                <th>Bangsal</th>
+                                <th>Status</th>
+                                <th>Batch</th>
+                                <th>Faktur</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

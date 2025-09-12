@@ -22,6 +22,12 @@ class Admin extends AdminModule
         $this->core->addCSS(url('assets/css/datatables.min.css'));
         $this->core->addJS(url('assets/jscripts/datatables.min.js'));
         $modules = $this->_modulesList($type);
+        
+        // Ensure $modules is always an array
+        if (!is_array($modules)) {
+            $modules = [];
+        }
+        
         return $this->draw('manage.html', ['modules' => array_chunk($modules, 2), 'tab' => $type]);
     }
 
@@ -116,7 +122,13 @@ class Admin extends AdminModule
 
     public function getUninstall($dir)
     {
-        if (in_array($dir, unserialize(BASIC_MODULES))) {
+        // Ensure BASIC_MODULES unserialize returns an array
+        $basicModules = unserialize(BASIC_MODULES);
+        if (!is_array($basicModules)) {
+            $basicModules = [];
+        }
+        
+        if (in_array($dir, $basicModules)) {
             $this->notify('failure', 'Tidak dapat menonaktifkan modul %s.', $dir);
             redirect(url([ADMIN, 'modules', 'manage', 'active']));
         }
@@ -139,7 +151,13 @@ class Admin extends AdminModule
 
     public function getRemove($dir)
     {
-        if (in_array($dir, unserialize(BASIC_MODULES))) {
+        // Ensure BASIC_MODULES unserialize returns an array
+        $basicModules = unserialize(BASIC_MODULES);
+        if (!is_array($basicModules)) {
+            $basicModules = [];
+        }
+        
+        if (in_array($dir, $basicModules)) {
             $this->notify('failure', 'Tidak dapat menghapus berkas-berkas modul %s.', $dir);
             redirect(url([ADMIN, 'modules', 'manage', 'inactive']));
         }
@@ -163,13 +181,25 @@ class Admin extends AdminModule
         ];
 
         $module = $this->core->getModuleInfo($dir);
-        $module['description'] = $this->tpl->noParse($module['description']);
+        
+        // Ensure description exists and is not null before processing
+        if (isset($module['description']) && $module['description'] !== null) {
+            $module['description'] = $this->tpl->noParse($module['description']);
+        } else {
+            $module['description'] = '';
+        }
+        
         $module['last_modified'] = date("Y-m-d", filemtime($files['info']));
 
         // ReadMe.md
         if (file_exists($files['readme'])) {
             $parsedown = new \Systems\Lib\Parsedown();
-            $module['readme'] = $parsedown->text($this->tpl->noParse(file_get_contents($files['readme'])));
+            $readmeContent = file_get_contents($files['readme']);
+            if ($readmeContent !== false && $readmeContent !== null) {
+                $module['readme'] = $parsedown->text($this->tpl->noParse($readmeContent));
+            } else {
+                $module['readme'] = '';
+            }
         }
 
         $this->tpl->set('module', $module);
@@ -179,10 +209,26 @@ class Admin extends AdminModule
 
     private function _modulesList($type)
     {
-        $dbModules = array_column($this->db('mlite_modules')->toArray(), 'dir');
+        // Ensure we get a valid array from database
+        $dbQuery = $this->db('mlite_modules')->toArray();
+        if (!is_array($dbQuery)) {
+            $dbQuery = [];
+        }
+        
+        $dbModules = array_column($dbQuery, 'dir');
+        if (!is_array($dbModules)) {
+            $dbModules = [];
+        }
+        
         $result = [];
+        
+        // Ensure glob returns a valid array
+        $directories = glob(MODULES.'/*', GLOB_ONLYDIR);
+        if (!is_array($directories)) {
+            $directories = [];
+        }
 
-        foreach (glob(MODULES.'/*', GLOB_ONLYDIR) as $dir) {
+        foreach ($directories as $dir) {
             $dir = basename($dir);
             $files = [
                 'info'  => MODULES.'/'.$dir.'/Info.php',
@@ -198,11 +244,39 @@ class Admin extends AdminModule
 
             if (((file_exists($files['info']) && file_exists($files['admin'])) || (file_exists($files['info']) && file_exists($files['site']))) && $inArray) {
                 $details = $this->core->getModuleInfo($dir);
-                $details['description'] = $this->tpl->noParse($details['description']);
+                
+                // Ensure $details is an array
+                if (!is_array($details)) {
+                    $details = [];
+                }
+                
+                // Add default values for required keys to prevent undefined array key warnings
+                $details = array_merge([
+                    'name' => ucfirst($dir),
+                    'version' => '1.0',
+                    'icon' => 'plug',
+                    'description' => '',
+                    'author' => '',
+                    'category' => '',
+                    'compatibility' => '5.0.0'
+                ], $details);
+                
+                // Ensure description exists and is not null before processing
+                if (isset($details['description']) && $details['description'] !== null) {
+                    $details['description'] = $this->tpl->noParse($details['description']);
+                } else {
+                    $details['description'] = '';
+                }
+                
                 $features = $this->core->getModuleNav($dir);
+                
+                // Ensure $features is an array
+                if (!is_array($features)) {
+                    $features = [];
+                }
                 $other = [];
                 $urls = [
-                    'url'            => (is_array($features) ? url([ADMIN, $dir, array_shift($features)]) : '#'),
+                    'url'            => (is_array($features) && !empty($features) ? url([ADMIN, $dir, array_shift($features)]) : '#'),
                     'uninstallUrl'    => url([ADMIN, 'modules', 'uninstall', $dir]),
                     'removeUrl'        => url([ADMIN, 'modules', 'remove', $dir]),
                     'installUrl'    => url([ADMIN, 'modules', 'install', $dir]),
@@ -210,8 +284,14 @@ class Admin extends AdminModule
                 ];
 
                 $other['installed'] = $type == 'active' ? true : false;
+                
+                // Ensure BASIC_MODULES unserialize returns an array
+                $basicModules = unserialize(BASIC_MODULES);
+                if (!is_array($basicModules)) {
+                    $basicModules = [];
+                }
 
-                if (in_array($dir, unserialize(BASIC_MODULES))) {
+                if (in_array($dir, $basicModules)) {
                     $other['basic'] = true;
                 } else {
                     $other['basic'] = false;

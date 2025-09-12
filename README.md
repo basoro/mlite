@@ -18,7 +18,7 @@ Kebutuhan Sistem
 Persyaratan sistem untuk mLITE  sangat sederhana, sehingga setiap server modern sudah cukup. Berikut persyaratan minimal yang diperlukan
 
 + Apache 2.2+ dengan `mod_rewrite` atau Nginx
-+ PHP versi 7.0 - 8.1
++ PHP versi 7.4 - 8.3+
 + MySQL atau MariaDB
 
 Konfigurasi PHP harus memiliki ekstensi berikut:

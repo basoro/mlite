@@ -48,7 +48,7 @@
         	    	            <label>Provinsi</label>
                                 <div class="input-group">
                                     <input type="hidden" name="jkn_mobile_fktp[kdprop]" value="{$settings.jkn_mobile_fktp.kdprop}" id="kd_prop">
-                                    <input type="text" value="{$settings.propinsi.nm_prop}" id="namaprop" class="form-control" placeholder="Propinsi">
+                                    <input type="text" value="{if: isset($settings.propinsi.nm_prop)}{$settings.propinsi.nm_prop}{/if}" id="namaprop" class="form-control" placeholder="Propinsi">
                                     <span class="input-group-addon" data-toggle="modal" data-target="#propinsiModal">
                                         <i class="fa fa-paperclip"></i>
                                     </span>
@@ -60,7 +60,7 @@
                                 <label>Kabupaten / Kota</label>
                                 <div class="input-group">
                                     <input type="hidden" name="jkn_mobile_fktp[kdkab]" value="{$settings.jkn_mobile_fktp.kdkab}" id="kd_kab">
-                                    <input type="text" value="{$settings.kabupaten.nm_kab}" id="namakab" class="form-control" placeholder="Kabupaten">
+                                    <input type="text" value="{if: isset($settings.kabupaten.nm_kab)}{$settings.kabupaten.nm_kab}{/if}" id="namakab" class="form-control" placeholder="Kabupaten">
                                     <span class="input-group-addon" data-toggle="modal" data-target="#kabupatenModal">
                                         <i class="fa fa-paperclip"></i>
                                     </span>
@@ -74,7 +74,7 @@
                                 <label>Kecamatan</label>
                                 <div class="input-group">
                                     <input type="hidden" name="jkn_mobile_fktp[kdkec]" value="{$settings.jkn_mobile_fktp.kdkec}" id="kd_kec">
-                                    <input type="text" value="{$settings.kecamatan.nm_kec}" id="namakec" class="form-control" placeholder="Kecamatan">
+                                    <input type="text" value="{if: isset($settings.kecamatan.nm_kec)}{$settings.kecamatan.nm_kec}{/if}" id="namakec" class="form-control" placeholder="Kecamatan">
                                     <span class="input-group-addon" data-toggle="modal" data-target="#kecamatanModal">
                                         <i class="fa fa-paperclip"></i>
                                     </span>
@@ -86,7 +86,7 @@
                                 <label>Kelurahan</label>
                                 <div class="input-group">
                                     <input type="hidden" name="jkn_mobile_fktp[kdkel]" value="{$settings.jkn_mobile_fktp.kdkel}" id="kd_kel">
-                                    <input type="text" value="{$settings.kelurahan.nm_kel}" id="namakel" class="form-control" placeholder="Kelurahan">
+                                    <input type="text" value="{if: isset($settings.kelurahan.nm_kel)}{$settings.kelurahan.nm_kel}{/if}" id="namakel" class="form-control" placeholder="Kelurahan">
                                     <span class="input-group-addon" data-toggle="modal" data-target="#kelurahanModal">
                                         <i class="fa fa-paperclip"></i>
                                     </span>
@@ -100,7 +100,7 @@
         	    	            <label>Perusahaan Pasien</label>
                                 <select name="jkn_mobile_fktp[perusahaan_pasien]" class="form-control">
                                     {loop: $settings.perusahaan_pasien}
-                                        <option value="{$value.kode_perusahaan}"{if: $value.kode_perusahaan == $settings.jkn_mobile_fktp.perusahaan_pasien} selected{/if}>{$value.nama_perusahaan}</option>
+                                        <option value="{$value.kode_perusahaan}"{if: isset($settings.jkn_mobile_fktp.perusahaan_pasien) && $value.kode_perusahaan == $settings.jkn_mobile_fktp.perusahaan_pasien} selected{/if}>{$value.nama_perusahaan}</option>
                                     {/loop}
 								</select>
         	    	        </div>
@@ -110,7 +110,7 @@
         	    	            <label>Suku Bangsa Pasien</label>
                                 <select name="jkn_mobile_fktp[suku_bangsa]" class="form-control">
                                     {loop: $settings.suku_bangsa}
-                                        <option value="{$value.id}"{if: $value.id == $settings.jkn_mobile_fktp.suku_bangsa} selected{/if}>{$value.nama_suku_bangsa}</option>
+                                        <option value="{$value.id}"{if: isset($settings.jkn_mobile_fktp.suku_bangsa) && $value.id == $settings.jkn_mobile_fktp.suku_bangsa} selected{/if}>{$value.nama_suku_bangsa}</option>
                                     {/loop}
 								</select>
     	    	            </div>
@@ -122,7 +122,7 @@
         	    	            <label>Bahasa Pasien</label>
                                 <select name="jkn_mobile_fktp[bahasa_pasien]" class="form-control">
                                     {loop: $settings.bahasa_pasien}
-                                        <option value="{$value.id}"{if: $value.id == $settings.jkn_mobile_fktp.bahasa_pasien} selected{/if}>{$value.nama_bahasa}</option>
+                                        <option value="{$value.id}"{if: isset($settings.jkn_mobile_fktp.bahasa_pasien) && $value.id == $settings.jkn_mobile_fktp.bahasa_pasien} selected{/if}>{$value.nama_bahasa}</option>
                                     {/loop}
                                 </select>
         	                </div>
@@ -132,7 +132,7 @@
                                 <label>Cacat Fisik</label>
                                 <select name="jkn_mobile_fktp[cacat_fisik]" class="form-control">
                                     {loop: $settings.cacat_fisik}
-                                        <option value="{$value.id}"{if: $value.id == $settings.jkn_mobile_fktp.cacat_fisik} selected{/if}>{$value.nama_cacat}</option>
+                                        <option value="{$value.id}"{if: isset($settings.jkn_mobile_fktp.cacat_fisik) && $value.id == $settings.jkn_mobile_fktp.cacat_fisik} selected{/if}>{$value.nama_cacat}</option>
                                     {/loop}
                                 </select>
                             </div>

@@ -1,16 +1,19 @@
+# mLITE Docker Compose Configuration
+# Updated for PHP 8.3 compatibility with mLITE PHP 7.4 - 8.3+ requirements
+
 services:
-  # PHP Service
+  # PHP 8.3 Service for mLITE
   php:
     build:
       context: .              # Build context is current directory
       dockerfile: php/Dockerfile
-    container_name: php81_app # Name our container
+    container_name: php83_app # Name our container
     volumes:
       - ../:/var/www/public   # Mount our source code
     networks:
       - app-network          # Connect to our network
     environment:
-      PHP_IDE_CONFIG: serverName=Docker # For Xdebug
+      PHP_IDE_CONFIG: serverName=Docker # For Xdebug PHP 8.3 debugging
     # Make container restart unless stopped manually
     restart: unless-stopped
 
@@ -29,21 +32,21 @@ services:
       - app-network
     restart: unless-stopped
 
-  # MySQL Service
+  # MySQL Service for mLITE Database
   mysql:
-    image: ${MYSQL_VERSION}
+    image: ${MYSQL_VERSION}  # MySQL version defined in .env file
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: true
-      MYSQL_DATABASE: mlite
+      MYSQL_DATABASE: mlite    # mLITE default database name
     ports:
       - 3308:3306 # Map port 3308 on our PC to 3306 in container
     volumes:
-      - ./mysql:/var/lib/mysql
-      - ../mlite_db.sql:/docker-entrypoint-initdb.d/00-mlite_db.sql
-      - ./db:/docker-entrypoint-initdb.d/01-custom
+      - ./mysql:/var/lib/mysql                                        # MySQL data persistence
+      - ../mlite_db.sql:/docker-entrypoint-initdb.d/00-mlite_db.sql  # mLITE database schema
+      - ./db:/docker-entrypoint-initdb.d/01-custom                   # Custom initialization scripts
     networks:
-      - app-network    # Add this to connect to the network      
+      - app-network    # Connect to the same network as PHP and Nginx      
 
 networks:
   app-network:

@@ -260,14 +260,6 @@ $("#form").on("click","#kartu", function(event){
   $("#printModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:50%;height:50%;"><iframe src="' + baseURL + '/pasien/cetakkartu/' + no_rkm_medis + '?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
 });
 
-// ketika tombol cetak ditekan
-$("#btn_cetak_jasper").click(function(event) {
-  var baseURL = mlite.url + '/' + mlite.admin;
-  event.preventDefault();
-  var cari = $('input:text[name=cari]').val();
-  window.open(baseURL + '/jasper/pasien?cari=' + cari + '&t=' + mlite.token);
-});
-
 // reset form
 function bersih(){
   $('input:text[name=no_rkm_medis]').val("").removeAttr('disabled');

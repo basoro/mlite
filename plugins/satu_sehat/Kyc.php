@@ -2,6 +2,7 @@
 
 namespace Plugins\Satu_Sehat;
 
+use Exception;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\AES;
@@ -141,8 +142,22 @@ class Kyc
   //done php_sec_lib
   public function decryptMessage($message, $privateKey)
   {
+      // Check if the response is a JSON error message instead of encrypted data
+      $trimmedMessage = trim($message);
+      if (substr($trimmedMessage, 0, 1) === '{') {
+          // This is a JSON response, likely an error from the server
+          error_log('Satu Sehat API returned JSON response instead of encrypted data: ' . $message);
+          return $message; // Return the JSON response as-is for error handling
+      }
+      
       $beginTag = "-----BEGIN ENCRYPTED MESSAGE-----";
       $endTag = "-----END ENCRYPTED MESSAGE-----";
+
+      // Check if the message has the expected encrypted format
+      if (strpos($message, $beginTag) === false || strpos($message, $endTag) === false) {
+          error_log('Invalid encrypted message format. Response: ' . substr($message, 0, 200));
+          throw new Exception('Invalid encrypted message format received from server');
+      }
 
       // Fetch the part of the PEM string between beginTag and endTag
       $messageContents = substr(
@@ -153,20 +168,37 @@ class Kyc
     
       // Base64 decode the string to get the binary data
       $binaryDerString = base64_decode($messageContents);
+      
+      if ($binaryDerString === false) {
+          error_log('Failed to base64 decode encrypted message');
+          throw new Exception('Failed to decode encrypted message');
+      }
     
       // Split the binary data into wrapped key and encrypted message
-      $wrappedKeyLength = 256;
+      $wrappedKeyLength = 256; // RSA 2048-bit key produces 256 bytes when encrypted
+      
+      if (strlen($binaryDerString) < $wrappedKeyLength) {
+          error_log('Binary data too short. Expected at least ' . $wrappedKeyLength . ' bytes, got ' . strlen($binaryDerString));
+          throw new Exception('Encrypted data is too short');
+      }
+      
       $wrappedKey = substr($binaryDerString, 0, $wrappedKeyLength);
       $encryptedMessage = substr($binaryDerString, $wrappedKeyLength);
     
-      // Unwrap the key using RSA private key
-      $key = PublicKeyLoader::load($privateKey);
-      $aesKey = $key->decrypt($wrappedKey);
+      try {
+          // Unwrap the key using RSA private key with OAEP padding
+          $key = PublicKeyLoader::load($privateKey);
+          $key = $key->withPadding(RSA::ENCRYPTION_OAEP);
+          $aesKey = $key->decrypt($wrappedKey);
 
-      // Decrypt the encrypted message using the unwrapped key
-      $decryptedMessage = $this->aesDecrypt($encryptedMessage, $aesKey);
+          // Decrypt the encrypted message using the unwrapped key
+          $decryptedMessage = $this->aesDecrypt($encryptedMessage, $aesKey);
 
-      return $decryptedMessage;
+          return $decryptedMessage;
+      } catch (Exception $e) {
+          error_log('RSA decryption failed: ' . $e->getMessage());
+          throw new Exception('RSA decryption failed: ' . $e->getMessage());
+      }
   }
 
   //not need php_sec_lib directly
@@ -238,7 +270,41 @@ class Kyc
     curl_close($ch);
 
     // Output the response
-    return $this->decryptMessage($response,$privateKey);
+    $decryptedResponse = $this->decryptMessage($response, $privateKey);
+    
+    // Check if the response is a JSON response
+    $trimmedResponse = trim($decryptedResponse);
+    if (substr($trimmedResponse, 0, 1) === '{') {
+        // Parse JSON to check if it's an error or success response
+        $responseData = json_decode($decryptedResponse, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            error_log('Failed to parse JSON response: ' . $decryptedResponse);
+            throw new Exception('Invalid JSON response from Satu Sehat API');
+        }
+        
+        // Check if it's an error response (has 'fault' field)
+        if (isset($responseData['fault'])) {
+            error_log('Satu Sehat KYC API Error Response: ' . $decryptedResponse);
+            throw new Exception('Satu Sehat API Error: ' . json_encode($responseData['fault']));
+        }
+        
+        // Check if it's a successful response (has 'metadata' with code 200 and 'data' field)
+        if (isset($responseData['metadata']) && 
+            isset($responseData['metadata']['code']) && 
+            $responseData['metadata']['code'] === '200' && 
+            isset($responseData['data'])) {
+            // This is a successful response, return it as-is
+            error_log('Satu Sehat KYC API Success Response: ' . $decryptedResponse);
+            return $decryptedResponse;
+        }
+        
+        // If it's neither a clear error nor a clear success, log and return
+        error_log('Satu Sehat KYC API Unknown JSON Response: ' . $decryptedResponse);
+        return $decryptedResponse;
+    }
+    
+    return $decryptedResponse;
   }    
 
 }

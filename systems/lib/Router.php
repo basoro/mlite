@@ -52,11 +52,12 @@ class Router
             }
             if (preg_match('#^'.$pattern.'$#', $url, $params) === 1) {
                 array_shift($params);
-                array_walk($params, function (&$val) {
-                    $val = $val ?: null;
-                });
+                // PHP 8+ compatible parameter processing
+                $params = array_map(function ($val) {
+                    return $val ?: null;
+                }, $params);
 
-                return call_user_func_array($callback, array_values($params));
+                return $callback(...array_values($params));
             }
         }
 

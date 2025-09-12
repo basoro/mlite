@@ -15,11 +15,19 @@ class Event
     }
 
 
-    public static function call($name, array $params = [])
+    /**
+     * Call event callbacks with parameters
+     * Compatible with PHP 8+ variadic parameters
+     * 
+     * @param string $name Event name
+     * @param array $params Parameters array
+     * @return bool
+     */
+    public static function call(string $name, array $params = []): bool
     {
         $return = true;
         foreach (isset_or(static::$events[$name], []) as $value) {
-            $return = $return && (call_user_func_array($value, $params) !== false);
+            $return = $return && ($value(...$params) !== false);
         }
         return $return;
     }

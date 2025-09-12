@@ -6,6 +6,7 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    public $assign;
 
     public function navigation()
     {
@@ -15,6 +16,7 @@ class Admin extends AdminModule
                 'Presensi Masuk' => 'presensi',
                 'Rekap Presensi' => 'rekap_presensi',
                 'Barcode Presensi' => 'barcode',
+                'Jam Masuk' => 'jammasuk',
                 'Jam Jaga' => 'jamjaga',
                 'Jadwal Pegawai' => 'jadwal',
                 'Jadwal Tambahan' => 'jadwal_tambahan',
@@ -38,6 +40,7 @@ class Admin extends AdminModule
                 ['name' => 'Presensi', 'url' => url([ADMIN, 'presensi', 'presensi']), 'icon' => 'cubes', 'desc' => 'Presensi Pegawai'],
                 ['name' => 'Rekap Presensi', 'url' => url([ADMIN, 'presensi', 'rekap_presensi']), 'icon' => 'cubes', 'desc' => 'Rekap Presensi Pegawai'],
                 ['name' => 'Barcode Presensi', 'url' => url([ADMIN, 'presensi', 'barcode']), 'icon' => 'cubes', 'desc' => 'Barcode Presensi Pegawai'],
+                ['name' => 'Jam Masuk', 'url' => url([ADMIN, 'presensi', 'jammasuk']), 'icon' => 'cubes', 'desc' => 'Jam Masuk Pegawai'],
                 ['name' => 'Jam Jaga', 'url' => url([ADMIN, 'presensi', 'jamjaga']), 'icon' => 'cubes', 'desc' => 'Jam Jaga Pegawai'],
                 ['name' => 'Jadwal', 'url' => url([ADMIN, 'presensi', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
                 ['name' => 'Jadwal Tambahan', 'url' => url([ADMIN, 'presensi', 'jadwal_tambahan']), 'icon' => 'cubes', 'desc' => 'Jadwal Tambahan Pegawai'],
@@ -121,6 +124,8 @@ class Admin extends AdminModule
 
         $this->assign['dep_id'] = $this->db('departemen')->toArray();
         $this->assign['shift'] = $this->db('jam_masuk')->toArray();
+        $this->assign['getStatus'] = isset($_GET['status']);
+        $this->assign['addURL'] = url([ADMIN, 'presensi', 'jagaadd']);
 
         return $this->draw('jagaadd.form.html', ['jagaadd' => $this->assign]);
     }
@@ -1704,6 +1709,140 @@ class Admin extends AdminModule
         }
 
         redirect($location, $_POST);
+    }
+
+    public function getJamMasuk($page = 1)
+    {
+        $this->_addHeaderFiles();
+        $perpage = '10';
+        $phrase = '';
+        if (isset($_GET['s']))
+            $phrase = $_GET['s'];
+
+        // pagination
+        $totalRecords = $this->db('jam_masuk')
+            ->like('shift', '%' . $phrase . '%')
+            ->toArray();
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'jammasuk', '%d']));
+        $this->assign['pagination'] = $pagination->nav('pagination', '5');
+        $this->assign['totalRecords'] = $totalRecords;
+
+        // list
+        $offset = $pagination->offset();
+        $rows = $this->db('jam_masuk')
+            ->like('shift', '%' . $phrase . '%')
+            ->offset($offset)
+            ->limit($perpage)
+            ->toArray();
+
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                $row['editURL'] = url([ADMIN, 'presensi', 'jammasukedit', $row['shift']]);
+                $row['delURL']  = url([ADMIN, 'presensi', 'jammasukhapus', $row['shift']]);
+                $this->assign['list'][] = $row;
+            }
+        }
+
+        $this->assign['getStatus'] = isset($_GET['status']);
+        $this->assign['addURL'] = url([ADMIN, 'presensi', 'jammasukadd']);
+
+        return $this->draw('jam_masuk.manage.html', ['jam_masuk' => $this->assign]);
+    }
+
+    public function getJamMasukAdd()
+    {
+        $this->_addHeaderFiles();
+        if (!empty($redirectData = getRedirectData())) {
+            $this->assign['form'] = filter_var_array($redirectData, FILTER_SANITIZE_STRING);
+        } else {
+            $this->assign['form'] = [
+                'shift' => '',
+                'jam_masuk' => '',
+                'jam_pulang' => ''
+            ];
+        }
+
+        $this->assign['title'] = 'Tambah Jam Masuk';
+        $this->assign['shift_options'] = [
+            'Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10',
+            'Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10',
+            'Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10',
+            'Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10',
+            'Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10',
+            'Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10'
+        ];
+
+        return $this->draw('jam_masuk.form.html', ['jam_masuk' => $this->assign]);
+    }
+
+    public function getJamMasukEdit($shift)
+    {
+        $this->_addHeaderFiles();
+        $row = $this->db('jam_masuk')->where('shift', $shift)->oneArray();
+        if (!empty($row)) {
+            $this->assign['form'] = $row;
+            $this->assign['title'] = 'Edit Jam Masuk';
+            $this->assign['shift_options'] = [
+                'Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10',
+                'Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10',
+                'Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10',
+                'Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10',
+                'Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10',
+                'Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10'
+            ];
+
+            return $this->draw('jam_masuk.form.html', ['jam_masuk' => $this->assign]);
+        } else {
+            redirect(url([ADMIN, 'presensi', 'jam_masuk']));
+        }
+    }
+
+    public function postJamMasukSave($shift = null)
+    {
+        $errors = 0;
+
+        if (!$shift) {
+            $location = url([ADMIN, 'presensi', 'jammasukadd']);
+        } else {
+            $location = url([ADMIN, 'presensi', 'jammasukedit', $shift]);
+        }
+
+        if (checkEmptyFields(['shift', 'jam_masuk', 'jam_pulang'], $_POST)) {
+            $this->notify('failure', 'Isian kosong');
+            redirect($location, $_POST);
+        }
+
+        if (!$errors) {
+            unset($_POST['save']);
+
+            if (!$shift) {    // new
+                $query = $this->db('jam_masuk')->save($_POST);
+            } else {        // edit
+                $query = $this->db('jam_masuk')->where('shift', $shift)->save($_POST);
+            }
+
+            if ($query) {
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+
+            redirect(url([ADMIN, 'presensi', 'jammasuk']));
+        }
+
+        redirect($location, $_POST);
+    }
+
+    public function postJamMasukHapus($shift)
+    {
+        if ($this->db('jam_masuk')->where('shift', $shift)->delete()) {
+            $this->notify('success', 'Hapus sukses');
+        } else {
+            $this->notify('failure', 'Hapus gagal');
+        }
+        redirect(url([ADMIN, 'presensi', 'jammasuk']));
     }
 
     public function getSettings()

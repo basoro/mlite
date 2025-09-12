@@ -8,7 +8,7 @@ class Site extends SiteModule
 {
 
     protected $mlite;
-    protected $assign;
+    protected array $assign = [];
 
     public function init()
     {
@@ -60,7 +60,8 @@ class Site extends SiteModule
         } else {
             if (isset($_POST['login'])) {
                 if ($this->_login($_POST['username'], $_POST['password'])) {
-                    if (count($arrayURL = parseURL()) > 1) {
+                    $arrayURL = parseURL();
+                    if (count($arrayURL) > 1) {
                         $url = array_merge(['veda'], $arrayURL);
                         redirect(url($url));
                     }

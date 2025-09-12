@@ -6,6 +6,8 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    // Property declarations to fix PHP 8.3 deprecation warnings
+    public $assign;
 
     public function navigation()
     {
@@ -70,7 +72,7 @@ class Admin extends AdminModule
         $this->assign['pendidikan'] = $this->db('pendidikan')->toArray();
         $this->assign['jnj_jabatan'] = $this->db('jnj_jabatan')->toArray();
 
-        $this->assign['fotoURL'] = url(WEBAPPS_PATH . '/penggajian/' . $row['photo']);
+        $this->assign['fotoURL'] = url(WEBAPPS_PATH . '/penggajian/' . ($row['photo'] ?? ''));
 
         return $this->draw('biodata.html', ['biodata' => $this->assign]);
     }
@@ -257,7 +259,7 @@ class Admin extends AdminModule
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '<', date('Y-m-t', mktime(0, 0, 0, $bulan, 1, date('Y'))))
                 ->like('nama', '%' . $phrase . '%')
                 ->orLike('shift', '%' . $phrase . '%')
                 ->asc('jam_datang')
@@ -266,7 +268,7 @@ class Admin extends AdminModule
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '<', date('Y-m-t', mktime(0, 0, 0, $bulan, 1, date('Y'))))
                 ->where('nik', $username)
                 ->asc('jam_datang')
                 ->toArray();
@@ -274,7 +276,7 @@ class Admin extends AdminModule
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '<', date('Y-m-t', mktime(0, 0, 0, $bulan, 1, date('Y'))))
                 ->where('nik', $username)
                 ->asc('jam_datang')
                 ->toArray();
@@ -301,7 +303,7 @@ class Admin extends AdminModule
                 ])
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '<', date('Y-m-t', mktime(0, 0, 0, $bulan, 1, date('Y'))))
                 ->like('nama', '%' . $phrase . '%')
                 ->orLike('shift', '%' . $phrase . '%')
                 ->asc('jam_datang')
@@ -323,7 +325,7 @@ class Admin extends AdminModule
                 ])
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '<', date('Y-m-t', mktime(0, 0, 0, $bulan, 1, date('Y'))))
                 ->where('nik', $username)
                 ->asc('jam_datang')
                 ->offset($offset)
@@ -344,7 +346,7 @@ class Admin extends AdminModule
                 ])
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '<', date('Y-m-t', mktime(0, 0, 0, $bulan, 1, date('Y'))))
                 ->where('nik', $username)
                 ->asc('jam_datang')
                 ->offset($offset)

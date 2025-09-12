@@ -1,0 +1,82 @@
+<div id="display">
+  <div class="table-responsive no-margin">
+    <table class="table table-striped no-padding">
+      <thead>
+        <tr>
+          <th>Kode ICD 9</th>
+          <th>Deskripsi Panjang</th>
+          <th>Deskripsi Pendek</th>
+        </tr>
+      </thead>
+      <tbody>
+        {if: $icd9.list}
+        {loop: $icd9.list}
+        <tr class="edit" data-kode="{$value.kode}">
+          <td>{$value.kode}</td>
+          <td>{$value.deskripsi_panjang}</td>
+          <td>{$value.deskripsi_pendek}</td>
+        </tr>
+        {/loop}
+        {else}
+        <tr>
+          <td colspan="3" class="text-center">Tidak ada data.</td>
+        </tr>
+        {/if}
+      </tbody>
+    </table>
+  </div>
+  <nav class="clearfix m-t-xs">
+    <div class="col">
+      <ul class="pagination no-margin pull-right">
+      {if: isset($icd9.halaman)}
+        {if: $icd9.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $icd9.halaman > 1}
+        <li class="halaman" data-hal="{?=$icd9.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$icd9.halaman} dari {$icd9.jml_halaman} Hal</a></li>
+        {if: $icd9.halaman < $icd9.jml_halaman}
+        <li class="halaman" data-hal="{?=$icd9.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $icd9.halaman == $icd9.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$icd9.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {else}
+        {if: $icd9.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $icd9.halaman > 1}
+        <li class="halaman" data-hal="{?=$icd9.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$icd9.halaman} dari {$icd9.jml_halaman} Hal</a></li>
+        {if: $icd9.halaman < $icd9.jml_halaman}
+        <li class="halaman" data-hal="{?=$icd9.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $icd9.halaman == $icd9.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$icd9.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {/if}
+      </ul>
+    </div>
+  </nav>
+</div>
+<script type="text/javascript">
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+</script>

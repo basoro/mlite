@@ -2206,7 +2206,7 @@ class Site extends SiteModule
         'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
         'tanggal' => $tanggal,
         'running_text' => $this->settings->get('anjungan.text_poli'),
-        'jam_jaga' => $this->db('jam_jaga')->group('jam_masuk')->toArray()
+        'jam_jaga' => $this->db('jam_jaga')->select('jam_masuk')->group('jam_masuk')->toArray()
       ]);
 
       $assign = [

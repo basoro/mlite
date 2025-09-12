@@ -40,7 +40,7 @@ class Admin extends AdminModule
             $row_['kode'] = $row['kode_pemeriksaan'];
             $row_['nama_pemeriksaan'] = $row['nama_pemeriksaan'];
             foreach($rows_kode_pemeriksaan as $row1) {
-                $rows_skala = $this->db('mlite_triase_skala')->where('kode_pemeriksaan', $row_['kode'])->group('skala')->toArray();
+                $rows_skala = $this->db('mlite_triase_skala')->select('skala')->where('kode_pemeriksaan', $row_['kode'])->group('skala')->toArray();
                 $row_['skala'] = [];
                 foreach($rows_skala as $row2) {
                     $row2_['skala'] = $row2['skala'];

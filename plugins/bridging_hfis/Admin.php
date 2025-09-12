@@ -41,7 +41,7 @@ class Admin extends AdminModule
   {
     $this->_addHeaderFiles();
     $dokter = $this->db('maping_dokter_dpjpvclaim')->toArray();
-    $poli = $this->db('maping_poli_bpjs')->group('kd_poli_bpjs')->toArray();
+    $poli = $this->db('maping_poli_bpjs')->select('kd_poli_bpjs')->group('kd_poli_bpjs')->toArray();
     return $this->draw('update.hfis.html', ['dokter' => $dokter, 'poli' => $poli]);
   }
 
@@ -139,7 +139,7 @@ class Admin extends AdminModule
 
   public function getLihatHfis()
   {
-    $poli = $this->db('maping_poli_bpjs')->group('kd_poli_bpjs')->toArray();
+    $poli = $this->db('maping_poli_bpjs')->select('kd_poli_bpjs')->group('kd_poli_bpjs')->toArray();
     return $this->draw('jadwal.hfis.html', ['poli' => $poli]);
   }
 

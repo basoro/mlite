@@ -4,11 +4,11 @@
           <div class="panel-heading">
               <h3 class="panel-title">Tambah Data Jam Jaga</h3>
               <ul class="nav nav-tabs">
-                  <li class="{if: !empty($jamjaga.getStatus)}{/if}">
+                  <li class="{if: !empty($jagaadd.getStatus)}{/if}">
                       <a href="{?=url(ADMIN.'/presensi/jamjaga')?}" role="tab">Jam Jaga</a>
                   </li>
-                  <li class="{if: empty($jamjaga.addUrl)}active{/if}">
-                      <a href="{$jamjaga.addURL}" role="tab">Tambah</a>
+                  <li class="{if: empty($jagaadd.addUrl)}active{/if}">
+                      <a href="{$jagaadd.addURL}" role="tab">Tambah</a>
                   </li>
               </ul>
           </div>

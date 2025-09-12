@@ -1,0 +1,71 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Data Jam Masuk</h3>
+                <ul class="nav nav-tabs">
+                    <li class="{if: empty($jam_masuk.getStatus)}active{/if}">
+                        <a href="{?=url(ADMIN.'/presensi/jammasuk')?}" role="tab">Jam Masuk</a>
+                    </li>
+                    <li class="{if: !empty($jam_masuk.addUrl)}active{/if}">
+                        <a href="{$jam_masuk.addURL}" role="tab">Tambah</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="panel-body">
+              <div class="row clearfix">
+                <div class="col col-md-6">
+                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($jam_masuk.totalRecords)?}</h3>
+                </div>
+                <div class="col col-md-6">
+                  <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+                      <div class="input-group">
+                          <input type="text" name="s" minlength="3" class="form-control" placeholder="Search" required>
+                          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                          <span class="input-group-btn">
+                              <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                          </span>
+                      </div>
+                  </form>
+                </div>
+              </div>
+    			<div class="table-responsive no-margin">
+    			    <table class="table table-striped no-margin">
+    				    <thead>
+    					    <tr>
+    						    <th>Shift</th>
+                                <th>Jam Masuk</th>
+                                <th>Jam Pulang</th>
+    							<th class="text-right">Aksi</th>
+    						</tr>
+    					</thead>
+    					<tbody>
+        					{if: !empty($jam_masuk.list)}
+						{loop: $jam_masuk.list}
+    						<tr>
+    							<td>{$value.shift}</td>
+                                        <td>{$value.jam_masuk}</td>
+                                        <td>{$value.jam_pulang}</td>
+    							<td class="text-right">
+    								<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    									<i class="fa fa-pencil"></i> <span class="hidden-xs">Edit</span>
+    								</a>
+                                            <a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
+      									<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+      								</a>
+    							</td>
+    						</tr>
+    						{/loop}
+    						{else}
+    						<tr>
+                                        <td colspan="4" class="text-center">Kosong</td>
+                                    </tr>
+    						{/if}
+    					</tbody>
+    				</table>
+    			</div>
+			{$jam_masuk.pagination}
+            </div>
+        </div>
+    </div>
+</div>

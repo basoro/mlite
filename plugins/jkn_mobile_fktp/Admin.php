@@ -7,6 +7,17 @@ use Systems\Lib\PcareService;
 
 class Admin extends AdminModule
 {
+    public $assign = [];
+    private $usernamePcare;
+    private $passwordPcare;
+    private $kdAplikasi;
+    private $consumerID;
+    private $consumerSecret;
+    private $consumerUserKey;
+    private $consumerUserKeyAntrol;
+    private $api_url;
+    private $api_url_antrol;
+    private $api_url_icare;
 
     public function init()
     {
@@ -20,7 +31,7 @@ class Admin extends AdminModule
       $this->api_url = $this->settings->get('pcare.PCareApiUrl');
       $this->api_url_antrol = 'https://apijkn.bpjs-kesehatan.go.id/antreanfktp/';
       $this->api_url_icare = 'https://apijkn.bpjs-kesehatan.go.id/wsIHS/api/pcare/validate';
-      if (strpos($this->api_url, 'dev') !== false) { 
+      if (!empty($this->api_url) && strpos($this->api_url, 'dev') !== false) { 
         $this->api_url_antrol = 'https://apijkn-dev.bpjs-kesehatan.go.id/antreanfktp_dev/';
         $this->api_url_icare = 'https://apijkn-dev.bpjs-kesehatan.go.id/ihs_dev/api/pcare/validate';
       }  
@@ -57,10 +68,14 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengaturan Modul JKN Mobile FKTP';
-        $this->assign['propinsi'] = $this->db('propinsi')->where('kd_prop', $this->settings->get('jkn_mobile_fktp.kdprop'))->oneArray();
-        $this->assign['kabupaten'] = $this->db('kabupaten')->where('kd_kab', $this->settings->get('jkn_mobile_fktp.kdkab'))->oneArray();
-        $this->assign['kecamatan'] = $this->db('kecamatan')->where('kd_kec', $this->settings->get('jkn_mobile_fktp.kdkec'))->oneArray();
-        $this->assign['kelurahan'] = $this->db('kelurahan')->where('kd_kel', $this->settings->get('jkn_mobile_fktp.kdkel'))->oneArray();
+        $kdprop = $this->settings->get('jkn_mobile_fktp.kdprop');
+        $this->assign['propinsi'] = $kdprop ? $this->db('propinsi')->where('kd_prop', $kdprop)->oneArray() : [];
+        $kdkab = $this->settings->get('jkn_mobile_fktp.kdkab');
+        $this->assign['kabupaten'] = $kdkab ? $this->db('kabupaten')->where('kd_kab', $kdkab)->oneArray() : [];
+        $kdkec = $this->settings->get('jkn_mobile_fktp.kdkec');
+        $this->assign['kecamatan'] = $kdkec ? $this->db('kecamatan')->where('kd_kec', $kdkec)->oneArray() : [];
+        $kdkel = $this->settings->get('jkn_mobile_fktp.kdkel');
+        $this->assign['kelurahan'] = $kdkel ? $this->db('kelurahan')->where('kd_kel', $kdkel)->oneArray() : [];
         $this->assign['suku_bangsa'] = $this->db('suku_bangsa')->toArray();
         $this->assign['bahasa_pasien'] = $this->db('bahasa_pasien')->toArray();
         $this->assign['cacat_fisik'] = $this->db('cacat_fisik')->toArray();

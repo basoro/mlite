@@ -5,6 +5,7 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    public $assign;
 
     public function navigation()
     {
@@ -67,7 +68,7 @@ class Admin extends AdminModule
         'settings' => $settings,
         'stats' => $stats,
         'pasien' => $this->db('pasien')->join('penjab', 'penjab.kd_pj = pasien.kd_pj')->desc('tgl_daftar')->limit('5')->toArray(),
-        'dokter' => $this->db('dokter')->join('spesialis', 'spesialis.kd_sps = dokter.kd_sps')->join('jadwal', 'jadwal.kd_dokter = dokter.kd_dokter')->where('jadwal.hari_kerja', $hari)->where('dokter.status', '1')->group('dokter.kd_dokter')->rand()->limit('6')->toArray()
+        'dokter' => $this->db('dokter')->join('spesialis', 'spesialis.kd_sps = dokter.kd_sps')->join('jadwal', 'jadwal.kd_dokter = dokter.kd_dokter')->where('jadwal.hari_kerja', $hari)->where('dokter.status', '1')->group(['dokter.kd_dokter', 'jadwal.jam_mulai', 'jadwal.jam_selesai'])->rand()->limit('6')->toArray()
       ]);
 
     }
@@ -298,7 +299,7 @@ class Admin extends AdminModule
         $query = $this->db('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT no_rawat)',
-              'label'       => 'tgl_registrasi'
+              'label'       => 'EXTRACT(MONTH FROM tgl_registrasi)'
             ])
             ->like('tgl_registrasi', date('Y').'%')
             ->group('EXTRACT(MONTH FROM tgl_registrasi)');
@@ -310,7 +311,7 @@ class Admin extends AdminModule
                 'visits'  => []
             ];
             foreach ($data as $value) {
-                $return['labels'][] = date("M", strtotime($value['label']));
+                $return['labels'][] = date("M", mktime(0, 0, 0, $value['label'], 1));
                 $return['visits'][] = $value['count'];
             }
 
@@ -323,7 +324,7 @@ class Admin extends AdminModule
         $query = $this->db('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT no_rawat)',
-              'label'       => 'tgl_registrasi'
+              'label'       => 'EXTRACT(MONTH FROM tgl_registrasi)'
             ])
             ->where('stts', 'Dirawat')
             ->like('tgl_registrasi', date('Y').'%')
@@ -336,7 +337,7 @@ class Admin extends AdminModule
                 'visits'  => []
             ];
             foreach ($data as $value) {
-                $return['labels'][] = date("M", strtotime($value['label']));
+                $return['labels'][] = date("M", mktime(0, 0, 0, $value['label'], 1));
                 $return['visits'][] = $value['count'];
             }
 
@@ -349,7 +350,7 @@ class Admin extends AdminModule
         $query = $this->db('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT no_rawat)',
-              'label'       => 'tgl_registrasi'
+              'label'       => 'EXTRACT(MONTH FROM tgl_registrasi)'
             ])
             ->where('stts', 'Dirujuk')
             ->like('tgl_registrasi', date('Y').'%')
@@ -362,7 +363,7 @@ class Admin extends AdminModule
                 'visits'  => []
             ];
             foreach ($data as $value) {
-                $return['labels'][] = date("M", strtotime($value['label']));
+                $return['labels'][] = date("M", mktime(0, 0, 0, $value['label'], 1));
                 $return['visits'][] = $value['count'];
             }
 
@@ -702,7 +703,7 @@ class Admin extends AdminModule
     public function countDx()
     {
         $date = date('Y-m-d');
-        $query = $this->db()->pdo()->prepare("SELECT COUNT(diagnosa_pasien.kd_penyakit) as count ,penyakit.nm_penyakit FROM diagnosa_pasien JOIN reg_periksa ON diagnosa_pasien.no_rawat = reg_periksa.no_rawat JOIN penyakit ON diagnosa_pasien.kd_penyakit = penyakit.kd_penyakit WHERE diagnosa_pasien.status ='Ralan' and reg_periksa.tgl_registrasi like '%$date%' GROUP BY diagnosa_pasien.kd_penyakit ORDER BY `count`  DESC Limit 10");
+        $query = $this->db()->pdo()->prepare("SELECT COUNT(diagnosa_pasien.kd_penyakit) as count ,penyakit.nm_penyakit FROM diagnosa_pasien JOIN reg_periksa ON diagnosa_pasien.no_rawat = reg_periksa.no_rawat JOIN penyakit ON diagnosa_pasien.kd_penyakit = penyakit.kd_penyakit WHERE diagnosa_pasien.status ='Ralan' and reg_periksa.tgl_registrasi like '%$date%' GROUP BY diagnosa_pasien.kd_penyakit, penyakit.nm_penyakit ORDER BY `count`  DESC Limit 10");
         $query->execute();
 
             $data = $query->fetchAll(\PDO::FETCH_ASSOC);
@@ -922,6 +923,10 @@ class Admin extends AdminModule
             $stats['percentDead'] = number_format((($this->countRanap('tgl_keluar','Meninggal')-$this->countLastRanap('tgl_keluar','Meninggal'))/$this->countRanap('tgl_keluar','Meninggal'))*100,0,'','.');
         }
 
+        $stats['percentYear'] = 0;
+        $stats['percentMonth'] = 0;
+        $stats['percentDays'] = 0;
+
       return $this->draw('rawatinap.html',[
         'settings' => $settings,
         'stats' => $stats,
@@ -970,6 +975,8 @@ class Admin extends AdminModule
         if($this->countYear('periksa_lab','Lab1') != 0) {
             $stats['percentYears'] = number_format((($this->countYear('periksa_lab','Lab1')-$this->countLastYear('periksa_lab','Lab1'))/$this->countYear('periksa_lab','Lab1'))*100,0,'','.');
         }
+        $stats['percentDaysBaru'] = 0;
+        $stats['percentDaysBatal'] = 0;
 
       return $this->draw('laboratorium.html',[
         'settings' => $settings,
@@ -1004,6 +1011,8 @@ class Admin extends AdminModule
         if($this->countYear('periksa_radiologi','rad1') != 0) {
             $stats['percentYears'] = number_format((($this->countYear('periksa_radiologi','rad1')-$this->countLastYear('periksa_radiologi','rad1'))/$this->countYear('periksa_radiologi','rad1'))*100,0,'','.');
         }
+        $stats['percentDaysBaru'] = 0;
+        $stats['percentDaysBatal'] = 0;
 
       return $this->draw('radiologi.html',[
         'settings' => $settings,
@@ -1068,7 +1077,7 @@ class Admin extends AdminModule
         $time = strtotime(date("Y-m-d", strtotime("-".($days + $offset)." days")));
         $date = date("Y-m-d", strtotime("-".($days + $offset)." days"));
 
-        $query = $this->db()->pdo()->prepare("SELECT COUNT(photo) as count,COUNT(IF(keterangan != '-', 1, NULL)) as count2, date(jam_datang) as jam FROM `rekap_presensi` WHERE jam_datang >= '$date 00:00:00' GROUP BY jam");
+        $query = $this->db()->pdo()->prepare("SELECT COUNT(photo) as count,COUNT(IF(keterangan != '-', 1, NULL)) as count2, date(jam_datang) as jam FROM `rekap_presensi` WHERE jam_datang >= '$date 00:00:00' GROUP BY date(jam_datang)");
         $query->execute();
 
         $data = $query->fetchAll(\PDO::FETCH_ASSOC);

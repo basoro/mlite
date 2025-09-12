@@ -1,18 +1,27 @@
 <?php
-ob_start();
-header('Content-Type:text/html;charset=utf-8');
-if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
-            $_SERVER['HTTPS']='on';
-}
+/**
+ * mLITE Admin Entry Point
+ * Compatible with PHP 7.4 - 8.3+
+ */
+
+try {
+    ob_start();
+    header('Content-Type: text/html; charset=utf-8');
+    
+    // Handle HTTPS forwarding with strict comparison
+    if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+        $_SERVER['HTTPS'] = 'on';
+    }
 define('BASE_DIR', __DIR__.'/..');
 require_once('../config.php');
 
-if (DEV_MODE) {
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-} else {
-    error_reporting(0);
-}
+    if (DEV_MODE) {
+        error_reporting(E_ALL);
+        ini_set('display_errors', '1');
+    } else {
+        error_reporting(0);
+        ini_set('display_errors', '0');
+    }
 
 require_once('../systems/lib/Autoloader.php');
 //ob_start(base64_decode('XFN5c3RlbXNcTWFpbjo6dmVyaWZ5TGljZW5zZQ=='));
@@ -37,7 +46,8 @@ if ($core->loginCheck()) {
 } else {
     if (isset($_POST['login'])) {
         if ($core->login($_POST['username'], $_POST['password'], isset($_POST['remember_me']))) {
-            if (count($arrayURL = parseURL()) > 1) {
+            $arrayURL = parseURL();
+            if ($arrayURL && count($arrayURL) > 1) {
                 $url = array_merge([ADMIN], $arrayURL);
                 redirect(url($url));
             }
@@ -64,4 +74,16 @@ if ($core->loginCheck()) {
 
 }
 
-ob_end_flush();
+} catch (Throwable $e) {
+    if (DEV_MODE) {
+        echo '<h1>Error</h1><pre>' . htmlspecialchars($e->getMessage()) . '</pre>';
+        echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
+    } else {
+        echo '<h1>System Error</h1><p>Please contact administrator.</p>';
+    }
+}
+
+// Safe buffer handling for PHP 8+
+if (ob_get_level() > 0) {
+    ob_end_flush();
+}

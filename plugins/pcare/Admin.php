@@ -7,6 +7,15 @@ use LZCompressor\LZString;
 
 class Admin extends AdminModule
 {
+  private $usernamePcare;
+  private $passwordPcare;
+  private $kdAplikasi;
+  private $consumerID;
+  private $consumerSecret;
+  private $consumerUserKey;
+  private $api_url;
+  private $api_url_antrol;
+  private $api_url_icare;
 
   public function init()
   {

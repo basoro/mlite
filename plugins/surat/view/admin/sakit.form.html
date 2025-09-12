@@ -1,0 +1,91 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{if: $sakit.form.id}Edit{else}Tambah{/if} Surat Sakit</h3>
+            </div>
+            <div class="panel-body">
+                <form name="sakit_form" action="{?=url(ADMIN.'/surat/sakitsave/'.@$sakit.form.id)?}" method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Nomor Surat</label>
+                                <input type="text" name="nomor_surat" class="form-control" value="{$sakit.form.nomor_surat}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>No. Rawat</label>
+                                <input type="text" name="no_rawat" class="form-control" value="{$sakit.form.no_rawat}">
+                            </div>
+                            <div class="form-group">
+                                <label>No. Rekam Medis</label>
+                                <input type="text" name="no_rkm_medis" class="form-control" value="{$sakit.form.no_rkm_medis}">
+                            </div>
+                            <div class="form-group">
+                                <label>Nama Pasien</label>
+                                <input type="text" name="nm_pasien" class="form-control" value="{$sakit.form.nm_pasien}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal Lahir</label>
+                                <input type="date" name="tgl_lahir" class="form-control" value="{$sakit.form.tgl_lahir}">
+                            </div>
+                            <div class="form-group">
+                                <label>Umur</label>
+                                <input type="text" name="umur" class="form-control" value="{$sakit.form.umur}">
+                            </div>
+                            <div class="form-group">
+                                <label>Jenis Kelamin</label>
+                                <select name="jk" class="form-control">
+                                    <option value="">Pilih Jenis Kelamin</option>
+                                    <option value="L" {if: $sakit.form.jk == 'L'}selected{/if}>Laki-laki</option>
+                                    <option value="P" {if: $sakit.form.jk == 'P'}selected{/if}>Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Alamat</label>
+                                <textarea name="alamat" class="form-control" rows="3">{$sakit.form.alamat}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Keadaan</label>
+                                <input type="text" name="keadaan" class="form-control" value="{$sakit.form.keadaan}">
+                            </div>
+                            <div class="form-group">
+                                <label>Diagnosa</label>
+                                <textarea name="diagnosa" class="form-control" rows="3">{$sakit.form.diagnosa}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Lama Sakit (Angka)</label>
+                                <input type="number" name="lama_angka" class="form-control" value="{$sakit.form.lama_angka}">
+                            </div>
+                            <div class="form-group">
+                                <label>Lama Sakit (Huruf)</label>
+                                <input type="text" name="lama_huruf" class="form-control" value="{$sakit.form.lama_huruf}" placeholder="contoh: hari, minggu, bulan">
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal Mulai</label>
+                                <input type="date" name="tanggal_mulai" class="form-control" value="{$sakit.form.tanggal_mulai}">
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal Selesai</label>
+                                <input type="date" name="tanggal_selesai" class="form-control" value="{$sakit.form.tanggal_selesai}">
+                            </div>
+                            <div class="form-group">
+                                <label>Dokter</label>
+                                <input type="text" name="dokter" class="form-control" value="{$sakit.form.dokter}">
+                            </div>
+                            <div class="form-group">
+                                <label>Petugas</label>
+                                <input type="text" name="petugas" class="form-control" value="{$sakit.form.petugas}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" name="save" class="btn btn-primary"><i class="fa fa-save"></i> Simpan</button>
+                        <a href="{?=url(ADMIN.'/surat/sakit')?}" class="btn btn-default"><i class="fa fa-arrow-left"></i> Kembali</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

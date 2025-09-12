@@ -92,9 +92,9 @@ class Admin extends Main
                 $method = strtolower($_SERVER['REQUEST_METHOD']).ucfirst($method);
 
                 if (method_exists($this->module->{$name}, $method)) {
-                    $details['content'] = call_user_func_array([$this->module->{$name}, $method], array_values($params));
+                    $details['content'] = $this->module->{$name}->{$method}(...array_values($params));
                 } elseif (method_exists($this->module->{$name}, $anyMethod)) {
-                    $details['content'] = call_user_func_array([$this->module->{$name}, $anyMethod], array_values($params));
+                    $details['content'] = $this->module->{$name}->{$anyMethod}(...array_values($params));
                 } else {
                     http_response_code(404);
                     $this->setNotify('failure', "[@{$method}] Alamat yang Anda minta tidak ada.");
@@ -201,10 +201,19 @@ class Admin extends Main
         return false;
     }
 
-    public function getModuleMethod($name, $method, $params = [])
+    /**
+     * Call module method with parameters
+     * Compatible with PHP 8+ variadic parameters
+     * 
+     * @param string $name Module name
+     * @param string $method Method name
+     * @param array $params Parameters array
+     * @return mixed
+     */
+    public function getModuleMethod(string $name, string $method, array $params = [])
     {
         if (method_exists($this->module->{$name}, $method)) {
-            return call_user_func_array([$this->module->{$name}, $method], array_values($params));
+            return $this->module->{$name}->{$method}(...array_values($params));
         }
 
         $this->setNotify('failure', "[@{$method}] Alamat yang Anda minta tidak ada.");

@@ -8,7 +8,7 @@
                    {if: !in_array($value, array('dashboard','crud_generator','mlite_api_key'))}
                         {if: $this->core->getUserInfo('role') == 'admin'}
                             {if: $value == 'master'}
-                              <li class="{if: str_contains($slug[2],'master')}active-api{/if} has-submenu">
+                              <li class="{if: isset($slug[2]) && str_contains($slug[2],'master')}active-api{/if} has-submenu">
                                 <a href="#" class="toggle-submenu">Master Data</a>
                                 <ul class="submenu">
                                   {loop: $masterNav as $key => $val}
@@ -17,10 +17,10 @@
                                 </ul>
                               </li>
                             {else}
-                                <li class="{if: $slug[2] == $value}active-api{/if}"><a href="{?=url([ADMIN, 'mlite_api_key', 'documentations', $value])?}">{?=$this->core->getModuleInfo($value)['name']?}</a></li>
+                                <li class="{if: isset($slug[2]) && $slug[2] == $value}active-api{/if}"><a href="{?=url([ADMIN, 'mlite_api_key', 'documentations', $value])?}">{?=$this->core->getModuleInfo($value)['name']?}</a></li>
                             {/if}
                         {else}
-                            <li class="{if: $slug[2] == $value}active-api{/if}"><a href="{?=url([ADMIN, 'mlite_api_key', 'documentations', $value])?}">{?=$this->core->getModuleInfo($value)['name']?}</a></li>
+                            <li class="{if: isset($slug[2]) && $slug[2] == $value}active-api{/if}"><a href="{?=url([ADMIN, 'mlite_api_key', 'documentations', $value])?}">{?=$this->core->getModuleInfo($value)['name']?}</a></li>
                         {/if}
                     {/if}
                 {/loop}
@@ -32,7 +32,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <h4 class="mb-3 --title">
-                            {$slug[2]}
+                            {?=isset($slug[2]) ? $slug[2] : ''?}
                         </h4>
                     </div>
                 </div>
@@ -84,10 +84,10 @@
                         </span>
                     </h5>
                     <div class="rounded pt-2 pe-3 pb-2 ps-3 bg-dark">
-                        {if: str_contains($slug[2], 'master')} 
-                        <code class="text-light">{?=url()?}/api/v2/master/{?=explode('_', $slug['2'])[1]?}data/</code>
+                        {if: isset($slug[2]) && str_contains($slug[2], 'master')} 
+                        <code class="text-light">{?=url()?}/api/v2/master/{?=isset(explode('_', $slug['2'])[1]) ? explode('_', $slug['2'])[1] : ''?}data/</code>
                         {else}
-                        <code class="text-light">{?=url()?}/api/v2/{$slug[2]}/data/</code>
+                        <code class="text-light">{?=url()?}/api/v2/{?=isset($slug[2]) ? $slug[2] : ''?}/data/</code>
                         {/if}
                     </div>
                 </div>
@@ -226,11 +226,11 @@
                             <tr>
                                 <td>
                                     <code>
-                                        {if: str_contains($slug[2], 'master')} 
-                                        search_field_{?=explode('_', $slug['2'])[1]?}
-                                        {else}
-                                        search_field_{$slug[2]}
-                                        {/if}
+                                        {if: isset($slug[2]) && str_contains($slug[2], 'master')} 
+                        search_field_{?=isset(explode('_', $slug['2'])[1]) ? explode('_', $slug['2'])[1] : ''?}
+                        {else}
+                        search_field_{?=isset($slug[2]) ? $slug[2] : ''?}
+                        {/if}
                                     </code>
                                 </td>
                                 <td>
@@ -243,11 +243,11 @@
                             <tr>
                                 <td>
                                     <code>
-                                        {if: str_contains($slug[2], 'master')} 
-                                        search_text_{?=explode('_', $slug['2'])[1]?}
-                                        {else}
-                                        search_text_{$slug[2]}
-                                        {/if}
+                                        {if: isset($slug[2]) && str_contains($slug[2], 'master')} 
+                        search_text_{?=isset(explode('_', $slug['2'])[1]) ? explode('_', $slug['2'])[1] : ''?}
+                        {else}
+                        search_text_{?=isset($slug[2]) ? $slug[2] : ''?}
+                        {/if}
                                     </code>
                                 </td>
                                 <td>
@@ -291,10 +291,10 @@
                         </span>
                     </h5>
                     <div class="rounded pt-2 pe-3 pb-2 ps-3 bg-dark">
-                        {if: str_contains($slug[2], 'master')} 
-                        <code class="text-light">{?=url()?}/api/v2/master/{?=explode('_', $slug['2'])[1]?}aksi/</code>
+                        {if: isset($slug[2]) && str_contains($slug[2], 'master')} 
+                        <code class="text-light">{?=url()?}/api/v2/master/{?=isset(explode('_', $slug['2'])[1]) ? explode('_', $slug['2'])[1] : ''?}aksi/</code>
                         {else}
-                        <code class="text-light">{?=url()?}/api/v2/{$slug[2]}/aksi/</code>
+                        <code class="text-light">{?=url()?}/api/v2/{?=isset($slug[2]) ? $slug[2] : ''?}/aksi/</code>
                         {/if}
                     </div>
                 </div>

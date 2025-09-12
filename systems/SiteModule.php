@@ -14,8 +14,8 @@ abstract class SiteModule extends BaseModule
         if (is_callable($callback)) {
             $this->core->router->set($pattern, $callback);
         } else {
-            $this->core->router->set($pattern, function () use ($callback) {
-                return call_user_func_array([$this, $callback], func_get_args());
+            $this->core->router->set($pattern, function (...$args) use ($callback) {
+                return $this->$callback(...$args);
             });
         }
     }

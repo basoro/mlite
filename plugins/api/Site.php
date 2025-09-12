@@ -532,7 +532,7 @@ class Site extends SiteModule
               }
               else if(!$check) {
                   $mysql_date = date( 'Y-m-d' );
-                  $mysql_time = date( 'H:m:s' );
+                  $mysql_time = date( 'H:i:s' );
                   $waktu_kunjungan = $tanggal . ' ' . $mysql_time;
 
                   $max_id = $this->db('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
@@ -916,7 +916,7 @@ class Site extends SiteModule
               }
               else if(!$check) {
                   $mysql_date = date( 'Y-m-d' );
-                  $mysql_time = date( 'H:m:s' );
+                  $mysql_time = date( 'H:i:s' );
                   $waktu_kunjungan = $tanggal . ' ' . $mysql_time;
 
                   $max_id = $this->db('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
