@@ -367,8 +367,6 @@ class Admin extends AdminModule
         ->group('resep_obat.no_resep')
         ->group('resep_obat.no_rawat')
         ->group('resep_obat.kd_dokter')
-        ->group('dokter.kd_dokter')
-        ->group('dokter.nm_dokter')
         ->group('resep_dokter.no_resep')
         ->group('resep_dokter.kode_brng')
         ->group('resep_dokter.jml')
@@ -401,11 +399,6 @@ class Admin extends AdminModule
         ->group('resep_obat.no_resep')
         ->group('resep_obat.no_rawat')
         ->group('resep_obat.kd_dokter')
-        ->group('dokter.kd_dokter')
-        ->group('dokter.nm_dokter')
-        ->group('resep_dokter_racikan.no_resep')
-        ->group('resep_dokter_racikan.nama_racik')
-        ->group('resep_dokter_racikan.kd_racik')
         ->group('resep_dokter_racikan.no_racik')
         ->toArray();
       $resep_racikan = [];

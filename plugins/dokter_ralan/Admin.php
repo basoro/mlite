@@ -573,7 +573,6 @@ class Admin extends AdminModule
 
       $rows = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-        ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('resep_obat.status', 'ralan')
         ->group('resep_obat.no_resep')
@@ -594,13 +593,16 @@ class Admin extends AdminModule
 
       $rows_racikan = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-        ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
+        ->where('resep_obat.status', 'ralan')
         ->group('resep_obat.no_resep')
         ->group('resep_obat.no_rawat')
         ->group('resep_obat.kd_dokter')
-        ->where('resep_obat.status', 'ralan')
         ->toArray();
+      // Filter only records that have racikan
+      $rows_racikan = array_filter($rows_racikan, function($row) {
+        return $this->db('resep_dokter_racikan')->where('no_resep', $row['no_resep'])->count() > 0;
+      });
       $resep_racikan = [];
       $jumlah_total_resep_racikan = 0;
       foreach ($rows_racikan as $row) {
@@ -723,7 +725,6 @@ class Admin extends AdminModule
 
       $rows = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-        ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('resep_obat.status', 'ralan')
         ->group('resep_obat.no_resep')
@@ -744,13 +745,16 @@ class Admin extends AdminModule
 
       $rows_racikan = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-        ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
+        ->where('resep_obat.status', 'ralan')
         ->group('resep_obat.no_resep')
         ->group('resep_obat.no_rawat')
         ->group('resep_obat.kd_dokter')
-        ->where('resep_obat.status', 'ralan')
         ->toArray();
+      // Filter only records that have racikan
+      $rows_racikan = array_filter($rows_racikan, function($row) {
+        return $this->db('resep_dokter_racikan')->where('no_resep', $row['no_resep'])->count() > 0;
+      });
       $resep_racikan = [];
       $jumlah_total_resep_racikan = 0;
       foreach ($rows_racikan as $row) {
