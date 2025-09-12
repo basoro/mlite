@@ -571,6 +571,16 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postHapusPermintaanRad()
+    {
+      $this->db('permintaan_radiologi')
+      ->where('noorder', $_POST['noorder'])
+      ->where('no_rawat', $_POST['no_rawat'])
+      ->where('dokter_perujuk', $_POST['dokter_perujuk'])
+      ->delete();
+      exit();
+    }
+
     public function postHapusResep()
     {
       if(isset($_POST['kd_jenis_prw'])) {
@@ -692,13 +702,23 @@ class Admin extends AdminModule
       }
 
       $rows = $this->db('resep_obat')
+        ->select('resep_obat.no_resep')
+        ->select('resep_obat.no_rawat')
+        ->select('resep_obat.kd_dokter')
+        ->select('resep_obat.tgl_peresepan')
+        ->select('resep_obat.jam_peresepan')
+        ->select('resep_obat.status')
+        ->select('dokter.nm_dokter')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-        ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('resep_obat.status', 'ranap')
         ->group('resep_obat.no_resep')
         ->group('resep_obat.no_rawat')
         ->group('resep_obat.kd_dokter')
+        ->group('resep_obat.tgl_peresepan')
+        ->group('resep_obat.jam_peresepan')
+        ->group('resep_obat.status')
+        ->group('dokter.nm_dokter')
         ->toArray();
       $resep = [];
       $jumlah_total_resep = 0;
@@ -713,13 +733,32 @@ class Admin extends AdminModule
       }
 
       $rows_racikan = $this->db('resep_obat')
+        ->select('resep_obat.no_resep')
+        ->select('resep_obat.no_rawat')
+        ->select('resep_obat.kd_dokter')
+        ->select('resep_obat.tgl_peresepan')
+        ->select('resep_obat.jam_peresepan')
+        ->select('resep_obat.status')
+        ->select('dokter.nm_dokter')
+        ->select('resep_dokter_racikan.nama_racik')
+        ->select('resep_dokter_racikan.jml_dr')
+        ->select('resep_dokter_racikan.aturan_pakai')
+        ->select('resep_dokter_racikan.keterangan')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
+        ->where('resep_obat.status', 'ranap')
         ->group('resep_obat.no_resep')
         ->group('resep_obat.no_rawat')
         ->group('resep_obat.kd_dokter')
-        ->where('resep_obat.status', 'ranap')
+        ->group('resep_obat.tgl_peresepan')
+        ->group('resep_obat.jam_peresepan')
+        ->group('resep_obat.status')
+        ->group('dokter.nm_dokter')
+        ->group('resep_dokter_racikan.nama_racik')
+        ->group('resep_dokter_racikan.jml_dr')
+        ->group('resep_dokter_racikan.aturan_pakai')
+        ->group('resep_dokter_racikan.keterangan')
         ->toArray();
       $resep_racikan = [];
       $jumlah_total_resep_racikan = 0;
