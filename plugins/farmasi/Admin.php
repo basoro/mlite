@@ -14,6 +14,7 @@ class Admin extends AdminModule
             'Kelola' => 'manage',
             'Obat & BHP' => 'mutasi',
             'Stok Opname' => 'opname',
+            'Darurat Stok' => 'daruratstok',
             'Detail Pemberian Obat' => 'detailpemberianobat',
             'Riwayat Barang Medis' => 'riwayatbarangmedis',
             'Pengaturan' => 'settings',
@@ -25,6 +26,7 @@ class Admin extends AdminModule
       $sub_modules = [
         ['name' => 'Mutasi Obat', 'url' => url([ADMIN, 'farmasi', 'mutasi']), 'icon' => 'medkit', 'desc' => 'Data obat dan barang habis pakai'],
         ['name' => 'Stok Opname', 'url' => url([ADMIN, 'farmasi', 'opname']), 'icon' => 'medkit', 'desc' => 'Tambah stok opname'],
+        ['name' => 'Darurat Stok', 'url' => url([ADMIN, 'farmasi', 'daruratstok']), 'icon' => 'warning', 'desc' => 'Monitoring stok darurat obat dan BHP'],
         ['name' => 'Detail Pemberian Obat', 'url' => url([ADMIN, 'farmasi', 'detailpemberianobat']), 'icon' => 'medkit', 'desc' => 'Detail pemberian obat pasien'],
         ['name' => 'Riwayat Barang Medis', 'url' => url([ADMIN, 'farmasi', 'riwayatbarangmedis']), 'icon' => 'medkit', 'desc' => 'Riwayat pergerakan barang medis'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'farmasi', 'settings']), 'icon' => 'medkit', 'desc' => 'Pengaturan farmasi dan depo'],
@@ -635,6 +637,88 @@ class Admin extends AdminModule
         exit();
     }
     /* End Riwayat Barang Medis Section */
+
+    /* Darurat Stok Section */
+    public function getDaruratStok()
+    {
+        $this->_addHeaderFiles();
+        $this->core->addJS(url([ADMIN, 'farmasi', 'daruratstokjs']), 'footer');
+        return $this->draw('daruratstok.html');
+    }
+
+    public function postDaruratStokData()
+    {
+        $draw = $_POST['draw'];
+        $row1 = $_POST['start'];
+        $rowperpage = $_POST['length']; // Rows display per page
+        $columnIndex = $_POST['order'][0]['column']; // Column index
+        $columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+        $columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+        $searchValue = $_POST['search']['value']; // Search value
+
+        ## Custom Field value
+        $search_field_databarang= $_POST['search_field_databarang'];
+        $search_text_databarang = $_POST['search_text_databarang'];
+
+        $searchQuery = " ";
+        if($search_text_databarang != ''){
+            $searchQuery .= " and (".$search_field_databarang." like '%".$search_text_databarang."%' ) ";
+        }
+
+        ## Total number of records without filtering
+        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from databarang");
+        $sel->execute();
+        $records = $sel->fetch();
+        $totalRecords = $records['allcount'];
+
+        ## Total number of records with filtering
+        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from databarang WHERE 1 ".$searchQuery);
+        $sel->execute();
+        $records = $sel->fetch();
+        $totalRecordwithFilter = $records['allcount'];
+
+        ## Fetch records
+        $sel = $this->db()->pdo()->prepare("select * from databarang WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row1.",".$rowperpage);
+        $sel->execute();
+        $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
+
+        $data = array();
+        foreach($result as $row) {
+            $stok = $this->db('gudangbarang')->select(['stok' => 'SUM(stok)'])->where('kode_brng', $row['kode_brng'])->toArray();
+            $data[] = array(
+                'kode_brng'=>$row['kode_brng'],
+                'nama_brng'=>$row['nama_brng'],
+                'stok'=>$stok[0]['stok'],
+                'stokminimal'=>$row['stokminimal'],
+                'kode_satbesar'=>$row['kode_satbesar'],
+                'kode_sat'=>$row['kode_sat'],
+                'dasar'=>$row['dasar'],
+                'h_beli'=>$row['h_beli'],
+                'isi'=>$row['isi'],
+                'kapasitas'=>$row['kapasitas'],
+                'expire'=>$row['expire']
+            );
+        }
+
+        ## Response
+        $response = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordwithFilter,
+            "aaData" => $data
+        );
+
+        echo json_encode($response);
+        exit();
+    }
+
+    public function getDaruratStokJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/farmasi/js/admin/daruratstok.js');
+        exit();
+    }
+    /* End Darurat Stok Section */
 
     public function getCSS()
     {

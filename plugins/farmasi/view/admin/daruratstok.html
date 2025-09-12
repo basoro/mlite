@@ -1,0 +1,80 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Darurat Stok - Monitoring Stok Obat & BHP</h3>
+            </div>
+            <div class="panel-body">
+                <div class="alert alert-warning">
+                    <i class="fa fa-warning"></i> <strong>Peringatan:</strong> Halaman ini menampilkan data obat dan BHP yang stoknya menipis atau sudah habis. Segera lakukan pengadaan untuk item yang ditandai merah.
+                </div>
+                
+                <form class="form-inline" style="margin-bottom: 15px;">
+                    <div class="form-group">
+                        <select class="form-control" id="search_field_databarang" name="search_field_databarang">
+                            <option value="kode_brng">Kode Barang</option>
+                            <option value="nama_brng">Nama Barang</option>
+                            <option value="kode_satbesar">Satuan Besar</option>
+                            <option value="kode_sat">Satuan Kecil</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-left: 10px;">
+                        <input type="text" class="form-control" id="search_text_databarang" name="search_text_databarang" placeholder="Cari...">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="btn_cari" style="margin-left: 10px;">
+                        <i class="fa fa-search"></i> Cari
+                    </button>
+                    <button type="button" class="btn btn-default" id="btn_reset" style="margin-left: 5px;">
+                        <i class="fa fa-refresh"></i> Reset
+                    </button>
+                </form>
+                
+                <div class="table-responsive">
+                    <table id="daruratstok_table" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Kode Barang</th>
+                                <th>Nama Barang</th>
+                                <th>Stok Saat Ini</th>
+                                <th>Stok Minimal</th>
+                                <th>Selisih</th>
+                                <th>Satuan Besar</th>
+                                <th>Satuan Kecil</th>
+                                <th>Harga Beli</th>
+                                <th>Isi</th>
+                                <th>Kapasitas</th>
+                                <th>Expire</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="row" style="margin-top: 15px;">
+                    <div class="col-md-12">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">Keterangan Status</h4>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <span class="label label-danger">HABIS</span> Stok = 0
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span class="label label-warning">KRITIS</span> Stok < Stok Minimal
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span class="label label-success">AMAN</span> Stok ≥ Stok Minimal
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
