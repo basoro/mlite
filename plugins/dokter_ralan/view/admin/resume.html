@@ -51,6 +51,7 @@
             <th>Prosedur</th>
             <th>Pulang</th>
             <th>Dokter</th>
+            <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -62,10 +63,15 @@
             <td>{$resume_pasien.prosedur_utama}</td>
             <td>{$resume_pasien.kondisi_pulang}</td>
             <td>{$resume_pasien.nm_dokter}</td>
+            <td>
+              <button type="button" class="btn btn-danger btn-xs hapus_resume" data-no_rawat="{$resume_pasien.no_rawat}">
+                <i class="fa fa-trash"></i> Hapus
+              </button>
+            </td>
           </tr>
           {else}
           <tr>
-            <td colspan="6">Tidak ada data</td>
+            <td colspan="7">Tidak ada data</td>
           </tr>
           {/if}
         </tbody>
@@ -101,6 +107,29 @@ $(document).ready(function(){
       console.log(data);
       $('.tampildata').load(baseURL + '/dokter_ralan/resumetampil/' + set_no_rawat + '?t=' + mlite.token);
     });
+  });
+
+  // Event handler untuk button hapus resume
+  $(document).on('click', '.hapus_resume', function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat = $(this).attr('data-no_rawat');
+    var set_no_rawat = no_rawat.replace(/\//g, '');
+    
+    // Tampilkan dialog konfirmasi
+    if(confirm('Apakah Anda yakin ingin menghapus data resume ini?')) {
+      var url = baseURL + '/dokter_ralan/resumedelete/?t=' + mlite.token;
+      $.post(url, {
+        no_rawat: no_rawat
+      }, function(data) {
+        console.log(data);
+        // Refresh tampilan data setelah berhasil menghapus
+        $('.tampildata').load(baseURL + '/dokter_ralan/resumetampil/' + set_no_rawat + '?t=' + mlite.token);
+        // Tampilkan notifikasi
+        alert('Data resume berhasil dihapus!');
+      }).fail(function() {
+        alert('Gagal menghapus data resume!');
+      });
+    }
   });
 });
 </script>

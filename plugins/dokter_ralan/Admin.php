@@ -1287,7 +1287,6 @@ class Admin extends AdminModule
 
       $rows = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-        ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $no_rawat)
         ->where('resep_obat.status', 'ralan')
         ->group('resep_obat.no_resep')
@@ -1306,25 +1305,34 @@ class Admin extends AdminModule
         $resep[] = $row;
       }
 
-      $rows_racikan = $this->db('resep_obat')
-        ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-        ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
-        ->where('no_rawat', $no_rawat)
-        ->group('resep_obat.no_resep')
-        ->group('resep_obat.no_rawat')
-        ->group('resep_obat.kd_dokter')
-        ->where('resep_obat.status', 'ralan')
-        ->toArray();
+      // Get resep_racikan records that have racikan data
+      $racikan_nos = $this->db('resep_dokter_racikan')->select('no_resep')->toArray();
+      $racikan_nos = array_column($racikan_nos, 'no_resep');
+      
       $resep_racikan = [];
       $jumlah_total_resep_racikan = 0;
-      foreach ($rows_racikan as $row) {
-        $row['nomor'] = $i++;
-        $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
-        foreach ($row['resep_dokter_racikan_detail'] as $value) {
-          $value['ralan'] = $value['jml'] * $value['dasar'];
-          $jumlah_total_resep_racikan += floatval($value['ralan']);
+      
+      // Only process racikan if there are actual racikan records
+      if (!empty($racikan_nos)) {
+        $rows_racikan = $this->db('resep_obat')
+          ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
+          ->where('no_rawat', $no_rawat)
+          ->where('resep_obat.status', 'ralan')
+          ->whereIn('resep_obat.no_resep', $racikan_nos)
+          ->group('resep_obat.no_resep')
+          ->group('resep_obat.no_rawat')
+          ->group('resep_obat.kd_dokter')
+          ->toArray();
+          
+        foreach ($rows_racikan as $row) {
+          $row['nomor'] = $i++;
+          $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
+          foreach ($row['resep_dokter_racikan_detail'] as $value) {
+            $value['ralan'] = $value['jml'] * $value['dasar'];
+            $jumlah_total_resep_racikan += floatval($value['ralan']);
+          }
+          $resep_racikan[] = $row;
         }
-        $resep_racikan[] = $row;
       }
 
       $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
@@ -1573,6 +1581,18 @@ class Admin extends AdminModule
           'obat_pulang' => '-'
         ]);
       }
+      exit();
+    }
+
+    public function postResumeDelete()
+    {
+      $kd_dokter = $this->core->getUserInfo('username', $_SESSION['mlite_user']);
+      
+      $this->db('resume_pasien')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->where('kd_dokter', $kd_dokter)
+        ->delete();
+      
       exit();
     }
 

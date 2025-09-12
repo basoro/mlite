@@ -21,7 +21,7 @@
               </div>
               <label for="pnd" class="col-sm-2 control-label">Jam</label>
               <div class="col-sm-3">
-                <input type="text" id="jam_reg" name="jam_reg" class="form-control jam" value="{?=date('H:i:s')?}">
+                <input type="text" id="eresep_jam_reg" name="jam_reg" class="form-control jam" value="{?=date('H:i:s')?}">
               </div>
             </div>
             <div class="form-group">
@@ -181,10 +181,10 @@
             <th>Keterangan</th>
           </tr>
           <tr>
-            <td>{$value.nama_racik}</td>
-            <td>{$value.jml_dr}</td>
-            <td>{$value.aturan_pakai}</td>
-            <td>{$value.keterangan}</td>
+            <td>{if: isset($value.nama_racik)}{$value.nama_racik}{else}-{/if}</td>
+            <td>{if: isset($value.jml_dr)}{$value.jml_dr}{else}-{/if}</td>
+            <td>{if: isset($value.aturan_pakai)}{$value.aturan_pakai}{else}-{/if}</td>
+            <td>{if: isset($value.keterangan)}{$value.keterangan}{else}-{/if}</td>
           </tr>
           <tr>
             <th>Nama Obat</th>
@@ -553,12 +553,12 @@
     });
   });
 
-  $("#form_rincian_eresep").on("click","#jam_reg", function(event){
+  $("#form_rincian_eresep").on("click","#eresep_jam_reg", function(event){
       var baseURL = mlite.url + '/' + mlite.admin;
       var url = baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token;
       $.post(url, {
       } ,function(data) {
-        $("#form_rincian_eresep #jam_reg").val(data);
+        $("#form_rincian_eresep #eresep_jam_reg").val(data);
       });
   });
 

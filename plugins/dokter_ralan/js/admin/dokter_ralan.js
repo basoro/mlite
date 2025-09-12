@@ -226,7 +226,7 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
       //$('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");
       $.post(baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token, {
       } ,function(data) {
-        $("#form_soap #jam_rawat").val(data);
+        $("#form_soap #soap_jam_rawat").val(data);
       });
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data soap telah disimpan!"+
@@ -782,7 +782,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var kode_provider   = $('input:text[name=kode_provider]').val();
   var kode_provider2   = $('input:text[name=kode_provider2]').val();
   var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
-  var jam_rawat       = $('input:text[name=jam_reg]').val();
+  var jam_rawat       = $('input:text[name=jam_rawat]').val();
   var biaya           = $('input:text[name=biaya]').val();
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var kat             = $('input:hidden[name=kat]').val();
@@ -849,7 +849,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('input:text[name=nm_perawatan]').val("");
     $.post(baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token, {
     } ,function(data) {
-      $("#form_rincian #jam_reg").val(data);
+      $("#form_rincian #rincian_jam_reg").val(data);
     });
     $('input:hidden[name=kat]').val("");
     $('input:text[name=biaya]').val("");
@@ -1081,7 +1081,7 @@ $("#rincian").on("click","#simpan_copy_resep", function(event){
   var url = baseURL + '/dokter_ralan/rincian?t=' + mlite.token;
   var no_rawat = $('input:text[name=no_rawat]').val();
   var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
-  var jam_rawat       = $('input:text[name=jam_reg]').val();
+  var jam_rawat       = $('input:text[name=jam_rawat]').val();
   var kode_brng       = JSON.stringify($('input:hidden[name=kode_brng_copyresep]').serializeArray());
   var jml       = JSON.stringify($('input:text[name=jml_copyresep]').serializeArray());
   var aturan_pakai       = JSON.stringify($('input:text[name=aturan_copyresep]').serializeArray());
@@ -1381,21 +1381,21 @@ $("#form_soap").on("click","#odontogram", function(event){
   return false;
 });
 
-$("#form_soap").on("click","#jam_rawat", function(event){
+$("#form_soap").on("click","#soap_jam_rawat", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     var url = baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token;
     $.post(url, {
     } ,function(data) {
-      $("#form_soap #jam_rawat").val(data);
+      $("#form_soap #soap_jam_rawat").val(data);
     });
 });
 
-$("#form_rincian").on("click","#jam_reg", function(event){
+$("#form_rincian").on("click","#rincian_jam_reg", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     var url = baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token;
     $.post(url, {
     } ,function(data) {
-      $("#form_rincian #jam_reg").val(data);
+      $("#form_rincian #rincian_jam_reg").val(data);
     });
 });
 
