@@ -86,7 +86,7 @@
   $("#display_icd").on("click",".hapus_icd9", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
-    var url = baseURL + '/igd/hapusicd10?t=' + mlite.token;
+    var url = baseURL + '/igd/hapusicd9?t=' + mlite.token;
     var no_rawat = $(this).attr("data-no_rawat");
     var prioritas = $(this).attr("data-prioritas");
 
