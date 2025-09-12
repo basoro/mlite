@@ -523,7 +523,6 @@ class Admin extends AdminModule
 
       $rows = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-        ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
         ->group('resep_obat.no_resep')
         ->group('resep_obat.no_rawat')
@@ -541,14 +540,21 @@ class Admin extends AdminModule
         $resep[] = $row;
       }
 
-      $rows_racikan = $this->db('resep_obat')
-        ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-        ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
-        ->where('no_rawat', $_POST['no_rawat'])
-        ->group('resep_obat.no_resep')
-        ->group('resep_obat.no_rawat')
-        ->group('resep_obat.kd_dokter')
-        ->toArray();
+      // Get list of no_resep that have racikan
+      $resep_racikan_nos = $this->db('resep_dokter_racikan')->select('no_resep')->toArray();
+      $resep_racikan_nos = array_column($resep_racikan_nos, 'no_resep');
+      
+      $rows_racikan = [];
+      if (!empty($resep_racikan_nos)) {
+        $rows_racikan = $this->db('resep_obat')
+          ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->whereIn('resep_obat.no_resep', $resep_racikan_nos)
+          ->group('resep_obat.no_resep')
+          ->group('resep_obat.no_rawat')
+          ->group('resep_obat.kd_dokter')
+          ->toArray();
+      }
       $resep_racikan = [];
       $jumlah_total_resep_racikan = 0;
       foreach ($rows_racikan as $row) {
@@ -654,7 +660,6 @@ class Admin extends AdminModule
 
       $rows = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-        ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('resep_obat.status', 'ralan')
         ->group('resep_obat.no_resep')
@@ -673,15 +678,22 @@ class Admin extends AdminModule
         $resep[] = $row;
       }
 
-      $rows_racikan = $this->db('resep_obat')
-        ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-        ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
-        ->where('no_rawat', $_POST['no_rawat'])
-        ->group('resep_obat.no_resep')
-        ->group('resep_obat.no_rawat')
-        ->group('resep_obat.kd_dokter')
-        ->where('resep_obat.status', 'ralan')
-        ->toArray();
+      // Get list of no_resep that have racikan
+      $resep_racikan_nos = $this->db('resep_dokter_racikan')->select('no_resep')->toArray();
+      $resep_racikan_nos = array_column($resep_racikan_nos, 'no_resep');
+      
+      $rows_racikan = [];
+      if (!empty($resep_racikan_nos)) {
+        $rows_racikan = $this->db('resep_obat')
+          ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->whereIn('resep_obat.no_resep', $resep_racikan_nos)
+          ->group('resep_obat.no_resep')
+          ->group('resep_obat.no_rawat')
+          ->group('resep_obat.kd_dokter')
+          ->where('resep_obat.status', 'ralan')
+          ->toArray();
+      }
       $resep_racikan = [];
       $jumlah_total_resep_racikan = 0;
       foreach ($rows_racikan as $row) {

@@ -70,7 +70,7 @@ jQuery(function($) {
             { data: 'no_faktur' }
         ],
         'paging': true,
-        'lengthChange': true,
+        'lengthChange': false,
         'searching': false,
         'ordering': true,
         'info': true,
