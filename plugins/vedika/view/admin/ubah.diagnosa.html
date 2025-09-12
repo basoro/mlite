@@ -91,7 +91,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: "{?=url([ADMIN, 'icd_10', 'icd10'])?}",
+                 url: "{?=url([ADMIN, 'vedika', 'icd10'])?}",
                  method:"POST",
                  data:{query:query},
                  success:function(data)
@@ -121,7 +121,7 @@
     var kode = $('#kode_icd10').text();
     var status = $('input:hidden[name=status]').val();
 
-    var url = baseURL + '/icd_10/saveicd10?t=' + mlite.token;
+    var url = baseURL + '/vedika/saveicd10?t=' + mlite.token;
 
     $.post(url,{
       no_rawat: no_rawat,

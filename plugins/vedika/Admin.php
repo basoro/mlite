@@ -2402,6 +2402,65 @@ class Admin extends AdminModule
     exit();
   }
 
+  public function postSaveICD10()
+  {
+    $_POST['status_penyakit'] = 'Baru';
+    unset($_POST['nama']);
+    $this->db('diagnosa_pasien')->save($_POST);
+    exit();
+  }  
+
+  public function postICD10()
+  {
+
+    if(isset($_POST["query"])){
+      $output = '';
+      $key = "%".$_POST["query"]."%";
+      $rows = $this->db('penyakit')->like('kd_penyakit', $key)->orLike('nm_penyakit', $key)->asc('kd_penyakit')->limit(10)->toArray();
+      $output = '';
+      if(count($rows)){
+        foreach ($rows as $row) {
+          $output .= '<li class="list-group-item link-class">'.$row["kd_penyakit"].': '.$row["nm_penyakit"].'</li>';
+        }
+      } else {
+        $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
+      }
+      echo $output;
+    }
+
+    exit();
+
+  }
+
+  public function postSaveICD9()
+  {
+    unset($_POST['nama']);
+    $this->db('prosedur_pasien')->save($_POST);
+    exit();
+  }
+
+  public function postICD9()
+  {
+
+    if(isset($_POST["query"])){
+      $output = '';
+      $key = "%".$_POST["query"]."%";
+      $rows = $this->db('icd9')->like('kode', $key)->orLike('deskripsi_panjang', $key)->asc('kode')->limit(10)->toArray();
+      $output = '';
+      if(count($rows)){
+        foreach ($rows as $row) {
+          $output .= '<li class="list-group-item link-class">'.$row["kode"].': '.$row["deskripsi_panjang"].'</li>';
+        }
+      } else {
+        $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
+      }
+      echo $output;
+    }
+
+    exit();
+
+  }
+
   public function getUbahDiagnosa($status_lanjut, $no_rawat)
   {
     $diagnosa_pasien = $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')->where('diagnosa_pasien.no_rawat', revertNoRawat($no_rawat))->where('diagnosa_pasien.status', $status_lanjut)->asc('prioritas')->toArray();
