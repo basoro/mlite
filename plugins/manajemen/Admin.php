@@ -812,9 +812,9 @@ class Admin extends AdminModule
     public function sumPdptLain()
     {
         $date = date('Y-m-d');
-        $record = $this->db('pemasukan_lain')
+        $record = $this->db('mlite_penjualan_billing')
             ->select([
-                'sum' => 'SUM(besar)',
+                'sum' => 'SUM(jumlah_bayar)',
             ])
             ->where('tanggal', $date)
             ->oneArray();
@@ -1034,15 +1034,73 @@ class Admin extends AdminModule
 
     public function getFarmasi()
     {
-      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-      return $this->draw('farmasi.html');
+        $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+        
+        $settings = htmlspecialchars_array($this->settings('manajemen'));
+        $stats['getTotalStok'] = number_format($this->countTotalStokObat(),0,'','.');
+        $stats['getObatHampirHabis'] = number_format($this->countObatHampirHabis(),0,'','.');
+        $stats['getTransaksiHariIni'] = number_format($this->countTransaksiFarmasi(),0,'','.');
+        $stats['getNilaiStok'] = number_format($this->sumNilaiStokObat(),0,'','.');
+        $stats['farmasiChart'] = $this->farmasiStokChart();
+        
+        $stats['percentTotal'] = 0;
+        if($this->countTotalStokObat() != 0) {
+            $stats['percentTotal'] = number_format((($this->countTotalStokObat()-$this->countLastTotalStokObat())/$this->countTotalStokObat())*100,0,'','.');
+        }
+        $stats['percentHampirHabis'] = 0;
+        if($this->countObatHampirHabis() != 0) {
+            $stats['percentHampirHabis'] = number_format((($this->countObatHampirHabis()-$this->countLastObatHampirHabis())/$this->countObatHampirHabis())*100,0,'','.');
+        }
+        $stats['percentTransaksi'] = 0;
+        if($this->countTransaksiFarmasi() != 0) {
+            $stats['percentTransaksi'] = number_format((($this->countTransaksiFarmasi()-$this->countLastTransaksiFarmasi())/$this->countTransaksiFarmasi())*100,0,'','.');
+        }
+        $stats['percentNilai'] = 0;
+        
+        return $this->draw('farmasi.html',[
+            'settings' => $settings,
+            'stats' => $stats,
+        ]);
     }
 
     public function getKasir()
     {
         $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
         $settings = htmlspecialchars_array($this->settings('manajemen'));
-        $stats['getDapat'] = number_format($this->sumPdptLain(),0,'','.');
+        $stats['getDapat'] = number_format($this->sumPdptLain() ?? 0,0,'','.');        
+        // Tambahkan data pendapatan dinamis
+        $stats['getPendapatanRajal'] = number_format($this->sumPendapatanRajal() ?? 0, 0, '', '.');
+        $stats['getPendapatanLain'] = number_format($this->sumPendapatanLain() ?? 0, 0, '', '.');
+        $stats['getVisities'] = number_format((($this->sumPendapatanRajal() ?? 0) + ($this->sumPendapatanLain() ?? 0)),0,'','.');
+        
+        $stats['percentTotal'] = 0;
+        if($this->countVisite() != 0) {
+            $stats['percentTotal'] = number_format((($this->countVisite()-$this->countVisiteNoRM())/$this->countVisite())*100,0,'','.');
+        }
+        
+        // Hitung persentase pendapatan rajal
+        $stats['percentRajal'] = 0;
+        if($this->sumPendapatanRajal() != 0) {
+            $lastRajal = $this->sumLastPendapatanRajal();
+            if($lastRajal != 0) {
+                $stats['percentRajal'] = number_format((($this->sumPendapatanRajal()-$lastRajal)/$lastRajal)*100,0,'','.');
+            }
+        }
+        
+        // Hitung persentase pendapatan lain-lain
+        $stats['percentLain'] = 0;
+        if($this->sumPendapatanLain() != 0) {
+            $lastLain = $this->sumLastPendapatanLain();
+            if($lastLain != 0) {
+                $stats['percentLain'] = number_format((($this->sumPendapatanLain()-$lastLain)/$lastLain)*100,0,'','.');
+            }
+        }
+        
+        $stats['percentYear'] = 0;
+        $stats['percentMonth'] = 0;
+        $stats['percentOut'] = 0;
+        $stats['percentDays'] = 0;
         return $this->draw('kasir.html',[
             'settings' => $settings,
             'stats' => $stats,
@@ -1125,6 +1183,135 @@ class Admin extends AdminModule
       $data = $query->toArray();
       print_r($data);
       exit();
+    }
+
+    // Method helper untuk statistik farmasi
+    public function countTotalStokObat()
+    {
+        $record = $this->db('gudangbarang')
+            ->join('databarang', 'databarang.kode_brng=gudangbarang.kode_brng')
+            ->where('databarang.status', '1')
+            ->select(['total' => 'SUM(gudangbarang.stok)'])
+            ->oneArray();
+        return $record['total'] ?? 0;
+    }
+    
+    public function countObatHampirHabis()
+    {
+        $record = $this->db('gudangbarang')
+            ->join('databarang', 'databarang.kode_brng=gudangbarang.kode_brng')
+            ->where('databarang.status', '1')
+            ->where('gudangbarang.stok', '<', 10)
+            ->count();
+        return $record ?? 0;
+    }
+    
+    public function countTransaksiFarmasi()
+    {
+        $date = date('Y-m-d');
+        $record = $this->db('detail_pemberian_obat')
+            ->where('tgl_perawatan', $date)
+            ->count();
+        return $record ?? 0;
+    }
+    
+    public function sumNilaiStokObat()
+    {
+        $record = $this->db('gudangbarang')
+            ->join('databarang', 'databarang.kode_brng=gudangbarang.kode_brng')
+            ->where('databarang.status', '1')
+            ->select(['total' => 'SUM(gudangbarang.stok * databarang.dasar)'])
+            ->oneArray();
+        return $record['total'] ?? 0;
+    }
+    
+    public function countLastTotalStokObat()
+    {
+        // Implementasi untuk perbandingan periode sebelumnya
+        return 0;
+    }
+    
+    public function countLastObatHampirHabis()
+    {
+        // Implementasi untuk perbandingan periode sebelumnya
+        return 0;
+    }
+    
+    public function countLastTransaksiFarmasi()
+    {
+        $date = date('Y-m-d', strtotime('-1 day'));
+        $record = $this->db('detail_pemberian_obat')
+            ->where('tgl_perawatan', $date)
+            ->count();
+        return $record ?? 0;
+    }
+    
+    public function farmasiStokChart()
+    {
+        $data = $this->db('gudangbarang')
+            ->join('databarang', 'databarang.kode_brng=gudangbarang.kode_brng')
+            ->join('jenis', 'jenis.kdjns=databarang.kdjns')
+            ->where('databarang.status', '1')
+            ->select([
+                'jenis' => 'jenis.nama',
+                'total_stok' => 'SUM(gudangbarang.stok)'
+            ])
+            ->group('jenis.kdjns')
+            ->limit(10)
+            ->toArray();
+            
+        $return = [
+            'labels' => [],
+            'visits' => []
+        ];
+        
+        foreach ($data as $row) {
+            $return['labels'][] = $row['jenis'];
+            $return['visits'][] = $row['total_stok'];
+        }
+        
+        return $return;
+    }
+
+    // Method helper untuk statistik kasir
+    public function sumPendapatanRajal()
+    {
+        $date = date('Y-m-d');
+        $record = $this->db('mlite_billing')
+            ->where('tgl_billing', $date)
+            ->select(['total' => 'SUM(jumlah_bayar)'])
+            ->oneArray();
+        return $record['total'] ?? 0;
+    }
+
+    public function sumPendapatanLain()
+    {
+        $date = date('Y-m-d');
+        $record = $this->db('mlite_penjualan_billing')
+            ->where('tanggal', $date)
+            ->select(['total' => 'SUM(jumlah_bayar)'])
+            ->oneArray();
+        return $record['total'] ?? 0;
+    }
+
+    public function sumLastPendapatanRajal()
+    {
+        $date = date('Y-m-d', strtotime('-1 day'));
+        $record = $this->db('billing')
+            ->where('tgl_billing', $date)
+            ->select(['total' => 'SUM(jumlah_bayar)'])
+            ->oneArray();
+        return $record['total'] ?? 0;
+    }
+
+    public function sumLastPendapatanLain()
+    {
+        $date = date('Y-m-d', strtotime('-1 day'));
+        $record = $this->db('mlite_penjualan_billing')
+            ->where('tanggal', $date)
+            ->select(['total' => 'SUM(jumlah_bayar)'])
+            ->oneArray();
+        return $record['total'] ?? 0;
     }
 
     public function getSettings()

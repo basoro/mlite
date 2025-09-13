@@ -1,3 +1,6 @@
+// Global variable untuk chart
+var vitalSignsChart = null;
+
 // sembunyikan form dan notif
 $("#form_rincian").hide();
 $("#form_soap").hide();
@@ -200,9 +203,13 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
       var url = baseURL + '/dokter_ranap/soap?t=' + mlite.token;
       $.post(url, {no_rawat : no_rawat,
       }, function(data) {
-        // tampilkan data
-        $("#soap").html(data).show();
-      });
+          // tampilkan data
+          $("#soap").html(data).show();
+          // Load vital signs chart when SOAP data is displayed
+          setTimeout(function() {
+            loadVitalSignsChart();
+          }, 500);
+        });
       $('input:text[name=suhu_tubuh]').val("");
       $('input:text[name=tensi]').val("");
       $('input:text[name=nadi]').val("");
@@ -302,6 +309,10 @@ $("#soap").on("click",".hapus_soap", function(event){
         }, function(data) {
           // tampilkan data
           $("#soap").html(data).show();
+          // Load vital signs chart when SOAP data is displayed
+          setTimeout(function() {
+            loadVitalSignsChart();
+          }, 500);
         });
         $('input:text[name=suhu_tubuh]').val("");
         $('input:text[name=tensi]').val("");
@@ -1452,3 +1463,155 @@ $(document).on('change', 'select[name="nyeri"]', function() {
     $('select[name="nyeri_hilang"]').val('-');
   }
 });
+
+// Load Vital Signs Chart
+function loadVitalSignsChart() {
+  console.log('loadVitalSignsChart() called');
+  
+  var no_rawat = $('input[name="no_rawat"]').val();
+  console.log('no_rawat:', no_rawat);
+  
+  if (!no_rawat) {
+    console.log('No rawat not found, showing no-data message');
+    $('#chart-no-data').show();
+    $('#chart-loading').hide();
+    return;
+  }
+  
+  // Check if Chart.js is loaded
+  if (typeof Chart === 'undefined') {
+    console.error('Chart.js is not loaded!');
+    $('#chart-loading').hide();
+    $('#chart-no-data').show();
+    return;
+  }
+  
+  $('#chart-loading').show();
+  $('#chart-no-data').hide();
+  
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url = baseURL + '/dokter_ranap/vitalsignschart?t=' + mlite.token;
+  console.log('AJAX URL:', url);
+  
+  $.post(url, {no_rawat: no_rawat}, function(data) {
+    console.log('AJAX Success - Raw data:', data);
+    $('#chart-loading').hide();
+    
+    if (data && data.labels && data.labels.length > 0) {
+      console.log('Data found, creating chart with', data.labels.length, 'data points');
+      createVitalSignsChart(data);
+    } else {
+      console.log('No data found or empty labels');
+      $('#chart-no-data').show();
+    }
+  }, 'json').fail(function(xhr, status, error) {
+    console.error('AJAX Failed:', status, error);
+    console.error('Response:', xhr.responseText);
+    $('#chart-loading').hide();
+    $('#chart-no-data').show();
+  });
+}
+
+// Create Vital Signs Chart
+function createVitalSignsChart(chartData) {
+  console.log('createVitalSignsChart() called with data:', chartData);
+  
+  // Check if Chart.js is loaded
+  if (typeof Chart === 'undefined') {
+    console.error('Chart.js is not loaded in createVitalSignsChart!');
+    return;
+  }
+  
+  var ctx = document.getElementById('vitalSignsChart');
+  
+  // Check if canvas element exists
+  if (!ctx) {
+    console.error('Canvas element vitalSignsChart not found');
+    return;
+  }
+  
+  console.log('Canvas element found, getting 2D context');
+  ctx = ctx.getContext('2d');
+  
+  // Destroy existing chart if exists
+  if (vitalSignsChart && typeof vitalSignsChart.destroy === 'function') {
+    console.log('Destroying existing chart');
+    vitalSignsChart.destroy();
+  }
+  
+  console.log('Creating new Chart instance');
+  vitalSignsChart = new Chart(ctx, {
+    type: 'line',
+    data: chartData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'Grafik Tren Tanda Vital Pasien'
+        },
+        legend: {
+          display: true,
+          position: 'top'
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              var label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                label += context.parsed.y;
+              }
+              return label;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Waktu Pemeriksaan'
+          }
+        },
+        y: {
+          type: 'linear',
+          display: true,
+          position: 'left',
+          title: {
+            display: true,
+            text: 'Nilai Tanda Vital'
+          },
+          beginAtZero: false
+        },
+        y1: {
+          type: 'linear',
+          display: true,
+          position: 'right',
+          title: {
+            display: true,
+            text: 'Tinggi/Berat'
+          },
+          grid: {
+            drawOnChartArea: false,
+          },
+        }
+      }
+    }
+  });
+  
+  console.log('Vital Signs Chart created successfully!');
+}
+
+// Update chart after saving SOAP data
+function updateVitalSignsChart() {
+  loadVitalSignsChart();
+}

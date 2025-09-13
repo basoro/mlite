@@ -1919,6 +1919,140 @@ class Admin extends AdminModule
         exit();
     }
     
+    public function anyVitalSignsChart()
+    {
+      $no_rawat = $_POST['no_rawat'];
+      
+      // Ambil data tanda vital dari pemeriksaan_ralan dan pemeriksaan_ranap
+      $vital_signs_ralan = $this->db('pemeriksaan_ralan')
+        ->where('no_rawat', $no_rawat)
+        ->asc('tgl_perawatan')
+        ->asc('jam_rawat')
+        ->toArray();
+        
+      $vital_signs_ranap = $this->db('pemeriksaan_ranap')
+        ->where('no_rawat', $no_rawat)
+        ->asc('tgl_perawatan')
+        ->asc('jam_rawat')
+        ->toArray();
+      
+      // Gabungkan data dari kedua tabel
+      $vital_signs = array_merge($vital_signs_ralan, $vital_signs_ranap);
+      
+      // Sort berdasarkan tanggal dan jam
+      usort($vital_signs, function($a, $b) {
+        $datetime_a = strtotime($a['tgl_perawatan'] . ' ' . $a['jam_rawat']);
+        $datetime_b = strtotime($b['tgl_perawatan'] . ' ' . $b['jam_rawat']);
+        return $datetime_a - $datetime_b;
+      });
+      
+      $chart_data = [
+        'labels' => [],
+        'datasets' => [
+          [
+            'label' => 'Suhu (°C)',
+            'data' => [],
+            'borderColor' => 'rgb(255, 99, 132)',
+            'backgroundColor' => 'rgba(255, 99, 132, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1
+          ],
+          [
+            'label' => 'Tensi Sistol (mmHg)',
+            'data' => [],
+            'borderColor' => 'rgb(54, 162, 235)',
+            'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1
+          ],
+          [
+            'label' => 'Tensi Diastol (mmHg)',
+            'data' => [],
+            'borderColor' => 'rgb(75, 192, 192)',
+            'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1
+          ],
+          [
+            'label' => 'Nadi (/menit)',
+            'data' => [],
+            'borderColor' => 'rgb(255, 205, 86)',
+            'backgroundColor' => 'rgba(255, 205, 86, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1
+          ],
+          [
+            'label' => 'RR (/menit)',
+            'data' => [],
+            'borderColor' => 'rgb(153, 102, 255)',
+            'backgroundColor' => 'rgba(153, 102, 255, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1
+          ],
+          [
+            'label' => 'Tinggi (cm)',
+            'data' => [],
+            'borderColor' => 'rgb(255, 159, 64)',
+            'backgroundColor' => 'rgba(255, 159, 64, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1,
+            'yAxisID' => 'y1'
+          ],
+          [
+            'label' => 'Berat (kg)',
+            'data' => [],
+            'borderColor' => 'rgb(199, 199, 199)',
+            'backgroundColor' => 'rgba(199, 199, 199, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1,
+            'yAxisID' => 'y1'
+          ],
+          [
+            'label' => 'SPO2 (%)',
+            'data' => [],
+            'borderColor' => 'rgb(83, 102, 255)',
+            'backgroundColor' => 'rgba(83, 102, 255, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1
+          ]
+        ]
+      ];
+      
+      foreach($vital_signs as $vital) {
+        $date_label = date('d/m H:i', strtotime($vital['tgl_perawatan'] . ' ' . $vital['jam_rawat']));
+        $chart_data['labels'][] = $date_label;
+        
+        // Suhu
+        $chart_data['datasets'][0]['data'][] = floatval($vital['suhu_tubuh']) ?: null;
+        
+        // Tensi - pisahkan sistol dan diastol
+        $tensi_parts = explode('/', $vital['tensi']);
+        $sistol = isset($tensi_parts[0]) ? floatval($tensi_parts[0]) : null;
+        $diastol = isset($tensi_parts[1]) ? floatval($tensi_parts[1]) : null;
+        $chart_data['datasets'][1]['data'][] = $sistol;
+        $chart_data['datasets'][2]['data'][] = $diastol;
+        
+        // Nadi
+        $chart_data['datasets'][3]['data'][] = floatval($vital['nadi']) ?: null;
+        
+        // RR
+        $chart_data['datasets'][4]['data'][] = floatval($vital['respirasi']) ?: null;
+        
+        // Tinggi
+        $chart_data['datasets'][5]['data'][] = floatval($vital['tinggi']) ?: null;
+        
+        // Berat
+        $chart_data['datasets'][6]['data'][] = floatval($vital['berat']) ?: null;
+        
+        // SPO2
+        $chart_data['datasets'][7]['data'][] = floatval($vital['spo2']) ?: null;
+      }
+      
+      header('Content-Type: application/json');
+      echo json_encode($chart_data);
+      exit();
+    }
+    
     public function getJavascript()
     {
         header('Content-type: text/javascript');
@@ -1939,6 +2073,7 @@ class Admin extends AdminModule
         $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+        $this->core->addJS('https://cdn.jsdelivr.net/npm/chart.js');
         $this->core->addJS(url([ADMIN, 'dokter_ranap', 'javascript']), 'footer');
     }
 

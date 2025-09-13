@@ -719,6 +719,35 @@ class Admin extends AdminModule
       }
 
       $rows_periksa_radiologi = $this->db('periksa_radiologi')
+      ->select([
+        'periksa_radiologi.no_rawat',
+        'periksa_radiologi.tgl_periksa',
+        'periksa_radiologi.jam',
+        'periksa_radiologi.nip',
+        'periksa_radiologi.kd_dokter',
+        'periksa_radiologi.kd_jenis_prw',
+        'periksa_radiologi.dokter_perujuk',
+        'periksa_radiologi.bagian_rs',
+        'periksa_radiologi.bhp',
+        'periksa_radiologi.tarif_perujuk',
+        'periksa_radiologi.tarif_tindakan_dokter',
+        'periksa_radiologi.tarif_tindakan_petugas',
+        'periksa_radiologi.kso',
+        'periksa_radiologi.menejemen',
+        'periksa_radiologi.biaya',
+        'periksa_radiologi.status',
+        'periksa_radiologi.proyeksi',
+        'periksa_radiologi.kV',
+        'periksa_radiologi.mAS',
+        'periksa_radiologi.FFD',
+        'periksa_radiologi.BSF',
+        'periksa_radiologi.inak',
+        'periksa_radiologi.jml_penyinaran',
+        'periksa_radiologi.dosis',
+        'dokter.nm_dokter',
+        'penjab.png_jawab',
+        'petugas.nama as nama_petugas'
+      ])
       ->join('reg_periksa', 'reg_periksa.no_rawat=periksa_radiologi.no_rawat')
       ->join('dokter', 'dokter.kd_dokter=periksa_radiologi.kd_dokter')
       ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
@@ -726,8 +755,14 @@ class Admin extends AdminModule
       ->where('periksa_radiologi.status', $_POST['status'])
       ->where('periksa_radiologi.no_rawat', $_POST['no_rawat'])
       ->group('periksa_radiologi.no_rawat')
-      ->group('tgl_periksa')
-      ->group('jam')
+      ->group('periksa_radiologi.tgl_periksa')
+      ->group('periksa_radiologi.jam')
+      ->group('periksa_radiologi.nip')
+      ->group('periksa_radiologi.kd_dokter')
+      ->group('periksa_radiologi.kd_jenis_prw')
+      ->group('dokter.nm_dokter')
+      ->group('penjab.png_jawab')
+      ->group('petugas.nama')
       ->toArray();
 
       $periksa_radiologi = [];

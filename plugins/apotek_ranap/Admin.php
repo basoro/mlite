@@ -5,6 +5,7 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    protected $assign = [];
 
     public function navigation()
     {
@@ -386,6 +387,15 @@ class Admin extends AdminModule
     public function anyRincian()
     {
       $rows = $this->db('resep_obat')
+        ->select('resep_obat.no_resep')
+        ->select('resep_obat.no_rawat')
+        ->select('resep_obat.kd_dokter')
+        ->select('resep_obat.tgl_perawatan')
+        ->select('resep_obat.jam')
+        ->select('resep_obat.tgl_peresepan')
+        ->select('resep_obat.jam_peresepan')
+        ->select('resep_obat.status')
+        ->select('dokter.nm_dokter')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
@@ -393,6 +403,12 @@ class Admin extends AdminModule
         ->group('resep_obat.no_resep')
         ->group('resep_obat.no_rawat')
         ->group('resep_obat.kd_dokter')
+        ->group('resep_obat.tgl_perawatan')
+        ->group('resep_obat.jam')
+        ->group('resep_obat.tgl_peresepan')
+        ->group('resep_obat.jam_peresepan')
+        ->group('resep_obat.status')
+        ->group('dokter.nm_dokter')
         ->toArray();
       $resep = [];
       $jumlah_total_resep = 0;
@@ -414,13 +430,28 @@ class Admin extends AdminModule
       }
 
       $rows_racikan = $this->db('resep_obat')
+        ->select('resep_obat.no_resep')
+        ->select('resep_obat.no_rawat')
+        ->select('resep_obat.kd_dokter')
+        ->select('resep_obat.tgl_perawatan')
+        ->select('resep_obat.jam')
+        ->select('resep_obat.tgl_peresepan')
+        ->select('resep_obat.jam_peresepan')
+        ->select('resep_obat.status')
+        ->select('dokter.nm_dokter')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
+        ->where('resep_obat.status', 'ranap')
         ->group('resep_obat.no_resep')
         ->group('resep_obat.no_rawat')
         ->group('resep_obat.kd_dokter')
-        ->where('resep_obat.status', 'ranap')
+        ->group('resep_obat.tgl_perawatan')
+        ->group('resep_obat.jam')
+        ->group('resep_obat.tgl_peresepan')
+        ->group('resep_obat.jam_peresepan')
+        ->group('resep_obat.status')
+        ->group('dokter.nm_dokter')
         ->toArray();
       $resep_racikan = [];
       $jumlah_total_resep_racikan = 0;

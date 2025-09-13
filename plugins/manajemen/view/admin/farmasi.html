@@ -8,6 +8,135 @@
     <li><a href="{?=url([ADMIN,'manajemen','radiologi'])?}">Radiologi</a></li>
     <li><a href="{?=url([ADMIN,'manajemen','apotek'])?}">Apotek</a></li>
     <li class="active"><a href="{?=url([ADMIN,'manajemen','farmasi'])?}">Farmasi</a></li>
-    <!--<li><a href="{?=url([ADMIN,'manajemen','kasir'])?}">Kasir</a></li>-->
+    <li><a href="{?=url([ADMIN,'manajemen','kasir'])?}">Kasir</a></li>
     <li><a href="{?=url([ADMIN,'manajemen','presensi'])?}">Presensi</a></li>
 </ul>
+<br>
+<div class="row">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-danger">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
+                        <i class="fa fa-medkit fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey">Total Stok Obat</div>
+                    <div class="stat-bold">
+                        {?= $stats.getTotalStok ?}
+                        <span class="stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentTotal >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentTotal ?}%)
+                        </span>
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-warning">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
+                        <i class="fa fa-exclamation-triangle fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey">Obat Hampir Habis</div>
+                    <div class="stat-bold">
+                        {?= $stats.getObatHampirHabis ?}
+                        <span class="stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentHampirHabis >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentHampirHabis ?}%)
+                        </span>
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-info">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
+                        <i class="fa fa-shopping-cart fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey">Transaksi Hari Ini</div>
+                    <div class="stat-bold">
+                        {?= $stats.getTransaksiHariIni ?}
+                        <span class="stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentTransaksi >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentTransaksi ?}%)
+                        </span>
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-success">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
+                        <i class="fa fa-money fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey">Nilai Stok (Rp)</div>
+                    <div class="stat-bold">
+                        {?= $stats.getNilaiStok ?}
+                        <span class="stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentNilai >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentNilai ?}%)
+                        </span>
+                    </div>
+              </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Stok Obat Per Jenis</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="farmasi-chartcanvas" height="350"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //bar chart
+        var ctx = document.getElementById("farmasi-chartcanvas");
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{?= '"' . implode('","', $stats.farmasiChart.labels) . '"' ?}],
+                datasets: [{
+                        label: "Stok Obat",
+                        borderColor: "#2E8B57",
+                        borderWidth: "2",
+                        backgroundColor: "rgba(46, 139, 87, 0.2)",
+                        pointHighlightStroke: "#2E8B57",
+                        pointRadius: 0,
+                        data: [{?= implode(',', $stats.farmasiChart.visits) ?}],
+                    }
+                ]
+            },
+            options: {
+                legend: {
+                    display: false
+                },
+                responsive: true,
+                tooltips: {
+                    mode: 'index',
+                    intersect: false
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                maintainAspectRatio: false,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    });
+</script>
