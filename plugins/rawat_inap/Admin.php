@@ -1576,6 +1576,123 @@ class Admin extends AdminModule
       exit();
     }
 
+    // ADIME Gizi Methods
+    public function postSaveadimegizi()
+    {
+        $data = [
+            'no_rawat' => $_POST['no_rawat'],
+            'tanggal' => $_POST['tanggal'],
+            'asesmen' => $_POST['asesmen'] ?? null,
+            'diagnosis' => $_POST['diagnosis'] ?? null,
+            'intervensi' => $_POST['intervensi'] ?? null,
+            'monitoring' => $_POST['monitoring'] ?? null,
+            'evaluasi' => $_POST['evaluasi'] ?? null,
+            'instruksi' => $_POST['instruksi'] ?? null,
+            'nip' => $this->core->getUserInfo('username', null, true)
+        ];
+        
+        // Cek apakah sudah ada data dengan no_rawat dan tanggal yang sama
+        $existing = $this->db('catatan_adime_gizi')
+            ->where('no_rawat', $data['no_rawat'])
+            ->where('tanggal', $data['tanggal'])
+            ->oneArray();
+        
+        try {
+            if($existing) {
+                // Update data yang sudah ada
+                $query = $this->db('catatan_adime_gizi')
+                    ->where('no_rawat', $data['no_rawat'])
+                    ->where('tanggal', $data['tanggal'])
+                    ->save($data);
+            } else {
+                // Insert data baru
+                $query = $this->db('catatan_adime_gizi')->save($data);
+            }
+            
+            if($query) {
+                echo json_encode(['status' => 'success', 'message' => 'Data ADIME Gizi berhasil disimpan']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data ADIME Gizi']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+        }
+        
+        exit();
+    }
+    
+    public function postGetadimegizi()
+    {
+        $no_rawat = $_POST['no_rawat'];
+        
+        try {
+            $data = $this->db('catatan_adime_gizi')
+                ->join('petugas', 'petugas.nip=catatan_adime_gizi.nip')
+                ->select([
+                    'catatan_adime_gizi.no_rawat',
+                    'catatan_adime_gizi.tanggal',
+                    'catatan_adime_gizi.asesmen',
+                    'catatan_adime_gizi.diagnosis',
+                    'catatan_adime_gizi.intervensi',
+                    'catatan_adime_gizi.monitoring',
+                    'catatan_adime_gizi.evaluasi',
+                    'catatan_adime_gizi.instruksi',
+                    'petugas.nama as nama_petugas'
+                ])
+                ->where('catatan_adime_gizi.no_rawat', $no_rawat)
+                ->desc('catatan_adime_gizi.tanggal')
+                ->toArray();
+            
+            echo json_encode($data);
+        } catch (Exception $e) {
+            echo json_encode([]);
+        }
+        
+        exit();
+    }
+    
+    public function postGetadimegizidetail()
+    {
+        $no_rawat = $_POST['no_rawat'];
+        $tanggal = $_POST['tanggal'];
+        
+        try {
+            $data = $this->db('catatan_adime_gizi')
+                ->where('no_rawat', $no_rawat)
+                ->where('tanggal', $tanggal)
+                ->oneArray();
+            
+            echo json_encode($data);
+        } catch (Exception $e) {
+            echo json_encode(null);
+        }
+        
+        exit();
+    }
+    
+    public function postDeleteadimegizi()
+    {
+        $no_rawat = $_POST['no_rawat'];
+        $tanggal = $_POST['tanggal'];
+        
+        try {
+            $query = $this->db('catatan_adime_gizi')
+                ->where('no_rawat', $no_rawat)
+                ->where('tanggal', $tanggal)
+                ->delete();
+            
+            if($query) {
+                echo json_encode(['status' => 'success', 'message' => 'Data ADIME Gizi berhasil dihapus']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus data ADIME Gizi']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+        }
+        
+        exit();
+    }
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');

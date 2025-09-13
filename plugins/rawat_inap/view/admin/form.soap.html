@@ -147,6 +147,113 @@
         </div>
     </div>
 </div>
+
+<!-- Modal ADIME Gizi -->
+<div class="modal fade" id="adimeGiziModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">ADIME Gizi</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- Form ADIME Gizi -->
+                        <form id="form_adime_gizi">
+                            <input type="hidden" name="no_rawat" id="adime_no_rawat">
+                            <input type="hidden" name="tanggal" id="adime_tanggal">
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="asesmen">Assessment (A)</label>
+                                        <textarea name="asesmen" id="asesmen" rows="3" class="form-control" placeholder="Masukkan assessment gizi..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="diagnosis">Diagnosis (D)</label>
+                                        <textarea name="diagnosis" id="diagnosis" rows="3" class="form-control" placeholder="Masukkan diagnosis gizi..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="intervensi">Intervention (I)</label>
+                                        <textarea name="intervensi" id="intervensi" rows="3" class="form-control" placeholder="Masukkan intervensi gizi..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="monitoring">Monitoring (M)</label>
+                                        <textarea name="monitoring" id="monitoring" rows="3" class="form-control" placeholder="Masukkan monitoring gizi..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="evaluasi">Evaluasi (E)</label>
+                                        <textarea name="evaluasi_gizi" id="evaluasi_gizi" rows="3" class="form-control" placeholder="Masukkan evaluasi gizi..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="instruksi">Instruksi</label>
+                                        <textarea name="instruksi_gizi" id="instruksi_gizi" rows="3" class="form-control" placeholder="Masukkan instruksi gizi..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" id="simpan_adime_gizi">
+                                    <i class="fa fa-save"></i> Simpan ADIME Gizi
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="reset_adime_gizi">
+                                    <i class="fa fa-refresh"></i> Reset Form
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <hr>
+                        
+                        <!-- Tabel Data ADIME Gizi -->
+                        <h5>Riwayat ADIME Gizi</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered" id="tabel_adime_gizi">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Assessment</th>
+                                        <th>Diagnosis</th>
+                                        <th>Intervention</th>
+                                        <th>Monitoring</th>
+                                        <th>Evaluasi</th>
+                                        <th>Instruksi</th>
+                                        <th>Petugas</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="data_adime_gizi">
+                                    <!-- Data akan dimuat via AJAX -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
 // Auto-fill BMI calculation
 $(document).ready(function() {
@@ -163,4 +270,165 @@ $(document).ready(function() {
   
   $('input[name="tinggi"], input[name="berat"]').on('input', calculateBMI);
 });
+
+// ADIME Gizi functionality
+$("#form_soap").on("click", ".adime_gizi", function(event) {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  
+  if (!no_rawat) {
+    alert('Pilih pasien terlebih dahulu!');
+    return false;
+  }
+  
+  var modal = $('#adimeGiziModal');
+  
+  // Set no_rawat dan tanggal saat ini
+  $('#adime_no_rawat').val(no_rawat);
+  $('#adime_tanggal').val(new Date().toISOString().slice(0, 19).replace('T', ' '));
+  
+  // Load data ADIME Gizi yang sudah ada
+  loadAdimeGiziData(no_rawat);
+  
+  modal.modal('show');
+  return false;
+});
+
+// Simpan ADIME Gizi
+$(document).off('click', '#simpan_adime_gizi').on('click', '#simpan_adime_gizi', function() {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var no_rawat = $('#adime_no_rawat').val();
+  var tanggal = $('#adime_tanggal').val();
+  var asesmen = $('#asesmen').val();
+  var diagnosis = $('#diagnosis').val();
+  var intervensi = $('#intervensi').val();
+  var monitoring = $('#monitoring').val();
+  var evaluasi = $('#evaluasi_gizi').val();
+  var instruksi = $('#instruksi_gizi').val();
+  
+  if (!asesmen && !diagnosis && !intervensi && !monitoring && !evaluasi && !instruksi) {
+    alert('Minimal isi satu field ADIME Gizi!');
+    return false;
+  }
+  
+  var url = baseURL + '/rawat_inap/saveadimegizi?t=' + mlite.token;
+  $.post(url, {
+    no_rawat: no_rawat,
+    tanggal: tanggal,
+    asesmen: asesmen,
+    diagnosis: diagnosis,
+    intervensi: intervensi,
+    monitoring: monitoring,
+    evaluasi: evaluasi,
+    instruksi: instruksi
+  }, function(data) {
+    if (data.status === 'success') {
+      alert('Data ADIME Gizi berhasil disimpan!');
+      resetAdimeGiziForm();
+      loadAdimeGiziData(no_rawat);
+    } else {
+      alert('Gagal menyimpan data: ' + (data.message || 'Unknown error'));
+    }
+  }, 'json').fail(function() {
+    alert('Terjadi kesalahan saat menyimpan data!');
+  });
+});
+
+// Reset form ADIME Gizi
+$(document).off('click', '#reset_adime_gizi').on('click', '#reset_adime_gizi', function() {
+  resetAdimeGiziForm();
+});
+
+// Load data ADIME Gizi
+function loadAdimeGiziData(no_rawat) {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url = baseURL + '/rawat_inap/getadimegizi?t=' + mlite.token;
+  
+  $.post(url, {no_rawat: no_rawat}, function(data) {
+    var tbody = $('#data_adime_gizi');
+    tbody.empty();
+    
+    if (data.length > 0) {
+      $.each(data, function(index, item) {
+        var row = '<tr>' +
+          '<td>' + item.tanggal + '</td>' +
+          '<td>' + (item.asesmen || '-') + '</td>' +
+          '<td>' + (item.diagnosis || '-') + '</td>' +
+          '<td>' + (item.intervensi || '-') + '</td>' +
+          '<td>' + (item.monitoring || '-') + '</td>' +
+          '<td>' + (item.evaluasi || '-') + '</td>' +
+          '<td>' + (item.instruksi || '-') + '</td>' +
+          '<td>' + (item.nama_petugas || '-') + '</td>' +
+          '<td>' +
+            '<button class="btn btn-xs btn-warning edit-adime" data-tanggal="' + item.tanggal + '" data-no-rawat="' + item.no_rawat + '">' +
+              '<i class="fa fa-edit"></i>' +
+            '</button> ' +
+            '<button class="btn btn-xs btn-danger hapus-adime" data-tanggal="' + item.tanggal + '" data-no-rawat="' + item.no_rawat + '">' +
+              '<i class="fa fa-trash"></i>' +
+            '</button>' +
+          '</td>' +
+        '</tr>';
+        tbody.append(row);
+      });
+    } else {
+      tbody.append('<tr><td colspan="9" class="text-center">Belum ada data ADIME Gizi</td></tr>');
+    }
+  }, 'json').fail(function() {
+    $('#data_adime_gizi').html('<tr><td colspan="9" class="text-center text-danger">Gagal memuat data</td></tr>');
+  });
+}
+
+// Edit ADIME Gizi
+$(document).off('click', '.edit-adime').on('click', '.edit-adime', function() {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var no_rawat = $(this).data('no-rawat');
+  var tanggal = $(this).data('tanggal');
+  
+  var url = baseURL + '/rawat_inap/getadimegizidetail?t=' + mlite.token;
+  $.post(url, {no_rawat: no_rawat, tanggal: tanggal}, function(data) {
+    if (data) {
+      $('#adime_no_rawat').val(data.no_rawat);
+      $('#adime_tanggal').val(data.tanggal);
+      $('#asesmen').val(data.asesmen || '');
+      $('#diagnosis').val(data.diagnosis || '');
+      $('#intervensi').val(data.intervensi || '');
+      $('#monitoring').val(data.monitoring || '');
+      $('#evaluasi_gizi').val(data.evaluasi || '');
+      $('#instruksi_gizi').val(data.instruksi || '');
+    }
+  }, 'json');
+});
+
+// Hapus ADIME Gizi
+$(document).off('click', '.hapus-adime').on('click', '.hapus-adime', function() {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var no_rawat = $(this).data('no-rawat');
+  var tanggal = $(this).data('tanggal');
+  
+  if (confirm('Yakin ingin menghapus data ADIME Gizi ini?')) {
+    var url = baseURL + '/rawat_inap/deleteadimegizi?t=' + mlite.token;
+    $.post(url, {no_rawat: no_rawat, tanggal: tanggal}, function(data) {
+      if (data.status === 'success') {
+        alert('Data ADIME Gizi berhasil dihapus!');
+        loadAdimeGiziData(no_rawat);
+      } else {
+        alert('Gagal menghapus data: ' + (data.message || 'Unknown error'));
+      }
+    }, 'json').fail(function() {
+      alert('Terjadi kesalahan saat menghapus data!');
+    });
+  }
+});
+
+// Reset form ADIME Gizi
+function resetAdimeGiziForm() {
+  $('#asesmen').val('');
+  $('#diagnosis').val('');
+  $('#intervensi').val('');
+  $('#monitoring').val('');
+  $('#evaluasi_gizi').val('');
+  $('#instruksi_gizi').val('');
+  $('#adime_tanggal').val(new Date().toISOString().slice(0, 19).replace('T', ' '));
+}
 </script>

@@ -64,7 +64,6 @@ $("#form").on("click", "#simpan", function(event){
       lama: lama,
       diagnosa_awal: diagnosa_awal
     } ,function(data) {
-      // // console.log(data);
       $("#display").show().load(baseURL + '/rawat_inap/display?t=' + mlite.token);
       bersih();
       $("#status_pendaftaran").hide();
