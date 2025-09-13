@@ -1599,9 +1599,93 @@ class Admin extends AdminModule
     public function getMedisRalan($no_rawat)
     {
       $data_medisRalan['pemeriksaan_ralan'] = $this->db('pemeriksaan_ralan')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+      
+      // Get existing penilaian_medis_ralan data
+      $penilaian_medis_ralan = $this->db('penilaian_medis_ralan')
+        ->where('no_rawat', revertNoRawat($no_rawat))
+        ->join('dokter', 'dokter.kd_dokter=penilaian_medis_ralan.kd_dokter')
+        ->oneArray();
+      
+      // If no penilaian_medis_ralan data exists, use fallback from pemeriksaan_ralan
+      if (empty($penilaian_medis_ralan)) {
+        // Get latest pemeriksaan_ralan data for fallback
+        $pemeriksaan_fallback = $this->db('pemeriksaan_ralan')
+          ->where('no_rawat', revertNoRawat($no_rawat))
+          ->desc('tgl_perawatan')
+          ->desc('jam_rawat')
+          ->oneArray();
+        
+        if (!empty($pemeriksaan_fallback)) {
+          // Get current user (dokter) info
+          $current_dokter = $this->core->getUserInfo('username', $_SESSION['mlite_user']);
+          $dokter_info = $this->db('dokter')->where('kd_dokter', $current_dokter)->oneArray();
+          
+          // Calculate BMI if height and weight are available
+          $bmi = '';
+          if (!empty($pemeriksaan_fallback['tinggi']) && !empty($pemeriksaan_fallback['berat']) && 
+              $pemeriksaan_fallback['tinggi'] > 0) {
+            $height_m = $pemeriksaan_fallback['tinggi'] / 100;
+            $bmi = round($pemeriksaan_fallback['berat'] / ($height_m * $height_m), 2);
+          }
+          
+          // Create fallback data structure matching penilaian_medis_ralan
+          $penilaian_medis_ralan = [
+            'no_rawat' => revertNoRawat($no_rawat),
+            'kd_dokter' => $current_dokter,
+            'tanggal' => date('Y-m-d H:i:s'),
+            'anamnesis' => '',
+            'hubungan' => '',
+            'keluhan_utama' => $pemeriksaan_fallback['keluhan'] ?? '',
+            'rps' => '',
+            'rpd' => '',
+            'rpk' => '',
+            'rpo' => '',
+            'alergi' => $pemeriksaan_fallback['alergi'] ?? '',
+            'keadaan' => '',
+            'gcs' => $pemeriksaan_fallback['gcs'] ?? '',
+            'kesadaran' => $pemeriksaan_fallback['kesadaran'] ?? '',
+            'td' => $pemeriksaan_fallback['tensi'] ?? '',
+            'nadi' => $pemeriksaan_fallback['nadi'] ?? '',
+            'rr' => $pemeriksaan_fallback['respirasi'] ?? '',
+            'suhu' => $pemeriksaan_fallback['suhu_tubuh'] ?? '',
+            'spo' => $pemeriksaan_fallback['spo2'] ?? '',
+            'bb' => $pemeriksaan_fallback['berat'] ?? '',
+            'tb' => $pemeriksaan_fallback['tinggi'] ?? '',
+            'kepala' => '',
+            'gigi' => '',
+            'tht' => '',
+            'thoraks' => '',
+            'abdomen' => '',
+            'genital' => '',
+            'ekstremitas' => '',
+            'kulit' => '',
+            'ket_fisik' => '',
+            'ket_lokalis' => '',
+            'penunjang' => '',
+            'diagnosis' => '',
+            'tata' => '',
+            'konsulrujuk' => '',
+            // Add dokter info for join compatibility
+            'nm_dokter' => $dokter_info['nm_dokter'] ?? '',
+            'jk' => $dokter_info['jk'] ?? '',
+            'tmp_lahir' => $dokter_info['tmp_lahir'] ?? '',
+            'tgl_lahir' => $dokter_info['tgl_lahir'] ?? '',
+            'gol_drh' => $dokter_info['gol_drh'] ?? '',
+            'agama' => $dokter_info['agama'] ?? '',
+            'almt_tgl' => $dokter_info['almt_tgl'] ?? '',
+            'no_telp' => $dokter_info['no_telp'] ?? '',
+            'stts_nikah' => $dokter_info['stts_nikah'] ?? '',
+            'kd_sps' => $dokter_info['kd_sps'] ?? '',
+            'alumni' => $dokter_info['alumni'] ?? '',
+            'no_ijn_praktek' => $dokter_info['no_ijn_praktek'] ?? '',
+            'status' => $dokter_info['status'] ?? ''
+          ];
+        }
+      }
+      
       echo $this->draw('medis.ralan.html', [
         'reg_periksa' => $this->db('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
-        'penilaian_medis_ralan' => $this->db('penilaian_medis_ralan')->where('no_rawat', revertNoRawat($no_rawat))->join('dokter', 'dokter.kd_dokter=penilaian_medis_ralan.kd_dokter')->oneArray(),
+        'penilaian_medis_ralan' => $penilaian_medis_ralan,
         'pasien'  => $this->db('pasien')->where('no_rawat', revertNoRawat($no_rawat))->join('reg_periksa','pasien.no_rkm_medis=reg_periksa.no_rkm_medis')->oneArray(),
         'dokter'  => $this->db('dokter')->where('no_rawat', revertNoRawat($no_rawat))->join('reg_periksa','dokter.kd_dokter=reg_periksa.kd_dokter')->oneArray(),
         'data_medisRalan' => $data_medisRalan
@@ -1611,15 +1695,56 @@ class Admin extends AdminModule
 
     public function getMedisRalanTampil($no_rawat)
     {
-      echo $this->draw('medis.ralan.tampil.html', ['penilaian_medis_ralan' => $this->db('penilaian_medis_ralan')->where('no_rawat', revertNoRawat($no_rawat))->join('dokter', 'dokter.kd_dokter=penilaian_medis_ralan.kd_dokter')->oneArray()]);
+      echo $this->draw('medis.ralan.tampil.html', ['penilaian_medis_ralan' => $this->db('penilaian_medis_ralan')->where('no_rawat', revertNoRawat($no_rawat))->join('dokter', 'dokter.kd_dokter=penilaian_medis_ralan.kd_dokter')->toArray()]);
       exit();
     }
 
     public function postMedisRalan()
     {
       $_POST['kd_dokter'] = $this->core->getUserInfo('username', $_SESSION['mlite_user']);
-
-      if($this->db('penilaian_medis_ralan')->where('no_rawat', $_POST['no_rawat'])->where('kd_dokter', $_POST['kd_dokter'])->oneArray()) {
+      
+      // Handle edit mode
+      if(isset($_POST['mode']) && $_POST['mode'] == 'edit' && isset($_POST['original_tanggal'])) {
+        $this->db('penilaian_medis_ralan')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->where('tanggal', $_POST['original_tanggal'])
+          ->save([
+          'kd_dokter'           =>  $_POST['kd_dokter'],
+          'tanggal'             =>  $_POST['tanggal'],  
+          'anamnesis'           =>  $_POST['anamnesis'],    
+          'hubungan'            =>  $_POST['hubungan'],    
+          'keluhan_utama'       =>  $_POST['keluhan_utama'],    
+          'rps'                 =>  $_POST['rps'],    
+          'rpd'                 =>  $_POST['rpd'],    
+          'rpk'                 =>  $_POST['rpk'],    
+          'rpo'                 =>  $_POST['rpo'],    
+          'alergi'              =>  $_POST['alergi'],    
+          'keadaan'             =>  $_POST['keadaan'],    
+          'gcs'                 =>  $_POST['gcs'],    
+          'kesadaran'           =>  $_POST['kesadaran'],    
+          'td'                  =>  $_POST['td'],    
+          'nadi'                =>  $_POST['nadi'],    
+          'rr'                  =>  $_POST['rr'],    
+          'suhu'                =>  $_POST['suhu'],    
+          'spo'                 =>  $_POST['spo'],    
+          'bb'                  =>  $_POST['bb'],    
+          'tb'                  =>  $_POST['tb'],    
+          'kepala'              =>  $_POST['kepala'],    
+          'gigi'                =>  $_POST['gigi'],    
+          'tht'                 =>  $_POST['tht'],    
+          'thoraks'             =>  $_POST['thoraks'],    
+          'abdomen'             =>  $_POST['abdomen'],    
+          'genital'             =>  $_POST['genital'],    
+          'ekstremitas'         =>  $_POST['ekstremitas'],    
+          'kulit'               =>  $_POST['kulit'],    
+          'ket_fisik'           =>  $_POST['ket_fisik'],    
+          'ket_lokalis'         =>  $_POST['ket_lokalis'],    
+          'penunjang'           =>  $_POST['penunjang'] ,    
+          'diagnosis'           =>  $_POST['diagnosis'],    
+          'tata'                =>  $_POST['tata'],    
+          'konsulrujuk'         =>  $_POST['konsulrujuk']
+        ]);
+      } else if($this->db('penilaian_medis_ralan')->where('no_rawat', $_POST['no_rawat'])->where('kd_dokter', $_POST['kd_dokter'])->oneArray()) {
         $this->db('penilaian_medis_ralan')
           ->where('no_rawat', $_POST['no_rawat'])
           ->save([
@@ -1697,6 +1822,15 @@ class Admin extends AdminModule
           'konsulrujuk'         =>  $_POST['konsulrujuk']
         ]);
       }
+      exit();
+    }
+
+    public function postHapusmedisralan()
+    {
+      $this->db('penilaian_medis_ralan')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->where('tanggal', $_POST['tanggal'])
+        ->delete();
       exit();
     }
 

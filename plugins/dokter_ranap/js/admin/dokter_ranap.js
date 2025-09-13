@@ -1107,7 +1107,7 @@ $(document).ready(function () {
         dataType: 'json',
         success: function(data) {
           callback(data.slice(0, 100));
-          console.log(data);
+          // console.log(data);
         },
         error: function() {
           callback();

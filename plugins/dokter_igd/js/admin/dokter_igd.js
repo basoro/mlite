@@ -1105,7 +1105,7 @@ $(document).ready(function () {
         dataType: 'json',
         success: function(data) {
           callback(data.slice(0, 100));
-          console.log(data);
+          // console.log(data);
         },
         error: function() {
           callback();
@@ -1254,7 +1254,7 @@ $("#form_rincian").on("click","#jam_reg", function(event){
         }
       }
     }catch(e){
-      console.log(e);
+      // console.log(e);
     }
   }
   

@@ -629,7 +629,7 @@ $("#rincian").on("click",".validasi_permintaan_radiologi", function(event){
         noorder: noorder,
         status: status
       } ,function(data) {
-        console.log(data);
+        // console.log(data);
         var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat, status: status
         }, function(data) {
@@ -829,7 +829,7 @@ $("#form_rincian").on("click","#jam_reg", function(event){
         }
       }
     }catch(e){
-      console.log(e);
+      // console.log(e);
     }
   }
   

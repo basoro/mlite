@@ -1850,6 +1850,282 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function getAssessment($no_rawat)
+    {
+        $no_rawat_reverted = revertNoRawat($no_rawat);
+        
+        // Cek apakah data assessment sudah ada
+        $existing_assessment = $this->db('penilaian_awal_keperawatan_ralan')
+            ->where('no_rawat', $no_rawat_reverted)
+            ->oneArray();
+        
+        $penilaian_awal_keperawatan_ralan = null;
+        
+        if($existing_assessment) {
+            // Jika data assessment sudah ada, ambil dengan join petugas
+            $penilaian_awal_keperawatan_ralan = $this->db('penilaian_awal_keperawatan_ralan')
+                ->where('no_rawat', $no_rawat_reverted)
+                ->join('petugas', 'petugas.nip=penilaian_awal_keperawatan_ralan.nip')
+                ->oneArray();
+        } else {
+            // Jika belum ada, ambil data dari pemeriksaan_ralan sebagai fallback
+            $pemeriksaan_data = $this->db('pemeriksaan_ralan')
+                ->where('no_rawat', $no_rawat_reverted)
+                ->desc('tgl_perawatan')
+                ->desc('jam_rawat')
+                ->oneArray();
+            
+            if($pemeriksaan_data) {
+                // Map data dari pemeriksaan_ralan ke format penilaian_awal_keperawatan_ralan
+                $penilaian_awal_keperawatan_ralan = [
+                    'no_rawat' => $pemeriksaan_data['no_rawat'],
+                    'tanggal' => $pemeriksaan_data['tgl_perawatan'] . 'T' . substr($pemeriksaan_data['jam_rawat'], 0, 5),
+                    'informasi' => 'Autoanamnesis', // default
+                    'td' => $pemeriksaan_data['tensi'] ?? '',
+                    'nadi' => $pemeriksaan_data['nadi'] ?? '',
+                    'rr' => $pemeriksaan_data['respirasi'] ?? '',
+                    'suhu' => $pemeriksaan_data['suhu_tubuh'] ?? '',
+                    'gcs' => $pemeriksaan_data['gcs'] ?? '',
+                    'bb' => $pemeriksaan_data['berat'] ?? '',
+                    'tb' => $pemeriksaan_data['tinggi'] ?? '',
+                    'bmi' => '', // akan dihitung otomatis jika bb dan tb ada
+                    'keluhan_utama' => $pemeriksaan_data['keluhan'] ?? '',
+                    'rpd' => '',
+                    'rpk' => '',
+                    'rpo' => '',
+                    'alergi' => $pemeriksaan_data['alergi'] ?? '',
+                    'alat_bantu' => 'Tidak',
+                    'ket_bantu' => '',
+                    'prothesa' => 'Tidak',
+                    'ket_pro' => '',
+                    'adl' => 'Mandiri',
+                    'status_psiko' => 'Tenang',
+                    'ket_psiko' => '',
+                    'hub_keluarga' => 'Baik',
+                    'tinggal_dengan' => 'Keluarga',
+                    'ket_tinggal' => '',
+                    'ekonomi' => 'Cukup',
+                    'budaya' => 'Tidak Ada',
+                    'ket_budaya' => '',
+                    'edukasi' => 'Pasien',
+                    'ket_edukasi' => '',
+                    'berjalan_a' => 'Tidak',
+                    'berjalan_b' => 'Tidak',
+                    'berjalan_c' => 'Tidak',
+                    'hasil' => 'Rendah',
+                    'lapor' => 'Tidak',
+                    'ket_lapor' => '',
+                    'sg1' => 'Tidak',
+                    'nilai1' => '0',
+                    'sg2' => 'Tidak',
+                    'nilai2' => '0',
+                    'total_hasil' => 0,
+                    'nyeri' => 'Tidak',
+                    'provokes' => 'Aktivitas',
+                    'ket_provokes' => '',
+                    'quality' => 'Seperti Tertusuk',
+                    'ket_quality' => '',
+                    'lokasi' => '',
+                    'menyebar' => 'Tidak',
+                    'skala_nyeri' => '0',
+                    'durasi' => '',
+                    'nyeri_hilang' => 'Istirahat',
+                    'ket_nyeri' => '',
+                    'pada_dokter' => 'Tidak',
+                    'ket_dokter' => '',
+                    'rencana' => '',
+                    'nip' => $this->core->getUserInfo('username') ?? ''
+                ];
+                
+                // Hitung BMI jika bb dan tb tersedia
+                if(!empty($penilaian_awal_keperawatan_ralan['bb']) && !empty($penilaian_awal_keperawatan_ralan['tb'])) {
+                    $bb = floatval($penilaian_awal_keperawatan_ralan['bb']);
+                    $tb = floatval($penilaian_awal_keperawatan_ralan['tb']) / 100; // convert cm to m
+                    if($tb > 0) {
+                        $bmi = $bb / ($tb * $tb);
+                        $penilaian_awal_keperawatan_ralan['bmi'] = number_format($bmi, 2);
+                    }
+                }
+            }
+        }
+        
+        $data_assessment['penilaian_awal_keperawatan_ralan'] = $existing_assessment;
+        
+        echo $this->draw('assesment.html', [
+            'reg_periksa' => $this->db('reg_periksa')->where('no_rawat', $no_rawat_reverted)->oneArray(),
+            'penilaian_awal_keperawatan_ralan' => $penilaian_awal_keperawatan_ralan,
+            'pasien' => $this->db('pasien')->where('no_rawat', $no_rawat_reverted)->join('reg_periksa','pasien.no_rkm_medis=reg_periksa.no_rkm_medis')->oneArray(),
+            'petugas' => $existing_assessment ? $this->db('petugas')->where('no_rawat', $no_rawat_reverted)->join('penilaian_awal_keperawatan_ralan','petugas.nip=penilaian_awal_keperawatan_ralan.nip')->oneArray() : [],
+            'data_assessment' => $data_assessment
+        ]);
+        exit();
+    }
+
+    public function postAssessmentsave()
+    {
+        // Trim semua input POST untuk menghilangkan whitespace
+        foreach($_POST as $key => $value) {
+            if(is_string($value)) {
+                $_POST[$key] = trim($value);
+            }
+        }
+        
+        // Log untuk debugging
+        error_log('POST data received: ' . print_r($_POST, true));
+        
+        // Debug khusus untuk field GCS
+        error_log('GCS field debug - isset: ' . (isset($_POST['gcs']) ? 'true' : 'false') . ', value: "' . (isset($_POST['gcs']) ? $_POST['gcs'] : 'NOT_SET') . '"');
+        
+        // Validasi input required
+        $required_fields = ['no_rawat', 'tanggal', 'informasi', 'rr', 'gcs', 'bmi', 'rpk', 'rpo', 'ket_pro', 'ket_psiko', 'ket_tinggal', 'ket_budaya', 'ket_edukasi', 'ket_lapor', 'ket_provokes', 'ket_quality', 'lokasi', 'durasi', 'ket_nyeri', 'ket_dokter', 'rencana', 'nip'];
+        
+        foreach($required_fields as $field) {
+            $value = isset($_POST[$field]) ? $_POST[$field] : '';
+            $trimmed_value = is_string($value) ? trim($value) : $value;
+            
+            // Log detail untuk setiap field
+            error_log('Field validation - ' . $field . ': isset=' . (isset($_POST[$field]) ? 'true' : 'false') . ', original="' . $value . '", trimmed="' . $trimmed_value . '", empty=' . (empty($trimmed_value) ? 'true' : 'false'));
+            
+            if(empty($trimmed_value) || $trimmed_value === '') {
+                error_log('Validation failed for field: ' . $field . ', value: "' . $value . '"');
+                echo json_encode([
+                    'status' => 'error', 
+                    'message' => 'Field ' . $field . ' harus diisi',
+                    'field' => $field,
+                    'value' => $value,
+                    'trimmed_value' => $trimmed_value,
+                    'debug_info' => [
+                        'isset' => isset($_POST[$field]),
+                        'original_value' => $value,
+                        'trimmed_value' => $trimmed_value,
+                        'is_empty' => empty($trimmed_value)
+                    ]
+                ]);
+                exit();
+            }
+        }
+
+        // Cek apakah data sudah ada
+        $existing = $this->db('penilaian_awal_keperawatan_ralan')
+            ->where('no_rawat', $_POST['no_rawat'])
+            ->oneArray();
+
+        $data = [
+            'no_rawat' => $_POST['no_rawat'],
+            'tanggal' => $_POST['tanggal'],
+            'informasi' => $_POST['informasi'],
+            'td' => $_POST['td'] ?? '',
+            'nadi' => $_POST['nadi'] ?? '',
+            'rr' => $_POST['rr'],
+            'suhu' => $_POST['suhu'] ?? '',
+            'gcs' => $_POST['gcs'],
+            'bb' => $_POST['bb'] ?? '',
+            'tb' => $_POST['tb'] ?? '',
+            'bmi' => $_POST['bmi'],
+            'keluhan_utama' => $_POST['keluhan_utama'] ?? '',
+            'rpd' => $_POST['rpd'] ?? '',
+            'rpk' => $_POST['rpk'],
+            'rpo' => $_POST['rpo'],
+            'alergi' => $_POST['alergi'] ?? '',
+            'alat_bantu' => $_POST['alat_bantu'],
+            'ket_bantu' => $_POST['ket_bantu'] ?? '',
+            'prothesa' => $_POST['prothesa'],
+            'ket_pro' => $_POST['ket_pro'],
+            'adl' => $_POST['adl'],
+            'status_psiko' => $_POST['status_psiko'],
+            'ket_psiko' => $_POST['ket_psiko'],
+            'hub_keluarga' => $_POST['hub_keluarga'],
+            'tinggal_dengan' => $_POST['tinggal_dengan'],
+            'ket_tinggal' => $_POST['ket_tinggal'],
+            'ekonomi' => $_POST['ekonomi'],
+            'budaya' => $_POST['budaya'],
+            'ket_budaya' => $_POST['ket_budaya'],
+            'edukasi' => $_POST['edukasi'],
+            'ket_edukasi' => $_POST['ket_edukasi'],
+            'berjalan_a' => $_POST['berjalan_a'],
+            'berjalan_b' => $_POST['berjalan_b'],
+            'berjalan_c' => $_POST['berjalan_c'],
+            'hasil' => $_POST['hasil'],
+            'lapor' => $_POST['lapor'],
+            'ket_lapor' => $_POST['ket_lapor'],
+            'sg1' => $_POST['sg1'],
+            'nilai1' => $_POST['nilai1'],
+            'sg2' => $_POST['sg2'],
+            'nilai2' => $_POST['nilai2'],
+            'total_hasil' => (int)$_POST['total_hasil'],
+            'nyeri' => $_POST['nyeri'],
+            'provokes' => $_POST['provokes'],
+            'ket_provokes' => $_POST['ket_provokes'],
+            'quality' => $_POST['quality'],
+            'ket_quality' => $_POST['ket_quality'],
+            'lokasi' => $_POST['lokasi'],
+            'menyebar' => $_POST['menyebar'],
+            'skala_nyeri' => $_POST['skala_nyeri'],
+            'durasi' => $_POST['durasi'],
+            'nyeri_hilang' => $_POST['nyeri_hilang'],
+            'ket_nyeri' => $_POST['ket_nyeri'],
+            'pada_dokter' => $_POST['pada_dokter'],
+            'ket_dokter' => $_POST['ket_dokter'],
+            'rencana' => $_POST['rencana'],
+            'nip' => $_POST['nip']
+        ];
+
+        try {
+            if($existing) {
+                // Update data yang sudah ada
+                $query = $this->db('penilaian_awal_keperawatan_ralan')
+                    ->where('no_rawat', $_POST['no_rawat'])
+                    ->save($data);
+            } else {
+                // Insert data baru
+                $query = $this->db('penilaian_awal_keperawatan_ralan')->save($data);
+            }
+
+            if($query) {
+                echo json_encode(['status' => 'success', 'message' => 'Data assessment berhasil disimpan']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data assessment']);
+            }
+        } catch(Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+        }
+        exit();
+    }
+
+    public function getAssessmenttampil($no_rawat)
+    {
+        $no_rawat = revertNorawat($no_rawat);
+        $penilaian_awal_keperawatan_ralan = $this->db('penilaian_awal_keperawatan_ralan')
+            ->join('petugas', 'petugas.nip=penilaian_awal_keperawatan_ralan.nip')
+            ->where('no_rawat', $no_rawat)
+            ->oneArray();
+        
+        if($penilaian_awal_keperawatan_ralan) {
+            $penilaian_awal_keperawatan_ralan['nm_petugas'] = $penilaian_awal_keperawatan_ralan['nama'];
+        }
+        
+        echo $this->draw('assesment.tampil.html', ['penilaian_awal_keperawatan_ralan' => $penilaian_awal_keperawatan_ralan]);
+        exit();
+    }
+
+    public function postAssessmentdelete()
+    {
+        try {
+            $query = $this->db('penilaian_awal_keperawatan_ralan')
+                ->where('no_rawat', $_POST['no_rawat'])
+                ->delete();
+            
+            if($query) {
+                echo json_encode(['status' => 'success', 'message' => 'Data assessment berhasil dihapus']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus data assessment']);
+            }
+        } catch(Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+        }
+        exit();
+    }
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');

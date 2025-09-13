@@ -1,0 +1,437 @@
+<div id="tampil_assesment">
+  {if: $penilaian_igd}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Data Assessment Awal Keperawatan IGD</h3>
+    </div>
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="pull-right">
+            <button type="button" class="btn btn-success btn-sm edit_assesment" data-no_rawat="{$penilaian_igd.no_rawat}">
+              <i class="fa fa-edit"></i> Edit
+            </button>
+            <button type="button" class="btn btn-danger btn-sm hapus_assesment" data-no_rawat="{$penilaian_igd.no_rawat}">
+              <i class="fa fa-trash"></i> Hapus
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <tr>
+            <th width="200">Tanggal</th>
+            <td>{$penilaian_igd.tanggal}</td>
+          </tr>
+          <tr>
+            <th>Petugas</th>
+            <td>{$penilaian_igd.nama_petugas}</td>
+          </tr>
+          <tr>
+            <th>Informasi</th>
+            <td>{$penilaian_igd.informasi}</td>
+          </tr>
+          <tr>
+            <th>Keluhan Utama</th>
+            <td>{$penilaian_igd.keluhan_utama}</td>
+          </tr>
+          <tr>
+            <th>Riwayat Penyakit Dahulu</th>
+            <td>{$penilaian_igd.rpd}</td>
+          </tr>
+          <tr>
+            <th>Riwayat Penyakit Sekarang</th>
+            <td>{$penilaian_igd.rpo}</td>
+          </tr>
+        </table>
+      </div>
+      
+      <h4>Status Kehamilan</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <tr>
+            <th width="200">Status Kehamilan</th>
+            <td>{$penilaian_igd.status_kehamilan}</td>
+          </tr>
+          {if: $penilaian_igd.status_kehamilan == 'Hamil'}
+          <tr>
+            <th>Gravida</th>
+            <td>{$penilaian_igd.gravida}</td>
+          </tr>
+          <tr>
+            <th>Para</th>
+            <td>{$penilaian_igd.para}</td>
+          </tr>
+          <tr>
+            <th>Abortus</th>
+            <td>{$penilaian_igd.abortus}</td>
+          </tr>
+          <tr>
+            <th>HPHT</th>
+            <td>{$penilaian_igd.hpht}</td>
+          </tr>
+          {/if}
+        </table>
+      </div>
+      
+      <h4>Pemeriksaan Fisik</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <tr>
+            <th width="200">Tekanan</th>
+            <td>{$penilaian_igd.tekanan}</td>
+          </tr>
+          <tr>
+            <th>Pupil</th>
+            <td>{$penilaian_igd.pupil}</td>
+          </tr>
+          <tr>
+            <th>Neurosensorik</th>
+            <td>{$penilaian_igd.neurosensorik}</td>
+          </tr>
+          <tr>
+            <th>Integumen</th>
+            <td>{$penilaian_igd.integumen}</td>
+          </tr>
+          <tr>
+            <th>Turgor</th>
+            <td>{$penilaian_igd.turgor}</td>
+          </tr>
+          <tr>
+            <th>Edema</th>
+            <td>{$penilaian_igd.edema}</td>
+          </tr>
+          <tr>
+            <th>Mukosa</th>
+            <td>{$penilaian_igd.mukosa}</td>
+          </tr>
+          <tr>
+            <th>Perdarahan</th>
+            <td>{$penilaian_igd.perdarahan}</td>
+          </tr>
+          {if: $penilaian_igd.perdarahan == 'Ada'}
+          <tr>
+            <th>Jumlah Perdarahan</th>
+            <td>{$penilaian_igd.jumlah_perdarahan}</td>
+          </tr>
+          <tr>
+            <th>Warna Perdarahan</th>
+            <td>{$penilaian_igd.warna_perdarahan}</td>
+          </tr>
+          {/if}
+          <tr>
+            <th>Intoksikasi</th>
+            <td>{$penilaian_igd.intoksikasi}</td>
+          </tr>
+        </table>
+      </div>
+      
+      <h4>Eliminasi</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <tr>
+            <th width="200">BAB (x/hari)</th>
+            <td>{$penilaian_igd.bab}</td>
+          </tr>
+          <tr>
+            <th>Frekuensi BAB</th>
+            <td>{$penilaian_igd.xbab}</td>
+          </tr>
+          <tr>
+            <th>Konsistensi BAB</th>
+            <td>{$penilaian_igd.kbab}</td>
+          </tr>
+          <tr>
+            <th>Warna BAB</th>
+            <td>{$penilaian_igd.wbab}</td>
+          </tr>
+          <tr>
+            <th>BAK (x/hari)</th>
+            <td>{$penilaian_igd.bak}</td>
+          </tr>
+          <tr>
+            <th>Frekuensi BAK</th>
+            <td>{$penilaian_igd.xbak}</td>
+          </tr>
+          <tr>
+            <th>Warna BAK</th>
+            <td>{$penilaian_igd.wbak}</td>
+          </tr>
+          <tr>
+            <th>Lain-lain BAK</th>
+            <td>{$penilaian_igd.lbak}</td>
+          </tr>
+        </table>
+      </div>
+      
+      <h4>Aspek Psikologis</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <tr>
+            <th width="200">Psikologis</th>
+            <td>{$penilaian_igd.psikologis}</td>
+          </tr>
+          <tr>
+            <th>Gangguan Jiwa</th>
+            <td>{$penilaian_igd.jiwa}</td>
+          </tr>
+          <tr>
+            <th>Perilaku</th>
+            <td>{$penilaian_igd.perilaku}</td>
+          </tr>
+          {if: $penilaian_igd.dilaporkan}
+          <tr>
+            <th>Dilaporkan</th>
+            <td>{$penilaian_igd.dilaporkan}</td>
+          </tr>
+          {/if}
+          {if: $penilaian_igd.sebutkan}
+          <tr>
+            <th>Sebutkan</th>
+            <td>{$penilaian_igd.sebutkan}</td>
+          </tr>
+          {/if}
+        </table>
+      </div>
+      
+      <h4>Aspek Sosial</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <tr>
+            <th width="200">Hubungan dengan Keluarga</th>
+            <td>{$penilaian_igd.hubungan}</td>
+          </tr>
+          <tr>
+            <th>Tinggal dengan</th>
+            <td>{$penilaian_igd.tinggal_dengan}</td>
+          </tr>
+          {if: $penilaian_igd.ket_tinggal}
+          <tr>
+            <th>Keterangan Tinggal</th>
+            <td>{$penilaian_igd.ket_tinggal}</td>
+          </tr>
+          {/if}
+          <tr>
+            <th>Budaya/Adat Istiadat</th>
+            <td>{$penilaian_igd.budaya}</td>
+          </tr>
+          <tr>
+            <th>Keterangan Budaya</th>
+            <td>{$penilaian_igd.ket_budaya}</td>
+          </tr>
+        </table>
+      </div>
+      
+      <h4>Edukasi</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <tr>
+            <th width="200">Pendidikan PJ</th>
+            <td>{$penilaian_igd.pendidikan_pj}</td>
+          </tr>
+          {if: $penilaian_igd.ket_pendidikan_pj}
+          <tr>
+            <th>Keterangan Pendidikan PJ</th>
+            <td>{$penilaian_igd.ket_pendidikan_pj}</td>
+          </tr>
+          {/if}
+          <tr>
+            <th>Edukasi Diberikan Kepada</th>
+            <td>{$penilaian_igd.edukasi}</td>
+          </tr>
+          <tr>
+            <th>Keterangan Edukasi</th>
+            <td>{$penilaian_igd.ket_edukasi}</td>
+          </tr>
+        </table>
+      </div>
+      
+      <h4>Aktivitas</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <tr>
+            <th width="200">Kemampuan</th>
+            <td>{$penilaian_igd.kemampuan}</td>
+          </tr>
+          <tr>
+            <th>Aktivitas</th>
+            <td>{$penilaian_igd.aktifitas}</td>
+          </tr>
+          <tr>
+            <th>Alat Bantu</th>
+            <td>{$penilaian_igd.alat_bantu}</td>
+          </tr>
+          {if: $penilaian_igd.ket_bantu}
+          <tr>
+            <th>Keterangan Alat Bantu</th>
+            <td>{$penilaian_igd.ket_bantu}</td>
+          </tr>
+          {/if}
+        </table>
+      </div>
+      
+      <h4>Nyeri</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <tr>
+            <th width="200">Nyeri</th>
+            <td>{$penilaian_igd.nyeri}</td>
+          </tr>
+          {if: $penilaian_igd.nyeri != 'Tidak Ada Nyeri'}
+          <tr>
+            <th>Provokes</th>
+            <td>{$penilaian_igd.provokes}</td>
+          </tr>
+          <tr>
+            <th>Keterangan Provokes</th>
+            <td>{$penilaian_igd.ket_provokes}</td>
+          </tr>
+          <tr>
+            <th>Quality</th>
+            <td>{$penilaian_igd.quality}</td>
+          </tr>
+          <tr>
+            <th>Keterangan Quality</th>
+            <td>{$penilaian_igd.ket_quality}</td>
+          </tr>
+          <tr>
+            <th>Lokasi</th>
+            <td>{$penilaian_igd.lokasi}</td>
+          </tr>
+          <tr>
+            <th>Menyebar</th>
+            <td>{$penilaian_igd.menyebar}</td>
+          </tr>
+          <tr>
+            <th>Skala Nyeri</th>
+            <td>{$penilaian_igd.skala_nyeri}</td>
+          </tr>
+          <tr>
+            <th>Durasi</th>
+            <td>{$penilaian_igd.durasi}</td>
+          </tr>
+          <tr>
+            <th>Nyeri Hilang</th>
+            <td>{$penilaian_igd.nyeri_hilang}</td>
+          </tr>
+          {if: $penilaian_igd.ket_nyeri}
+          <tr>
+            <th>Keterangan Nyeri</th>
+            <td>{$penilaian_igd.ket_nyeri}</td>
+          </tr>
+          {/if}
+          <tr>
+            <th>Pada Dokter</th>
+            <td>{$penilaian_igd.pada_dokter}</td>
+          </tr>
+          {if: $penilaian_igd.ket_dokter}
+          <tr>
+            <th>Keterangan Dokter</th>
+            <td>{$penilaian_igd.ket_dokter}</td>
+          </tr>
+          {/if}
+          {/if}
+        </table>
+      </div>
+      
+      <h4>Risiko Jatuh</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <tr>
+            <th width="200">Berjalan A</th>
+            <td>{$penilaian_igd.berjalan_a}</td>
+          </tr>
+          <tr>
+            <th>Berjalan B</th>
+            <td>{$penilaian_igd.berjalan_b}</td>
+          </tr>
+          <tr>
+            <th>Berjalan C</th>
+            <td>{$penilaian_igd.berjalan_c}</td>
+          </tr>
+          <tr>
+            <th>Hasil</th>
+            <td><span class="label {if: $penilaian_igd.hasil == 'Tidak beresiko (tidak ditemukan a dan b)'}label-success{elseif: $penilaian_igd.hasil == 'Resiko rendah (ditemukan a/b)'}label-warning{else}label-danger{/if}">{$penilaian_igd.hasil}</span></td>
+          </tr>
+          <tr>
+            <th>Lapor</th>
+            <td>{$penilaian_igd.lapor}</td>
+          </tr>
+          {if: $penilaian_igd.ket_lapor}
+          <tr>
+            <th>Keterangan Lapor</th>
+            <td>{$penilaian_igd.ket_lapor}</td>
+          </tr>
+          {/if}
+        </table>
+      </div>
+      
+      <h4>Rencana</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <tr>
+            <th width="200">Rencana</th>
+            <td>{$penilaian_igd.rencana}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  {else}
+  <div class="alert alert-info">
+    <i class="fa fa-info-circle"></i> Belum ada data assessment untuk pasien ini.
+    <button type="button" class="btn btn-primary btn-sm pull-right buat_assesment" data-no_rawat="{$_GET.no_rawat}">
+      <i class="fa fa-plus"></i> Buat Assessment
+    </button>
+  </div>
+  {/if}
+</div>
+
+<script>
+$(document).ready(function() {
+  // Handler untuk tombol edit
+  $('.edit_assesment').click(function() {
+    var no_rawat = $(this).data('no_rawat');
+    var baseURL = mlite.url + '/' + mlite.admin;
+    
+    $('#form_assesment').show().load(baseURL + '/igd/assessment?no_rawat=' + no_rawat + '&t=' + mlite.token);
+    $('#tampil_assesment').hide();
+  });
+  
+  // Handler untuk tombol hapus
+  $('.hapus_assesment').click(function() {
+    var no_rawat = $(this).data('no_rawat');
+    var baseURL = mlite.url + '/' + mlite.admin;
+    
+    if(confirm('Apakah Anda yakin ingin menghapus data assessment ini?')) {
+      $.ajax({
+        url: baseURL + '/igd/assessmentdelete?t=' + mlite.token,
+        type: 'POST',
+        data: {no_rawat: no_rawat},
+        dataType: 'json',
+        success: function(response) {
+          if(response.status == 'success') {
+            $('#notif').html('<div class="alert alert-success alert-dismissible fade in" role="alert" style="border-radius:0px;margin-top:-15px;">Data assessment berhasil dihapus!<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button></div>').show();
+            $('#tampil_assesment').load(baseURL + '/igd/assessmenttampil?no_rawat=' + no_rawat + '&t=' + mlite.token);
+          } else {
+            $('#notif').html('<div class="alert alert-danger alert-dismissible fade in" role="alert" style="border-radius:0px;margin-top:-15px;">Gagal menghapus data: ' + (response.msg || 'Unknown error') + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button></div>').show();
+          }
+        },
+        error: function() {
+          $('#notif').html('<div class="alert alert-danger alert-dismissible fade in" role="alert" style="border-radius:0px;margin-top:-15px;">Terjadi kesalahan saat menghapus data!<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button></div>').show();
+        }
+      });
+    }
+  });
+  
+  // Handler untuk tombol buat assessment
+  $('.buat_assesment').click(function() {
+    var no_rawat = $(this).data('no_rawat');
+    var baseURL = mlite.url + '/' + mlite.admin;
+    
+    $('#form_assesment').show().load(baseURL + '/igd/assessment?no_rawat=' + no_rawat + '&t=' + mlite.token);
+    $('#tampil_assesment').hide();
+  });
+});
+</script>

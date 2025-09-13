@@ -19,7 +19,7 @@ jQuery().ready(function () {
             },
             dataType: 'json',
             success: function (res) {
-                console.log(res);
+                // console.log(res);
                 var grandtotal = res['grandtotal'];
                 var res = res['dokter'];
                 var eTable = "<div class='table-responsive'><table id='tbl_lihat_dokter' class='table' style='width:100%'><thead><th>Nama Dokter</th><th>Detail</th></thead>";

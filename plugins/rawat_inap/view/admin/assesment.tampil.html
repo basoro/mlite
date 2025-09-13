@@ -1,0 +1,379 @@
+{if: $penilaian_ranap}
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Nomor Rawat</th>
+      <th>Tanggal</th>
+      <th>Informasi</th>
+      <th>Vital Signs</th>
+      <th>Status Nyeri</th>
+      <th>Petugas</th>
+      <th width="150px">Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{$penilaian_ranap.no_rawat}</td>
+      <td>{$penilaian_ranap.tanggal}</td>
+      <td>
+        <strong>Informasi:</strong> {$penilaian_ranap.informasi}<br>
+        <strong>Cara Masuk:</strong> {$penilaian_ranap.cara_masuk}<br>
+        <strong>Tiba di Ruang:</strong> {$penilaian_ranap.tiba_diruang_rawat}
+      </td>
+      <td>
+        <strong>TD:</strong> {$penilaian_ranap.pemeriksaan_td} mmHg<br>
+        <strong>Nadi:</strong> {$penilaian_ranap.pemeriksaan_nadi} x/mnt<br>
+        <strong>RR:</strong> {$penilaian_ranap.pemeriksaan_rr} x/mnt<br>
+        <strong>Suhu:</strong> {$penilaian_ranap.pemeriksaan_suhu} °C<br>
+        <strong>SpO2:</strong> {$penilaian_ranap.pemeriksaan_spo2} &#37;<br>
+        <strong>GCS:</strong> {$penilaian_ranap.pemeriksaan_gcs}<br>
+        <strong>BB:</strong> {$penilaian_ranap.pemeriksaan_bb} kg<br>
+        <strong>TB:</strong> {$penilaian_ranap.pemeriksaan_tb} cm
+      </td>
+      <td>
+        <strong>Nyeri:</strong> {$penilaian_ranap.penilaian_nyeri}<br>
+        {if: $penilaian_ranap.penilaian_nyeri != 'Tidak Ada Nyeri'}
+        <strong>Skala:</strong> {$penilaian_ranap.penilaian_nyeri_skala}/10<br>
+        <strong>Lokasi:</strong> {$penilaian_ranap.penilaian_nyeri_lokasi}<br>
+        <strong>Kualitas:</strong> {$penilaian_ranap.penilaian_nyeri_kualitas}
+        {/if}
+      </td>
+      <td>
+        <strong>Petugas 1:</strong> {$penilaian_ranap.nama_petugas1}<br>
+        <strong>Petugas 2:</strong> {$penilaian_ranap.nama_petugas2}
+      </td>
+      <td>
+        <button type="button" class="btn btn-success btn-xs edit_assesment" 
+          data-no_rawat="{$penilaian_ranap.no_rawat}">
+          <span class="fa fa-edit"></span> Edit
+        </button>
+        <button type="button" class="btn btn-danger btn-xs hapus_assesment" 
+          data-no_rawat="{$penilaian_ranap.no_rawat}">
+          <span class="fa fa-trash"></span> Hapus
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Detail Assessment -->
+<div class="panel-group" id="accordion_assessment">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion_assessment" href="#collapse_riwayat">
+          <i class="fa fa-plus-circle"></i> Riwayat Penyakit
+        </a>
+      </h4>
+    </div>
+    <div id="collapse_riwayat" class="panel-collapse collapse">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-12">
+            <strong>Riwayat Penyakit Sekarang (RPS):</strong><br>
+            {$penilaian_ranap.rps}
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-4">
+            <strong>RPD:</strong> {$penilaian_ranap.rpd}
+          </div>
+          <div class="col-md-4">
+            <strong>RPK:</strong> {$penilaian_ranap.rpk}
+          </div>
+          <div class="col-md-4">
+            <strong>RPO:</strong> {$penilaian_ranap.rpo}
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Riwayat Pembedahan:</strong> {$penilaian_ranap.riwayat_pembedahan}
+          </div>
+          <div class="col-md-6">
+            <strong>Riwayat Dirawat di RS:</strong> {$penilaian_ranap.riwayat_dirawat_dirs}
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Riwayat Alergi:</strong> {$penilaian_ranap.riwayat_alergi}
+          </div>
+          <div class="col-md-6">
+            <strong>Alat Bantu:</strong> {$penilaian_ranap.alat_bantu_dipakai}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion_assessment" href="#collapse_pemeriksaan">
+          <i class="fa fa-plus-circle"></i> Pemeriksaan Fisik
+        </a>
+      </h4>
+    </div>
+    <div id="collapse_pemeriksaan" class="panel-collapse collapse">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Keadaan Umum:</strong> {$penilaian_ranap.pemeriksaan_keadaan_umum}
+          </div>
+          <div class="col-md-6">
+            <strong>Pemeriksaan Mental:</strong> {$penilaian_ranap.pemeriksaan_mental}
+          </div>
+        </div>
+        <hr>
+        <h6><strong>Susunan Saraf:</strong></h6>
+        <div class="row">
+          <div class="col-md-3">
+            <strong>Kepala:</strong> {$penilaian_ranap.pemeriksaan_susunan_kepala}
+          </div>
+          <div class="col-md-3">
+            <strong>Wajah:</strong> {$penilaian_ranap.pemeriksaan_susunan_wajah}
+          </div>
+          <div class="col-md-3">
+            <strong>Leher:</strong> {$penilaian_ranap.pemeriksaan_susunan_leher}
+          </div>
+          <div class="col-md-3">
+            <strong>Kejang:</strong> {$penilaian_ranap.pemeriksaan_susunan_kejang}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <strong>Sensorik:</strong> {$penilaian_ranap.pemeriksaan_susunan_sensorik}
+          </div>
+        </div>
+        <hr>
+        <h6><strong>Kardiovaskular:</strong></h6>
+        <div class="row">
+          <div class="col-md-4">
+            <strong>Denyut Nadi:</strong> {$penilaian_ranap.pemeriksaan_kardiovaskuler_denyut_nadi}
+          </div>
+          <div class="col-md-4">
+            <strong>Sirkulasi:</strong> {$penilaian_ranap.pemeriksaan_kardiovaskuler_sirkulasi}
+          </div>
+          <div class="col-md-4">
+            <strong>Pulsasi:</strong> {$penilaian_ranap.pemeriksaan_kardiovaskuler_pulsasi}
+          </div>
+        </div>
+        <hr>
+        <h6><strong>Respirasi:</strong></h6>
+        <div class="row">
+          <div class="col-md-4">
+            <strong>Pola Nafas:</strong> {$penilaian_ranap.pemeriksaan_respirasi_pola_nafas}
+          </div>
+          <div class="col-md-4">
+            <strong>Suara Nafas:</strong> {$penilaian_ranap.pemeriksaan_respirasi_suara_nafas}
+          </div>
+          <div class="col-md-4">
+            <strong>Batuk:</strong> {$penilaian_ranap.pemeriksaan_respirasi_batuk}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion_assessment" href="#collapse_fungsi">
+          <i class="fa fa-plus-circle"></i> Pengkajian Fungsi
+        </a>
+      </h4>
+    </div>
+    <div id="collapse_fungsi" class="panel-collapse collapse">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Kemampuan Sehari-hari:</strong> {$penilaian_ranap.pengkajian_fungsi_kemampuan_sehari}
+          </div>
+          <div class="col-md-6">
+            <strong>Aktifitas:</strong> {$penilaian_ranap.pengkajian_fungsi_aktifitas}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Berjalan:</strong> {$penilaian_ranap.pengkajian_fungsi_berjalan}
+          </div>
+          <div class="col-md-6">
+            <strong>Ambulasi:</strong> {$penilaian_ranap.pengkajian_fungsi_ambulasi}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Ekstrimitas Atas:</strong> {$penilaian_ranap.pengkajian_fungsi_ekstrimitas_atas}
+          </div>
+          <div class="col-md-6">
+            <strong>Ekstrimitas Bawah:</strong> {$penilaian_ranap.pengkajian_fungsi_ekstrimitas_bawah}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Menggenggam:</strong> {$penilaian_ranap.pengkajian_fungsi_menggenggam}
+          </div>
+          <div class="col-md-6">
+            <strong>Koordinasi:</strong> {$penilaian_ranap.pengkajian_fungsi_koordinasi}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <strong>Kesimpulan:</strong> {$penilaian_ranap.pengkajian_fungsi_kesimpulan}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion_assessment" href="#collapse_psiko">
+          <i class="fa fa-plus-circle"></i> Riwayat Psikososial
+        </a>
+      </h4>
+    </div>
+    <div id="collapse_psiko" class="panel-collapse collapse">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Kondisi Psiko:</strong> {$penilaian_ranap.riwayat_psiko_kondisi_psiko}
+          </div>
+          <div class="col-md-6">
+            <strong>Gangguan Jiwa:</strong> {$penilaian_ranap.riwayat_psiko_gangguan_jiwa}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Perilaku:</strong> {$penilaian_ranap.riwayat_psiko_perilaku}
+          </div>
+          <div class="col-md-6">
+            <strong>Hubungan Keluarga:</strong> {$penilaian_ranap.riwayat_psiko_hubungan_keluarga}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Tinggal dengan:</strong> {$penilaian_ranap.riwayat_psiko_tinggal}
+          </div>
+          <div class="col-md-6">
+            <strong>Nilai Kepercayaan:</strong> {$penilaian_ranap.riwayat_psiko_nilai_kepercayaan}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Pendidikan PJ:</strong> {$penilaian_ranap.riwayat_psiko_pendidikan_pj}
+          </div>
+          <div class="col-md-6">
+            <strong>Edukasi Diberikan:</strong> {$penilaian_ranap.riwayat_psiko_edukasi_diberikan}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion_assessment" href="#collapse_gizi">
+          <i class="fa fa-plus-circle"></i> Skrining Gizi
+        </a>
+      </h4>
+    </div>
+    <div id="collapse_gizi" class="panel-collapse collapse">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-8">
+            <strong>1. Penurunan berat badan:</strong> {$penilaian_ranap.skrining_gizi1}
+          </div>
+          <div class="col-md-4">
+            <strong>Nilai:</strong> {$penilaian_ranap.nilai_gizi1}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <strong>2. Asupan makan berkurang:</strong> {$penilaian_ranap.skrining_gizi2}
+          </div>
+          <div class="col-md-4">
+            <strong>Nilai:</strong> {$penilaian_ranap.nilai_gizi2}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <strong>Total Nilai Gizi:</strong> {$penilaian_ranap.nilai_total_gizi}
+          </div>
+          <div class="col-md-4">
+            <strong>Status:</strong> 
+            {if: $penilaian_ranap.nilai_total_gizi >= 3}
+              <span class="label label-danger">Risiko Tinggi</span>
+            {elseif: $penilaian_ranap.nilai_total_gizi >= 1}
+              <span class="label label-warning">Risiko Sedang</span>
+            {else}
+              <span class="label label-success">Risiko Rendah</span>
+            {/if}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Diagnosa Khusus:</strong> {$penilaian_ranap.skrining_gizi_diagnosa_khusus}
+          </div>
+          <div class="col-md-6">
+            <strong>Diketahui Dietisen:</strong> {$penilaian_ranap.skrining_gizi_diketahui_dietisen}
+          </div>
+        </div>
+        {if: $penilaian_ranap.skrining_gizi_jam_diketahui_dietisen}
+        <div class="row">
+          <div class="col-md-12">
+            <strong>Jam Diketahui Dietisen:</strong> {$penilaian_ranap.skrining_gizi_jam_diketahui_dietisen}
+          </div>
+        </div>
+        {/if}
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion_assessment" href="#collapse_rencana">
+          <i class="fa fa-plus-circle"></i> Rencana Keperawatan
+        </a>
+      </h4>
+    </div>
+    <div id="collapse_rencana" class="panel-collapse collapse">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-12">
+            <strong>Rencana:</strong><br>
+            {$penilaian_ranap.rencana}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{else}
+<div class="alert alert-info">
+  <i class="fa fa-info-circle"></i> Belum ada data assessment untuk pasien ini.
+  <button type="button" class="btn btn-primary btn-sm buat_assesment" 
+    data-no_rawat="{$smarty.get.no_rawat}" style="margin-left: 10px;">
+    <span class="fa fa-plus"></span> Buat Assessment
+  </button>
+</div>
+{/if}
+
+<script>
+$(document).ready(function() {
+  // Toggle collapse icons
+  $('.panel-collapse').on('show.bs.collapse', function () {
+    $(this).siblings('.panel-heading').find('.fa').removeClass('fa-plus-circle').addClass('fa-minus-circle');
+  });
+  
+  $('.panel-collapse').on('hide.bs.collapse', function () {
+    $(this).siblings('.panel-heading').find('.fa').removeClass('fa-minus-circle').addClass('fa-plus-circle');
+  });
+});
+</script>

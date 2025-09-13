@@ -41,16 +41,7 @@
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
               <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAPIE & Pemeriksaan</a></li>
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Tindakan</a></li>
-              <li class="dropdown-submenu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Penilaian Keperawatan</a>
-                <ul class="dropdown-menu">
-                  <li><a href="{?=url([ADMIN,'penilaian_keperawatan_ralan','manage'])?}&no_rawat={$value.no_rawat}">Keperawatan Umum</a></li>
-                  <li><a href="{?=url([ADMIN,'penilaian_keperawatan_gigi','manage'])?}&no_rawat={$value.no_rawat}">Keperawatan Gigi</a></li>
-                </ul>
-              </li>
-              <li><a href="{?=url([ADMIN,'peta_mukosa_rongga_mulut','manage'])?}&no_rawat={$value.no_rawat}">Peta Mukosa Oral</a></li>
               <li><a href="{?=url([ADMIN,'penilaian_ulang_nyeri','manage'])?}&no_rawat={$value.no_rawat}">Penilaian Ulang Nyeri</a></li>
-              <li><a href="{?=url([ADMIN,'adime_gizi','manage'])?}&no_rawat={$value.no_rawat}">ADIME Gizi</a></li>
               <li class="dropdown-submenu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Surat-Surat</a>
                 <ul class="dropdown-menu">

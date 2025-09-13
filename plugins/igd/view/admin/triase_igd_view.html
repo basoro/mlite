@@ -1,0 +1,299 @@
+<style>
+@media print {
+  /* Reset margins and padding for print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  body {
+    margin: 0;
+    padding: 15px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #000 !important;
+    background: white !important;
+  }
+  
+  /* Panel styling for print */
+  .panel {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    background: white !important;
+  }
+  
+  .panel-body {
+    padding: 15px !important;
+  }
+  
+  /* Table styling for print */
+  .table {
+    margin-bottom: 15px !important;
+    border-collapse: collapse !important;
+  }
+  
+  .table-bordered {
+    border: 1px solid #000 !important;
+  }
+  
+  .table-bordered > thead > tr > th,
+  .table-bordered > tbody > tr > th,
+  .table-bordered > tfoot > tr > th,
+  .table-bordered > thead > tr > td,
+  .table-bordered > tbody > tr > td,
+  .table-bordered > tfoot > tr > td {
+    border: 1px solid #000 !important;
+    padding: 8px !important;
+  }
+  
+  .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f9f9f9 !important;
+  }
+  
+  /* Typography for print */
+  h5 {
+    font-size: 14px !important;
+    font-weight: bold !important;
+    margin: 10px 0 5px 0 !important;
+    color: #000 !important;
+  }
+  
+  strong {
+    font-weight: bold !important;
+    color: #000 !important;
+  }
+  
+  /* Grid system for print */
+  .row {
+    margin: 0 !important;
+    display: table !important;
+    width: 100% !important;
+  }
+  
+  .col-md-6 {
+    display: table-cell !important;
+    width: 50% !important;
+    padding: 0 10px !important;
+    vertical-align: top !important;
+    float: none !important;
+  }
+  
+  /* Labels and badges for print */
+  .label {
+    display: inline-block !important;
+    padding: 2px 6px !important;
+    font-size: 11px !important;
+    font-weight: bold !important;
+    border: 1px solid #000 !important;
+    background: white !important;
+    color: #000 !important;
+  }
+  
+  .label-danger {
+    border-color: #000 !important;
+    background: #f0f0f0 !important;
+  }
+  
+  .label-warning {
+    border-color: #000 !important;
+    background: #f5f5f5 !important;
+  }
+  
+  .label-success {
+    border-color: #000 !important;
+    background: #f9f9f9 !important;
+  }
+  
+  /* Well styling for print */
+  .well {
+    background: #f9f9f9 !important;
+    border: 1px solid #ddd !important;
+    padding: 10px !important;
+    margin: 5px 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  
+  /* Text styling for print */
+  .text-muted {
+    color: #666 !important;
+  }
+  
+  /* Info row highlighting */
+  .info {
+    background-color: #f0f8ff !important;
+  }
+  
+  /* Hide elements not needed for print */
+  .btn, .button, .modal-footer {
+    display: none !important;
+  }
+  
+  /* Page break settings */
+  .panel {
+    page-break-inside: avoid;
+  }
+  
+  .row {
+    page-break-inside: avoid;
+  }
+  
+  /* Ensure proper spacing */
+  hr {
+    border: 0 !important;
+    border-top: 1px solid #ddd !important;
+    margin: 15px 0 !important;
+  }
+}
+</style>
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    
+    <!-- Informasi Dasar -->
+    <table class="table table-bordered">
+      <tr>
+        <td width="15%"><strong>No. Rawat</strong></td>
+        <td width="35%">{$triase_igd.no_rawat}</td>
+        <td width="15%"><strong>No. RM</strong></td>
+        <td width="35%">{$triase_igd.no_rkm_medis}</td>
+      </tr>
+      <tr>
+        <td><strong>Nama Pasien</strong></td>
+        <td>{$triase_igd.nm_pasien}</td>
+        <td><strong>Tgl. Triase</strong></td>
+        <td>{$triase_igd.tgl_triase}</td>
+      </tr>
+      <tr>
+        <td><strong>Petugas</strong></td>
+        <td colspan="3">{$triase_igd.nama_petugas} ({$triase_igd.petugas_id})</td>
+      </tr>
+    </table>
+
+    <!-- Kondisi & Tanda Vital -->
+    <div class="row">
+      <div class="col-md-6">
+        <h5>Kondisi Umum</h5>
+        <table class="table table-striped">
+          <tr>
+            <td><strong>Kesadaran</strong></td>
+            <td>{$triase_igd.kesadaran}</td>
+          </tr>
+          <tr>
+            <td><strong>Airway</strong></td>
+            <td>{$triase_igd.airway}</td>
+          </tr>
+          <tr>
+            <td><strong>Breathing</strong></td>
+            <td>{$triase_igd.breathing}</td>
+          </tr>
+          <tr>
+            <td><strong>Circulation</strong></td>
+            <td>{$triase_igd.circulation}</td>
+          </tr>
+        </table>
+      </div>
+      
+      <div class="col-md-6">
+        <h5>Tanda Vital</h5>
+        <table class="table table-striped">
+          <tr>
+            <td><strong>Tekanan Darah</strong></td>
+            <td>{?=isset_or($triase_igd.tekanan_darah, '-')?} mmHg</td>
+          </tr>
+          <tr>
+            <td><strong>Nadi</strong></td>
+            <td>{?=isset_or($triase_igd.nadi, '-')?} x/menit</td>
+          </tr>
+          <tr>
+            <td><strong>Respirasi</strong></td>
+            <td>{?=isset_or($triase_igd.respirasi, '-')?} x/menit</td>
+          </tr>
+          <tr>
+            <td><strong>Suhu</strong></td>
+            <td>{?=isset_or($triase_igd.suhu, '-')?} °C</td>
+          </tr>
+          <tr>
+            <td><strong>SpO2</strong></td>
+            <td>{?=isset_or($triase_igd.spo2, '-')?} %</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- GCS & Hasil Triase -->
+    <div class="row">
+      <div class="col-md-6">
+        <h5>Glasgow Coma Scale (GCS)</h5>
+        <table class="table table-striped">
+          <tr>
+            <td><strong>GCS Eye (E)</strong></td>
+            <td>{?=isset_or($triase_igd.gcs_e, '-')?}</td>
+          </tr>
+          <tr>
+            <td><strong>GCS Verbal (V)</strong></td>
+            <td>{?=isset_or($triase_igd.gcs_v, '-')?}</td>
+          </tr>
+          <tr>
+            <td><strong>GCS Motorik (M)</strong></td>
+            <td>{?=isset_or($triase_igd.gcs_m, '-')?}</td>
+          </tr>
+          <tr class="info">
+            <td><strong>Total GCS</strong></td>
+            <td><strong>{$triase_igd.total_gcs}</strong></td>
+          </tr>
+        </table>
+      </div>
+      
+      <div class="col-md-6">
+        <h5>Hasil Triase</h5>
+        <table class="table table-striped">
+          <tr>
+            <td><strong>Kategori</strong></td>
+            <td>
+              <span class="label {if: $triase_igd.kategori == 'Merah'}label-danger{elseif: $triase_igd.kategori == 'Kuning'}label-warning{elseif: $triase_igd.kategori == 'Hijau'}label-success{else}label-default{/if}">
+                {$triase_igd.kategori}
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Skala Triase</strong></td>
+            <td>{?=isset_or($triase_igd.skala_triase, '-')?}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Keluhan & Diagnosa -->
+    {if: $triase_igd.keluhan_utama || $triase_igd.diagnosa_awal}
+    <div class="row">
+      {if: $triase_igd.keluhan_utama}
+      <div class="col-md-6">
+        <h5>Keluhan Utama</h5>
+        <p class="well">{$triase_igd.keluhan_utama}</p>
+      </div>
+      {/if}
+      
+      {if: $triase_igd.diagnosa_awal}
+      <div class="col-md-6">
+        <h5>Diagnosa Awal</h5>
+        <p class="well">{$triase_igd.diagnosa_awal}</p>
+      </div>
+      {/if}
+    </div>
+    {/if}
+
+    <!-- Timestamp -->
+    <hr>
+    <div class="row">
+      <div class="col-md-6">
+        <small class="text-muted">Dibuat: {$triase_igd.created_at}</small>
+      </div>
+      <div class="col-md-6">
+        <small class="text-muted">Diupdate: {$triase_igd.updated_at}</small>
+      </div>
+    </div>
+    
+  </div>
+</div>

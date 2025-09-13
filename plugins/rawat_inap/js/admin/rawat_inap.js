@@ -64,7 +64,7 @@ $("#form").on("click", "#simpan", function(event){
       lama: lama,
       diagnosa_awal: diagnosa_awal
     } ,function(data) {
-      console.log(data);
+      // // console.log(data);
       $("#display").show().load(baseURL + '/rawat_inap/display?t=' + mlite.token);
       bersih();
       $("#status_pendaftaran").hide();
@@ -407,6 +407,93 @@ $('#manage').on('click', '#lunas_periode_rawat_inap', function(event){
 
 //$("#display").on("click", ".soap", function(event){
 
+// Handler untuk copy data SOAP sebagai fallback
+$("#soap").on("click",".copy_soap", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var suhu_tubuh      = $(this).attr("data-suhu_tubuh");
+  var tensi           = $(this).attr("data-tensi");
+  var nadi            = $(this).attr("data-nadi");
+  var respirasi       = $(this).attr("data-respirasi");
+  var tinggi          = $(this).attr("data-tinggi");
+  var berat           = $(this).attr("data-berat");
+  var gcs             = $(this).attr("data-gcs");
+  var kesadaran       = $(this).attr("data-kesadaran");
+  var alergi          = $(this).attr("data-alergi");
+  var lingkar_perut   = $(this).attr("data-lingkar_perut");
+  var keluhan         = $(this).attr("data-keluhan");
+  var pemeriksaan     = $(this).attr("data-pemeriksaan");
+  var penilaian       = $(this).attr("data-penilaian");
+  var rtl             = $(this).attr("data-rtl");
+  var instruksi       = $(this).attr("data-instruksi");
+  var evaluasi        = $(this).attr("data-evaluasi");
+  var spo2            = $(this).attr("data-spo2");
+
+  $('input:text[name=suhu_tubuh]').val(suhu_tubuh);
+  $('input:text[name=tensi]').val(tensi);
+  $('input:text[name=nadi]').val(nadi);
+  $('input:text[name=respirasi]').val(respirasi);
+  $('input:text[name=tinggi]').val(tinggi);
+  $('input:text[name=berat]').val(berat);
+  $('input:text[name=gcs]').val(gcs);
+  $('input:text[name=kesadaran]').val(kesadaran);
+  $('input:text[name=alergi]').val(alergi);
+  $('input:text[name=lingkar_perut]').val(lingkar_perut);
+  $('textarea[name=keluhan]').val(keluhan);
+  $('textarea[name=pemeriksaan]').val(pemeriksaan);
+  $('textarea[name=penilaian]').val(penilaian);
+  $('textarea[name=rtl]').val(rtl);
+  $('textarea[name=instruksi]').val(instruksi);
+  $('textarea[name=evaluasi]').val(evaluasi);
+  $('input:text[name=spo2]').val(spo2);
+});
+
+// Handler untuk edit data SOAP
+$("#soap").on("click",".edit_soap", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat        = $(this).attr("data-no_rawat");
+  var tgl_perawatan   = $(this).attr("data-tgl_perawatan");
+  var jam_rawat       = $(this).attr("data-jam_rawat");
+  var suhu_tubuh      = $(this).attr("data-suhu_tubuh");
+  var tensi           = $(this).attr("data-tensi");
+  var nadi            = $(this).attr("data-nadi");
+  var respirasi       = $(this).attr("data-respirasi");
+  var tinggi          = $(this).attr("data-tinggi");
+  var berat           = $(this).attr("data-berat");
+  var gcs             = $(this).attr("data-gcs");
+  var kesadaran       = $(this).attr("data-kesadaran");
+  var alergi          = $(this).attr("data-alergi");
+  var lingkar_perut   = $(this).attr("data-lingkar_perut");
+  var keluhan         = $(this).attr("data-keluhan");
+  var pemeriksaan     = $(this).attr("data-pemeriksaan");
+  var penilaian       = $(this).attr("data-penilaian");
+  var rtl             = $(this).attr("data-rtl");
+  var instruksi       = $(this).attr("data-instruksi");
+  var evaluasi        = $(this).attr("data-evaluasi");
+  var spo2            = $(this).attr("data-spo2");
+
+  $('input:text[name=tgl_perawatan]').val(tgl_perawatan);
+  $('input:text[name=jam_rawat]').val(jam_rawat);
+  $('input:text[name=suhu_tubuh]').val(suhu_tubuh);
+  $('input:text[name=tensi]').val(tensi);
+  $('input:text[name=nadi]').val(nadi);
+  $('input:text[name=respirasi]').val(respirasi);
+  $('input:text[name=tinggi]').val(tinggi);
+  $('input:text[name=berat]').val(berat);
+  $('input:text[name=gcs]').val(gcs);
+  $('input:text[name=kesadaran]').val(kesadaran);
+  $('input:text[name=alergi]').val(alergi);
+  $('input:text[name=lingkar_perut]').val(lingkar_perut);
+  $('textarea[name=keluhan]').val(keluhan);
+  $('textarea[name=pemeriksaan]').val(pemeriksaan);
+  $('textarea[name=penilaian]').val(penilaian);
+  $('textarea[name=rtl]').val(rtl);
+  $('textarea[name=instruksi]').val(instruksi);
+  $('textarea[name=evaluasi]').val(evaluasi);
+  $('input:text[name=spo2]').val(spo2);
+});
+
 // ketika tombol simpan diklik
 $("#form_soap").on("click", "#simpan_soap", function(event){
   {if: !$cek_role}
@@ -598,7 +685,7 @@ $("#soap").on("click",".hapus_soap", function(event){
         tgl_perawatan: tgl_perawatan,
         jam_rawat: jam_rawat
       } ,function(data) {
-        console.log(data);
+        // console.log(data);
         var url = baseURL + '/rawat_inap/soap?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
         }, function(data) {
@@ -701,7 +788,7 @@ $("#surat_kontrol").on("click",".hapus_kontrol", function(event){
         kd_poli: kd_poli,
         no_rkm_medis: no_rkm_medis
       } ,function(data) {
-        //console.log(data);
+        // console.log(data);
         var url = baseURL + '/rawat_inap/kontrol?t=' + mlite.token;
         $.post(url, {no_rkm_medis : no_rkm_medis,
         }, function(data) {
@@ -1011,7 +1098,7 @@ $("#form_kontrol").on("click", "#simpan_kontrol", function(event){
   dokter : dokter,
   poli : poli
   }, function(data) {
-    //console.log(data);
+    // console.log(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/rawat_inap/kontrol?t=' + mlite.token;
@@ -1064,7 +1151,7 @@ $("#form_kontrol").on("click", "#simpan_kontrol_bpjs", function(event){
   dokter : dokter,
   poli : poli
   }, function(data) {
-    //console.log(data);
+    // console.log(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/rawat_inap/kontrol?t=' + mlite.token;
@@ -1196,4 +1283,144 @@ $("#form_soap").on("click","#jam_rawat", function(event){
     } ,function(data) {
       $("#jam_rawat").val(data);
     });
+});
+
+// Handler untuk tombol assessment di form SOAP
+$("#form_soap").on("click",".assesment", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+
+  var modal = $('#assesmentModal');
+  var modalContent = $('#assesmentModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      // Load form assessment dengan data pasien
+      var set_no_rawat = no_rawat.replace(/\//g, '');
+      modalContent.load(baseURL + '/rawat_inap/assessment/' + set_no_rawat + '?t=' + mlite.token, function() {
+        // Load data assessment yang sudah ada
+        $('.tampildata_assessment').load(baseURL + '/rawat_inap/assessmenttampil/' + set_no_rawat + '?t=' + mlite.token);
+      });
+  }).modal();
+  return false;
+});
+
+// Handler untuk assessment di display juga
+$("#display").on("click",".assesment", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat");
+
+  var modal = $('#assesmentModal');
+  var modalContent = $('#assesmentModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      // Load form assessment dengan data pasien
+      var set_no_rawat = no_rawat.replace(/\//g, '');
+      modalContent.load(baseURL + '/rawat_inap/assessment/' + set_no_rawat + '?t=' + mlite.token, function() {
+        // Load data assessment yang sudah ada
+        $('.tampildata_assessment').load(baseURL + '/rawat_inap/assessmenttampil/' + set_no_rawat + '?t=' + mlite.token);
+      });
+  }).modal();
+  return false;
+});
+
+// Handler untuk tombol buat assessment dari tampil assessment
+$(document).on("click", ".buat_assesment", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).data('no_rawat');
+  
+  var modal = $('#assesmentModal');
+  var modalContent = $('#assesmentModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      var set_no_rawat = no_rawat.replace(/\//g, '');
+      modalContent.load(baseURL + '/rawat_inap/assessment/' + set_no_rawat + '?t=' + mlite.token);
+  }).modal();
+  return false;
+});
+
+// Handler untuk tombol edit assessment
+$(document).on("click", ".edit_assesment", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).data('no_rawat');
+  
+  var modal = $('#assesmentModal');
+  var modalContent = $('#assesmentModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      var set_no_rawat = no_rawat.replace(/\//g, '');
+      modalContent.load(baseURL + '/rawat_inap/assessment/' + set_no_rawat + '?t=' + mlite.token);
+  }).modal();
+  return false;
+});
+
+// Handler untuk tombol hapus assessment
+$(document).on("click", ".hapus_assesment", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).data('no_rawat');
+  
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data assessment ini?", function(result){
+    if (result){
+      $.post(baseURL + '/rawat_inap/assessmentdelete?t=' + mlite.token, {
+        no_rawat: no_rawat
+      }, function(data) {
+        if(data.status == 'success') {
+          // Reload tampilan assessment
+          var set_no_rawat = no_rawat.replace(/\//g, '');
+          $('.tampildata_assessment').load(baseURL + '/rawat_inap/assessmenttampil/' + set_no_rawat + '?t=' + mlite.token);
+        } else {
+          alert('Error: ' + data.msg);
+        }
+      }, 'json');
+    }
+  });
+});
+
+// Handler untuk copy data SOAP sebagai fallback assessment
+$(document).on("click", ".copy_soap", function(event){
+  event.preventDefault();
+  
+  // Ambil data dari tombol
+  var suhu_tubuh = $(this).data('suhu_tubuh');
+  var tensi = $(this).data('tensi');
+  var nadi = $(this).data('nadi');
+  var respirasi = $(this).data('respirasi');
+  var tinggi = $(this).data('tinggi');
+  var berat = $(this).data('berat');
+  var gcs = $(this).data('gcs');
+  var kesadaran = $(this).data('kesadaran');
+  var alergi = $(this).data('alergi');
+  var keluhan = $(this).data('keluhan');
+  var pemeriksaan = $(this).data('pemeriksaan');
+  var penilaian = $(this).data('penilaian');
+  var rtl = $(this).data('rtl');
+  var spo2 = $(this).data('spo2');
+  
+  // Isi form assessment dengan data SOAP
+  if($('#assesmentModal').hasClass('in')) {
+    $('input[name="pemeriksaan_suhu"]').val(suhu_tubuh);
+    $('input[name="pemeriksaan_td"]').val(tensi);
+    $('input[name="pemeriksaan_nadi"]').val(nadi);
+    $('input[name="pemeriksaan_rr"]').val(respirasi);
+    $('input[name="pemeriksaan_tb"]').val(tinggi);
+    $('input[name="pemeriksaan_bb"]').val(berat);
+    $('input[name="pemeriksaan_gcs"]').val(gcs);
+    $('input[name="riwayat_alergi"]').val(alergi);
+    $('textarea[name="rps"]').val(keluhan);
+    $('textarea[name="rencana"]').val(rtl);
+    $('input[name="pemeriksaan_spo2"]').val(spo2);
+    
+    // Trigger BMI calculation jika ada
+    if(typeof calculateBMI === 'function') {
+      calculateBMI();
+    }
+  }
 });

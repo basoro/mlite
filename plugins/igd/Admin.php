@@ -1223,6 +1223,164 @@ class Admin extends AdminModule
       exit();
     }
     
+    public function getAssessment($no_rawat)
+    {
+      $no_rawat = revertNoRawat($no_rawat);
+      
+      // Cek apakah sudah ada data assessment
+      $penilaian_igd = $this->db('penilaian_awal_keperawatan_igd')
+        ->where('no_rawat', $no_rawat)
+        ->oneArray();
+      
+      // Jika belum ada, ambil data fallback dari pemeriksaan_ralan
+      if(!$penilaian_igd) {
+        $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')
+          ->where('no_rawat', $no_rawat)
+          ->desc('tgl_perawatan')
+          ->desc('jam_rawat')
+          ->oneArray();
+        
+        $penilaian_igd = [
+          'no_rawat' => $no_rawat,
+          'tanggal' => date('Y-m-d H:i:s'),
+          'informasi' => 'Autoanamnesis',
+          'keluhan_utama' => $pemeriksaan_ralan['keluhan'] ?? '',
+          'rpd' => '',
+          'rpo' => '',
+          'status_kehamilan' => 'Tidak Hamil',
+          'gravida' => '',
+          'para' => '',
+          'abortus' => '',
+          'hpht' => '',
+          'tekanan' => 'TAK',
+          'pupil' => 'Normal',
+          'neurosensorik' => 'TAK',
+          'integumen' => 'TAK',
+          'turgor' => 'Baik',
+          'edema' => 'Tidak Ada',
+          'mukosa' => 'Lembab',
+          'perdarahan' => 'Tidak Ada',
+          'jumlah_perdarahan' => '',
+          'warna_perdarahan' => '',
+          'intoksikasi' => 'Tidak Ada',
+          'bab' => '',
+          'xbab' => '',
+          'kbab' => '',
+          'wbab' => '',
+          'bak' => '',
+          'xbak' => '',
+          'wbak' => '',
+          'lbak' => '',
+          'psikologis' => 'Tidak Ada Masalah',
+          'jiwa' => 'Tidak',
+          'perilaku' => '-',
+          'dilaporkan' => '',
+          'sebutkan' => '',
+          'hubungan' => 'Harmonis',
+          'tinggal_dengan' => 'Orang Tua',
+          'ket_tinggal' => '',
+          'budaya' => 'Tidak Ada',
+          'ket_budaya' => '',
+          'pendidikan_pj' => '-',
+          'ket_pendidikan_pj' => '',
+          'edukasi' => 'Pasien',
+          'ket_edukasi' => '',
+          'kemampuan' => 'Mandiri',
+          'aktifitas' => 'Berjalan',
+          'alat_bantu' => 'Tidak',
+          'ket_bantu' => '',
+          'nyeri' => 'Tidak Ada Nyeri',
+          'provokes' => 'Proses Penyakit',
+          'ket_provokes' => '',
+          'quality' => 'Seperti Tertusuk',
+          'ket_quality' => '',
+          'lokasi' => '',
+          'menyebar' => 'Tidak',
+          'skala_nyeri' => '0',
+          'durasi' => '',
+          'nyeri_hilang' => 'Istirahat',
+          'ket_nyeri' => '',
+          'pada_dokter' => 'Tidak',
+          'ket_dokter' => '',
+          'berjalan_a' => 'Tidak',
+          'berjalan_b' => 'Tidak',
+          'berjalan_c' => 'Tidak',
+          'hasil' => 'Tidak beresiko (tidak ditemukan a dan b)',
+          'lapor' => 'Tidak',
+          'ket_lapor' => '',
+          'rencana' => '',
+          'nip' => $this->core->getUserInfo('username', null, true)
+        ];
+      }
+      
+      echo $this->draw('assesment.html', ['penilaian_igd' => $penilaian_igd]);
+      exit();
+    }
+
+    public function postAssessmentsave()
+    {
+      $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+      
+      // Cek apakah sudah ada data
+      $existing = $this->db('penilaian_awal_keperawatan_igd')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->oneArray();
+      
+      if($existing) {
+        // Update data yang sudah ada
+        $query = $this->db('penilaian_awal_keperawatan_igd')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->save($_POST);
+      } else {
+        // Insert data baru
+        $query = $this->db('penilaian_awal_keperawatan_igd')->save($_POST);
+      }
+      
+      if($query) {
+        $data['status'] = 'success';
+        echo json_encode($data);
+      } else {
+        $data['status'] = 'error';
+        $data['msg'] = 'Gagal menyimpan data assessment';
+        echo json_encode($data);
+      }
+      exit();
+    }
+
+    public function getAssessmenttampil($no_rawat)
+    {
+      $no_rawat = revertNoRawat($no_rawat);
+      
+      $penilaian_igd = $this->db('penilaian_awal_keperawatan_igd')
+        ->join('petugas', 'petugas.nip=penilaian_awal_keperawatan_igd.nip')
+        ->where('no_rawat', $no_rawat)
+        ->oneArray();
+      
+      if($penilaian_igd) {
+        $penilaian_igd['nama_petugas'] = $penilaian_igd['nama'];
+      }
+      
+      echo $this->draw('assesment.tampil.html', ['penilaian_igd' => $penilaian_igd]);
+      exit();
+    }
+
+    public function postAssessmentdelete()
+    {
+      $query = $this->db('penilaian_awal_keperawatan_igd')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->delete();
+      
+      if($query) {
+        $data['status'] = 'success';
+        echo json_encode($data);
+      } else {
+        $data['status'] = 'error';
+        $data['msg'] = 'Gagal menghapus data assessment';
+        echo json_encode($data);
+      }
+      exit();
+    }
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');
@@ -1241,6 +1399,244 @@ class Admin extends AdminModule
         exit();
     }
 
+    // ===== TRIASE IGD METHODS =====
+    
+    public function anyTriaseIgd()
+    {
+        if(isset($_POST['no_rawat'])) {
+            $no_rawat = $_POST['no_rawat'];
+            $no_rkm_medis = $_POST['no_rkm_medis'];
+            $nm_pasien = $_POST['nm_pasien'];
+            $tgl_registrasi = $_POST['tgl_registrasi'];
+            
+            // Cek apakah sudah ada data triase
+            $triase_igd = $this->db('mlite_triase_igd')
+                ->where('no_rawat', $no_rawat)
+                ->oneArray();
+            
+            // Jika belum ada, buat data default
+            if(!$triase_igd) {
+                $triase_igd = [
+                    'id_triase' => '',
+                    'no_rawat' => $no_rawat,
+                    'no_rkm_medis' => $no_rkm_medis,
+                    'nm_pasien' => $nm_pasien,
+                    'tgl_registrasi' => $tgl_registrasi,
+                    'tgl_triase' => date('Y-m-d\TH:i'),
+                    'petugas_id' => $this->core->getUserInfo('username', null, true),
+                    'kesadaran' => '',
+                    'airway' => '',
+                    'breathing' => '',
+                    'circulation' => '',
+                    'tekanan_darah' => '',
+                    'nadi' => '',
+                    'respirasi' => '',
+                    'suhu' => '',
+                    'spo2' => '',
+                    'gcs_e' => '',
+                    'gcs_v' => '',
+                    'gcs_m' => '',
+                    'kategori' => '',
+                    'skala_triase' => '',
+                    'keluhan_utama' => '',
+                    'diagnosa_awal' => ''
+                ];
+            } else {
+                $triase_igd['nm_pasien'] = $nm_pasien;
+                $triase_igd['tgl_registrasi'] = $tgl_registrasi;
+                // Format datetime untuk input datetime-local
+                if($triase_igd['tgl_triase']) {
+                    $triase_igd['tgl_triase'] = date('Y-m-d\TH:i', strtotime($triase_igd['tgl_triase']));
+                }
+            }
+            
+            // Ambil data petugas untuk dropdown
+            $petugas = $this->db('petugas')->where('status', '1')->toArray();
+            
+            echo $this->draw('triase_igd.html', [
+                'triase_igd' => $triase_igd,
+                'petugas' => $petugas
+            ]);
+        }
+        exit();
+    }
+    
+    public function postTriaseIgdSave()
+    {
+        try {
+            // Debug: Log raw POST data
+            error_log('DEBUG: Raw POST data: ' . print_r($_POST, true));
+            
+            // Validasi input required
+            $required_fields = ['no_rawat', 'no_rkm_medis', 'tgl_triase', 'petugas_id', 'kesadaran_triase', 'airway', 'breathing', 'circulation', 'kategori'];
+            foreach($required_fields as $field) {
+                if(empty($_POST[$field])) {
+                    throw new Exception("Field {$field} harus diisi");
+                }
+            }
+            
+            // Prepare clean data array
+            $data_to_save = [];
+            
+            // Copy only allowed fields
+            $allowed_fields = ['no_rawat', 'no_rkm_medis', 'tgl_triase', 'petugas_id', 'kesadaran', 'airway', 'breathing', 'circulation', 'tekanan_darah', 'nadi', 'respirasi', 'suhu', 'spo2', 'gcs_e', 'gcs_v', 'gcs_m', 'kategori', 'skala_triase', 'keluhan_utama', 'diagnosa_awal'];
+            
+            foreach($allowed_fields as $field) {
+                if(isset($_POST[$field]) && $_POST[$field] !== '') {
+                    $data_to_save[$field] = $_POST[$field];
+                }
+            }
+            
+            // Handle kesadaran_triase mapping
+            if(isset($_POST['kesadaran_triase'])) {
+                $data_to_save['kesadaran'] = $_POST['kesadaran_triase'];
+            }
+            
+            // Format datetime
+            if(isset($data_to_save['tgl_triase'])) {
+                $data_to_save['tgl_triase'] = date('Y-m-d H:i:s', strtotime($data_to_save['tgl_triase']));
+            }
+            
+            // Debug: Log cleaned data
+            error_log('DEBUG: Cleaned data to save: ' . print_r($data_to_save, true));
+            
+            // Completely prevent framework from auto-adding timestamp fields
+            // MLite QueryWrapper auto-adds created_at and updated_at with time() if columns exist
+            // We need to bypass this behavior entirely
+            
+            // Explicitly set timestamp fields to NULL to prevent framework auto-addition
+            $data_to_save['created_at'] = null;
+            $data_to_save['updated_at'] = null;
+            
+            // Remove id_triase for insert
+            unset($data_to_save['id_triase']);
+            
+            // Debug: Log final data
+            error_log('DEBUG: Final data after cleanup: ' . print_r($data_to_save, true));
+            
+            // Use direct SQL approach to bypass framework timestamp behavior
+            if(!empty($_POST['id_triase'])) {
+                // Update data yang sudah ada - use direct SQL to avoid framework timestamp issues
+                error_log('DEBUG: Performing UPDATE with direct SQL for id_triase: ' . $_POST['id_triase']);
+                
+                // Remove null timestamp fields and let MySQL handle them
+                unset($data_to_save['created_at']);
+                unset($data_to_save['updated_at']);
+                
+                // Build UPDATE query manually to avoid framework interference
+                $fields = array_keys($data_to_save);
+                $set_clause = [];
+                foreach($fields as $field) {
+                    $set_clause[] = "{$field} = :{$field}";
+                }
+                $sql = "UPDATE mlite_triase_igd SET " . implode(', ', $set_clause) . " WHERE id_triase = :id_triase";
+                
+                // Add id_triase to data for WHERE clause
+                $data_to_save['id_triase'] = $_POST['id_triase'];
+                
+                error_log('DEBUG: Direct UPDATE SQL: ' . $sql);
+                error_log('DEBUG: UPDATE Data: ' . print_r($data_to_save, true));
+                
+                $stmt = $this->db()->pdo()->prepare($sql);
+                $query = $stmt->execute($data_to_save);
+                $message = 'Data triase berhasil diupdate';
+            } else {
+                // Insert data baru - use direct SQL to avoid framework timestamp issues
+                error_log('DEBUG: Performing INSERT with direct SQL');
+                
+                // Remove null timestamp fields and let MySQL handle them
+                unset($data_to_save['created_at']);
+                unset($data_to_save['updated_at']);
+                
+                // Build INSERT query manually to avoid framework interference
+                $fields = array_keys($data_to_save);
+                $placeholders = ':' . implode(', :', $fields);
+                $sql = "INSERT INTO mlite_triase_igd (" . implode(', ', $fields) . ") VALUES (" . $placeholders . ")";
+                
+                error_log('DEBUG: Direct SQL: ' . $sql);
+                error_log('DEBUG: SQL Data: ' . print_r($data_to_save, true));
+                
+                $stmt = $this->db()->pdo()->prepare($sql);
+                $query = $stmt->execute($data_to_save);
+                $message = 'Data triase berhasil disimpan';
+            }
+            
+            if($query) {
+                $data['status'] = 'success';
+                $data['msg'] = $message;
+                error_log('DEBUG: Database operation successful');
+            } else {
+                $data['status'] = 'error';
+                $data['msg'] = 'Gagal menyimpan data triase';
+                error_log('DEBUG: Database operation failed');
+            }
+            
+        } catch(Exception $e) {
+            $data['status'] = 'error';
+            $data['msg'] = $e->getMessage();
+            error_log('DEBUG: Exception caught: ' . $e->getMessage());
+            error_log('DEBUG: Exception trace: ' . $e->getTraceAsString());
+        }
+        
+        echo json_encode($data);
+        exit();
+    }
+    
+    public function postTriaseIgdDelete()
+    {
+        try {
+            if(empty($_POST['no_rawat'])) {
+                throw new Exception('No rawat tidak boleh kosong');
+            }
+            
+            $query = $this->db('mlite_triase_igd')
+                ->where('no_rawat', $_POST['no_rawat'])
+                ->delete();
+            
+            if($query) {
+                $data['status'] = 'success';
+                $data['msg'] = 'Data triase berhasil dihapus';
+            } else {
+                $data['status'] = 'error';
+                $data['msg'] = 'Gagal menghapus data triase';
+            }
+            
+        } catch(Exception $e) {
+            $data['status'] = 'error';
+            $data['msg'] = $e->getMessage();
+        }
+        
+        echo json_encode($data);
+        exit();
+    }
+    
+    public function postTriaseIgdView()
+    {
+        if(isset($_POST['no_rawat'])) {
+            $triase_igd = $this->db('mlite_triase_igd')
+                ->join('petugas', 'petugas.nip=mlite_triase_igd.petugas_id')
+                ->join('pasien', 'pasien.no_rkm_medis=mlite_triase_igd.no_rkm_medis')
+                ->where('mlite_triase_igd.no_rawat', $_POST['no_rawat'])
+                ->oneArray();
+            
+            if($triase_igd) {
+                $triase_igd['nama_petugas'] = $triase_igd['nama'];
+                // Pastikan nm_pasien tersedia, jika tidak ada berikan fallback
+                if(empty($triase_igd['nm_pasien'])) {
+                    $triase_igd['nm_pasien'] = 'Nama Pasien Tidak Ditemukan';
+                }
+                // Hitung total GCS
+                $total_gcs = ($triase_igd['gcs_e'] ?? 0) + ($triase_igd['gcs_v'] ?? 0) + ($triase_igd['gcs_m'] ?? 0);
+                $triase_igd['total_gcs'] = $total_gcs > 0 ? $total_gcs : '-';
+                
+                echo $this->draw('triase_igd_view.html', ['triase_igd' => $triase_igd]);
+            } else {
+                echo '<div class="alert alert-warning">Data triase tidak ditemukan</div>';
+            }
+        }
+        exit();
+    }
+
     private function _addHeaderFiles()
     {
         $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
@@ -1251,6 +1647,7 @@ class Admin extends AdminModule
         $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+        $this->core->addCSS(url('plugins/igd/css/triase_igd.css'));
         $this->core->addJS(url([ADMIN, 'igd', 'javascript']), 'footer');
     }
 

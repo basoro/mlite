@@ -30,7 +30,6 @@
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
               <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAPIE & Pemeriksaan</a></li>
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
-              <li><a href="{?=url([ADMIN,'penilaian_keperawatan_ranap','manage'])?}&no_rawat={$value.no_rawat}">Penilaian Keperawatan Ranap</a></li>
               <li><a href="{?=url([ADMIN,'adime_gizi','manage'])?}&no_rawat={$value.no_rawat}">ADIME Gizi</a></li>
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
               <li class="dropdown-submenu">
@@ -246,6 +245,13 @@
     $('input:text[name=tgl_registrasi]').val(tgl_registrasi);
     $("#display").hide();
 
+    // Load form SOAP dengan fallback data dari pemeriksaan_ralan
+    var url_form = baseURL + '/rawat_inap/formsoap?t=' + mlite.token;
+    $.post(url_form, {no_rawat : no_rawat,
+    }, function(data) {
+      $("#form_soap").html(data).show();
+    });
+    
     var url = baseURL + '/rawat_inap/soap?t=' + mlite.token;
     $.post(url, {no_rawat : no_rawat,
     }, function(data) {
@@ -253,8 +259,33 @@
       $("#form_rincian").hide();
       $("#form").hide();
       $("#notif").hide();
-      $("#form_soap").show();
       $("#soap").html(data).show();
+    });
+  });
+
+  $('a[href="#assessment"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rawat = $(this).attr("data-no_rawat");
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+
+    $('input:text[name=no_rawat]').val(no_rawat);
+    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+    $('input:text[name=nm_pasien]').val(nm_pasien);
+    $("#display").hide();
+
+    var url = baseURL + '/rawat_inap/assessmenttampil?t=' + mlite.token;
+    $.post(url, {no_rawat : no_rawat,
+    }, function(data) {
+      // tampilkan data
+      $("#form_rincian").hide();
+      $("#form").hide();
+      $("#notif").hide();
+      $("#form_soap").hide();
+      $("#form_assessment").show();
+      $("#assessment").html(data).show();
     });
   });
 

@@ -1,0 +1,730 @@
+<div id="form_assesment">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Assessment Awal Keperawatan IGD</h3>
+    </div>
+    <div class="panel-body">
+      <form id="assesmentForm">
+        <input type="hidden" name="no_rawat" value="{$penilaian_igd.no_rawat}">
+        
+        <!-- Informasi Dasar -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Tanggal</label>
+              <input type="datetime-local" name="tanggal" class="form-control" value="{$penilaian_igd.tanggal}" required>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Informasi</label>
+              <select name="informasi" class="form-control" required>
+                <option value="Autoanamnesis" {if: $penilaian_igd.informasi == 'Autoanamnesis'}selected{/if}>Autoanamnesis</option>
+                <option value="Alloanamnesis" {if: $penilaian_igd.informasi == 'Alloanamnesis'}selected{/if}>Alloanamnesis</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keluhan dan Riwayat -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Keluhan Utama</label>
+              <textarea name="keluhan_utama" class="form-control" rows="3" required>{$penilaian_igd.keluhan_utama}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Riwayat Penyakit Dahulu (RPD)</label>
+              <textarea name="rpd" class="form-control" rows="3" required>{$penilaian_igd.rpd}</textarea>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Riwayat Penyakit Sekarang (RPO)</label>
+              <textarea name="rpo" class="form-control" rows="3" required>{$penilaian_igd.rpo}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Kehamilan -->
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Status Kehamilan</label>
+              <select name="status_kehamilan" class="form-control" required>
+                <option value="Tidak Hamil" {if: $penilaian_igd.status_kehamilan == 'Tidak Hamil'}selected{/if}>Tidak Hamil</option>
+                <option value="Hamil" {if: $penilaian_igd.status_kehamilan == 'Hamil'}selected{/if}>Hamil</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Gravida</label>
+              <input type="text" name="gravida" class="form-control" value="{$penilaian_igd.gravida}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Para</label>
+              <input type="text" name="para" class="form-control" value="{$penilaian_igd.para}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Abortus</label>
+              <input type="text" name="abortus" class="form-control" value="{$penilaian_igd.abortus}">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>HPHT</label>
+              <input type="text" name="hpht" class="form-control" value="{$penilaian_igd.hpht}">
+            </div>
+          </div>
+        </div>
+
+        <!-- Pemeriksaan Fisik -->
+        <h4>Pemeriksaan Fisik</h4>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Tekanan</label>
+              <select name="tekanan" class="form-control" required>
+                <option value="TAK" {if: $penilaian_igd.tekanan == 'TAK'}selected{/if}>TAK</option>
+                <option value="Sakit Kepala" {if: $penilaian_igd.tekanan == 'Sakit Kepala'}selected{/if}>Sakit Kepala</option>
+                <option value="Muntah" {if: $penilaian_igd.tekanan == 'Muntah'}selected{/if}>Muntah</option>
+                <option value="Pusing" {if: $penilaian_igd.tekanan == 'Pusing'}selected{/if}>Pusing</option>
+                <option value="Bingung" {if: $penilaian_igd.tekanan == 'Bingung'}selected{/if}>Bingung</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Pupil</label>
+              <select name="pupil" class="form-control" required>
+                <option value="Normal" {if: $penilaian_igd.pupil == 'Normal'}selected{/if}>Normal</option>
+                <option value="Miosis" {if: $penilaian_igd.pupil == 'Miosis'}selected{/if}>Miosis</option>
+                <option value="Isokor" {if: $penilaian_igd.pupil == 'Isokor'}selected{/if}>Isokor</option>
+                <option value="Anisokor" {if: $penilaian_igd.pupil == 'Anisokor'}selected{/if}>Anisokor</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Neurosensorik</label>
+              <select name="neurosensorik" class="form-control" required>
+                <option value="TAK" {if: $penilaian_igd.neurosensorik == 'TAK'}selected{/if}>TAK</option>
+                <option value="Spasme Otot" {if: $penilaian_igd.neurosensorik == 'Spasme Otot'}selected{/if}>Spasme Otot</option>
+                <option value="Perubahan Sensorik" {if: $penilaian_igd.neurosensorik == 'Perubahan Sensorik'}selected{/if}>Perubahan Sensorik</option>
+                <option value="Perubahan Motorik" {if: $penilaian_igd.neurosensorik == 'Perubahan Motorik'}selected{/if}>Perubahan Motorik</option>
+                <option value="Perubahan Bentuk Ekstremitas" {if: $penilaian_igd.neurosensorik == 'Perubahan Bentuk Ekstremitas'}selected{/if}>Perubahan Bentuk Ekstremitas</option>
+                <option value="Penurunan Tingkat Kesadaran" {if: $penilaian_igd.neurosensorik == 'Penurunan Tingkat Kesadaran'}selected{/if}>Penurunan Tingkat Kesadaran</option>
+                <option value="Fraktur/Dislokasi" {if: $penilaian_igd.neurosensorik == 'Fraktur/Dislokasi'}selected{/if}>Fraktur/Dislokasi</option>
+                <option value="Luksasio" {if: $penilaian_igd.neurosensorik == 'Luksasio'}selected{/if}>Luksasio</option>
+                <option value="Kerusakan Jaringan/Luka" {if: $penilaian_igd.neurosensorik == 'Kerusakan Jaringan/Luka'}selected{/if}>Kerusakan Jaringan/Luka</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Integumen</label>
+              <select name="integumen" class="form-control" required>
+                <option value="TAK" {if: $penilaian_igd.integumen == 'TAK'}selected{/if}>TAK</option>
+                <option value="Luka Bakar" {if: $penilaian_igd.integumen == 'Luka Bakar'}selected{/if}>Luka Bakar</option>
+                <option value="Luka Robek" {if: $penilaian_igd.integumen == 'Luka Robek'}selected{/if}>Luka Robek</option>
+                <option value="Lecet" {if: $penilaian_igd.integumen == 'Lecet'}selected{/if}>Lecet</option>
+                <option value="Luka Decubitus" {if: $penilaian_igd.integumen == 'Luka Decubitus'}selected{/if}>Luka Decubitus</option>
+                <option value="Luka Gangren" {if: $penilaian_igd.integumen == 'Luka Gangren'}selected{/if}>Luka Gangren</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Turgor</label>
+              <select name="turgor" class="form-control" required>
+                <option value="Baik" {if: $penilaian_igd.turgor == 'Baik'}selected{/if}>Baik</option>
+                <option value="Menurun" {if: $penilaian_igd.turgor == 'Menurun'}selected{/if}>Menurun</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Edema</label>
+              <select name="edema" class="form-control" required>
+                <option value="Tidak Ada" {if: $penilaian_igd.edema == 'Tidak Ada'}selected{/if}>Tidak Ada</option>
+                <option value="Ekstremitas" {if: $penilaian_igd.edema == 'Ekstremitas'}selected{/if}>Ekstremitas</option>
+                <option value="Seluruh Tubuh" {if: $penilaian_igd.edema == 'Seluruh Tubuh'}selected{/if}>Seluruh Tubuh</option>
+                <option value="Asites" {if: $penilaian_igd.edema == 'Asites'}selected{/if}>Asites</option>
+                <option value="Palpebrae" {if: $penilaian_igd.edema == 'Palpebrae'}selected{/if}>Palpebrae</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Mukosa</label>
+              <select name="mukosa" class="form-control" required>
+                <option value="Lembab" {if: $penilaian_igd.mukosa == 'Lembab'}selected{/if}>Lembab</option>
+                <option value="Kering" {if: $penilaian_igd.mukosa == 'Kering'}selected{/if}>Kering</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Perdarahan</label>
+              <select name="perdarahan" class="form-control" required>
+                <option value="Tidak Ada" {if: $penilaian_igd.perdarahan == 'Tidak Ada'}selected{/if}>Tidak Ada</option>
+                <option value="Ada" {if: $penilaian_igd.perdarahan == 'Ada'}selected{/if}>Ada</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Jumlah Perdarahan</label>
+              <input type="text" name="jumlah_perdarahan" class="form-control" value="{$penilaian_igd.jumlah_perdarahan}" maxlength="5">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Warna Perdarahan</label>
+              <input type="text" name="warna_perdarahan" class="form-control" value="{$penilaian_igd.warna_perdarahan}" maxlength="40">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Intoksikasi</label>
+              <select name="intoksikasi" class="form-control" required>
+                <option value="Tidak Ada" {if: $penilaian_igd.intoksikasi == 'Tidak Ada'}selected{/if}>Tidak Ada</option>
+                <option value="Ada" {if: $penilaian_igd.intoksikasi == 'Ada'}selected{/if}>Ada</option>
+                <option value="Gigitan Binatang" {if: $penilaian_igd.intoksikasi == 'Gigitan Binatang'}selected{/if}>Gigitan Binatang</option>
+                <option value="Zat Kimia" {if: $penilaian_igd.intoksikasi == 'Zat Kimia'}selected{/if}>Zat Kimia</option>
+                <option value="Gas" {if: $penilaian_igd.intoksikasi == 'Gas'}selected{/if}>Gas</option>
+                <option value="Obat" {if: $penilaian_igd.intoksikasi == 'Obat'}selected{/if}>Obat</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- BAB dan BAK -->
+        <h4>Eliminasi</h4>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>BAB (x/hari)</label>
+              <input type="text" name="bab" class="form-control" value="{$penilaian_igd.bab}" maxlength="2">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Frekuensi BAB</label>
+              <input type="text" name="xbab" class="form-control" value="{$penilaian_igd.xbab}" maxlength="10">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Konsistensi BAB</label>
+              <input type="text" name="kbab" class="form-control" value="{$penilaian_igd.kbab}" maxlength="40">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Warna BAB</label>
+              <input type="text" name="wbab" class="form-control" value="{$penilaian_igd.wbab}" maxlength="40">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>BAK (x/hari)</label>
+              <input type="text" name="bak" class="form-control" value="{$penilaian_igd.bak}" maxlength="2">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Frekuensi BAK</label>
+              <input type="text" name="xbak" class="form-control" value="{$penilaian_igd.xbak}" maxlength="10">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Warna BAK</label>
+              <input type="text" name="wbak" class="form-control" value="{$penilaian_igd.wbak}" maxlength="40">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Lain-lain BAK</label>
+              <input type="text" name="lbak" class="form-control" value="{$penilaian_igd.lbak}" maxlength="40">
+            </div>
+          </div>
+        </div>
+
+        <!-- Psikologis -->
+        <h4>Aspek Psikologis</h4>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Psikologis</label>
+              <select name="psikologis" class="form-control" required>
+                <option value="Tidak Ada Masalah" {if: $penilaian_igd.psikologis == 'Tidak Ada Masalah'}selected{/if}>Tidak Ada Masalah</option>
+                <option value="Marah" {if: $penilaian_igd.psikologis == 'Marah'}selected{/if}>Marah</option>
+                <option value="Takut" {if: $penilaian_igd.psikologis == 'Takut'}selected{/if}>Takut</option>
+                <option value="Depresi" {if: $penilaian_igd.psikologis == 'Depresi'}selected{/if}>Depresi</option>
+                <option value="Cepat Lelah" {if: $penilaian_igd.psikologis == 'Cepat Lelah'}selected{/if}>Cepat Lelah</option>
+                <option value="Cemas" {if: $penilaian_igd.psikologis == 'Cemas'}selected{/if}>Cemas</option>
+                <option value="Gelisah" {if: $penilaian_igd.psikologis == 'Gelisah'}selected{/if}>Gelisah</option>
+                <option value="Lain-lain" {if: $penilaian_igd.psikologis == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Gangguan Jiwa</label>
+              <select name="jiwa" class="form-control" required>
+                <option value="Tidak" {if: $penilaian_igd.jiwa == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_igd.jiwa == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Perilaku</label>
+              <select name="perilaku" class="form-control" required>
+                <option value="-" {if: $penilaian_igd.perilaku == '-'}selected{/if}>-</option>
+                <option value="Perilaku Kekerasan" {if: $penilaian_igd.perilaku == 'Perilaku Kekerasan'}selected{/if}>Perilaku Kekerasan</option>
+                <option value="Gangguan Efek" {if: $penilaian_igd.perilaku == 'Gangguan Efek'}selected{/if}>Gangguan Efek</option>
+                <option value="Gangguan Memori" {if: $penilaian_igd.perilaku == 'Gangguan Memori'}selected{/if}>Gangguan Memori</option>
+                <option value="Halusinasi" {if: $penilaian_igd.perilaku == 'Halusinasi'}selected{/if}>Halusinasi</option>
+                <option value="Kecenderungan Percobaan Bunuh Diri" {if: $penilaian_igd.perilaku == 'Kecenderungan Percobaan Bunuh Diri'}selected{/if}>Kecenderungan Percobaan Bunuh Diri</option>
+                <option value="Lainnya" {if: $penilaian_igd.perilaku == 'Lainnya'}selected{/if}>Lainnya</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Dilaporkan</label>
+              <input type="text" name="dilaporkan" class="form-control" value="{$penilaian_igd.dilaporkan}" maxlength="50">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Sebutkan</label>
+              <input type="text" name="sebutkan" class="form-control" value="{$penilaian_igd.sebutkan}" maxlength="50">
+            </div>
+          </div>
+        </div>
+
+        <!-- Sosial -->
+        <h4>Aspek Sosial</h4>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Hubungan dengan Anggota Keluarga</label>
+              <select name="hubungan" class="form-control" required>
+                <option value="Harmonis" {if: $penilaian_igd.hubungan == 'Harmonis'}selected{/if}>Harmonis</option>
+                <option value="Kurang Harmonis" {if: $penilaian_igd.hubungan == 'Kurang Harmonis'}selected{/if}>Kurang Harmonis</option>
+                <option value="Tidak Harmonis" {if: $penilaian_igd.hubungan == 'Tidak Harmonis'}selected{/if}>Tidak Harmonis</option>
+                <option value="Konflik Besar" {if: $penilaian_igd.hubungan == 'Konflik Besar'}selected{/if}>Konflik Besar</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Tinggal dengan</label>
+              <select name="tinggal_dengan" class="form-control" required>
+                <option value="Sendiri" {if: $penilaian_igd.tinggal_dengan == 'Sendiri'}selected{/if}>Sendiri</option>
+                <option value="Orang Tua" {if: $penilaian_igd.tinggal_dengan == 'Orang Tua'}selected{/if}>Orang Tua</option>
+                <option value="Suami / Istri" {if: $penilaian_igd.tinggal_dengan == 'Suami / Istri'}selected{/if}>Suami / Istri</option>
+                <option value="Lainnya" {if: $penilaian_igd.tinggal_dengan == 'Lainnya'}selected{/if}>Lainnya</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Keterangan Tinggal</label>
+              <input type="text" name="ket_tinggal" class="form-control" value="{$penilaian_igd.ket_tinggal}" maxlength="50">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Budaya/Adat Istiadat</label>
+              <select name="budaya" class="form-control" required>
+                <option value="Tidak Ada" {if: $penilaian_igd.budaya == 'Tidak Ada'}selected{/if}>Tidak Ada</option>
+                <option value="Ada" {if: $penilaian_igd.budaya == 'Ada'}selected{/if}>Ada</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Keterangan Budaya</label>
+              <input type="text" name="ket_budaya" class="form-control" value="{$penilaian_igd.ket_budaya}" maxlength="50" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edukasi -->
+        <h4>Edukasi</h4>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Pendidikan PJ</label>
+              <select name="pendidikan_pj" class="form-control" required>
+                <option value="-" {if: $penilaian_igd.pendidikan_pj == '-'}selected{/if}>-</option>
+                <option value="TS" {if: $penilaian_igd.pendidikan_pj == 'TS'}selected{/if}>TS</option>
+                <option value="TK" {if: $penilaian_igd.pendidikan_pj == 'TK'}selected{/if}>TK</option>
+                <option value="SD" {if: $penilaian_igd.pendidikan_pj == 'SD'}selected{/if}>SD</option>
+                <option value="SMP" {if: $penilaian_igd.pendidikan_pj == 'SMP'}selected{/if}>SMP</option>
+                <option value="SMA" {if: $penilaian_igd.pendidikan_pj == 'SMA'}selected{/if}>SMA</option>
+                <option value="SLTA/SEDERAJAT" {if: $penilaian_igd.pendidikan_pj == 'SLTA/SEDERAJAT'}selected{/if}>SLTA/SEDERAJAT</option>
+                <option value="D1" {if: $penilaian_igd.pendidikan_pj == 'D1'}selected{/if}>D1</option>
+                <option value="D2" {if: $penilaian_igd.pendidikan_pj == 'D2'}selected{/if}>D2</option>
+                <option value="D3" {if: $penilaian_igd.pendidikan_pj == 'D3'}selected{/if}>D3</option>
+                <option value="D4" {if: $penilaian_igd.pendidikan_pj == 'D4'}selected{/if}>D4</option>
+                <option value="S1" {if: $penilaian_igd.pendidikan_pj == 'S1'}selected{/if}>S1</option>
+                <option value="S2" {if: $penilaian_igd.pendidikan_pj == 'S2'}selected{/if}>S2</option>
+                <option value="S3" {if: $penilaian_igd.pendidikan_pj == 'S3'}selected{/if}>S3</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Keterangan Pendidikan PJ</label>
+              <input type="text" name="ket_pendidikan_pj" class="form-control" value="{$penilaian_igd.ket_pendidikan_pj}" maxlength="50">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Edukasi Diberikan Kepada</label>
+              <select name="edukasi" class="form-control" required>
+                <option value="Pasien" {if: $penilaian_igd.edukasi == 'Pasien'}selected{/if}>Pasien</option>
+                <option value="Keluarga" {if: $penilaian_igd.edukasi == 'Keluarga'}selected{/if}>Keluarga</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Keterangan Edukasi</label>
+              <input type="text" name="ket_edukasi" class="form-control" value="{$penilaian_igd.ket_edukasi}" maxlength="50" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aktivitas -->
+        <h4>Aktivitas</h4>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Kemampuan</label>
+              <select name="kemampuan" class="form-control" required>
+                <option value="Mandiri" {if: $penilaian_igd.kemampuan == 'Mandiri'}selected{/if}>Mandiri</option>
+                <option value="Bantuan Minimal" {if: $penilaian_igd.kemampuan == 'Bantuan Minimal'}selected{/if}>Bantuan Minimal</option>
+                <option value="Bantuan Sebagian" {if: $penilaian_igd.kemampuan == 'Bantuan Sebagian'}selected{/if}>Bantuan Sebagian</option>
+                <option value="Ketergantungan Total" {if: $penilaian_igd.kemampuan == 'Ketergantungan Total'}selected{/if}>Ketergantungan Total</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Aktivitas</label>
+              <select name="aktifitas" class="form-control" required>
+                <option value="Tirah Baring" {if: $penilaian_igd.aktifitas == 'Tirah Baring'}selected{/if}>Tirah Baring</option>
+                <option value="Duduk" {if: $penilaian_igd.aktifitas == 'Duduk'}selected{/if}>Duduk</option>
+                <option value="Berjalan" {if: $penilaian_igd.aktifitas == 'Berjalan'}selected{/if}>Berjalan</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Alat Bantu</label>
+              <select name="alat_bantu" class="form-control" required>
+                <option value="Tidak" {if: $penilaian_igd.alat_bantu == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_igd.alat_bantu == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Keterangan Alat Bantu</label>
+              <input type="text" name="ket_bantu" class="form-control" value="{$penilaian_igd.ket_bantu}" maxlength="50">
+            </div>
+          </div>
+        </div>
+
+        <!-- Nyeri -->
+        <h4>Nyeri</h4>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nyeri</label>
+              <select name="nyeri" class="form-control" required>
+                <option value="Tidak Ada Nyeri" {if: $penilaian_igd.nyeri == 'Tidak Ada Nyeri'}selected{/if}>Tidak Ada Nyeri</option>
+                <option value="Nyeri Akut" {if: $penilaian_igd.nyeri == 'Nyeri Akut'}selected{/if}>Nyeri Akut</option>
+                <option value="Nyeri Kronis" {if: $penilaian_igd.nyeri == 'Nyeri Kronis'}selected{/if}>Nyeri Kronis</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Provokes</label>
+              <select name="provokes" class="form-control" required>
+                <option value="Proses Penyakit" {if: $penilaian_igd.provokes == 'Proses Penyakit'}selected{/if}>Proses Penyakit</option>
+                <option value="Benturan" {if: $penilaian_igd.provokes == 'Benturan'}selected{/if}>Benturan</option>
+                <option value="Lain-lain" {if: $penilaian_igd.provokes == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Keterangan Provokes</label>
+              <input type="text" name="ket_provokes" class="form-control" value="{$penilaian_igd.ket_provokes}" maxlength="40" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Quality</label>
+              <select name="quality" class="form-control" required>
+                <option value="Seperti Tertusuk" {if: $penilaian_igd.quality == 'Seperti Tertusuk'}selected{/if}>Seperti Tertusuk</option>
+                <option value="Berdenyut" {if: $penilaian_igd.quality == 'Berdenyut'}selected{/if}>Berdenyut</option>
+                <option value="Teriris" {if: $penilaian_igd.quality == 'Teriris'}selected{/if}>Teriris</option>
+                <option value="Tertindih" {if: $penilaian_igd.quality == 'Tertindih'}selected{/if}>Tertindih</option>
+                <option value="Tertiban" {if: $penilaian_igd.quality == 'Tertiban'}selected{/if}>Tertiban</option>
+                <option value="Lain-lain" {if: $penilaian_igd.quality == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Keterangan Quality</label>
+              <input type="text" name="ket_quality" class="form-control" value="{$penilaian_igd.ket_quality}" maxlength="50" required>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Lokasi</label>
+              <input type="text" name="lokasi" class="form-control" value="{$penilaian_igd.lokasi}" maxlength="50" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Menyebar</label>
+              <select name="menyebar" class="form-control" required>
+                <option value="Tidak" {if: $penilaian_igd.menyebar == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_igd.menyebar == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Skala Nyeri (0-10)</label>
+              <select name="skala_nyeri" class="form-control" required>
+                <option value="0" {if: $penilaian_igd.skala_nyeri == '0'}selected{/if}>0</option>
+                <option value="1" {if: $penilaian_igd.skala_nyeri == '1'}selected{/if}>1</option>
+                <option value="2" {if: $penilaian_igd.skala_nyeri == '2'}selected{/if}>2</option>
+                <option value="3" {if: $penilaian_igd.skala_nyeri == '3'}selected{/if}>3</option>
+                <option value="4" {if: $penilaian_igd.skala_nyeri == '4'}selected{/if}>4</option>
+                <option value="5" {if: $penilaian_igd.skala_nyeri == '5'}selected{/if}>5</option>
+                <option value="6" {if: $penilaian_igd.skala_nyeri == '6'}selected{/if}>6</option>
+                <option value="7" {if: $penilaian_igd.skala_nyeri == '7'}selected{/if}>7</option>
+                <option value="8" {if: $penilaian_igd.skala_nyeri == '8'}selected{/if}>8</option>
+                <option value="9" {if: $penilaian_igd.skala_nyeri == '9'}selected{/if}>9</option>
+                <option value="10" {if: $penilaian_igd.skala_nyeri == '10'}selected{/if}>10</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Durasi</label>
+              <input type="text" name="durasi" class="form-control" value="{$penilaian_igd.durasi}" maxlength="25" required>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Nyeri Hilang</label>
+              <select name="nyeri_hilang" class="form-control" required>
+                <option value="Istirahat" {if: $penilaian_igd.nyeri_hilang == 'Istirahat'}selected{/if}>Istirahat</option>
+                <option value="Medengar Musik" {if: $penilaian_igd.nyeri_hilang == 'Medengar Musik'}selected{/if}>Medengar Musik</option>
+                <option value="Minum Obat" {if: $penilaian_igd.nyeri_hilang == 'Minum Obat'}selected{/if}>Minum Obat</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Keterangan Nyeri</label>
+              <input type="text" name="ket_nyeri" class="form-control" value="{$penilaian_igd.ket_nyeri}" maxlength="40">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Pada Dokter</label>
+              <select name="pada_dokter" class="form-control" required>
+                <option value="Tidak" {if: $penilaian_igd.pada_dokter == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_igd.pada_dokter == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Keterangan Dokter</label>
+              <input type="text" name="ket_dokter" class="form-control" value="{$penilaian_igd.ket_dokter}" maxlength="15">
+            </div>
+          </div>
+        </div>
+
+        <!-- Risiko Jatuh -->
+        <h4>Risiko Jatuh</h4>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Berjalan A</label>
+              <select name="berjalan_a" class="form-control" required>
+                <option value="Tidak" {if: $penilaian_igd.berjalan_a == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_igd.berjalan_a == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Berjalan B</label>
+              <select name="berjalan_b" class="form-control" required>
+                <option value="Tidak" {if: $penilaian_igd.berjalan_b == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_igd.berjalan_b == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Berjalan C</label>
+              <select name="berjalan_c" class="form-control" required>
+                <option value="Tidak" {if: $penilaian_igd.berjalan_c == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_igd.berjalan_c == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Hasil</label>
+              <select name="hasil" class="form-control" required>
+                <option value="Tidak beresiko (tidak ditemukan a dan b)" {if: $penilaian_igd.hasil == 'Tidak beresiko (tidak ditemukan a dan b)'}selected{/if}>Tidak beresiko (tidak ditemukan a dan b)</option>
+                <option value="Resiko rendah (ditemukan a/b)" {if: $penilaian_igd.hasil == 'Resiko rendah (ditemukan a/b)'}selected{/if}>Resiko rendah (ditemukan a/b)</option>
+                <option value="Resiko tinggi (ditemukan a dan b)" {if: $penilaian_igd.hasil == 'Resiko tinggi (ditemukan a dan b)'}selected{/if}>Resiko tinggi (ditemukan a dan b)</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Lapor</label>
+              <select name="lapor" class="form-control" required>
+                <option value="Tidak" {if: $penilaian_igd.lapor == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_igd.lapor == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Keterangan Lapor</label>
+              <input type="text" name="ket_lapor" class="form-control" value="{$penilaian_igd.ket_lapor}" maxlength="15">
+            </div>
+          </div>
+        </div>
+
+        <!-- Rencana -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Rencana</label>
+              <textarea name="rencana" class="form-control" rows="4" required>{$penilaian_igd.rencana}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tombol -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <button type="button" id="simpan_assesment" class="btn btn-primary"><i class="fa fa-save"></i> Simpan</button>
+              <button type="button" id="batal_assesment" class="btn btn-default"><i class="fa fa-times"></i> Batal</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  // Handler untuk tombol simpan
+  $('#simpan_assesment').click(function() {
+    var formData = $('#assesmentForm').serialize();
+    var baseURL = mlite.url + '/' + mlite.admin;
+    
+    $.ajax({
+      url: baseURL + '/igd/assessmentsave?t=' + mlite.token,
+      type: 'POST',
+      data: formData,
+      dataType: 'json',
+      success: function(response) {
+        if(response.status == 'success') {
+          $('#notif').html('<div class="alert alert-success alert-dismissible fade in" role="alert" style="border-radius:0px;margin-top:-15px;">Data assessment berhasil disimpan!<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button></div>').show();
+          $('#form_assesment').hide();
+        } else {
+          $('#notif').html('<div class="alert alert-danger alert-dismissible fade in" role="alert" style="border-radius:0px;margin-top:-15px;">Gagal menyimpan data: ' + (response.msg || 'Unknown error') + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button></div>').show();
+        }
+      },
+      error: function() {
+        $('#notif').html('<div class="alert alert-danger alert-dismissible fade in" role="alert" style="border-radius:0px;margin-top:-15px;">Terjadi kesalahan saat menyimpan data!<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button></div>').show();
+      }
+    });
+  });
+  
+  // Handler untuk tombol batal
+  $('#batal_assesment').click(function() {
+    $('#form_assesment').hide();
+  });
+});
+</script>

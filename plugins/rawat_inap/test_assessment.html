@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Assessment Form</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h2>Test Assessment Form Submission</h2>
+    
+    <form id="test_form">
+        <input type="hidden" name="no_rawat" value="2024/01/01/000001">
+        <input type="text" name="tanggal" value="2024-01-01" placeholder="Tanggal">
+        <input type="text" name="informasi" value="Test Data" placeholder="Informasi">
+        <button type="button" id="test_submit">Test Submit</button>
+    </form>
+    
+    <div id="result"></div>
+    
+    <script>
+    // Simulasi mlite object
+    var mlite = {
+        url: 'http://localhost',
+        admin: 'admin',
+        token: 'test_token'
+    };
+    
+    $('#test_submit').on('click', function() {
+        var baseURL = mlite.url + '/' + mlite.admin;
+        var formData = $('#test_form').serialize();
+        
+        console.log('Test URL:', baseURL + '/rawat_inap/assessmentsave?t=' + mlite.token);
+        console.log('Test Data:', formData);
+        
+        // Simulasi AJAX call
+        $.ajax({
+            url: baseURL + '/rawat_inap/assessmentsave?t=' + mlite.token,
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function(data) {
+                console.log('Success Response:', data);
+                $('#result').html('<div style="color: green;">Success: ' + JSON.stringify(data) + '</div>');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error Response:', xhr.responseText);
+                $('#result').html('<div style="color: red;">Error: ' + error + '<br>Response: ' + xhr.responseText + '</div>');
+            }
+        });
+    });
+    </script>
+</body>
+</html>

@@ -647,6 +647,40 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function anyFormSoap()
+    {
+      // Ambil data pemeriksaan_ralan terbaru sebagai fallback
+      $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->desc('tgl_perawatan')
+        ->desc('jam_rawat')
+        ->oneArray();
+      
+      // Set default values dari pemeriksaan_ralan jika ada
+      $default_values = [
+        'suhu_tubuh' => $pemeriksaan_ralan['suhu_tubuh'] ?? '',
+        'tensi' => $pemeriksaan_ralan['tensi'] ?? '',
+        'nadi' => $pemeriksaan_ralan['nadi'] ?? '',
+        'respirasi' => $pemeriksaan_ralan['respirasi'] ?? '',
+        'tinggi' => $pemeriksaan_ralan['tinggi'] ?? '',
+        'berat' => $pemeriksaan_ralan['berat'] ?? '',
+        'gcs' => $pemeriksaan_ralan['gcs'] ?? '',
+        'kesadaran' => $pemeriksaan_ralan['kesadaran'] ?? '',
+        'alergi' => $pemeriksaan_ralan['alergi'] ?? '',
+        'lingkar_perut' => $pemeriksaan_ralan['lingkar_perut'] ?? '',
+        'keluhan' => $pemeriksaan_ralan['keluhan'] ?? '',
+        'pemeriksaan' => $pemeriksaan_ralan['pemeriksaan'] ?? '',
+        'penilaian' => $pemeriksaan_ralan['penilaian'] ?? '',
+        'rtl' => $pemeriksaan_ralan['rtl'] ?? '',
+        'instruksi' => $pemeriksaan_ralan['instruksi'] ?? '',
+        'evaluasi' => $pemeriksaan_ralan['evaluasi'] ?? '',
+        'spo2' => $pemeriksaan_ralan['spo2'] ?? ''
+      ];
+      
+      echo $this->draw('form.soap.html', ['default_values' => $default_values]);
+      exit();
+    }
+
     public function postSaveSOAP()
     {
       $_POST['nip'] = $this->core->getUserInfo('username', null, true);
@@ -1272,6 +1306,273 @@ class Admin extends AdminModule
       }
   
       echo $this->draw('display.icd.html', ['diagnosa' => $diagnosa, 'prosedur' => $prosedur]);
+      exit();
+    }
+
+    public function getAssessment($no_rawat)
+    {
+      $no_rawat = revertNoRawat($no_rawat);
+      
+      // Cek apakah sudah ada data assessment
+      $penilaian_ranap = $this->db('mlite_penilaian_awal_keperawatan_ranap')
+        ->where('no_rawat', $no_rawat)
+        ->oneArray();
+      
+      // Jika belum ada, ambil data fallback dari pemeriksaan_ralan dan pemeriksaan_ranap
+      if(!$penilaian_ranap) {
+        $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')
+          ->where('no_rawat', $no_rawat)
+          ->desc('tgl_perawatan')
+          ->desc('jam_rawat')
+          ->oneArray();
+          
+        $pemeriksaan_ranap = $this->db('pemeriksaan_ranap')
+          ->where('no_rawat', $no_rawat)
+          ->desc('tgl_perawatan')
+          ->desc('jam_rawat')
+          ->oneArray();
+        
+        $penilaian_ranap = [
+          'no_rawat' => $no_rawat,
+          'tanggal' => date('Y-m-d H:i:s'),
+          'informasi' => 'Autoanamnesis',
+          'ket_informasi' => '',
+          'tiba_diruang_rawat' => 'Jalan Tanpa Bantuan',
+          'kasus_trauma' => 'Non Trauma',
+          'cara_masuk' => 'Poli',
+          'rps' => $pemeriksaan_ralan['keluhan'] ?? $pemeriksaan_ranap['keluhan'] ?? '',
+          'rpd' => '',
+          'rpk' => '',
+          'rpo' => '',
+          'riwayat_pembedahan' => '',
+          'riwayat_dirawat_dirs' => '',
+          'alat_bantu_dipakai' => 'Kacamata',
+          'riwayat_kehamilan' => 'Tidak',
+          'riwayat_kehamilan_perkiraan' => '',
+          'riwayat_tranfusi' => '',
+          'riwayat_alergi' => $pemeriksaan_ralan['alergi'] ?? $pemeriksaan_ranap['alergi'] ?? '',
+          'riwayat_merokok' => 'Tidak',
+          'riwayat_merokok_jumlah' => '',
+          'riwayat_alkohol' => 'Tidak',
+          'riwayat_alkohol_jumlah' => '',
+          'riwayat_narkoba' => 'Tidak',
+          'riwayat_olahraga' => 'Tidak',
+          'pemeriksaan_mental' => '',
+          'pemeriksaan_keadaan_umum' => 'Baik',
+          'pemeriksaan_gcs' => $pemeriksaan_ralan['gcs'] ?? $pemeriksaan_ranap['gcs'] ?? '',
+          'pemeriksaan_td' => $pemeriksaan_ralan['tensi'] ?? $pemeriksaan_ranap['tensi'] ?? '',
+          'pemeriksaan_nadi' => $pemeriksaan_ralan['nadi'] ?? $pemeriksaan_ranap['nadi'] ?? '',
+          'pemeriksaan_rr' => $pemeriksaan_ralan['respirasi'] ?? $pemeriksaan_ranap['respirasi'] ?? '',
+          'pemeriksaan_suhu' => $pemeriksaan_ralan['suhu_tubuh'] ?? $pemeriksaan_ranap['suhu_tubuh'] ?? '',
+          'pemeriksaan_spo2' => $pemeriksaan_ralan['spo2'] ?? $pemeriksaan_ranap['spo2'] ?? '',
+          'pemeriksaan_bb' => $pemeriksaan_ralan['berat'] ?? $pemeriksaan_ranap['berat'] ?? '',
+          'pemeriksaan_tb' => $pemeriksaan_ralan['tinggi'] ?? $pemeriksaan_ranap['tinggi'] ?? '',
+          'pemeriksaan_susunan_kepala' => 'TAK',
+          'pemeriksaan_susunan_wajah' => 'TAK',
+          'pemeriksaan_susunan_leher' => 'TAK',
+          'pemeriksaan_susunan_kejang' => 'TAK',
+          'pemeriksaan_susunan_sensorik' => 'TAK',
+          'pemeriksaan_kardiovaskuler_denyut_nadi' => 'Teratur',
+          'pemeriksaan_kardiovaskuler_sirkulasi' => 'Akral Hangat',
+          'pemeriksaan_kardiovaskuler_pulsasi' => 'Kuat',
+          'pemeriksaan_respirasi_pola_nafas' => 'Normal',
+          'pemeriksaan_respirasi_retraksi' => 'Tidak Ada',
+          'pemeriksaan_respirasi_suara_nafas' => 'Vesikuler',
+          'pemeriksaan_respirasi_volume_pernafasan' => 'Normal',
+          'pemeriksaan_respirasi_jenis_pernafasan' => 'Pernafasan Dada',
+          'pemeriksaan_respirasi_irama_nafas' => 'Teratur',
+          'pemeriksaan_respirasi_batuk' => 'Tidak',
+          'pemeriksaan_gastrointestinal_mulut' => 'TAK',
+          'pemeriksaan_gastrointestinal_gigi' => 'TAK',
+          'pemeriksaan_gastrointestinal_lidah' => 'TAK',
+          'pemeriksaan_gastrointestinal_tenggorokan' => 'TAK',
+          'pemeriksaan_gastrointestinal_abdomen' => 'Supel',
+          'pemeriksaan_gastrointestinal_peistatik_usus' => 'TAK',
+          'pemeriksaan_gastrointestinal_anus' => 'TAK',
+          'pemeriksaan_neurologi_pengelihatan' => 'TAK',
+          'pemeriksaan_neurologi_alat_bantu_penglihatan' => 'Tidak',
+          'pemeriksaan_neurologi_pendengaran' => 'TAK',
+          'pemeriksaan_neurologi_bicara' => 'Jelas',
+          'pemeriksaan_neurologi_sensorik' => 'TAK',
+          'pemeriksaan_neurologi_motorik' => 'TAK',
+          'pemeriksaan_neurologi_kekuatan_otot' => 'Kuat',
+          'pemeriksaan_integument_warnakulit' => 'Normal',
+          'pemeriksaan_integument_turgor' => 'Baik',
+          'pemeriksaan_integument_kulit' => 'Normal',
+          'pemeriksaan_integument_dekubitas' => 'Tidak Ada',
+          'pemeriksaan_muskuloskletal_pergerakan_sendi' => 'Bebas',
+          'pemeriksaan_muskuloskletal_kekauatan_otot' => 'Baik',
+          'pemeriksaan_muskuloskletal_nyeri_sendi' => 'Tidak Ada',
+          'pemeriksaan_muskuloskletal_oedema' => 'Tidak Ada',
+          'pemeriksaan_muskuloskletal_fraktur' => 'Tidak Ada',
+          'pemeriksaan_eliminasi_bab_frekuensi_jumlah' => '',
+          'pemeriksaan_eliminasi_bab_frekuensi_durasi' => '',
+          'pemeriksaan_eliminasi_bab_konsistensi' => '',
+          'pemeriksaan_eliminasi_bab_warna' => '',
+          'pemeriksaan_eliminasi_bak_frekuensi_jumlah' => '',
+          'pemeriksaan_eliminasi_bak_frekuensi_durasi' => '',
+          'pemeriksaan_eliminasi_bak_warna' => '',
+          'pemeriksaan_eliminasi_bak_lainlain' => '',
+          'pola_aktifitas_makanminum' => 'Mandiri',
+          'pola_aktifitas_mandi' => 'Mandiri',
+          'pola_aktifitas_eliminasi' => 'Mandiri',
+          'pola_aktifitas_berpakaian' => 'Mandiri',
+          'pola_aktifitas_berpindah' => 'Mandiri',
+          'pola_nutrisi_frekuesi_makan' => '',
+          'pola_nutrisi_jenis_makanan' => '',
+          'pola_nutrisi_porsi_makan' => '',
+          'pola_tidur_lama_tidur' => '',
+          'pola_tidur_gangguan' => 'Tidak Ada Gangguan',
+          'pengkajian_fungsi_kemampuan_sehari' => 'Mandiri',
+          'pengkajian_fungsi_aktifitas' => 'Berjalan',
+          'pengkajian_fungsi_berjalan' => 'TAK',
+          'pengkajian_fungsi_ambulasi' => 'Tidak Menggunakan',
+          'pengkajian_fungsi_ekstrimitas_atas' => 'TAK',
+          'pengkajian_fungsi_ekstrimitas_bawah' => 'TAK',
+          'pengkajian_fungsi_menggenggam' => 'Tidak Ada Kesulitan',
+          'pengkajian_fungsi_koordinasi' => 'Tidak Ada Kesulitan',
+          'pengkajian_fungsi_kesimpulan' => 'Tidak (Tidak Perlu Co DPJP)',
+          'riwayat_psiko_kondisi_psiko' => 'Tidak Ada Masalah',
+          'riwayat_psiko_gangguan_jiwa' => 'Tidak',
+          'riwayat_psiko_perilaku' => 'Tidak Ada Masalah',
+          'riwayat_psiko_hubungan_keluarga' => 'Harmonis',
+          'riwayat_psiko_tinggal' => 'Keluarga',
+          'riwayat_psiko_nilai_kepercayaan' => 'Tidak Ada',
+          'riwayat_psiko_pendidikan_pj' => '-',
+          'riwayat_psiko_edukasi_diberikan' => 'Pasien',
+          'penilaian_nyeri' => 'Tidak Ada Nyeri',
+          'penilaian_nyeri_penyebab' => 'Proses Penyakit',
+          'penilaian_nyeri_kualitas' => 'Seperti Tertusuk',
+          'penilaian_nyeri_lokasi' => '',
+          'penilaian_nyeri_menyebar' => 'Tidak',
+          'penilaian_nyeri_skala' => '0',
+          'penilaian_nyeri_waktu' => '',
+          'penilaian_nyeri_hilang' => 'Istirahat',
+          'penilaian_nyeri_diberitahukan_dokter' => 'Tidak',
+          'penilaian_nyeri_jam_diberitahukan_dokter' => '',
+          'penilaian_jatuhmorse_skala1' => 'Tidak',
+          'penilaian_jatuhmorse_nilai1' => 0,
+          'penilaian_jatuhmorse_skala2' => 'Tidak',
+          'penilaian_jatuhmorse_nilai2' => 0,
+          'penilaian_jatuhmorse_skala3' => 'Tidak Ada/Kursi Roda/Perawat/Tirah Baring',
+          'penilaian_jatuhmorse_nilai3' => 0,
+          'penilaian_jatuhmorse_skala4' => 'Tidak',
+          'penilaian_jatuhmorse_nilai4' => 0,
+          'penilaian_jatuhmorse_skala5' => 'Normal/Tirah Baring/Imobilisasi',
+          'penilaian_jatuhmorse_nilai5' => 0,
+          'penilaian_jatuhmorse_skala6' => 'Sadar Akan Kemampuan Diri Sendiri',
+          'penilaian_jatuhmorse_nilai6' => 0,
+          'penilaian_jatuhmorse_totalnilai' => 0,
+          'penilaian_jatuhsydney_skala1' => 'Tidak',
+          'penilaian_jatuhsydney_nilai1' => 0,
+          'penilaian_jatuhsydney_skala2' => 'Tidak',
+          'penilaian_jatuhsydney_nilai2' => 0,
+          'penilaian_jatuhsydney_skala3' => 'Tidak',
+          'penilaian_jatuhsydney_nilai3' => 0,
+          'penilaian_jatuhsydney_skala4' => 'Tidak',
+          'penilaian_jatuhsydney_nilai4' => 0,
+          'penilaian_jatuhsydney_skala5' => 'Tidak',
+          'penilaian_jatuhsydney_nilai5' => 0,
+          'penilaian_jatuhsydney_skala6' => 'Tidak',
+          'penilaian_jatuhsydney_nilai6' => 0,
+          'penilaian_jatuhsydney_skala7' => 'Tidak',
+          'penilaian_jatuhsydney_nilai7' => 0,
+          'penilaian_jatuhsydney_skala8' => 'Tidak',
+          'penilaian_jatuhsydney_nilai8' => 0,
+          'penilaian_jatuhsydney_skala9' => 'Tidak',
+          'penilaian_jatuhsydney_nilai9' => 0,
+          'penilaian_jatuhsydney_skala10' => 'Tidak',
+          'penilaian_jatuhsydney_nilai10' => 0,
+          'penilaian_jatuhsydney_skala11' => 'Tidak',
+          'penilaian_jatuhsydney_nilai11' => 0,
+          'penilaian_jatuhsydney_totalnilai' => 0,
+          'skrining_gizi1' => 'Tidak ada penurunan berat badan',
+          'nilai_gizi1' => 0,
+          'skrining_gizi2' => 'Tidak',
+          'nilai_gizi2' => 0,
+          'nilai_total_gizi' => 0,
+          'skrining_gizi_diagnosa_khusus' => 'Tidak',
+          'skrining_gizi_diketahui_dietisen' => 'Tidak',
+          'skrining_gizi_jam_diketahui_dietisen' => '',
+          'rencana' => '',
+          'nip1' => $this->core->getUserInfo('username', null, true),
+          'nip2' => $this->core->getUserInfo('username', null, true),
+          'kd_dokter' => ''
+        ];
+      }
+      
+      echo $this->draw('assesment.html', ['penilaian_ranap' => $penilaian_ranap]);
+      exit();
+    }
+
+    public function postAssessmentsave()
+    {
+      $_POST['nip1'] = $this->core->getUserInfo('username', null, true);
+      $_POST['nip2'] = $this->core->getUserInfo('username', null, true);
+      
+      // Remove fields that don't exist in database
+      $data = $_POST;
+      unset($data['no_rawat_display']);
+      
+      // Cek apakah sudah ada data
+      $existing = $this->db('mlite_penilaian_awal_keperawatan_ranap')
+        ->where('no_rawat', $data['no_rawat'])
+        ->oneArray();
+      
+      if($existing) {
+        // Update data yang sudah ada
+        $query = $this->db('mlite_penilaian_awal_keperawatan_ranap')
+          ->where('no_rawat', $data['no_rawat'])
+          ->save($data);
+      } else {
+        // Insert data baru
+        $query = $this->db('mlite_penilaian_awal_keperawatan_ranap')->save($data);
+      }
+      
+      if($query) {
+        $data['status'] = 'success';
+        echo json_encode($data);
+      } else {
+        $data['status'] = 'error';
+        $data['msg'] = 'Gagal menyimpan data assessment';
+        echo json_encode($data);
+      }
+      exit();
+    }
+
+    public function getAssessmenttampil($no_rawat)
+    {
+      $no_rawat = revertNoRawat($no_rawat);
+      
+      $penilaian_ranap = $this->db('mlite_penilaian_awal_keperawatan_ranap')
+        ->join('petugas as p1', 'p1.nip=mlite_penilaian_awal_keperawatan_ranap.nip1')
+        ->join('petugas as p2', 'p2.nip=mlite_penilaian_awal_keperawatan_ranap.nip2')
+        ->where('no_rawat', $no_rawat)
+        ->oneArray();
+      
+      if($penilaian_ranap) {
+        $penilaian_ranap['nama_petugas1'] = $penilaian_ranap['p1.nama'];
+        $penilaian_ranap['nama_petugas2'] = $penilaian_ranap['p2.nama'];
+      }
+      
+      echo $this->draw('assesment.tampil.html', ['penilaian_ranap' => $penilaian_ranap]);
+      exit();
+    }
+
+    public function postAssessmentdelete()
+    {
+      $query = $this->db('mlite_penilaian_awal_keperawatan_ranap')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->delete();
+      
+      if($query) {
+        $data['status'] = 'success';
+        echo json_encode($data);
+      } else {
+        $data['status'] = 'error';
+        $data['msg'] = 'Gagal menghapus data assessment';
+        echo json_encode($data);
+      }
       exit();
     }
 

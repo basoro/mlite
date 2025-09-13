@@ -1,0 +1,741 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Penilaian Awal Keperawatan Rawat Jalan</h4>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <!-- Hidden field untuk no_rawat -->
+    <input type="hidden" name="no_rawat" value="{$reg_periksa.no_rawat}" />
+    
+    <!-- Informasi Dasar -->
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Nomor Rawat</label>
+          <input type="text" name="no_rawat_assessment" class="form-control" placeholder="Nomor Rawat" required value="{$reg_periksa.no_rawat}" readonly />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Tanggal</label>
+          <input type="datetime-local" name="tanggal" class="form-control" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.tanggal}{else}{?=date('Y-m-d\TH:i')?}{/if}" required />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Informasi</label>
+          <select name="informasi" class="form-control" required>
+              <option value="Autoanamnesis" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.informasi == 'Autoanamnesis'}selected{/if}>Autoanamnesis</option>
+              <option value="Alloanamnesis" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.informasi == 'Alloanamnesis'}selected{/if}>Alloanamnesis</option>
+          </select>
+      </div>
+    </div>
+    
+    <!-- Vital Signs -->
+    <div class="col-md-12"><h5><strong>Tanda Vital</strong></h5></div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>Tekanan Darah</label>
+          <input type="text" name="td" class="form-control" placeholder="mmHg" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.td}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>Nadi</label>
+          <input type="text" name="nadi" class="form-control" placeholder="x/menit" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.nadi}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>Respirasi</label>
+          <input type="text" name="rr" class="form-control" placeholder="x/menit" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.rr}{/if}" required />
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>Suhu</label>
+          <input type="text" name="suhu" class="form-control" placeholder="°C" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.suhu}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>GCS</label>
+          <input type="text" name="gcs" class="form-control" placeholder="E-V-M" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.gcs}{/if}" required />
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>Berat Badan (kg)</label>
+          <input type="text" name="bb" class="form-control" placeholder="kg" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.bb}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>Tinggi Badan (cm)</label>
+          <input type="text" name="tb" class="form-control" placeholder="cm" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.tb}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>BMI</label>
+          <input type="text" name="bmi" class="form-control" placeholder="BMI" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.bmi}{/if}" required />
+      </div>
+    </div>
+    
+    <!-- Riwayat -->
+    <div class="col-md-12"><h5><strong>Riwayat</strong></h5></div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Keluhan Utama</label>
+          <textarea name="keluhan_utama" class="form-control" rows="3" placeholder="Keluhan utama pasien">{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.keluhan_utama}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Riwayat Penyakit Dahulu</label>
+          <textarea name="rpd" class="form-control" rows="2" placeholder="RPD">{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.rpd}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Riwayat Penyakit Keluarga</label>
+          <textarea name="rpk" class="form-control" rows="2" placeholder="RPK" required>{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.rpk}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Riwayat Pengobatan</label>
+          <textarea name="rpo" class="form-control" rows="2" placeholder="RPO" required>{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.rpo}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Alergi</label>
+          <input type="text" name="alergi" class="form-control" placeholder="Alergi" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.alergi}{/if}" />
+      </div>
+    </div>
+    
+    <!-- Status Fungsional -->
+    <div class="col-md-12"><h5><strong>Status Fungsional</strong></h5></div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Alat Bantu</label>
+          <select name="alat_bantu" class="form-control" required>
+              <option value="Tidak" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.alat_bantu == 'Tidak'}selected{/if}>Tidak</option>
+              <option value="Ya" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.alat_bantu == 'Ya'}selected{/if}>Ya</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Keterangan Alat Bantu</label>
+          <input type="text" name="ket_bantu" class="form-control" placeholder="Keterangan" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.ket_bantu}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Prothesa</label>
+          <select name="prothesa" class="form-control" required>
+              <option value="Tidak" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.prothesa == 'Tidak'}selected{/if}>Tidak</option>
+              <option value="Ya" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.prothesa == 'Ya'}selected{/if}>Ya</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Keterangan Prothesa</label>
+          <input type="text" name="ket_pro" class="form-control" placeholder="Keterangan" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.ket_pro}{/if}" required />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>ADL (Activity Daily Living)</label>
+          <select name="adl" class="form-control" required>
+              <option value="Mandiri" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.adl == 'Mandiri'}selected{/if}>Mandiri</option>
+              <option value="Dibantu" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.adl == 'Dibantu'}selected{/if}>Dibantu</option>
+          </select>
+      </div>
+    </div>
+    
+    <!-- Status Psikososial -->
+    <div class="col-md-12"><h5><strong>Status Psikososial</strong></h5></div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Status Psikologi</label>
+          <select name="status_psiko" class="form-control" required>
+              <option value="Tenang" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.status_psiko == 'Tenang'}selected{/if}>Tenang</option>
+              <option value="Takut" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.status_psiko == 'Takut'}selected{/if}>Takut</option>
+              <option value="Cemas" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.status_psiko == 'Cemas'}selected{/if}>Cemas</option>
+              <option value="Depresi" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.status_psiko == 'Depresi'}selected{/if}>Depresi</option>
+              <option value="Lain-lain" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.status_psiko == 'Lain-lain'}selected{/if}>Lain-lain</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Keterangan Psikologi</label>
+          <input type="text" name="ket_psiko" class="form-control" placeholder="Keterangan" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.ket_psiko}{/if}" required />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Hubungan Keluarga</label>
+          <select name="hub_keluarga" class="form-control" required>
+              <option value="Baik" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.hub_keluarga == 'Baik'}selected{/if}>Baik</option>
+              <option value="Tidak Baik" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.hub_keluarga == 'Tidak Baik'}selected{/if}>Tidak Baik</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Tinggal Dengan</label>
+          <select name="tinggal_dengan" class="form-control" required>
+              <option value="Sendiri" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.tinggal_dengan == 'Sendiri'}selected{/if}>Sendiri</option>
+              <option value="Orang Tua" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.tinggal_dengan == 'Orang Tua'}selected{/if}>Orang Tua</option>
+              <option value="Suami / Istri" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.tinggal_dengan == 'Suami / Istri'}selected{/if}>Suami / Istri</option>
+              <option value="Lainnya" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.tinggal_dengan == 'Lainnya'}selected{/if}>Lainnya</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Keterangan Tinggal</label>
+          <input type="text" name="ket_tinggal" class="form-control" placeholder="Keterangan" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.ket_tinggal}{/if}" required />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Status Ekonomi</label>
+          <select name="ekonomi" class="form-control" required>
+              <option value="Baik" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.ekonomi == 'Baik'}selected{/if}>Baik</option>
+              <option value="Cukup" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.ekonomi == 'Cukup'}selected{/if}>Cukup</option>
+              <option value="Kurang" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.ekonomi == 'Kurang'}selected{/if}>Kurang</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Budaya</label>
+          <select name="budaya" class="form-control" required>
+              <option value="Tidak Ada" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.budaya == 'Tidak Ada'}selected{/if}>Tidak Ada</option>
+              <option value="Ada" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.budaya == 'Ada'}selected{/if}>Ada</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Keterangan Budaya</label>
+          <input type="text" name="ket_budaya" class="form-control" placeholder="Keterangan" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.ket_budaya}{/if}" required />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Edukasi</label>
+          <select name="edukasi" class="form-control" required>
+              <option value="Pasien" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.edukasi == 'Pasien'}selected{/if}>Pasien</option>
+              <option value="Keluarga" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.edukasi == 'Keluarga'}selected{/if}>Keluarga</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Keterangan Edukasi</label>
+          <input type="text" name="ket_edukasi" class="form-control" placeholder="Keterangan" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.ket_edukasi}{/if}" required />
+      </div>
+    </div>
+    
+    <!-- Assessment Risiko Jatuh -->
+    <div class="col-md-12"><h5><strong>Assessment Risiko Jatuh</strong></h5></div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Berjalan A</label>
+          <select name="berjalan_a" class="form-control" required>
+              <option value="Ya" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.berjalan_a == 'Ya'}selected{/if}>Ya</option>
+              <option value="Tidak" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.berjalan_a == 'Tidak'}selected{/if}>Tidak</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Berjalan B</label>
+          <select name="berjalan_b" class="form-control" required>
+              <option value="Ya" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.berjalan_b == 'Ya'}selected{/if}>Ya</option>
+              <option value="Tidak" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.berjalan_b == 'Tidak'}selected{/if}>Tidak</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Berjalan C</label>
+          <select name="berjalan_c" class="form-control" required>
+              <option value="Ya" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.berjalan_c == 'Ya'}selected{/if}>Ya</option>
+              <option value="Tidak" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.berjalan_c == 'Tidak'}selected{/if}>Tidak</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <div class="form-group">
+          <label>Hasil Assessment</label>
+          <select name="hasil" class="form-control" required>
+              <option value="Tidak beresiko (tidak ditemukan a dan b)" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.hasil == 'Tidak beresiko (tidak ditemukan a dan b)'}selected{/if}>Tidak beresiko (tidak ditemukan a dan b)</option>
+              <option value="Resiko rendah (ditemukan a/b)" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.hasil == 'Resiko rendah (ditemukan a/b)'}selected{/if}>Resiko rendah (ditemukan a/b)</option>
+              <option value="Resiko tinggi (ditemukan a dan b)" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.hasil == 'Resiko tinggi (ditemukan a dan b)'}selected{/if}>Resiko tinggi (ditemukan a dan b)</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="form-group">
+          <label>Lapor</label>
+          <select name="lapor" class="form-control" required>
+              <option value="Ya" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.lapor == 'Ya'}selected{/if}>Ya</option>
+              <option value="Tidak" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.lapor == 'Tidak'}selected{/if}>Tidak</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="form-group">
+          <label>Ket. Lapor</label>
+          <input type="text" name="ket_lapor" class="form-control" placeholder="Keterangan" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.ket_lapor}{/if}" required />
+      </div>
+    </div>
+    
+    <!-- Screening Gizi -->
+    <div class="col-md-12"><h5><strong>Screening Gizi</strong></h5></div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>SG1</label>
+          <select name="sg1" class="form-control" required>
+              <option value="Tidak" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.sg1 == 'Tidak'}selected{/if}>Tidak</option>
+              <option value="Tidak Yakin" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.sg1 == 'Tidak Yakin'}selected{/if}>Tidak Yakin</option>
+              <option value="Ya, 1-5 Kg" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.sg1 == 'Ya, 1-5 Kg'}selected{/if}>Ya, 1-5 Kg</option>
+              <option value="Ya, 6-10 Kg" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.sg1 == 'Ya, 6-10 Kg'}selected{/if}>Ya, 6-10 Kg</option>
+              <option value="Ya, 11-15 Kg" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.sg1 == 'Ya, 11-15 Kg'}selected{/if}>Ya, 11-15 Kg</option>
+              <option value="Ya, >15 Kg" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.sg1 == 'Ya, >15 Kg'}selected{/if}>Ya, &gt;15 Kg</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="form-group">
+          <label>Nilai 1</label>
+          <select name="nilai1" class="form-control" required>
+              <option value="0" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.nilai1 == '0'}selected{/if}>0</option>
+              <option value="1" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.nilai1 == '1'}selected{/if}>1</option>
+              <option value="2" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.nilai1 == '2'}selected{/if}>2</option>
+              <option value="3" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.nilai1 == '3'}selected{/if}>3</option>
+              <option value="4" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.nilai1 == '4'}selected{/if}>4</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="form-group">
+          <label>SG2</label>
+          <select name="sg2" class="form-control" required>
+              <option value="Ya" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.sg2 == 'Ya'}selected{/if}>Ya</option>
+              <option value="Tidak" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.sg2 == 'Tidak'}selected{/if}>Tidak</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="form-group">
+          <label>Nilai 2</label>
+          <select name="nilai2" class="form-control" required>
+              <option value="0" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.nilai2 == '0'}selected{/if}>0</option>
+              <option value="1" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.nilai2 == '1'}selected{/if}>1</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Total Hasil</label>
+          <input type="number" name="total_hasil" class="form-control" placeholder="Total" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.total_hasil}{/if}" required />
+      </div>
+    </div>
+    
+    <!-- Assessment Nyeri -->
+    <div class="col-md-12"><h5><strong>Assessment Nyeri</strong></h5></div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Nyeri</label>
+          <select name="nyeri" class="form-control" required>
+              <option value="Tidak Ada Nyeri" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.nyeri == 'Tidak Ada Nyeri'}selected{/if}>Tidak Ada Nyeri</option>
+              <option value="Nyeri Akut" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.nyeri == 'Nyeri Akut'}selected{/if}>Nyeri Akut</option>
+              <option value="Nyeri Kronis" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.nyeri == 'Nyeri Kronis'}selected{/if}>Nyeri Kronis</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Provokes</label>
+          <select name="provokes" class="form-control" required>
+              <option value="Proses Penyakit" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.provokes == 'Proses Penyakit'}selected{/if}>Proses Penyakit</option>
+              <option value="Benturan" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.provokes == 'Benturan'}selected{/if}>Benturan</option>
+              <option value="Lain-lain" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.provokes == 'Lain-lain'}selected{/if}>Lain-lain</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Keterangan Provokes</label>
+          <input type="text" name="ket_provokes" class="form-control" placeholder="Keterangan" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.ket_provokes}{/if}" required />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Quality</label>
+          <select name="quality" class="form-control" required>
+              <option value="Seperti Tertusuk" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.quality == 'Seperti Tertusuk'}selected{/if}>Seperti Tertusuk</option>
+              <option value="Berdenyut" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.quality == 'Berdenyut'}selected{/if}>Berdenyut</option>
+              <option value="Teriris" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.quality == 'Teriris'}selected{/if}>Teriris</option>
+              <option value="Tertindih" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.quality == 'Tertindih'}selected{/if}>Tertindih</option>
+              <option value="Tertiban" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.quality == 'Tertiban'}selected{/if}>Tertiban</option>
+              <option value="Lain-lain" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.quality == 'Lain-lain'}selected{/if}>Lain-lain</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Keterangan Quality</label>
+          <input type="text" name="ket_quality" class="form-control" placeholder="Keterangan" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.ket_quality}{/if}" required />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Lokasi</label>
+          <input type="text" name="lokasi" class="form-control" placeholder="Lokasi nyeri" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.lokasi}{/if}" required />
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>Menyebar</label>
+          <select name="menyebar" class="form-control" required>
+              <option value="Tidak" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.menyebar == 'Tidak'}selected{/if}>Tidak</option>
+              <option value="Ya" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.menyebar == 'Ya'}selected{/if}>Ya</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>Skala Nyeri</label>
+          <select name="skala_nyeri" class="form-control" required>
+              <option value="0" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.skala_nyeri == '0'}selected{/if}>0</option>
+              <option value="1" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.skala_nyeri == '1'}selected{/if}>1</option>
+              <option value="2" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.skala_nyeri == '2'}selected{/if}>2</option>
+              <option value="3" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.skala_nyeri == '3'}selected{/if}>3</option>
+              <option value="4" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.skala_nyeri == '4'}selected{/if}>4</option>
+              <option value="5" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.skala_nyeri == '5'}selected{/if}>5</option>
+              <option value="6" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.skala_nyeri == '6'}selected{/if}>6</option>
+              <option value="7" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.skala_nyeri == '7'}selected{/if}>7</option>
+              <option value="8" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.skala_nyeri == '8'}selected{/if}>8</option>
+              <option value="9" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.skala_nyeri == '9'}selected{/if}>9</option>
+              <option value="10" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.skala_nyeri == '10'}selected{/if}>10</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Durasi</label>
+          <input type="text" name="durasi" class="form-control" placeholder="Durasi nyeri" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.durasi}{/if}" required />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Nyeri Hilang</label>
+          <select name="nyeri_hilang" class="form-control" required>
+              <option value="Istirahat" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.nyeri_hilang == 'Istirahat'}selected{/if}>Istirahat</option>
+              <option value="Medengar Musik" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.nyeri_hilang == 'Medengar Musik'}selected{/if}>Medengar Musik</option>
+              <option value="Minum Obat" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.nyeri_hilang == 'Minum Obat'}selected{/if}>Minum Obat</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Keterangan Nyeri</label>
+          <input type="text" name="ket_nyeri" class="form-control" placeholder="Keterangan" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.ket_nyeri}{/if}" required />
+      </div>
+    </div>
+    
+    <!-- Rencana dan Petugas -->
+    <div class="col-md-12"><h5><strong>Rencana dan Petugas</strong></h5></div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>Pada Dokter</label>
+          <select name="pada_dokter" class="form-control" required>
+              <option value="Tidak" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.pada_dokter == 'Tidak'}selected{/if}>Tidak</option>
+              <option value="Ya" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.pada_dokter == 'Ya'}selected{/if}>Ya</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>Keterangan Dokter</label>
+          <input type="text" name="ket_dokter" class="form-control" placeholder="Keterangan" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.ket_dokter}{/if}" required />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>NIP Petugas</label>
+          <input type="text" name="nip" class="form-control" placeholder="NIP Petugas" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.nip}{else}{?=$this->core->getUserInfo('username')?}{/if}" required />
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Rencana</label>
+          <textarea name="rencana" class="form-control" rows="3" placeholder="Rencana keperawatan" required>{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.rencana}{/if}</textarea>
+      </div>
+    </div>
+    
+    <div class="col-md-12">
+      <button class="btn btn-success" id="simpan_assessment">Simpan</button>
+      <button class="btn btn-warning" id="reset_assessment" type="button">Reset</button>
+    </div>
+    <br>
+    <div class="tampildata_assessment">
+      {include: ../plugins/rawat_jalan/view/admin/assesment.tampil.html}
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+
+<script type="text/javascript">
+$('select').selectator();
+$(document).ready(function(){
+  // Event handler untuk simpan assessment
+  $("#simpan_assessment").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    
+    // Ambil no_rawat dari field yang benar (dari form SOAP atau dari hidden field)
+    var no_rawat = $('input[name=no_rawat]').val() || $('input[name=no_rawat_assessment]').val();
+    if(!no_rawat) {
+      alert('No rawat tidak ditemukan!');
+      return false;
+    }
+    var set_no_rawat = no_rawat.replace(/\//g, '');
+    
+    // Gunakan konteks modal untuk menghindari konflik dengan form lain
+    var modalContext = $('#assesmentModal');
+    
+    // Debug: Cek keberadaan field GCS dalam konteks modal
+    var gcsField = modalContext.find('input[name=gcs]');
+    console.log('GCS field found in modal:', gcsField.length);
+    console.log('GCS field value in modal:', gcsField.val());
+    
+    // Alert untuk debugging
+    alert('GCS Value from Assessment Modal: "' + modalContext.find('input[name=gcs]').val() + '"');
+    
+    // Validasi field required dengan konteks modal
+    var requiredFields = {
+      'no_rawat': no_rawat,
+      'tanggal': modalContext.find('input[name=tanggal]').val(),
+      'informasi': modalContext.find('select[name=informasi]').val(),
+      'rr': modalContext.find('input[name=rr]').val(),
+      'gcs': modalContext.find('input[name=gcs]').val(),
+      'bmi': modalContext.find('input[name=bmi]').val(),
+      'rpk': modalContext.find('textarea[name=rpk]').val(),
+      'rpo': modalContext.find('textarea[name=rpo]').val(),
+      'ket_pro': modalContext.find('input[name=ket_pro]').val(),
+      'ket_psiko': modalContext.find('input[name=ket_psiko]').val(),
+      'ket_tinggal': modalContext.find('input[name=ket_tinggal]').val(),
+      'ket_budaya': modalContext.find('input[name=ket_budaya]').val(),
+      'ket_edukasi': modalContext.find('input[name=ket_edukasi]').val(),
+      'ket_lapor': modalContext.find('input[name=ket_lapor]').val(),
+      'ket_provokes': modalContext.find('input[name=ket_provokes]').val(),
+      'ket_quality': modalContext.find('input[name=ket_quality]').val(),
+      'lokasi': modalContext.find('input[name=lokasi]').val(),
+      'durasi': modalContext.find('input[name=durasi]').val(),
+      'ket_nyeri': modalContext.find('input[name=ket_nyeri]').val(),
+      'ket_dokter': modalContext.find('input[name=ket_dokter]').val(),
+      'rencana': modalContext.find('textarea[name=rencana]').val(),
+      'nip': modalContext.find('input[name=nip]').val()
+    };
+    
+    // Debug: Log semua field required
+    console.log('Required fields values:');
+    for(var field in requiredFields) {
+      console.log(field + ': "' + requiredFields[field] + '"');
+    }
+    
+    // Cek field required dengan validasi yang lebih ketat
+    for(var field in requiredFields) {
+      var value = requiredFields[field];
+      if(!value || (typeof value === 'string' && value.trim() === '')) {
+        alert('Field ' + field + ' harus diisi!');
+        console.log('Validation failed for field: ' + field + ', value: "' + value + '"');
+        // Focus ke field yang error jika memungkinkan
+        var fieldElement = $('[name=' + field + ']');
+        if(fieldElement.length > 0) {
+          fieldElement.focus();
+        }
+        return false;
+      }
+    }
+    
+    console.log('All required fields validated successfully');
+    console.log('Final GCS value before sending: "' + $('input[name=gcs]').val() + '"');
+    
+    // Ambil semua data form dengan trim dan konteks modal
+    var formData = {
+      no_rawat: no_rawat.trim(),
+      tanggal: modalContext.find('input[name=tanggal]').val().trim(),
+      informasi: modalContext.find('select[name=informasi]').val(),
+      td: modalContext.find('input[name=td]').val().trim(),
+      nadi: modalContext.find('input[name=nadi]').val().trim(),
+      rr: modalContext.find('input[name=rr]').val().trim(),
+      suhu: modalContext.find('input[name=suhu]').val().trim(),
+      gcs: modalContext.find('input[name=gcs]').val().trim(),
+      bb: modalContext.find('input[name=bb]').val().trim(),
+      tb: modalContext.find('input[name=tb]').val().trim(),
+      bmi: modalContext.find('input[name=bmi]').val().trim(),
+      keluhan_utama: modalContext.find('textarea[name=keluhan_utama]').val().trim(),
+      rpd: modalContext.find('textarea[name=rpd]').val().trim(),
+      rpk: modalContext.find('textarea[name=rpk]').val().trim(),
+      rpo: modalContext.find('textarea[name=rpo]').val().trim(),
+      alergi: modalContext.find('input[name=alergi]').val().trim(),
+      alat_bantu: modalContext.find('select[name=alat_bantu]').val(),
+      ket_bantu: modalContext.find('input[name=ket_bantu]').val().trim(),
+      prothesa: modalContext.find('select[name=prothesa]').val(),
+      ket_pro: modalContext.find('input[name=ket_pro]').val().trim(),
+      adl: modalContext.find('select[name=adl]').val(),
+      status_psiko: modalContext.find('select[name=status_psiko]').val(),
+      ket_psiko: modalContext.find('input[name=ket_psiko]').val().trim(),
+      hub_keluarga: modalContext.find('select[name=hub_keluarga]').val(),
+      tinggal_dengan: modalContext.find('select[name=tinggal_dengan]').val(),
+      ket_tinggal: modalContext.find('input[name=ket_tinggal]').val().trim(),
+      ekonomi: modalContext.find('select[name=ekonomi]').val(),
+      budaya: modalContext.find('select[name=budaya]').val(),
+      ket_budaya: modalContext.find('input[name=ket_budaya]').val().trim(),
+      edukasi: modalContext.find('select[name=edukasi]').val(),
+      ket_edukasi: modalContext.find('input[name=ket_edukasi]').val().trim(),
+      berjalan_a: modalContext.find('select[name=berjalan_a]').val(),
+      berjalan_b: modalContext.find('select[name=berjalan_b]').val(),
+      berjalan_c: modalContext.find('select[name=berjalan_c]').val(),
+      hasil: modalContext.find('select[name=hasil]').val(),
+      lapor: modalContext.find('select[name=lapor]').val(),
+      ket_lapor: modalContext.find('input[name=ket_lapor]').val().trim(),
+      sg1: modalContext.find('select[name=sg1]').val(),
+      nilai1: modalContext.find('select[name=nilai1]').val(),
+      sg2: modalContext.find('select[name=sg2]').val(),
+      nilai2: modalContext.find('select[name=nilai2]').val(),
+      total_hasil: modalContext.find('input[name=total_hasil]').val().trim(),
+      nyeri: modalContext.find('select[name=nyeri]').val(),
+      provokes: modalContext.find('select[name=provokes]').val(),
+      ket_provokes: modalContext.find('input[name=ket_provokes]').val().trim(),
+      quality: modalContext.find('select[name=quality]').val(),
+      ket_quality: modalContext.find('input[name=ket_quality]').val().trim(),
+      lokasi: modalContext.find('input[name=lokasi]').val().trim(),
+      menyebar: modalContext.find('select[name=menyebar]').val(),
+      skala_nyeri: modalContext.find('select[name=skala_nyeri]').val(),
+      durasi: modalContext.find('input[name=durasi]').val().trim(),
+      nyeri_hilang: modalContext.find('select[name=nyeri_hilang]').val(),
+      ket_nyeri: modalContext.find('input[name=ket_nyeri]').val().trim(),
+      pada_dokter: modalContext.find('select[name=pada_dokter]').val(),
+      ket_dokter: modalContext.find('input[name=ket_dokter]').val().trim(),
+      rencana: modalContext.find('textarea[name=rencana]').val().trim(),
+      nip: modalContext.find('input[name=nip]').val().trim()
+    };
+
+    console.log('Sending form data:', formData);
+    
+    var url = baseURL + '/rawat_jalan/assessmentsave/?t=' + mlite.token;
+    $.post(url, formData, function(data) {
+      console.log('Server response:', data);
+      try {
+        var response = typeof data === 'string' ? JSON.parse(data) : data;
+        if(response.status === 'success') {
+          $('.tampildata_assessment').load(baseURL + '/rawat_jalan/assessmenttampil/' + set_no_rawat + '?t=' + mlite.token);
+          alert('Data assessment berhasil disimpan!');
+        } else {
+          alert('Error: ' + (response.message || 'Gagal menyimpan data'));
+        }
+      } catch(e) {
+        console.log('Response parsing error:', e);
+        $('.tampildata_assessment').load(baseURL + '/rawat_jalan/assessmenttampil/' + set_no_rawat + '?t=' + mlite.token);
+        alert('Data assessment berhasil disimpan!');
+      }
+    }).fail(function(xhr, status, error) {
+      console.log('AJAX Error:', xhr.responseText);
+      alert('Gagal menyimpan data assessment: ' + error);
+    });
+  });
+
+  // Event handler untuk reset form
+  $("#reset_assessment").click(function(){
+    if(confirm('Apakah Anda yakin ingin mereset form?')) {
+      $('form')[0].reset();
+      $('select').selectator('destroy');
+      $('select').selectator();
+    }
+  });
+
+  // Event handler untuk button hapus assessment
+  $(document).on('click', '.hapus_assessment', function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat = $(this).attr('data-no_rawat');
+    var set_no_rawat = no_rawat.replace(/\//g, '');
+    
+    // Tampilkan dialog konfirmasi
+    if(confirm('Apakah Anda yakin ingin menghapus data assessment ini?')) {
+      var url = baseURL + '/rawat_jalan/assessmentdelete/?t=' + mlite.token;
+      $.post(url, {
+        no_rawat: no_rawat
+      }, function(data) {
+        console.log(data);
+        // Refresh tampilan data setelah berhasil menghapus
+        $('.tampildata_assessment').load(baseURL + '/rawat_jalan/assessmenttampil/' + set_no_rawat + '?t=' + mlite.token);
+        // Tampilkan notifikasi
+        alert('Data assessment berhasil dihapus!');
+      }).fail(function() {
+        alert('Gagal menghapus data assessment!');
+      });
+    }
+  });
+
+  // Event handler untuk button edit assessment
+  $(document).on('click', '.edit_assessment', function(){
+    var no_rawat = $(this).attr('data-no_rawat');
+    var tanggal = $(this).attr('data-tanggal');
+    var informasi = $(this).attr('data-informasi');
+    var td = $(this).attr('data-td');
+    var nadi = $(this).attr('data-nadi');
+    var rr = $(this).attr('data-rr');
+    var suhu = $(this).attr('data-suhu');
+    var gcs = $(this).attr('data-gcs');
+    var bb = $(this).attr('data-bb');
+    var tb = $(this).attr('data-tb');
+    var bmi = $(this).attr('data-bmi');
+    var keluhan_utama = $(this).attr('data-keluhan_utama');
+    var rpd = $(this).attr('data-rpd');
+    var rpk = $(this).attr('data-rpk');
+    var rpo = $(this).attr('data-rpo');
+    var alergi = $(this).attr('data-alergi');
+    var rencana = $(this).attr('data-rencana');
+    var nip = $(this).attr('data-nip');
+    
+    // Set nilai ke form dengan konteks modal
+    var modalContext = $('#assesmentModal');
+    modalContext.find('input[name=no_rawat_assessment]').val(no_rawat);
+    modalContext.find('input[name=tanggal]').val(tanggal);
+    modalContext.find('select[name=informasi]').val(informasi);
+    modalContext.find('input[name=td]').val(td);
+    modalContext.find('input[name=nadi]').val(nadi);
+    modalContext.find('input[name=rr]').val(rr);
+    modalContext.find('input[name=suhu]').val(suhu);
+    modalContext.find('input[name=gcs]').val(gcs);
+    modalContext.find('input[name=bb]').val(bb);
+    modalContext.find('input[name=tb]').val(tb);
+    modalContext.find('input[name=bmi]').val(bmi);
+    modalContext.find('textarea[name=keluhan_utama]').val(keluhan_utama);
+    modalContext.find('textarea[name=rpd]').val(rpd);
+    modalContext.find('textarea[name=rpk]').val(rpk);
+    modalContext.find('textarea[name=rpo]').val(rpo);
+    modalContext.find('input[name=alergi]').val(alergi);
+    modalContext.find('textarea[name=rencana]').val(rencana);
+    modalContext.find('input[name=nip]').val(nip);
+    
+    // Refresh selectator
+    $('select').selectator('destroy');
+    $('select').selectator();
+  });
+});
+</script>

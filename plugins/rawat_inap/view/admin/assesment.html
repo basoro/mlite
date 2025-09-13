@@ -1,0 +1,1757 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <h4 class="modal-title">Assessment Awal Keperawatan Rawat Inap</h4>
+</div>
+<div class="modal-body">
+  <form id="form_assessment" method="post" accept-charset="utf-8">
+    <input type="hidden" name="no_rawat" value="{$penilaian_ranap.no_rawat}">
+    
+    <!-- Informasi Dasar -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Informasi Dasar</h5></div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>No. Rawat</label>
+              <input type="text" class="form-control" name="no_rawat_display" value="{$penilaian_ranap.no_rawat}" readonly>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Tanggal</label>
+              <input type="datetime-local" class="form-control" name="tanggal" value="{$penilaian_ranap.tanggal}" required>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Informasi</label>
+              <select class="form-control" name="informasi" required>
+                <option value="Autoanamnesis" {if: $penilaian_ranap.informasi == 'Autoanamnesis'}selected{/if}>Autoanamnesis</option>
+                <option value="Alloanamnesis" {if: $penilaian_ranap.informasi == 'Alloanamnesis'}selected{/if}>Alloanamnesis</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Keterangan Informasi</label>
+              <input type="text" class="form-control" name="ket_informasi" value="{$penilaian_ranap.ket_informasi}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Tiba di Ruang Rawat</label>
+              <select class="form-control" name="tiba_diruang_rawat" required>
+                <option value="Jalan Tanpa Bantuan" {if: $penilaian_ranap.tiba_diruang_rawat == 'Jalan Tanpa Bantuan'}selected{/if}>Jalan Tanpa Bantuan</option>
+                <option value="Kursi Roda" {if: $penilaian_ranap.tiba_diruang_rawat == 'Kursi Roda'}selected{/if}>Kursi Roda</option>
+                <option value="Brankar" {if: $penilaian_ranap.tiba_diruang_rawat == 'Brankar'}selected{/if}>Brankar</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Kasus Trauma</label>
+              <select class="form-control" name="kasus_trauma">
+                <option value="Trauma" {if: $penilaian_ranap.kasus_trauma == 'Trauma'}selected{/if}>Trauma</option>
+                <option value="Non Trauma" {if: $penilaian_ranap.kasus_trauma == 'Non Trauma'}selected{/if}>Non Trauma</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Cara Masuk</label>
+              <select class="form-control" name="cara_masuk" required>
+                <option value="Poli" {if: $penilaian_ranap.cara_masuk == 'Poli'}selected{/if}>Poli</option>
+                <option value="IGD" {if: $penilaian_ranap.cara_masuk == 'IGD'}selected{/if}>IGD</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.cara_masuk == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Riwayat Penyakit -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Riwayat Penyakit</h5></div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label>Riwayat Penyakit Sekarang (RPS)</label>
+          <textarea class="form-control" name="rps" rows="3">{$penilaian_ranap.rps}</textarea>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Riwayat Penyakit Dahulu (RPD)</label>
+              <input type="text" class="form-control" name="rpd" value="{$penilaian_ranap.rpd}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Riwayat Penyakit Keluarga (RPK)</label>
+              <input type="text" class="form-control" name="rpk" value="{$penilaian_ranap.rpk}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Riwayat Pengobatan (RPO)</label>
+              <input type="text" class="form-control" name="rpo" value="{$penilaian_ranap.rpo}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Riwayat Pembedahan</label>
+              <input type="text" class="form-control" name="riwayat_pembedahan" value="{$penilaian_ranap.riwayat_pembedahan}">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Riwayat Dirawat di RS</label>
+              <input type="text" class="form-control" name="riwayat_dirawat_dirs" value="{$penilaian_ranap.riwayat_dirawat_dirs}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Riwayat Lainnya -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Riwayat Lainnya</h5></div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Alat Bantu yang Dipakai</label>
+              <select class="form-control" name="alat_bantu_dipakai">
+                <option value="Kacamata" {if: $penilaian_ranap.alat_bantu_dipakai == 'Kacamata'}selected{/if}>Kacamata</option>
+                <option value="Prothesa" {if: $penilaian_ranap.alat_bantu_dipakai == 'Prothesa'}selected{/if}>Prothesa</option>
+                <option value="Alat Bantu Dengar" {if: $penilaian_ranap.alat_bantu_dipakai == 'Alat Bantu Dengar'}selected{/if}>Alat Bantu Dengar</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.alat_bantu_dipakai == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Riwayat Kehamilan</label>
+              <select class="form-control" name="riwayat_kehamilan">
+                <option value="Tidak" {if: $penilaian_ranap.riwayat_kehamilan == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.riwayat_kehamilan == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Perkiraan Kehamilan</label>
+              <input type="text" class="form-control" name="riwayat_kehamilan_perkiraan" value="{$penilaian_ranap.riwayat_kehamilan_perkiraan}">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Riwayat Transfusi</label>
+              <input type="text" class="form-control" name="riwayat_tranfusi" value="{$penilaian_ranap.riwayat_tranfusi}">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Riwayat Alergi</label>
+          <input type="text" class="form-control" name="riwayat_alergi" value="{$penilaian_ranap.riwayat_alergi}">
+        </div>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Riwayat Merokok</label>
+              <select class="form-control" name="riwayat_merokok">
+                <option value="Tidak" {if: $penilaian_ranap.riwayat_merokok == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.riwayat_merokok == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Jumlah (batang/hari)</label>
+              <input type="text" class="form-control" name="riwayat_merokok_jumlah" value="{$penilaian_ranap.riwayat_merokok_jumlah}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Riwayat Alkohol</label>
+              <select class="form-control" name="riwayat_alkohol">
+                <option value="Tidak" {if: $penilaian_ranap.riwayat_alkohol == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.riwayat_alkohol == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Jumlah (gelas/hari)</label>
+              <input type="text" class="form-control" name="riwayat_alkohol_jumlah" value="{$penilaian_ranap.riwayat_alkohol_jumlah}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Riwayat Narkoba</label>
+              <select class="form-control" name="riwayat_narkoba">
+                <option value="Tidak" {if: $penilaian_ranap.riwayat_narkoba == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.riwayat_narkoba == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Riwayat Olahraga</label>
+              <select class="form-control" name="riwayat_olahraga">
+                <option value="Tidak" {if: $penilaian_ranap.riwayat_olahraga == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.riwayat_olahraga == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pemeriksaan Fisik -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Pemeriksaan Fisik</h5></div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Pemeriksaan Mental</label>
+              <input type="text" class="form-control" name="pemeriksaan_mental" value="{$penilaian_ranap.pemeriksaan_mental}">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Keadaan Umum</label>
+              <select class="form-control" name="pemeriksaan_keadaan_umum">
+                <option value="Baik" {if: $penilaian_ranap.pemeriksaan_keadaan_umum == 'Baik'}selected{/if}>Baik</option>
+                <option value="Sedang" {if: $penilaian_ranap.pemeriksaan_keadaan_umum == 'Sedang'}selected{/if}>Sedang</option>
+                <option value="Buruk" {if: $penilaian_ranap.pemeriksaan_keadaan_umum == 'Buruk'}selected{/if}>Buruk</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Vital Signs -->
+        <h6><strong>Vital Signs</strong></h6>
+        <div class="row">
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>GCS</label>
+              <input type="text" class="form-control" name="pemeriksaan_gcs" value="{$penilaian_ranap.pemeriksaan_gcs}">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>TD (mmHg)</label>
+              <input type="text" class="form-control" name="pemeriksaan_td" value="{$penilaian_ranap.pemeriksaan_td}">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Nadi (x/mnt)</label>
+              <input type="text" class="form-control" name="pemeriksaan_nadi" value="{$penilaian_ranap.pemeriksaan_nadi}">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>RR (x/mnt)</label>
+              <input type="text" class="form-control" name="pemeriksaan_rr" value="{$penilaian_ranap.pemeriksaan_rr}">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Suhu (°C)</label>
+              <input type="text" class="form-control" name="pemeriksaan_suhu" value="{$penilaian_ranap.pemeriksaan_suhu}">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>SpO2 (&#37;)</label>
+              <input type="text" class="form-control" name="pemeriksaan_spo2" value="{$penilaian_ranap.pemeriksaan_spo2}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>BB (kg)</label>
+              <input type="text" class="form-control" name="pemeriksaan_bb" id="bb" value="{$penilaian_ranap.pemeriksaan_bb}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>TB (cm)</label>
+              <input type="text" class="form-control" name="pemeriksaan_tb" id="tb" value="{$penilaian_ranap.pemeriksaan_tb}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>BMI</label>
+              <input type="text" class="form-control" id="bmi" readonly>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Status Gizi</label>
+              <input type="text" class="form-control" id="status_gizi" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pemeriksaan Sistem -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Pemeriksaan Sistem</h5></div>
+      <div class="panel-body">
+        <!-- Susunan Saraf -->
+        <h6><strong>Susunan Saraf</strong></h6>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Kepala</label>
+              <select class="form-control" name="pemeriksaan_susunan_kepala">
+                <option value="TAK" {if: $penilaian_ranap.pemeriksaan_susunan_kepala == 'TAK'}selected{/if}>TAK</option>
+                <option value="Hydrocephalus" {if: $penilaian_ranap.pemeriksaan_susunan_kepala == 'Hydrocephalus'}selected{/if}>Hydrocephalus</option>
+                <option value="Hematoma" {if: $penilaian_ranap.pemeriksaan_susunan_kepala == 'Hematoma'}selected{/if}>Hematoma</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pemeriksaan_susunan_kepala == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Wajah</label>
+              <select class="form-control" name="pemeriksaan_susunan_wajah">
+                <option value="TAK" {if: $penilaian_ranap.pemeriksaan_susunan_wajah == 'TAK'}selected{/if}>TAK</option>
+                <option value="Asimetris" {if: $penilaian_ranap.pemeriksaan_susunan_wajah == 'Asimetris'}selected{/if}>Asimetris</option>
+                <option value="Kelainan Kongenital" {if: $penilaian_ranap.pemeriksaan_susunan_wajah == 'Kelainan Kongenital'}selected{/if}>Kelainan Kongenital</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Leher</label>
+              <select class="form-control" name="pemeriksaan_susunan_leher">
+                <option value="TAK" {if: $penilaian_ranap.pemeriksaan_susunan_leher == 'TAK'}selected{/if}>TAK</option>
+                <option value="Kaku Kuduk" {if: $penilaian_ranap.pemeriksaan_susunan_leher == 'Kaku Kuduk'}selected{/if}>Kaku Kuduk</option>
+                <option value="Pembesaran Thyroid" {if: $penilaian_ranap.pemeriksaan_susunan_leher == 'Pembesaran Thyroid'}selected{/if}>Pembesaran Thyroid</option>
+                <option value="Pembesaran KGB" {if: $penilaian_ranap.pemeriksaan_susunan_leher == 'Pembesaran KGB'}selected{/if}>Pembesaran KGB</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Kejang</label>
+              <select class="form-control" name="pemeriksaan_susunan_kejang">
+                <option value="TAK" {if: $penilaian_ranap.pemeriksaan_susunan_kejang == 'TAK'}selected{/if}>TAK</option>
+                <option value="Kuat" {if: $penilaian_ranap.pemeriksaan_susunan_kejang == 'Kuat'}selected{/if}>Kuat</option>
+                <option value="Ada" {if: $penilaian_ranap.pemeriksaan_susunan_kejang == 'Ada'}selected{/if}>Ada</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Sensorik</label>
+          <select class="form-control" name="pemeriksaan_susunan_sensorik">
+            <option value="TAK" {if: $penilaian_ranap.pemeriksaan_susunan_sensorik == 'TAK'}selected{/if}>TAK</option>
+            <option value="Sakit Nyeri" {if: $penilaian_ranap.pemeriksaan_susunan_sensorik == 'Sakit Nyeri'}selected{/if}>Sakit Nyeri</option>
+            <option value="Rasa kebas" {if: $penilaian_ranap.pemeriksaan_susunan_sensorik == 'Rasa kebas'}selected{/if}>Rasa kebas</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Penilaian Nyeri -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Penilaian Nyeri</h5></div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Penilaian Nyeri</label>
+              <select class="form-control" name="penilaian_nyeri">
+                <option value="Tidak Ada Nyeri" {if: $penilaian_ranap.penilaian_nyeri == 'Tidak Ada Nyeri'}selected{/if}>Tidak Ada Nyeri</option>
+                <option value="Nyeri Akut" {if: $penilaian_ranap.penilaian_nyeri == 'Nyeri Akut'}selected{/if}>Nyeri Akut</option>
+                <option value="Nyeri Kronis" {if: $penilaian_ranap.penilaian_nyeri == 'Nyeri Kronis'}selected{/if}>Nyeri Kronis</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Penyebab</label>
+              <select class="form-control" name="penilaian_nyeri_penyebab">
+                <option value="Proses Penyakit" {if: $penilaian_ranap.penilaian_nyeri_penyebab == 'Proses Penyakit'}selected{/if}>Proses Penyakit</option>
+                <option value="Benturan" {if: $penilaian_ranap.penilaian_nyeri_penyebab == 'Benturan'}selected{/if}>Benturan</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.penilaian_nyeri_penyebab == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Kualitas</label>
+              <select class="form-control" name="penilaian_nyeri_kualitas">
+                <option value="Seperti Tertusuk" {if: $penilaian_ranap.penilaian_nyeri_kualitas == 'Seperti Tertusuk'}selected{/if}>Seperti Tertusuk</option>
+                <option value="Berdenyut" {if: $penilaian_ranap.penilaian_nyeri_kualitas == 'Berdenyut'}selected{/if}>Berdenyut</option>
+                <option value="Teriris" {if: $penilaian_ranap.penilaian_nyeri_kualitas == 'Teriris'}selected{/if}>Teriris</option>
+                <option value="Tertindih" {if: $penilaian_ranap.penilaian_nyeri_kualitas == 'Tertindih'}selected{/if}>Tertindih</option>
+                <option value="Tertiban" {if: $penilaian_ranap.penilaian_nyeri_kualitas == 'Tertiban'}selected{/if}>Tertiban</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.penilaian_nyeri_kualitas == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Lokasi</label>
+              <input type="text" class="form-control" name="penilaian_nyeri_lokasi" value="{$penilaian_ranap.penilaian_nyeri_lokasi}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Menyebar</label>
+              <select class="form-control" name="penilaian_nyeri_menyebar">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_nyeri_menyebar == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_nyeri_menyebar == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Skala Nyeri (0-10)</label>
+              <select class="form-control" name="penilaian_nyeri_skala">
+                <option value="0" {if: $penilaian_ranap.penilaian_nyeri_skala == '0'}selected{/if}>0</option>
+                <option value="1" {if: $penilaian_ranap.penilaian_nyeri_skala == '1'}selected{/if}>1</option>
+                <option value="2" {if: $penilaian_ranap.penilaian_nyeri_skala == '2'}selected{/if}>2</option>
+                <option value="3" {if: $penilaian_ranap.penilaian_nyeri_skala == '3'}selected{/if}>3</option>
+                <option value="4" {if: $penilaian_ranap.penilaian_nyeri_skala == '4'}selected{/if}>4</option>
+                <option value="5" {if: $penilaian_ranap.penilaian_nyeri_skala == '5'}selected{/if}>5</option>
+                <option value="6" {if: $penilaian_ranap.penilaian_nyeri_skala == '6'}selected{/if}>6</option>
+                <option value="7" {if: $penilaian_ranap.penilaian_nyeri_skala == '7'}selected{/if}>7</option>
+                <option value="8" {if: $penilaian_ranap.penilaian_nyeri_skala == '8'}selected{/if}>8</option>
+                <option value="9" {if: $penilaian_ranap.penilaian_nyeri_skala == '9'}selected{/if}>9</option>
+                <option value="10" {if: $penilaian_ranap.penilaian_nyeri_skala == '10'}selected{/if}>10</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Waktu</label>
+              <input type="text" class="form-control" name="penilaian_nyeri_waktu" value="{$penilaian_ranap.penilaian_nyeri_waktu}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nyeri Hilang dengan</label>
+              <select class="form-control" name="penilaian_nyeri_hilang">
+                <option value="Istirahat" {if: $penilaian_ranap.penilaian_nyeri_hilang == 'Istirahat'}selected{/if}>Istirahat</option>
+                <option value="Medengar Musik" {if: $penilaian_ranap.penilaian_nyeri_hilang == 'Medengar Musik'}selected{/if}>Medengar Musik</option>
+                <option value="Minum Obat" {if: $penilaian_ranap.penilaian_nyeri_hilang == 'Minum Obat'}selected{/if}>Minum Obat</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Diberitahukan ke Dokter</label>
+              <select class="form-control" name="penilaian_nyeri_diberitahukan_dokter">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_nyeri_diberitahukan_dokter == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_nyeri_diberitahukan_dokter == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Jam Diberitahukan ke Dokter</label>
+          <input type="text" class="form-control" name="penilaian_nyeri_jam_diberitahukan_dokter" value="{$penilaian_ranap.penilaian_nyeri_jam_diberitahukan_dokter}">
+        </div>
+      </div>
+    </div>
+
+    <!-- Pemeriksaan Sistem -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Pemeriksaan Sistem</h5></div>
+      <div class="panel-body">
+        <h6><strong>Kardiovaskuler</strong></h6>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Denyut Nadi</label>
+              <select class="form-control" name="pemeriksaan_kardiovaskuler_denyut_nadi">
+                <option value="Teratur" {if: $penilaian_ranap.pemeriksaan_kardiovaskuler_denyut_nadi == 'Teratur'}selected{/if}>Teratur</option>
+                <option value="Tidak Teratur" {if: $penilaian_ranap.pemeriksaan_kardiovaskuler_denyut_nadi == 'Tidak Teratur'}selected{/if}>Tidak Teratur</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Sirkulasi</label>
+              <select class="form-control" name="pemeriksaan_kardiovaskuler_sirkulasi">
+                <option value="Akral Hangat" {if: $penilaian_ranap.pemeriksaan_kardiovaskuler_sirkulasi == 'Akral Hangat'}selected{/if}>Akral Hangat</option>
+                <option value="Akral Dingin" {if: $penilaian_ranap.pemeriksaan_kardiovaskuler_sirkulasi == 'Akral Dingin'}selected{/if}>Akral Dingin</option>
+                <option value="Edema" {if: $penilaian_ranap.pemeriksaan_kardiovaskuler_sirkulasi == 'Edema'}selected{/if}>Edema</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Pulsasi</label>
+              <select class="form-control" name="pemeriksaan_kardiovaskuler_pulsasi">
+                <option value="Kuat" {if: $penilaian_ranap.pemeriksaan_kardiovaskuler_pulsasi == 'Kuat'}selected{/if}>Kuat</option>
+                <option value="Lemah" {if: $penilaian_ranap.pemeriksaan_kardiovaskuler_pulsasi == 'Lemah'}selected{/if}>Lemah</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pemeriksaan_kardiovaskuler_pulsasi == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <h6><strong>Respirasi</strong></h6>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Pola Nafas</label>
+              <select class="form-control" name="pemeriksaan_respirasi_pola_nafas">
+                <option value="Normal" {if: $penilaian_ranap.pemeriksaan_respirasi_pola_nafas == 'Normal'}selected{/if}>Normal</option>
+                <option value="Bradipnea" {if: $penilaian_ranap.pemeriksaan_respirasi_pola_nafas == 'Bradipnea'}selected{/if}>Bradipnea</option>
+                <option value="Tachipnea" {if: $penilaian_ranap.pemeriksaan_respirasi_pola_nafas == 'Tachipnea'}selected{/if}>Tachipnea</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Retraksi</label>
+              <select class="form-control" name="pemeriksaan_respirasi_retraksi">
+                <option value="Tidak Ada" {if: $penilaian_ranap.pemeriksaan_respirasi_retraksi == 'Tidak Ada'}selected{/if}>Tidak Ada</option>
+                <option value="Ringan" {if: $penilaian_ranap.pemeriksaan_respirasi_retraksi == 'Ringan'}selected{/if}>Ringan</option>
+                <option value="Berat" {if: $penilaian_ranap.pemeriksaan_respirasi_retraksi == 'Berat'}selected{/if}>Berat</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Suara Nafas</label>
+              <select class="form-control" name="pemeriksaan_respirasi_suara_nafas">
+                <option value="Vesikuler" {if: $penilaian_ranap.pemeriksaan_respirasi_suara_nafas == 'Vesikuler'}selected{/if}>Vesikuler</option>
+                <option value="Wheezing" {if: $penilaian_ranap.pemeriksaan_respirasi_suara_nafas == 'Wheezing'}selected{/if}>Wheezing</option>
+                <option value="Rhonki" {if: $penilaian_ranap.pemeriksaan_respirasi_suara_nafas == 'Rhonki'}selected{/if}>Rhonki</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Volume Pernafasan</label>
+              <select class="form-control" name="pemeriksaan_respirasi_volume_pernafasan">
+                <option value="Normal" {if: $penilaian_ranap.pemeriksaan_respirasi_volume_pernafasan == 'Normal'}selected{/if}>Normal</option>
+                <option value="Hiperventilasi" {if: $penilaian_ranap.pemeriksaan_respirasi_volume_pernafasan == 'Hiperventilasi'}selected{/if}>Hiperventilasi</option>
+                <option value="Hipoventilasi" {if: $penilaian_ranap.pemeriksaan_respirasi_volume_pernafasan == 'Hipoventilasi'}selected{/if}>Hipoventilasi</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Jenis Pernafasan</label>
+              <select class="form-control" name="pemeriksaan_respirasi_jenis_pernafasan">
+                <option value="Pernafasan Dada" {if: $penilaian_ranap.pemeriksaan_respirasi_jenis_pernafasan == 'Pernafasan Dada'}selected{/if}>Pernafasan Dada</option>
+                <option value="Alat Bantu Pernafasaan" {if: $penilaian_ranap.pemeriksaan_respirasi_jenis_pernafasan == 'Alat Bantu Pernafasaan'}selected{/if}>Alat Bantu Pernafasaan</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Irama Nafas</label>
+              <select class="form-control" name="pemeriksaan_respirasi_irama_nafas">
+                <option value="Teratur" {if: $penilaian_ranap.pemeriksaan_respirasi_irama_nafas == 'Teratur'}selected{/if}>Teratur</option>
+                <option value="Tidak Teratur" {if: $penilaian_ranap.pemeriksaan_respirasi_irama_nafas == 'Tidak Teratur'}selected{/if}>Tidak Teratur</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Batuk</label>
+          <select class="form-control" name="pemeriksaan_respirasi_batuk">
+            <option value="Tidak" {if: $penilaian_ranap.pemeriksaan_respirasi_batuk == 'Tidak'}selected{/if}>Tidak</option>
+            <option value="Ya : Produktif" {if: $penilaian_ranap.pemeriksaan_respirasi_batuk == 'Ya : Produktif'}selected{/if}>Ya : Produktif</option>
+            <option value="Ya : Non Produktif" {if: $penilaian_ranap.pemeriksaan_respirasi_batuk == 'Ya : Non Produktif'}selected{/if}>Ya : Non Produktif</option>
+          </select>
+        </div>
+        
+        <h6><strong>Gastrointestinal</strong></h6>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Mulut</label>
+              <select class="form-control" name="pemeriksaan_gastrointestinal_mulut">
+                <option value="TAK" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_mulut == 'TAK'}selected{/if}>TAK</option>
+                <option value="Stomatitis" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_mulut == 'Stomatitis'}selected{/if}>Stomatitis</option>
+                <option value="Mukosa Kering" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_mulut == 'Mukosa Kering'}selected{/if}>Mukosa Kering</option>
+                <option value="Bibir Pucat" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_mulut == 'Bibir Pucat'}selected{/if}>Bibir Pucat</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_mulut == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Gigi</label>
+              <select class="form-control" name="pemeriksaan_gastrointestinal_gigi">
+                <option value="TAK" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_gigi == 'TAK'}selected{/if}>TAK</option>
+                <option value="Karies" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_gigi == 'Karies'}selected{/if}>Karies</option>
+                <option value="Goyang" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_gigi == 'Goyang'}selected{/if}>Goyang</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_gigi == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Lidah</label>
+              <select class="form-control" name="pemeriksaan_gastrointestinal_lidah">
+                <option value="TAK" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_lidah == 'TAK'}selected{/if}>TAK</option>
+                <option value="Kotor" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_lidah == 'Kotor'}selected{/if}>Kotor</option>
+                <option value="Gerak Asimetris" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_lidah == 'Gerak Asimetris'}selected{/if}>Gerak Asimetris</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_lidah == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Tenggorokan</label>
+              <select class="form-control" name="pemeriksaan_gastrointestinal_tenggorokan">
+                <option value="TAK" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_tenggorokan == 'TAK'}selected{/if}>TAK</option>
+                <option value="Gangguan Menelan" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_tenggorokan == 'Gangguan Menelan'}selected{/if}>Gangguan Menelan</option>
+                <option value="Sakit Menelan" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_tenggorokan == 'Sakit Menelan'}selected{/if}>Sakit Menelan</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_tenggorokan == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Abdomen</label>
+              <select class="form-control" name="pemeriksaan_gastrointestinal_abdomen">
+                <option value="Supel" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_abdomen == 'Supel'}selected{/if}>Supel</option>
+                <option value="Asictes" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_abdomen == 'Asictes'}selected{/if}>Asictes</option>
+                <option value=" Tegang" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_abdomen == ' Tegang'}selected{/if}> Tegang</option>
+                <option value="Nyeri Tekan/Lepas" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_abdomen == 'Nyeri Tekan/Lepas'}selected{/if}>Nyeri Tekan/Lepas</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_abdomen == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Peristaltik Usus</label>
+              <select class="form-control" name="pemeriksaan_gastrointestinal_peistatik_usus">
+                <option value="TAK" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_peistatik_usus == 'TAK'}selected{/if}>TAK</option>
+                <option value="Tidak Ada Bising Usus" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_peistatik_usus == 'Tidak Ada Bising Usus'}selected{/if}>Tidak Ada Bising Usus</option>
+                <option value="Hiperistaltik" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_peistatik_usus == 'Hiperistaltik'}selected{/if}>Hiperistaltik</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Anus</label>
+          <select class="form-control" name="pemeriksaan_gastrointestinal_anus">
+            <option value="TAK" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_anus == 'TAK'}selected{/if}>TAK</option>
+            <option value="Atresia Ani" {if: $penilaian_ranap.pemeriksaan_gastrointestinal_anus == 'Atresia Ani'}selected{/if}>Atresia Ani</option>
+          </select>
+        </div>
+        
+        <h6><strong>Neurologi</strong></h6>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Penglihatan</label>
+              <select class="form-control" name="pemeriksaan_neurologi_pengelihatan">
+                <option value="TAK" {if: $penilaian_ranap.pemeriksaan_neurologi_pengelihatan == 'TAK'}selected{/if}>TAK</option>
+                <option value="Ada Kelainan" {if: $penilaian_ranap.pemeriksaan_neurologi_pengelihatan == 'Ada Kelainan'}selected{/if}>Ada Kelainan</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Alat Bantu Penglihatan</label>
+              <select class="form-control" name="pemeriksaan_neurologi_alat_bantu_penglihatan">
+                <option value="Tidak" {if: $penilaian_ranap.pemeriksaan_neurologi_alat_bantu_penglihatan == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Kacamata" {if: $penilaian_ranap.pemeriksaan_neurologi_alat_bantu_penglihatan == 'Kacamata'}selected{/if}>Kacamata</option>
+                <option value="Lensa Kontak" {if: $penilaian_ranap.pemeriksaan_neurologi_alat_bantu_penglihatan == 'Lensa Kontak'}selected{/if}>Lensa Kontak</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Pendengaran</label>
+              <select class="form-control" name="pemeriksaan_neurologi_pendengaran">
+                <option value="TAK" {if: $penilaian_ranap.pemeriksaan_neurologi_pendengaran == 'TAK'}selected{/if}>TAK</option>
+                <option value="Berdengung" {if: $penilaian_ranap.pemeriksaan_neurologi_pendengaran == 'Berdengung'}selected{/if}>Berdengung</option>
+                <option value="Nyeri" {if: $penilaian_ranap.pemeriksaan_neurologi_pendengaran == 'Nyeri'}selected{/if}>Nyeri</option>
+                <option value="Tuli" {if: $penilaian_ranap.pemeriksaan_neurologi_pendengaran == 'Tuli'}selected{/if}>Tuli</option>
+                <option value="Keluar Cairan" {if: $penilaian_ranap.pemeriksaan_neurologi_pendengaran == 'Keluar Cairan'}selected{/if}>Keluar Cairan</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pemeriksaan_neurologi_pendengaran == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Bicara</label>
+              <select class="form-control" name="pemeriksaan_neurologi_bicara">
+                <option value="Jelas" {if: $penilaian_ranap.pemeriksaan_neurologi_bicara == 'Jelas'}selected{/if}>Jelas</option>
+                <option value="Tidak Jelas" {if: $penilaian_ranap.pemeriksaan_neurologi_bicara == 'Tidak Jelas'}selected{/if}>Tidak Jelas</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Sensorik</label>
+              <select class="form-control" name="pemeriksaan_neurologi_sensorik">
+                <option value="TAK" {if: $penilaian_ranap.pemeriksaan_neurologi_sensorik == 'TAK'}selected{/if}>TAK</option>
+                <option value="Sakit Nyeri" {if: $penilaian_ranap.pemeriksaan_neurologi_sensorik == 'Sakit Nyeri'}selected{/if}>Sakit Nyeri</option>
+                <option value="Rasa Kebas" {if: $penilaian_ranap.pemeriksaan_neurologi_sensorik == 'Rasa Kebas'}selected{/if}>Rasa Kebas</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pemeriksaan_neurologi_sensorik == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Motorik</label>
+              <select class="form-control" name="pemeriksaan_neurologi_motorik">
+                <option value="TAK" {if: $penilaian_ranap.pemeriksaan_neurologi_motorik == 'TAK'}selected{/if}>TAK</option>
+                <option value="Hemiparese" {if: $penilaian_ranap.pemeriksaan_neurologi_motorik == 'Hemiparese'}selected{/if}>Hemiparese</option>
+                <option value="Tetraparese" {if: $penilaian_ranap.pemeriksaan_neurologi_motorik == 'Tetraparese'}selected{/if}>Tetraparese</option>
+                <option value="Tremor" {if: $penilaian_ranap.pemeriksaan_neurologi_motorik == 'Tremor'}selected{/if}>Tremor</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pemeriksaan_neurologi_motorik == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Kekuatan Otot</label>
+              <select class="form-control" name="pemeriksaan_neurologi_kekuatan_otot">
+                <option value="Kuat" {if: $penilaian_ranap.pemeriksaan_neurologi_kekuatan_otot == 'Kuat'}selected{/if}>Kuat</option>
+                <option value="Lemah" {if: $penilaian_ranap.pemeriksaan_neurologi_kekuatan_otot == 'Lemah'}selected{/if}>Lemah</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <h6><strong>Integument</strong></h6>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Warna Kulit</label>
+              <select class="form-control" name="pemeriksaan_integument_warnakulit">
+                <option value="Pucat" {if: $penilaian_ranap.pemeriksaan_integument_warnakulit == 'Pucat'}selected{/if}>Pucat</option>
+                <option value="Sianosis" {if: $penilaian_ranap.pemeriksaan_integument_warnakulit == 'Sianosis'}selected{/if}>Sianosis</option>
+                <option value="Normal" {if: $penilaian_ranap.pemeriksaan_integument_warnakulit == 'Normal'}selected{/if}>Normal</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pemeriksaan_integument_warnakulit == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Turgor</label>
+              <select class="form-control" name="pemeriksaan_integument_turgor">
+                <option value="Baik" {if: $penilaian_ranap.pemeriksaan_integument_turgor == 'Baik'}selected{/if}>Baik</option>
+                <option value="Sedang" {if: $penilaian_ranap.pemeriksaan_integument_turgor == 'Sedang'}selected{/if}>Sedang</option>
+                <option value="Buruk" {if: $penilaian_ranap.pemeriksaan_integument_turgor == 'Buruk'}selected{/if}>Buruk</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Kulit</label>
+              <select class="form-control" name="pemeriksaan_integument_kulit">
+                <option value="Normal" {if: $penilaian_ranap.pemeriksaan_integument_kulit == 'Normal'}selected{/if}>Normal</option>
+                <option value="Rash/Kemerahan" {if: $penilaian_ranap.pemeriksaan_integument_kulit == 'Rash/Kemerahan'}selected{/if}>Rash/Kemerahan</option>
+                <option value="Luka" {if: $penilaian_ranap.pemeriksaan_integument_kulit == 'Luka'}selected{/if}>Luka</option>
+                <option value="Memar" {if: $penilaian_ranap.pemeriksaan_integument_kulit == 'Memar'}selected{/if}>Memar</option>
+                <option value="Ptekie" {if: $penilaian_ranap.pemeriksaan_integument_kulit == 'Ptekie'}selected{/if}>Ptekie</option>
+                <option value="Bula" {if: $penilaian_ranap.pemeriksaan_integument_kulit == 'Bula'}selected{/if}>Bula</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Dekubitas</label>
+              <select class="form-control" name="pemeriksaan_integument_dekubitas">
+                <option value="Tidak Ada" {if: $penilaian_ranap.pemeriksaan_integument_dekubitas == 'Tidak Ada'}selected{/if}>Tidak Ada</option>
+                <option value="Usia > 65 tahun" {if: $penilaian_ranap.pemeriksaan_integument_dekubitas == 'Usia > 65 tahun'}selected{/if}>Usia > 65 tahun</option>
+                <option value="Obesitas" {if: $penilaian_ranap.pemeriksaan_integument_dekubitas == 'Obesitas'}selected{/if}>Obesitas</option>
+                <option value="Imobilisasi" {if: $penilaian_ranap.pemeriksaan_integument_dekubitas == 'Imobilisasi'}selected{/if}>Imobilisasi</option>
+                <option value="Paraplegi/Vegetative State" {if: $penilaian_ranap.pemeriksaan_integument_dekubitas == 'Paraplegi/Vegetative State'}selected{/if}>Paraplegi/Vegetative State</option>
+                <option value="Dirawat Di HCU" {if: $penilaian_ranap.pemeriksaan_integument_dekubitas == 'Dirawat Di HCU'}selected{/if}>Dirawat Di HCU</option>
+                <option value="Penyakit Kronis (DM, CHF, CKD)" {if: $penilaian_ranap.pemeriksaan_integument_dekubitas == 'Penyakit Kronis (DM, CHF, CKD)'}selected{/if}>Penyakit Kronis (DM, CHF, CKD)</option>
+                <option value="Inkontinentia Uri/Alvi" {if: $penilaian_ranap.pemeriksaan_integument_dekubitas == 'Inkontinentia Uri/Alvi'}selected{/if}>Inkontinentia Uri/Alvi</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <h6><strong>Muskuloskeletal</strong></h6>
+        <div class="row">
+          <div class="col-md-5">
+            <div class="form-group">
+              <label>Pergerakan Sendi</label>
+              <select class="form-control" name="pemeriksaan_muskuloskletal_pergerakan_sendi">
+                <option value="Bebas" {if: $penilaian_ranap.pemeriksaan_muskuloskletal_pergerakan_sendi == 'Bebas'}selected{/if}>Bebas</option>
+                <option value="Terbatas" {if: $penilaian_ranap.pemeriksaan_muskuloskletal_pergerakan_sendi == 'Terbatas'}selected{/if}>Terbatas</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <div class="form-group">
+              <label>Kekuatan Otot</label>
+              <select class="form-control" name="pemeriksaan_muskuloskletal_kekauatan_otot">
+                <option value="Baik" {if: $penilaian_ranap.pemeriksaan_muskuloskletal_kekauatan_otot == 'Baik'}selected{/if}>Baik</option>
+                <option value="Lemah" {if: $penilaian_ranap.pemeriksaan_muskuloskletal_kekauatan_otot == 'Lemah'}selected{/if}>Lemah</option>
+                <option value="Tremor" {if: $penilaian_ranap.pemeriksaan_muskuloskletal_kekauatan_otot == 'Tremor'}selected{/if}>Tremor</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nyeri Sendi</label>
+              <select class="form-control" name="pemeriksaan_muskuloskletal_nyeri_sendi">
+                <option value="Tidak Ada" {if: $penilaian_ranap.pemeriksaan_muskuloskletal_nyeri_sendi == 'Tidak Ada'}selected{/if}>Tidak Ada</option>
+                <option value="Ada" {if: $penilaian_ranap.pemeriksaan_muskuloskletal_nyeri_sendi == 'Ada'}selected{/if}>Ada</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Oedema</label>
+              <select class="form-control" name="pemeriksaan_muskuloskletal_oedema">
+                <option value="Tidak Ada" {if: $penilaian_ranap.pemeriksaan_muskuloskletal_oedema == 'Tidak Ada'}selected{/if}>Tidak Ada</option>
+                <option value="Ada" {if: $penilaian_ranap.pemeriksaan_muskuloskletal_oedema == 'Ada'}selected{/if}>Ada</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Fraktur</label>
+              <select class="form-control" name="pemeriksaan_muskuloskletal_fraktur">
+                <option value="Tidak Ada" {if: $penilaian_ranap.pemeriksaan_muskuloskletal_fraktur == 'Tidak Ada'}selected{/if}>Tidak Ada</option>
+                <option value="Ada" {if: $penilaian_ranap.pemeriksaan_muskuloskletal_fraktur == 'Ada'}selected{/if}>Ada</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pemeriksaan Eliminasi -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Pemeriksaan Eliminasi</h5></div>
+      <div class="panel-body">
+        <h6><strong>BAB (Buang Air Besar)</strong></h6>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Frekuensi Jumlah</label>
+              <input type="text" class="form-control" name="pemeriksaan_eliminasi_bab_frekuensi_jumlah" value="{$penilaian_ranap.pemeriksaan_eliminasi_bab_frekuensi_jumlah}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Frekuensi Durasi</label>
+              <input type="text" class="form-control" name="pemeriksaan_eliminasi_bab_frekuensi_durasi" value="{$penilaian_ranap.pemeriksaan_eliminasi_bab_frekuensi_durasi}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Konsistensi</label>
+              <input type="text" class="form-control" name="pemeriksaan_eliminasi_bab_konsistensi" value="{$penilaian_ranap.pemeriksaan_eliminasi_bab_konsistensi}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Warna</label>
+              <input type="text" class="form-control" name="pemeriksaan_eliminasi_bab_warna" value="{$penilaian_ranap.pemeriksaan_eliminasi_bab_warna}">
+            </div>
+          </div>
+        </div>
+        
+        <h6><strong>BAK (Buang Air Kecil)</strong></h6>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Frekuensi Jumlah</label>
+              <input type="text" class="form-control" name="pemeriksaan_eliminasi_bak_frekuensi_jumlah" value="{$penilaian_ranap.pemeriksaan_eliminasi_bak_frekuensi_jumlah}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Frekuensi Durasi</label>
+              <input type="text" class="form-control" name="pemeriksaan_eliminasi_bak_frekuensi_durasi" value="{$penilaian_ranap.pemeriksaan_eliminasi_bak_frekuensi_durasi}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Warna</label>
+              <input type="text" class="form-control" name="pemeriksaan_eliminasi_bak_warna" value="{$penilaian_ranap.pemeriksaan_eliminasi_bak_warna}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Lain-lain</label>
+              <input type="text" class="form-control" name="pemeriksaan_eliminasi_bak_lainlain" value="{$penilaian_ranap.pemeriksaan_eliminasi_bak_lainlain}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pola Aktivitas -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Pola Aktivitas</h5></div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Makan & Minum</label>
+              <select class="form-control" name="pola_aktifitas_makanminum">
+                <option value="Mandiri" {if: $penilaian_ranap.pola_aktifitas_makanminum == 'Mandiri'}selected{/if}>Mandiri</option>
+                <option value="Bantuan Orang Lain" {if: $penilaian_ranap.pola_aktifitas_makanminum == 'Bantuan Orang Lain'}selected{/if}>Bantuan Orang Lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Mandi</label>
+              <select class="form-control" name="pola_aktifitas_mandi">
+                <option value="Mandiri" {if: $penilaian_ranap.pola_aktifitas_mandi == 'Mandiri'}selected{/if}>Mandiri</option>
+                <option value="Bantuan Orang Lain" {if: $penilaian_ranap.pola_aktifitas_mandi == 'Bantuan Orang Lain'}selected{/if}>Bantuan Orang Lain</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Eliminasi</label>
+              <select class="form-control" name="pola_aktifitas_eliminasi">
+                <option value="Mandiri" {if: $penilaian_ranap.pola_aktifitas_eliminasi == 'Mandiri'}selected{/if}>Mandiri</option>
+                <option value="Bantuan Orang Lain" {if: $penilaian_ranap.pola_aktifitas_eliminasi == 'Bantuan Orang Lain'}selected{/if}>Bantuan Orang Lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Berpakaian</label>
+              <select class="form-control" name="pola_aktifitas_berpakaian">
+                <option value="Mandiri" {if: $penilaian_ranap.pola_aktifitas_berpakaian == 'Mandiri'}selected{/if}>Mandiri</option>
+                <option value="Bantuan Orang Lain" {if: $penilaian_ranap.pola_aktifitas_berpakaian == 'Bantuan Orang Lain'}selected{/if}>Bantuan Orang Lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Berpindah</label>
+              <select class="form-control" name="pola_aktifitas_berpindah">
+                <option value="Mandiri" {if: $penilaian_ranap.pola_aktifitas_berpindah == 'Mandiri'}selected{/if}>Mandiri</option>
+                <option value="Bantuan Orang Lain" {if: $penilaian_ranap.pola_aktifitas_berpindah == 'Bantuan Orang Lain'}selected{/if}>Bantuan Orang Lain</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pola Nutrisi dan Tidur -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Pola Nutrisi dan Tidur</h5></div>
+      <div class="panel-body">
+        <h6><strong>Pola Nutrisi</strong></h6>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Frekuensi Makan (x/hari)</label>
+              <input type="text" class="form-control" name="pola_nutrisi_frekuesi_makan" value="{$penilaian_ranap.pola_nutrisi_frekuesi_makan}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Jenis Makanan</label>
+              <input type="text" class="form-control" name="pola_nutrisi_jenis_makanan" value="{$penilaian_ranap.pola_nutrisi_jenis_makanan}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Porsi Makan (&#37;)</label>
+              <input type="text" class="form-control" name="pola_nutrisi_porsi_makan" value="{$penilaian_ranap.pola_nutrisi_porsi_makan}">
+            </div>
+          </div>
+        </div>
+        
+        <h6><strong>Pola Tidur</strong></h6>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Lama Tidur (jam/hari)</label>
+              <input type="text" class="form-control" name="pola_tidur_lama_tidur" value="{$penilaian_ranap.pola_tidur_lama_tidur}">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Gangguan Tidur</label>
+              <select class="form-control" name="pola_tidur_gangguan">
+                <option value="Tidak Ada Gangguan" {if: $penilaian_ranap.pola_tidur_gangguan == 'Tidak Ada Gangguan'}selected{/if}>Tidak Ada Gangguan</option>
+                <option value="Insomnia" {if: $penilaian_ranap.pola_tidur_gangguan == 'Insomnia'}selected{/if}>Insomnia</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pengkajian Fungsi -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Pengkajian Fungsi</h5></div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Kemampuan Sehari-hari</label>
+              <select class="form-control" name="pengkajian_fungsi_kemampuan_sehari">
+                <option value="Mandiri" {if: $penilaian_ranap.pengkajian_fungsi_kemampuan_sehari == 'Mandiri'}selected{/if}>Mandiri</option>
+                <option value="Bantuan Minimal" {if: $penilaian_ranap.pengkajian_fungsi_kemampuan_sehari == 'Bantuan Minimal'}selected{/if}>Bantuan Minimal</option>
+                <option value="Bantuan Sebagian" {if: $penilaian_ranap.pengkajian_fungsi_kemampuan_sehari == 'Bantuan Sebagian'}selected{/if}>Bantuan Sebagian</option>
+                <option value="Ketergantungan Total" {if: $penilaian_ranap.pengkajian_fungsi_kemampuan_sehari == 'Ketergantungan Total'}selected{/if}>Ketergantungan Total</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Aktivitas</label>
+              <select class="form-control" name="pengkajian_fungsi_aktifitas">
+                <option value="Tirah Baring" {if: $penilaian_ranap.pengkajian_fungsi_aktifitas == 'Tirah Baring'}selected{/if}>Tirah Baring</option>
+                <option value="Duduk" {if: $penilaian_ranap.pengkajian_fungsi_aktifitas == 'Duduk'}selected{/if}>Duduk</option>
+                <option value="Berjalan" {if: $penilaian_ranap.pengkajian_fungsi_aktifitas == 'Berjalan'}selected{/if}>Berjalan</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Berjalan</label>
+              <select class="form-control" name="pengkajian_fungsi_berjalan">
+                <option value="TAK" {if: $penilaian_ranap.pengkajian_fungsi_berjalan == 'TAK'}selected{/if}>TAK</option>
+                <option value="Penurunan Kekuatan/ROM" {if: $penilaian_ranap.pengkajian_fungsi_berjalan == 'Penurunan Kekuatan/ROM'}selected{/if}>Penurunan Kekuatan/ROM</option>
+                <option value="Paralisis" {if: $penilaian_ranap.pengkajian_fungsi_berjalan == 'Paralisis'}selected{/if}>Paralisis</option>
+                <option value="Sering Jatuh" {if: $penilaian_ranap.pengkajian_fungsi_berjalan == 'Sering Jatuh'}selected{/if}>Sering Jatuh</option>
+                <option value="Deformitas" {if: $penilaian_ranap.pengkajian_fungsi_berjalan == 'Deformitas'}selected{/if}>Deformitas</option>
+                <option value="Hilang Keseimbangan" {if: $penilaian_ranap.pengkajian_fungsi_berjalan == 'Hilang Keseimbangan'}selected{/if}>Hilang Keseimbangan</option>
+                <option value="Riwayat Patah Tulang" {if: $penilaian_ranap.pengkajian_fungsi_berjalan == 'Riwayat Patah Tulang'}selected{/if}>Riwayat Patah Tulang</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pengkajian_fungsi_berjalan == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Ambulasi</label>
+              <select class="form-control" name="pengkajian_fungsi_ambulasi">
+                <option value="Walker" {if: $penilaian_ranap.pengkajian_fungsi_ambulasi == 'Walker'}selected{/if}>Walker</option>
+                <option value="Tongkat" {if: $penilaian_ranap.pengkajian_fungsi_ambulasi == 'Tongkat'}selected{/if}>Tongkat</option>
+                <option value="Kursi Roda" {if: $penilaian_ranap.pengkajian_fungsi_ambulasi == 'Kursi Roda'}selected{/if}>Kursi Roda</option>
+                <option value="Tidak Menggunakan" {if: $penilaian_ranap.pengkajian_fungsi_ambulasi == 'Tidak Menggunakan'}selected{/if}>Tidak Menggunakan</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Ekstrimitas Atas</label>
+              <select class="form-control" name="pengkajian_fungsi_ekstrimitas_atas">
+                <option value="TAK" {if: $penilaian_ranap.pengkajian_fungsi_ekstrimitas_atas == 'TAK'}selected{/if}>TAK</option>
+                <option value="Lemah" {if: $penilaian_ranap.pengkajian_fungsi_ekstrimitas_atas == 'Lemah'}selected{/if}>Lemah</option>
+                <option value="Oedema" {if: $penilaian_ranap.pengkajian_fungsi_ekstrimitas_atas == 'Oedema'}selected{/if}>Oedema</option>
+                <option value="Tidak Simetris" {if: $penilaian_ranap.pengkajian_fungsi_ekstrimitas_atas == 'Tidak Simetris'}selected{/if}>Tidak Simetris</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pengkajian_fungsi_ekstrimitas_atas == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Ekstrimitas Bawah</label>
+              <select class="form-control" name="pengkajian_fungsi_ekstrimitas_bawah">
+                <option value="TAK" {if: $penilaian_ranap.pengkajian_fungsi_ekstrimitas_bawah == 'TAK'}selected{/if}>TAK</option>
+                <option value="Varises" {if: $penilaian_ranap.pengkajian_fungsi_ekstrimitas_bawah == 'Varises'}selected{/if}>Varises</option>
+                <option value="Oedema" {if: $penilaian_ranap.pengkajian_fungsi_ekstrimitas_bawah == 'Oedema'}selected{/if}>Oedema</option>
+                <option value="Tidak Simetris" {if: $penilaian_ranap.pengkajian_fungsi_ekstrimitas_bawah == 'Tidak Simetris'}selected{/if}>Tidak Simetris</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pengkajian_fungsi_ekstrimitas_bawah == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Menggenggam</label>
+              <select class="form-control" name="pengkajian_fungsi_menggenggam">
+                <option value="Tidak Ada Kesulitan" {if: $penilaian_ranap.pengkajian_fungsi_menggenggam == 'Tidak Ada Kesulitan'}selected{/if}>Tidak Ada Kesulitan</option>
+                <option value="Terakhir" {if: $penilaian_ranap.pengkajian_fungsi_menggenggam == 'Terakhir'}selected{/if}>Terakhir</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.pengkajian_fungsi_menggenggam == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Koordinasi</label>
+              <select class="form-control" name="pengkajian_fungsi_koordinasi">
+                <option value="Tidak Ada Kesulitan" {if: $penilaian_ranap.pengkajian_fungsi_koordinasi == 'Tidak Ada Kesulitan'}selected{/if}>Tidak Ada Kesulitan</option>
+                <option value="Ada Masalah" {if: $penilaian_ranap.pengkajian_fungsi_koordinasi == 'Ada Masalah'}selected{/if}>Ada Masalah</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Kesimpulan</label>
+              <select class="form-control" name="pengkajian_fungsi_kesimpulan">
+                <option value="Ya (Co DPJP)" {if: $penilaian_ranap.pengkajian_fungsi_kesimpulan == 'Ya (Co DPJP)'}selected{/if}>Ya (Co DPJP)</option>
+                <option value="Tidak (Tidak Perlu Co DPJP)" {if: $penilaian_ranap.pengkajian_fungsi_kesimpulan == 'Tidak (Tidak Perlu Co DPJP)'}selected{/if}>Tidak (Tidak Perlu Co DPJP)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Riwayat Psikososial -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Riwayat Psikososial</h5></div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Kondisi Psiko</label>
+              <select class="form-control" name="riwayat_psiko_kondisi_psiko">
+                <option value="Tidak Ada Masalah" {if: $penilaian_ranap.riwayat_psiko_kondisi_psiko == 'Tidak Ada Masalah'}selected{/if}>Tidak Ada Masalah</option>
+                <option value="Marah" {if: $penilaian_ranap.riwayat_psiko_kondisi_psiko == 'Marah'}selected{/if}>Marah</option>
+                <option value="Takut" {if: $penilaian_ranap.riwayat_psiko_kondisi_psiko == 'Takut'}selected{/if}>Takut</option>
+                <option value="Depresi" {if: $penilaian_ranap.riwayat_psiko_kondisi_psiko == 'Depresi'}selected{/if}>Depresi</option>
+                <option value="Cepat Lelah" {if: $penilaian_ranap.riwayat_psiko_kondisi_psiko == 'Cepat Lelah'}selected{/if}>Cepat Lelah</option>
+                <option value="Cemas" {if: $penilaian_ranap.riwayat_psiko_kondisi_psiko == 'Cemas'}selected{/if}>Cemas</option>
+                <option value="Gelisah" {if: $penilaian_ranap.riwayat_psiko_kondisi_psiko == 'Gelisah'}selected{/if}>Gelisah</option>
+                <option value="Sulit Tidur" {if: $penilaian_ranap.riwayat_psiko_kondisi_psiko == 'Sulit Tidur'}selected{/if}>Sulit Tidur</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.riwayat_psiko_kondisi_psiko == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Gangguan Jiwa</label>
+              <select class="form-control" name="riwayat_psiko_gangguan_jiwa">
+                <option value="Ya" {if: $penilaian_ranap.riwayat_psiko_gangguan_jiwa == 'Ya'}selected{/if}>Ya</option>
+                <option value="Tidak" {if: $penilaian_ranap.riwayat_psiko_gangguan_jiwa == 'Tidak'}selected{/if}>Tidak</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Perilaku</label>
+              <select class="form-control" name="riwayat_psiko_perilaku">
+                <option value="Tidak Ada Masalah" {if: $penilaian_ranap.riwayat_psiko_perilaku == 'Tidak Ada Masalah'}selected{/if}>Tidak Ada Masalah</option>
+                <option value="Perilaku Kekerasan" {if: $penilaian_ranap.riwayat_psiko_perilaku == 'Perilaku Kekerasan'}selected{/if}>Perilaku Kekerasan</option>
+                <option value="Gangguan Efek" {if: $penilaian_ranap.riwayat_psiko_perilaku == 'Gangguan Efek'}selected{/if}>Gangguan Efek</option>
+                <option value="Gangguan Memori" {if: $penilaian_ranap.riwayat_psiko_perilaku == 'Gangguan Memori'}selected{/if}>Gangguan Memori</option>
+                <option value="Halusinasi" {if: $penilaian_ranap.riwayat_psiko_perilaku == 'Halusinasi'}selected{/if}>Halusinasi</option>
+                <option value="Kecenderungan Percobaan Bunuh Diri" {if: $penilaian_ranap.riwayat_psiko_perilaku == 'Kecenderungan Percobaan Bunuh Diri'}selected{/if}>Kecenderungan Percobaan Bunuh Diri</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.riwayat_psiko_perilaku == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Hubungan Keluarga</label>
+              <select class="form-control" name="riwayat_psiko_hubungan_keluarga">
+                <option value="Harmonis" {if: $penilaian_ranap.riwayat_psiko_hubungan_keluarga == 'Harmonis'}selected{/if}>Harmonis</option>
+                <option value="Kurang Harmonis" {if: $penilaian_ranap.riwayat_psiko_hubungan_keluarga == 'Kurang Harmonis'}selected{/if}>Kurang Harmonis</option>
+                <option value="Tidak Harmonis" {if: $penilaian_ranap.riwayat_psiko_hubungan_keluarga == 'Tidak Harmonis'}selected{/if}>Tidak Harmonis</option>
+                <option value="Konflik Besar" {if: $penilaian_ranap.riwayat_psiko_hubungan_keluarga == 'Konflik Besar'}selected{/if}>Konflik Besar</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Tinggal Dengan</label>
+              <select class="form-control" name="riwayat_psiko_tinggal">
+                <option value="Sendiri" {if: $penilaian_ranap.riwayat_psiko_tinggal == 'Sendiri'}selected{/if}>Sendiri</option>
+                <option value="Orang Tua" {if: $penilaian_ranap.riwayat_psiko_tinggal == 'Orang Tua'}selected{/if}>Orang Tua</option>
+                <option value="Suami/Istri" {if: $penilaian_ranap.riwayat_psiko_tinggal == 'Suami/Istri'}selected{/if}>Suami/Istri</option>
+                <option value="Keluarga" {if: $penilaian_ranap.riwayat_psiko_tinggal == 'Keluarga'}selected{/if}>Keluarga</option>
+                <option value="Lain-lain" {if: $penilaian_ranap.riwayat_psiko_tinggal == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai Kepercayaan</label>
+              <select class="form-control" name="riwayat_psiko_nilai_kepercayaan">
+                <option value="Tidak Ada" {if: $penilaian_ranap.riwayat_psiko_nilai_kepercayaan == 'Tidak Ada'}selected{/if}>Tidak Ada</option>
+                <option value="Ada" {if: $penilaian_ranap.riwayat_psiko_nilai_kepercayaan == 'Ada'}selected{/if}>Ada</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Pendidikan PJ</label>
+              <select class="form-control" name="riwayat_psiko_pendidikan_pj">
+                <option value="-" {if: $penilaian_ranap.riwayat_psiko_pendidikan_pj == '-'}selected{/if}>-</option>
+                <option value="TS" {if: $penilaian_ranap.riwayat_psiko_pendidikan_pj == 'TS'}selected{/if}>TS</option>
+                <option value="TK" {if: $penilaian_ranap.riwayat_psiko_pendidikan_pj == 'TK'}selected{/if}>TK</option>
+                <option value="SD" {if: $penilaian_ranap.riwayat_psiko_pendidikan_pj == 'SD'}selected{/if}>SD</option>
+                <option value="SMP" {if: $penilaian_ranap.riwayat_psiko_pendidikan_pj == 'SMP'}selected{/if}>SMP</option>
+                <option value="SMA" {if: $penilaian_ranap.riwayat_psiko_pendidikan_pj == 'SMA'}selected{/if}>SMA</option>
+                <option value="SLTA/SEDERAJAT" {if: $penilaian_ranap.riwayat_psiko_pendidikan_pj == 'SLTA/SEDERAJAT'}selected{/if}>SLTA/SEDERAJAT</option>
+                <option value="D1" {if: $penilaian_ranap.riwayat_psiko_pendidikan_pj == 'D1'}selected{/if}>D1</option>
+                <option value="D2" {if: $penilaian_ranap.riwayat_psiko_pendidikan_pj == 'D2'}selected{/if}>D2</option>
+                <option value="D3" {if: $penilaian_ranap.riwayat_psiko_pendidikan_pj == 'D3'}selected{/if}>D3</option>
+                <option value="D4" {if: $penilaian_ranap.riwayat_psiko_pendidikan_pj == 'D4'}selected{/if}>D4</option>
+                <option value="S1" {if: $penilaian_ranap.riwayat_psiko_pendidikan_pj == 'S1'}selected{/if}>S1</option>
+                <option value="S2" {if: $penilaian_ranap.riwayat_psiko_pendidikan_pj == 'S2'}selected{/if}>S2</option>
+                <option value="S3" {if: $penilaian_ranap.riwayat_psiko_pendidikan_pj == 'S3'}selected{/if}>S3</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Edukasi Diberikan Kepada</label>
+          <select class="form-control" name="riwayat_psiko_edukasi_diberikan">
+            <option value="Pasien" {if: $penilaian_ranap.riwayat_psiko_edukasi_diberikan == 'Pasien'}selected{/if}>Pasien</option>
+            <option value="Keluarga" {if: $penilaian_ranap.riwayat_psiko_edukasi_diberikan == 'Keluarga'}selected{/if}>Keluarga</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Penilaian Jatuh -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Penilaian Jatuh</h5></div>
+      <div class="panel-body">
+        <h6><strong>Morse Fall Scale</strong></h6>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>1. Riwayat Jatuh</label>
+              <select class="form-control" name="penilaian_jatuhmorse_skala1">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_jatuhmorse_skala1 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_jatuhmorse_skala1 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhmorse_nilai1" value="{$penilaian_ranap.penilaian_jatuhmorse_nilai1}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>2. Diagnosa Sekunder</label>
+              <select class="form-control" name="penilaian_jatuhmorse_skala2">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_jatuhmorse_skala2 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_jatuhmorse_skala2 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhmorse_nilai2" value="{$penilaian_ranap.penilaian_jatuhmorse_nilai2}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>3. Alat Bantu Jalan</label>
+              <select class="form-control" name="penilaian_jatuhmorse_skala3">
+                <option value="Tidak Ada/Kursi Roda/Perawat/Tirah Baring" {if: $penilaian_ranap.penilaian_jatuhmorse_skala3 == 'Tidak Ada/Kursi Roda/Perawat/Tirah Baring'}selected{/if}>Tidak Ada/Kursi Roda/Perawat/Tirah Baring</option>
+                <option value="Tongkat/Alat Penopang" {if: $penilaian_ranap.penilaian_jatuhmorse_skala3 == 'Tongkat/Alat Penopang'}selected{/if}>Tongkat/Alat Penopang</option>
+                <option value="Berpegangan Pada Perabot" {if: $penilaian_ranap.penilaian_jatuhmorse_skala3 == 'Berpegangan Pada Perabot'}selected{/if}>Berpegangan Pada Perabot</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhmorse_nilai3" value="{$penilaian_ranap.penilaian_jatuhmorse_nilai3}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>4. Terapi Intravena</label>
+              <select class="form-control" name="penilaian_jatuhmorse_skala4">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_jatuhmorse_skala4 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_jatuhmorse_skala4 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhmorse_nilai4" value="{$penilaian_ranap.penilaian_jatuhmorse_nilai4}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>5. Gaya Berjalan</label>
+              <select class="form-control" name="penilaian_jatuhmorse_skala5">
+                <option value="Normal/Tirah Baring/Imobilisasi" {if: $penilaian_ranap.penilaian_jatuhmorse_skala5 == 'Normal/Tirah Baring/Imobilisasi'}selected{/if}>Normal/Tirah Baring/Imobilisasi</option>
+                <option value="Lemah" {if: $penilaian_ranap.penilaian_jatuhmorse_skala5 == 'Lemah'}selected{/if}>Lemah</option>
+                <option value="Terganggu" {if: $penilaian_ranap.penilaian_jatuhmorse_skala5 == 'Terganggu'}selected{/if}>Terganggu</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhmorse_nilai5" value="{$penilaian_ranap.penilaian_jatuhmorse_nilai5}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>6. Status Mental</label>
+              <select class="form-control" name="penilaian_jatuhmorse_skala6">
+                <option value="Sadar Akan Kemampuan Diri Sendiri" {if: $penilaian_ranap.penilaian_jatuhmorse_skala6 == 'Sadar Akan Kemampuan Diri Sendiri'}selected{/if}>Sadar Akan Kemampuan Diri Sendiri</option>
+                <option value="Sering Lupa Akan Keterbatasan Yang Dimiliki" {if: $penilaian_ranap.penilaian_jatuhmorse_skala6 == 'Sering Lupa Akan Keterbatasan Yang Dimiliki'}selected{/if}>Sering Lupa Akan Keterbatasan Yang Dimiliki</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhmorse_nilai6" value="{$penilaian_ranap.penilaian_jatuhmorse_nilai6}">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Total Nilai Morse</label>
+          <input type="number" class="form-control" name="penilaian_jatuhmorse_totalnilai" value="{$penilaian_ranap.penilaian_jatuhmorse_totalnilai}" readonly>
+        </div>
+        
+        <h6><strong>Sydney Scoring Tool</strong></h6>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>1. Usia 65 tahun ke atas</label>
+              <select class="form-control" name="penilaian_jatuhsydney_skala1">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_jatuhsydney_skala1 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_jatuhsydney_skala1 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhsydney_nilai1" value="{$penilaian_ranap.penilaian_jatuhsydney_nilai1}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>2. Jenis Kelamin Laki-laki</label>
+              <select class="form-control" name="penilaian_jatuhsydney_skala2">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_jatuhsydney_skala2 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_jatuhsydney_skala2 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhsydney_nilai2" value="{$penilaian_ranap.penilaian_jatuhsydney_nilai2}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>3. Diagnosis Psikiatri</label>
+              <select class="form-control" name="penilaian_jatuhsydney_skala3">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_jatuhsydney_skala3 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_jatuhsydney_skala3 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhsydney_nilai3" value="{$penilaian_ranap.penilaian_jatuhsydney_nilai3}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>4. Kognitif Impairment</label>
+              <select class="form-control" name="penilaian_jatuhsydney_skala4">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_jatuhsydney_skala4 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_jatuhsydney_skala4 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhsydney_nilai4" value="{$penilaian_ranap.penilaian_jatuhsydney_nilai4}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>5. Riwayat Jatuh dalam 12 bulan</label>
+              <select class="form-control" name="penilaian_jatuhsydney_skala5">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_jatuhsydney_skala5 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_jatuhsydney_skala5 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhsydney_nilai5" value="{$penilaian_ranap.penilaian_jatuhsydney_nilai5}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>6. Obat-obatan Berisiko Tinggi</label>
+              <select class="form-control" name="penilaian_jatuhsydney_skala6">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_jatuhsydney_skala6 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_jatuhsydney_skala6 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhsydney_nilai6" value="{$penilaian_ranap.penilaian_jatuhsydney_nilai6}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>7. Pembedahan/Sedasi/Anestesi</label>
+              <select class="form-control" name="penilaian_jatuhsydney_skala7">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_jatuhsydney_skala7 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_jatuhsydney_skala7 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhsydney_nilai7" value="{$penilaian_ranap.penilaian_jatuhsydney_nilai7}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>8. Mobilitas Terganggu</label>
+              <select class="form-control" name="penilaian_jatuhsydney_skala8">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_jatuhsydney_skala8 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_jatuhsydney_skala8 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhsydney_nilai8" value="{$penilaian_ranap.penilaian_jatuhsydney_nilai8}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>9. Agitasi</label>
+              <select class="form-control" name="penilaian_jatuhsydney_skala9">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_jatuhsydney_skala9 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_jatuhsydney_skala9 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhsydney_nilai9" value="{$penilaian_ranap.penilaian_jatuhsydney_nilai9}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>10. Status Mental Terganggu</label>
+              <select class="form-control" name="penilaian_jatuhsydney_skala10">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_jatuhsydney_skala10 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_jatuhsydney_skala10 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhsydney_nilai10" value="{$penilaian_ranap.penilaian_jatuhsydney_nilai10}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>11. Nocturia</label>
+              <select class="form-control" name="penilaian_jatuhsydney_skala11">
+                <option value="Tidak" {if: $penilaian_ranap.penilaian_jatuhsydney_skala11 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.penilaian_jatuhsydney_skala11 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="penilaian_jatuhsydney_nilai11" value="{$penilaian_ranap.penilaian_jatuhsydney_nilai11}">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Total Nilai Sydney</label>
+          <input type="number" class="form-control" name="penilaian_jatuhsydney_totalnilai" value="{$penilaian_ranap.penilaian_jatuhsydney_totalnilai}" readonly>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skrining Gizi -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Skrining Gizi</h5></div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>1. Apakah pasien mengalami penurunan berat badan yang tidak diinginkan dalam 6 bulan terakhir?</label>
+              <select class="form-control" name="skrining_gizi1" id="skrining_gizi1">
+                <option value="Tidak ada penurunan berat badan" {if: $penilaian_ranap.skrining_gizi1 == 'Tidak ada penurunan berat badan'}selected{/if}>Tidak ada penurunan berat badan</option>
+                <option value="Tidak yakin/ tidak tahu/ terasa baju lebih longgar" {if: $penilaian_ranap.skrining_gizi1 == 'Tidak yakin/ tidak tahu/ terasa baju lebih longgar'}selected{/if}>Tidak yakin/ tidak tahu/ terasa baju lebih longgar</option>
+                <option value="Ya 1-5 kg" {if: $penilaian_ranap.skrining_gizi1 == 'Ya 1-5 kg'}selected{/if}>Ya 1-5 kg</option>
+                <option value="Ya 6-10 kg" {if: $penilaian_ranap.skrining_gizi1 == 'Ya 6-10 kg'}selected{/if}>Ya 6-10 kg</option>
+                <option value="Ya 11-15 kg" {if: $penilaian_ranap.skrining_gizi1 == 'Ya 11-15 kg'}selected{/if}>Ya 11-15 kg</option>
+                <option value="Ya > 15 kg" {if: $penilaian_ranap.skrining_gizi1 == 'Ya > 15 kg'}selected{/if}>Ya > 15 kg</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="nilai_gizi1" id="nilai_gizi1" value="{$penilaian_ranap.nilai_gizi1}" readonly>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>2. Apakah asupan makan berkurang karena tidak nafsu makan?</label>
+              <select class="form-control" name="skrining_gizi2" id="skrining_gizi2">
+                <option value="Tidak" {if: $penilaian_ranap.skrining_gizi2 == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.skrining_gizi2 == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nilai</label>
+              <input type="number" class="form-control" name="nilai_gizi2" id="nilai_gizi2" value="{$penilaian_ranap.nilai_gizi2}" readonly>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Total Nilai Gizi</label>
+          <input type="number" class="form-control" name="nilai_total_gizi" id="nilai_total_gizi" value="{$penilaian_ranap.nilai_total_gizi}" readonly>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Diagnosa Khusus</label>
+              <select class="form-control" name="skrining_gizi_diagnosa_khusus">
+                <option value="Tidak" {if: $penilaian_ranap.skrining_gizi_diagnosa_khusus == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.skrining_gizi_diagnosa_khusus == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Diketahui Dietisen</label>
+              <select class="form-control" name="skrining_gizi_diketahui_dietisen">
+                <option value="Tidak" {if: $penilaian_ranap.skrining_gizi_diketahui_dietisen == 'Tidak'}selected{/if}>Tidak</option>
+                <option value="Ya" {if: $penilaian_ranap.skrining_gizi_diketahui_dietisen == 'Ya'}selected{/if}>Ya</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Jam Diketahui Dietisen</label>
+          <input type="text" class="form-control" name="skrining_gizi_jam_diketahui_dietisen" value="{$penilaian_ranap.skrining_gizi_jam_diketahui_dietisen}">
+        </div>
+      </div>
+    </div>
+
+    <!-- Rencana -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><h5>Rencana Keperawatan</h5></div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label>Rencana</label>
+          <textarea class="form-control" name="rencana" rows="4">{$penilaian_ranap.rencana}</textarea>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Kode Dokter</label>
+              <input type="text" class="form-control" name="kd_dokter" value="{$penilaian_ranap.kd_dokter}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>NIP Petugas 1</label>
+              <input type="text" class="form-control" name="nip1" value="{$penilaian_ranap.nip1}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>NIP Petugas 2</label>
+              <input type="text" class="form-control" name="nip2" value="{$penilaian_ranap.nip2}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+  <button type="button" class="btn btn-primary" id="simpan_assessment">Simpan</button>
+</div>
+
+<script>
+// BMI Calculation
+function calculateBMI() {
+  var bb = parseFloat($('#bb').val());
+  var tb = parseFloat($('#tb').val());
+  
+  if (bb > 0 && tb > 0) {
+    var tbMeter = tb / 100;
+    var bmi = bb / (tbMeter * tbMeter);
+    $('#bmi').val(bmi.toFixed(1));
+    
+    var status = '';
+    if (bmi < 18.5) {
+      status = 'Underweight';
+    } else if (bmi < 25) {
+      status = 'Normal';
+    } else if (bmi < 30) {
+      status = 'Overweight';
+    } else {
+      status = 'Obese';
+    }
+    $('#status_gizi').val(status);
+  }
+}
+
+// Skrining Gizi Calculation
+function calculateSkriningGizi() {
+  var nilai1 = 0;
+  var nilai2 = 0;
+  
+  var gizi1 = $('#skrining_gizi1').val();
+  switch(gizi1) {
+    case 'Tidak ada penurunan berat badan': nilai1 = 0; break;
+    case 'Tidak yakin/ tidak tahu/ terasa baju lebih longgar': nilai1 = 2; break;
+    case 'Ya 1-5 kg': nilai1 = 1; break;
+    case 'Ya 6-10 kg': nilai1 = 2; break;
+    case 'Ya 11-15 kg': nilai1 = 3; break;
+    case 'Ya > 15 kg': nilai1 = 4; break;
+  }
+  
+  var gizi2 = $('#skrining_gizi2').val();
+  if (gizi2 == 'Ya') {
+    nilai2 = 1;
+  }
+  
+  $('#nilai_gizi1').val(nilai1);
+  $('#nilai_gizi2').val(nilai2);
+  $('#nilai_total_gizi').val(nilai1 + nilai2);
+}
+
+$(document).ready(function() {
+  // Calculate BMI on input change
+  $('#bb, #tb').on('input', calculateBMI);
+  
+  // Calculate initial BMI
+  calculateBMI();
+  
+  // Calculate Skrining Gizi on change
+  $('#skrining_gizi1, #skrining_gizi2').on('change', calculateSkriningGizi);
+  
+  // Calculate initial Skrining Gizi
+  calculateSkriningGizi();
+  
+  // Simpan Assessment
+  $('#simpan_assessment').on('click', function() {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var formData = $('#form_assessment').serialize();
+    
+    // console.log('Sending data:', formData);
+    
+    $.post(baseURL + '/rawat_inap/assessmentsave?t=' + mlite.token, formData, function(data) {
+      // console.log('Response:', data);
+      if (data.status == 'success') {
+        $('#assesmentModal').modal('hide');
+        alert('Data assessment berhasil disimpan!');
+        // Reload tampilan assessment
+        var no_rawat = $('input[name=no_rawat]').val();
+        var set_no_rawat = no_rawat.replace(/\//g, '');
+        $('.tampildata_assessment').load(baseURL + '/rawat_inap/assessmenttampil/' + set_no_rawat + '?t=' + mlite.token);
+      } else {
+        alert('Error: ' + (data.msg || 'Terjadi kesalahan saat menyimpan data'));
+      }
+    }, 'json').fail(function(xhr, status, error) {
+      console.error('AJAX Error:', xhr.responseText);
+      alert('Terjadi kesalahan koneksi: ' + error);
+    });
+  });
+});
+</script>
