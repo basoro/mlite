@@ -9,6 +9,7 @@ $('#aturan_pakai').hide();
 $('#daftar_racikan').hide();
 $("#info_tambahan").hide();
 $("#form_kontrol").hide();
+$("#triase_igd").hide();
 
 $("#display").on("click",".riwayat_perawatan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
@@ -230,7 +231,181 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
       "</div>").show();
     });
   {/if}
+
 });
+
+$("#form_soap").on("click",".resume", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val().replace(/\//g, '');
+
+  var loadURL =  baseURL + '/dokter_igd/resume/' + no_rawat + '?t=' + mlite.token;
+
+  var modal = $('#eresepModal');
+  var modalContent = $('#eresepModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      modalContent.load(loadURL);
+  }).modal();
+  return false;
+});
+
+// JavaScript handlers untuk Assessment IGD
+$(document).ready(function() {
+  
+  // Handler untuk form assessment
+  $(document).on('submit', '#form_assessment', function(e) {
+    e.preventDefault();
+    
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var formData = $(this).serialize();
+    
+    $.ajax({
+      url: baseURL + '/dokter_igd/medisigd?t=' + mlite.token,
+      type: 'POST',
+      data: formData,
+      dataType: 'json',
+      success: function(response) {
+        if(response.status === 'success') {
+          $('#assessmentModal').modal('hide');
+          alert('Data assessment berhasil disimpan!');
+        } else {
+          alert('Gagal menyimpan data assessment: ' + (response.message || 'Unknown error'));
+        }
+      },
+      error: function(xhr, status, error) {
+        alert('Terjadi kesalahan saat menyimpan data assessment!');
+        console.error('Error:', error);
+      }
+    });
+  });
+  
+  // Handler untuk dropdown anamnesis
+  $(document).on('change', 'select[name="anamnesis"]', function() {
+    var hubunganField = $('input[name="hubungan"]');
+    if($(this).val() === 'Autoanamnesis') {
+      hubunganField.val('Pasien').prop('readonly', true);
+    } else {
+      hubunganField.val('').prop('readonly', false);
+    }
+  });
+  
+  // Handler untuk auto-fill vital signs dari pemeriksaan ralan
+  $(document).on('click', '#auto_fill_vital', function() {
+    var no_rawat = $('input[name="no_rawat"]').val();
+    var baseURL = mlite.url + '/' + mlite.admin;
+    
+    $.ajax({
+      url: baseURL + '/dokter_igd/getvitalsigns?t=' + mlite.token,
+      type: 'POST',
+      data: {no_rawat: no_rawat},
+      dataType: 'json',
+      success: function(data) {
+        if(data) {
+          if(data.td) $('input[name="td"]').val(data.td);
+          if(data.nadi) $('input[name="nadi"]').val(data.nadi);
+          if(data.rr) $('input[name="rr"]').val(data.rr);
+          if(data.suhu) $('input[name="suhu"]').val(data.suhu);
+          if(data.spo) $('input[name="spo"]').val(data.spo);
+          if(data.bb) $('input[name="bb"]').val(data.bb);
+          if(data.tb) $('input[name="tb"]').val(data.tb);
+          if(data.kesadaran) $('select[name="kesadaran"]').val(data.kesadaran);
+          if(data.gcs) $('input[name="gcs"]').val(data.gcs);
+        }
+      },
+      error: function() {
+        console.log('Gagal mengambil data vital signs');
+      }
+    });
+  });
+  
+  // Handler untuk validasi form
+  $(document).on('blur', 'input[name="td"]', function() {
+    var td = $(this).val();
+    if(td && !td.match(/^\d{2,3}\/\d{2,3}$/)) {
+      alert('Format tekanan darah harus seperti: 120/80');
+      $(this).focus();
+    }
+  });
+  
+  $(document).on('blur', 'input[name="gcs"]', function() {
+    var gcs = $(this).val();
+    if(gcs && !gcs.match(/^E\d+M\d+V\d+$/)) {
+      alert('Format GCS harus seperti: E4M6V5');
+      $(this).focus();
+    }
+  });
+  
+  // Handler untuk numeric input validation
+  $(document).on('keypress', 'input[name="nadi"], input[name="rr"], input[name="suhu"], input[name="spo"], input[name="bb"], input[name="tb"]', function(e) {
+    // Allow: backspace, delete, tab, escape, enter, decimal point
+    if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (e.keyCode === 65 && e.ctrlKey === true) ||
+        (e.keyCode === 67 && e.ctrlKey === true) ||
+        (e.keyCode === 86 && e.ctrlKey === true) ||
+        (e.keyCode === 88 && e.ctrlKey === true) ||
+        // Allow: home, end, left, right
+        (e.keyCode >= 35 && e.keyCode <= 39)) {
+      return;
+    }
+    // Ensure that it is a number and stop the keypress
+    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+      e.preventDefault();
+    }
+  });
+  
+  // Handler untuk textarea auto-resize
+  $(document).on('input', 'textarea', function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+  });
+  
+  // Handler untuk reset form
+  $(document).on('click', '#reset_assessment', function() {
+    if(confirm('Apakah Anda yakin ingin mereset form ini?')) {
+      $('#form_assessment')[0].reset();
+      // Reset anamnesis hubungan
+      $('input[name="hubungan"]').prop('readonly', false);
+    }
+  });
+  
+});
+
+// Function untuk format tanggal
+function formatTanggal(tanggal) {
+  var date = new Date(tanggal);
+  var day = String(date.getDate()).padStart(2, '0');
+  var month = String(date.getMonth() + 1).padStart(2, '0');
+  var year = date.getFullYear();
+  var hours = String(date.getHours()).padStart(2, '0');
+  var minutes = String(date.getMinutes()).padStart(2, '0');
+  
+  return day + '/' + month + '/' + year + ' ' + hours + ':' + minutes;
+}
+
+// Function untuk validasi form assessment
+function validateAssessmentForm() {
+  var isValid = true;
+  var requiredFields = ['keluhan_utama', 'rps', 'rpk', 'rpo', 'keadaan', 'kesadaran', 'diagnosis'];
+  
+  requiredFields.forEach(function(field) {
+    var element = $('[name="' + field + '"]');
+    if(!element.val() || element.val().trim() === '') {
+      element.addClass('error');
+      isValid = false;
+    } else {
+      element.removeClass('error');
+    }
+  });
+  
+  if(!isValid) {
+    alert('Mohon lengkapi semua field yang wajib diisi!');
+  }
+  
+  return isValid;
+}
 
 // ketika tombol hapus ditekan
 $("#soap").on("click",".edit_soap", function(event){
@@ -1232,6 +1407,110 @@ $("#form_rincian").on("click","#jam_reg", function(event){
     } ,function(data) {
       $("#form_rincian #jam_reg").val(data);
     });
+});
+
+// ===== TRIASE IGD HANDLERS =====
+
+// Handler untuk tombol kembali dari triase
+$("#triase_igd").on("click", "#btn_kembali_triase", function(event){
+  event.preventDefault();
+  $("#triase_igd").hide();
+  $("#display").show();
+});
+
+// Handler untuk submit form triase
+$("#triase_igd").on("submit", "#form_triase_igd", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  
+  // Validasi form
+  var required_fields = ['tgl_triase', 'petugas_id', 'kesadaran_triase', 'airway', 'breathing', 'circulation', 'kategori'];
+  var is_valid = true;
+  var error_message = '';
+  
+  required_fields.forEach(function(field) {
+    var field_value = $('input[name="' + field + '"], select[name="' + field + '"]').val();
+    if(!field_value || field_value.trim() === '') {
+      is_valid = false;
+      error_message += 'Field ' + field + ' harus diisi\n';
+      $('input[name="' + field + '"], select[name="' + field + '"]').addClass('has-error');
+    } else {
+      $('input[name="' + field + '"], select[name="' + field + '"]').removeClass('has-error');
+    }
+  });
+  
+  if(!is_valid) {
+    alert('Validasi Error:\n' + error_message);
+    return false;
+  }
+  
+  // Serialize form data
+  var formData = $(this).serialize();
+  
+  var url = baseURL + '/dokter_igd/triaseigdsave?t=' + mlite.token;
+  $.post(url, formData, function(response) {
+    try {
+      var data = JSON.parse(response);
+      if(data.status === 'success') {
+        alert(data.msg);
+        // Refresh form dengan data terbaru
+        var no_rawat = $('input[name="no_rawat"]').val();
+        var no_rkm_medis = $('input[name="no_rkm_medis"]').val();
+        var nm_pasien = $('input[name="nm_pasien"]').val();
+        var tgl_registrasi = $('input[name="tgl_registrasi"]').val();
+        
+        // Reload triase form
+        var reload_url = baseURL + '/dokter_igd/triaseigd?t=' + mlite.token;
+        $.post(reload_url, {
+          no_rawat: no_rawat,
+          no_rkm_medis: no_rkm_medis,
+          nm_pasien: nm_pasien,
+          tgl_registrasi: tgl_registrasi
+        }, function(reload_data) {
+          $("#triase_igd").html(reload_data);
+        });
+      } else {
+        alert('Error: ' + data.msg);
+      }
+    } catch(e) {
+      alert('Error: Gagal memproses response dari server');
+      console.log('Response error:', e);
+      console.log('Raw response:', response);
+    }
+  }).fail(function(xhr, status, error) {
+    alert('Error: Gagal mengirim data ke server\nStatus: ' + status + '\nError: ' + error);
+    console.log('AJAX Error:', xhr.responseText);
+  });
+});
+
+// Handler untuk tombol hapus triase (jika diperlukan)
+$("#triase_igd").on("click", "#btn_hapus_triase", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  
+  if(confirm('Apakah Anda yakin ingin menghapus data triase ini?')) {
+    var no_rawat = $('input[name="no_rawat"]').val();
+    
+    var url = baseURL + '/dokter_igd/triaseigddelete?t=' + mlite.token;
+    $.post(url, {no_rawat: no_rawat}, function(response) {
+      try {
+        var data = JSON.parse(response);
+        if(data.status === 'success') {
+          alert(data.msg);
+          $("#triase_igd").hide();
+          $("#display").show();
+        } else {
+          alert('Error: ' + data.msg);
+        }
+      } catch(e) {
+        alert('Error: Gagal memproses response dari server');
+        console.log('Response error:', e);
+      }
+    }).fail(function(xhr, status, error) {
+      alert('Error: Gagal mengirim data ke server');
+      console.log('AJAX Error:', xhr.responseText);
+    });
+  }
 });
 
 {if: $mlite.websocket == 'ya'}

@@ -12,19 +12,19 @@
           </div>
           <div class="form-group">
             <label for="id_pendaftaran">Id Rawat</label>
-            <input type="text" name="no_rawat" placeholder="ID Pendaftaran" class="form-control" value="" readonly>
+            <input type="text" name="no_rawat" placeholder="ID Pendaftaran" class="form-control" value="{$patient_data.no_rawat}" readonly>
           </div>
           <div class="form-group">
             <label for="id_pasien">Nomor RM</label>
-            <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor Rekam Medik" value="" readonly>
+            <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor Rekam Medik" value="{$patient_data.no_rkm_medis}" readonly>
           </div>
           <div class="form-group">
             <label for="nama_pasien">Nama Pasien</label>
-            <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="" readonly>
+            <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="{$patient_data.nm_pasien}" readonly>
           </div>
           <div class="form-group">
             <label for="nama_pasien">Umur</label>
-            <input type="text" name="umur" class="form-control" placeholder="Umur pasien" value="" readonly>
+            <input type="text" name="umur" class="form-control" placeholder="Umur pasien" value="{$patient_data.umur}" readonly>
           </div>
       </div>
     </div>
@@ -134,12 +134,14 @@
           <span class="pull-right">
             <a href="#" class="btn btn-warning assesment"><i class="fa fa-file-text"></i><span class="hidden-xs"> Assesment</span></a>
             <a href="#" class="btn btn-warning adime_gizi"><i class="fa fa-file-text"></i><span class="hidden-xs"> ADIME Gizi</span></a>
+            <a href="#" class="btn btn-warning assessment_nyeri"><i class="fa fa-heartbeat"></i><span class="hidden-xs"> Assessment Nyeri</span></a>
           </span>
         </div>
       </div>
     </div>
   </div>
 </div>
+
 <div class="modal fade" id="assesmentModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
@@ -254,7 +256,22 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Assessment Nyeri -->
+<div class="modal fade" id="assessmentNyeriModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <!-- Content akan dimuat via AJAX -->
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script type="text/javascript">
+// Global chart variable
+
 // Auto-fill BMI calculation
 $(document).ready(function() {
   function calculateBMI() {
@@ -269,6 +286,7 @@ $(document).ready(function() {
   }
   
   $('input[name="tinggi"], input[name="berat"]').on('input', calculateBMI);
+  
 });
 
 // ADIME Gizi functionality

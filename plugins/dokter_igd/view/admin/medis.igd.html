@@ -1,0 +1,581 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Penilaian Awal Medis Dokter IGD</h4>
+</div>
+<div class="modal-body">
+  <h4>I. Riwayat Kesehatan</h4>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Nomor Rawat</label>
+          <input type="text" name="no_rawat_medisIgd" class="form-control" placeholder="Nomor Rawat" required value="{$reg_periksa.no_rawat}" readonly />
+      </div>
+    </div>
+     <div class="col-md-6">
+      <div class="form-group">
+          <label>Nama Pasien</label>
+          <input type="text" name="nm_pasien" class="form-control" placeholder="Nama Pasien" required value="{$pasien.nm_pasien}" readonly />
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="kd_dokter">Dokter</label>
+        <input type="text" name="kd_dokter" class="form-control" required value="{$dokter.nm_dokter}" readonly>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="tanggal">Tanggal & Jam Pemeriksaan</label>
+        <input type="text" name="tanggal" id="tanggal" class="form-control" placeholder="" value="{?=date('Y-m-d')?} {?=date('H:i:s')?}" readonly>
+      </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+          <label>Anamnesis</label>
+          <select name="anamnesis" id="anamnesis" class="form-control">
+              <option value="Autoanamnesis" {if: isset_or($penilaian_medis_igd.anamnesis, '') == 'Autoanamnesis'}selected{/if}>Autoanamnesis</option>
+              <option value="Alloanamnesis" {if: isset_or($penilaian_medis_igd.anamnesis, '') == 'Alloanamnesis'}selected{/if}>Alloanamnesis</option>
+          </select>
+        </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="hubungan">Hubungan</label>
+        <input type="text" name="hubungan" id="hubungan" class="form-control" value="{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.hubungan,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.hubungan,'')?}{/if}">
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="keluhan_utama">Keluhan Utama</label>
+        <textarea name="keluhan_utama" id="keluhan_utama" class="form-control" cols="5">{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.keluhan_utama,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.keluhan_utama,'')?}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="rps">Riawayat Penyakit Sekarang</label>
+        <textarea name="rps" id="rps" class="form-control" cols="5">{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.rps,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.rps,'')?}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="rpk">Riawayat Penyakit Keluarga</label>
+        <textarea name="rpk" id="rpk" class="form-control" cols="5">{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.rpk,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.rpk,'')?}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="rpd">Riawayat Penyakit Dahulu</label>
+        <textarea name="rpd" id="rpd" class="form-control" cols="5">{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.rpd,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.rpd,'')?}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="rpo">Riawayat Penggunaan Obat</label>
+        <textarea name="rpo" id="rpo" class="form-control" cols="3">{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.rpo,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.rpo,'')?}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="alergi">Alergi</label>
+        <textarea name="alergi" id="alergi" class="form-control" cols="3">{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.alergi,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.alergi,'')?}{/if}</textarea>
+      </div>
+    </div>
+  </div>
+
+<h4>II. Pemeriksaan Fisik</h4>
+ <div class="row">
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="keadaan">Keadaan Umum</label>
+          <select name="keadaan" id="keadaan" class="form-control">
+                <option value="Sehat" {if: isset_or($penilaian_medis_igd.keadaan, '') == 'Sehat'}selected{/if}>Sehat</option>
+                <option value="Sakit Ringan" {if: isset_or($penilaian_medis_igd.keadaan, '') == 'Sakit Ringan'}selected{/if}>Sakit Ringan</option>
+                <option value="Sakit Sedang" {if: isset_or($penilaian_medis_igd.keadaan, '') == 'Sakit Sedang'}selected{/if}>Sakit Sedang</option>
+                <option value="Sakit Berat" {if: isset_or($penilaian_medis_igd.keadaan, '') == 'Sakit Berat'}selected{/if}>Sakit Berat</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="kesadaran">Kesadaran</label>
+          <select name="kesadaran" id="kesadaran" class="form-control">
+                <option value="Compos Mentis" {if: isset_or($penilaian_medis_igd.kesadaran, '') == 'Compos Mentis'}selected{/if}>Compos Mentis</option>
+                <option value="Apatis" {if: isset_or($penilaian_medis_igd.kesadaran, '') == 'Apatis'}selected{/if}>Apatis</option>
+                <option value="Somnolen" {if: isset_or($penilaian_medis_igd.kesadaran, '') == 'Somnolen'}selected{/if}>Somnolen</option>
+                <option value="Sopor" {if: isset_or($penilaian_medis_igd.kesadaran, '') == 'Sopor'}selected{/if}>Sopor</option>
+                <option value="Koma" {if: isset_or($penilaian_medis_igd.kesadaran, '') == 'Koma'}selected{/if}>Koma</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="gcs">GCS (E,V,M)</label>
+          <input type="text" name="gcs" id="gcs" class="form-control" value="{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.gcs,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.gcs,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="tb">Tinggi Badan (Cm)</label>
+          <input type="text" name="tb" id="tb" class="form-control" value="{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.tb,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.tb,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="bb">Berat Badan (Kg)</label>
+          <input type="text" name="bb" id="bb" class="form-control" value="{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.bb,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.bb,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="td">TD (mmHg)</label>
+          <input type="text" name="td" id="td" class="form-control" value="{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.td,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.td,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="nadi">Nadi (x/Menit)</label>
+          <input type="text" name="nadi" id="nadi" class="form-control" value="{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.nadi,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.nadi,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="rr">RR (x/Menit)</label>
+          <input type="text" name="rr" id="rr" class="form-control" value="{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.rr,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.rr,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="suhu">Suhu</label>
+          <input type="text" name="suhu" id="suhu" class="form-control" value="{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.suhu,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.suhu,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="spo">SPO2 (%)</label>
+          <input type="text" name="spo" id="spo" class="form-control" value="{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.spo,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.spo,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="kepala">Kepala</label>
+          <select name="kepala" id="kepala" class="form-control">
+                <option value="Normal" {if: isset_or($penilaian_medis_igd.kepala, '') == 'Normal'}selected{/if}>Normal</option>
+                <option value="Abnormal" {if: isset_or($penilaian_medis_igd.kepala, '') == 'Abnormal'}selected{/if}>Abnormal</option>
+                <option value="Tidak Diperiksa" {if: isset_or($penilaian_medis_igd.kepala, '') == 'Tidak Diperiksa'}selected{/if}>Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="mata">Mata</label>
+          <select name="mata" id="mata" class="form-control">
+                <option value="Normal" {if: isset_or($penilaian_medis_igd.mata, '') == 'Normal'}selected{/if}>Normal</option>
+                <option value="Abnormal" {if: isset_or($penilaian_medis_igd.mata, '') == 'Abnormal'}selected{/if}>Abnormal</option>
+                <option value="Tidak Diperiksa" {if: isset_or($penilaian_medis_igd.mata, '') == 'Tidak Diperiksa'}selected{/if}>Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+     <div class="col-sm-3">
+        <div class="form-group">
+          <label for="gigi">Gigi & Mulut</label>
+          <select name="gigi" id="gigi" class="form-control">
+                <option value="Normal" {if: isset_or($penilaian_medis_igd.gigi, '') == 'Normal'}selected{/if}>Normal</option>
+                <option value="Abnormal" {if: isset_or($penilaian_medis_igd.gigi, '') == 'Abnormal'}selected{/if}>Abnormal</option>
+                <option value="Tidak Diperiksa" {if: isset_or($penilaian_medis_igd.gigi, '') == 'Tidak Diperiksa'}selected{/if}>Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="leher">Leher</label>
+          <select name="leher" id="leher" class="form-control">
+                <option value="Normal" {if: isset_or($penilaian_medis_igd.leher, '') == 'Normal'}selected{/if}>Normal</option>
+                <option value="Abnormal" {if: isset_or($penilaian_medis_igd.leher, '') == 'Abnormal'}selected{/if}>Abnormal</option>
+                <option value="Tidak Diperiksa" {if: isset_or($penilaian_medis_igd.leher, '') == 'Tidak Diperiksa'}selected{/if}>Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+        <div class="col-sm-3">
+        <div class="form-group">
+          <label for="thoraks">Thorax</label>
+          <select name="thoraks" id="thoraks" class="form-control">
+                <option value="Normal" {if: isset_or($penilaian_medis_igd.thoraks, '') == 'Normal'}selected{/if}>Normal</option>
+                <option value="Abnormal" {if: isset_or($penilaian_medis_igd.thoraks, '') == 'Abnormal'}selected{/if}>Abnormal</option>
+                <option value="Tidak Diperiksa" {if: isset_or($penilaian_medis_igd.thoraks, '') == 'Tidak Diperiksa'}selected{/if}>Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="abdomen">Abdomen</label>
+          <select name="abdomen" id="abdomen" class="form-control">
+                <option value="Normal" {if: isset_or($penilaian_medis_igd.abdomen, '') == 'Normal'}selected{/if}>Normal</option>
+                <option value="Abnormal" {if: isset_or($penilaian_medis_igd.abdomen, '') == 'Abnormal'}selected{/if}>Abnormal</option>
+                <option value="Tidak Diperiksa" {if: isset_or($penilaian_medis_igd.abdomen, '') == 'Tidak Diperiksa'}selected{/if}>Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="genital">Genita & Anus</label>
+          <select name="genital" id="genital" class="form-control">
+                <option value="Normal" {if: isset_or($penilaian_medis_igd.genital, '') == 'Normal'}selected{/if}>Normal</option>
+                <option value="Abnormal" {if: isset_or($penilaian_medis_igd.genital, '') == 'Abnormal'}selected{/if}>Abnormal</option>
+                <option value="Tidak Diperiksa" {if: isset_or($penilaian_medis_igd.genital, '') == 'Tidak Diperiksa'}selected{/if}>Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="ekstremitas">Ekstremitas</label>
+          <select name="ekstremitas" id="ekstremitas" class="form-control">
+                <option value="Normal" {if: isset_or($penilaian_medis_igd.ekstremitas, '') == 'Normal'}selected{/if}>Normal</option>
+                <option value="Abnormal" {if: isset_or($penilaian_medis_igd.ekstremitas, '') == 'Abnormal'}selected{/if}>Abnormal</option>
+                <option value="Tidak Diperiksa" {if: isset_or($penilaian_medis_igd.ekstremitas, '') == 'Tidak Diperiksa'}selected{/if}>Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+       <div class="col-sm-12">
+        <div class="form-group">
+          <label for="ket_fisik">Keterangan Fisik</label>
+          <textarea name="ket_fisik" id="ket_fisik" class="form-control" cols="5" rows="5">{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.ket_fisik,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.ket_fisik,'')?}{/if}</textarea>
+        </div>
+      </div>
+
+      <div class="col-sm-6">
+        <h4>III. Status Lokalisasi</h4>
+        <div class="form-group">
+          <textarea name="ket_lokalis" id="ket_lokalis" class="form-control" cols="5" rows="5">{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.ket_lokalis,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.ket_lokalis,'')?}{/if}</textarea>
+        </div>
+      </div>
+
+      <div class="col-sm-6">
+        <h4>IV. EKG</h4>
+        <div class="form-group">
+          <textarea name="ekg" id="ekg" class="form-control" cols="5" rows="5">{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.ekg,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.ekg,'')?}{/if}</textarea>
+        </div>
+      </div>
+
+      <div class="col-sm-6">
+        <h4>V. Radiologi</h4>
+        <div class="form-group">
+          <textarea name="rad" id="rad" class="form-control" cols="5" rows="5">{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.rad,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.rad,'')?}{/if}</textarea>
+        </div>
+      </div>
+
+      <div class="col-sm-6">
+        <h4>VI. Laboratorium</h4>
+        <div class="form-group">
+          <textarea name="lab" id="lab" class="form-control" cols="5" rows="5">{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.lab,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.lab,'')?}{/if}</textarea>
+        </div>
+      </div>
+
+      <div class="col-sm-6">
+        <h4>VII. Diagnosis/Assesmen</h4>
+        <div class="form-group">
+          <textarea name="diagnosis" id="diagnosis" class="form-control" cols="5" rows="5">{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.diagnosis,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.diagnosis,'')?}{/if}</textarea>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <h4>VIII. Tata Laksana</h4>
+        <div class="form-group">
+          <textarea name="tata" id="tata" class="form-control" cols="5" rows="5">{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.tata,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.tata,'')?}{/if}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+        <input type="hidden" name="mode" id="mode" value="add">
+        <input type="hidden" name="original_tanggal" id="original_tanggal" value="">
+        <button class="btn btn-success" id="saveMedisIgd">Simpan</button>
+        <button type="button" class="btn btn-warning" id="resetForm" style="display:none;">Reset</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Kembali</button>
+      </div>
+
+    <br>
+    <div class="tampildata">
+      <table class="table" width="100%">
+        <thead>
+          <tr>
+            <th>Nomor Rawat</th>
+            <th>Keluhan</th>
+            <th>Hubungan</th>
+            <th>Dokter</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {if: $penilaian_medis_igd}
+          <tr>
+            <td>{?=isset_or($penilaian_medis_igd.no_rawat,'')?}</td>
+            <td>{?=isset_or($penilaian_medis_igd.keluhan_utama,'')?}</td>
+            <td>{?=isset_or($penilaian_medis_igd.hubungan,'')?}</td>
+            <td>{?=isset_or($penilaian_medis_igd.nm_dokter,'')?}</td>
+            <td>
+              <button type="button" class="btn btn-success btn-xs edit_medis_igd" 
+                data-no_rawat="{?=isset_or($penilaian_medis_igd.no_rawat,'')?}" 
+                data-kd_dokter="{?=isset_or($penilaian_medis_igd.kd_dokter,'')?}" 
+                data-tanggal="{?=isset_or($penilaian_medis_igd.tanggal,'')?}" 
+                data-anamnesis="{?=isset_or($penilaian_medis_igd.anamnesis,'')?}" 
+                data-hubungan="{?=isset_or($penilaian_medis_igd.hubungan,'')?}" 
+                data-keluhan_utama="{?=isset_or($penilaian_medis_igd.keluhan_utama,'')?}" 
+                data-rps="{?=isset_or($penilaian_medis_igd.rps,'')?}" 
+                data-rpd="{?=isset_or($penilaian_medis_igd.rpd,'')?}" 
+                data-rpk="{?=isset_or($penilaian_medis_igd.rpk,'')?}" 
+                data-rpo="{?=isset_or($penilaian_medis_igd.rpo,'')?}" 
+                data-alergi="{?=isset_or($penilaian_medis_igd.alergi,'')?}" 
+                data-keadaan="{?=isset_or($penilaian_medis_igd.keadaan,'')?}" 
+                data-gcs="{?=isset_or($penilaian_medis_igd.gcs,'')?}" 
+                data-kesadaran="{?=isset_or($penilaian_medis_igd.kesadaran,'')?}" 
+                data-td="{?=isset_or($penilaian_medis_igd.td,'')?}" 
+                data-nadi="{?=isset_or($penilaian_medis_igd.nadi,'')?}" 
+                data-rr="{?=isset_or($penilaian_medis_igd.rr,'')?}" 
+                data-suhu="{?=isset_or($penilaian_medis_igd.suhu,'')?}" 
+                data-spo="{?=isset_or($penilaian_medis_igd.spo,'')?}" 
+                data-bb="{?=isset_or($penilaian_medis_igd.bb,'')?}" 
+                data-tb="{?=isset_or($penilaian_medis_igd.tb,'')?}" 
+                data-kepala="{?=isset_or($penilaian_medis_igd.kepala,'')?}" 
+                data-mata="{?=isset_or($penilaian_medis_igd.mata,'')?}" 
+                data-gigi="{?=isset_or($penilaian_medis_igd.gigi,'')?}" 
+                data-leher="{?=isset_or($penilaian_medis_igd.leher,'')?}" 
+                data-thoraks="{?=isset_or($penilaian_medis_igd.thoraks,'')?}" 
+                data-abdomen="{?=isset_or($penilaian_medis_igd.abdomen,'')?}" 
+                data-genital="{?=isset_or($penilaian_medis_igd.genital,'')?}" 
+                data-ekstremitas="{?=isset_or($penilaian_medis_igd.ekstremitas,'')?}" 
+                data-ket_fisik="{?=isset_or($penilaian_medis_igd.ket_fisik,'')?}" 
+                data-ket_lokalis="{?=isset_or($penilaian_medis_igd.ket_lokalis,'')?}" 
+                data-ekg="{?=isset_or($penilaian_medis_igd.ekg,'')?}" 
+                data-rad="{?=isset_or($penilaian_medis_igd.rad,'')?}" 
+                data-lab="{?=isset_or($penilaian_medis_igd.lab,'')?}" 
+                data-diagnosis="{?=isset_or($penilaian_medis_igd.diagnosis,'')?}" 
+                data-tata="{?=isset_or($penilaian_medis_igd.tata,'')?}">
+                <i class="fa fa-edit"></i> Edit
+              </button>
+              <button type="button" class="btn btn-danger btn-xs hapus_medis_igd" 
+                data-no_rawat="{?=isset_or($penilaian_medis_igd.no_rawat,'')?}" 
+                data-tanggal="{?=isset_or($penilaian_medis_igd.tanggal,'')?}">
+                <i class="fa fa-trash"></i> Hapus
+              </button>
+            </td>
+          </tr>
+          {/if}
+        </tbody>
+      </table>
+    </div>
+</div>
+
+<script>
+$(document).off('click', '#saveMedisIgd').on('click', '#saveMedisIgd', function(event) {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat_medisIgd]').val();
+  var tanggal = $('#tanggal').val();
+  var anamnesis = $('select[name=anamnesis]').val();
+  var hubungan = $('#hubungan').val();
+  var keluhan_utama = $('#keluhan_utama').val();
+  var rps = $('#rps').val();
+  var rpd = $('#rpd').val();
+  var rpk = $('#rpk').val();
+  var rpo = $('#rpo').val();
+  var alergi = $('#alergi').val();
+  var keadaan = $('select[name=keadaan]').val();
+  var gcs = $('#gcs').val();
+  var kesadaran = $('select[name=kesadaran]').val();
+  var td = $('#td').val();
+  var nadi = $('#nadi').val();
+  var rr = $('#rr').val();
+  var suhu = $('#suhu').val();
+  var spo = $('#spo').val();
+  var bb = $('#bb').val();
+  var tb = $('#tb').val();
+  var kepala = $('select[name=kepala]').val();
+  var mata = $('select[name=mata]').val();
+  var gigi = $('select[name=gigi]').val();
+  var leher = $('select[name=leher]').val();
+  var thoraks = $('select[name=thoraks]').val();
+  var abdomen = $('select[name=abdomen]').val();
+  var genital = $('select[name=genital]').val();
+  var ekstremitas = $('select[name=ekstremitas]').val();
+  var ket_fisik = $('#ket_fisik').val();
+  var ket_lokalis = $('#ket_lokalis').val();
+  var ekg = $('#ekg').val();
+  var rad = $('#rad').val();
+  var lab = $('#lab').val();
+  var diagnosis = $('#diagnosis').val();
+  var tata = $('#tata').val();
+  var mode = $('#mode').val();
+  var original_tanggal = $('#original_tanggal').val();
+
+  var url = baseURL + '/dokter_igd/medisigd?t=' + mlite.token;
+  $.post(url, {
+    no_rawat: no_rawat,
+    tanggal: tanggal,
+    anamnesis: anamnesis,
+    hubungan: hubungan,
+    keluhan_utama: keluhan_utama,
+    rps: rps,
+    rpd: rpd,
+    rpk: rpk,
+    rpo: rpo,
+    alergi: alergi,
+    keadaan: keadaan,
+    gcs: gcs,
+    kesadaran: kesadaran,
+    td: td,
+    nadi: nadi,
+    rr: rr,
+    suhu: suhu,
+    spo: spo,
+    bb: bb,
+    tb: tb,
+    kepala: kepala,
+    mata: mata,
+    gigi: gigi,
+    leher: leher,
+    thoraks: thoraks,
+    abdomen: abdomen,
+    genital: genital,
+    ekstremitas: ekstremitas,
+    ket_fisik: ket_fisik,
+    ket_lokalis: ket_lokalis,
+    ekg: ekg,
+    rad: rad,
+    lab: lab,
+    diagnosis: diagnosis,
+    tata: tata,
+    mode: mode,
+    original_tanggal: original_tanggal
+  }, function(data) {
+    alert('Data penilaian medis IGD berhasil disimpan!');
+    // Close modal
+    $('#assessmentModal').modal('hide');
+  });
+});
+
+$(document).off('click', '.edit_medis_igd').on('click', '.edit_medis_igd', function(event) {
+  event.preventDefault();
+  
+  // Populate form with data attributes
+  $('#mode').val('edit');
+  $('#original_tanggal').val($(this).attr('data-tanggal'));
+  $('#tanggal').val($(this).attr('data-tanggal'));
+  $('select[name=anamnesis]').val($(this).attr('data-anamnesis'));
+  $('#hubungan').val($(this).attr('data-hubungan'));
+  $('#keluhan_utama').val($(this).attr('data-keluhan_utama'));
+  $('#rps').val($(this).attr('data-rps'));
+  $('#rpd').val($(this).attr('data-rpd'));
+  $('#rpk').val($(this).attr('data-rpk'));
+  $('#rpo').val($(this).attr('data-rpo'));
+  $('#alergi').val($(this).attr('data-alergi'));
+  $('select[name=keadaan]').val($(this).attr('data-keadaan'));
+  $('#gcs').val($(this).attr('data-gcs'));
+  $('select[name=kesadaran]').val($(this).attr('data-kesadaran'));
+  $('#td').val($(this).attr('data-td'));
+  $('#nadi').val($(this).attr('data-nadi'));
+  $('#rr').val($(this).attr('data-rr'));
+  $('#suhu').val($(this).attr('data-suhu'));
+  $('#spo').val($(this).attr('data-spo'));
+  $('#bb').val($(this).attr('data-bb'));
+  $('#tb').val($(this).attr('data-tb'));
+  $('select[name=kepala]').val($(this).attr('data-kepala'));
+  $('select[name=mata]').val($(this).attr('data-mata'));
+  $('select[name=gigi]').val($(this).attr('data-gigi'));
+  $('select[name=leher]').val($(this).attr('data-leher'));
+  $('select[name=thoraks]').val($(this).attr('data-thoraks'));
+  $('select[name=abdomen]').val($(this).attr('data-abdomen'));
+  $('select[name=genital]').val($(this).attr('data-genital'));
+  $('select[name=ekstremitas]').val($(this).attr('data-ekstremitas'));
+  $('#ket_fisik').val($(this).attr('data-ket_fisik'));
+  $('#ket_lokalis').val($(this).attr('data-ket_lokalis'));
+  $('#ekg').val($(this).attr('data-ekg'));
+  $('#rad').val($(this).attr('data-rad'));
+  $('#lab').val($(this).attr('data-lab'));
+  $('#diagnosis').val($(this).attr('data-diagnosis'));
+  $('#tata').val($(this).attr('data-tata'));
+  
+  $('#resetForm').show();
+});
+
+$(document).off('click', '#resetForm').on('click', '#resetForm', function(event) {
+  event.preventDefault();
+  
+  // Reset form to add mode
+  $('#mode').val('add');
+  $('#original_tanggal').val('');
+  $('#tanggal').val('{?=date("Y-m-d H:i:s")?}');
+  
+  // Clear all form fields
+  $('select[name=anamnesis]').val('Autoanamnesis');
+  $('#hubungan').val('');
+  $('#keluhan_utama').val('');
+  $('#rps').val('');
+  $('#rpd').val('');
+  $('#rpk').val('');
+  $('#rpo').val('');
+  $('#alergi').val('');
+  $('select[name=keadaan]').val('Sehat');
+  $('#gcs').val('');
+  $('select[name=kesadaran]').val('Compos Mentis');
+  $('#td').val('');
+  $('#nadi').val('');
+  $('#rr').val('');
+  $('#suhu').val('');
+  $('#spo').val('');
+  $('#bb').val('');
+  $('#tb').val('');
+  $('select[name=kepala]').val('Normal');
+  $('select[name=mata]').val('Normal');
+  $('select[name=gigi]').val('Normal');
+  $('select[name=leher]').val('Normal');
+  $('select[name=thoraks]').val('Normal');
+  $('select[name=abdomen]').val('Normal');
+  $('select[name=genital]').val('Normal');
+  $('select[name=ekstremitas]').val('Normal');
+  $('#ket_fisik').val('');
+  $('#ket_lokalis').val('');
+  $('#ekg').val('');
+  $('#rad').val('');
+  $('#lab').val('');
+  $('#diagnosis').val('');
+  $('#tata').val('');
+  
+  $('#resetForm').hide();
+});
+
+$(document).off('click', '.hapus_medis_igd').on('click', '.hapus_medis_igd', function(event) {
+  event.preventDefault();
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var no_rawat = $(this).attr('data-no_rawat');
+  var tanggal = $(this).attr('data-tanggal');
+  
+  if(confirm('Apakah Anda yakin ingin menghapus data penilaian medis IGD ini?')) {
+    var url = baseURL + '/dokter_igd/hapusmedisigd?t=' + mlite.token;
+    $.post(url, {
+      no_rawat: no_rawat,
+      tanggal: tanggal
+    }, function(data) {
+      alert('Data penilaian medis IGD berhasil dihapus!');
+      // Refresh tampilan data tanpa reload halaman
+      $('.tampildata').load(location.href + ' .tampildata > *');
+    });
+  }
+});
+</script>

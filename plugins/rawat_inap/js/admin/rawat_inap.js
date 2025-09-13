@@ -1,3 +1,6 @@
+// Global variable untuk chart
+var vitalSignsChart = null;
+
 // sembunyikan form dan notif
 $("#form_rincian").hide();
 $("#form_soap").hide();
@@ -553,6 +556,10 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
       }, function(data) {
         // tampilkan data
         $("#soap").html(data).show();
+        // Update vital signs chart
+        if (typeof updateVitalSignsChart === 'function') {
+          updateVitalSignsChart();
+        }
       });
       $('input:text[name=suhu_tubuh]').val("");
       $('input:text[name=tensi]').val("");
@@ -690,6 +697,10 @@ $("#soap").on("click",".hapus_soap", function(event){
         }, function(data) {
           // tampilkan data
           $("#soap").html(data).show();
+          // Update vital signs chart
+          if (typeof updateVitalSignsChart === 'function') {
+            updateVitalSignsChart();
+          }
         });
         $('input:text[name=suhu_tubuh]').val("");
         $('input:text[name=tensi]').val("");
@@ -1423,3 +1434,241 @@ $(document).on("click", ".copy_soap", function(event){
     }
   }
 });
+
+// Handler untuk tombol Assessment Nyeri di form SOAP
+$("#form_soap").on("click",".assessment_nyeri", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+
+  if (!no_rawat) {
+    alert('Pilih pasien terlebih dahulu!');
+    return false;
+  }
+
+  var modal = $('#assessmentNyeriModal');
+  var modalContent = $('#assessmentNyeriModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      // Load form assessment nyeri dengan data pasien
+      var set_no_rawat = no_rawat.replace(/\//g, '');
+      modalContent.load(baseURL + '/rawat_inap/assessmentnyeri/' + set_no_rawat + '?t=' + mlite.token, function() {
+        // Load data assessment nyeri yang sudah ada
+        $('.tampildata').load(baseURL + '/rawat_inap/assessmentnyeritampil/' + set_no_rawat + '?t=' + mlite.token);
+      });
+  }).modal();
+  return false;
+});
+
+// Handler untuk Assessment Nyeri di display juga
+$("#display").on("click",".assessment_nyeri", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat");
+
+  var modal = $('#assessmentNyeriModal');
+  var modalContent = $('#assessmentNyeriModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      // Load form assessment nyeri dengan data pasien
+      var set_no_rawat = no_rawat.replace(/\//g, '');
+      modalContent.load(baseURL + '/rawat_inap/assessmentnyeri/' + set_no_rawat + '?t=' + mlite.token, function() {
+        // Load data assessment nyeri yang sudah ada
+        $('.tampildata').load(baseURL + '/rawat_inap/assessmentnyeritampil/' + set_no_rawat + '?t=' + mlite.token);
+      });
+  }).modal();
+  return false;
+});
+
+// Handler untuk tombol buat assessment nyeri dari tampil assessment nyeri
+$(document).on("click", ".buat_assessment_nyeri", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).data('no_rawat');
+  
+  var modal = $('#assessmentNyeriModal');
+  var modalContent = $('#assessmentNyeriModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      var set_no_rawat = no_rawat.replace(/\//g, '');
+      modalContent.load(baseURL + '/rawat_inap/assessmentnyeri/' + set_no_rawat + '?t=' + mlite.token);
+  }).modal();
+  return false;
+});
+
+// Handler untuk tombol edit assessment nyeri
+$(document).on("click", ".edit_assessment_nyeri", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).data('no_rawat');
+  
+  var modal = $('#assessmentNyeriModal');
+  var modalContent = $('#assessmentNyeriModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      var set_no_rawat = no_rawat.replace(/\//g, '');
+      modalContent.load(baseURL + '/rawat_inap/assessmentnyeri/' + set_no_rawat + '?t=' + mlite.token);
+  }).modal();
+  return false;
+});
+
+// Handler untuk tombol hapus assessment nyeri
+$(document).on("click", ".hapus_assessment_nyeri", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).data('no_rawat');
+  var tanggal = $(this).data('tanggal');
+  
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data assessment nyeri ini?", function(result){
+    if (result){
+      $.post(baseURL + '/rawat_inap/hapusassessmentnyeri?t=' + mlite.token, {
+        no_rawat: no_rawat,
+        tanggal: tanggal
+      }, function(data) {
+        try {
+          var response = typeof data === 'string' ? JSON.parse(data) : data;
+          if(response.status === 'success') {
+            alert(response.message);
+            // Reload tampilan assessment nyeri
+            var set_no_rawat = no_rawat.replace(/\//g, '');
+            $('.tampildata').load(baseURL + '/rawat_inap/assessmentnyeritampil/' + set_no_rawat + '?t=' + mlite.token);
+          } else {
+            alert('Error: ' + response.message);
+          }
+        } catch(e) {
+          // Fallback for non-JSON response
+          alert('Data assessment nyeri berhasil dihapus!');
+          var set_no_rawat = no_rawat.replace(/\//g, '');
+          $('.tampildata').load(baseURL + '/rawat_inap/assessmentnyeritampil/' + set_no_rawat + '?t=' + mlite.token);
+        }
+      }).fail(function(xhr, status, error) {
+        alert('Terjadi kesalahan saat menghapus data: ' + error);
+      });
+    }
+  });
+});
+
+// Load Vital Signs Chart
+function loadVitalSignsChart() {
+  var no_rawat = $('input[name="no_rawat"]').val();
+  
+  if (!no_rawat) {
+    $('#chart-no-data').show();
+    return;
+  }
+  
+  $('#chart-loading').show();
+  $('#chart-no-data').hide();
+  
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url = baseURL + '/rawat_inap/vitalsignschart?t=' + mlite.token;
+  
+  $.post(url, {no_rawat: no_rawat}, function(data) {
+    console.log('Raw data:', data);
+    $('#chart-loading').hide();
+    
+    if (data.labels && data.labels.length > 0) {
+      createVitalSignsChart(data);
+    } else {
+      $('#chart-no-data').show();
+    }
+  }, 'json').fail(function() {
+    $('#chart-loading').hide();
+    $('#chart-no-data').show();
+  });
+}
+
+// Create Vital Signs Chart
+function createVitalSignsChart(chartData) {
+  var ctx = document.getElementById('vitalSignsChart');
+  
+  // Check if canvas element exists
+  if (!ctx) {
+    console.error('Canvas element vitalSignsChart not found');
+    return;
+  }
+  
+  ctx = ctx.getContext('2d');
+  
+  // Destroy existing chart if exists
+  if (vitalSignsChart && typeof vitalSignsChart.destroy === 'function') {
+    vitalSignsChart.destroy();
+  }
+  
+  vitalSignsChart = new Chart(ctx, {
+    type: 'line',
+    data: chartData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'Grafik Tren Tanda Vital Pasien'
+        },
+        legend: {
+          display: true,
+          position: 'top'
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              var label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                label += context.parsed.y;
+              }
+              return label;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Waktu Pemeriksaan'
+          }
+        },
+        y: {
+          type: 'linear',
+          display: true,
+          position: 'left',
+          title: {
+            display: true,
+            text: 'Nilai Tanda Vital'
+          },
+          beginAtZero: false
+        },
+        y1: {
+          type: 'linear',
+          display: true,
+          position: 'right',
+          title: {
+            display: true,
+            text: 'Tinggi/Berat'
+          },
+          grid: {
+            drawOnChartArea: false,
+          },
+        }
+      }
+    }
+  });
+}
+
+// Update chart after saving SOAP data
+function updateVitalSignsChart() {
+  loadVitalSignsChart();
+}

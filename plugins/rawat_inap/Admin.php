@@ -649,6 +649,30 @@ class Admin extends AdminModule
 
     public function anyFormSoap()
     {
+      // Ambil data pasien dari reg_periksa dan pasien
+      $pasien_data = $this->db('reg_periksa')
+        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+        ->where('reg_periksa.no_rawat', $_POST['no_rawat'])
+        ->oneArray();
+      
+      // Hitung umur
+      $umur = '';
+      if($pasien_data) {
+        $tgl_lahir = new \DateTime($pasien_data['tgl_lahir']);
+        $tgl_daftar = new \DateTime($pasien_data['tgl_registrasi']);
+        $umur_tahun = $tgl_daftar->diff($tgl_lahir)->y;
+        $umur_bulan = $tgl_daftar->diff($tgl_lahir)->m;
+        $umur_hari = $tgl_daftar->diff($tgl_lahir)->d;
+        
+        if($umur_tahun > 0) {
+          $umur = $umur_tahun . ' Th';
+        } elseif($umur_bulan > 0) {
+          $umur = $umur_bulan . ' Bl';
+        } else {
+          $umur = $umur_hari . ' Hr';
+        }
+      }
+      
       // Ambil data pemeriksaan_ralan terbaru sebagai fallback
       $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')
         ->where('no_rawat', $_POST['no_rawat'])
@@ -677,7 +701,18 @@ class Admin extends AdminModule
         'spo2' => $pemeriksaan_ralan['spo2'] ?? ''
       ];
       
-      echo $this->draw('form.soap.html', ['default_values' => $default_values]);
+      // Data pasien untuk form
+      $patient_data = [
+        'no_rawat' => $_POST['no_rawat'],
+        'no_rkm_medis' => $pasien_data['no_rkm_medis'] ?? '',
+        'nm_pasien' => $pasien_data['nm_pasien'] ?? '',
+        'umur' => $umur
+      ];
+      
+      echo $this->draw('form.soap.html', [
+        'default_values' => $default_values,
+        'patient_data' => $patient_data
+      ]);
       exit();
     }
 
@@ -690,6 +725,124 @@ class Admin extends AdminModule
       } else {
         $this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->where('nip', $_POST['nip'])->save($_POST);
       }
+      exit();
+    }
+
+    public function anyVitalSignsChart()
+    {
+      $no_rawat = $_POST['no_rawat'];
+      
+      // Ambil data tanda vital dari pemeriksaan_ranap
+      $vital_signs = $this->db('pemeriksaan_ranap')
+        ->where('no_rawat', $no_rawat)
+        ->asc('tgl_perawatan')
+        ->asc('jam_rawat')
+        ->toArray();
+      
+      $chart_data = [
+        'labels' => [],
+        'datasets' => [
+          [
+            'label' => 'Suhu (°C)',
+            'data' => [],
+            'borderColor' => 'rgb(255, 99, 132)',
+            'backgroundColor' => 'rgba(255, 99, 132, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1
+          ],
+          [
+            'label' => 'Tensi Sistol (mmHg)',
+            'data' => [],
+            'borderColor' => 'rgb(54, 162, 235)',
+            'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1
+          ],
+          [
+            'label' => 'Tensi Diastol (mmHg)',
+            'data' => [],
+            'borderColor' => 'rgb(75, 192, 192)',
+            'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1
+          ],
+          [
+            'label' => 'Nadi (/menit)',
+            'data' => [],
+            'borderColor' => 'rgb(255, 205, 86)',
+            'backgroundColor' => 'rgba(255, 205, 86, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1
+          ],
+          [
+            'label' => 'RR (/menit)',
+            'data' => [],
+            'borderColor' => 'rgb(153, 102, 255)',
+            'backgroundColor' => 'rgba(153, 102, 255, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1
+          ],
+          [
+            'label' => 'Tinggi (cm)',
+            'data' => [],
+            'borderColor' => 'rgb(255, 159, 64)',
+            'backgroundColor' => 'rgba(255, 159, 64, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1,
+            'yAxisID' => 'y1'
+          ],
+          [
+            'label' => 'Berat (kg)',
+            'data' => [],
+            'borderColor' => 'rgb(199, 199, 199)',
+            'backgroundColor' => 'rgba(199, 199, 199, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1,
+            'yAxisID' => 'y1'
+          ],
+          [
+            'label' => 'SPO2 (%)',
+            'data' => [],
+            'borderColor' => 'rgb(83, 102, 255)',
+            'backgroundColor' => 'rgba(83, 102, 255, 0.2)',
+            'borderWidth' => 1,
+            'tension' => 0.1
+          ]
+        ]
+      ];
+      
+      foreach($vital_signs as $vital) {
+        $date_label = date('d/m H:i', strtotime($vital['tgl_perawatan'] . ' ' . $vital['jam_rawat']));
+        $chart_data['labels'][] = $date_label;
+        
+        // Suhu
+        $chart_data['datasets'][0]['data'][] = floatval($vital['suhu_tubuh']) ?: null;
+        
+        // Tensi - pisahkan sistol dan diastol
+        $tensi_parts = explode('/', $vital['tensi']);
+        $sistol = isset($tensi_parts[0]) ? floatval($tensi_parts[0]) : null;
+        $diastol = isset($tensi_parts[1]) ? floatval($tensi_parts[1]) : null;
+        $chart_data['datasets'][1]['data'][] = $sistol;
+        $chart_data['datasets'][2]['data'][] = $diastol;
+        
+        // Nadi
+        $chart_data['datasets'][3]['data'][] = floatval($vital['nadi']) ?: null;
+        
+        // RR
+        $chart_data['datasets'][4]['data'][] = floatval($vital['respirasi']) ?: null;
+        
+        // Tinggi
+        $chart_data['datasets'][5]['data'][] = floatval($vital['tinggi']) ?: null;
+        
+        // Berat
+        $chart_data['datasets'][6]['data'][] = floatval($vital['berat']) ?: null;
+        
+        // SPO2
+        $chart_data['datasets'][7]['data'][] = floatval($vital['spo2']) ?: null;
+      }
+      
+      header('Content-Type: application/json');
+      echo json_encode($chart_data);
       exit();
     }
 
@@ -1314,7 +1467,7 @@ class Admin extends AdminModule
       $no_rawat = revertNoRawat($no_rawat);
       
       // Cek apakah sudah ada data assessment
-      $penilaian_ranap = $this->db('mlite_penilaian_awal_keperawatan_ranap')
+      $penilaian_ranap = $this->db('penilaian_awal_keperawatan_ranap')
         ->where('no_rawat', $no_rawat)
         ->oneArray();
       
@@ -1515,18 +1668,18 @@ class Admin extends AdminModule
       unset($data['no_rawat_display']);
       
       // Cek apakah sudah ada data
-      $existing = $this->db('mlite_penilaian_awal_keperawatan_ranap')
+      $existing = $this->db('penilaian_awal_keperawatan_ranap')
         ->where('no_rawat', $data['no_rawat'])
         ->oneArray();
       
       if($existing) {
         // Update data yang sudah ada
-        $query = $this->db('mlite_penilaian_awal_keperawatan_ranap')
+        $query = $this->db('penilaian_awal_keperawatan_ranap')
           ->where('no_rawat', $data['no_rawat'])
           ->save($data);
       } else {
         // Insert data baru
-        $query = $this->db('mlite_penilaian_awal_keperawatan_ranap')->save($data);
+        $query = $this->db('penilaian_awal_keperawatan_ranap')->save($data);
       }
       
       if($query) {
@@ -1544,9 +1697,9 @@ class Admin extends AdminModule
     {
       $no_rawat = revertNoRawat($no_rawat);
       
-      $penilaian_ranap = $this->db('mlite_penilaian_awal_keperawatan_ranap')
-        ->join('petugas as p1', 'p1.nip=mlite_penilaian_awal_keperawatan_ranap.nip1')
-        ->join('petugas as p2', 'p2.nip=mlite_penilaian_awal_keperawatan_ranap.nip2')
+      $penilaian_ranap = $this->db('penilaian_awal_keperawatan_ranap')
+        ->join('petugas as p1', 'p1.nip=penilaian_awal_keperawatan_ranap.nip1')
+        ->join('petugas as p2', 'p2.nip=penilaian_awal_keperawatan_ranap.nip2')
         ->where('no_rawat', $no_rawat)
         ->oneArray();
       
@@ -1561,7 +1714,7 @@ class Admin extends AdminModule
 
     public function postAssessmentdelete()
     {
-      $query = $this->db('mlite_penilaian_awal_keperawatan_ranap')
+      $query = $this->db('penilaian_awal_keperawatan_ranap')
         ->where('no_rawat', $_POST['no_rawat'])
         ->delete();
       
@@ -1685,6 +1838,176 @@ class Admin extends AdminModule
                 echo json_encode(['status' => 'success', 'message' => 'Data ADIME Gizi berhasil dihapus']);
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus data ADIME Gizi']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+        }
+        
+        exit();
+    }
+
+    // Assessment Nyeri Methods
+    public function getAssessmentNyeri($no_rawat)
+    {
+        $no_rawat = revertNorawat($no_rawat);
+        $reg_periksa = $this->db('reg_periksa')
+            ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+            ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+            ->where('no_rawat', $no_rawat)
+            ->oneArray();
+        
+        $penilaian_ulang_nyeri = $this->db('penilaian_ulang_nyeri')
+            ->join('petugas', 'petugas.nip=penilaian_ulang_nyeri.nip')
+            ->where('no_rawat', $no_rawat)
+            ->oneArray();
+        
+        // Get petugas info for current user
+        $petugas = $this->db('petugas')
+            ->where('nip', $this->core->getUserInfo('username', null, true))
+            ->oneArray();
+        
+        echo $this->draw('assessment.nyeri.html', ['reg_periksa' => $reg_periksa, 'penilaian_ulang_nyeri' => $penilaian_ulang_nyeri, 'petugas' => $petugas]);
+        exit();
+    }
+    
+    public function postAssessmentNyeri()
+    {
+        $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+        
+        // Handle edit mode
+        if(isset($_POST['mode']) && $_POST['mode'] == 'edit' && isset($_POST['original_tanggal'])) {
+            $this->db('penilaian_ulang_nyeri')
+                ->where('no_rawat', $_POST['no_rawat'])
+                ->where('tanggal', $_POST['original_tanggal'])
+                ->save([
+                    'nip'               => $_POST['nip'],
+                    'tanggal'           => $_POST['tanggal'],
+                    'nyeri'             => $_POST['nyeri'],
+                    'provokes'          => $_POST['provokes'],
+                    'ket_provokes'      => $_POST['ket_provokes'],
+                    'quality'           => $_POST['quality'],
+                    'ket_quality'       => $_POST['ket_quality'],
+                    'lokasi'            => $_POST['lokasi'],
+                    'menyebar'          => $_POST['menyebar'],
+                    'skala_nyeri'       => $_POST['skala_nyeri'],
+                    'durasi'            => $_POST['durasi'],
+                    'nyeri_hilang'      => $_POST['nyeri_hilang'],
+                    'ket_nyeri'         => $_POST['ket_nyeri']
+                ]);
+        } else {
+            // Check if record already exists
+            $existing = $this->db('penilaian_ulang_nyeri')
+                ->where('no_rawat', $_POST['no_rawat'])
+                ->where('tanggal', $_POST['tanggal'])
+                ->oneArray();
+            
+            if($existing) {
+                // Update existing record
+                $this->db('penilaian_ulang_nyeri')
+                    ->where('no_rawat', $_POST['no_rawat'])
+                    ->where('tanggal', $_POST['tanggal'])
+                    ->save([
+                        'nip'               => $_POST['nip'],
+                        'nyeri'             => $_POST['nyeri'],
+                        'provokes'          => $_POST['provokes'],
+                        'ket_provokes'      => $_POST['ket_provokes'],
+                        'quality'           => $_POST['quality'],
+                        'ket_quality'       => $_POST['ket_quality'],
+                        'lokasi'            => $_POST['lokasi'],
+                        'menyebar'          => $_POST['menyebar'],
+                        'skala_nyeri'       => $_POST['skala_nyeri'],
+                        'durasi'            => $_POST['durasi'],
+                        'nyeri_hilang'      => $_POST['nyeri_hilang'],
+                        'ket_nyeri'         => $_POST['ket_nyeri']
+                    ]);
+            } else {
+                // Insert new record
+                $this->db('penilaian_ulang_nyeri')->save([
+                    'no_rawat'          => $_POST['no_rawat'],
+                    'nip'               => $_POST['nip'],
+                    'tanggal'           => $_POST['tanggal'],
+                    'nyeri'             => $_POST['nyeri'],
+                    'provokes'          => $_POST['provokes'],
+                    'ket_provokes'      => $_POST['ket_provokes'],
+                    'quality'           => $_POST['quality'],
+                    'ket_quality'       => $_POST['ket_quality'],
+                    'lokasi'            => $_POST['lokasi'],
+                    'menyebar'          => $_POST['menyebar'],
+                    'skala_nyeri'       => $_POST['skala_nyeri'],
+                    'durasi'            => $_POST['durasi'],
+                    'nyeri_hilang'      => $_POST['nyeri_hilang'],
+                    'ket_nyeri'         => $_POST['ket_nyeri']
+                ]);
+            }
+        }
+        exit();
+    }
+    
+    public function getAssessmentNyeriTampil($no_rawat)
+    {
+        $no_rawat = revertNorawat($no_rawat);
+        $penilaian_ulang_nyeri = $this->db('penilaian_ulang_nyeri')
+            ->join('petugas', 'petugas.nip=penilaian_ulang_nyeri.nip')
+            ->where('no_rawat', $no_rawat)
+            ->oneArray();
+        
+        if($penilaian_ulang_nyeri) {
+            echo '<table class="table" width="100%">';
+            echo '<thead><tr><th>Tanggal</th><th>Jenis Nyeri</th><th>Skala</th><th>Lokasi</th><th>Petugas</th><th>Aksi</th></tr></thead>';
+            echo '<tbody>';
+            echo '<tr>';
+            echo '<td>'.$penilaian_ulang_nyeri['tanggal'].'</td>';
+            echo '<td>'.$penilaian_ulang_nyeri['nyeri'].'</td>';
+            echo '<td>'.$penilaian_ulang_nyeri['skala_nyeri'].'</td>';
+            echo '<td>'.$penilaian_ulang_nyeri['lokasi'].'</td>';
+            echo '<td>'.$penilaian_ulang_nyeri['nama'].'</td>';
+            echo '<td>';
+            echo '<button type="button" class="btn btn-warning btn-xs edit_assessment_nyeri" ';
+            echo 'data-no_rawat="'.$penilaian_ulang_nyeri['no_rawat'].'" ';
+            echo 'data-tanggal="'.$penilaian_ulang_nyeri['tanggal'].'" ';
+            echo 'data-nyeri="'.$penilaian_ulang_nyeri['nyeri'].'" ';
+            echo 'data-provokes="'.$penilaian_ulang_nyeri['provokes'].'" ';
+            echo 'data-ket_provokes="'.htmlspecialchars($penilaian_ulang_nyeri['ket_provokes']).'" ';
+            echo 'data-quality="'.$penilaian_ulang_nyeri['quality'].'" ';
+            echo 'data-ket_quality="'.htmlspecialchars($penilaian_ulang_nyeri['ket_quality']).'" ';
+            echo 'data-lokasi="'.htmlspecialchars($penilaian_ulang_nyeri['lokasi']).'" ';
+            echo 'data-menyebar="'.$penilaian_ulang_nyeri['menyebar'].'" ';
+            echo 'data-skala_nyeri="'.$penilaian_ulang_nyeri['skala_nyeri'].'" ';
+            echo 'data-durasi="'.htmlspecialchars($penilaian_ulang_nyeri['durasi']).'" ';
+            echo 'data-nyeri_hilang="'.$penilaian_ulang_nyeri['nyeri_hilang'].'" ';
+            echo 'data-ket_nyeri="'.htmlspecialchars($penilaian_ulang_nyeri['ket_nyeri']).'" ';
+            echo '>Edit</button> ';
+            echo '<button type="button" class="btn btn-danger btn-xs hapus_assessment_nyeri" data-no_rawat="'.$penilaian_ulang_nyeri['no_rawat'].'" data-tanggal="'.$penilaian_ulang_nyeri['tanggal'].'">Hapus</button>';
+            echo '</td>';
+            echo '</tr>';
+            echo '</tbody>';
+            echo '</table>';
+        } else {
+            echo '<div class="alert alert-info">Belum ada data assessment nyeri untuk pasien ini.</div>';
+        }
+        exit();
+    }
+    
+    public function postHapusAssessmentNyeri()
+    {
+        header('Content-Type: application/json');
+        
+        try {
+            // Validate required fields
+            if(empty($_POST['no_rawat']) || empty($_POST['tanggal'])) {
+                echo json_encode(['status' => 'error', 'message' => 'Data tidak lengkap']);
+                exit();
+            }
+            
+            $result = $this->db('penilaian_ulang_nyeri')
+                ->where('no_rawat', $_POST['no_rawat'])
+                ->where('tanggal', $_POST['tanggal'])
+                ->delete();
+            
+            if($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Data assessment nyeri berhasil dihapus']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus data assessment nyeri']);
             }
         } catch (Exception $e) {
             echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);

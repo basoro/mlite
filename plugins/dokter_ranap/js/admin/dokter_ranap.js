@@ -1138,3 +1138,317 @@ $("#form_rincian").on("click","#jam_reg", function(event){
       $("#form_rincian #jam_reg").val(data);
     });
 });
+
+// Assessment Medis Ranap Handlers
+$(document).off('click', '#saveMedisRanap').on('click', '#saveMedisRanap', function(event) {
+  event.preventDefault();
+  
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var formData = {
+    no_rawat: $('input[name="no_rawat_medisRanap"]').val(),
+    kd_dokter: '{?=$this->core->getUserInfo("username", $_SESSION["mlite_user"])?}',
+    tanggal: $('input[name="tanggal"]').val(),
+    anamnesis: $('select[name="anamnesis"]').val(),
+    hubungan: $('input[name="hubungan"]').val(),
+    keluhan_utama: $('textarea[name="keluhan_utama"]').val(),
+    rps: $('textarea[name="rps"]').val(),
+    rpd: $('textarea[name="rpd"]').val(),
+    rpk: $('textarea[name="rpk"]').val(),
+    rpo: $('textarea[name="rpo"]').val(),
+    alergi: $('textarea[name="alergi"]').val(),
+    keadaan: $('select[name="keadaan"]').val(),
+    gcs: $('input[name="gcs"]').val(),
+    kesadaran: $('select[name="kesadaran"]').val(),
+    td: $('input[name="td"]').val(),
+    nadi: $('input[name="nadi"]').val(),
+    rr: $('input[name="rr"]').val(),
+    suhu: $('input[name="suhu"]').val(),
+    spo: $('input[name="spo"]').val(),
+    bb: $('input[name="bb"]').val(),
+    tb: $('input[name="tb"]').val(),
+    kepala: $('select[name="kepala"]').val(),
+    mata: $('select[name="mata"]').val(),
+    gigi: $('select[name="gigi"]').val(),
+    tht: $('select[name="tht"]').val(),
+    thoraks: $('select[name="thoraks"]').val(),
+    jantung: $('select[name="jantung"]').val(),
+    paru: $('select[name="paru"]').val(),
+    abdomen: $('select[name="abdomen"]').val(),
+    genital: $('select[name="genital"]').val(),
+    ekstremitas: $('select[name="ekstremitas"]').val(),
+    kulit: $('select[name="kulit"]').val(),
+    ket_fisik: $('textarea[name="ket_fisik"]').val(),
+    ket_lokalis: $('textarea[name="ket_lokalis"]').val(),
+    lab: $('textarea[name="lab"]').val(),
+    rad: $('textarea[name="rad"]').val(),
+    penunjang: $('textarea[name="penunjang"]').val(),
+    diagnosis: $('textarea[name="diagnosis"]').val(),
+    tata: $('textarea[name="tata"]').val(),
+    edukasi: $('textarea[name="edukasi"]').val(),
+    mode: $('#mode').val(),
+    original_tanggal: $('#original_tanggal').val(),
+    t: '{?=$_SESSION["token"]?}'
+  };
+  
+  $.post(baseURL + '/dokter_ranap/medisranap', formData, function(data) {
+    alert('Data assessment berhasil disimpan!');
+    var no_rawat_clean = formData.no_rawat ? formData.no_rawat.replace(/\//g, '') : '';
+    $('.tampildata').load(baseURL + '/dokter_ranap/medisranaptampil/' + no_rawat_clean + '?t=' + mlite.token);
+    // Reset form to add mode
+    $('#mode').val('add');
+    $('#original_tanggal').val('');
+    $('#resetForm').hide();
+    // Close modal
+    $('#medisRanapModal').modal('hide');
+  }).fail(function() {
+    alert('Terjadi kesalahan saat menyimpan data!');
+  });
+});
+
+$(document).off('click', '.edit_medis_ranap').on('click', '.edit_medis_ranap', function(event) {
+  event.preventDefault();
+  
+  // Fill form with data attributes
+  $('input[name="no_rawat_medisRanap"]').val($(this).data('no_rawat'));
+  $('input[name="tanggal"]').val($(this).data('tanggal'));
+  $('select[name="anamnesis"]').val($(this).data('anamnesis'));
+  $('input[name="hubungan"]').val($(this).data('hubungan'));
+  $('textarea[name="keluhan_utama"]').val($(this).data('keluhan_utama'));
+  $('textarea[name="rps"]').val($(this).data('rps'));
+  $('textarea[name="rpd"]').val($(this).data('rpd'));
+  $('textarea[name="rpk"]').val($(this).data('rpk'));
+  $('textarea[name="rpo"]').val($(this).data('rpo'));
+  $('textarea[name="alergi"]').val($(this).data('alergi'));
+  $('select[name="keadaan"]').val($(this).data('keadaan'));
+  $('input[name="gcs"]').val($(this).data('gcs'));
+  $('select[name="kesadaran"]').val($(this).data('kesadaran'));
+  $('input[name="td"]').val($(this).data('td'));
+  $('input[name="nadi"]').val($(this).data('nadi'));
+  $('input[name="rr"]').val($(this).data('rr'));
+  $('input[name="suhu"]').val($(this).data('suhu'));
+  $('input[name="spo"]').val($(this).data('spo'));
+  $('input[name="bb"]').val($(this).data('bb'));
+  $('input[name="tb"]').val($(this).data('tb'));
+  $('select[name="kepala"]').val($(this).data('kepala'));
+  $('select[name="mata"]').val($(this).data('mata'));
+  $('select[name="gigi"]').val($(this).data('gigi'));
+  $('select[name="tht"]').val($(this).data('tht'));
+  $('select[name="thoraks"]').val($(this).data('thoraks'));
+  $('select[name="jantung"]').val($(this).data('jantung'));
+  $('select[name="paru"]').val($(this).data('paru'));
+  $('select[name="abdomen"]').val($(this).data('abdomen'));
+  $('select[name="genital"]').val($(this).data('genital'));
+  $('select[name="ekstremitas"]').val($(this).data('ekstremitas'));
+  $('select[name="kulit"]').val($(this).data('kulit'));
+  $('textarea[name="ket_fisik"]').val($(this).data('ket_fisik'));
+  $('textarea[name="ket_lokalis"]').val($(this).data('ket_lokalis'));
+  $('textarea[name="lab"]').val($(this).data('lab'));
+  $('textarea[name="rad"]').val($(this).data('rad'));
+  $('textarea[name="penunjang"]').val($(this).data('penunjang'));
+  $('textarea[name="diagnosis"]').val($(this).data('diagnosis'));
+  $('textarea[name="tata"]').val($(this).data('tata'));
+  $('textarea[name="edukasi"]').val($(this).data('edukasi'));
+  
+  // Set edit mode
+  $('#mode').val('edit');
+  $('#original_tanggal').val($(this).data('tanggal'));
+  $('#resetForm').show();
+});
+
+$(document).off('click', '.hapus_medis_ranap').on('click', '.hapus_medis_ranap', function(event) {
+  event.preventDefault();
+  
+  if(confirm('Yakin ingin menghapus data assessment ini?')) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat = $(this).data('no_rawat');
+    var tanggal = $(this).data('tanggal');
+    
+    $.post(baseURL + '/dokter_ranap/hapusmedisranap', {
+      no_rawat: no_rawat,
+      tanggal: tanggal,
+      t: '{?=$_SESSION["token"]?}'
+    }, function(data) {
+      alert('Data assessment berhasil dihapus!');
+      var no_rawat_clean = no_rawat ? no_rawat.replace(/\//g, '') : '';
+      $('.tampildata').load(baseURL + '/dokter_ranap/medisranaptampil/' + no_rawat_clean + '?t=' + mlite.token);
+    }).fail(function() {
+      alert('Terjadi kesalahan saat menghapus data!');
+    });
+  }
+});
+
+$(document).off('click', '#resetForm').on('click', '#resetForm', function(event) {
+  event.preventDefault();
+  
+  // Reset all form fields
+  $('#medisRanapModal form')[0].reset();
+  
+  // Reset mode
+  $('#mode').val('add');
+  $('#original_tanggal').val('');
+  $(this).hide();
+  
+  // Reset datetime
+  $('input[name="tanggal"]').val('{?=date("Y-m-d H:i:s")?}');
+});
+
+// Load assessment data when modal opens
+$(document).on('shown.bs.modal', '#medisRanapModal', function () {
+  var no_rawat = $('#medisRanapBtn').data('no_rawat');
+  if(no_rawat) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat_clean = no_rawat ? no_rawat.replace(/\//g, '') : '';
+    $('.tampildata').load(baseURL + '/dokter_ranap/medisranaptampil/' + no_rawat_clean + '?t=' + mlite.token);
+  }
+});
+
+// Auto calculate BMI when height and weight change
+$(document).on('input', 'input[name="tb"], input[name="bb"]', function() {
+  var tb = parseFloat($('input[name="tb"]').val());
+  var bb = parseFloat($('input[name="bb"]').val());
+  
+  if(tb > 0 && bb > 0) {
+    var tinggi_m = tb / 100;
+    var bmi = bb / (tinggi_m * tinggi_m);
+    // Display BMI somewhere if needed
+    console.log('BMI: ' + bmi.toFixed(2));
+  }
+});
+
+// Auto-fill current datetime when modal opens
+$(document).on('show.bs.modal', '#medisRanapModal', function () {
+  if($('#mode').val() === 'add') {
+    $('input[name="tanggal"]').val('{?=date("Y-m-d H:i:s")?}');
+  }
+});
+
+// Assessment Nyeri Handlers
+$(document).off('click', '#saveAssessmentNyeri').on('click', '#saveAssessmentNyeri', function(event) {
+  event.preventDefault();
+  
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var formData = {
+    no_rawat: $('input[name="no_rawat_assessmentNyeri"]').val(),
+    nip: '{?=$this->core->getUserInfo("username", $_SESSION["mlite_user"])?}',
+    tanggal: $('input[name="tanggal"]').val(),
+    nyeri: $('select[name="nyeri"]').val(),
+    provokes: $('select[name="provokes"]').val(),
+    ket_provokes: $('input[name="ket_provokes"]').val(),
+    quality: $('select[name="quality"]').val(),
+    ket_quality: $('input[name="ket_quality"]').val(),
+    lokasi: $('input[name="lokasi"]').val(),
+    menyebar: $('select[name="menyebar"]').val(),
+    skala_nyeri: $('select[name="skala_nyeri"]').val(),
+    durasi: $('input[name="durasi"]').val(),
+    nyeri_hilang: $('select[name="nyeri_hilang"]').val(),
+    ket_nyeri: $('textarea[name="ket_nyeri"]').val(),
+    mode: $('#mode').val(),
+    original_tanggal: $('#original_tanggal').val(),
+    t: '{?=$_SESSION["token"]?}'
+  };
+  
+  $.post(baseURL + '/dokter_ranap/assessmentnyeri', formData, function(data) {
+    alert('Data assessment nyeri berhasil disimpan!');
+    var no_rawat_clean = formData.no_rawat ? formData.no_rawat.replace(/\//g, '') : '';
+    $('.tampildata').load(baseURL + '/dokter_ranap/assessmentnyeritampil/' + no_rawat_clean + '?t=' + mlite.token);
+    // Reset form to add mode
+    $('#mode').val('add');
+    $('#original_tanggal').val('');
+    $('#resetFormNyeri').hide();
+    // Close modal
+    $('#assessmentNyeriModal').modal('hide');
+  }).fail(function() {
+    alert('Terjadi kesalahan saat menyimpan data!');
+  });
+});
+
+$(document).off('click', '.edit_assessment_nyeri').on('click', '.edit_assessment_nyeri', function(event) {
+  event.preventDefault();
+  
+  // Fill form with data attributes
+  $('input[name="no_rawat_assessmentNyeri"]').val($(this).data('no_rawat'));
+  $('input[name="tanggal"]').val($(this).data('tanggal'));
+  $('select[name="nyeri"]').val($(this).data('nyeri'));
+  $('select[name="provokes"]').val($(this).data('provokes'));
+  $('input[name="ket_provokes"]').val($(this).data('ket_provokes'));
+  $('select[name="quality"]').val($(this).data('quality'));
+  $('input[name="ket_quality"]').val($(this).data('ket_quality'));
+  $('input[name="lokasi"]').val($(this).data('lokasi'));
+  $('select[name="menyebar"]').val($(this).data('menyebar'));
+  $('select[name="skala_nyeri"]').val($(this).data('skala_nyeri'));
+  $('input[name="durasi"]').val($(this).data('durasi'));
+  $('select[name="nyeri_hilang"]').val($(this).data('nyeri_hilang'));
+  $('textarea[name="ket_nyeri"]').val($(this).data('ket_nyeri'));
+  
+  // Set edit mode
+  $('#mode').val('edit');
+  $('#original_tanggal').val($(this).data('tanggal'));
+  $('#resetFormNyeri').show();
+});
+
+$(document).off('click', '.hapus_assessment_nyeri').on('click', '.hapus_assessment_nyeri', function(event) {
+  event.preventDefault();
+  
+  if(confirm('Yakin ingin menghapus data assessment nyeri ini?')) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat = $(this).data('no_rawat');
+    var tanggal = $(this).data('tanggal');
+    
+    $.post(baseURL + '/dokter_ranap/hapusassessmentnyeri', {
+      no_rawat: no_rawat,
+      tanggal: tanggal,
+      t: '{?=$_SESSION["token"]?}'
+    }, function(data) {
+      alert('Data assessment nyeri berhasil dihapus!');
+      var no_rawat_clean = no_rawat ? no_rawat.replace(/\//g, '') : '';
+      $('.tampildata').load(baseURL + '/dokter_ranap/assessmentnyeritampil/' + no_rawat_clean + '?t=' + mlite.token);
+    }).fail(function() {
+      alert('Terjadi kesalahan saat menghapus data!');
+    });
+  }
+});
+
+$(document).off('click', '#resetFormNyeri').on('click', '#resetFormNyeri', function(event) {
+  event.preventDefault();
+  
+  // Reset all form fields
+  $('#assessmentNyeriModal form')[0].reset();
+  
+  // Reset mode
+  $('#mode').val('add');
+  $('#original_tanggal').val('');
+  $(this).hide();
+  
+  // Reset datetime
+  $('input[name="tanggal"]').val('{?=date("Y-m-d H:i:s")?}');
+});
+
+// Load assessment nyeri data when modal opens
+$(document).on('shown.bs.modal', '#assessmentNyeriModal', function () {
+  var no_rawat = $('#assessmentNyeriBtn').data('no_rawat');
+  if(no_rawat) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat_clean = no_rawat ? no_rawat.replace(/\//g, '') : '';
+    $('.tampildata').load(baseURL + '/dokter_ranap/assessmentnyeritampil/' + no_rawat_clean + '?t=' + mlite.token);
+  }
+});
+
+// Auto-fill current datetime when assessment nyeri modal opens
+$(document).on('show.bs.modal', '#assessmentNyeriModal', function () {
+  if($('#mode').val() === 'add') {
+    $('input[name="tanggal"]').val('{?=date("Y-m-d H:i:s")?}');
+  }
+});
+
+// Validation for required fields in Assessment Nyeri
+$(document).on('change', 'select[name="nyeri"]', function() {
+  var nyeri = $(this).val();
+  if(nyeri === 'Tidak Ada Nyeri') {
+    $('select[name="skala_nyeri"]').val('0');
+    $('input[name="lokasi"]').val('-');
+    $('select[name="provokes"]').val('-');
+    $('select[name="quality"]').val('-');
+    $('select[name="menyebar"]').val('Tidak');
+    $('select[name="nyeri_hilang"]').val('-');
+  }
+});

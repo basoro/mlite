@@ -1,0 +1,349 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Assessment Nyeri Pasien Rawat Inap</h4>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Nomor Rawat</label>
+          <input type="text" name="no_rawat_assessmentNyeri" class="form-control" placeholder="Nomor Rawat" required value="{$reg_periksa.no_rawat}" readonly />
+      </div>
+    </div>
+     <div class="col-md-6">
+      <div class="form-group">
+          <label>Nama Pasien</label>
+          <input type="text" name="nm_pasien" class="form-control" placeholder="Nama Pasien" required value="{$pasien.nm_pasien}" readonly />
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="tanggal">Tanggal & Jam Pemeriksaan</label>
+        <input type="text" name="tanggal" id="tanggal" class="form-control" placeholder="" value="{?=date('Y-m-d H:i:s')?}" readonly>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="nip">Petugas</label>
+        <input type="text" name="nip" class="form-control" required value="{$petugas.nama}" readonly>
+      </div>
+    </div>
+  </div>
+
+  <h4>I. Penilaian Nyeri</h4>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="nyeri">Jenis Nyeri</label>
+        <select name="nyeri" id="nyeri" class="form-control" required>
+            <option value="">-- Pilih Jenis Nyeri --</option>
+            <option value="Tidak Ada Nyeri" {if: isset_or($penilaian_ulang_nyeri.nyeri, '') == 'Tidak Ada Nyeri'}selected{/if}>Tidak Ada Nyeri</option>
+            <option value="Nyeri Akut" {if: isset_or($penilaian_ulang_nyeri.nyeri, '') == 'Nyeri Akut'}selected{/if}>Nyeri Akut</option>
+            <option value="Nyeri Kronis" {if: isset_or($penilaian_ulang_nyeri.nyeri, '') == 'Nyeri Kronis'}selected{/if}>Nyeri Kronis</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="skala_nyeri">Skala Nyeri (0-10)</label>
+        <select name="skala_nyeri" id="skala_nyeri" class="form-control" required>
+            <option value="">-- Pilih Skala --</option>
+            <option value="0" {if: isset_or($penilaian_ulang_nyeri.skala_nyeri, '') == '0'}selected{/if}>0 - Tidak Nyeri</option>
+            <option value="1" {if: isset_or($penilaian_ulang_nyeri.skala_nyeri, '') == '1'}selected{/if}>1 - Nyeri Ringan</option>
+            <option value="2" {if: isset_or($penilaian_ulang_nyeri.skala_nyeri, '') == '2'}selected{/if}>2 - Nyeri Ringan</option>
+            <option value="3" {if: isset_or($penilaian_ulang_nyeri.skala_nyeri, '') == '3'}selected{/if}>3 - Nyeri Ringan</option>
+            <option value="4" {if: isset_or($penilaian_ulang_nyeri.skala_nyeri, '') == '4'}selected{/if}>4 - Nyeri Sedang</option>
+            <option value="5" {if: isset_or($penilaian_ulang_nyeri.skala_nyeri, '') == '5'}selected{/if}>5 - Nyeri Sedang</option>
+            <option value="6" {if: isset_or($penilaian_ulang_nyeri.skala_nyeri, '') == '6'}selected{/if}>6 - Nyeri Sedang</option>
+            <option value="7" {if: isset_or($penilaian_ulang_nyeri.skala_nyeri, '') == '7'}selected{/if}>7 - Nyeri Berat</option>
+            <option value="8" {if: isset_or($penilaian_ulang_nyeri.skala_nyeri, '') == '8'}selected{/if}>8 - Nyeri Berat</option>
+            <option value="9" {if: isset_or($penilaian_ulang_nyeri.skala_nyeri, '') == '9'}selected{/if}>9 - Nyeri Berat</option>
+            <option value="10" {if: isset_or($penilaian_ulang_nyeri.skala_nyeri, '') == '10'}selected{/if}>10 - Nyeri Sangat Berat</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="lokasi">Lokasi Nyeri</label>
+        <input type="text" name="lokasi" id="lokasi" class="form-control" placeholder="Contoh: Kepala, Perut, dll" value="{if: $penilaian_ulang_nyeri}{?=isset_or($penilaian_ulang_nyeri.lokasi,'')?}{/if}" required>
+      </div>
+    </div>
+  </div>
+
+  <h4>II. Karakteristik Nyeri (PQRST)</h4>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="provokes">P - Provokes (Pencetus)</label>
+        <select name="provokes" id="provokes" class="form-control" required>
+            <option value="">-- Pilih Pencetus --</option>
+            <option value="Proses Penyakit" {if: isset_or($penilaian_ulang_nyeri.provokes, '') == 'Proses Penyakit'}selected{/if}>Proses Penyakit</option>
+            <option value="Benturan" {if: isset_or($penilaian_ulang_nyeri.provokes, '') == 'Benturan'}selected{/if}>Benturan</option>
+            <option value="Lain-lain" {if: isset_or($penilaian_ulang_nyeri.provokes, '') == 'Lain-lain'}selected{/if}>Lain-lain</option>
+            <option value="-" {if: isset_or($penilaian_ulang_nyeri.provokes, '') == '-'}selected{/if}>-</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="ket_provokes">Keterangan Pencetus</label>
+        <input type="text" name="ket_provokes" id="ket_provokes" class="form-control" placeholder="Jelaskan pencetus nyeri" value="{if: $penilaian_ulang_nyeri}{?=isset_or($penilaian_ulang_nyeri.ket_provokes,'')?}{/if}">
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="quality">Q - Quality (Kualitas)</label>
+        <select name="quality" id="quality" class="form-control" required>
+            <option value="">-- Pilih Kualitas --</option>
+            <option value="Seperti Tertusuk" {if: isset_or($penilaian_ulang_nyeri.quality, '') == 'Seperti Tertusuk'}selected{/if}>Seperti Tertusuk</option>
+            <option value="Berdenyut" {if: isset_or($penilaian_ulang_nyeri.quality, '') == 'Berdenyut'}selected{/if}>Berdenyut</option>
+            <option value="Teriris" {if: isset_or($penilaian_ulang_nyeri.quality, '') == 'Teriris'}selected{/if}>Teriris</option>
+            <option value="Tertindih" {if: isset_or($penilaian_ulang_nyeri.quality, '') == 'Tertindih'}selected{/if}>Tertindih</option>
+            <option value="Tertiban" {if: isset_or($penilaian_ulang_nyeri.quality, '') == 'Tertiban'}selected{/if}>Tertiban</option>
+            <option value="Lain-lain" {if: isset_or($penilaian_ulang_nyeri.quality, '') == 'Lain-lain'}selected{/if}>Lain-lain</option>
+            <option value="-" {if: isset_or($penilaian_ulang_nyeri.quality, '') == '-'}selected{/if}>-</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="ket_quality">Keterangan Kualitas</label>
+        <input type="text" name="ket_quality" id="ket_quality" class="form-control" placeholder="Jelaskan kualitas nyeri" value="{if: $penilaian_ulang_nyeri}{?=isset_or($penilaian_ulang_nyeri.ket_quality,'')?}{/if}">
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="menyebar">R - Radiation (Penyebaran)</label>
+        <select name="menyebar" id="menyebar" class="form-control" required>
+            <option value="">-- Pilih --</option>
+            <option value="Tidak" {if: isset_or($penilaian_ulang_nyeri.menyebar, '') == 'Tidak'}selected{/if}>Tidak</option>
+            <option value="Ya" {if: isset_or($penilaian_ulang_nyeri.menyebar, '') == 'Ya'}selected{/if}>Ya</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="durasi">T - Time (Durasi)</label>
+        <input type="text" name="durasi" id="durasi" class="form-control" placeholder="Contoh: 2 jam, 30 menit" value="{if: $penilaian_ulang_nyeri}{?=isset_or($penilaian_ulang_nyeri.durasi,'')?}{/if}" required>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="nyeri_hilang">Cara Menghilangkan Nyeri</label>
+        <select name="nyeri_hilang" id="nyeri_hilang" class="form-control" required>
+            <option value="">-- Pilih Cara --</option>
+            <option value="Istirahat" {if: isset_or($penilaian_ulang_nyeri.nyeri_hilang, '') == 'Istirahat'}selected{/if}>Istirahat</option>
+            <option value="Medengar Musik" {if: isset_or($penilaian_ulang_nyeri.nyeri_hilang, '') == 'Medengar Musik'}selected{/if}>Mendengar Musik</option>
+            <option value="Minum Obat" {if: isset_or($penilaian_ulang_nyeri.nyeri_hilang, '') == 'Minum Obat'}selected{/if}>Minum Obat</option>
+            <option value="-" {if: isset_or($penilaian_ulang_nyeri.nyeri_hilang, '') == '-'}selected{/if}>-</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="form-group">
+        <label for="ket_nyeri">Keterangan Tambahan</label>
+        <textarea name="ket_nyeri" id="ket_nyeri" class="form-control" rows="3" placeholder="Keterangan tambahan tentang nyeri">{if: $penilaian_ulang_nyeri}{?=isset_or($penilaian_ulang_nyeri.ket_nyeri,'')?}{/if}</textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden fields -->
+  <input type="hidden" id="mode" name="mode" value="add">
+  <input type="hidden" id="original_tanggal" name="original_tanggal" value="">
+
+  <div class="form-group">
+    <button class="btn btn-success" id="saveAssessmentNyeri">Simpan</button>
+    <button class="btn btn-warning" id="resetFormNyeri" style="display:none;">Reset Form</button>
+    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+  </div>
+
+  <!-- Data Display -->
+  <div class="tampildata">
+    {if: $penilaian_ulang_nyeri}
+      <h4>Data Assessment Nyeri</h4>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Jenis Nyeri</th>
+            <th>Skala</th>
+            <th>Lokasi</th>
+            <th>Petugas</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{?=isset_or($penilaian_ulang_nyeri.tanggal,'')?}</td>
+            <td>{?=isset_or($penilaian_ulang_nyeri.nyeri,'')?}</td>
+            <td>{?=isset_or($penilaian_ulang_nyeri.skala_nyeri,'')?}</td>
+            <td>{?=isset_or($penilaian_ulang_nyeri.lokasi,'')?}</td>
+            <td>{?=isset_or($penilaian_ulang_nyeri.nama,'')?}</td>
+            <td>
+              <button type="button" class="btn btn-success btn-xs edit_assessment_nyeri" 
+                data-no_rawat="{?=isset_or($penilaian_ulang_nyeri.no_rawat,'')?}" 
+                data-tanggal="{?=isset_or($penilaian_ulang_nyeri.tanggal,'')?}" 
+                data-nyeri="{?=isset_or($penilaian_ulang_nyeri.nyeri,'')?}" 
+                data-provokes="{?=isset_or($penilaian_ulang_nyeri.provokes,'')?}" 
+                data-ket_provokes="{?=isset_or($penilaian_ulang_nyeri.ket_provokes,'')?}" 
+                data-quality="{?=isset_or($penilaian_ulang_nyeri.quality,'')?}" 
+                data-ket_quality="{?=isset_or($penilaian_ulang_nyeri.ket_quality,'')?}" 
+                data-lokasi="{?=isset_or($penilaian_ulang_nyeri.lokasi,'')?}" 
+                data-menyebar="{?=isset_or($penilaian_ulang_nyeri.menyebar,'')?}" 
+                data-skala_nyeri="{?=isset_or($penilaian_ulang_nyeri.skala_nyeri,'')?}" 
+                data-durasi="{?=isset_or($penilaian_ulang_nyeri.durasi,'')?}" 
+                data-nyeri_hilang="{?=isset_or($penilaian_ulang_nyeri.nyeri_hilang,'')?}" 
+                data-ket_nyeri="{?=isset_or($penilaian_ulang_nyeri.ket_nyeri,'')?}">
+                <i class="fa fa-edit"></i> Edit
+              </button>
+              <button type="button" class="btn btn-danger btn-xs hapus_assessment_nyeri" 
+                data-no_rawat="{?=isset_or($penilaian_ulang_nyeri.no_rawat,'')?}" 
+                data-tanggal="{?=isset_or($penilaian_ulang_nyeri.tanggal,'')?}">
+                <i class="fa fa-trash"></i> Hapus
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    {/if}
+  </div>
+</div>
+
+<script>
+$(document).off('click', '#saveAssessmentNyeri').on('click', '#saveAssessmentNyeri', function(event) {
+  event.preventDefault();
+  
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var formData = {
+    no_rawat: $('input[name="no_rawat_assessmentNyeri"]').val(),
+    nip: '{?=$this->core->getUserInfo("username", $_SESSION["mlite_user"])?}',
+    tanggal: $('input[name="tanggal"]').val(),
+    nyeri: $('select[name="nyeri"]').val(),
+    provokes: $('select[name="provokes"]').val(),
+    ket_provokes: $('input[name="ket_provokes"]').val(),
+    quality: $('select[name="quality"]').val(),
+    ket_quality: $('input[name="ket_quality"]').val(),
+    lokasi: $('input[name="lokasi"]').val(),
+    menyebar: $('select[name="menyebar"]').val(),
+    skala_nyeri: $('select[name="skala_nyeri"]').val(),
+    durasi: $('input[name="durasi"]').val(),
+    nyeri_hilang: $('select[name="nyeri_hilang"]').val(),
+    ket_nyeri: $('textarea[name="ket_nyeri"]').val(),
+    mode: $('#mode').val(),
+    original_tanggal: $('#original_tanggal').val(),
+    t: '{?=$_SESSION["token"]?}'
+  };
+  
+  $.post(baseURL + '/dokter_ranap/assessmentnyeri/?t=' + mlite.token, formData, function(data) {
+    try {
+      var response = typeof data === 'string' ? JSON.parse(data) : data;
+      
+      if(response.status === 'success') {
+        alert(response.message);
+        $('.tampildata').load(baseURL + '/dokter_ranap/assessmentnyeritampil/' + formData.no_rawat.replace(/\//g, '') + '?t=' + mlite.token);
+        // Reset form to add mode
+        $('#mode').val('add');
+        $('#original_tanggal').val('');
+        $('#resetFormNyeri').hide();
+        // Close modal
+        $('#assessmentNyeriModal').modal('hide');
+      } else {
+        alert('Error: ' + response.message);
+      }
+    } catch(e) {
+      // Fallback for non-JSON response
+      alert('Data assessment nyeri berhasil disimpan!');
+      $('.tampildata').load(baseURL + '/dokter_ranap/assessmentnyeritampil/' + formData.no_rawat.replace(/\//g, '') + '?t=' + mlite.token);
+      // Reset form to add mode
+      $('#mode').val('add');
+      $('#original_tanggal').val('');
+      $('#resetFormNyeri').hide();
+      // Close modal
+      $('#assessmentNyeriModal').modal('hide');
+    }
+  }).fail(function(xhr, status, error) {
+    alert('Terjadi kesalahan saat menyimpan data: ' + error);
+  });
+});
+
+$(document).off('click', '.edit_assessment_nyeri').on('click', '.edit_assessment_nyeri', function(event) {
+  event.preventDefault();
+  
+  // Fill form with data attributes
+  $('input[name="no_rawat_assessmentNyeri"]').val($(this).data('no_rawat'));
+  $('input[name="tanggal"]').val($(this).data('tanggal'));
+  $('select[name="nyeri"]').val($(this).data('nyeri'));
+  $('select[name="provokes"]').val($(this).data('provokes'));
+  $('input[name="ket_provokes"]').val($(this).data('ket_provokes'));
+  $('select[name="quality"]').val($(this).data('quality'));
+  $('input[name="ket_quality"]').val($(this).data('ket_quality'));
+  $('input[name="lokasi"]').val($(this).data('lokasi'));
+  $('select[name="menyebar"]').val($(this).data('menyebar'));
+  $('select[name="skala_nyeri"]').val($(this).data('skala_nyeri'));
+  $('input[name="durasi"]').val($(this).data('durasi'));
+  $('select[name="nyeri_hilang"]').val($(this).data('nyeri_hilang'));
+  $('textarea[name="ket_nyeri"]').val($(this).data('ket_nyeri'));
+  
+  // Set edit mode
+  $('#mode').val('edit');
+  $('#original_tanggal').val($(this).data('tanggal'));
+  $('#resetFormNyeri').show();
+});
+
+$(document).off('click', '.hapus_assessment_nyeri').on('click', '.hapus_assessment_nyeri', function(event) {
+  event.preventDefault();
+  
+  if(confirm('Yakin ingin menghapus data assessment nyeri ini?')) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat = $(this).data('no_rawat');
+    var tanggal = $(this).data('tanggal');
+    
+    $.post(baseURL + '/dokter_ranap/hapusassessmentnyeri', {
+      no_rawat: no_rawat,
+      tanggal: tanggal,
+      t: '{?=$_SESSION["token"]?}'
+    }, function(data) {
+      try {
+        var response = typeof data === 'string' ? JSON.parse(data) : data;
+        
+        if(response.status === 'success') {
+          alert(response.message);
+          $('.tampildata').load(baseURL + '/dokter_ranap/assessmentnyeritampil/' + no_rawat.replace(/\//g, '') + '?t=' + mlite.token);
+        } else {
+          alert('Error: ' + response.message);
+        }
+      } catch(e) {
+        // Fallback for non-JSON response
+        alert('Data assessment nyeri berhasil dihapus!');
+        $('.tampildata').load(baseURL + '/dokter_ranap/assessmentnyeritampil/' + no_rawat.replace(/\//g, '') + '?t=' + mlite.token);
+      }
+    }).fail(function(xhr, status, error) {
+      alert('Terjadi kesalahan saat menghapus data: ' + error);
+    });
+  }
+});
+
+$(document).off('click', '#resetFormNyeri').on('click', '#resetFormNyeri', function(event) {
+  event.preventDefault();
+  
+  // Reset all form fields
+  $('#assessmentNyeriModal form')[0].reset();
+  
+  // Reset mode
+  $('#mode').val('add');
+  $('#original_tanggal').val('');
+  $(this).hide();
+  
+  // Reset datetime
+  $('input[name="tanggal"]').val('{?=date("Y-m-d H:i:s")?}');
+});
+</script>

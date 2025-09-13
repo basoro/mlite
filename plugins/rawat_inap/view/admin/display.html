@@ -245,10 +245,26 @@
     $("#display").hide();
 
     // Load form SOAP dengan fallback data dari pemeriksaan_ralan
+    var loadCounter = 0;
+    var totalLoads = 2;
+    
+    function checkAndLoadChart() {
+      loadCounter++;
+      if (loadCounter >= totalLoads) {
+        // Delay kecil untuk memastikan DOM sudah ter-render
+        setTimeout(function() {
+          if (typeof loadVitalSignsChart === 'function') {
+            loadVitalSignsChart();
+          }
+        }, 100);
+      }
+    }
+    
     var url_form = baseURL + '/rawat_inap/formsoap?t=' + mlite.token;
     $.post(url_form, {no_rawat : no_rawat,
     }, function(data) {
       $("#form_soap").html(data).show();
+      checkAndLoadChart();
     });
     
     var url = baseURL + '/rawat_inap/soap?t=' + mlite.token;
@@ -259,6 +275,7 @@
       $("#form").hide();
       $("#notif").hide();
       $("#soap").html(data).show();
+      checkAndLoadChart();
     });
   });
 

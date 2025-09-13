@@ -1,0 +1,214 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <h4 class="modal-title" id="myModalLabel">Assessment Medis IGD - {$medis.nm_pasien}</h4>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Data Assessment</h3>
+        </div>
+        <div class="panel-body">
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+              <tr>
+                <td width="200"><strong>Tanggal</strong></td>
+                <td>{$medis.tanggal}</td>
+              </tr>
+              <tr>
+                <td><strong>Dokter</strong></td>
+                <td>{$medis.nm_dokter}</td>
+              </tr>
+              <tr>
+                <td><strong>Anamnesis</strong></td>
+                <td>{$medis.anamnesis}</td>
+              </tr>
+              <tr>
+                <td><strong>Hubungan</strong></td>
+                <td>{$medis.hubungan}</td>
+              </tr>
+              <tr>
+                <td><strong>Keluhan Utama</strong></td>
+                <td>{$medis.keluhan_utama}</td>
+              </tr>
+              <tr>
+                <td><strong>RPS</strong></td>
+                <td>{$medis.rps}</td>
+              </tr>
+              <tr>
+                <td><strong>RPD</strong></td>
+                <td>{$medis.rpd}</td>
+              </tr>
+              <tr>
+                <td><strong>RPK</strong></td>
+                <td>{$medis.rpk}</td>
+              </tr>
+              <tr>
+                <td><strong>RPO</strong></td>
+                <td>{$medis.rpo}</td>
+              </tr>
+              <tr>
+                <td><strong>Alergi</strong></td>
+                <td>{$medis.alergi}</td>
+              </tr>
+              <tr>
+                <td><strong>Keadaan Umum</strong></td>
+                <td>{$medis.keadaan}</td>
+              </tr>
+              <tr>
+                <td><strong>GCS</strong></td>
+                <td>{$medis.gcs}</td>
+              </tr>
+              <tr>
+                <td><strong>Kesadaran</strong></td>
+                <td>{$medis.kesadaran}</td>
+              </tr>
+              <tr>
+                <td><strong>Tekanan Darah</strong></td>
+                <td>{$medis.td} mmHg</td>
+              </tr>
+              <tr>
+                <td><strong>Nadi</strong></td>
+                <td>{$medis.nadi} x/menit</td>
+              </tr>
+              <tr>
+                <td><strong>Respirasi</strong></td>
+                <td>{$medis.rr} x/menit</td>
+              </tr>
+              <tr>
+                <td><strong>Suhu</strong></td>
+                <td>{$medis.suhu} °C</td>
+              </tr>
+              <tr>
+                <td><strong>SpO2</strong></td>
+                <td>{$medis.spo} %</td>
+              </tr>
+              <tr>
+                <td><strong>Berat Badan</strong></td>
+                <td>{$medis.bb} kg</td>
+              </tr>
+              <tr>
+                <td><strong>Tinggi Badan</strong></td>
+                <td>{$medis.tb} cm</td>
+              </tr>
+            </table>
+          </div>
+          
+          <h4>Pemeriksaan Fisik</h4>
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+              <tr>
+                <td width="200"><strong>Kepala</strong></td>
+                <td>{$medis.kepala}</td>
+              </tr>
+              <tr>
+                <td><strong>Mata</strong></td>
+                <td>{$medis.mata}</td>
+              </tr>
+              <tr>
+                <td><strong>Gigi</strong></td>
+                <td>{$medis.gigi}</td>
+              </tr>
+              <tr>
+                <td><strong>Leher</strong></td>
+                <td>{$medis.leher}</td>
+              </tr>
+              <tr>
+                <td><strong>Thoraks</strong></td>
+                <td>{$medis.thoraks}</td>
+              </tr>
+              <tr>
+                <td><strong>Abdomen</strong></td>
+                <td>{$medis.abdomen}</td>
+              </tr>
+              <tr>
+                <td><strong>Genital</strong></td>
+                <td>{$medis.genital}</td>
+              </tr>
+              <tr>
+                <td><strong>Ekstremitas</strong></td>
+                <td>{$medis.ekstremitas}</td>
+              </tr>
+              <tr>
+                <td><strong>Keterangan Fisik</strong></td>
+                <td>{$medis.ket_fisik}</td>
+              </tr>
+              <tr>
+                <td><strong>Keterangan Lokalis</strong></td>
+                <td>{$medis.ket_lokalis}</td>
+              </tr>
+            </table>
+          </div>
+          
+          <h4>Pemeriksaan Penunjang</h4>
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+              <tr>
+                <td width="200"><strong>EKG</strong></td>
+                <td>{$medis.ekg}</td>
+              </tr>
+              <tr>
+                <td><strong>Radiologi</strong></td>
+                <td>{$medis.rad}</td>
+              </tr>
+              <tr>
+                <td><strong>Laboratorium</strong></td>
+                <td>{$medis.lab}</td>
+              </tr>
+            </table>
+          </div>
+          
+          <h4>Diagnosis & Tatalaksana</h4>
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+              <tr>
+                <td width="200"><strong>Diagnosis</strong></td>
+                <td>{$medis.diagnosis}</td>
+              </tr>
+              <tr>
+                <td><strong>Tatalaksana</strong></td>
+                <td>{$medis.tata}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-warning" id="edit_assessment" data-no_rawat="{$medis.no_rawat}"><i class="fa fa-edit"></i> Edit</button>
+  <button type="button" class="btn btn-danger" id="hapus_assessment" data-no_rawat="{$medis.no_rawat}"><i class="fa fa-trash"></i> Hapus</button>
+  <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+</div>
+
+<script type="text/javascript">
+  // Handler untuk tombol Edit
+  $("#edit_assessment").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat = $(this).data('no_rawat');
+    var loadURL = baseURL + '/dokter_igd/medisigd/' + no_rawat.replaceAll('/','') + '?t=' + mlite.token;
+    
+    $('#assessmentModal .modal-content').load(loadURL);
+  });
+  
+  // Handler untuk tombol Hapus
+  $("#hapus_assessment").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat = $(this).data('no_rawat');
+    
+    if(confirm('Apakah Anda yakin ingin menghapus data assessment ini?')){
+      $.post(baseURL + '/dokter_igd/hapusmedisigd?t=' + mlite.token, {
+        no_rawat: no_rawat
+      }, function(data){
+        if(data.status == 'success'){
+          $('#assessmentModal').modal('hide');
+          alert('Data assessment berhasil dihapus!');
+        } else {
+          alert('Gagal menghapus data assessment!');
+        }
+      }, 'json');
+    }
+  });
+</script>

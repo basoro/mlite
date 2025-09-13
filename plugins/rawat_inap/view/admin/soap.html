@@ -9,6 +9,25 @@
 <div id="display_icd">
   {include: ../plugins/rawat_inap/view/admin/display.icd.html}
 </div>
+<!-- Grafik Tanda Vital -->
+<div class="col-md-12" style="margin-top: 20px;">
+  <div class="panel panel-default">
+    <div class="panel-header">
+      <h4 class="panel-title" style="padding: 15px;"><i class="fa fa-line-chart"></i> Grafik Tanda Vital</h4>
+    </div>
+    <div class="panel-body">
+      <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
+        <canvas id="vitalSignsChart"></canvas>
+      </div>
+      <div class="text-center" id="chart-loading" style="display: none;">
+        <i class="fa fa-spinner fa-spin"></i> Memuat data grafik...
+      </div>
+      <div class="text-center" id="chart-no-data" style="display: none; color: #999;">
+        <i class="fa fa-info-circle"></i> Belum ada data tanda vital untuk ditampilkan
+      </div>
+    </div>
+  </div>
+</div>
 <h4>Rincian Riwayat</h4>
 <div class="table-responsive no-margin">
   <table class="table table-bordered no-padding" width="100%">

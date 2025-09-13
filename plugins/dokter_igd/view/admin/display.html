@@ -32,6 +32,7 @@
               <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAPIE & Pemeriksaan</a></li>
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
               <li><a href="{?=url([ADMIN,'penilaian_medis_igd','manage'])?}&no_rawat={$value.no_rawat}">Penilaian Awal Medis IGD</a></li>
+              <li><a href="#triase_igd" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Triase IGD</a></li>
               <li><a href="{?=url([ADMIN,'dokter_igd','lokalis'])?}" data-toggle="modal" data-target="#lokalisModal">Status Lokalis</a></li>
               {/if}
             </ul>
@@ -139,6 +140,40 @@
       $("#form_soap").show();
       $("#form_kontrol").hide();
       $("#soap").html(data).show();
+    });
+  });
+</script>
+<script>
+  // Handler untuk Triase IGD
+  $('a[href="#triase_igd"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rawat = $(this).attr("data-no_rawat");
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+    var tgl_registrasi = $(this).attr("data-tgl_registrasi");
+
+    $('input:text[name=no_rawat]').val(no_rawat);
+    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+    $('input:text[name=nm_pasien]').val(nm_pasien);
+    $('input:text[name=tgl_registrasi]').val(tgl_registrasi);
+    $("#display").hide();
+
+    var url = baseURL + '/dokter_igd/triaseigd?t=' + mlite.token;
+    $.post(url, {
+      no_rawat : no_rawat,
+      no_rkm_medis : no_rkm_medis,
+      nm_pasien : nm_pasien,
+      tgl_registrasi : tgl_registrasi
+    }, function(data) {
+      // tampilkan data
+      $("#form_rincian").hide();
+      $("#form").hide();
+      $("#notif").hide();
+      $("#form_soap").hide();
+      $("#form_kontrol").hide();
+      $("#triase_igd").html(data).show();
     });
   });
 </script>

@@ -132,6 +132,8 @@
           <button type="button" name="button" class="btn btn-success" id="selesai_soap"><i class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
           <span class="pull-right">
             <a href="#" class="btn btn-warning resume"><i class="fa fa-file-text"></i><span class="hidden-xs"> Resume</span></a>
+            <a href="#" class="btn btn-warning" id="medisRanapBtn"><i class="fa fa-stethoscope"></i><span class="hidden-xs"> Assessment</span></a>
+            <a href="#" class="btn btn-info" id="assessmentNyeriBtn"><i class="fa fa-heartbeat"></i><span class="hidden-xs"> Assessment Nyeri</span></a>
           </span>
         </div>
       </div>
@@ -217,7 +219,7 @@
   </div>
 </div>
 <div class="modal fade" id="resumeModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-full" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             ...
         </div>
@@ -411,6 +413,60 @@ $("#form_soap").on("click",".resume", function(event){
 
   var modal = $('#resumeModal');
   var modalContent = $('#resumeModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      modalContent.load(loadURL);
+  }).modal();
+  return false;
+});
+</script>
+
+<!-- Modal Assessment Medis Ranap -->
+<div class="modal fade" id="medisRanapModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <!-- Content will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal Assessment Nyeri -->
+<div class="modal fade" id="assessmentNyeriModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <!-- Content will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+$("#form_soap").on("click","#medisRanapBtn", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val().replace(/\//g, '');
+
+  var loadURL = baseURL + '/dokter_ranap/medisranap/' + no_rawat + '?t=' + mlite.token;
+
+  var modal = $('#medisRanapModal');
+  var modalContent = $('#medisRanapModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      modalContent.load(loadURL);
+  }).modal();
+  return false;
+});
+
+$("#form_soap").on("click","#assessmentNyeriBtn", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val().replace(/\//g, '');
+
+  var loadURL = baseURL + '/dokter_ranap/assessmentnyeri/' + no_rawat + '?t=' + mlite.token;
+
+  var modal = $('#assessmentNyeriModal');
+  var modalContent = $('#assessmentNyeriModal .modal-content');
 
   modal.off('show.bs.modal');
   modal.on('show.bs.modal', function () {
