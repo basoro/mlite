@@ -732,12 +732,37 @@ class Admin extends AdminModule
     {
       $no_rawat = $_POST['no_rawat'];
       
-      // Ambil data tanda vital dari pemeriksaan_ranap
-      $vital_signs = $this->db('pemeriksaan_ranap')
+      // Ambil data tanda vital dari pemeriksaan_ralan dan pemeriksaan_ranap
+      $vital_signs_ralan = $this->db('pemeriksaan_ralan')
         ->where('no_rawat', $no_rawat)
         ->asc('tgl_perawatan')
         ->asc('jam_rawat')
         ->toArray();
+        
+      $vital_signs_ranap = $this->db('pemeriksaan_ranap')
+        ->where('no_rawat', $no_rawat)
+        ->asc('tgl_perawatan')
+        ->asc('jam_rawat')
+        ->toArray();
+      
+      // Gabungkan data dari kedua tabel
+      $vital_signs = array_merge($vital_signs_ralan, $vital_signs_ranap);
+      
+      // Urutkan berdasarkan tanggal dan jam
+      usort($vital_signs, function($a, $b) {
+        $datetime_a = $a['tgl_perawatan'] . ' ' . $a['jam_rawat'];
+        $datetime_b = $b['tgl_perawatan'] . ' ' . $b['jam_rawat'];
+        return strtotime($datetime_a) - strtotime($datetime_b);
+      });
+      
+      // Debug: Log jumlah data yang ditemukan
+      error_log('VitalSignsChart - no_rawat: ' . $no_rawat);
+      error_log('VitalSignsChart - ralan count: ' . count($vital_signs_ralan));
+      error_log('VitalSignsChart - ranap count: ' . count($vital_signs_ranap));
+      error_log('VitalSignsChart - total count: ' . count($vital_signs));
+      if(count($vital_signs) > 0) {
+        error_log('VitalSignsChart - first record: ' . json_encode($vital_signs[0]));
+      }
       
       $chart_data = [
         'labels' => [],
@@ -1521,43 +1546,72 @@ class Admin extends AdminModule
           'pemeriksaan_bb' => $pemeriksaan_ralan['berat'] ?? $pemeriksaan_ranap['berat'] ?? '',
           'pemeriksaan_tb' => $pemeriksaan_ralan['tinggi'] ?? $pemeriksaan_ranap['tinggi'] ?? '',
           'pemeriksaan_susunan_kepala' => 'TAK',
+          'pemeriksaan_susunan_kepala_keterangan' => '',
           'pemeriksaan_susunan_wajah' => 'TAK',
+          'pemeriksaan_susunan_wajah_keterangan' => '',
           'pemeriksaan_susunan_leher' => 'TAK',
+          'pemeriksaan_susunan_leher_keterangan' => '',
           'pemeriksaan_susunan_kejang' => 'TAK',
+          'pemeriksaan_susunan_kejang_keterangan' => '',
           'pemeriksaan_susunan_sensorik' => 'TAK',
+          'pemeriksaan_susunan_sensorik_keterangan' => '',
           'pemeriksaan_kardiovaskuler_denyut_nadi' => 'Teratur',
           'pemeriksaan_kardiovaskuler_sirkulasi' => 'Akral Hangat',
+          'pemeriksaan_kardiovaskuler_sirkulasi_keterangan' => '',
           'pemeriksaan_kardiovaskuler_pulsasi' => 'Kuat',
           'pemeriksaan_respirasi_pola_nafas' => 'Normal',
           'pemeriksaan_respirasi_retraksi' => 'Tidak Ada',
           'pemeriksaan_respirasi_suara_nafas' => 'Vesikuler',
           'pemeriksaan_respirasi_volume_pernafasan' => 'Normal',
           'pemeriksaan_respirasi_jenis_pernafasan' => 'Pernafasan Dada',
+          'pemeriksaan_respirasi_jenis_pernafasan_keterangan' => '',
           'pemeriksaan_respirasi_irama_nafas' => 'Teratur',
           'pemeriksaan_respirasi_batuk' => 'Tidak',
           'pemeriksaan_gastrointestinal_mulut' => 'TAK',
+          'pemeriksaan_gastrointestinal_mulut_keterangan' => '',
           'pemeriksaan_gastrointestinal_gigi' => 'TAK',
+          'pemeriksaan_gastrointestinal_gigi_keterangan' => '',
           'pemeriksaan_gastrointestinal_lidah' => 'TAK',
+          'pemeriksaan_gastrointestinal_lidah_keterangan' => '',
           'pemeriksaan_gastrointestinal_tenggorokan' => 'TAK',
+          'pemeriksaan_gastrointestinal_tenggorokan_keterangan' => '',
           'pemeriksaan_gastrointestinal_abdomen' => 'Supel',
+          'pemeriksaan_gastrointestinal_abdomen_keterangan' => '',
           'pemeriksaan_gastrointestinal_peistatik_usus' => 'TAK',
+          'pemeriksaan_gastrointestinal_peistatik_usus_keterangan' => '',
           'pemeriksaan_gastrointestinal_anus' => 'TAK',
+          'pemeriksaan_gastrointestinal_anus_keterangan' => '',
           'pemeriksaan_neurologi_pengelihatan' => 'TAK',
+          'pemeriksaan_neurologi_pengelihatan_keterangan' => '',
           'pemeriksaan_neurologi_alat_bantu_penglihatan' => 'Tidak',
           'pemeriksaan_neurologi_pendengaran' => 'TAK',
+          'pemeriksaan_neurologi_pendengaran_keterangan' => '',
           'pemeriksaan_neurologi_bicara' => 'Jelas',
+          'pemeriksaan_neurologi_bicara_keterangan' => '',
           'pemeriksaan_neurologi_sensorik' => 'TAK',
+          'pemeriksaan_neurologi_sensorik_keterangan' => '',
           'pemeriksaan_neurologi_motorik' => 'TAK',
+          'pemeriksaan_neurologi_motorik_keterangan' => '',
           'pemeriksaan_neurologi_kekuatan_otot' => 'Kuat',
+          'pemeriksaan_neurologi_kekuatan_otot_keterangan' => '',
           'pemeriksaan_integument_warnakulit' => 'Normal',
+          'pemeriksaan_integument_warnakulit_keterangan' => '',
           'pemeriksaan_integument_turgor' => 'Baik',
+          'pemeriksaan_integument_turgor_keterangan' => '',
           'pemeriksaan_integument_kulit' => 'Normal',
+          'pemeriksaan_integument_kulit_keterangan' => '',
           'pemeriksaan_integument_dekubitas' => 'Tidak Ada',
+          'pemeriksaan_integument_dekubitas_keterangan' => '',
           'pemeriksaan_muskuloskletal_pergerakan_sendi' => 'Bebas',
+          'pemeriksaan_muskuloskletal_pergerakan_sendi_keterangan' => '',
           'pemeriksaan_muskuloskletal_kekauatan_otot' => 'Baik',
+          'pemeriksaan_muskuloskletal_kekauatan_otot_keterangan' => '',
           'pemeriksaan_muskuloskletal_nyeri_sendi' => 'Tidak Ada',
+          'pemeriksaan_muskuloskletal_nyeri_sendi_keterangan' => '',
           'pemeriksaan_muskuloskletal_oedema' => 'Tidak Ada',
+          'pemeriksaan_muskuloskletal_oedema_keterangan' => '',
           'pemeriksaan_muskuloskletal_fraktur' => 'Tidak Ada',
+          'pemeriksaan_muskuloskletal_fraktur_keterangan' => '',
           'pemeriksaan_eliminasi_bab_frekuensi_jumlah' => '',
           'pemeriksaan_eliminasi_bab_frekuensi_durasi' => '',
           'pemeriksaan_eliminasi_bab_konsistensi' => '',
@@ -1579,30 +1633,48 @@ class Admin extends AdminModule
           'pengkajian_fungsi_kemampuan_sehari' => 'Mandiri',
           'pengkajian_fungsi_aktifitas' => 'Berjalan',
           'pengkajian_fungsi_berjalan' => 'TAK',
+          'pengkajian_fungsi_berjalan_keterangan' => '',
           'pengkajian_fungsi_ambulasi' => 'Tidak Menggunakan',
           'pengkajian_fungsi_ekstrimitas_atas' => 'TAK',
+          'pengkajian_fungsi_ekstrimitas_atas_keterangan' => '',
           'pengkajian_fungsi_ekstrimitas_bawah' => 'TAK',
+          'pengkajian_fungsi_ekstrimitas_bawah_keterangan' => '',
           'pengkajian_fungsi_menggenggam' => 'Tidak Ada Kesulitan',
+          'pengkajian_fungsi_menggenggam_keterangan' => '',
           'pengkajian_fungsi_koordinasi' => 'Tidak Ada Kesulitan',
+          'pengkajian_fungsi_koordinasi_keterangan' => '',
           'pengkajian_fungsi_kesimpulan' => 'Tidak (Tidak Perlu Co DPJP)',
           'riwayat_psiko_kondisi_psiko' => 'Tidak Ada Masalah',
           'riwayat_psiko_gangguan_jiwa' => 'Tidak',
           'riwayat_psiko_perilaku' => 'Tidak Ada Masalah',
+          'riwayat_psiko_perilaku_keterangan' => '',
           'riwayat_psiko_hubungan_keluarga' => 'Harmonis',
           'riwayat_psiko_tinggal' => 'Keluarga',
+          'riwayat_psiko_tinggal_keterangan' => '',
           'riwayat_psiko_nilai_kepercayaan' => 'Tidak Ada',
+          'riwayat_psiko_nilai_kepercayaan_keterangan' => '',
           'riwayat_psiko_pendidikan_pj' => '-',
           'riwayat_psiko_edukasi_diberikan' => 'Pasien',
+          'riwayat_psiko_edukasi_diberikan_keterangan' => '',
           'penilaian_nyeri' => 'Tidak Ada Nyeri',
           'penilaian_nyeri_penyebab' => 'Proses Penyakit',
+          'penilaian_nyeri_ket_penyebab' => '',
           'penilaian_nyeri_kualitas' => 'Seperti Tertusuk',
+          'penilaian_nyeri_ket_kualitas' => '',
           'penilaian_nyeri_lokasi' => '',
+          'penilaian_nyeri_ket_lokasi' => '',
           'penilaian_nyeri_menyebar' => 'Tidak',
+          'penilaian_nyeri_ket_menjalar' => '',
           'penilaian_nyeri_skala' => '0',
+          'penilaian_nyeri_ket_skala' => '',
           'penilaian_nyeri_waktu' => '',
+          'penilaian_nyeri_ket_waktu' => '',
           'penilaian_nyeri_hilang' => 'Istirahat',
+          'penilaian_nyeri_ket_hilang' => '',
           'penilaian_nyeri_diberitahukan_dokter' => 'Tidak',
+          'penilaian_nyeri_ket_diberitahukan_dokter' => '',
           'penilaian_nyeri_jam_diberitahukan_dokter' => '',
+          'penilaian_nyeri_ket_pada_dokter' => '',
           'penilaian_jatuhmorse_skala1' => 'Tidak',
           'penilaian_jatuhmorse_nilai1' => 0,
           'penilaian_jatuhmorse_skala2' => 'Tidak',
@@ -1645,12 +1717,13 @@ class Admin extends AdminModule
           'nilai_gizi2' => 0,
           'nilai_total_gizi' => 0,
           'skrining_gizi_diagnosa_khusus' => 'Tidak',
+          'skrining_gizi_ket_diagnosa_khusus' => '',
           'skrining_gizi_diketahui_dietisen' => 'Tidak',
           'skrining_gizi_jam_diketahui_dietisen' => '',
           'rencana' => '',
           'nip1' => $this->core->getUserInfo('username', null, true),
           'nip2' => $this->core->getUserInfo('username', null, true),
-          'kd_dokter' => ''
+          'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat),
         ];
       }
       
@@ -2038,6 +2111,7 @@ class Admin extends AdminModule
         $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+        $this->core->addJS('https://cdn.jsdelivr.net/npm/chart.js');
         $this->core->addJS(url([ADMIN, 'rawat_inap', 'javascript']), 'footer');
     }
 

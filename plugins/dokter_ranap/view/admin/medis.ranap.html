@@ -602,4 +602,96 @@ $(document).off('click', '#resetForm').on('click', '#resetForm', function(event)
   // Reset datetime
   $('input[name="tanggal"]').val('{?=date("Y-m-d H:i:s")?}');
 });
+
+// Callback untuk mengambil data pemeriksaan_ralan berdasarkan no_rawat
+function loadPemeriksaanRalan(no_rawat) {
+  if(!no_rawat) return;
+  
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var cleanNoRawat = no_rawat.replace(/\//g, '');
+  
+  $.get(baseURL + '/dokter_ranap/pemeriksaanralan/' + cleanNoRawat + '?t=' + mlite.token)
+    .done(function(response) {
+      try {
+        var data = typeof response === 'string' ? JSON.parse(response) : response;
+        
+        if(data.status === 'success' && data.data) {
+          var pemeriksaan = data.data;
+          
+          // Populate form fields dengan data pemeriksaan_ralan
+          if(pemeriksaan.keluhan) {
+            $('textarea[name="keluhan_utama"]').val(pemeriksaan.keluhan);
+          }
+          
+          if(pemeriksaan.pemeriksaan) {
+            $('textarea[name="ket_fisik"]').val(pemeriksaan.pemeriksaan);
+          }
+          
+          if(pemeriksaan.penilaian) {
+            $('textarea[name="diagnosis"]').val(pemeriksaan.penilaian);
+          }
+          
+          if(pemeriksaan.rtl) {
+            $('textarea[name="tata"]').val(pemeriksaan.rtl);
+          }
+          
+          if(pemeriksaan.instruksi) {
+            $('textarea[name="edukasi"]').val(pemeriksaan.instruksi);
+          }
+          
+          // Ambil data vital signs jika ada
+          if(pemeriksaan.suhu_tubuh) {
+            $('input[name="suhu"]').val(pemeriksaan.suhu_tubuh);
+          }
+          
+          if(pemeriksaan.tensi) {
+            $('input[name="td"]').val(pemeriksaan.tensi);
+          }
+          
+          if(pemeriksaan.nadi) {
+            $('input[name="nadi"]').val(pemeriksaan.nadi);
+          }
+          
+          if(pemeriksaan.respirasi) {
+            $('input[name="rr"]').val(pemeriksaan.respirasi);
+          }
+          
+          if(pemeriksaan.spo2) {
+            $('input[name="spo"]').val(pemeriksaan.spo2);
+          }
+          
+          if(pemeriksaan.berat) {
+            $('input[name="bb"]').val(pemeriksaan.berat);
+          }
+          
+          if(pemeriksaan.tinggi) {
+            $('input[name="tb"]').val(pemeriksaan.tinggi);
+          }
+          
+          console.log('Data pemeriksaan ralan berhasil dimuat');
+        }
+      } catch(e) {
+        console.log('Error parsing response:', e);
+      }
+    })
+    .fail(function(xhr, status, error) {
+      console.log('Error loading pemeriksaan ralan:', error);
+    });
+}
+
+// Event listener untuk perubahan no_rawat
+$(document).off('change', 'input[name="no_rawat_medisRanap"]').on('change', 'input[name="no_rawat_medisRanap"]', function() {
+  var no_rawat = $(this).val();
+  if(no_rawat && $('#mode').val() === 'add') {
+    loadPemeriksaanRalan(no_rawat);
+  }
+});
+
+// Event listener untuk blur (kehilangan fokus) pada no_rawat
+$(document).off('blur', 'input[name="no_rawat_medisRanap"]').on('blur', 'input[name="no_rawat_medisRanap"]', function() {
+  var no_rawat = $(this).val();
+  if(no_rawat && $('#mode').val() === 'add') {
+    loadPemeriksaanRalan(no_rawat);
+  }
+});
 </script>

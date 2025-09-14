@@ -2053,6 +2053,40 @@ class Admin extends AdminModule
       exit();
     }
     
+    public function getPemeriksaanRalan($no_rawat)
+    {
+        header('Content-Type: application/json');
+        
+        try {
+            $no_rawat = revertNorawat($no_rawat);
+            
+            // Ambil data pemeriksaan_ralan berdasarkan no_rawat
+            $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')
+                ->where('no_rawat', $no_rawat)
+                ->desc('tgl_perawatan')
+                ->desc('jam_rawat')
+                ->oneArray();
+            
+            if($pemeriksaan_ralan) {
+                echo json_encode([
+                    'status' => 'success',
+                    'data' => $pemeriksaan_ralan
+                ]);
+            } else {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Data pemeriksaan ralan tidak ditemukan'
+                ]);
+            }
+        } catch (Exception $e) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ]);
+        }
+        exit();
+    }
+    
     public function getJavascript()
     {
         header('Content-type: text/javascript');

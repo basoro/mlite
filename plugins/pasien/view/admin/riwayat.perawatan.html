@@ -431,7 +431,7 @@
       {if: $value.rawat_jl_dr || $value.rawat_jl_pr || $value.rawat_jl_drpr}
       <tr class="isi">
         <td valign="top" width="20%">
-          Tindakan Perawatan
+          Tindakan Rawat Jalan
         </td>
         <td valign="top" width="1%" align="center">
           :
@@ -560,6 +560,19 @@
             {/loop}
           </table>
           {/if}
+        </td>
+      </tr>
+      {/if}
+      
+      {if: $value.rawat_inap_dr || $value.rawat_inap_pr || $value.rawat_inap_drpr}
+      <tr class="isi">
+        <td valign="top" width="20%">
+          Tindakan Rawat Inap
+        </td>
+        <td valign="top" width="1%" align="center">
+          :
+        </td>
+        <td valign="top" width="79%">
           {if: $value.rawat_inap_dr}
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom:2px;">
             <tr>
@@ -641,7 +654,7 @@
           {if: $value.rawat_inap_drpr}
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom:2px;">
             <tr>
-              <td valign="top" colspan="4">
+              <td valign="top" colspan="5">
                 Tindakan Rawat Inap Dokter & Perawat
               </td>
             </tr>
@@ -652,7 +665,7 @@
               <td valign="top" width="10%" bgcolor="#eee">
                 Kode
               </td>
-              <td valign="top" width="40%" bgcolor="#eee">
+              <td valign="top" width="35%" bgcolor="#eee">
                 Nama Tindakan/Perawatan
               </td>
               <td valign="top" width="20%" bgcolor="#eee">
@@ -699,7 +712,7 @@
            </tr>
            {loop: $value.pemberian_obat as $data1}
            <tr>
-             <td valign="top" width="25%">{$data1.tgl_perawatan} {$data1.jam}<br>{$data1.status}</td>
+             <td valign="top" width="25%">{$data1.tgl_perawatan} {$data1.jam}<br>{$value.status_lanjut}</td>
              <td valign="top" width="75%">
                <table width="100%" border="0" align="center" cellpadding="3px" cellspacing="0">
                  <tr>
@@ -888,6 +901,1345 @@
                 </div>
               </td>
             </tr>
+          </table>
+        </td>
+      </tr>
+      {/if}
+      {if: $value.triase_igd}
+      <tr class="isi">
+        <td valign="top" width="20%">Triase IGD</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          {loop: $value.triase_igd as $data}
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom: 10px;">
+            <!-- Header Informasi Dasar -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">INFORMASI TRIASE IGD</td>
+            </tr>
+            <tr>
+              <td valign="top" width="25%" bgcolor="#eee">Tanggal/Jam Triase</td>
+              <td valign="top" width="25%">{$data.tgl_triase}</td>
+              <td valign="top" width="25%" bgcolor="#eee">Petugas</td>
+              <td valign="top" width="25%">{$data.petugas_id}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">No. Rawat</td>
+              <td valign="top">{$data.no_rawat}</td>
+              <td valign="top" bgcolor="#eee">No. RM</td>
+              <td valign="top">{$data.no_rkm_medis}</td>
+            </tr>
+            
+            <!-- Keluhan dan Diagnosa -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">KELUHAN & DIAGNOSA</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keluhan Utama</td>
+              <td valign="top" colspan="3">{$data.keluhan_utama}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Diagnosa Awal</td>
+              <td valign="top" colspan="3">{$data.diagnosa_awal}</td>
+            </tr>
+            
+            <!-- Kesadaran dan GCS -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">KESADARAN & GCS</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Kesadaran</td>
+              <td valign="top">{$data.kesadaran}</td>
+              <td valign="top" bgcolor="#eee">GCS</td>
+              <td valign="top">
+                {if: $data.gcs_e || $data.gcs_v || $data.gcs_m}
+                E: {$data.gcs_e} | V: {$data.gcs_v} | M: {$data.gcs_m}
+                <br><strong>Total: {$data.gcs_e + $data.gcs_v + $data.gcs_m}</strong>
+                {else}
+                -
+                {/if}
+              </td>
+            </tr>
+            
+            <!-- Vital Sign -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">VITAL SIGN</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Tekanan Darah</td>
+              <td valign="top">{$data.tekanan_darah} mmHg</td>
+              <td valign="top" bgcolor="#eee">Nadi</td>
+              <td valign="top">{$data.nadi} x/menit</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Respirasi</td>
+              <td valign="top">{$data.respirasi} x/menit</td>
+              <td valign="top" bgcolor="#eee">Suhu</td>
+              <td valign="top">{$data.suhu} °C</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">SpO2</td>
+              <td valign="top" colspan="3">{$data.spo2}%</td>
+            </tr>
+            
+            <!-- Primary Survey (ABC) -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">PRIMARY SURVEY (ABC)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Airway</td>
+              <td valign="top">
+                <span style="color: {if: $data.airway == 'Sumbatan Total'}red{elseif: $data.airway == 'Sumbatan Parsial'}orange{else}green{/if}; font-weight: bold;">
+                  {$data.airway}
+                </span>
+              </td>
+              <td valign="top" bgcolor="#eee">Breathing</td>
+              <td valign="top">
+                <span style="color: {if: $data.breathing == 'Tak Spontan'}red{elseif: $data.breathing == 'Distres Nafas'}orange{else}green{/if}; font-weight: bold;">
+                  {$data.breathing}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Circulation</td>
+              <td valign="top" colspan="3">
+                <span style="color: {if: $data.circulation == 'Syok' || $data.circulation == 'Perdarahan'}red{else}green{/if}; font-weight: bold;">
+                  {$data.circulation}
+                </span>
+              </td>
+            </tr>
+            
+            <!-- Kategori Triase -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">KATEGORI TRIASE</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Kategori</td>
+              <td valign="top">
+                <span style="color: {if: $data.kategori == 'Merah'}red{elseif: $data.kategori == 'Kuning'}orange{elseif: $data.kategori == 'Hijau'}green{elseif: $data.kategori == 'Hitam'}black{else}blue{/if}; font-weight: bold; font-size: 14px;">
+                  {$data.kategori}
+                </span>
+              </td>
+              <td valign="top" bgcolor="#eee">Skala Triase</td>
+              <td valign="top">
+                <span style="font-weight: bold;">
+                  {$data.skala_triase}
+                </span>
+              </td>
+            </tr>
+            
+            <!-- Waktu -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">WAKTU PENCATATAN</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Dibuat</td>
+              <td valign="top">{$data.created_at}</td>
+              <td valign="top" bgcolor="#eee">Diperbarui</td>
+              <td valign="top">{$data.updated_at}</td>
+            </tr>
+          </table>
+          {/loop}
+        </td>
+      </tr>
+      {/if}
+      {if: $value.penilaian_keperawatan_igd}
+      <tr class="isi">
+        <td valign="top" width="20%">Penilaian Awal Keperawatan IGD</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          {loop: $value.penilaian_keperawatan_igd as $data}
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom: 10px;">
+            <!-- Header Informasi Dasar -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">INFORMASI DASAR</td>
+            </tr>
+            <tr>
+              <td valign="top" width="25%" bgcolor="#eee">Tanggal/Jam</td>
+              <td valign="top" width="25%">{$data.tanggal}</td>
+              <td valign="top" width="25%" bgcolor="#eee">Petugas</td>
+              <td valign="top" width="25%">{$data.nama}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Informasi</td>
+              <td valign="top">{$data.informasi}</td>
+              <td valign="top" bgcolor="#eee">Status Kehamilan</td>
+              <td valign="top">
+                {$data.status_kehamilan}
+                {if: $data.status_kehamilan == 'Hamil'}
+                <br>G: {$data.gravida} P: {$data.para} A: {$data.abortus}
+                <br>HPHT: {$data.hpht}
+                {/if}
+              </td>
+            </tr>
+            
+            <!-- Anamnesis -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">ANAMNESIS</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keluhan Utama</td>
+              <td valign="top" colspan="3">{$data.keluhan_utama}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Riwayat Penyakit Dahulu</td>
+              <td valign="top" colspan="3">{$data.rpd}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Riwayat Penyakit Obat</td>
+              <td valign="top" colspan="3">{$data.rpo}</td>
+            </tr>
+            
+            <!-- Pemeriksaan Fisik -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">PEMERIKSAAN FISIK</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Tekanan Darah</td>
+              <td valign="top">{$data.tekanan}</td>
+              <td valign="top" bgcolor="#eee">Pupil</td>
+              <td valign="top">{$data.pupil}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Neurosensorik</td>
+              <td valign="top">{$data.neurosensorik}</td>
+              <td valign="top" bgcolor="#eee">Integumen</td>
+              <td valign="top">{$data.integumen}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Turgor</td>
+              <td valign="top">{$data.turgor}</td>
+              <td valign="top" bgcolor="#eee">Edema</td>
+              <td valign="top">{$data.edema}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Mukosa</td>
+              <td valign="top">{$data.mukosa}</td>
+              <td valign="top" bgcolor="#eee">Perdarahan</td>
+              <td valign="top">
+                {$data.perdarahan}
+                {if: $data.perdarahan == 'Ada'}
+                <br>Jumlah: {$data.jumlah_perdarahan}
+                <br>Warna: {$data.warna_perdarahan}
+                {/if}
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Intoksikasi</td>
+              <td valign="top" colspan="3">{$data.intoksikasi}</td>
+            </tr>
+            
+            <!-- Eliminasi -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">ELIMINASI</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">BAB</td>
+              <td valign="top">
+                {if: $data.bab}Frekuensi: {$data.bab}x/{$data.xbab}<br>{/if}
+                {if: $data.kbab}Konsistensi: {$data.kbab}<br>{/if}
+                {if: $data.wbab}Warna: {$data.wbab}{/if}
+              </td>
+              <td valign="top" bgcolor="#eee">BAK</td>
+              <td valign="top">
+                {if: $data.bak}Frekuensi: {$data.bak}x/{$data.xbak}<br>{/if}
+                {if: $data.wbak}Warna: {$data.wbak}<br>{/if}
+                {if: $data.lbak}Lain-lain: {$data.lbak}{/if}
+              </td>
+            </tr>
+            
+            <!-- Psikososial -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">PSIKOSOSIAL</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Kondisi Psikologis</td>
+              <td valign="top">{$data.psikologis}</td>
+              <td valign="top" bgcolor="#eee">Gangguan Jiwa</td>
+              <td valign="top">{$data.jiwa}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Perilaku</td>
+              <td valign="top">
+                {$data.perilaku}
+                {if: $data.perilaku != '-'}
+                <br>Dilaporkan: {$data.dilaporkan}
+                <br>Sebutkan: {$data.sebutkan}
+                {/if}
+              </td>
+              <td valign="top" bgcolor="#eee">Hubungan Keluarga</td>
+              <td valign="top">{$data.hubungan}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Tinggal Dengan</td>
+              <td valign="top">
+                {$data.tinggal_dengan}
+                {if: $data.ket_tinggal}<br>Ket: {$data.ket_tinggal}{/if}
+              </td>
+              <td valign="top" bgcolor="#eee">Budaya</td>
+              <td valign="top">
+                {$data.budaya}
+                {if: $data.budaya == 'Ada'}<br>Ket: {$data.ket_budaya}{/if}
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Pendidikan PJ</td>
+              <td valign="top">
+                {$data.pendidikan_pj}
+                {if: $data.ket_pendidikan_pj}<br>Ket: {$data.ket_pendidikan_pj}{/if}
+              </td>
+              <td valign="top" bgcolor="#eee">Edukasi</td>
+              <td valign="top">
+                {$data.edukasi}
+                {if: $data.ket_edukasi}<br>Ket: {$data.ket_edukasi}{/if}
+              </td>
+            </tr>
+            
+            <!-- Aktivitas -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">AKTIVITAS & MOBILITAS</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Kemampuan</td>
+              <td valign="top">{$data.kemampuan}</td>
+              <td valign="top" bgcolor="#eee">Aktivitas</td>
+              <td valign="top">{$data.aktifitas}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Alat Bantu</td>
+              <td valign="top">
+                {$data.alat_bantu}
+                {if: $data.alat_bantu == 'Ya'}<br>Ket: {$data.ket_bantu}{/if}
+              </td>
+              <td valign="top" bgcolor="#eee">Risiko Jatuh</td>
+              <td valign="top">
+                A: {$data.berjalan_a} | B: {$data.berjalan_b} | C: {$data.berjalan_c}<br>
+                <strong>{$data.hasil}</strong>
+                {if: $data.lapor == 'Ya'}<br>Dilaporkan: {$data.ket_lapor}{/if}
+              </td>
+            </tr>
+            
+            <!-- Nyeri -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">PENILAIAN NYERI</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Status Nyeri</td>
+              <td valign="top" colspan="3">
+                <strong>{$data.nyeri}</strong>
+                {if: $data.nyeri != 'Tidak Ada Nyeri'}
+                <br><strong>Skala:</strong> {$data.skala_nyeri}/10
+                <br><strong>Lokasi:</strong> {$data.lokasi}
+                <br><strong>Durasi:</strong> {$data.durasi}
+                <br><strong>Menyebar:</strong> {$data.menyebar}
+                <br><strong>Provokes:</strong> {$data.provokes} ({$data.ket_provokes})
+                <br><strong>Quality:</strong> {$data.quality} ({$data.ket_quality})
+                <br><strong>Nyeri Hilang:</strong> {$data.nyeri_hilang} ({$data.ket_nyeri})
+                <br><strong>Dilaporkan ke Dokter:</strong> {$data.pada_dokter} ({$data.ket_dokter})
+                {/if}
+              </td>
+            </tr>
+            
+            <!-- Rencana Keperawatan -->
+            {if: $data.rencana}
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">RENCANA KEPERAWATAN</td>
+            </tr>
+            <tr>
+              <td valign="top" colspan="4">{$data.rencana}</td>
+            </tr>
+            {/if}
+          </table>
+          {/loop}
+        </td>
+      </tr>
+      {/if}
+      {if: $value.penilaian_awal_keperawatan_ralan}
+      <tr class="isi">
+        <td valign="top" width="20%">Penilaian Awal Keperawatan Rawat Jalan</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          {loop: $value.penilaian_awal_keperawatan_ralan as $data}
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom: 10px;">
+            <!-- Header Informasi Dasar -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">INFORMASI DASAR</td>
+            </tr>
+            <tr>
+              <td valign="top" width="25%" bgcolor="#eee">Tanggal</td>
+              <td valign="top" width="25%">{$data.tanggal}</td>
+              <td valign="top" width="25%" bgcolor="#eee">Petugas</td>
+              <td valign="top" width="25%">{$data.nama}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Informasi</td>
+              <td valign="top">{$data.informasi}</td>
+              <td valign="top" bgcolor="#eee">Keluhan Utama</td>
+              <td valign="top">{$data.keluhan_utama}</td>
+            </tr>
+            
+            <!-- Riwayat Kesehatan -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">RIWAYAT KESEHATAN</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Riwayat Penyakit Dahulu</td>
+              <td valign="top" colspan="3">{if: $data.rpd}{$data.rpd}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Riwayat Penyakit Keluarga</td>
+              <td valign="top" colspan="3">{if: $data.rpk}{$data.rpk}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Riwayat Penyakit Operasi</td>
+              <td valign="top" colspan="3">{if: $data.rpo}{$data.rpo}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Riwayat Alergi</td>
+              <td valign="top" colspan="3">{if: $data.alergi}{$data.alergi}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Pemeriksaan Fisik -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">PEMERIKSAAN FISIK</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">GCS</td>
+              <td valign="top">{if: $data.gcs}{$data.gcs}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">BMI</td>
+              <td valign="top">{if: $data.bmi}{$data.bmi}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Tekanan Darah</td>
+              <td valign="top">{if: $data.td}{$data.td} mmHg{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Nadi</td>
+              <td valign="top">{if: $data.nadi}{$data.nadi} x/menit{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Respirasi</td>
+              <td valign="top">{if: $data.rr}{$data.rr} x/menit{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Suhu</td>
+              <td valign="top">{if: $data.suhu}{$data.suhu} °C{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Tinggi Badan</td>
+              <td valign="top">{if: $data.tb}{$data.tb} cm{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Berat Badan</td>
+              <td valign="top">{if: $data.bb}{$data.bb} kg{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Status Psikologis</td>
+              <td valign="top">{if: $data.status_psiko}{$data.status_psiko}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Keterangan</td>
+              <td valign="top">{if: $data.ket_psiko}{$data.ket_psiko}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Penilaian Nyeri -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">PENILAIAN NYERI</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Status Nyeri</td>
+              <td valign="top">{if: $data.nyeri}{$data.nyeri}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Skala Nyeri</td>
+              <td valign="top">{if: $data.skala_nyeri}{$data.skala_nyeri}/10{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Lokasi</td>
+              <td valign="top">{if: $data.lokasi}{$data.lokasi}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Durasi</td>
+              <td valign="top">{if: $data.durasi}{$data.durasi}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Rencana Keperawatan -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">RENCANA KEPERAWATAN</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Rencana Keperawatan</td>
+              <td valign="top" colspan="3">{if: $data.rencana}{$data.rencana}{else}-{/if}</td>
+            </tr>
+          </table>
+          {/loop}
+        </td>
+      </tr>
+      {/if}
+      {if: $value.penilaian_awal_keperawatan_ranap}
+      <tr class="isi">
+        <td valign="top" width="20%">Penilaian Awal Keperawatan Rawat Inap</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          {loop: $value.penilaian_awal_keperawatan_ranap as $data}
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom: 10px;">
+            <!-- Header Informasi Dasar -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">INFORMASI DASAR</td>
+            </tr>
+            <tr>
+              <td valign="top" width="25%" bgcolor="#eee">Tanggal</td>
+              <td valign="top" width="25%">{$data.tanggal}</td>
+              <td valign="top" width="25%" bgcolor="#eee">Petugas</td>
+              <td valign="top" width="25%">{$data.nama}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Informasi</td>
+              <td valign="top">{if: $data.informasi}{$data.informasi}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Cara Masuk</td>
+              <td valign="top">{if: $data.cara_masuk}{$data.cara_masuk}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Riwayat Kesehatan -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">RIWAYAT KESEHATAN</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Riwayat Penyakit Sekarang</td>
+              <td valign="top" colspan="3">{if: $data.rps}{$data.rps}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Riwayat Penyakit Dahulu</td>
+              <td valign="top" colspan="3">{if: $data.rpd}{$data.rpd}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Riwayat Penyakit Keluarga</td>
+              <td valign="top" colspan="3">{if: $data.rpk}{$data.rpk}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Riwayat Alergi</td>
+              <td valign="top" colspan="3">{if: $data.riwayat_alergi}{$data.riwayat_alergi}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Pemeriksaan Fisik -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">PEMERIKSAAN FISIK</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keadaan Umum</td>
+              <td valign="top">{if: $data.pemeriksaan_keadaan_umum}{$data.pemeriksaan_keadaan_umum}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">GCS</td>
+              <td valign="top">{if: $data.pemeriksaan_gcs}{$data.pemeriksaan_gcs}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Tekanan Darah</td>
+              <td valign="top">{if: $data.pemeriksaan_td}{$data.pemeriksaan_td} mmHg{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Nadi</td>
+              <td valign="top">{if: $data.pemeriksaan_nadi}{$data.pemeriksaan_nadi} x/menit{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Respirasi</td>
+              <td valign="top">{if: $data.pemeriksaan_rr}{$data.pemeriksaan_rr} x/menit{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Suhu</td>
+              <td valign="top">{if: $data.pemeriksaan_suhu}{$data.pemeriksaan_suhu} °C{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">SpO2</td>
+              <td valign="top">{if: $data.pemeriksaan_spo2}{$data.pemeriksaan_spo2}%{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Berat Badan</td>
+              <td valign="top">{if: $data.pemeriksaan_bb}{$data.pemeriksaan_bb} kg{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Tinggi Badan</td>
+              <td valign="top">{if: $data.pemeriksaan_tb}{$data.pemeriksaan_tb} cm{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Mental</td>
+              <td valign="top">{if: $data.pemeriksaan_mental}{$data.pemeriksaan_mental}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Pemeriksaan Sistem -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">PEMERIKSAAN SISTEM</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Susunan Kepala</td>
+              <td valign="top">{if: $data.pemeriksaan_susunan_kepala}{$data.pemeriksaan_susunan_kepala}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Susunan Wajah</td>
+              <td valign="top">{if: $data.pemeriksaan_susunan_wajah}{$data.pemeriksaan_susunan_wajah}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Kardiovaskular - Denyut Nadi</td>
+              <td valign="top">{if: $data.pemeriksaan_kardiovaskuler_denyut_nadi}{$data.pemeriksaan_kardiovaskuler_denyut_nadi}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Kardiovaskular - Sirkulasi</td>
+              <td valign="top">{if: $data.pemeriksaan_kardiovaskuler_sirkulasi}{$data.pemeriksaan_kardiovaskuler_sirkulasi}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Respirasi - Pola Nafas</td>
+              <td valign="top">{if: $data.pemeriksaan_respirasi_pola_nafas}{$data.pemeriksaan_respirasi_pola_nafas}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Respirasi - Suara Nafas</td>
+              <td valign="top">{if: $data.pemeriksaan_respirasi_suara_nafas}{$data.pemeriksaan_respirasi_suara_nafas}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Penilaian Nyeri -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">PENILAIAN NYERI</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Status Nyeri</td>
+              <td valign="top">{if: $data.penilaian_nyeri}{$data.penilaian_nyeri}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Skala Nyeri</td>
+              <td valign="top">{if: $data.penilaian_nyeri_skala}{$data.penilaian_nyeri_skala}/10{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Lokasi Nyeri</td>
+              <td valign="top">{if: $data.penilaian_nyeri_lokasi}{$data.penilaian_nyeri_lokasi}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Waktu Nyeri</td>
+              <td valign="top">{if: $data.penilaian_nyeri_waktu}{$data.penilaian_nyeri_waktu}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Skrining Gizi -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">SKRINING GIZI</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Penurunan BB</td>
+              <td valign="top">{if: $data.skrining_gizi1}{$data.skrining_gizi1}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Asupan Makan</td>
+              <td valign="top">{if: $data.skrining_gizi2}{$data.skrining_gizi2}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Total Skor</td>
+              <td valign="top">{if: $data.nilai_total_gizi}{$data.nilai_total_gizi}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Diagnosa Khusus</td>
+              <td valign="top">{if: $data.skrining_gizi_diagnosa_khusus}{$data.skrining_gizi_diagnosa_khusus}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Rencana Keperawatan -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">RENCANA KEPERAWATAN</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Rencana Keperawatan</td>
+              <td valign="top" colspan="3">{if: $data.rencana}{$data.rencana}{else}-{/if}</td>
+            </tr>
+          </table>
+          {/loop}
+        </td>
+      </tr>
+      {/if}
+      {if: $value.catatan_adime_gizi}
+      <tr class="isi">
+        <td valign="top" width="20%">Catatan ADIME Gizi</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          {loop: $value.catatan_adime_gizi as $data}
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom: 10px;">
+            <!-- Header Informasi Dasar -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">INFORMASI CATATAN ADIME GIZI</td>
+            </tr>
+            <tr>
+              <td valign="top" width="25%" bgcolor="#eee">Tanggal Catatan</td>
+              <td valign="top" width="25%">{$data.tanggal}</td>
+              <td valign="top" width="25%" bgcolor="#eee">Petugas</td>
+              <td valign="top" width="25%">{$data.nama}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Asesmen</td>
+              <td valign="top" colspan="3">{if: $data.asesmen}{$data.asesmen}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Diagnosis</td>
+              <td valign="top" colspan="3">{if: $data.diagnosis}{$data.diagnosis}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Intervensi</td>
+              <td valign="top" colspan="3">{if: $data.intervensi}{$data.intervensi}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Monitoring</td>
+              <td valign="top" colspan="3">{if: $data.monitoring}{$data.monitoring}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Evaluasi</td>
+              <td valign="top" colspan="3">{if: $data.evaluasi}{$data.evaluasi}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Instruksi</td>
+              <td valign="top" colspan="3">{if: $data.instruksi}{$data.instruksi}{else}-{/if}</td>
+            </tr>
+          </table>
+          {/loop}
+        </td>
+      </tr>
+      {/if}
+      {if: $value.penilaian_ulang_nyeri}
+      <tr class="isi">
+        <td valign="top" width="20%">Penilaian Ulang Nyeri</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          {loop: $value.penilaian_ulang_nyeri as $data}
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom: 10px;">
+            <!-- Header Informasi Dasar -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">PENILAIAN ULANG NYERI</td>
+            </tr>
+            <tr>
+              <td valign="top" width="25%" bgcolor="#eee">Tanggal Penilaian</td>
+              <td valign="top" width="25%">{$data.tanggal}</td>
+              <td valign="top" width="25%" bgcolor="#eee">Petugas</td>
+              <td valign="top" width="25%">{$data.nama}</td>
+            </tr>
+            
+            <!-- Penilaian PQRST -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">PENILAIAN NYERI (PQRST)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Status Nyeri</td>
+              <td valign="top">{if: $data.nyeri}{$data.nyeri}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Skala Nyeri</td>
+              <td valign="top">{if: $data.skala_nyeri}{$data.skala_nyeri}/10{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Provokes (P) - Pencetus</td>
+              <td valign="top">{if: $data.provokes}{$data.provokes}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Keterangan Provokes</td>
+              <td valign="top">{if: $data.ket_provokes}{$data.ket_provokes}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Quality (Q) - Kualitas</td>
+              <td valign="top">{if: $data.quality}{$data.quality}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Keterangan Quality</td>
+              <td valign="top">{if: $data.ket_quality}{$data.ket_quality}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Region (R) - Lokasi</td>
+              <td valign="top">{if: $data.lokasi}{$data.lokasi}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Menyebar</td>
+              <td valign="top">{if: $data.menyebar}{$data.menyebar}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Timing (T) - Durasi</td>
+              <td valign="top">{if: $data.durasi}{$data.durasi}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Nyeri Hilang Dengan</td>
+              <td valign="top">{if: $data.nyeri_hilang}{$data.nyeri_hilang}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keterangan Tambahan</td>
+              <td valign="top" colspan="3">{if: $data.ket_nyeri}{$data.ket_nyeri}{else}-{/if}</td>
+            </tr>
+          </table>
+          {/loop}
+        </td>
+      </tr>
+      {/if}
+      {if: $value.resume_pasien}
+      <tr class="isi">
+        <td valign="top" width="20%">Resume Pasien</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          {loop: $value.resume_pasien as $data}
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom: 10px;">
+            <!-- Header Informasi Dasar -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">RESUME PASIEN</td>
+            </tr>
+            <tr>
+              <td valign="top" width="25%" bgcolor="#eee">Dokter</td>
+              <td valign="top" width="25%">{if: $data.nm_dokter}{$data.nm_dokter}{else}-{/if}</td>
+              <td valign="top" width="25%" bgcolor="#eee">Kondisi Pulang</td>
+              <td valign="top" width="25%">{if: $data.kondisi_pulang}{$data.kondisi_pulang}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Keluhan dan Riwayat -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">KELUHAN DAN RIWAYAT</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keluhan Utama</td>
+              <td valign="top" colspan="3">{if: $data.keluhan_utama}{$data.keluhan_utama}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Jalannya Penyakit</td>
+              <td valign="top" colspan="3">{if: $data.jalannya_penyakit}{$data.jalannya_penyakit}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Pemeriksaan -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">PEMERIKSAAN</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Pemeriksaan Penunjang</td>
+              <td valign="top" colspan="3">{if: $data.pemeriksaan_penunjang}{$data.pemeriksaan_penunjang}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Hasil Laboratorium</td>
+              <td valign="top" colspan="3">{if: $data.hasil_laborat}{$data.hasil_laborat}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Diagnosa -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">DIAGNOSA</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Diagnosa Utama</td>
+              <td valign="top">{if: $data.diagnosa_utama}{$data.diagnosa_utama}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Kode ICD-10</td>
+              <td valign="top">{if: $data.kd_diagnosa_utama}{$data.kd_diagnosa_utama}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Diagnosa Sekunder</td>
+              <td valign="top">{if: $data.diagnosa_sekunder}{$data.diagnosa_sekunder}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Kode ICD-10</td>
+              <td valign="top">{if: $data.kd_diagnosa_sekunder}{$data.kd_diagnosa_sekunder}{else}-{/if}</td>
+            </tr>
+            {if: $data.diagnosa_sekunder2}
+            <tr>
+              <td valign="top" bgcolor="#eee">Diagnosa Sekunder 2</td>
+              <td valign="top">{$data.diagnosa_sekunder2}</td>
+              <td valign="top" bgcolor="#eee">Kode ICD-10</td>
+              <td valign="top">{if: $data.kd_diagnosa_sekunder2}{$data.kd_diagnosa_sekunder2}{else}-{/if}</td>
+            </tr>
+            {/if}
+            {if: $data.diagnosa_sekunder3}
+            <tr>
+              <td valign="top" bgcolor="#eee">Diagnosa Sekunder 3</td>
+              <td valign="top">{$data.diagnosa_sekunder3}</td>
+              <td valign="top" bgcolor="#eee">Kode ICD-10</td>
+              <td valign="top">{if: $data.kd_diagnosa_sekunder3}{$data.kd_diagnosa_sekunder3}{else}-{/if}</td>
+            </tr>
+            {/if}
+            {if: $data.diagnosa_sekunder4}
+            <tr>
+              <td valign="top" bgcolor="#eee">Diagnosa Sekunder 4</td>
+              <td valign="top">{$data.diagnosa_sekunder4}</td>
+              <td valign="top" bgcolor="#eee">Kode ICD-10</td>
+              <td valign="top">{if: $data.kd_diagnosa_sekunder4}{$data.kd_diagnosa_sekunder4}{else}-{/if}</td>
+            </tr>
+            {/if}
+            
+            <!-- Prosedur -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">PROSEDUR</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Prosedur Utama</td>
+              <td valign="top">{if: $data.prosedur_utama}{$data.prosedur_utama}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Kode ICD-9</td>
+              <td valign="top">{if: $data.kd_prosedur_utama}{$data.kd_prosedur_utama}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Prosedur Sekunder</td>
+              <td valign="top">{if: $data.prosedur_sekunder}{$data.prosedur_sekunder}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Kode ICD-9</td>
+              <td valign="top">{if: $data.kd_prosedur_sekunder}{$data.kd_prosedur_sekunder}{else}-{/if}</td>
+            </tr>
+            {if: $data.prosedur_sekunder2}
+            <tr>
+              <td valign="top" bgcolor="#eee">Prosedur Sekunder 2</td>
+              <td valign="top">{$data.prosedur_sekunder2}</td>
+              <td valign="top" bgcolor="#eee">Kode ICD-9</td>
+              <td valign="top">{if: $data.kd_prosedur_sekunder2}{$data.kd_prosedur_sekunder2}{else}-{/if}</td>
+            </tr>
+            {/if}
+            {if: $data.prosedur_sekunder3}
+            <tr>
+              <td valign="top" bgcolor="#eee">Prosedur Sekunder 3</td>
+              <td valign="top">{$data.prosedur_sekunder3}</td>
+              <td valign="top" bgcolor="#eee">Kode ICD-9</td>
+              <td valign="top">{if: $data.kd_prosedur_sekunder3}{$data.kd_prosedur_sekunder3}{else}-{/if}</td>
+            </tr>
+            {/if}
+            
+            <!-- Obat Pulang -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">OBAT PULANG</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Obat Pulang</td>
+              <td valign="top" colspan="3">{if: $data.obat_pulang}{$data.obat_pulang}{else}-{/if}</td>
+            </tr>
+          </table>
+          {/loop}
+        </td>
+      </tr>
+      {/if}
+      {if: $value.penilaian_medis_ralan}
+      <tr class="isi">
+        <td valign="top" width="20%">Penilaian Medis Rawat Jalan</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          {loop: $value.penilaian_medis_ralan as $data}
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom: 10px;">
+            <!-- Header Informasi Dasar -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">PENILAIAN MEDIS RAWAT JALAN</td>
+            </tr>
+            <tr>
+              <td valign="top" width="25%" bgcolor="#eee">Tanggal</td>
+              <td valign="top" width="25%">{if: $data.tanggal}{$data.tanggal}{else}-{/if}</td>
+              <td valign="top" width="25%" bgcolor="#eee">Dokter</td>
+              <td valign="top" width="25%">{if: $data.nm_dokter}{$data.nm_dokter}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Anamnesis</td>
+              <td valign="top">{if: $data.anamnesis}{$data.anamnesis}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Hubungan</td>
+              <td valign="top">{if: $data.hubungan}{$data.hubungan}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Keluhan dan Riwayat -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">KELUHAN DAN RIWAYAT</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keluhan Utama</td>
+              <td valign="top" colspan="3">{if: $data.keluhan_utama}{$data.keluhan_utama}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">RPS (Riwayat Penyakit Sekarang)</td>
+              <td valign="top" colspan="3">{if: $data.rps}{$data.rps}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">RPD (Riwayat Penyakit Dahulu)</td>
+              <td valign="top">{if: $data.rpd}{$data.rpd}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">RPK (Riwayat Penyakit Keluarga)</td>
+              <td valign="top">{if: $data.rpk}{$data.rpk}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">RPO (Riwayat Pengobatan)</td>
+              <td valign="top">{if: $data.rpo}{$data.rpo}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Alergi</td>
+              <td valign="top">{if: $data.alergi}{$data.alergi}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Pemeriksaan Fisik -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">PEMERIKSAAN FISIK</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keadaan Umum</td>
+              <td valign="top">{if: $data.keadaan}{$data.keadaan}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Kesadaran</td>
+              <td valign="top">{if: $data.kesadaran}{$data.kesadaran}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">GCS</td>
+              <td valign="top">{if: $data.gcs}{$data.gcs}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">TD</td>
+              <td valign="top">{if: $data.td}{$data.td} mmHg{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Nadi</td>
+              <td valign="top">{if: $data.nadi}{$data.nadi} x/menit{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">RR</td>
+              <td valign="top">{if: $data.rr}{$data.rr} x/menit{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Suhu</td>
+              <td valign="top">{if: $data.suhu}{$data.suhu} °C{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">SpO2</td>
+              <td valign="top">{if: $data.spo}{$data.spo}%{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">BB</td>
+              <td valign="top">{if: $data.bb}{$data.bb} kg{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">TB</td>
+              <td valign="top">{if: $data.tb}{$data.tb} cm{else}-{/if}</td>
+            </tr>
+            
+            <!-- Pemeriksaan Sistem -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">PEMERIKSAAN SISTEM</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Kepala</td>
+              <td valign="top">{if: $data.kepala}{$data.kepala}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Gigi</td>
+              <td valign="top">{if: $data.gigi}{$data.gigi}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">THT</td>
+              <td valign="top">{if: $data.tht}{$data.tht}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Thoraks</td>
+              <td valign="top">{if: $data.thoraks}{$data.thoraks}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Abdomen</td>
+              <td valign="top">{if: $data.abdomen}{$data.abdomen}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Genital</td>
+              <td valign="top">{if: $data.genital}{$data.genital}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Ekstremitas</td>
+              <td valign="top">{if: $data.ekstremitas}{$data.ekstremitas}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Kulit</td>
+              <td valign="top">{if: $data.kulit}{$data.kulit}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Keterangan dan Diagnosis -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">KETERANGAN DAN DIAGNOSIS</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keterangan Fisik</td>
+              <td valign="top" colspan="3">{if: $data.ket_fisik}{$data.ket_fisik}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keterangan Lokalis</td>
+              <td valign="top" colspan="3">{if: $data.ket_lokalis}{$data.ket_lokalis}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Pemeriksaan Penunjang</td>
+              <td valign="top" colspan="3">{if: $data.penunjang}{$data.penunjang}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Diagnosis</td>
+              <td valign="top" colspan="3">{if: $data.diagnosis}{$data.diagnosis}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Rencana Tindak Lanjut -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">RENCANA TINDAK LANJUT</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Tatalaksana</td>
+              <td valign="top" colspan="3">{if: $data.tata}{$data.tata}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Konsul/Rujuk</td>
+              <td valign="top" colspan="3">{if: $data.konsulrujuk}{$data.konsulrujuk}{else}-{/if}</td>
+            </tr>
+          </table>
+          {/loop}
+        </td>
+      </tr>
+      {/if}
+      {if: $value.penilaian_medis_igd}
+      <tr class="isi">
+        <td valign="top" width="20%">Penilaian Medis IGD</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          {loop: $value.penilaian_medis_igd as $data}
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom: 10px;">
+            <!-- Header Informasi Dasar -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">PENILAIAN MEDIS IGD</td>
+            </tr>
+            <tr>
+              <td valign="top" width="25%" bgcolor="#eee">Tanggal</td>
+              <td valign="top" width="25%">{if: $data.tanggal}{$data.tanggal}{else}-{/if}</td>
+              <td valign="top" width="25%" bgcolor="#eee">Dokter</td>
+              <td valign="top" width="25%">{if: $data.nm_dokter}{$data.nm_dokter}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Anamnesis</td>
+              <td valign="top">{if: $data.anamnesis}{$data.anamnesis}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Hubungan</td>
+              <td valign="top">{if: $data.hubungan}{$data.hubungan}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Keluhan dan Riwayat -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">KELUHAN DAN RIWAYAT</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keluhan Utama</td>
+              <td valign="top" colspan="3">{if: $data.keluhan_utama}{$data.keluhan_utama}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">RPS (Riwayat Penyakit Sekarang)</td>
+              <td valign="top" colspan="3">{if: $data.rps}{$data.rps}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">RPD (Riwayat Penyakit Dahulu)</td>
+              <td valign="top">{if: $data.rpd}{$data.rpd}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">RPK (Riwayat Penyakit Keluarga)</td>
+              <td valign="top">{if: $data.rpk}{$data.rpk}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">RPO (Riwayat Pengobatan)</td>
+              <td valign="top">{if: $data.rpo}{$data.rpo}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Alergi</td>
+              <td valign="top">{if: $data.alergi}{$data.alergi}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Pemeriksaan Fisik -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">PEMERIKSAAN FISIK</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keadaan Umum</td>
+              <td valign="top">{if: $data.keadaan}{$data.keadaan}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Kesadaran</td>
+              <td valign="top">{if: $data.kesadaran}{$data.kesadaran}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">GCS</td>
+              <td valign="top">{if: $data.gcs}{$data.gcs}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">TD</td>
+              <td valign="top">{if: $data.td}{$data.td} mmHg{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Nadi</td>
+              <td valign="top">{if: $data.nadi}{$data.nadi} x/menit{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">RR</td>
+              <td valign="top">{if: $data.rr}{$data.rr} x/menit{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Suhu</td>
+              <td valign="top">{if: $data.suhu}{$data.suhu} °C{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">SpO2</td>
+              <td valign="top">{if: $data.spo}{$data.spo}%{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">BB</td>
+              <td valign="top">{if: $data.bb}{$data.bb} kg{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">TB</td>
+              <td valign="top">{if: $data.tb}{$data.tb} cm{else}-{/if}</td>
+            </tr>
+            
+            <!-- Pemeriksaan Sistem -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">PEMERIKSAAN SISTEM</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Kepala</td>
+              <td valign="top">{if: $data.kepala}{$data.kepala}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Mata</td>
+              <td valign="top">{if: $data.mata}{$data.mata}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Gigi</td>
+              <td valign="top">{if: $data.gigi}{$data.gigi}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Leher</td>
+              <td valign="top">{if: $data.leher}{$data.leher}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Thoraks</td>
+              <td valign="top">{if: $data.thoraks}{$data.thoraks}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Abdomen</td>
+              <td valign="top">{if: $data.abdomen}{$data.abdomen}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Genital</td>
+              <td valign="top">{if: $data.genital}{$data.genital}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Ekstremitas</td>
+              <td valign="top">{if: $data.ekstremitas}{$data.ekstremitas}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Keterangan dan Diagnosis -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">KETERANGAN DAN DIAGNOSIS</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keterangan Fisik</td>
+              <td valign="top" colspan="3">{if: $data.ket_fisik}{$data.ket_fisik}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keterangan Lokalis</td>
+              <td valign="top" colspan="3">{if: $data.ket_lokalis}{$data.ket_lokalis}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">EKG</td>
+              <td valign="top">{if: $data.ekg}{$data.ekg}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Radiologi</td>
+              <td valign="top">{if: $data.rad}{$data.rad}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Laboratorium</td>
+              <td valign="top" colspan="3">{if: $data.lab}{$data.lab}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Diagnosis</td>
+              <td valign="top" colspan="3">{if: $data.diagnosis}{$data.diagnosis}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Rencana Tindak Lanjut -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">RENCANA TINDAK LANJUT</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Tatalaksana</td>
+              <td valign="top" colspan="3">{if: $data.tata}{$data.tata}{else}-{/if}</td>
+            </tr>
+          </table>
+          {/loop}
+        </td>
+      </tr>
+      {/if}
+      {if: $value.penilaian_medis_ranap}
+      <tr class="isi">
+        <td valign="top" width="20%">Penilaian Medis Rawat Inap</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          {loop: $value.penilaian_medis_ranap as $data}
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom: 10px;">
+            <!-- Header Informasi Dasar -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">PENILAIAN MEDIS RAWAT INAP</td>
+            </tr>
+            <tr>
+              <td valign="top" width="25%" bgcolor="#eee">Tanggal</td>
+              <td valign="top" width="25%">{if: $data.tanggal}{$data.tanggal}{else}-{/if}</td>
+              <td valign="top" width="25%" bgcolor="#eee">Dokter</td>
+              <td valign="top" width="25%">{if: $data.nm_dokter}{$data.nm_dokter}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Anamnesis</td>
+              <td valign="top" colspan="3">{if: $data.anamnesis}{$data.anamnesis}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Keluhan dan Riwayat -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">KELUHAN DAN RIWAYAT</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keluhan Utama</td>
+              <td valign="top" colspan="3">{if: $data.keluhan_utama}{$data.keluhan_utama}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">RPS (Riwayat Penyakit Sekarang)</td>
+              <td valign="top" colspan="3">{if: $data.rps}{$data.rps}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">RPD (Riwayat Penyakit Dahulu)</td>
+              <td valign="top">{if: $data.rpd}{$data.rpd}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">RPK (Riwayat Penyakit Keluarga)</td>
+              <td valign="top">{if: $data.rpk}{$data.rpk}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">RPO (Riwayat Pengobatan)</td>
+              <td valign="top">{if: $data.rpo}{$data.rpo}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Alergi</td>
+              <td valign="top">{if: $data.alergi}{$data.alergi}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Pemeriksaan Fisik -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">PEMERIKSAAN FISIK</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keadaan Umum</td>
+              <td valign="top">{if: $data.keadaan}{$data.keadaan}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Kesadaran</td>
+              <td valign="top">{if: $data.kesadaran}{$data.kesadaran}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">GCS</td>
+              <td valign="top">{if: $data.gcs}{$data.gcs}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">TD</td>
+              <td valign="top">{if: $data.td}{$data.td} mmHg{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Nadi</td>
+              <td valign="top">{if: $data.nadi}{$data.nadi} x/menit{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">RR</td>
+              <td valign="top">{if: $data.rr}{$data.rr} x/menit{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Suhu</td>
+              <td valign="top">{if: $data.suhu}{$data.suhu} °C{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">SpO2</td>
+              <td valign="top">{if: $data.spo}{$data.spo}%{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">BB</td>
+              <td valign="top">{if: $data.bb}{$data.bb} kg{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">TB</td>
+              <td valign="top">{if: $data.tb}{$data.tb} cm{else}-{/if}</td>
+            </tr>
+            
+            <!-- Pemeriksaan Sistem -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">PEMERIKSAAN SISTEM</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Mata</td>
+              <td valign="top">{if: $data.mata}{$data.mata}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Gigi</td>
+              <td valign="top">{if: $data.gigi}{$data.gigi}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">THT</td>
+              <td valign="top">{if: $data.tht}{$data.tht}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Thoraks</td>
+              <td valign="top">{if: $data.thoraks}{$data.thoraks}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Jantung</td>
+              <td valign="top">{if: $data.jantung}{$data.jantung}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Paru</td>
+              <td valign="top">{if: $data.paru}{$data.paru}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Abdomen</td>
+              <td valign="top">{if: $data.abdomen}{$data.abdomen}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Genital</td>
+              <td valign="top">{if: $data.genital}{$data.genital}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Ekstremitas</td>
+              <td valign="top">{if: $data.ekstremitas}{$data.ekstremitas}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Kulit</td>
+              <td valign="top">{if: $data.kulit}{$data.kulit}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Keterangan dan Diagnosis -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">KETERANGAN DAN DIAGNOSIS</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keterangan Fisik</td>
+              <td valign="top" colspan="3">{if: $data.ket_fisik}{$data.ket_fisik}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Keterangan Lokalis</td>
+              <td valign="top" colspan="3">{if: $data.ket_lokalis}{$data.ket_lokalis}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Laboratorium</td>
+              <td valign="top">{if: $data.lab}{$data.lab}{else}-{/if}</td>
+              <td valign="top" bgcolor="#eee">Radiologi</td>
+              <td valign="top">{if: $data.rad}{$data.rad}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Penunjang</td>
+              <td valign="top" colspan="3">{if: $data.penunjang}{$data.penunjang}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Diagnosis</td>
+              <td valign="top" colspan="3">{if: $data.diagnosis}{$data.diagnosis}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Rencana Tindak Lanjut -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">RENCANA TINDAK LANJUT</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Tatalaksana</td>
+              <td valign="top" colspan="3">{if: $data.tata}{$data.tata}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Edukasi</td>
+              <td valign="top" colspan="3">{if: $data.edukasi}{$data.edukasi}{else}-{/if}</td>
+            </tr>
+          </table>
+          {/loop}
+        </td>
+      </tr>
+      {/if}
+      {if: $value.mlite_odontogram}
+      <tr class="isi">
+        <td valign="top" width="20%">Riwayat Odontogram</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom: 10px;">
+            <thead>
+              <tr bgcolor="#d9edf7">
+                <th width="15%" style="font-weight: bold; text-align: center;">Tanggal Input</th>
+                <th width="20%" style="font-weight: bold; text-align: center;">Elemen Gigi</th>
+                <th width="25%" style="font-weight: bold; text-align: center;">Kondisi</th>
+                <th width="40%" style="font-weight: bold; text-align: center;">Catatan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $value.mlite_odontogram as $data}
+              <tr>
+                <td valign="top" align="center">{if: $data.tgl_input}{$data.tgl_input}{else}-{/if}</td>
+                <td valign="top" align="center">{if: $data.pemeriksaan}{$data.pemeriksaan}{else}-{/if}</td>
+                <td valign="top">{if: $data.kondisi}{$data.kondisi}{else}-{/if}</td>
+                <td valign="top">{if: $data.catatan}{$data.catatan}{else}-{/if}</td>
+              </tr>
+              {/loop}
+            </tbody>
           </table>
         </td>
       </tr>

@@ -1554,10 +1554,23 @@ $(document).on("click", ".hapus_assessment_nyeri", function(event){
 
 // Load Vital Signs Chart
 function loadVitalSignsChart() {
+  console.log('loadVitalSignsChart() called');
+  
   var no_rawat = $('input[name="no_rawat"]').val();
+  console.log('no_rawat:', no_rawat);
   
   if (!no_rawat) {
+    console.log('No rawat not found, showing no-data message');
     $('#chart-no-data').show();
+    $('#chart-loading').hide();
+    return;
+  }
+  
+  // Check if Chart.js is loaded
+  if (typeof Chart === 'undefined') {
+    console.error('Chart.js is not loaded!');
+    $('#chart-no-data').show();
+    $('#chart-loading').hide();
     return;
   }
   
@@ -1584,6 +1597,14 @@ function loadVitalSignsChart() {
 
 // Create Vital Signs Chart
 function createVitalSignsChart(chartData) {
+  console.log('createVitalSignsChart() called with data:', chartData);
+  
+  // Check if Chart.js is loaded
+  if (typeof Chart === 'undefined') {
+    console.error('Chart.js is not loaded in createVitalSignsChart!');
+    return;
+  }
+  
   var ctx = document.getElementById('vitalSignsChart');
   
   // Check if canvas element exists
@@ -1592,6 +1613,7 @@ function createVitalSignsChart(chartData) {
     return;
   }
   
+  console.log('Canvas element found, getting 2D context');
   ctx = ctx.getContext('2d');
   
   // Destroy existing chart if exists
