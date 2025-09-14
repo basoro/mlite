@@ -2216,6 +2216,63 @@
         </td>
       </tr>
       {/if}
+      {if: $value.laporan_operasi}
+      <tr class="isi">
+        <td valign="top" width="20%">Laporan Operasi</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          {loop: $value.laporan_operasi as $data}
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom: 10px;">
+            <!-- Header Informasi Dasar -->
+            <tr>
+              <td colspan="4" bgcolor="#d9edf7" style="font-weight: bold; text-align: center;">LAPORAN OPERASI</td>
+            </tr>
+            <tr>
+              <td valign="top" width="25%" bgcolor="#eee">Tanggal Operasi</td>
+              <td valign="top" width="25%">{if: $data.tanggal}{$data.tanggal}{else}-{/if}</td>
+              <td valign="top" width="25%" bgcolor="#eee">Selesai Operasi</td>
+              <td valign="top" width="25%">{if: $data.selesaioperasi}{$data.selesaioperasi}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Diagnosa -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">DIAGNOSA</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Diagnosa Pre-Operasi</td>
+              <td valign="top" colspan="3">{if: $data.diagnosa_preop}{$data.diagnosa_preop}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Diagnosa Post-Operasi</td>
+              <td valign="top" colspan="3">{if: $data.diagnosa_postop}{$data.diagnosa_postop}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Detail Operasi -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">DETAIL OPERASI</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Jaringan yang Dieksekusi</td>
+              <td valign="top" colspan="3">{if: $data.jaringan_dieksekusi}{$data.jaringan_dieksekusi}{else}-{/if}</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Permintaan PA</td>
+              <td valign="top" colspan="3">{if: $data.permintaan_pa}{$data.permintaan_pa}{else}-{/if}</td>
+            </tr>
+            
+            <!-- Laporan Operasi -->
+            <tr>
+              <td colspan="4" bgcolor="#f0f8ff" style="font-weight: bold; text-align: center;">CATATAN OPERASI</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#eee">Laporan Operasi</td>
+              <td valign="top" colspan="3">{if: $data.laporan_operasi}{$data.laporan_operasi}{else}-{/if}</td>
+            </tr>
+          </table>
+          {/loop}
+        </td>
+      </tr>
+      {/if}
       {if: $value.mlite_odontogram}
       <tr class="isi">
         <td valign="top" width="20%">Riwayat Odontogram</td>

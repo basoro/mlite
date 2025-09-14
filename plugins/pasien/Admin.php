@@ -874,6 +874,11 @@ class Admin extends AdminModule
           ->where('no_rawat', $row['no_rawat'])
           ->toArray();
 
+        $row['laporan_operasi'] = $this->db('laporan_operasi')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tanggal')
+          ->toArray();
+
         $row['mlite_odontogram'] = $this->db('mlite_odontogram')
           ->where('no_rkm_medis', $no_rkm_medis)
           ->where('tgl_input', $row['tgl_registrasi'])
