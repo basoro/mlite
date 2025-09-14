@@ -338,29 +338,6 @@
                   </ul>  
                 </li>
                 <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Laporan</a>
-                  <ul class="dropdown-menu">
-                    {loop: $mlite.nav}
-                    {if: $value.category == 'laporan'}
-                    <li{if: !empty($value.subnav)} class="dropdown-submenu"{/if}>
-                        {if: !empty($value.subnav)}
-                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-                          {$value.name}
-                        </a>
-                        <ul class="dropdown-menu">
-                            {loop: $value.subnav}
-                            <li><a href="{$value.url}" class="dropdown-item">{$value.name}</a></li>
-                            {/loop}
-                        </ul>
-                        {else} 
-                        <a class="dropdown-item" href="{$value.url}">{$value.name}</a>
-                        {/if}
-                    </li>
-                    {/if}
-                    {/loop}
-                  </ul>  
-                </li>
-                <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Keuangan</a>
                   <ul class="dropdown-menu">
                     {loop: $mlite.nav}
