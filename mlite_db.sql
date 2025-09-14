@@ -2532,6 +2532,27 @@ CREATE TABLE `mutasi_berkas` (
   CONSTRAINT `mutasi_berkas_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE `mutasibarang` (
+  `kode_brng` varchar(15) NOT NULL,
+  `jml` double NOT NULL,
+  `harga` double NOT NULL,
+  `kd_bangsaldari` char(5) NOT NULL,
+  `kd_bangsalke` char(5) NOT NULL,
+  `tanggal` datetime NOT NULL,
+  `keterangan` varchar(60) NOT NULL,
+  `no_batch` varchar(20) NOT NULL,
+  `no_faktur` varchar(20) NOT NULL,
+  PRIMARY KEY (`kode_brng`,`kd_bangsaldari`,`kd_bangsalke`,`tanggal`,`no_batch`,`no_faktur`),
+  KEY `kd_bangsaldari` (`kd_bangsaldari`),
+  KEY `kd_bangsalke` (`kd_bangsalke`),
+  KEY `jml` (`jml`),
+  KEY `keterangan` (`keterangan`),
+  KEY `kode_brng` (`kode_brng`),
+  CONSTRAINT `mutasibarang_ibfk_1` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `mutasibarang_ibfk_2` FOREIGN KEY (`kd_bangsaldari`) REFERENCES `bangsal` (`kd_bangsal`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `mutasibarang_ibfk_3` FOREIGN KEY (`kd_bangsalke`) REFERENCES `bangsal` (`kd_bangsal`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 CREATE TABLE `obat_racikan` (
   `tgl_perawatan` date NOT NULL,
   `jam` time NOT NULL,
