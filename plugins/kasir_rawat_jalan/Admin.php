@@ -654,8 +654,8 @@ class Admin extends AdminModule
                 'no_jurnal' => $no_jurnal_pendaftaran,
                 'kd_rek' => $this->settings('keuangan', 'akun_kredit_pendaftaran'),
                 'arus_kas' => '1',
-                'debet' => str_replace(".", "", substr($_POST['jurnal_pendaftaran'], 0, strpos($_POST['jurnal_pendaftaran'], ","))), 
-                'kredit' => '0' 
+                'debet' => '0',  
+                'kredit' => str_replace(".", "", substr($_POST['jurnal_pendaftaran'], 0, strpos($_POST['jurnal_pendaftaran'], ","))) 
               ]);
             }
             unset($_POST['jurnal_pendaftaran']);
@@ -681,8 +681,8 @@ class Admin extends AdminModule
                 'no_jurnal' => $no_jurnal_tindakan_ralan,
                 'kd_rek' => $this->settings('keuangan', 'akun_kredit_tindakan'),
                 'arus_kas' => '1',
-                'debet' => str_replace(".", "", substr($_POST['jurnal_tindakan_ralan'], 0, strpos($_POST['jurnal_tindakan_ralan'], ","))), 
-                'kredit' => '0'
+                'debet' => '0', 
+                'kredit' => str_replace(".", "", substr($_POST['jurnal_tindakan_ralan'], 0, strpos($_POST['jurnal_tindakan_ralan'], ","))) 
               ]);
             }
             unset($_POST['jurnal_tindakan_ralan']);
@@ -708,8 +708,8 @@ class Admin extends AdminModule
                 'no_jurnal' => $no_jurnal_obat_bhp,
                 'kd_rek' => $this->settings('keuangan', 'akun_kredit_obat_bhp'),
                 'arus_kas' => '1',
-                'debet' => str_replace(".", "", substr($_POST['jurnal_obat_bhp'], 0, strpos($_POST['jurnal_obat_bhp'], ","))),
-                'kredit' => '0'
+                'debet' => '0', 
+                'kredit' => str_replace(".", "", substr($_POST['jurnal_obat_bhp'], 0, strpos($_POST['jurnal_obat_bhp'], ","))) 
               ]);
             }
             unset($_POST['jurnal_obat_bhp']);
@@ -735,8 +735,8 @@ class Admin extends AdminModule
                 'no_jurnal' => $no_jurnal_laboratorium,
                 'kd_rek' => $this->settings('keuangan', 'akun_kredit_laboratorium'),
                 'arus_kas' => '1',
-                'debet' => str_replace(".", "", substr($_POST['jurnal_laboratorium'], 0, strpos($_POST['jurnal_laboratorium'], ","))), 
-                'kredit' => '0' 
+                'debet' => '0',  
+                'kredit' => str_replace(".", "", substr($_POST['jurnal_laboratorium'], 0, strpos($_POST['jurnal_laboratorium'], ","))) 
               ]);
             }
             unset($_POST['jurnal_laboratorium']);
@@ -762,8 +762,8 @@ class Admin extends AdminModule
                 'no_jurnal' => $no_jurnal_radiologi,
                 'kd_rek' => $this->settings('keuangan', 'akun_kredit_radiologi'),
                 'arus_kas' => '1',
-                'debet' => str_replace(".", "", substr($_POST['jurnal_radiologi'], 0, strpos($_POST['jurnal_radiologi'], ","))), 
-                'kredit' => '0' 
+                'debet' => '0',  
+                'kredit' => str_replace(".", "", substr($_POST['jurnal_radiologi'], 0, strpos($_POST['jurnal_radiologi'], ","))) 
               ]);
             }
             unset($_POST['jurnal_radiologi']);
