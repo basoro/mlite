@@ -83,15 +83,15 @@ class Admin extends AdminModule
         $this->_getInfoRole();
         $user = $this->db('mlite_users')->oneArray($id);
 
-        if (!empty($user)) {
+        if (!empty($user) && is_array($user)) {
             $this->assign['form'] = $user;
             $this->assign['title'] = 'Sunting pengguna';
-            $this->assign['modules'] = $this->_getModules($user['access']);
+            $this->assign['modules'] = $this->_getModules(isset($user['access']) ? $user['access'] : null);
             $this->assign['cap'] = [];
             if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
-              $this->assign['cap'] = $this->_getInfoCap($user['cap']);
+              $this->assign['cap'] = $this->_getInfoCap(isset($user['cap']) ? $user['cap'] : null);
             }
-            $this->assign['avatarURL'] = url(UPLOADS.'/users/'.$user['avatar']);
+            $this->assign['avatarURL'] = url(UPLOADS.'/users/'.(isset($user['avatar']) ? $user['avatar'] : 'default.png'));
 
             return $this->draw('form.html', ['users' => $this->assign]);
         } else {
@@ -198,7 +198,7 @@ class Admin extends AdminModule
 
             if ($query) {
                 if (isset($img) && $img->getInfos('width')) {
-                    if (isset($user)) {
+                    if (isset($user) && is_array($user) && !empty($user['avatar'])) {
                         unlink(UPLOADS."/users/".$user['avatar']);
                     }
 
@@ -223,7 +223,7 @@ class Admin extends AdminModule
     {
         if ($id != 1 && $this->core->getUserInfo('id') != $id && ($user = $this->db('mlite_users')->oneArray($id))) {
             if ($this->db('mlite_users')->delete($id)) {
-                if (!empty($user['avatar'])) {
+                if (is_array($user) && !empty($user['avatar'])) {
                     unlink(UPLOADS."/users/".$user['avatar']);
                 }
 
@@ -276,16 +276,19 @@ class Admin extends AdminModule
         }
 
         foreach ($rows as $row) {
-            if (empty($kd_poliArray)) {
-                $attr = '';
-            } else {
-                if (in_array($row['cap'], $kd_poliArray)) {
-                    $attr = 'selected';
-                } else {
+            // Check if $row is valid array before accessing its elements
+            if ($row && is_array($row) && isset($row['cap']) && isset($row['nm_cap'])) {
+                if (empty($kd_poliArray)) {
                     $attr = '';
+                } else {
+                    if (in_array($row['cap'], $kd_poliArray)) {
+                        $attr = 'selected';
+                    } else {
+                        $attr = '';
+                    }
                 }
+                $result[] = ['cap' => $row['cap'], 'nm_cap' => $row['nm_cap'], 'attr' => $attr];
             }
-            $result[] = ['cap' => $row['cap'], 'nm_cap' => $row['nm_cap'], 'attr' => $attr];
         }
         return $result;
     }
@@ -309,16 +312,24 @@ class Admin extends AdminModule
             if ($row['dir'] != 'dashboard') {
                 $details = $this->core->getModuleInfo($row['dir']);
 
-                if (empty($accessArray)) {
-                    $attr = '';
-                } else {
-                    if (in_array($row['dir'], $accessArray) || ($accessArray[0] == 'all')) {
-                        $attr = 'selected';
-                    } else {
+                // Check if $details is valid array before accessing its elements
+                if ($details && is_array($details)) {
+                    if (empty($accessArray)) {
                         $attr = '';
+                    } else {
+                        if (in_array($row['dir'], $accessArray) || (isset($accessArray[0]) && $accessArray[0] == 'all')) {
+                            $attr = 'selected';
+                        } else {
+                            $attr = '';
+                        }
                     }
+                    $result[] = [
+                        'dir' => $row['dir'], 
+                        'name' => isset($details['name']) ? $details['name'] : $row['dir'], 
+                        'icon' => isset($details['icon']) ? $details['icon'] : 'folder', 
+                        'attr' => $attr
+                    ];
                 }
-                $result[] = ['dir' => $row['dir'], 'name' => $details['name'], 'icon' => $details['icon'], 'attr' => $attr];
             }
         }
         return $result;

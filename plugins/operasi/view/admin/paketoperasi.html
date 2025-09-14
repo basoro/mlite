@@ -3,6 +3,7 @@
     white-space: nowrap;
   }
 </style>
+{if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'rekammedis'}
 <form action="{?=url(ADMIN.'/operasi/savepaketoperasi')?}" method="POST">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -178,6 +179,7 @@
         </div>
     </div>
 </form>
+{/if}
 <div class="row">
   <div class="col-md-12">
     <div class="table-responsive no-margin" id="paketoperasi">

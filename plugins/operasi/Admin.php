@@ -79,6 +79,8 @@ class Admin extends AdminModule
         $this->assign['no_rawat'] = '';
 
         $bangsal = str_replace(",","','", $this->core->getUserInfo('cap', null, true));
+        $user_role = $this->core->getUserInfo('role', null, true);
+        $username = $this->core->getUserInfo('username', null, true);
 
         $sql = "SELECT
             operasi.*,
@@ -98,6 +100,11 @@ class Admin extends AdminModule
             operasi.tgl_operasi BETWEEN '$tgl_masuk' AND '$tgl_masuk_akhir'
           AND
             reg_periksa.kd_pj=penjab.kd_pj";
+
+        // Add condition for medical role users
+        if ($user_role == 'medis') {
+            $sql .= " AND operasi.operator1 = '$username'";
+        }
 
         $stmt = $this->db()->pdo()->prepare($sql);
         $stmt->execute();
