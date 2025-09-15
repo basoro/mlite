@@ -146,7 +146,7 @@
   });
 </script>
 <script type="text/javascript">
-  $('a[href="#soap"]').click(function(event){
+  $(document).on('click', 'a[href="#soap"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -175,7 +175,7 @@
     });
   });
 
-  $('a[href="#layanan_obat"]').click(function(event){
+  $(document).on('click', 'a[href="#layanan_obat"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -199,7 +199,7 @@
     });
   });
 
-  $('a[href="#berkas_digital"]').click(function(event){
+  $(document).on('click', 'a[href="#berkas_digital"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -224,7 +224,7 @@
     });
   });
 
-  $('a[href="#triase_igd"]').click(function(event){
+  $(document).on('click', 'a[href="#triase_igd"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     console.log('Triase IGD clicked from display.html');
@@ -260,7 +260,7 @@
     });
   });
 
-  $('a[href="#status_rawat"]').click(function(event){
+  $(document).on('click', 'a[href="#status_rawat"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var url = baseURL + '/igd/statusrawat?t=' + mlite.token;
@@ -328,7 +328,7 @@
         }
     });
   });
-  $('a[href="#status_lanjut"]').click(function(event){
+  $(document).on('click', 'a[href="#status_lanjut"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var url = baseURL + '/igd/statuslanjut?t=' + mlite.token;

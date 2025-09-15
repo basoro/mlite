@@ -1168,7 +1168,8 @@ $("#display").on("click",".assesment", function(event){
   return false;
 });
 
-$('a[href="#rujuk_internal"]').click(function(event){
+// Event delegation untuk rujuk internal - bekerja untuk elemen dinamis
+$(document).on('click', 'a[href="#rujuk_internal"]', function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var no_rawat = $(this).attr("data-no_rawat");
@@ -1216,12 +1217,101 @@ $('a[href="#rujuk_internal"]').click(function(event){
             isi_rujukan: isi_rujukan, 
           } ,function(data) {
             alert('Rujukan internal telah disimpan!');
+            // Reload display setelah simpan
+            $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
           });
         }
       }
     }
   });
   $('select').selectator();
+  event.stopPropagation();
+  return false;
+});
+
+// Event delegation untuk edit rujukan internal
+$(document).on('click', 'a[href="#edit_rujukan_internal"]', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat");
+  var kd_dokter = $(this).attr("data-kd_dokter");
+  var kd_dokter_tujuan = $(this).attr("data-kd_dokter_tujuan");
+  var kd_poli_tujuan = $(this).attr("data-kd_poli_tujuan");
+  var url = baseURL + '/rawat_jalan/editrujukaninternal?t=' + mlite.token;
+
+  var edit_rujukan_internal = ''
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Pilih Poli</label>'
+      + '<select name="kd_poli" id="kd_poli" class="form-control" data-use-dimmer="false">'
+      + '{loop: $mlite.poliklinik}'
+      + '<option value="{$value.kd_poli}"' + ('{$value.kd_poli}' == kd_poli_tujuan ? ' selected' : '') + '>{$value.nm_poli}</option>'
+      + '{/loop}'
+      + '</select>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Pilih Dokter</label>'
+      + '<select name="kd_dokter" id="kd_dokter" class="form-control" data-use-dimmer="false">'
+      + '{loop: $mlite.dokter}'
+      + '<option value="{$value.kd_dokter}"' + ('{$value.kd_dokter}' == kd_dokter_tujuan ? ' selected' : '') + '>{$value.nm_dokter}</option>'
+      + '{/loop}'
+      + '</select>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Isi Rujukan</label>'
+      + '<textarea name="isi_rujukan" id="isi_rujukan" class="form-control" rows="6"></textarea>'
+      + '</div>'
+      + '';
+
+  // tampilkan dialog konfirmasi
+  bootbox.dialog({
+    message: edit_rujukan_internal,
+    title: 'Edit Rujukan Internal',
+    buttons: {
+      main: {
+        label: 'Update',
+        className: 'btn-primary',
+        callback() {
+          var kd_poli = $('#kd_poli').val();
+          var kd_dokter = $('#kd_dokter').val();
+          var isi_rujukan = $('#isi_rujukan').val();
+          $.post(url, {
+            no_rawat: no_rawat,
+            kd_poli: kd_poli,
+            kd_dokter: kd_dokter,
+            isi_rujukan: isi_rujukan, 
+          } ,function(data) {
+            alert('Rujukan internal telah diupdate!');
+            // Reload display setelah update
+            $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+          });
+        }
+      }
+    }
+  });
+  $('select').selectator();
+  event.stopPropagation();
+  return false;
+});
+
+// Event delegation untuk hapus rujukan internal
+$(document).on('click', 'a[href="#hapus_rujukan_internal"]', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat");
+  var url = baseURL + '/rawat_jalan/hapusrujukaninternal?t=' + mlite.token;
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus rujukan internal ini?", function(result){
+    if (result){
+      $.post(url, {
+        no_rawat: no_rawat
+      } ,function(data) {
+        alert('Rujukan internal telah dihapus!');
+        // Reload display setelah hapus
+        $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+      });
+    }
+  });
   event.stopPropagation();
   return false;
 });

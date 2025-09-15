@@ -86,7 +86,7 @@
     </div>
 </div>
 <script type="text/javascript">
-  $('a[href="#soap"]').click(function(event){
+  $(document).on('click', 'a[href="#soap"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -121,7 +121,7 @@
     });
   });
 
-  $('a[href="#layanan_obat"]').click(function(event){
+  $(document).on('click', 'a[href="#layanan_obat"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 

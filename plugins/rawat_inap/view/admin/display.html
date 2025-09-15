@@ -119,7 +119,7 @@
 <script type="text/javascript">
   // ketika tombol hapus ditekan
   //$("#display").on("click",".set_dpjp", function(event){
-  $('a[href="#set_dpjp"]').click(function(event){
+  $(document).on('click', 'a[href="#set_dpjp"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var url = baseURL + '/rawat_inap/setdpjp?t=' + mlite.token;
@@ -168,7 +168,7 @@
   });
 </script>
 <script>
-  $('a[href="#surat_kontrol"]').click(function(event){
+  $(document).on('click', 'a[href="#surat_kontrol"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -227,7 +227,7 @@
   });
 </script>
 <script type="text/javascript">
-  $('a[href="#soap"]').click(function(event){
+  $(document).on('click', 'a[href="#soap"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -279,7 +279,7 @@
     });
   });
 
-  $('a[href="#assessment"]').click(function(event){
+  $(document).on('click', 'a[href="#assessment"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -305,7 +305,7 @@
     });
   });
 
-  $('a[href="#layanan_obat"]').click(function(event){
+  $(document).on('click', 'a[href="#layanan_obat"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -329,7 +329,7 @@
     });
   });
 
-  $('a[href="#berkas_digital"]').click(function(event){
+  $(document).on('click', 'a[href="#berkas_digital"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -378,7 +378,7 @@
 <script type="text/javascript">
   // ketika tombol hapus ditekan
   //$("#display").on("click",".set_dpjp", function(event){
-  $('a[href="#ubah_penjab"]').click(function(event){
+  $(document).on('click', 'a[href="#ubah_penjab"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var url = baseURL + '/rawat_inap/ubahpenjab?t=' + mlite.token;

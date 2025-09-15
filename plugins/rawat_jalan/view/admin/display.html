@@ -1,6 +1,58 @@
+<style>
+/* Fix thead tbody alignment for rujukan internal table */
+#rujukan-internal .dataTables {
+  table-layout: fixed !important;
+}
+
+#rujukan-internal .dataTables th,
+#rujukan-internal .dataTables td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Ensure DataTables doesn't override column widths */
+#rujukan-internal .dataTables_wrapper .dataTables_scroll .dataTables_scrollHead table,
+#rujukan-internal .dataTables_wrapper .dataTables_scroll .dataTables_scrollBody table {
+  table-layout: fixed !important;
+}
+
+/* Fix column alignment */
+#rujukan-internal .dataTables tbody td:nth-child(1) { width: 12% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(2) { width: 15% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(3) { width: 12% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(4) { width: 10% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(5) { width: 10% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(6) { width: 12% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(7) { width: 12% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(8) { width: 10% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(9) { width: 10% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(10) { width: 7% !important; }
+</style>
+
 <div id="display">
-  <div class="table-responsive no-margin">
-    <table class="table table-striped no-padding dataTables" width="100%">
+  <!-- Tab Navigation -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active">
+      <a href="#rawat-jalan" aria-controls="rawat-jalan" role="tab" data-toggle="tab">
+        <i class="fa fa-hospital-o"></i> Rawat Jalan
+        <span class="badge" id="count-rawat-jalan">0</span>
+      </a>
+    </li>
+    <li role="presentation">
+      <a href="#rujukan-internal" aria-controls="rujukan-internal" role="tab" data-toggle="tab">
+        <i class="fa fa-share"></i> Rujukan Internal
+        <span class="badge" id="count-rujukan-internal">0</span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content" style="margin-top: 15px;">
+    <!-- Tab Rawat Jalan -->
+    <div role="tabpanel" class="tab-pane active" id="rawat-jalan">
+      <div class="table-responsive no-margin">
+        <table class="table table-striped no-padding dataTables" width="100%">
       <thead>
         <tr>
           <th style="white-space: nowrap;">No. RM</th>
@@ -132,7 +184,66 @@
         </tr>
         {/loop}
       </tbody>
-    </table>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Tab Rujukan Internal -->
+    <div role="tabpanel" class="tab-pane" id="rujukan-internal">
+      <div class="table-responsive no-margin">
+        <table class="table table-striped no-padding dataTables" width="100%" style="table-layout: fixed;">
+          <thead>
+            <tr>
+              <th style="white-space: nowrap; width: 12%;">No. RM</th>
+              <th style="white-space: nowrap; width: 15%;">Nama Pasien</th>
+              <th style="white-space: nowrap; width: 12%;">ID Kunjungan</th>
+              <th style="white-space: nowrap; width: 10%;">Poli Asal</th>
+              <th style="white-space: nowrap; width: 10%;">Poli Tujuan</th>
+              <th style="white-space: nowrap; width: 12%;">Dokter Perujuk</th>
+              <th style="white-space: nowrap; width: 12%;">Dokter Tujuan</th>
+              <th style="white-space: nowrap; width: 10%;">Tgl. Rujukan</th>
+              <th style="white-space: nowrap; width: 10%;">Keterangan</th>
+              <th style="white-space: nowrap; width: 7%;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loop: $rawat_jalan.list_rujukan_internal}
+            <tr>
+              <td style="white-space: nowrap;">
+                <span class="dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true">
+                  <button type="button" name="button" class="btn btn-sm btn-default">{if: isset($value.no_rkm_medis)}{$value.no_rkm_medis}{else}-{/if} <span class="caret"></span></button>
+                </span>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', isset($value.no_rkm_medis) ? $value.no_rkm_medis : '-'])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
+                  <li><a href="#edit_rujukan_internal" data-no_rawat="{if: isset($value.no_rawat)}{$value.no_rawat}{else}-{/if}" data-kd_dokter="{if: isset($value.kd_dokter)}{$value.kd_dokter}{else}-{/if}" data-kd_dokter_tujuan="{if: isset($value.kd_dokter_tujuan)}{$value.kd_dokter_tujuan}{else}-{/if}" data-kd_poli_tujuan="{if: isset($value.kd_poli_tujuan)}{$value.kd_poli_tujuan}{else}-{/if}">Edit Rujukan</a></li>
+                  <li><a href="#hapus_rujukan_internal" data-no_rawat="{if: isset($value.no_rawat)}{$value.no_rawat}{else}-{/if}">Hapus Rujukan</a></li>
+                </ul>
+              </td>
+              <td style="white-space: nowrap;"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', isset($value.no_rkm_medis) ? $value.no_rkm_medis : '-'])?}" data-toggle="modal" data-target="#riwayatModal">{if: isset($value.nm_pasien)}{$value.nm_pasien}{else}-{/if}</a></td>
+              <td class="edit" data-no_rawat="{if: isset($value.no_rawat)}{$value.no_rawat}{else}-{/if}">{if: isset($value.no_rawat)}{$value.no_rawat}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.poli_asal)}{$value.poli_asal}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.poli_tujuan)}{$value.poli_tujuan}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.dokter_perujuk)}{$value.dokter_perujuk}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.dokter_tujuan)}{$value.dokter_tujuan}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.tgl_rujukan)}{$value.tgl_rujukan}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.keterangan)}{$value.keterangan}{else}-{/if}</td>
+              <td style="white-space: nowrap;">
+                {if: isset($value.status) && $value.status == 'Belum'}
+                  <span class="label label-warning">Belum Ditangani</span>
+                {elseif: isset($value.status) && $value.status == 'Sudah'}
+                  <span class="label label-success">Sudah Ditangani</span>
+                {elseif: isset($value.status)}
+                  <span class="label label-danger">Dibatalkan</span>
+                {else}
+                  <span class="label label-secondary">-</span>
+                {/if}
+              </td>
+            </tr>
+            {/loop}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 <div class="modal fade" id="asuransiModal" tabindex="-1" role="dialog">
@@ -482,11 +593,19 @@
       "searchPlaceholder": "Search..."
     },
     "lengthChange": false,
-    "scrollX": true,
+    "scrollX": false,
+    "autoWidth": false,
+    "columnDefs": [
+      { "width": "12%", "targets": [0, 2] },
+      { "width": "15%", "targets": 1 },
+      { "width": "10%", "targets": [3, 4, 7, 8] },
+      { "width": "12%", "targets": [5, 6] },
+      { "width": "7%", "targets": 9 }
+    ],
     dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
   });
   var t = $(".dataTables").DataTable().rows().count();
-  $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+  // $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
   //event.stopPropagation();
 </script>
 <script type="text/javascript">
@@ -692,4 +811,54 @@
   	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   	xhttp.send("api_key=" + api_key + "&sender=" + sender + "&number=" + number + "&message=" + message);
   }
+</script>
+
+<script>
+$(document).ready(function() {
+  // Function to update tab counters
+  function updateTabCounters() {
+    // Get total entries from DataTables pagination for rawat jalan
+    var rawatJalanCount = 0;
+    var rujukanInternalCount = 0;
+    
+    // Check if rawat jalan table has DataTables initialized
+    if ($.fn.DataTable.isDataTable('#rawat-jalan .dataTables')) {
+      var rawatJalanTable = $('#rawat-jalan .dataTables').DataTable();
+      rawatJalanCount = rawatJalanTable.page.info().recordsTotal;
+    } else {
+      // Fallback to counting visible rows if DataTables not initialized
+      rawatJalanCount = $('#rawat-jalan tbody tr').length;
+    }
+    
+    // Check if rujukan internal table has DataTables initialized
+    if ($.fn.DataTable.isDataTable('#rujukan-internal .dataTables')) {
+      var rujukanInternalTable = $('#rujukan-internal .dataTables').DataTable();
+      rujukanInternalCount = rujukanInternalTable.page.info().recordsTotal;
+    } else {
+      // Fallback to counting visible rows if DataTables not initialized
+      rujukanInternalCount = $('#rujukan-internal tbody tr').length;
+    }
+    
+    // Update badge counters
+    $('#count-rawat-jalan').text(rawatJalanCount);
+    $('#count-rujukan-internal').text(rujukanInternalCount);
+  }
+  
+  // Update counters on page load with delay to ensure DataTables is initialized
+  setTimeout(function() {
+    updateTabCounters();
+  }, 500);
+  
+  // Update counters when tab is shown
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    setTimeout(function() {
+      updateTabCounters();
+    }, 100);
+  });
+  
+  // Update counters when DataTables is redrawn
+  $(document).on('draw.dt', '.dataTables', function() {
+    updateTabCounters();
+  });
+});
 </script>

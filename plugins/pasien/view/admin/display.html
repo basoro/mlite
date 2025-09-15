@@ -145,7 +145,7 @@
 </div>
 <script type="text/javascript">
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
-  $("#btn_cetak_pdf").click(function() {
+  $(document).on('click', '#btn_cetak_pdf', function() {
     var baseURL = mlite.url + '/' + mlite.admin;
     var url    = baseURL + '/pasien/cetak?t=' + mlite.token;
     var cari = $('input:text[name=cari]').val();
@@ -157,7 +157,7 @@
 
 		return false;
   });
-  $("#btn_export_xls").click(function() {
+  $(document).on('click', '#btn_export_xls', function() {
     alert('btn_export_xls');
     var baseURL = mlite.url + '/' + mlite.admin;
     var url    = baseURL + '/pasien/excel?t=' + mlite.token;

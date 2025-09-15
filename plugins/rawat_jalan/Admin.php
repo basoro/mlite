@@ -140,6 +140,7 @@ class Admin extends AdminModule
 
         $poliklinik = str_replace(",","','", $this->core->getUserInfo('cap', null, true));
         $igd = $this->settings('settings', 'igd');
+
         $sql = "SELECT reg_periksa.*,
             pasien.*,
             dokter.*,
@@ -175,6 +176,52 @@ class Admin extends AdminModule
           $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $row['no_rawat'])->oneArray();
           $row['no_sep'] = isset_or($bridging_sep['no_sep']);
           $this->assign['list'][] = $row;
+        }
+
+        $sql_rujukan_internal = "SELECT 
+            reg_periksa.no_rkm_medis,
+            pasien.nm_pasien,
+            reg_periksa.no_rawat,
+            p1.nm_poli as poli_asal,
+            p2.nm_poli as poli_tujuan,
+            d1.nm_dokter as dokter_perujuk,
+            d2.nm_dokter as dokter_tujuan,
+            reg_periksa.tgl_registrasi as tgl_rujukan,
+            mlite_rujukan_internal_poli.isi_rujukan as keterangan,
+            'Aktif' as status
+          FROM mlite_rujukan_internal_poli
+          INNER JOIN reg_periksa ON mlite_rujukan_internal_poli.no_rawat = reg_periksa.no_rawat
+          INNER JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis
+          INNER JOIN poliklinik p1 ON reg_periksa.kd_poli = p1.kd_poli
+          INNER JOIN poliklinik p2 ON mlite_rujukan_internal_poli.kd_poli = p2.kd_poli
+          INNER JOIN dokter d1 ON reg_periksa.kd_dokter = d1.kd_dokter
+          INNER JOIN dokter d2 ON mlite_rujukan_internal_poli.kd_dokter = d2.kd_dokter
+          INNER JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj
+          WHERE reg_periksa.kd_poli != '$igd'
+          AND reg_periksa.tgl_registrasi BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'";
+
+        if ($this->core->getUserInfo('role') != 'admin') {
+          $sql_rujukan_internal .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
+        }
+        if($status_periksa == 'belum') {
+          $sql_rujukan_internal .= " AND reg_periksa.stts = 'Belum'";
+        }
+        if($status_periksa == 'selesai') {
+          $sql_rujukan_internal .= " AND reg_periksa.stts = 'Sudah'";
+        }
+        if($status_periksa == 'lunas') {
+          $sql_rujukan_internal .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
+        }
+
+        $stmt = $this->db()->pdo()->prepare($sql_rujukan_internal);
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+
+        $this->assign['list_rujukan_internal'] = [];
+        foreach ($rows as $row) {
+          $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $row['no_rawat'])->oneArray();
+          $row['no_sep'] = isset_or($bridging_sep['no_sep']);
+          $this->assign['list_rujukan_internal'][] = $row;  
         }
 
         if (isset($_POST['no_rawat'])){

@@ -84,7 +84,7 @@
 <script>
   // ketika baris data diklik
   //$("#display").on("click", ".layanan_obat", function(event){
-  $('a[href="#layanan_obat"]').click(function(event){
+  $(document).on('click', 'a[href="#layanan_obat"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -112,7 +112,7 @@
 </script>
 <script>
   //$("#display").on("click", ".soap", function(event){
-  $('a[href="#soap"]').click(function(event){
+  $(document).on('click', 'a[href="#soap"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -144,7 +144,7 @@
 </script>
 <script>
   // Handler untuk Triase IGD
-  $('a[href="#triase_igd"]').click(function(event){
+  $(document).on('click', 'a[href="#triase_igd"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -177,7 +177,7 @@
   });
 </script>
 <script>
-  $('a[href="#surat_kontrol"]').click(function(event){
+  $(document).on('click', 'a[href="#surat_kontrol"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
