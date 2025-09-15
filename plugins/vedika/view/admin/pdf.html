@@ -54,7 +54,7 @@ Ralan :
                   SURAT ELEGIBILITAS PESERTA
                 </div>
                 <div style="font-size:21px;text-align:center;">
-                  {$print_sep.nama_instansi}
+                  {if: isset($print_sep.nama_instansi)}{$print_sep.nama_instansi}{/if}
                 </div>
               </td>
             </tr>
@@ -66,11 +66,11 @@ Ralan :
           <table>
             <tr>
               <td width="420">
-                            <b><u>PRB : {$print_sep.bpjs_prb.prb}</u></b>
+                            <b><u>PRB : {if: isset($print_sep.bpjs_prb.prb)}{$print_sep.bpjs_prb.prb}{/if}</u></b>
               </td>
               <td width="580">
                 <center>
-                  <img src="{?=url()?}/api/barcode/?codetype=code39&size=60&text={$print_sep.bridging_sep.no_sep}" alt="" width="200px">
+                  <img src="{?=url()?}/api/barcode/?codetype=code39&size=60&text={if: isset($print_sep.bridging_sep.no_sep)}{$print_sep.bridging_sep.no_sep}{/if}" alt="" width="200px">
                 </center>
               </td>
             </tr>
@@ -88,7 +88,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.no_sep}
+                {if: isset($print_sep.bridging_sep.no_sep)}{$print_sep.bridging_sep.no_sep}{/if}
               </td>
             </tr>
           </table>
@@ -105,7 +105,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.tglsep}
+                {if: isset($print_sep.bridging_sep.tglsep)}{$print_sep.bridging_sep.tglsep}{/if}
               </td>
             </tr>
           </table>
@@ -122,7 +122,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.no_kartu} ( MR: {$print_sep.bridging_sep.nomr})
+                {if: isset($print_sep.bridging_sep.no_kartu)}{$print_sep.bridging_sep.no_kartu}{/if} ( MR: {if: isset($print_sep.bridging_sep.nomr)}{$print_sep.bridging_sep.nomr}{/if})
               </td>
               <td width="90">
                 Peserta
@@ -131,7 +131,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.peserta}
+                {if: isset($print_sep.bridging_sep.peserta)}{$print_sep.bridging_sep.peserta}{/if}
               </td>
             </tr>
           </table>
@@ -148,7 +148,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.nama_pasien}
+                {if: isset($print_sep.bridging_sep.nama_pasien)}{$print_sep.bridging_sep.nama_pasien}{/if}
               </td>
               <td width="90">
                 COB
@@ -157,7 +157,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.cob}
+                {if: isset($print_sep.bridging_sep.cob)}{$print_sep.bridging_sep.cob}{/if}
               </td>
             </tr>
           </table>
@@ -174,7 +174,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.tanggal_lahir} Kelamin: {$print_sep.bridging_sep.jkel}
+                {if: isset($print_sep.bridging_sep.tanggal_lahir)}{$print_sep.bridging_sep.tanggal_lahir}{/if} Kelamin: {if: isset($print_sep.bridging_sep.jkel)}{$print_sep.bridging_sep.jkel}{/if}
               </td>
               <td width="90">
                 Jns. Rawat
@@ -200,7 +200,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.notelep}
+                {if: isset($print_sep.bridging_sep.notelep)}{$print_sep.bridging_sep.notelep}{/if}
               </td>
               <td width="90">
                 Kls. Rawat
@@ -209,7 +209,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.kelas_naik}
+                {if: isset($print_sep.kelas_naik)}{$print_sep.kelas_naik}{/if}
               </td>
             </tr>
           </table>
@@ -226,7 +226,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.nmpolitujuan}
+                {if: isset($print_sep.bridging_sep.nmpolitujuan)}{$print_sep.bridging_sep.nmpolitujuan}{/if}
               </td>
               <td width="90">
                 Kls. Hak
@@ -235,7 +235,7 @@ Ralan :
                 :
               </td>
               <td>
-                Kelas {$print_sep.bridging_sep.klsrawat}
+                Kelas {if: isset($print_sep.bridging_sep.klsrawat)}{$print_sep.bridging_sep.klsrawat}{/if}
               </td>
             </tr>
           </table>
@@ -252,7 +252,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.nmdpdjp}
+                {if: isset($print_sep.bridging_sep.nmdpdjp)}{$print_sep.bridging_sep.nmdpdjp}{/if}
               </td>
             </tr>
           </table>
@@ -269,7 +269,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.nmppkrujukan}
+                {if: isset($print_sep.bridging_sep.nmppkrujukan)}{$print_sep.bridging_sep.nmppkrujukan}{/if}
               </td>
             </tr>
           </table>
@@ -286,7 +286,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.nmdiagnosaawal}
+                {if: isset($print_sep.bridging_sep.nmdiagnosaawal)}{$print_sep.bridging_sep.nmdiagnosaawal}{/if}
               </td>
             </tr>
           </table>
@@ -303,7 +303,7 @@ Ralan :
                 :
               </td>
               <td width="550" valign="top">
-                {$print_sep.bridging_sep.catatan}
+                {if: isset($print_sep.bridging_sep.catatan)}{$print_sep.bridging_sep.catatan}{/if}
               </td>
               <td width="200" halign="center" valign="bottom">
                 Pasien/Keluarga Pasien
@@ -322,12 +322,12 @@ Ralan :
                   *Saya Menyetujui BPJS Kesehatan menggunakan informasi Medis Pasien jika diperlukan.<br>
                   **SEP bukan sebagai bukti penjaminan peserta<br>
                   Cetakan ke 1 {?=date("d/m/Y H:i:s A")?}<br>
-                  Masa berlaku {$print_sep.bridging_sep.tglrujukan} s/d {$print_sep.batas_rujukan}
+                  Masa berlaku {if: isset($print_sep.bridging_sep.tglrujukan)}{$print_sep.bridging_sep.tglrujukan}{/if} s/d {if: isset($print_sep.batas_rujukan)}{$print_sep.batas_rujukan}{/if}
                 </i>
               </td>
               <td valign="bottom" halign="center" padding="0" margin="0">
                 <div id="qrcodeSEP" style="margin-top:10px;width:80px;"></div><br>
-                {$print_sep.bridging_sep.nama_pasien}<br>
+                {if: isset($print_sep.bridging_sep.nama_pasien)}{$print_sep.bridging_sep.nama_pasien}{/if}<br>
               </td>
             </tr>
           </table>
@@ -1004,7 +1004,7 @@ Ralan :
       <center>RESUME MEDIS RAWAT JALAN</center>
     </h3>
     <h4>
-      <center>{$print_sep.nama_instansi}</center>
+      <center>{if: isset($print_sep.nama_instansi)}{$print_sep.nama_instansi}{/if}</center>
     </h4>
     <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
       <tr class="isi">
@@ -1013,11 +1013,11 @@ Ralan :
         <td valign="top" width="79%">
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
             <tr>
-              <td valign="top">{?=nl2br($resume_pasien.diagnosa_utama)?}<br>
-                {$resume_pasien.diagnosa_sekunder}<br>
-                {$resume_pasien.diagnosa_sekunder2}<br>
-                {$resume_pasien.diagnosa_sekunder3}<br>
-                {$resume_pasien.diagnosa_sekunder4}</td>
+              <td valign="top">{if: isset($resume_pasien.diagnosa_utama)}{?=nl2br($resume_pasien.diagnosa_utama)?}{/if}<br>
+                {if: isset($resume_pasien.diagnosa_sekunder)}{$resume_pasien.diagnosa_sekunder}{/if}<br>
+                {if: isset($resume_pasien.diagnosa_sekunder2)}{$resume_pasien.diagnosa_sekunder2}{/if}<br>
+                {if: isset($resume_pasien.diagnosa_sekunder3)}{$resume_pasien.diagnosa_sekunder3}{/if}<br>
+                {if: isset($resume_pasien.diagnosa_sekunder4)}{$resume_pasien.diagnosa_sekunder4}{/if}</td>
             </tr>
           </table>
         </td>
@@ -1028,10 +1028,10 @@ Ralan :
         <td valign="top" width="79%">
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
             <tr>
-              <td valign="top">{?=nl2br($resume_pasien.prosedur_utama)?}<br>
-                {$resume_pasien.prosedur_sekunder}<br>
-                {$resume_pasien.prosedur_sekunder2}<br>
-                {$resume_pasien.prosedur_sekunder3}</td>
+              <td valign="top">{if: isset($resume_pasien.prosedur_utama)}{?=nl2br($resume_pasien.prosedur_utama)?}{/if}<br>
+                {if: isset($resume_pasien.prosedur_sekunder)}{$resume_pasien.prosedur_sekunder}{/if}<br>
+                {if: isset($resume_pasien.prosedur_sekunder2)}{$resume_pasien.prosedur_sekunder2}{/if}<br>
+                {if: isset($resume_pasien.prosedur_sekunder3)}{$resume_pasien.prosedur_sekunder3}{/if}</td>
             </tr>
           </table>
         </td>
@@ -1114,44 +1114,44 @@ Ralan :
       <tr>
         <td valign="top" width="20%">Dokter DPJP</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$resume_pasien.nm_dokter}</td>
+        <td valign="top" width="79%">{if: isset($resume_pasien.nm_dokter)}{$resume_pasien.nm_dokter}{/if}</td>
       </tr>
       <tr>
         <td valign="top" width="20%">Nomor Rawat</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$resume_pasien.no_rawat}</td>
+        <td valign="top" width="79%">{if: isset($resume_pasien.no_rawat)}{$resume_pasien.no_rawat}{/if}</td>
       </tr>
       <tr>
         <td valign="top" width="20%">Diagnosa Masuk</td>
         <td valign="top" width="1%" align="center">:</td>
         <td valign="top" width="79%"> {if: !empty($resume_pasien.diagnosa_awal)}
-          {$resume_pasien.diagnosa_awal}<br>{/if}</td>
+          {if: isset($resume_pasien.diagnosa_awal)}{$resume_pasien.diagnosa_awal}{/if}<br>{/if}</td>
       </tr>
       <tr>
         <td valign="top" width="20%">Keluhan Utama Riwayat Penyakit Yang Positif</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$resume_pasien.keluhan_utama}</td>
+        <td valign="top" width="79%">{if: isset($resume_pasien.keluhan_utama)}{$resume_pasien.keluhan_utama}{/if}</td>
       </tr>
       <tr>
         <td valign="top" width="20%">Jalannya Penyakit Selama Perawatan</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$resume_pasien.jalannya_penyakit}</td>
+        <td valign="top" width="79%">{if: isset($resume_pasien.jalannya_penyakit)}{$resume_pasien.jalannya_penyakit}{/if}</td>
       </tr>
       <tr>
         <td valign="top" width="20%">Pemeriksaan Fisik</td>
         <td valign="top" width="1%" align="center">:</td>
         <td valign="top" width="79%"> {if: !empty($resume_pasien.pemeriksaan_fisik)}
-          {$resume_pasien.pemeriksaan_fisik}<br>{/if}</td>
+          {if: isset($resume_pasien.pemeriksaan_fisik)}{$resume_pasien.pemeriksaan_fisik}{/if}<br>{/if}</td>
       </tr>
       <tr>
         <td valign="top" width="20%">Pemeriksaan Penunjang yang Penting</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$resume_pasien.pemeriksaan_penunjang}</td>
+        <td valign="top" width="79%">{if: isset($resume_pasien.pemeriksaan_penunjang)}{$resume_pasien.pemeriksaan_penunjang}{/if}</td>
       </tr>
       <tr>
         <td valign="top" width="20%">Pemeriksaan Laboratorium</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$resume_pasien.hasil_laborat}</td>
+        <td valign="top" width="79%">{if: isset($resume_pasien.hasil_laborat)}{$resume_pasien.hasil_laborat}{/if}</td>
       </tr>
       <tr>
         <td valign="top" width="20%">Diagnosa</td>
@@ -1159,11 +1159,11 @@ Ralan :
         <td valign="top" width="79%">
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
             <tr>
-              <td valign="top">{$resume_pasien.diagnosa_utama}<br>
-                {$resume_pasien.diagnosa_sekunder}<br>
-                {$resume_pasien.diagnosa_sekunder2}<br>
-                {$resume_pasien.diagnosa_sekunder3}<br>
-                {$resume_pasien.diagnosa_sekunder4}</td>
+              <td valign="top">{if: isset($resume_pasien.diagnosa_utama)}{$resume_pasien.diagnosa_utama}{/if}<br>
+                {if: isset($resume_pasien.diagnosa_sekunder)}{$resume_pasien.diagnosa_sekunder}{/if}<br>
+                {if: isset($resume_pasien.diagnosa_sekunder2)}{$resume_pasien.diagnosa_sekunder2}{/if}<br>
+                {if: isset($resume_pasien.diagnosa_sekunder3)}{$resume_pasien.diagnosa_sekunder3}{/if}<br>
+                {if: isset($resume_pasien.diagnosa_sekunder4)}{$resume_pasien.diagnosa_sekunder4}{/if}</td>
             </tr>
           </table>
         </td>
@@ -1174,10 +1174,10 @@ Ralan :
         <td valign="top" width="79%">
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
             <tr>
-              <td valign="top">{$resume_pasien.prosedur_utama}<br>
-                {$resume_pasien.prosedur_sekunder}<br>
-                {$resume_pasien.prosedur_sekunder2}<br>
-                {$resume_pasien.prosedur_sekunder3}</td>
+              <td valign="top">{if: isset($resume_pasien.prosedur_utama)}{$resume_pasien.prosedur_utama}{/if}<br>
+                {if: isset($resume_pasien.prosedur_sekunder)}{$resume_pasien.prosedur_sekunder}{/if}<br>
+                {if: isset($resume_pasien.prosedur_sekunder2)}{$resume_pasien.prosedur_sekunder2}{/if}<br>
+                {if: isset($resume_pasien.prosedur_sekunder3)}{$resume_pasien.prosedur_sekunder3}{/if}</td>
             </tr>
           </table>
         </td>
@@ -1185,13 +1185,13 @@ Ralan :
       <tr>
         <td valign="top" width="20%">Obat-obatan Waktu Pulang/Nasihat</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$resume_pasien.obat_pulang}<br></td>
+        <td valign="top" width="79%">{if: isset($resume_pasien.obat_pulang)}{$resume_pasien.obat_pulang}{/if}<br></td>
       </tr>
       <tr>
         <td valign="top" width="20%">Kondisi Pulang</td>
         <td valign="top" width="1%" align="center">:</td>
         <td valign="top" width="79%"> {if: !empty($resume_pasien.kondisi_pulang)}
-          {$resume_pasien.kondisi_pulang}<br>{/if}</td>
+          {if: isset($resume_pasien.kondisi_pulang)}{$resume_pasien.kondisi_pulang}{/if}<br>{/if}</td>
       </tr>
     </table>
     <div style="float: right;">
@@ -1199,10 +1199,10 @@ Ralan :
       <h5>Dokter Penanggung Jawab</h5>
       <p>
       <div class="qrcodeDPJPResumeRanap" style="margin-top:10px;width:80px;margin-right: 120px;"></div>
-      {$resume_pasien.nm_dokter}<br>
+      {if: isset($resume_pasien.nm_dokter)}{$resume_pasien.nm_dokter}{/if}<br>
       <script>
         jQuery('.qrcodeDPJPResumeRanap').qrcode({
-          text: "DPJP: {$resume_pasien.nm_dokter}"
+          text: "DPJP: {if: isset($resume_pasien.nm_dokter)}{$resume_pasien.nm_dokter}{/if}"
         });
       </script>
       </p>
@@ -1326,7 +1326,7 @@ Ralan :
           Website : {$settings.website}</p></td>
         <td align="right"><strong   style="font-size: 12px" >BUKTI PEMBAYARAN</strong>
           <p align="right" style="font-size: 10px;">
-          Kode Faktur : {$billing.billing.kd_billing}<br>
+          Kode Faktur : {if: isset($billing.billing.kd_billing)}{$billing.billing.kd_billing}{/if}<br>
           Nama Pasien : {$pasien.nm_pasien}<br>
           No RM : {$pasien.no_rkm_medis}<br>
           Alamat : {$pasien.alamat}<br></p>
@@ -1486,20 +1486,20 @@ Ralan :
         <tr >
           <td colspan="2"></td>
           <td colspan="2">Jumlah</td>
-          <td>Rp. <span class="pull-right">{?= number_format($billing.billing.jumlah_total,2,',','.')?}</span></td>
+          <td>Rp. <span class="pull-right">{if: isset($billing.billing.jumlah_total)}{?= number_format($billing.billing.jumlah_total,2,',','.')?}{else}0,00{/if}</span></td>
         </tr>
         <tr >
           <td colspan="2"></td>
           <td colspan="2">Potongan</td>
-          <td>Rp. <span class="pull-right">{?= number_format($billing.billing.potongan,2,',','.')?}</span></td>
+          <td>Rp. <span class="pull-right">{if: isset($billing.billing.potongan)}{?= number_format($billing.billing.potongan,2,',','.')?}{else}0,00{/if}</span></td>
         </tr>
         <tr >
           <td colspan="2"></td>
           <td colspan="2">Jumlah Bayar</td>
-          <td>Rp. <span class="pull-right">{?= number_format($billing.billing.jumlah_harus_bayar,2,',','.')?}</span></td>
+          <td>Rp. <span class="pull-right">{if: isset($billing.billing.jumlah_harus_bayar)}{?= number_format($billing.billing.jumlah_harus_bayar,2,',','.')?}{else}0,00{/if}</span></td>
         </tr>
         <tr >
-          <td style="font-size: 9pt;" colspan="6"><i>Terbilang : # {?=terbilang($billing.billing.jumlah_harus_bayar,3,"")?} Rupiah # </i></td>
+          <td style="font-size: 9pt;" colspan="6"><i>Terbilang : # {if: isset($billing.billing.jumlah_harus_bayar)}{?=terbilang($billing.billing.jumlah_harus_bayar,3,"")?}{else}Nol{/if} Rupiah # </i></td>
         </tr>
         <tr>
           <td colspan="3"></td>
@@ -1508,7 +1508,7 @@ Ralan :
           <p align="center" ><strong>{$settings.kota}, {?=date('d-m-Y')?}</strong><br>
            Kasir<br><br>
            <br><br>
-          {$billing.fullname}<br>
+          {if: isset($billing.fullname)}{$billing.fullname}{/if}<br>
           </p>
           </td>
         </tr>
@@ -1535,7 +1535,7 @@ Ralan :
           Website : {$settings.website}</p></td>
         <td align="right"><strong   style="font-size: 12px" >BUKTI PEMBAYARAN</strong>
           <p align="right" style="font-size: 10px;">
-          Kode Faktur : {$billing.billing.kd_billing}<br>
+          Kode Faktur : {if: isset($billing.billing.kd_billing)}{$billing.billing.kd_billing}{/if}<br>
           Nama Pasien : {$pasien.nm_pasien}<br>
           No RM : {$pasien.no_rkm_medis}<br>
           Alamat : {$pasien.alamat}<br></p>
@@ -1711,20 +1711,20 @@ Ralan :
         <tr >
           <td colspan="2"></td>
           <td colspan="2">Jumlah</td>
-          <td>Rp. <span class="pull-right">{?= number_format($billing.billing.jumlah_total,2,',','.')?}</span></td>
+          <td>Rp. <span class="pull-right">{if: isset($billing.billing.jumlah_total)}{?= number_format($billing.billing.jumlah_total,2,',','.')?}{else}0,00{/if}</span></td>
         </tr>
         <tr >
           <td colspan="2"></td>
           <td colspan="2">Potongan</td>
-          <td>Rp. <span class="pull-right">{?= number_format($billing.billing.potongan,2,',','.')?}</span></td>
+          <td>Rp. <span class="pull-right">{if: isset($billing.billing.potongan)}{?= number_format($billing.billing.potongan,2,',','.')?}{else}0,00{/if}</span></td>
         </tr>
         <tr >
           <td colspan="2"></td>
           <td colspan="2">Jumlah Bayar</td>
-          <td>Rp. <span class="pull-right">{?= number_format($billing.billing.jumlah_harus_bayar,2,',','.')?}</span></td>
+          <td>Rp. <span class="pull-right">{if: isset($billing.billing.jumlah_harus_bayar)}{?= number_format($billing.billing.jumlah_harus_bayar,2,',','.')?}{else}0,00{/if}</span></td>
         </tr>
         <tr >
-          <td style="font-size: 9pt;" colspan="6"><i>Terbilang : # {?=terbilang($billing.billing.jumlah_harus_bayar,3,"")?} Rupiah # </i></td>
+          <td style="font-size: 9pt;" colspan="6"><i>Terbilang : # {if: isset($billing.billing.jumlah_harus_bayar)}{?=terbilang($billing.billing.jumlah_harus_bayar,3,"")?}{else}Nol{/if} Rupiah # </i></td>
         </tr>
         <tr>
           <td colspan="3"></td>
@@ -1733,7 +1733,7 @@ Ralan :
           <p align="center" ><strong>{$settings.kota}, {?=date('d-m-Y')?}</strong><br>
            Kasir<br><br>
            <br><br>
-          {$billing.fullname}<br>
+          {if: isset($billing.fullname)}{$billing.fullname}{/if}<br>
           </p>
           </td>
         </tr>
@@ -1941,7 +1941,7 @@ Ralan :
                 {$print_sep.bridging_sep.nama_pasien}<br>
                <script>
               jQuery('.qrcodeNamaPasien').qrcode({
-                text	: "No. {$print_spri.bridging_surat_pri_bpjs.no_surat} ({$print_sep.bridging_sep.nama_pasien})"
+                text	: "No. {if: isset($print_spri.bridging_surat_pri_bpjs.no_surat)}{$print_spri.bridging_surat_pri_bpjs.no_surat}{/if} ({if: isset($print_sep.bridging_sep.nama_pasien)}{$print_sep.bridging_sep.nama_pasien}{/if})"
               });
              </script>
               </td>
@@ -1996,10 +1996,10 @@ Ralan :
      <h5>Dokter Penanggung Jawab</h5>
      <p>
        <div class="qrcodeDPJPOperasi" style="margin-top:10px;width:80px;margin-right: 120px;"></div>
-       {$resume_pasien.nm_dokter}<br>
-       <script>
-        jQuery('.qrcodeDPJPOperasi').qrcode({
-          text	: "DPJP: {$resume_pasien.nm_dokter}"
+       {if: isset($resume_pasien.nm_dokter)}{$resume_pasien.nm_dokter}{/if}<br>
+      <script>
+        jQuery('.qrcodeDPJPResumeRanap').qrcode({
+          text	: "DPJP: {if: isset($resume_pasien.nm_dokter)}{$resume_pasien.nm_dokter}{/if}"
         });
        </script>
      </p>
@@ -2053,17 +2053,17 @@ Ralan :
   {/if}
   <script>
   	jQuery('#qrcodeSEP').qrcode({
-  		text	: "No.SEP: {$print_sep.bridging_sep.no_sep}"
+  		text	: "No.SEP: {if: isset($print_sep.bridging_sep.no_sep)}{$print_sep.bridging_sep.no_sep}{/if}"
   	});
   </script>
   <script>
   	jQuery('#qrCodePasien').qrcode({
-  		text	: "Nama Pasien: {$print_sep.bridging_sep.nama_pasien}"
+  		text	: "Nama Pasien: {if: isset($print_sep.bridging_sep.nama_pasien)}{$print_sep.bridging_sep.nama_pasien}{/if}"
   	});
   </script>
   <script>
   	jQuery('#qrCodeKasir').qrcode({
-  		text	: "Kasir: KASIR {$print_sep.nama_instansi}"
+  		text	: "Kasir: KASIR {if: isset($print_sep.nama_instansi)}{$print_sep.nama_instansi}{/if}"
   	});
   </script>
 </body>

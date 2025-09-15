@@ -336,25 +336,25 @@ abstract class Main
     public function getPasienInfo($field, $no_rkm_medis)
     {
         $row = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
-        return $row[$field];
+        return isset($row[$field]) ? $row[$field] : '';
     }
 
     public function getRegPeriksaInfo($field, $no_rawat)
     {
         $row = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
-        return $row[$field];
+        return isset($row[$field]) ? $row[$field] : '';
     }
 
     public function getKamarInapInfo($field, $no_rawat)
     {
         $row = $this->db('kamar_inap')->where('no_rawat', $no_rawat)->oneArray();
-        return $row[$field];
+        return isset($row[$field]) ? $row[$field] : '';
     }
 
     public function getDepartemenInfo($dep_id)
     {
         $row = $this->db('departemen')->where('dep_id', $dep_id)->oneArray();
-        return $row['nama'];
+        return isset($row['nama']) ? $row['nama'] : '';
     }
 
     public function setNoRM()

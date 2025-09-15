@@ -694,14 +694,25 @@ class Site extends SiteModule
           ->toArray();
 
         $no_rawat = $this->revertNorawat($id);
-        $query = $this->db()->pdo()->prepare("select no,nm_perawatan,pemisah,if(biaya=0,'',biaya),if(jumlah=0,'',jumlah),if(tambahan=0,'',tambahan),if(totalbiaya=0,'',totalbiaya),totalbiaya from billing where no_rawat='$no_rawat'");
-        $query->execute();
-        $rows = $query->fetchAll();
-        $total=0;
-        foreach ($rows as $key => $value) {
-          $total = $total+$value['7'];
+
+        $check_billing = $this->db()->pdo()->query("SHOW TABLES LIKE 'billing'");
+        $check_billing->execute();
+        $check_billing = $check_billing->fetch();
+
+        if($check_billing) {
+          $query = $this->db()->pdo()->prepare("select no,nm_perawatan,pemisah,if(biaya=0,'',biaya),if(jumlah=0,'',jumlah),if(tambahan=0,'',tambahan),if(totalbiaya=0,'',totalbiaya),totalbiaya from billing where no_rawat='$no_rawat'");
+          $query->execute();
+          $rows = $query->fetchAll();
+          $total = 0;
+          foreach ($rows as $key => $value) {
+            $total = $total + $value['7'];
+          }
+          $total = $total;
+        } else {
+          $rows = [];
+          $total = '';
         }
-        $total = $total;
+
         $this->tpl->set('total', $total);
 
         $settings = $this->settings('settings');
@@ -714,7 +725,7 @@ class Site extends SiteModule
           $print_sep['bridging_sep'] = $this->db('bridging_sep')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
           $print_sep['bpjs_prb'] = $this->db('bpjs_prb')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
           $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
-          $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
+          $print_sep['batas_rujukan'] = isset($batas_rujukan['batas_rujukan']) ? $batas_rujukan['batas_rujukan'] : '';
         }
 
         $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');

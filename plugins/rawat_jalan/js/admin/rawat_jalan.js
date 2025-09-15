@@ -1168,6 +1168,64 @@ $("#display").on("click",".assesment", function(event){
   return false;
 });
 
+$('a[href="#rujuk_internal"]').click(function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat");
+  var url = baseURL + '/rawat_jalan/rujukaninternal?t=' + mlite.token;
+
+  var rujuk_internal = ''
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Pilih Poli</label>'
+      + '<select name="kd_poli" id="kd_poli" class="form-control" data-use-dimmer="false">'
+      + '{loop: $mlite.poliklinik}'
+      + '<option value="{$value.kd_poli}">{$value.nm_poli}</option>'
+      + '{/loop}'
+      + '</select>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Pilih Dokter</label>'
+      + '<select name="kd_dokter" id="kd_dokter" class="form-control" data-use-dimmer="false">'
+      + '{loop: $mlite.dokter}'
+      + '<option value="{$value.kd_dokter}">{$value.nm_dokter}</option>'
+      + '{/loop}'
+      + '</select>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Isi Rujukan</label>'
+      + '<textarea name="isi_rujukan" id="isi_rujukan" class="form-control" rows="3"></textarea>'
+      + '</div>'
+      + '';
+
+  // tampilkan dialog konfirmasi
+  bootbox.dialog({
+    message: rujuk_internal,
+    title: 'Rujuk Internal',
+    buttons: {
+      main: {
+        label: 'Simpan',
+        className: 'btn-primary',
+        callback() {
+          var kd_poli = $('#kd_poli').val();
+          var kd_dokter = $('#kd_dokter').val();
+          var isi_rujukan = $('#isi_rujukan').val();
+          $.post(url, {
+            no_rawat: no_rawat,
+            kd_poli: kd_poli,
+            kd_dokter: kd_dokter,
+            isi_rujukan: isi_rujukan, 
+          } ,function(data) {
+            alert('Rujukan internal telah disimpan!');
+          });
+        }
+      }
+    }
+  });
+  $('select').selectator();
+  event.stopPropagation();
+  return false;
+});
+
 {if: $mlite.websocket == 'ya'}
 
   {if: $mlite.websocket_proxy != ''}

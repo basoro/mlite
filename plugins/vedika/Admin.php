@@ -1516,7 +1516,7 @@ class Admin extends AdminModule
        $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
        if($reg_periksa['status_lanjut'] == 'Ralan') {
           $result_detail['billing'] = $this->db('mlite_billing')->where('no_rawat', $no_rawat)->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
-          $result_detail['fullname'] = $this->core->getUserInfo('fullname', $result_detail['billing']['id_user'], true);
+          $result_detail['fullname'] = isset($result_detail['billing']['id_user']) ? $this->core->getUserInfo('fullname', $result_detail['billing']['id_user'], true) : '';
 
           $result_detail['poliklinik'] = $this->db('poliklinik')
             ->join('reg_periksa', 'reg_periksa.kd_poli = poliklinik.kd_poli')
@@ -1525,7 +1525,7 @@ class Admin extends AdminModule
 
           $result_detail['rawat_jl_dr'] = $this->db('rawat_jl_dr')
             ->select('jns_perawatan.nm_perawatan')
-            ->select(['biaya_rawat' => 'rawat_jl_dr.biaya_rawat'])
+            ->select(['biaya_rawat' => 'AVG(rawat_jl_dr.biaya_rawat)'])
             ->select(['jml' => 'COUNT(rawat_jl_dr.kd_jenis_prw)'])
             ->select(['total_biaya_rawat_dr' => 'SUM(rawat_jl_dr.biaya_rawat)'])
             ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_dr.kd_jenis_prw')
@@ -1535,12 +1535,12 @@ class Admin extends AdminModule
 
           $total_rawat_jl_dr = 0;
           foreach ($result_detail['rawat_jl_dr'] as $row) {
-            $total_rawat_jl_dr += $row['biaya_rawat'];
+            $total_rawat_jl_dr += $row['total_biaya_rawat_dr'];
           }
 
           $result_detail['rawat_jl_pr'] = $this->db('rawat_jl_pr')
             ->select('jns_perawatan.nm_perawatan')
-            ->select(['biaya_rawat' => 'rawat_jl_pr.biaya_rawat'])
+            ->select(['biaya_rawat' => 'AVG(rawat_jl_pr.biaya_rawat)'])
             ->select(['jml' => 'COUNT(rawat_jl_pr.kd_jenis_prw)'])
             ->select(['total_biaya_rawat_pr' => 'SUM(rawat_jl_pr.biaya_rawat)'])
             ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_pr.kd_jenis_prw')
@@ -1550,12 +1550,12 @@ class Admin extends AdminModule
 
           $total_rawat_jl_pr = 0;
           foreach ($result_detail['rawat_jl_pr'] as $row) {
-            $total_rawat_jl_pr += $row['biaya_rawat'];
+            $total_rawat_jl_pr += $row['total_biaya_rawat_pr'];
           }
 
           $result_detail['rawat_jl_drpr'] = $this->db('rawat_jl_drpr')
             ->select('jns_perawatan.nm_perawatan')
-            ->select(['biaya_rawat' => 'rawat_jl_drpr.biaya_rawat'])
+            ->select(['biaya_rawat' => 'AVG(rawat_jl_drpr.biaya_rawat)'])
             ->select(['jml' => 'COUNT(rawat_jl_drpr.kd_jenis_prw)'])
             ->select(['total_biaya_rawat_drpr' => 'SUM(rawat_jl_drpr.biaya_rawat)'])
             ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_drpr.kd_jenis_prw')
@@ -1565,7 +1565,7 @@ class Admin extends AdminModule
 
           $total_rawat_jl_drpr = 0;
           foreach ($result_detail['rawat_jl_drpr'] as $row) {
-            $total_rawat_jl_drpr += $row['biaya_rawat'];
+            $total_rawat_jl_drpr += $row['total_biaya_rawat_drpr'];
           }
 
           $result_detail['detail_pemberian_obat'] = $this->db('detail_pemberian_obat')
@@ -1621,7 +1621,7 @@ class Admin extends AdminModule
        } else {
 
          $result_detail['billing'] = $this->db('mlite_billing')->where('no_rawat', $no_rawat)->like('kd_billing', 'RI%')->desc('id_billing')->oneArray();
-         $result_detail['fullname'] = $this->core->getUserInfo('fullname', $result_detail['billing']['id_user'], true);
+         $result_detail['fullname'] = isset($result_detail['billing']['id_user']) ? $this->core->getUserInfo('fullname', $result_detail['billing']['id_user'], true) : '';
 
          $result_detail['kamar_inap'] = $this->db('kamar_inap')
            ->join('reg_periksa', 'reg_periksa.no_rawat = kamar_inap.no_rawat')
@@ -1630,7 +1630,7 @@ class Admin extends AdminModule
 
          $result_detail['rawat_inap_dr'] = $this->db('rawat_inap_dr')
            ->select('jns_perawatan_inap.nm_perawatan')
-           ->select(['biaya_rawat' => 'rawat_inap_dr.biaya_rawat'])
+           ->select(['biaya_rawat' => 'AVG(rawat_inap_dr.biaya_rawat)'])
            ->select(['jml' => 'COUNT(rawat_inap_dr.kd_jenis_prw)'])
            ->select(['total_biaya_rawat_dr' => 'SUM(rawat_inap_dr.biaya_rawat)'])
            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_dr.kd_jenis_prw')
@@ -1640,7 +1640,7 @@ class Admin extends AdminModule
 
          $result_detail['rawat_inap_pr'] = $this->db('rawat_inap_pr')
            ->select('jns_perawatan_inap.nm_perawatan')
-           ->select(['biaya_rawat' => 'rawat_inap_pr.biaya_rawat'])
+           ->select(['biaya_rawat' => 'AVG(rawat_inap_pr.biaya_rawat)'])
            ->select(['jml' => 'COUNT(rawat_inap_pr.kd_jenis_prw)'])
            ->select(['total_biaya_rawat_pr' => 'SUM(rawat_inap_pr.biaya_rawat)'])
            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_pr.kd_jenis_prw')
@@ -1650,7 +1650,7 @@ class Admin extends AdminModule
 
          $result_detail['rawat_inap_drpr'] = $this->db('rawat_inap_drpr')
            ->select('jns_perawatan_inap.nm_perawatan')
-           ->select(['biaya_rawat' => 'rawat_inap_drpr.biaya_rawat'])
+           ->select(['biaya_rawat' => 'AVG(rawat_inap_drpr.biaya_rawat)'])
            ->select(['jml' => 'COUNT(rawat_inap_drpr.kd_jenis_prw)'])
            ->select(['total_biaya_rawat_drpr' => 'SUM(rawat_inap_drpr.biaya_rawat)'])
            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_drpr.kd_jenis_prw')
@@ -1713,7 +1713,7 @@ class Admin extends AdminModule
       $print_sep['bridging_sep'] = $this->db('bridging_sep')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
       $print_sep['bpjs_prb'] = $this->db('bpjs_prb')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
       $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
-      $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
+      $print_sep['batas_rujukan'] = isset($batas_rujukan['batas_rujukan']) ? $batas_rujukan['batas_rujukan'] : '';
       switch ($print_sep['bridging_sep']['klsnaik']) {
         case '2':
           $print_sep['kelas_naik'] = 'Kelas VIP';
@@ -3102,7 +3102,7 @@ class Admin extends AdminModule
 
     $msg = $this->Request($request);
     $get_claim_data = [];
-    if($msg['metadata']['message']=="Ok"){
+    if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
       $get_claim_data = $msg;
       //echo json_encode($msg, true);
     }
@@ -3327,7 +3327,7 @@ class Admin extends AdminModule
                      }';
 
           $msg = $this->Request($request);
-          if($msg['metadata']['message']=="Ok"){
+          if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
               $pdf = base64_decode($msg['data']);
               file_put_contents(WEBAPPS_PATH.'/berkasrawat/pages/upload/'.$no_rawat.'_'.$imgTime,$pdf);
           } else {
@@ -3379,7 +3379,7 @@ class Admin extends AdminModule
                }';
 
     $msg = $this->Request($request);
-    if($msg['metadata']['message']=="Ok"){
+    if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
         // variable data adalah base64 dari file pdf
         $pdf = base64_decode($msg['data']);
         // atau untuk ditampilkan dengan perintah:
@@ -3415,7 +3415,7 @@ class Admin extends AdminModule
   private function mc_encrypt($data, $strkey) {
       $key = hex2bin($strkey);
       if (mb_strlen($key, "8bit") !== 32) {
-              throw new Exception("Needs a 256-bit key!");
+              throw new \Exception("Needs a 256-bit key!");
       }
 
       $iv_size = openssl_cipher_iv_length("aes-256-cbc");
@@ -3429,7 +3429,7 @@ class Admin extends AdminModule
   private function mc_decrypt($str, $strkey){
       $key = hex2bin($strkey);
       if (mb_strlen($key, "8bit") !== 32) {
-          throw new Exception("Needs a 256-bit key!");
+          throw new \Exception("Needs a 256-bit key!");
       }
 
       $iv_size = openssl_cipher_iv_length("aes-256-cbc");
@@ -3483,7 +3483,7 @@ class Admin extends AdminModule
                       }
                  }';
       $msg= $this->Request($request);
-      if($msg['metadata']['message']=="Ok"){
+      if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
           if($msg['response']['cbg']['tariff'] == '') {
             $tarif = '0';
           } else {
@@ -3510,10 +3510,10 @@ class Admin extends AdminModule
                       }
                   }';
       $msg= $this->Request($request);
-      if($msg['metadata']['message']=="Ok"){
+      if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
           //InsertData2("inacbg_klaim_baru2","'".$norawat."','".$nomor_sep."','".$msg['response']['patient_id']."','".$msg['response']['admission_id']."','".$msg['response']['hospital_admission_id']."'");
       }
-      return $msg['metadata']['message'];
+      return $msg && isset($msg['metadata']['message']) ? $msg['metadata']['message'] : 'Error';
   }
 
   private function EditUlangKlaim($nomor_sep){
@@ -3679,7 +3679,7 @@ class Admin extends AdminModule
                  }';
       echo "Data : ".$request;
       $msg= $this->Request($request);
-      if($msg['metadata']['message']=="Ok"){
+      if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
           //echo 'Sukses';
           //Hapus2("inacbg_data_terkirim2", "no_sep='".$nomor_sep."'");
           //InsertData2("inacbg_data_terkirim2","'".$nomor_sep."','".$coder_nik."'");
@@ -3700,7 +3700,7 @@ class Admin extends AdminModule
                       }
                  }';
       $msg= $this->Request($request);
-      if($msg['metadata']['message']=="Ok"){
+      if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
           //Hapus2("inacbg_grouping_stage12", "no_sep='".$nomor_sep."'");
           /*
           $cbg                = validangka($msg['response']['cbg']['tariff']);
@@ -3748,7 +3748,7 @@ class Admin extends AdminModule
             }
           }';
           $msg2= $this->Request($request2);
-          if($msg2['metadata']['message']=="Ok"){
+          if($msg2 && isset($msg2['metadata']['message']) && $msg2['metadata']['message']=="Ok"){
             $this->FinalisasiKlaim($nomor_sep,$coder_nik);
           }
         }else if($topup==''){
@@ -3768,7 +3768,7 @@ class Admin extends AdminModule
                       }
                  }';
       $msg= $this->Request($request);
-      if($msg['metadata']['message']=="Ok"){
+      if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
           //KirimKlaimIndividualKeDC($nomor_sep);
       }
   }
@@ -3783,7 +3783,7 @@ class Admin extends AdminModule
                       }
                  }';
       $msg= $this->Request($request);
-      echo $msg['metadata']['message']."";
+      echo ($msg && isset($msg['metadata']['message'])) ? $msg['metadata']['message'] : 'Error';
   }
 
   public function anySavePrioritas()

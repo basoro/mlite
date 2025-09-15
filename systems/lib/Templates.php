@@ -168,13 +168,18 @@ class Templates
         if (!$last) {
             return $result;
         } else {
-            $result = str_replace(['*bracket*','*/bracket*'], ['{', '}'], $result);
-            $result = str_replace('*dollar*', '$', $result);
+            // Add null check to prevent deprecated warning
+            if ($result !== null) {
+                $result = str_replace(['*bracket*','*/bracket*'], ['{', '}'], $result);
+                $result = str_replace('*dollar*', '$', $result);
+            } else {
+                $result = '';
+            }
 
-            //if (HTML_BEAUTY) {
-            //    $tidyHTML = new Indenter;
-            //    return $tidyHTML->indent($result);
-            //}
+            if (HTML_BEAUTY) {
+               $tidyHTML = new Indenter;
+               return $tidyHTML->indent($result);
+            }
             return $result;
         }
     }

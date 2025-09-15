@@ -1,6 +1,7 @@
 <?php
-if (!version_compare(PHP_VERSION, '7.0.0', '>=')) {
-    exit("mLITE requires at least <b>PHP 7.0</b>");
+// mLITE - Kompatibel dengan PHP 7.4 - 8.3+
+if (!version_compare(PHP_VERSION, '7.4.0', '>=')) {
+    exit("mLITE requires at least <b>PHP 7.4</b> (Current: " . PHP_VERSION . ")");
 }
 
 define('DBHOST', 'localhost');
@@ -15,7 +16,7 @@ define('WEBAPPS_PATH', BASE_DIR . '/uploads');
 
 // Multi APP
 define('MULTI_APP', false);
-#define('MULTI_APP_REDIRECT', 'dokter_ulun');
+define('MULTI_APP_REDIRECT', 'dokter_ulun');
 
 // Admin cat name
 define('ADMIN', 'admin');
@@ -31,6 +32,9 @@ define('UPLOADS', BASE_DIR . '/uploads');
 
 // Lock files
 define('FILE_LOCK', false);
+
+// HTML Beauty
+define('HTML_BEAUTY', true);
 
 // Basic modules
 define('BASIC_MODULES', serialize([

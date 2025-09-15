@@ -2136,6 +2136,26 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postRujukanInternal()
+    {
+        try {
+            $query = $this->db('mlite_rujukan_internal_poli')
+                ->save([
+                    'no_rawat' => $_POST['no_rawat'],
+                    'kd_poli' => $_POST['kd_poli'],
+                    'kd_dokter' => $_POST['kd_dokter'], 
+                    'isi_rujukan' => $_POST['isi_rujukan'],
+                ]);
+            if($query) {
+                echo json_encode(['status' => 'success', 'message' => 'Data rujukan internal berhasil disimpan']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data rujukan internal']);
+            }
+        } catch(Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+        }
+        exit();
+    }
 
     public function getJavascript()
     {
@@ -2146,6 +2166,10 @@ class Admin extends AdminModule
           $cek_role = $this->core->getPegawaiInfo('nik', $this->core->getUserInfo('username', $_SESSION['mlite_user']));
         }
         $this->assign = [];
+        $poliklinik = $this->db('poliklinik')->where('status', '1')->toArray();
+        $dokter = $this->db('dokter')->where('status', '1')->toArray();
+        $this->assign['poliklinik'] = $poliklinik;
+        $this->assign['dokter'] = $dokter;
         $this->assign['websocket'] = $this->settings->get('settings.websocket');
         $this->assign['websocket_proxy'] = $this->settings->get('settings.websocket_proxy');
         echo $this->draw(MODULES.'/dokter_ralan/js/admin/dokter_ralan.js', ['cek_role' => $cek_role, 'mlite' => $this->assign]);
