@@ -65,6 +65,10 @@ class Indenter
      */
     public function indent($input)
     {
+        // Increase memory limit to handle large HTML inputs
+        $original_memory_limit = ini_get('memory_limit');
+        ini_set('memory_limit', '256M');
+        
         $this->log = array();
 
         // Dindent does not indent <script> body. Instead, it temporary removes it from the code, indents the input, and restores the script body.
@@ -93,28 +97,46 @@ class Indenter
 
         $next_line_indentation_level = 0;
 
+        // Pre-compile patterns for better performance
+        $patterns = array(
+            // block tag
+            '/^(<([a-z]+)(?:[^>]*)>(?:[^<]*)<\/(?:\2)>)/' => static::MATCH_INDENT_NO,
+            // DOCTYPE
+            '/^<!([^>]*)>/' => static::MATCH_INDENT_NO,
+            // tag with implied closing
+            '/^<(input|link|meta|base|br|img|hr)([^>]*)>/' => static::MATCH_INDENT_NO,
+            // opening tag
+            '/^<[^\/]([^>]*)>/' => static::MATCH_INDENT_INCREASE,
+            // closing tag
+            '/^<\/([^>]*)>/' => static::MATCH_INDENT_DECREASE,
+            // self-closing tag
+            '/^<(.+)\/>/' => static::MATCH_INDENT_DECREASE,
+            // whitespace
+            '/^(\s+)/' => static::MATCH_DISCARD,
+            // text node
+            '/([^<]+)/' => static::MATCH_INDENT_NO
+        );
+        $rules = array('NO', 'DECREASE', 'INCREASE', 'DISCARD');
+        
+        $iteration_count = 0;
+        $max_iterations = 100000; // Prevent infinite loops
+        
         do {
             $indentation_level = $next_line_indentation_level;
-
-            $patterns = array(
-                // block tag
-                '/^(<([a-z]+)(?:[^>]*)>(?:[^<]*)<\/(?:\2)>)/' => static::MATCH_INDENT_NO,
-                // DOCTYPE
-                '/^<!([^>]*)>/' => static::MATCH_INDENT_NO,
-                // tag with implied closing
-                '/^<(input|link|meta|base|br|img|hr)([^>]*)>/' => static::MATCH_INDENT_NO,
-                // opening tag
-                '/^<[^\/]([^>]*)>/' => static::MATCH_INDENT_INCREASE,
-                // closing tag
-                '/^<\/([^>]*)>/' => static::MATCH_INDENT_DECREASE,
-                // self-closing tag
-                '/^<(.+)\/>/' => static::MATCH_INDENT_DECREASE,
-                // whitespace
-                '/^(\s+)/' => static::MATCH_DISCARD,
-                // text node
-                '/([^<]+)/' => static::MATCH_INDENT_NO
-            );
-            $rules = array('NO', 'DECREASE', 'INCREASE', 'DISCARD');
+            $iteration_count++;
+            
+            // Safety check to prevent infinite loops
+            if ($iteration_count > $max_iterations) {
+                trigger_error('Indenter: Maximum iterations exceeded, possible infinite loop detected.', E_USER_WARNING);
+                break;
+            }
+            
+            // Memory cleanup every 1000 iterations
+            if ($iteration_count % 1000 === 0) {
+                if (function_exists('gc_collect_cycles')) {
+                    gc_collect_cycles();
+                }
+            }
 
             foreach ($patterns as $pattern => $rule) {
                 if ($match = preg_match($pattern, $subject, $matches)) {
@@ -148,7 +170,7 @@ class Indenter
                     break;
                 }
             }
-        } while ($match);
+        } while ($match && !empty($subject));
 
         $interpreted_input = '';
         foreach ($this->log as $e) {
@@ -168,6 +190,15 @@ class Indenter
         foreach ($this->temporary_replacements_inline as $i => $original) {
             $output = str_replace('ᐃ' . ($i + 1) . 'ᐃ', $original, $output);
         }
+
+        // Clean up memory
+        unset($subject, $patterns, $rules, $interpreted_input);
+        if (function_exists('gc_collect_cycles')) {
+            gc_collect_cycles();
+        }
+        
+        // Restore original memory limit
+        ini_set('memory_limit', $original_memory_limit);
 
         return trim($output);
     }
