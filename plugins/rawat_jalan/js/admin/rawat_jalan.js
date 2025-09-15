@@ -1193,7 +1193,7 @@ $('a[href="#rujuk_internal"]').click(function(event){
       + '</div>'
       + '<div class="form-group">'
       + '<label for="status_keluar">Isi Rujukan</label>'
-      + '<textarea name="isi_rujukan" id="isi_rujukan" class="form-control" rows="3"></textarea>'
+      + '<textarea name="isi_rujukan" id="isi_rujukan" class="form-control" rows="6"></textarea>'
       + '</div>'
       + '';
 
