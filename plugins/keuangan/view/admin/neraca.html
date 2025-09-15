@@ -5,31 +5,43 @@
                 <p style="text-align:center">
                 <b>{$settings.nama_instansi}</b><br>
                 {$settings.alamat}<br>
-                {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
-                    Laporan Neraca Periode {?=date('d-m-Y', strtotime($_GET['tgl_awal']))?} s/d {?=date('d-m-Y', strtotime($_GET['tgl_akhir']))?}
-                {else}
-                    Laporan Neraca Periode {?=date('d-m-Y')?} s/d {?=date('d-m-Y')?}
-                {/if}
+                Laporan Neraca Periode {?=date('d-m-Y', strtotime($tgl_awal))?} s/d {?=date('d-m-Y', strtotime($tgl_akhir))?}
                 </p>
-                <form action="" method="">
-                  {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
-                  <a href="{?=url()?}/{?=ADMIN?}/keuangan/bukubesar?action=print&tgl_awal={?=$_GET['tgl_awal']?}&tgl_akhir={?=$_GET['tgl_akhir']?}&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
-                  {else}
-                  <a href="{?=url()?}/{?=ADMIN?}/keuangan/bukubesar?action=print&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
-                  {/if}
+                
+                <!-- Alert untuk validasi keseimbangan -->
+                {if: !$seimbang}
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle"></i> <strong>Peringatan:</strong> 
+                    Neraca tidak seimbang! Selisih: Rp. {?= number_format(abs($selisih),2,',','.')?}
+                    {if: $selisih > 0}(Aktiva lebih besar){else}(Pasiva lebih besar){/if}
+                </div>
+                {else}
+                <div class="alert alert-success">
+                    <i class="fa fa-check-circle"></i> <strong>Neraca Seimbang!</strong> Aktiva = Pasiva
+                </div>
+                {/if}
+                
+                <form action="" method="GET">
+                  <!-- Tombol Print yang benar -->
+                  <a href="{?=url()?}/{?=ADMIN?}/keuangan/neraca?action=print&tgl_awal={$tgl_awal}&tgl_akhir={$tgl_akhir}&t={?=$_SESSION['token']?}" target="_blank" class="btn btn-sm btn-default pull-right" style="margin-left:5px;"><i class="fa fa-print"></i> Print</a>
+                  
+                  <!-- Tombol Export Excel -->
+                  <a href="{?=url()?}/{?=ADMIN?}/keuangan/neraca?action=excel&tgl_awal={$tgl_awal}&tgl_akhir={$tgl_akhir}&t={?=$_SESSION['token']?}" class="btn btn-sm btn-success pull-right" style="margin-left:5px;"><i class="fa fa-file-excel-o"></i> Excel</a>
                   <div class="btn-group pull-right" style="margin-top:-8px;">
                     <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
-                      <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode</span>
+                      <i class="fa fa-calendar"></i><span class="hidden-xs"> Filter Periode</span>
                     </span>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                      <li style="padding-left:5px;padding-right:5px;">
-                        <input type="text" id="tgl_awal" class="form-control tanggal" name="tgl_awal" value="{?=date('Y-m-d')?}" required>
+                    <ul class="dropdown-menu dropdown-menu-right" style="width:200px;">
+                      <li style="padding:10px;">
+                        <label>Tanggal Awal:</label>
+                        <input type="text" id="tgl_awal" class="form-control tanggal" name="tgl_awal" value="{$tgl_awal}" required>
                       </li>
-                      <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-                        <input type="text" id="tgl_akhir" class="form-control tanggal" name="tgl_akhir" value="{?=date('Y-m-d')?}" required>
+                      <li style="padding:10px;">
+                        <label>Tanggal Akhir:</label>
+                        <input type="text" id="tgl_akhir" class="form-control tanggal" name="tgl_akhir" value="{$tgl_akhir}" required>
                       </li>
-                      <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-                        <input type="submit" class="btn btn-primary btn-block" value="Submit">
+                      <li style="padding:10px;">
+                        <input type="submit" class="btn btn-primary btn-block" value="Tampilkan">
                         <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
                       </li>
                     </ul>
@@ -38,60 +50,127 @@
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">
-                <div class="col-md-6 col-sm-6">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Aktiva</th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="2">Kas</td>
-                                    <td>Rp. {?= number_format($kas,2,',','.')?}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">Persedian</td>
-                                    <td>Rp. {?= number_format($persediaan,2,',','.')?}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3">Total</td>
-                                    <td>Rp. {?= number_format($aktiva,2,',','.')?}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="row">
+                    <!-- AKTIVA -->
+                    <div class="col-md-6 col-sm-6">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="bg-primary">
+                                    <tr>
+                                        <th colspan="2" style="text-align:center; font-size:16px;"><strong>AKTIVA</strong></th>
+                                        <th style="text-align:right; width:150px;"><strong>JUMLAH (Rp)</strong></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- AKTIVA LANCAR -->
+                                    <tr class="bg-info">
+                                        <td colspan="3"><strong>AKTIVA LANCAR</strong></td>
+                                    </tr>
+                                    {loop: $aktiva_lancar}
+                                    <tr>
+                                        <td style="padding-left:20px;">{$value.kd_rek}</td>
+                                        <td>{$value.nm_rek}</td>
+                                        <td style="text-align:right;">{?= number_format($value.saldo,2,',','.')?}</td>
+                                    </tr>
+                                    {/loop}
+                                    <tr class="bg-light">
+                                        <td colspan="2"><strong>TOTAL AKTIVA LANCAR</strong></td>
+                                        <td style="text-align:right;"><strong>{?= number_format($total_aktiva_lancar,2,',','.')?}</strong></td>
+                                    </tr>
+                                    
+                                    <!-- AKTIVA TETAP -->
+                                    <tr class="bg-info">
+                                        <td colspan="3"><strong>AKTIVA TETAP</strong></td>
+                                    </tr>
+                                    {loop: $aktiva_tetap}
+                                    <tr>
+                                        <td style="padding-left:20px;">{$value.kd_rek}</td>
+                                        <td>{$value.nm_rek}</td>
+                                        <td style="text-align:right;">{?= number_format($value.saldo,2,',','.')?}</td>
+                                    </tr>
+                                    {/loop}
+                                    <tr class="bg-light">
+                                        <td colspan="2"><strong>TOTAL AKTIVA TETAP</strong></td>
+                                        <td style="text-align:right;"><strong>{?= number_format($total_aktiva_tetap,2,',','.')?}</strong></td>
+                                    </tr>
+                                    
+                                    <!-- TOTAL AKTIVA -->
+                                    <tr class="bg-success">
+                                        <td colspan="2" style="font-size:16px;"><strong>TOTAL AKTIVA</strong></td>
+                                        <td style="text-align:right; font-size:16px;"><strong>{?= number_format($total_aktiva,2,',','.')?}</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-6 col-sm-6">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Passiva</th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="2">Hutang</td>
-                                    <td>Rp. {?= number_format($hutang,2,',','.')?}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">Modal</td>
-                                    <td>Rp. {?= number_format($modal,2,',','.')?}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3">Total</td>
-                                    <td>Rp. {?= number_format($pasiva,2,',','.')?}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    
+                    <!-- PASIVA -->
+                    <div class="col-md-6 col-sm-6">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="bg-warning">
+                                    <tr>
+                                        <th colspan="2" style="text-align:center; font-size:16px;"><strong>PASIVA</strong></th>
+                                        <th style="text-align:right; width:150px;"><strong>JUMLAH (Rp)</strong></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- HUTANG LANCAR -->
+                                    <tr class="bg-info">
+                                        <td colspan="3"><strong>HUTANG LANCAR</strong></td>
+                                    </tr>
+                                    {loop: $hutang_lancar}
+                                    <tr>
+                                        <td style="padding-left:20px;">{$value.kd_rek}</td>
+                                        <td>{$value.nm_rek}</td>
+                                        <td style="text-align:right;">{?= number_format($value.saldo,2,',','.')?}</td>
+                                    </tr>
+                                    {/loop}
+                                    <tr class="bg-light">
+                                        <td colspan="2"><strong>TOTAL HUTANG LANCAR</strong></td>
+                                        <td style="text-align:right;"><strong>{?= number_format($total_hutang_lancar,2,',','.')?}</strong></td>
+                                    </tr>
+                                    
+                                    <!-- HUTANG JANGKA PANJANG -->
+                                    <tr class="bg-info">
+                                        <td colspan="3"><strong>HUTANG JANGKA PANJANG</strong></td>
+                                    </tr>
+                                    {loop: $hutang_jangka_panjang}
+                                    <tr>
+                                        <td style="padding-left:20px;">{$value.kd_rek}</td>
+                                        <td>{$value.nm_rek}</td>
+                                        <td style="text-align:right;">{?= number_format($value.saldo,2,',','.')?}</td>
+                                    </tr>
+                                    {/loop}
+                                    <tr class="bg-light">
+                                        <td colspan="2"><strong>TOTAL HUTANG JANGKA PANJANG</strong></td>
+                                        <td style="text-align:right;"><strong>{?= number_format($total_hutang_jangka_panjang,2,',','.')?}</strong></td>
+                                    </tr>
+                                    
+                                    <!-- MODAL -->
+                                    <tr class="bg-info">
+                                        <td colspan="3"><strong>MODAL</strong></td>
+                                    </tr>
+                                    {loop: $modal}
+                                    <tr>
+                                        <td style="padding-left:20px;">{$value.kd_rek}</td>
+                                        <td>{$value.nm_rek}</td>
+                                        <td style="text-align:right;">{?= number_format($value.saldo,2,',','.')?}</td>
+                                    </tr>
+                                    {/loop}
+                                    <tr class="bg-light">
+                                        <td colspan="2"><strong>TOTAL MODAL</strong></td>
+                                        <td style="text-align:right;"><strong>{?= number_format($total_modal,2,',','.')?}</strong></td>
+                                    </tr>
+                                    
+                                    <!-- TOTAL PASIVA -->
+                                    <tr class="bg-success">
+                                        <td colspan="2" style="font-size:16px;"><strong>TOTAL PASIVA</strong></td>
+                                        <td style="text-align:right; font-size:16px;"><strong>{?= number_format($total_pasiva,2,',','.')?}</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

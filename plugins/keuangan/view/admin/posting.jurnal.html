@@ -1,77 +1,365 @@
 <div class="row">
-    <form action="{?=url(ADMIN.'/keuangan/saveJurnal')?}" method="POST">
+    <form action="{?=url(ADMIN.'/keuangan/saveJurnal')?}" method="POST" id="jurnalForm">
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Posting Jurnal</h3>
-                </div>
-            	  <div class="panel-body">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                          <label>Nomor Jurnal</label>
-                          <input type="text" name="no_jurnal" class="form-control" value="{$no_jurnal}" required />
-                      </div>
-                      <div class="form-group">
-                          <label>Nomor Bukti</label>
-                          <input type="text" name="no_bukti" class="form-control" value="" required />
-                      </div>
-                      <div class="form-group">
-                          <label>Rekening</label>
-                          <select name="kd_rek" class="form-control" data-use-search="true">
-                            {loop: $akunrekening}
-                              <option value="{$value.kd_rek}">{$value.kd_rek} - {$value.nm_rek}</option>
-                            {/loop}
-                          </select>
-                      </div>
-                      <div class="form-group">
-                          <label>Tanggal Jurnal</label>
-                          <input type="text" name="tgl_jurnal" class="form-control tanggal" value="{?=date('Y-m-d')?}" required />
-                      </div>
-                      <div class="form-group">
-                          <label>Jenis</label>
-                          <select name="jenis" class="form-control" data-use-search="true">
-                              <option value="U">Umum</option>
-                              <option value="P">Penyesuaian</option>
-                          </select>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                          <label>Kegiatan</label>
-                          <select name="kegiatan" class="form-control" data-use-search="true">
-                            {loop: $kegiatan}
-                              <option value="{$value.kegiatan}">{$value.kegiatan}</option>
-                            {/loop}
-                          </select>
-                      </div>
-                      <div class="form-group">
-                          <label>Debet</label>
-                          <input type="text" name="debet" class="form-control" value="" required />
-                      </div>
-                      <div class="form-group">
-                          <label>Kredit</label>
-                          <input type="text" name="kredit" class="form-control" value="" required />
-                      </div>
-                      <div class="form-group">
-                          <label>Keterangan</label>
-                          <textarea name="keterangan" class="form-control" rows="5" cols="80"></textarea>
-                      </div>
-                    </div>
+                    <h3 class="panel-title">Posting Jurnal - Double Entry Bookkeeping</h3>
                 </div>
                 <div class="panel-body">
-                  <div class="col-md-6">
-                    <input type="submit" name="save" class="btn btn-success" value="Simpan" />
-                  </div>
+                    <!-- Header Jurnal -->
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Nomor Jurnal</label>
+                                <input type="text" name="no_jurnal" class="form-control" value="{$no_jurnal}" required />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Nomor Bukti</label>
+                                <input type="text" name="no_bukti" class="form-control" value="" required />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Tanggal Jurnal</label>
+                                <input type="text" name="tgl_jurnal" class="form-control tanggal" value="{?=date('Y-m-d')?}" required />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Jenis</label>
+                                <select name="jenis" class="form-control">
+                                    <option value="U">Umum</option>
+                                    <option value="P">Penyesuaian</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Kegiatan</label>
+                                <select name="kegiatan" class="form-control" data-use-search="true">
+                                    {loop: $kegiatan}
+                                        <option value="{$value.kegiatan}">{$value.kegiatan}</option>
+                                    {/loop}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Keterangan Umum</label>
+                                <input type="text" name="keterangan_umum" class="form-control" placeholder="Keterangan untuk seluruh jurnal" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Entry Jurnal -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Entry Jurnal <small>(Minimal 2 entry: 1 Debet, 1 Kredit)</small></h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="jurnalTable">
+                                    <thead class="bg-primary">
+                                        <tr>
+                                            <th width="30%">Rekening</th>
+                                            <th width="25%">Keterangan</th>
+                                            <th width="15%">Debet</th>
+                                            <th width="15%">Kredit</th>
+                                            <th width="10%">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="jurnalEntries">
+                                        <tr class="entry-row">
+                                            <td>
+                                                <select name="entries[0][kd_rek]" class="form-control rekening-select" data-use-search="true" required>
+                                                    <option value="">Pilih Rekening</option>
+                                                    {loop: $akunrekening}
+                                                        <option value="{$value.kd_rek}">{$value.kd_rek} - {$value.nm_rek}</option>
+                                                    {/loop}
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="entries[0][keterangan]" class="form-control" placeholder="Keterangan entry" />
+                                            </td>
+                                            <td>
+                                                <input type="number" name="entries[0][debet]" class="form-control debet-input" step="0.01" min="0" placeholder="0.00" />
+                                            </td>
+                                            <td>
+                                                <input type="number" name="entries[0][kredit]" class="form-control kredit-input" step="0.01" min="0" placeholder="0.00" />
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-danger btn-sm remove-entry" disabled>
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr class="entry-row">
+                                            <td>
+                                                <select name="entries[1][kd_rek]" class="form-control rekening-select" data-use-search="true" required>
+                                                    <option value="">Pilih Rekening</option>
+                                                    {loop: $akunrekening}
+                                                        <option value="{$value.kd_rek}">{$value.kd_rek} - {$value.nm_rek}</option>
+                                                    {/loop}
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="entries[1][keterangan]" class="form-control" placeholder="Keterangan entry" />
+                                            </td>
+                                            <td>
+                                                <input type="number" name="entries[1][debet]" class="form-control debet-input" step="0.01" min="0" placeholder="0.00" />
+                                            </td>
+                                            <td>
+                                                <input type="number" name="entries[1][kredit]" class="form-control kredit-input" step="0.01" min="0" placeholder="0.00" />
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-danger btn-sm remove-entry" disabled>
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot class="bg-info">
+                                        <tr>
+                                            <td colspan="2"><strong>TOTAL</strong></td>
+                                            <td><strong id="totalDebet">0.00</strong></td>
+                                            <td><strong id="totalKredit">0.00</strong></td>
+                                            <td>
+                                                <button type="button" class="btn btn-success btn-sm" id="addEntry">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr id="balanceStatus">
+                                            <td colspan="5" class="text-center">
+                                                <span id="balanceMessage" class="label label-warning">Belum Balance</span>
+                                                <span id="selisihAmount"></span>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="submit" name="save" class="btn btn-success" id="submitBtn" disabled>
+                                <i class="fa fa-save"></i> Simpan Jurnal
+                            </button>
+                            <button type="button" class="btn btn-default" onclick="window.location.reload()">
+                                <i class="fa fa-refresh"></i> Reset
+                            </button>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <div class="alert alert-info" style="margin: 0; padding: 10px;">
+                                <strong>Prinsip Double Entry:</strong><br>
+                                Total Debet = Total Kredit<br>
+                                Setiap entry hanya boleh Debet ATAU Kredit
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </form>
 </div>
 <script type="text/javascript">
-  $(function () {
-      $('.tanggal').datetimepicker({
+$(document).ready(function() {
+    // Initialize date picker
+    $('.tanggal').datetimepicker({
         format: 'YYYY-MM-DD',
         locale: 'id'
-      });
-  });
+    });
+    
+    let entryCount = 2; // Mulai dari 2 karena sudah ada 2 entry default
+    
+    // Function untuk menghitung total dan validasi balance
+    function calculateBalance() {
+        let totalDebet = 0;
+        let totalKredit = 0;
+        
+        $('.debet-input').each(function() {
+            let value = parseFloat($(this).val()) || 0;
+            totalDebet += value;
+        });
+        
+        $('.kredit-input').each(function() {
+            let value = parseFloat($(this).val()) || 0;
+            totalKredit += value;
+        });
+        
+        // Update display total
+        $('#totalDebet').text(totalDebet.toFixed(2));
+        $('#totalKredit').text(totalKredit.toFixed(2));
+        
+        // Check balance
+        let selisih = Math.abs(totalDebet - totalKredit);
+        let isBalanced = selisih < 0.01; // toleransi 1 sen
+        
+        if (isBalanced && totalDebet > 0 && totalKredit > 0) {
+            $('#balanceMessage').removeClass('label-warning label-danger').addClass('label-success').text('BALANCE ✓');
+            $('#selisihAmount').text('');
+            $('#submitBtn').prop('disabled', false);
+        } else if (totalDebet === 0 && totalKredit === 0) {
+            $('#balanceMessage').removeClass('label-success label-danger').addClass('label-warning').text('Belum Ada Entry');
+            $('#selisihAmount').text('');
+            $('#submitBtn').prop('disabled', true);
+        } else {
+            $('#balanceMessage').removeClass('label-success label-warning').addClass('label-danger').text('TIDAK BALANCE ✗');
+            $('#selisihAmount').text(' (Selisih: ' + selisih.toFixed(2) + ')');
+            $('#submitBtn').prop('disabled', true);
+        }
+    }
+    
+    // Function untuk validasi entry (tidak boleh debet dan kredit bersamaan)
+    function validateEntry(row) {
+        let debetInput = row.find('.debet-input');
+        let kreditInput = row.find('.kredit-input');
+        let debetValue = parseFloat(debetInput.val()) || 0;
+        let kreditValue = parseFloat(kreditInput.val()) || 0;
+        
+        // Reset border color
+        debetInput.removeClass('border-danger');
+        kreditInput.removeClass('border-danger');
+        
+        // Validasi: tidak boleh keduanya diisi atau keduanya kosong (kecuali 0)
+        if (debetValue > 0 && kreditValue > 0) {
+            debetInput.addClass('border-danger');
+            kreditInput.addClass('border-danger');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Event handler untuk input debet/kredit
+    $(document).on('input', '.debet-input, .kredit-input', function() {
+        let row = $(this).closest('tr');
+        validateEntry(row);
+        calculateBalance();
+    });
+    
+    // Event handler untuk menambah entry baru
+    $('#addEntry').click(function() {
+        let newRow = `
+            <tr class="entry-row">
+                <td>
+                    <select name="entries[${entryCount}][kd_rek]" class="form-control rekening-select" data-use-search="true" required>
+                        <option value="">Pilih Rekening</option>
+                        {loop: $akunrekening}
+                            <option value="{$value.kd_rek}">{$value.kd_rek} - {$value.nm_rek}</option>
+                        {/loop}
+                    </select>
+                </td>
+                <td>
+                    <input type="text" name="entries[${entryCount}][keterangan]" class="form-control" placeholder="Keterangan entry" />
+                </td>
+                <td>
+                    <input type="number" name="entries[${entryCount}][debet]" class="form-control debet-input" step="0.01" min="0" placeholder="0.00" />
+                </td>
+                <td>
+                    <input type="number" name="entries[${entryCount}][kredit]" class="form-control kredit-input" step="0.01" min="0" placeholder="0.00" />
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm remove-entry">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+        
+        $('#jurnalEntries').append(newRow);
+        entryCount++;
+        updateRemoveButtons();
+        
+        // Re-initialize select2 untuk dropdown yang baru ditambahkan
+        $('[data-use-search="true"]').select2();
+    });
+    
+    // Event handler untuk menghapus entry
+    $(document).on('click', '.remove-entry', function() {
+        $(this).closest('tr').remove();
+        updateRemoveButtons();
+        calculateBalance();
+    });
+    
+    // Function untuk mengupdate status tombol hapus
+    function updateRemoveButtons() {
+        let entryRows = $('.entry-row').length;
+        if (entryRows <= 2) {
+            $('.remove-entry').prop('disabled', true);
+        } else {
+            $('.remove-entry').prop('disabled', false);
+        }
+    }
+    
+    // Validasi form sebelum submit
+    $('#jurnalForm').submit(function(e) {
+        let isValid = true;
+        let errorMessages = [];
+        
+        // Validasi minimal 2 entry
+        if ($('.entry-row').length < 2) {
+            errorMessages.push('Minimal harus ada 2 entry jurnal');
+            isValid = false;
+        }
+        
+        // Validasi setiap entry
+        $('.entry-row').each(function() {
+            let row = $(this);
+            let rekening = row.find('.rekening-select').val();
+            let debet = parseFloat(row.find('.debet-input').val()) || 0;
+            let kredit = parseFloat(row.find('.kredit-input').val()) || 0;
+            
+            if (rekening === '') {
+                errorMessages.push('Semua entry harus memiliki rekening');
+                isValid = false;
+                return false;
+            }
+            
+            if (debet === 0 && kredit === 0) {
+                errorMessages.push('Setiap entry harus memiliki nilai debet atau kredit');
+                isValid = false;
+                return false;
+            }
+            
+            if (debet > 0 && kredit > 0) {
+                errorMessages.push('Entry tidak boleh memiliki debet dan kredit bersamaan');
+                isValid = false;
+                return false;
+            }
+        });
+        
+        // Validasi balance
+        let totalDebet = 0;
+        let totalKredit = 0;
+        $('.debet-input').each(function() { totalDebet += parseFloat($(this).val()) || 0; });
+        $('.kredit-input').each(function() { totalKredit += parseFloat($(this).val()) || 0; });
+        
+        if (Math.abs(totalDebet - totalKredit) > 0.01) {
+            errorMessages.push('Total debet harus sama dengan total kredit');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Error:\n' + errorMessages.join('\n'));
+            return false;
+        }
+        
+        return true;
+    });
+    
+    // Initialize
+    calculateBalance();
+    updateRemoveButtons();
+    
+    // Initialize select2 untuk dropdown
+    $('[data-use-search="true"]').select2();
+});
 </script>

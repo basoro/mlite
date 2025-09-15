@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Laporan Neraca - {$settings.nama_instansi}</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            page-break-inside: avoid;
+        }
+        .header h2 { 
+            margin: 5px 0; 
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .header h3 { 
+            margin: 5px 0; 
+            font-weight: normal; 
+            font-size: 14px;
+        }
+        .header h4 { 
+            margin: 5px 0; 
+            font-weight: normal; 
+            font-size: 12px;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-bottom: 20px; 
+            page-break-inside: avoid;
+        }
+        th, td { 
+            border: 0px solid #000; 
+            padding: 6px 8px; 
+            text-align: left; 
+            vertical-align: top;
+            font-size: 11px;
+        }
+        th { 
+            background-color: #f0f0f0; 
+            font-weight: bold; 
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .bg-info { 
+            background-color: #d9edf7; 
+            font-weight: bold; 
+        }
+        .bg-light { 
+            background-color: #f9f9f9; 
+            font-weight: bold; 
+        }
+        .bg-success { 
+            background-color: #dff0d8; 
+            font-weight: bold; 
+        }
+        .indent { padding-left: 20px; }
+        .balance-info { 
+            margin-top: 20px; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            page-break-inside: avoid;
+            font-size: 11px;
+        }
+        .balance-ok { background-color: #dff0d8; }
+        .balance-error { background-color: #f2dede; }
+        .signature-area {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+            page-break-inside: avoid;
+        }
+        .signature-box {
+            text-align: center;
+            width: 200px;
+        }
+        .signature-line {
+            border-top: 1px solid #000;
+            margin-top: 60px;
+            padding-top: 5px;
+        }
+        @media print {
+            body { 
+                margin: 0; 
+                font-size: 10px;
+            }
+            .no-print { display: none; }
+            .header h2 { font-size: 16px; }
+            .header h3 { font-size: 12px; }
+            .header h4 { font-size: 10px; }
+            th, td { 
+                padding: 4px 6px;
+                font-size: 9px;
+            }
+            .balance-info { font-size: 9px; }
+            @page {
+                margin: 1cm;
+                size: A4;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>{$settings.nama_instansi}</h2>
+        <h3>{$settings.alamat}</h3>
+        <h3>LAPORAN NERACA</h3>
+        <h4>Periode {?=date('d-m-Y', strtotime($tgl_awal))?} s/d {?=date('d-m-Y', strtotime($tgl_akhir))?}</h4>
+    </div>
+
+    <table style="width: 100%;">
+        <tr>
+            <!-- AKTIVA -->
+            <td style="width: 50%; vertical-align: top; padding: 0;">
+                <table style="width: 100%; margin: 0;">
+                    <thead>
+                        <tr>
+                            <th colspan="2" class="text-center">AKTIVA</th>
+                            <th class="text-right" style="width: 150px;">JUMLAH (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- AKTIVA LANCAR -->
+                        <tr class="bg-info">
+                            <td colspan="3">AKTIVA LANCAR</td>
+                        </tr>
+                        {loop: $aktiva_lancar}
+                        <tr>
+                            <td class="indent">{$value.kd_rek}</td>
+                            <td>{$value.nm_rek}</td>
+                            <td class="text-right">{?= number_format($value.saldo,2,',','.')?}</td>
+                        </tr>
+                        {/loop}
+                        <tr class="bg-light">
+                            <td colspan="2">TOTAL AKTIVA LANCAR</td>
+                            <td class="text-right">{?= number_format($total_aktiva_lancar,2,',','.')?}</td>
+                        </tr>
+                        
+                        <!-- AKTIVA TETAP -->
+                        <tr class="bg-info">
+                            <td colspan="3">AKTIVA TETAP</td>
+                        </tr>
+                        {loop: $aktiva_tetap}
+                        <tr>
+                            <td class="indent">{$value.kd_rek}</td>
+                            <td>{$value.nm_rek}</td>
+                            <td class="text-right">{?= number_format($value.saldo,2,',','.')?}</td>
+                        </tr>
+                        {/loop}
+                        <tr class="bg-light">
+                            <td colspan="2">TOTAL AKTIVA TETAP</td>
+                            <td class="text-right">{?= number_format($total_aktiva_tetap,2,',','.')?}</td>
+                        </tr>
+                        
+                        <!-- TOTAL AKTIVA -->
+                        <tr class="bg-success">
+                            <td colspan="2"><strong>TOTAL AKTIVA</strong></td>
+                            <td class="text-right"><strong>{?= number_format($total_aktiva,2,',','.')?}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            
+            <!-- PASIVA -->
+            <td style="width: 50%; vertical-align: top; padding: 0;">
+                <table style="width: 100%; margin: 0;">
+                    <thead>
+                        <tr>
+                            <th colspan="2" class="text-center">PASIVA</th>
+                            <th class="text-right" style="width: 150px;">JUMLAH (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- HUTANG LANCAR -->
+                        <tr class="bg-info">
+                            <td colspan="3">HUTANG LANCAR</td>
+                        </tr>
+                        {loop: $hutang_lancar}
+                        <tr>
+                            <td class="indent">{$value.kd_rek}</td>
+                            <td>{$value.nm_rek}</td>
+                            <td class="text-right">{?= number_format($value.saldo,2,',','.')?}</td>
+                        </tr>
+                        {/loop}
+                        <tr class="bg-light">
+                            <td colspan="2">TOTAL HUTANG LANCAR</td>
+                            <td class="text-right">{?= number_format($total_hutang_lancar,2,',','.')?}</td>
+                        </tr>
+                        
+                        <!-- HUTANG JANGKA PANJANG -->
+                        <tr class="bg-info">
+                            <td colspan="3">HUTANG JANGKA PANJANG</td>
+                        </tr>
+                        {loop: $hutang_jangka_panjang}
+                        <tr>
+                            <td class="indent">{$value.kd_rek}</td>
+                            <td>{$value.nm_rek}</td>
+                            <td class="text-right">{?= number_format($value.saldo,2,',','.')?}</td>
+                        </tr>
+                        {/loop}
+                        <tr class="bg-light">
+                            <td colspan="2">TOTAL HUTANG JANGKA PANJANG</td>
+                            <td class="text-right">{?= number_format($total_hutang_jangka_panjang,2,',','.')?}</td>
+                        </tr>
+                        
+                        <!-- MODAL -->
+                        <tr class="bg-info">
+                            <td colspan="3">MODAL</td>
+                        </tr>
+                        {loop: $modal}
+                        <tr>
+                            <td class="indent">{$value.kd_rek}</td>
+                            <td>{$value.nm_rek}</td>
+                            <td class="text-right">{?= number_format($value.saldo,2,',','.')?}</td>
+                        </tr>
+                        {/loop}
+                        <tr class="bg-light">
+                            <td colspan="2">TOTAL MODAL</td>
+                            <td class="text-right">{?= number_format($total_modal,2,',','.')?}</td>
+                        </tr>
+                        
+                        <!-- TOTAL PASIVA -->
+                        <tr class="bg-success">
+                            <td colspan="2"><strong>TOTAL PASIVA</strong></td>
+                            <td class="text-right"><strong>{?= number_format($total_pasiva,2,',','.')?}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Validasi Keseimbangan -->
+    <div class="balance-info {if: $seimbang}balance-ok{else}balance-error{/if}">
+        <strong>Validasi Keseimbangan Neraca:</strong><br>
+        Total Aktiva: Rp. {?= number_format($total_aktiva,2,',','.')?}<br>
+        Total Pasiva: Rp. {?= number_format($total_pasiva,2,',','.')?}<br>
+        {if: $seimbang}
+            <span style="color: green;">✓ NERACA SEIMBANG</span>
+        {else}
+            <span style="color: red;">✗ NERACA TIDAK SEIMBANG</span><br>
+            Selisih: Rp. {?= number_format(abs($selisih),2,',','.')?}
+            {if: $selisih > 0}(Aktiva lebih besar){else}(Pasiva lebih besar){/if}
+        {/if}
+    </div>
+
+    <div style="margin-top: 30px; text-align: right; font-size: 10px; color: #666;">
+        <p>Dicetak pada: {?=date('d-m-Y H:i:s')?}</p>
+    </div>
+
+    <!-- Area Tanda Tangan -->
+    <div class="signature-area">
+        <div class="signature-box">
+            <p>Mengetahui,</p>
+            <p><strong>Direktur</strong></p>
+            <div class="signature-line">
+                <p>(_____________________)</p>
+            </div>
+        </div>
+        <div class="signature-box">
+            <p>Menyetujui,</p>
+            <p><strong>Kepala Keuangan</strong></p>
+            <div class="signature-line">
+                <p>(_____________________)</p>
+            </div>
+        </div>
+        <div class="signature-box">
+            <p>Dibuat oleh,</p>
+            <p><strong>Staff Keuangan</strong></p>
+            <div class="signature-line">
+                <p>(_____________________)</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto print dengan delay untuk memastikan CSS sudah loaded
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        }
+        
+        // Handle after print
+        window.onafterprint = function() {
+            // Bisa ditambahkan aksi setelah print jika diperlukan
+        }
+    </script>
+</body>
+</html>
