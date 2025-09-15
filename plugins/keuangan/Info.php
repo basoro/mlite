@@ -15,7 +15,6 @@ return [
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_obat_bhp', '')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_laboratorium', '')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_radiologi', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_tambahan_biaya', '')");
     },
     'uninstall'     =>  function() use($core)
     {

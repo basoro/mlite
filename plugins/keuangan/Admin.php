@@ -7,6 +7,7 @@ use Plugins\Keuangan\Src\Akunrekening;
 class Admin extends AdminModule
 {
     protected $akunrekening;
+    protected $assign = [];
     
     public function init()
     {
@@ -259,6 +260,7 @@ class Admin extends AdminModule
         $jumlah_total_saldo = 0;
         $rows_kredit = $this->db('mlite_detailjurnal')
         ->join('mlite_rekening', 'mlite_rekening.kd_rek=mlite_detailjurnal.kd_rek')
+        ->select('mlite_detailjurnal.kd_rek, mlite_rekening.nm_rek, mlite_rekening.tipe, mlite_rekening.balance')
         ->where('tipe', $row['tipe'])
         ->where('balance', 'K')
         ->group('mlite_detailjurnal.kd_rek')
@@ -284,6 +286,7 @@ class Admin extends AdminModule
 
         $rows_debet = $this->db('mlite_detailjurnal')
         ->join('mlite_rekening', 'mlite_rekening.kd_rek=mlite_detailjurnal.kd_rek')
+        ->select('mlite_detailjurnal.kd_rek, mlite_rekening.nm_rek, mlite_rekening.tipe, mlite_rekening.balance')
         ->where('tipe', $row['tipe'])
         ->where('balance', 'D')
         ->group('mlite_detailjurnal.kd_rek')
@@ -414,7 +417,8 @@ class Admin extends AdminModule
           'no_bukti' => $_POST['no_bukti'],
           'tgl_jurnal' => $_POST['tgl_jurnal'],
           'jenis' => $_POST['jenis'],
-          'keterangan' => $_POST['kegiatan'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'. ('.$_POST['keterangan'].').'
+          'kegiatan' => $_POST['kegiatan'],
+          'keterangan' => $_POST['kegiatan'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'. ('.$_POST['keterangan'].').'  
           ]);
         $this->db('mlite_detailjurnal')
         ->save([
