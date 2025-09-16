@@ -637,136 +637,201 @@ class Admin extends AdminModule
       if($this->settings('keuangan', 'jurnal_kasir') == 1) {
           // jurnal_pendaftaran //
           if($_POST['jurnal_pendaftaran'] != '0,00') {
-            $no_jurnal_pendaftaran = $this->core->setNoJurnal();
-            $keterangan = $this->db('mlite_rekening')
-            ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_pendaftaran'))
-            ->oneArray();
-            $query_jurnal_pendaftaran =  $this->db('mlite_jurnal')->save([
-                'no_jurnal' => $no_jurnal_pendaftaran,
-                'no_bukti' => $_POST['no_rawat'],
-                'tgl_jurnal' => date('Y-m-d'),
-                'jenis' => 'U',
-                'kegiatan' => $keterangan['nm_rek'].' '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
-                'keterangan' => $keterangan['nm_rek']
+              $no_jurnal_pendaftaran = $this->core->setNoJurnal();
+              $keterangan = $this->db('mlite_rekening')
+                  ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_pendaftaran'))
+                  ->oneArray();
+              $jumlah = str_replace(".", "", substr($_POST['jurnal_pendaftaran'], 0, strpos($_POST['jurnal_pendaftaran'], ",")));
+              
+              $query_jurnal_pendaftaran = $this->db('mlite_jurnal')->save([
+                  'no_jurnal' => $no_jurnal_pendaftaran,
+                  'no_bukti' => $_POST['no_rawat'],
+                  'tgl_jurnal' => date('Y-m-d'),
+                  'jenis' => 'U',
+                  'kegiatan' => $keterangan['nm_rek'].' '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                  'keterangan' => $keterangan['nm_rek']
               ]);
-            if($query_jurnal_pendaftaran) {
-              $this->db('mlite_detailjurnal')->save([
-                'no_jurnal' => $no_jurnal_pendaftaran,
-                'kd_rek' => $this->settings('keuangan', 'akun_kredit_pendaftaran'),
-                'arus_kas' => '1',
-                'debet' => '0',  
-                'kredit' => str_replace(".", "", substr($_POST['jurnal_pendaftaran'], 0, strpos($_POST['jurnal_pendaftaran'], ","))) 
-              ]);
-            }
-            unset($_POST['jurnal_pendaftaran']);
+              
+              if($query_jurnal_pendaftaran) {
+                  // DEBET: Kas/Piutang Usaha (Aset bertambah)
+                  $this->db('mlite_detailjurnal')->save([
+                      'no_jurnal' => $no_jurnal_pendaftaran,
+                      'kd_rek' => $this->settings('keuangan', 'akun_debet_kas'), // Setting untuk akun kas
+                      'arus_kas' => '1',
+                      'debet' => $jumlah,
+                      'kredit' => '0'
+                  ]);
+                  
+                  // KREDIT: Pendapatan Pendaftaran (Pendapatan bertambah)
+                  $this->db('mlite_detailjurnal')->save([
+                      'no_jurnal' => $no_jurnal_pendaftaran,
+                      'kd_rek' => $this->settings('keuangan', 'akun_kredit_pendaftaran'),
+                      'arus_kas' => '0',
+                      'debet' => '0',
+                      'kredit' => $jumlah
+                  ]);
+              }
+              unset($_POST['jurnal_pendaftaran']);
           }
           // End jurnal_pendaftaran // 
 
           // jurnal_tindakan_ralan //
           if($_POST['jurnal_tindakan_ralan'] != '0,00') {
-            $no_jurnal_tindakan_ralan = $this->core->setNoJurnal();
-            $keterangan = $this->db('mlite_rekening')
-            ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_tindakan'))
-            ->oneArray();
-            $query_jurnal_tindakan_ralan =  $this->db('mlite_jurnal')->save([
-                'no_jurnal' => $no_jurnal_tindakan_ralan,
-                'no_bukti' => $_POST['no_rawat'],
-                'tgl_jurnal' => date('Y-m-d'),
-                'jenis' => 'U',
-                'kegiatan' => 'Tindakan rawat jalan '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
-                'keterangan' => $keterangan['nm_rek']
+              $no_jurnal_tindakan_ralan = $this->core->setNoJurnal();
+              $keterangan = $this->db('mlite_rekening')
+                  ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_tindakan'))
+                  ->oneArray();
+              $jumlah = str_replace(".", "", substr($_POST['jurnal_tindakan_ralan'], 0, strpos($_POST['jurnal_tindakan_ralan'], ",")));
+              
+              $query_jurnal_tindakan_ralan = $this->db('mlite_jurnal')->save([
+                  'no_jurnal' => $no_jurnal_tindakan_ralan,
+                  'no_bukti' => $_POST['no_rawat'],
+                  'tgl_jurnal' => date('Y-m-d'),
+                  'jenis' => 'U',
+                  'kegiatan' => 'Tindakan rawat jalan '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                  'keterangan' => $keterangan['nm_rek']
               ]);
-            if($query_jurnal_tindakan_ralan) {
-              $this->db('mlite_detailjurnal')->save([
-                'no_jurnal' => $no_jurnal_tindakan_ralan,
-                'kd_rek' => $this->settings('keuangan', 'akun_kredit_tindakan'),
-                'arus_kas' => '1',
-                'debet' => '0', 
-                'kredit' => str_replace(".", "", substr($_POST['jurnal_tindakan_ralan'], 0, strpos($_POST['jurnal_tindakan_ralan'], ","))) 
-              ]);
-            }
-            unset($_POST['jurnal_tindakan_ralan']);
+              
+              if($query_jurnal_tindakan_ralan) {
+                  // DEBET: Kas/Piutang Usaha
+                  $this->db('mlite_detailjurnal')->save([
+                      'no_jurnal' => $no_jurnal_tindakan_ralan,
+                      'kd_rek' => $this->settings('keuangan', 'akun_debet_kas'),
+                      'arus_kas' => '1',
+                      'debet' => $jumlah,
+                      'kredit' => '0'
+                  ]);
+                  
+                  // KREDIT: Pendapatan Tindakan
+                  $this->db('mlite_detailjurnal')->save([
+                      'no_jurnal' => $no_jurnal_tindakan_ralan,
+                      'kd_rek' => $this->settings('keuangan', 'akun_kredit_tindakan'),
+                      'arus_kas' => '0',
+                      'debet' => '0',
+                      'kredit' => $jumlah
+                  ]);
+              }
+              unset($_POST['jurnal_tindakan_ralan']);
           }
           // End jurnal_tindakan_ralan //
 
           // jurnal_obat_bhp //
           if($_POST['jurnal_obat_bhp'] != '0,00') {
-            $no_jurnal_obat_bhp = $this->core->setNoJurnal();
-            $keterangan = $this->db('mlite_rekening')
-            ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_obat_bhp'))
-            ->oneArray();
-            $query_jurnal_obat_bhp =  $this->db('mlite_jurnal')->save([
-                'no_jurnal' => $no_jurnal_obat_bhp,
-                'no_bukti' => $_POST['no_rawat'],
-                'tgl_jurnal' => date('Y-m-d'),
-                'jenis' => 'U',
-                'kegiatan' => 'Obat dan BHP '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
-                'keterangan' => $keterangan['nm_rek']
+              $no_jurnal_obat_bhp = $this->core->setNoJurnal();
+              $keterangan = $this->db('mlite_rekening')
+                  ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_obat_bhp'))
+                  ->oneArray();
+              $jumlah = str_replace(".", "", substr($_POST['jurnal_obat_bhp'], 0, strpos($_POST['jurnal_obat_bhp'], ",")));
+              
+              $query_jurnal_obat_bhp = $this->db('mlite_jurnal')->save([
+                  'no_jurnal' => $no_jurnal_obat_bhp,
+                  'no_bukti' => $_POST['no_rawat'],
+                  'tgl_jurnal' => date('Y-m-d'),
+                  'jenis' => 'U',
+                  'kegiatan' => 'Obat dan BHP '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                  'keterangan' => $keterangan['nm_rek']
               ]);
-            if($query_jurnal_obat_bhp) {
-              $this->db('mlite_detailjurnal')->save([
-                'no_jurnal' => $no_jurnal_obat_bhp,
-                'kd_rek' => $this->settings('keuangan', 'akun_kredit_obat_bhp'),
-                'arus_kas' => '1',
-                'debet' => '0', 
-                'kredit' => str_replace(".", "", substr($_POST['jurnal_obat_bhp'], 0, strpos($_POST['jurnal_obat_bhp'], ","))) 
-              ]);
-            }
-            unset($_POST['jurnal_obat_bhp']);
+              
+              if($query_jurnal_obat_bhp) {
+                  // DEBET: Kas/Piutang Usaha
+                  $this->db('mlite_detailjurnal')->save([
+                      'no_jurnal' => $no_jurnal_obat_bhp,
+                      'kd_rek' => $this->settings('keuangan', 'akun_debet_kas'),
+                      'arus_kas' => '1',
+                      'debet' => $jumlah,
+                      'kredit' => '0'
+                  ]);
+                  
+                  // KREDIT: Pendapatan Obat dan BHP
+                  $this->db('mlite_detailjurnal')->save([
+                      'no_jurnal' => $no_jurnal_obat_bhp,
+                      'kd_rek' => $this->settings('keuangan', 'akun_kredit_obat_bhp'),
+                      'arus_kas' => '0',
+                      'debet' => '0',
+                      'kredit' => $jumlah
+                  ]);
+              }
+              unset($_POST['jurnal_obat_bhp']);
           }
           // End jurnal_obat_bhp //
 
           // jurnal_laboratorium //
           if($_POST['jurnal_laboratorium'] != '0,00') {
-            $no_jurnal_laboratorium = $this->core->setNoJurnal();
-            $keterangan = $this->db('mlite_rekening')
-            ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_laboratorium'))
-            ->oneArray();
-            $query_jurnal_laboratorium =  $this->db('mlite_jurnal')->save([
-                'no_jurnal' => $no_jurnal_laboratorium,
-                'no_bukti' => $_POST['no_rawat'],
-                'tgl_jurnal' => date('Y-m-d'),
-                'jenis' => 'U',
-                'kegiatan' => 'Laboratorium '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
-                'keterangan' => $keterangan['nm_rek']
+              $no_jurnal_laboratorium = $this->core->setNoJurnal();
+              $keterangan = $this->db('mlite_rekening')
+                  ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_laboratorium'))
+                  ->oneArray();
+              $jumlah = str_replace(".", "", substr($_POST['jurnal_laboratorium'], 0, strpos($_POST['jurnal_laboratorium'], ",")));
+              
+              $query_jurnal_laboratorium = $this->db('mlite_jurnal')->save([
+                  'no_jurnal' => $no_jurnal_laboratorium,
+                  'no_bukti' => $_POST['no_rawat'],
+                  'tgl_jurnal' => date('Y-m-d'),
+                  'jenis' => 'U',
+                  'kegiatan' => 'Laboratorium '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                  'keterangan' => $keterangan['nm_rek']
               ]);
-            if($query_jurnal_laboratorium) {
-              $this->db('mlite_detailjurnal')->save([
-                'no_jurnal' => $no_jurnal_laboratorium,
-                'kd_rek' => $this->settings('keuangan', 'akun_kredit_laboratorium'),
-                'arus_kas' => '1',
-                'debet' => '0',  
-                'kredit' => str_replace(".", "", substr($_POST['jurnal_laboratorium'], 0, strpos($_POST['jurnal_laboratorium'], ","))) 
-              ]);
-            }
-            unset($_POST['jurnal_laboratorium']);
+              
+              if($query_jurnal_laboratorium) {
+                  // DEBET: Kas/Piutang Usaha
+                  $this->db('mlite_detailjurnal')->save([
+                      'no_jurnal' => $no_jurnal_laboratorium,
+                      'kd_rek' => $this->settings('keuangan', 'akun_debet_kas'),
+                      'arus_kas' => '1',
+                      'debet' => $jumlah,
+                      'kredit' => '0'
+                  ]);
+                  
+                  // KREDIT: Pendapatan Laboratorium
+                  $this->db('mlite_detailjurnal')->save([
+                      'no_jurnal' => $no_jurnal_laboratorium,
+                      'kd_rek' => $this->settings('keuangan', 'akun_kredit_laboratorium'),
+                      'arus_kas' => '0',
+                      'debet' => '0',
+                      'kredit' => $jumlah
+                  ]);
+              }
+              unset($_POST['jurnal_laboratorium']);
           }
           // End jurnal_laboratorium //
 
           // jurnal_radiologi//
           if($_POST['jurnal_radiologi'] != '0,00') {
-            $no_jurnal_radiologi = $this->core->setNoJurnal();
-            $keterangan = $this->db('mlite_rekening')
-            ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_radiologi'))
-            ->oneArray();
-            $query_jurnal_radiologi =  $this->db('mlite_jurnal')->save([
-                'no_jurnal' => $no_jurnal_radiologi,
-                'no_bukti' => $_POST['no_rawat'],
-                'tgl_jurnal' => date('Y-m-d'),
-                'jenis' => 'U',
-                'kegiatan' => 'Radiologi '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
-                'keterangan' => $keterangan['nm_rek']
+              $no_jurnal_radiologi = $this->core->setNoJurnal();
+              $keterangan = $this->db('mlite_rekening')
+                  ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_radiologi'))
+                  ->oneArray();
+              $jumlah = str_replace(".", "", substr($_POST['jurnal_radiologi'], 0, strpos($_POST['jurnal_radiologi'], ",")));
+              
+              $query_jurnal_radiologi = $this->db('mlite_jurnal')->save([
+                  'no_jurnal' => $no_jurnal_radiologi,
+                  'no_bukti' => $_POST['no_rawat'],
+                  'tgl_jurnal' => date('Y-m-d'),
+                  'jenis' => 'U',
+                  'kegiatan' => 'Radiologi '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                  'keterangan' => $keterangan['nm_rek']
               ]);
-            if($query_jurnal_radiologi) {
-              $this->db('mlite_detailjurnal')->save([
-                'no_jurnal' => $no_jurnal_radiologi,
-                'kd_rek' => $this->settings('keuangan', 'akun_kredit_radiologi'),
-                'arus_kas' => '1',
-                'debet' => '0',  
-                'kredit' => str_replace(".", "", substr($_POST['jurnal_radiologi'], 0, strpos($_POST['jurnal_radiologi'], ","))) 
-              ]);
-            }
-            unset($_POST['jurnal_radiologi']);
+              
+              if($query_jurnal_radiologi) {
+                  // DEBET: Kas/Piutang Usaha
+                  $this->db('mlite_detailjurnal')->save([
+                      'no_jurnal' => $no_jurnal_radiologi,
+                      'kd_rek' => $this->settings('keuangan', 'akun_debet_kas'),
+                      'arus_kas' => '1',
+                      'debet' => $jumlah,
+                      'kredit' => '0'
+                  ]);
+                  
+                  // KREDIT: Pendapatan Radiologi
+                  $this->db('mlite_detailjurnal')->save([
+                      'no_jurnal' => $no_jurnal_radiologi,
+                      'kd_rek' => $this->settings('keuangan', 'akun_kredit_radiologi'),
+                      'arus_kas' => '0',
+                      'debet' => '0',
+                      'kredit' => $jumlah
+                  ]);
+              }
+              unset($_POST['jurnal_radiologi']);
           }
           // End jurnal_radiologi //
       }
