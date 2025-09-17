@@ -1,8 +1,6 @@
 const cacheName = 'cache-v2';
 const precacheResources = [
-  '/',
   'assets/jscripts/bootstrap.min.js',
-  'assets/css/flatly.min.css',
 ];
 
 self.addEventListener('install', event => {
