@@ -11,7 +11,7 @@ define('DBPASS', '');
 define('DBNAME', 'mlite');
 
 // URL Webapps
-define('WEBAPPS_URL', 'http://mlite.loc/uploads'); // Sesuaikan http://mlite.loc dengan domain atau IP Address server
+define('WEBAPPS_URL', 'http://localhost/uploads'); // Sesuaikan http://mlite.loc dengan domain atau IP Address server
 define('WEBAPPS_PATH', BASE_DIR . '/uploads');
 
 // Multi APP
@@ -34,7 +34,7 @@ define('UPLOADS', BASE_DIR . '/uploads');
 define('FILE_LOCK', false);
 
 // HTML Beauty
-define('HTML_BEAUTY', true);
+define('HTML_BEAUTY', false);
 
 // Basic modules
 define('BASIC_MODULES', serialize([
