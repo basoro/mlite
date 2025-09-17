@@ -361,16 +361,9 @@ class Admin extends AdminModule
 
       $rows = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-        ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('resep_obat.status', 'ralan')
         ->group('resep_obat.no_resep')
-        ->group('resep_obat.no_rawat')
-        ->group('resep_obat.kd_dokter')
-        ->group('resep_dokter.no_resep')
-        ->group('resep_dokter.kode_brng')
-        ->group('resep_dokter.jml')
-        ->group('resep_dokter.aturan_pakai')
         ->toArray();
       $resep = [];
       $jumlah_total_resep = 0;
@@ -397,8 +390,6 @@ class Admin extends AdminModule
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('resep_obat.status', 'ralan')
         ->group('resep_obat.no_resep')
-        ->group('resep_obat.no_rawat')
-        ->group('resep_obat.kd_dokter')
         ->group('resep_dokter_racikan.no_racik')
         ->toArray();
       $resep_racikan = [];
