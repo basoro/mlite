@@ -48,6 +48,16 @@ class Restore_Database {
     var $disableForeignKeyChecks;
 
     /**
+     * Backup directory path
+     */
+    var $backupDir;
+
+    /**
+     * Backup file name
+     */
+    var $backupFile;
+
+    /**
      * Constructor initializes database
      */
     function __construct($host, $username, $passwd, $dbName, $charset = 'utf8') {
