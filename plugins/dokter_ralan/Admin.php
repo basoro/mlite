@@ -1314,15 +1314,19 @@ class Admin extends AdminModule
       
       // Only process racikan if there are actual racikan records
       if (!empty($racikan_nos)) {
-        $rows_racikan = $this->db('resep_obat')
-          ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-          ->where('no_rawat', $no_rawat)
-          ->where('resep_obat.status', 'ralan')
-          ->whereIn('resep_obat.no_resep', $racikan_nos)
-          ->group('resep_obat.no_resep')
-          ->group('resep_obat.no_rawat')
-          ->group('resep_obat.kd_dokter')
-          ->toArray();
+        // Use raw SQL query since whereIn() is not available in QueryWrapper
+        $racikan_nos_str = "'" . implode("','", $racikan_nos) . "'";
+        $query_racikan = $this->db()->pdo()->prepare("
+          SELECT resep_obat.*, dokter.nm_dokter 
+          FROM resep_obat 
+          JOIN dokter ON dokter.kd_dokter = resep_obat.kd_dokter 
+          WHERE resep_obat.no_rawat = ? 
+          AND resep_obat.status = 'ralan' 
+          AND resep_obat.no_resep IN ($racikan_nos_str)
+          GROUP BY resep_obat.no_resep, resep_obat.no_rawat, resep_obat.kd_dokter
+        ");
+        $query_racikan->execute([$no_rawat]);
+        $rows_racikan = $query_racikan->fetchAll(\PDO::FETCH_ASSOC);
           
         foreach ($rows_racikan as $row) {
           $row['nomor'] = $i++;
