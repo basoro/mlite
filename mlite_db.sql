@@ -1834,6 +1834,19 @@ CREATE TABLE `mlite_remember_me` (
   KEY `mlite_remember_me_ibfk_1` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
+CREATE TABLE `mlite_rujukan_internal_poli` (
+  `no_rawat` varchar(17) NOT NULL,
+  `kd_dokter` varchar(20) NOT NULL,
+  `kd_poli` varchar(5) DEFAULT NULL,
+  `isi_rujukan` text,
+  PRIMARY KEY (`no_rawat`,`kd_dokter`) USING BTREE,
+  KEY `kd_dokter` (`kd_dokter`) USING BTREE,
+  KEY `kd_poli` (`kd_poli`) USING BTREE,
+  CONSTRAINT `mlite_rujukan_internal_poli_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `mlite_rujukan_internal_poli_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `mlite_rujukan_internal_poli_ibfk_3` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+
 CREATE TABLE `mlite_satu_sehat_departemen` (
   `dep_id` char(4) NOT NULL,
   `id_organisasi_satusehat` varchar(40) DEFAULT NULL,
