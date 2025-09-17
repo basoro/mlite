@@ -648,8 +648,8 @@ class Admin extends AdminModule
                   'no_bukti' => $_POST['no_rawat'],
                   'tgl_jurnal' => date('Y-m-d'),
                   'jenis' => 'U',
-                  'kegiatan' => $keterangan['nm_rek'].' '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
-                  'keterangan' => $keterangan['nm_rek']
+                  'kegiatan' => $keterangan['nm_rek'],
+                  'keterangan' => $keterangan['nm_rek'].' '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
               ]);
               
               if($query_jurnal_pendaftaran) {
@@ -688,8 +688,8 @@ class Admin extends AdminModule
                   'no_bukti' => $_POST['no_rawat'],
                   'tgl_jurnal' => date('Y-m-d'),
                   'jenis' => 'U',
-                  'kegiatan' => 'Tindakan rawat jalan '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
-                  'keterangan' => $keterangan['nm_rek']
+                  'kegiatan' => $keterangan['nm_rek'],
+                  'keterangan' => $keterangan['nm_rek'].' '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
               ]);
               
               if($query_jurnal_tindakan_ralan) {
@@ -728,8 +728,8 @@ class Admin extends AdminModule
                   'no_bukti' => $_POST['no_rawat'],
                   'tgl_jurnal' => date('Y-m-d'),
                   'jenis' => 'U',
-                  'kegiatan' => 'Obat dan BHP '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
-                  'keterangan' => $keterangan['nm_rek']
+                  'kegiatan' => $keterangan['nm_rek'],
+                  'keterangan' => $keterangan['nm_rek'].' '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
               ]);
               
               if($query_jurnal_obat_bhp) {
@@ -768,8 +768,8 @@ class Admin extends AdminModule
                   'no_bukti' => $_POST['no_rawat'],
                   'tgl_jurnal' => date('Y-m-d'),
                   'jenis' => 'U',
-                  'kegiatan' => 'Laboratorium '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
-                  'keterangan' => $keterangan['nm_rek']
+                  'kegiatan' => $keterangan['nm_rek'],
+                  'keterangan' => $keterangan['nm_rek'].' '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
               ]);
               
               if($query_jurnal_laboratorium) {
@@ -808,8 +808,8 @@ class Admin extends AdminModule
                   'no_bukti' => $_POST['no_rawat'],
                   'tgl_jurnal' => date('Y-m-d'),
                   'jenis' => 'U',
-                  'kegiatan' => 'Radiologi '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
-                  'keterangan' => $keterangan['nm_rek']
+                  'kegiatan' => $keterangan['nm_rek'],
+                  'keterangan' => $keterangan['nm_rek'].' '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
               ]);
               
               if($query_jurnal_radiologi) {
