@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS `mlite`;
 
 USE `mlite`;
-
+SET sql_mode = '';
 SET foreign_key_checks = 0;
 
 CREATE TABLE `aturan_pakai` (
