@@ -1840,7 +1840,7 @@ class Admin extends AdminModule
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data ADIME Gizi']);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
         }
         
@@ -1870,7 +1870,7 @@ class Admin extends AdminModule
                 ->toArray();
             
             echo json_encode($data);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo json_encode([]);
         }
         
@@ -1889,7 +1889,7 @@ class Admin extends AdminModule
                 ->oneArray();
             
             echo json_encode($data);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo json_encode(null);
         }
         
@@ -1912,7 +1912,7 @@ class Admin extends AdminModule
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus data ADIME Gizi']);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
         }
         
@@ -2082,7 +2082,7 @@ class Admin extends AdminModule
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus data assessment nyeri']);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
         }
         

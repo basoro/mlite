@@ -6069,7 +6069,7 @@ class Admin extends AdminModule
 
       return $this->draw('kyc.html', ['url' => $url]);
       
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       error_log('Satu Sehat KYC Exception: ' . $e->getMessage());
       return $this->draw('error.html', [
         'title' => 'KYC Generation Error',

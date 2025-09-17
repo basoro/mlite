@@ -156,7 +156,7 @@ class Kyc
       // Check if the message has the expected encrypted format
       if (strpos($message, $beginTag) === false || strpos($message, $endTag) === false) {
           error_log('Invalid encrypted message format. Response: ' . substr($message, 0, 200));
-          throw new Exception('Invalid encrypted message format received from server');
+          throw new \Exception('Invalid encrypted message format received from server');
       }
 
       // Fetch the part of the PEM string between beginTag and endTag
@@ -171,7 +171,7 @@ class Kyc
       
       if ($binaryDerString === false) {
           error_log('Failed to base64 decode encrypted message');
-          throw new Exception('Failed to decode encrypted message');
+          throw new \Exception('Failed to decode encrypted message');
       }
     
       // Split the binary data into wrapped key and encrypted message
@@ -179,7 +179,7 @@ class Kyc
       
       if (strlen($binaryDerString) < $wrappedKeyLength) {
           error_log('Binary data too short. Expected at least ' . $wrappedKeyLength . ' bytes, got ' . strlen($binaryDerString));
-          throw new Exception('Encrypted data is too short');
+          throw new \Exception('Encrypted data is too short');
       }
       
       $wrappedKey = substr($binaryDerString, 0, $wrappedKeyLength);
@@ -195,9 +195,9 @@ class Kyc
           $decryptedMessage = $this->aesDecrypt($encryptedMessage, $aesKey);
 
           return $decryptedMessage;
-      } catch (Exception $e) {
+      } catch (\Exception $e) {
           error_log('RSA decryption failed: ' . $e->getMessage());
-          throw new Exception('RSA decryption failed: ' . $e->getMessage());
+          throw new \Exception('RSA decryption failed: ' . $e->getMessage());
       }
   }
 
@@ -280,13 +280,13 @@ class Kyc
         
         if (json_last_error() !== JSON_ERROR_NONE) {
             error_log('Failed to parse JSON response: ' . $decryptedResponse);
-            throw new Exception('Invalid JSON response from Satu Sehat API');
+            throw new \Exception('Invalid JSON response from Satu Sehat API');
         }
         
         // Check if it's an error response (has 'fault' field)
         if (isset($responseData['fault'])) {
             error_log('Satu Sehat KYC API Error Response: ' . $decryptedResponse);
-            throw new Exception('Satu Sehat API Error: ' . json_encode($responseData['fault']));
+            throw new \Exception('Satu Sehat API Error: ' . json_encode($responseData['fault']));
         }
         
         // Check if it's a successful response (has 'metadata' with code 200 and 'data' field)

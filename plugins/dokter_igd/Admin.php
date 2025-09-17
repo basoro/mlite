@@ -1787,7 +1787,7 @@ class Admin extends AdminModule
             $required_fields = ['no_rawat', 'no_rkm_medis', 'tgl_triase', 'petugas_id', 'kesadaran_triase', 'airway', 'breathing', 'circulation', 'kategori'];
             foreach($required_fields as $field) {
                 if(empty($_POST[$field])) {
-                    throw new Exception("Field {$field} harus diisi");
+                    throw new \Exception("Field {$field} harus diisi");
                 }
             }
             
@@ -1865,7 +1865,7 @@ class Admin extends AdminModule
     {
         try {
             if(empty($_POST['no_rawat'])) {
-                throw new Exception('No rawat tidak boleh kosong');
+                throw new \Exception('No rawat tidak boleh kosong');
             }
             
             $query = $this->db('mlite_triase_igd')

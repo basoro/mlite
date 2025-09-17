@@ -78,7 +78,7 @@ class Restore_Database {
         try {
             $conn = mysqli_connect($this->host, $this->username, $this->passwd, $this->dbName);
             if (mysqli_connect_errno()) {
-                throw new Exception('ERROR connecting database: ' . mysqli_connect_error());
+                throw new \Exception('ERROR connecting database: ' . mysqli_connect_error());
                 die();
             }
             if (!mysqli_set_charset($conn, $this->charset)) {
@@ -92,7 +92,7 @@ class Restore_Database {
                 mysqli_query($conn, 'SET foreign_key_checks = 0');
             }
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             print_r($e->getMessage());
             die();
         }
@@ -119,7 +119,7 @@ class Restore_Database {
             $backupFileIsGzipped = substr($backupFile, -3, 3) == '.gz' ? true : false;
             if ($backupFileIsGzipped) {
                 if (!$backupFile = $this->gunzipBackupFile()) {
-                    throw new Exception("ERROR: couldn't gunzip backup file " . $backupDir . '/' . $backupFile);
+                    throw new \Exception("ERROR: couldn't gunzip backup file " . $backupDir . '/' . $backupFile);
                 }
             }
 
@@ -150,7 +150,7 @@ class Restore_Database {
                                     }
                                     $sql = '';
                                 } else {
-                                    throw new Exception("ERROR: SQL execution error: " . mysqli_error($this->conn));
+                                    throw new \Exception("ERROR: SQL execution error: " . mysqli_error($this->conn));
                                 }
                             }
                         } else if (preg_match('/\*\/$/', $line)) {
@@ -160,9 +160,9 @@ class Restore_Database {
                 }
                 fclose($handle);
             } else {
-                throw new Exception("ERROR: couldn't open backup file " . $backupDir . '/' . $backupFile);
+                throw new \Exception("ERROR: couldn't open backup file " . $backupDir . '/' . $backupFile);
             } 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             print_r($e->getMessage());
             return false;
         }

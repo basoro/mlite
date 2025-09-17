@@ -1731,7 +1731,7 @@ class Admin extends AdminModule
                     'message' => 'Gagal menghapus data assessment atau data tidak ditemukan.'
                 ]);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo json_encode([
                 'status' => 'error',
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
@@ -1910,7 +1910,7 @@ class Admin extends AdminModule
                     'message' => 'Gagal menghapus data assessment nyeri atau data tidak ditemukan.'
                 ]);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo json_encode([
                 'status' => 'error',
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
@@ -2078,7 +2078,7 @@ class Admin extends AdminModule
                     'message' => 'Data pemeriksaan ralan tidak ditemukan'
                 ]);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo json_encode([
                 'status' => 'error',
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()

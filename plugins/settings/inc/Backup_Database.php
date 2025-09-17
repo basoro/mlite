@@ -103,13 +103,13 @@ class Backup_Database {
         try {
             $conn = mysqli_connect($this->host, $this->username, $this->passwd, $this->dbName);
             if (mysqli_connect_errno()) {
-                throw new Exception('ERROR connecting database: ' . mysqli_connect_error());
+                throw new \Exception('ERROR connecting database: ' . mysqli_connect_error());
                 die();
             }
             if (!mysqli_set_charset($conn, $this->charset)) {
                 mysqli_query($conn, 'SET NAMES '.$this->charset);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             print_r($e->getMessage());
             die();
         }
@@ -139,6 +139,7 @@ class Backup_Database {
 
             $sql = 'CREATE DATABASE IF NOT EXISTS `'.$this->dbName.'`'.";\n\n";
             $sql .= 'USE `'.$this->dbName."`;\n\n";
+            $sql .= "SET sql_mode = '';\n\n";
 
             /**
              * Disable foreign key checks 
@@ -245,7 +246,7 @@ class Backup_Database {
             } else {
                 $this->obfPrint('Backup file succesfully saved to ' . $this->backupDir.'/'.$this->backupFile, 1, 1);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             print_r($e->getMessage());
             return false;
         }
@@ -268,7 +269,7 @@ class Backup_Database {
 
             file_put_contents($this->backupDir.'/'.$this->backupFile, $sql, FILE_APPEND | LOCK_EX);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             print_r($e->getMessage());
             return false;
         }
