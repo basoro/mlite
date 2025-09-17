@@ -1825,6 +1825,53 @@ CREATE TABLE `mlite_rekeningtahun` (
   CONSTRAINT `mlite_rekeningtahun_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1000', 'ASET', 'M', 'D', '0');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1100', 'ASET LANCAR', 'M', 'D', '0');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1101', 'Kas', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1102', 'Bank', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1103', 'Piutang Usaha', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1104', 'Piutang Lain-lain', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1105', 'Persediaan Obat', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1106', 'Persediaan Alat Kesehatan', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1107', 'Biaya Dibayar Dimuka', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1108', 'Pajak Dibayar Dimuka', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1200', 'ASET TETAP', 'M', 'D', '0');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1201', 'Tanah', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1202', 'Bangunan', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1203', 'Akumulasi Penyusutan Bangunan', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1204', 'Peralatan Medis', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1205', 'Akumulasi Penyusutan Peralatan Medis', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1206', 'Kendaraan', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1207', 'Akumulasi Penyusutan Kendaraan', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1208', 'Peralatan Kantor', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('1209', 'Akumulasi Penyusutan Peralatan Kantor', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('2000', 'KEWAJIBAN', 'M', 'K', '0');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('2100', 'KEWAJIBAN LANCAR', 'M', 'K', '0');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('2101', 'Hutang Usaha', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('2102', 'Hutang Gaji', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('2103', 'Hutang Pajak', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('2104', 'Biaya Yang Masih Harus Dibayar', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('2105', 'Pendapatan Diterima Dimuka', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('2200', 'KEWAJIBAN JANGKA PANJANG', 'M', 'K', '0');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('2201', 'Hutang Bank Jangka Panjang', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('2202', 'Hutang Lain-lain Jangka Panjang', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('3000', 'MODAL', 'M', 'K', '0');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('3101', 'Modal Disetor', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('3102', 'Laba Ditahan', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('3103', 'Laba Tahun Berjalan', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('4000', 'PENDAPATAN', 'M', 'K', '0');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('4101', 'Pendapatan Jasa Medis', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('4102', 'Pendapatan Obat dan Alkes', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('4103', 'Pendapatan Lain-lain', 'N', 'K', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('5000', 'BEBAN', 'M', 'D', '0');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('5101', 'Beban Gaji dan Tunjangan', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('5102', 'Beban Listrik dan Air', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('5103', 'Beban Telepon dan Internet', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('5104', 'Beban Pemeliharaan', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('5105', 'Beban Penyusutan', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('5106', 'Beban Administrasi', 'N', 'D', '1');
+INSERT INTO `mlite_rekening` (`kd_rek`, `nm_rek`, `tipe`, `balance`, `level`) VALUES ('5107', 'Beban Lain-lain', 'N', 'D', '1');
+
 CREATE TABLE `mlite_remember_me` (
   `id` int NOT NULL AUTO_INCREMENT,
   `token` text,
@@ -2256,15 +2303,6 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("284","veronisa","user_key",""),
 ("285","veronisa","secret_key",""),
 ("286","veronisa","bpjs_api_url","");
-
-CREATE TABLE `mlite_subrekening` (
-  `kd_rek` varchar(15) NOT NULL,
-  `kd_rek2` varchar(15) NOT NULL,
-  PRIMARY KEY (`kd_rek2`),
-  KEY `kd_rek` (`kd_rek`),
-  CONSTRAINT `mlite_subrekening_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON UPDATE CASCADE,
-  CONSTRAINT `mlite_subrekening_ibfk_2` FOREIGN KEY (`kd_rek2`) REFERENCES `mlite_rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `mlite_surat_rujukan` (
   `id` int NOT NULL AUTO_INCREMENT,
