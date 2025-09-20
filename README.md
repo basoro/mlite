@@ -64,7 +64,11 @@ $ composer install
 
 5. Sesuaikan pengaturan di config.php
 
-6. Buat database baru di MySQL/MariaDB dan import file `mlite_db.sql`
+6. Buat database baru di MySQL/MariaDB dan import file `mlite_db.sql` (tambahkan sql-mode = '' pada my.cnf atau jalankan perintah berikut)
+
+```
+$ sed -i "/user=mysql/a sql-mode = ''" /etc/my.cnf
+```
 
 7. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
 

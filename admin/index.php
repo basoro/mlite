@@ -75,11 +75,29 @@ if ($core->loginCheck()) {
 }
 
 } catch (Throwable $e) {
-    if (DEV_MODE) {
-        echo '<h1>Error</h1><pre>' . htmlspecialchars($e->getMessage()) . '</pre>';
-        echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
+    // Check if this is an AJAX request expecting JSON
+    $isAjaxRequest = (
+        (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') ||
+        (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) ||
+        (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false)
+    );
+    
+    if ($isAjaxRequest) {
+        // Return JSON error response for AJAX requests
+        header('Content-Type: application/json');
+        echo json_encode([
+            'error' => 'Database connection failed',
+            'message' => 'Please check database configuration and ensure MySQL server is running',
+            'details' => DEV_MODE ? $e->getMessage() : 'System error occurred'
+        ]);
     } else {
-        echo '<h1>System Error</h1><p>Please contact administrator.</p>';
+        // Return HTML error for regular requests
+        if (DEV_MODE) {
+            echo '<h1>Error</h1><pre>' . htmlspecialchars($e->getMessage()) . '</pre>';
+            echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
+        } else {
+            echo '<h1>System Error</h1><p>Please contact administrator.</p>';
+        }
     }
 }
 
