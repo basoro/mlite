@@ -183,12 +183,16 @@ class Admin extends AdminModule
             pasien.nm_pasien,
             reg_periksa.no_rawat,
             p1.nm_poli as poli_asal,
+            reg_periksa.kd_poli as kd_poli_asal,
             p2.nm_poli as poli_tujuan,
+            mlite_rujukan_internal_poli.kd_poli as kd_poli_tujuan, 
             d1.nm_dokter as dokter_perujuk,
+            reg_periksa.kd_dokter as kd_dokter_perujuk, 
             d2.nm_dokter as dokter_tujuan,
+            mlite_rujukan_internal_poli.kd_dokter as kd_dokter_tujuan, 
             reg_periksa.tgl_registrasi as tgl_rujukan,
             mlite_rujukan_internal_poli.isi_rujukan as keterangan,
-            'Aktif' as status
+            mlite_rujukan_internal_poli.jawab_rujukan as keterangan_jawab 
           FROM mlite_rujukan_internal_poli
           INNER JOIN reg_periksa ON mlite_rujukan_internal_poli.no_rawat = reg_periksa.no_rawat
           INNER JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis
@@ -2133,7 +2137,7 @@ class Admin extends AdminModule
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data assessment']);
             }
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
         }
         exit();
@@ -2167,7 +2171,7 @@ class Admin extends AdminModule
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus data assessment']);
             }
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
         }
         exit();
@@ -2188,7 +2192,64 @@ class Admin extends AdminModule
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data rujukan internal']);
             }
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+        }
+        exit();
+    }
+
+    public function postHapusrujukaninternal()
+    {
+        try {
+            // Get POST data
+            $no_rawat = isset($_POST['no_rawat']) ? $_POST['no_rawat'] : '';
+
+            if (empty($no_rawat)) {
+                echo json_encode(['status' => 'error', 'message' => 'No rawat tidak boleh kosong']);
+                exit();
+            }
+
+            // Delete rujukan internal
+            $result = $this->db('mlite_rujukan_internal_poli')->where('no_rawat', $no_rawat)->delete();
+
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Rujukan internal berhasil dihapus']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus rujukan internal atau data tidak ditemukan']);
+            }
+        } catch (\Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+        }
+        exit();
+    }
+
+    public function postEditrujukaninternal()
+    {
+        try {
+            // Get POST data
+            $no_rawat = isset($_POST['no_rawat']) ? $_POST['no_rawat'] : '';
+            $jawab_rujukan = isset($_POST['jawab_rujukan']) ? $_POST['jawab_rujukan'] : '';
+
+            if (empty($jawab_rujukan)) {
+                echo json_encode(['status' => 'error', 'message' => 'Jawaban rujukan tidak boleh kosong']);
+                exit();
+            }
+
+            // Update rujukan internal
+            $data = [
+                'jawab_rujukan' => $jawab_rujukan
+            ];
+
+            $result = $this->db('mlite_rujukan_internal_poli')
+                ->where('no_rawat', $no_rawat)
+                ->save($data);
+
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Rujukan internal berhasil diupdate']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal mengupdate rujukan internal']);
+            }
+        } catch (\Exception $e) {
             echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
         }
         exit();
