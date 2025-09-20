@@ -110,7 +110,7 @@
   $('input:text[name=pasien]').on('keydown',function(e){
     var baseURL = mlite.url + '/' + mlite.admin;
     if(event.which==13){
-    var url    = baseURL + '/igd/pasien?t=' + mlite.token;
+    var url    = baseURL + '/radiologi/pasien?t=' + mlite.token;
     var cari = $('input:text[name=pasien]').val();
 
     if(cari!="") {
@@ -137,7 +137,7 @@
     var no_tlp	       = $(this).attr("data-no_tlp");
     var pekerjaan      = $(this).attr("data-pekerjaan");
 
-    var url    				= baseURL + '/igd/statusdaftar?t=' + mlite.token;
+    var url    				= baseURL + '/radiologi/statusdaftar?t=' + mlite.token;
 
     $.post(url, {no_rkm_medis: no_rkm_medis} ,function(data) {
       $("#stts_daftar").html(data).show();

@@ -54,7 +54,12 @@ class Admin extends AdminModule
 
       $patient = json_decode($resp, TRUE);
 
-      $pacs['patientUUID'] = $patient[0]["ID"];
+      // Add null check before accessing array elements
+      if (!empty($patient) && isset($patient[0]) && isset($patient[0]["ID"])) {
+          $pacs['patientUUID'] = $patient[0]["ID"];
+      } else {
+          $pacs['patientUUID'] = "";
+      }
 
       if ($pacs['patientUUID'] != "") {
 
@@ -69,7 +74,12 @@ class Admin extends AdminModule
         $study = json_decode($resp, TRUE);
         //echo json_encode($study);
 
-        $pacs['Studies'] = $study["Studies"][0];
+        // Add null check before accessing array elements
+        if (!empty($study) && isset($study["Studies"]) && isset($study["Studies"][0])) {
+            $pacs['Studies'] = $study["Studies"][0];
+        } else {
+            $pacs['Studies'] = "";
+        }
 
         if($pacs['Studies'] != "") {
           $curl = curl_init();
@@ -83,7 +93,12 @@ class Admin extends AdminModule
           $series = json_decode($resp, TRUE);
           //echo json_encode($series);
 
-          $pacs['Series'] = json_encode($series["Series"]);
+          // Add null check before accessing array elements
+          if (!empty($series) && isset($series["Series"])) {
+              $pacs['Series'] = json_encode($series["Series"]);
+          } else {
+              $pacs['Series'] = "";
+          }
 
           //echo $pacs['Series'];
 
