@@ -1,70 +1,174 @@
+<style>
+/* Fix thead tbody alignment for rujukan internal table */
+#rujukan-internal .dataTables {
+  table-layout: fixed !important;
+}
+
+#rujukan-internal .dataTables th,
+#rujukan-internal .dataTables td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Ensure thead th specifically has white-space: nowrap */
+#rujukan-internal .dataTables thead th {
+  white-space: nowrap !important;
+}
+
+/* Ensure DataTables doesn't override column widths */
+#rujukan-internal .dataTables_wrapper .dataTables_scroll .dataTables_scrollHead table,
+#rujukan-internal .dataTables_wrapper .dataTables_scroll .dataTables_scrollBody table {
+  table-layout: fixed !important;
+}
+
+/* Fix column alignment */
+#rujukan-internal .dataTables tbody td:nth-child(1) { width: 12% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(2) { width: 15% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(3) { width: 12% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(4) { width: 10% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(5) { width: 10% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(6) { width: 12% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(7) { width: 12% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(8) { width: 10% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(9) { width: 10% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(10) { width: 7% !important; }
+
+</style>
 <div id="display">
-  <div class="table-responsive no-margin">
-    <table class="table table-striped no-padding dataTables" width="100%">
-      <thead>
-        <tr>
-          <th style="white-space: nowrap;">No. RM</th>
-          <th style="white-space: nowrap;">Nama Pasien</th>
-          <th style="white-space: nowrap;">ID Kunjungan</th>
-          <th style="white-space: nowrap;">Antrian</th>
-          <th style="white-space: nowrap;">Poliklinik</th>
-          <th style="white-space: nowrap;">Dokter</th>
-          <th style="white-space: nowrap;">Penjamin</th>
-          <th style="white-space: nowrap;">No. Asuransi</th>
-          <th style="white-space: nowrap;">Tgl. Kunjungan</th>
-          <th style="white-space: nowrap;">Stts. Periksa</th>
-          <th style="white-space: nowrap;">Stts. Lanjut</th>
-          <th style="white-space: nowrap;">Stts. Bayar</th>
-        </tr>
-      </thead>
-      <tbody>
-        {loop: $rawat_jalan.list}
-        <tr{if: $value.stts == 'Sudah'} style="background-color: #dff0d8 !important;"{/if}>
-          <td style="white-space: nowrap;">
-            <span class="dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><button type="button" name="button" class="btn btn-sm btn-default">{$value.no_rkm_medis} <span class="caret"></span></button></span>
-            <ul class="dropdown-menu" role="menu">
-              {if: $cek_vclaim}
-                <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynokartu', $value.no_peserta, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">[BPJS] Cek Nomor Kartu</a></li>
-                <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynik', $value.no_ktp, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">[BPJS] Cek Nomor KTP</a></li>
-              {/if}
-              <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
-              {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
-              <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAPIE & Pemeriksaan</a></li>
-              <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
-              <li><a href="#rujuk_internal" data-no_rawat="{$value.no_rawat}">Rujuk Internal</a></li>
-              <li class="dropdown-submenu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Surat-Surat</a>
-                <ul class="dropdown-menu">
-                  <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
-                  <li><a href="{?=url([ADMIN,'dokter_ralan','suratrujukan',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Rujukan</a></li>
-                  <li><a href="{?=url([ADMIN,'dokter_ralan','suratsehat',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sehat</a></li>
-                  <li><a href="{?=url([ADMIN,'dokter_ralan','suratsakit',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sakit</a></li>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active">
+      <a href="#dokter-ralan" aria-controls="dokter-ralan" role="tab" data-toggle="tab">
+        <i class="fa fa-user-md"></i> Dokter Rawat Jalan
+        <span class="badge" id="count-dokter-ralan">0</span>
+      </a>
+    </li>
+    <li role="presentation">
+      <a href="#rujukan-internal" aria-controls="rujukan-internal" role="tab" data-toggle="tab">
+        <i class="fa fa-share"></i> Rujukan Internal
+        <span class="badge" id="count-rujukan-internal">0</span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content" style="margin-top: 15px;">
+    <!-- Tab Dokter Rawat Jalan -->
+    <div role="tabpanel" class="tab-pane active" id="dokter-ralan">
+      <div class="table-responsive no-margin">
+        <table class="table table-striped no-padding dataTables" width="100%">
+          <thead>
+            <tr>
+              <th style="white-space: nowrap;">No. RM</th>
+              <th style="white-space: nowrap;">Nama Pasien</th>
+              <th style="white-space: nowrap;">ID Kunjungan</th>
+              <th style="white-space: nowrap;">Antrian</th>
+              <th style="white-space: nowrap;">Poliklinik</th>
+              <th style="white-space: nowrap;">Dokter</th>
+              <th style="white-space: nowrap;">Penjamin</th>
+              <th style="white-space: nowrap;">No. Asuransi</th>
+              <th style="white-space: nowrap;">Tgl. Kunjungan</th>
+              <th style="white-space: nowrap;">Stts. Periksa</th>
+              <th style="white-space: nowrap;">Stts. Lanjut</th>
+              <th style="white-space: nowrap;">Stts. Bayar</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loop: $rawat_jalan.list}
+            <tr{if: $value.stts == 'Sudah'} style="background-color: #dff0d8 !important;"{/if}>
+              <td style="white-space: nowrap;">
+                <span class="dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><button type="button" name="button" class="btn btn-sm btn-default">{$value.no_rkm_medis} <span class="caret"></span></button></span>
+                <ul class="dropdown-menu" role="menu">
+                  {if: $cek_vclaim}
+                    <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynokartu', $value.no_peserta, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">[BPJS] Cek Nomor Kartu</a></li>
+                    <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynik', $value.no_ktp, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">[BPJS] Cek Nomor KTP</a></li>
+                  {/if}
+                  <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
+                  {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
+                  <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAPIE & Pemeriksaan</a></li>
+                  <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
+                  <li><a href="#rujuk_internal" data-no_rawat="{$value.no_rawat}">Rujuk Internal</a></li>
+                  <li class="dropdown-submenu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Surat-Surat</a>
+                    <ul class="dropdown-menu">
+                      <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
+                      <li><a href="{?=url([ADMIN,'dokter_ralan','suratrujukan',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Rujukan</a></li>
+                      <li><a href="{?=url([ADMIN,'dokter_ralan','suratsehat',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sehat</a></li>
+                      <li><a href="{?=url([ADMIN,'dokter_ralan','suratsakit',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sakit</a></li>
+                    </ul>
+                  </li>
+                  {/if}
                 </ul>
-              </li>
-              {/if}
-            </ul>
-          </td>
-          <td style="white-space: nowrap;"><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">{$value.nm_pasien}</a></td>
-          <td style="white-space: nowrap;"><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">{$value.no_rawat}</a></td>
-          <td style="white-space: nowrap;">
-            <button type="button" name="button" class="btn btn-xs btn-warning antrian"
-              data-no_rawat="{$value.no_rawat}"
-              {if: $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
-              disabled
-              {/if}
-            ><span class="fa fa-print"></span> {$value.no_reg}</button> {if: $responsivevoice == 'true'}<button type="button" name="button" class="btn btn-xs btn-primary panggil" data-nm_pasien="{?=strtolower($value.nm_pasien)?}" data-nm_poli="{?=strtolower($value.nm_poli)?}" data-no_reg="{?=strtolower($value.no_reg)?}"><i class="fa fa-bullhorn"></i><span class="hidden-xs hidden-sm"> Panggil</span></button>{/if}</td>
-          <td style="white-space: nowrap;">{$value.nm_poli}</td>
-          <td style="white-space: nowrap;">{$value.nm_dokter}</td>
-          <td style="white-space: nowrap;">{$value.png_jawab} {if: $value.kd_pj == 'BPJ'}{if: $value.potensi_prb !=''}<button class="btn btn-xs btn-danger"><span class="fa fa-wheelchair"></span> {$value.potensi_prb}</button>{/if}{if: $this->core->ActiveModule('vclaim')}<a href="{?=url([ADMIN, 'icare', 'riwayat', convertNorawat($value.no_rawat)])?}" class="btn btn-xs btn-info" data-toggle="modal" data-target="#riwayatModal"><span class="fa fa-file"></span> iCare</a>{/if}{if: $this->core->ActiveModule('pcare')}<a href="{?=url([ADMIN, 'icare', 'riwayat', convertNorawat($value.no_rawat), 'fktp'])?}" class="btn btn-xs btn-info" data-toggle="modal" data-target="#riwayatModal"><span class="fa fa-file"></span> iCare</a>{/if}{/if}</td>
-          <td style="white-space: nowrap;">{$value.no_peserta}</td>
-          <td style="white-space: nowrap;">{$value.tgl_registrasi} {$value.jam_reg}</td>
-          <td style="white-space: nowrap;">{$value.stts}</td>
-          <td style="white-space: nowrap;">{$value.status_lanjut}</td>
-          <td style="white-space: nowrap;">{$value.status_bayar}</td>
-        </tr>
-        {/loop}
-      </tbody>
-    </table>
+              </td>
+              <td style="white-space: nowrap;"><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">{$value.nm_pasien}</a></td>
+              <td style="white-space: nowrap;"><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">{$value.no_rawat}</a></td>
+              <td style="white-space: nowrap;">
+                <button type="button" name="button" class="btn btn-xs btn-warning antrian"
+                  data-no_rawat="{$value.no_rawat}"
+                  {if: $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
+                  disabled
+                  {/if}
+                ><span class="fa fa-print"></span> {$value.no_reg}</button> {if: $responsivevoice == 'true'}<button type="button" name="button" class="btn btn-xs btn-primary panggil" data-nm_pasien="{?=strtolower($value.nm_pasien)?}" data-nm_poli="{?=strtolower($value.nm_poli)?}" data-no_reg="{?=strtolower($value.no_reg)}"><i class="fa fa-bullhorn"></i><span class="hidden-xs hidden-sm"> Panggil</span></button>{/if}</td>
+              <td style="white-space: nowrap;">{$value.nm_poli}</td>
+              <td style="white-space: nowrap;">{$value.nm_dokter}</td>
+              <td style="white-space: nowrap;">{$value.png_jawab} {if: $value.kd_pj == 'BPJ'}{if: $value.potensi_prb !=''}<button class="btn btn-xs btn-danger"><span class="fa fa-wheelchair"></span> {$value.potensi_prb}</button>{/if}{if: $this->core->ActiveModule('vclaim')}<a href="{?=url([ADMIN, 'icare', 'riwayat', convertNorawat($value.no_rawat)])?}" class="btn btn-xs btn-info" data-toggle="modal" data-target="#riwayatModal"><span class="fa fa-file"></span> iCare</a>{/if}{if: $this->core->ActiveModule('pcare')}<a href="{?=url([ADMIN, 'icare', 'riwayat', convertNorawat($value.no_rawat), 'fktp'])?}" class="btn btn-xs btn-info" data-toggle="modal" data-target="#riwayatModal"><span class="fa fa-file"></span> iCare</a>{/if}{/if}</td>
+              <td style="white-space: nowrap;">{$value.no_peserta}</td>
+              <td style="white-space: nowrap;">{$value.tgl_registrasi} {$value.jam_reg}</td>
+              <td style="white-space: nowrap;">{$value.stts}</td>
+              <td style="white-space: nowrap;">{$value.status_lanjut}</td>
+              <td style="white-space: nowrap;">{$value.status_bayar}</td>
+            </tr>
+            {/loop}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Tab Rujukan Internal -->
+    <div role="tabpanel" class="tab-pane" id="rujukan-internal">
+      <div class="table-responsive no-margin">
+        <table class="table table-striped no-padding dataTables" width="100%" style="table-layout: fixed;">
+          <thead>
+            <tr>
+              <th style="white-space: nowrap;">No. RM</th>
+              <th style="white-space: nowrap;">Nama Pasien</th>
+              <th style="white-space: nowrap;">ID Kunjungan</th>
+              <th style="white-space: nowrap;">Poli Asal</th>
+              <th style="white-space: nowrap;">Poli Tujuan</th>
+              <th style="white-space: nowrap;">Dokter Perujuk</th>
+              <th style="white-space: nowrap;">Dokter Tujuan</th>
+              <th style="white-space: nowrap;">Tgl. Rujukan</th>
+              <th style="white-space: nowrap;">Status</th>
+              <th style="white-space: nowrap;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loop: $rawat_jalan.list_rujukan_internal} 
+            <tr>
+              <td style="white-space: nowrap;">{if: isset($value.no_rkm_medis)}{$value.no_rkm_medis}{else}-{/if}</td>
+              <td style="white-space: nowrap;"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', isset($value.no_rkm_medis) ? $value.no_rkm_medis : '-'])?}" data-toggle="modal" data-target="#riwayatModal">{if: isset($value.nm_pasien)}{$value.nm_pasien}{else}-{/if}</a></td>
+              <td style="white-space: nowrap;">{if: isset($value.no_rawat)}{$value.no_rawat}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.poli_asal)}{$value.poli_asal}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.poli_tujuan)}{$value.poli_tujuan}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.dokter_perujuk)}{$value.dokter_perujuk}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.dokter_tujuan)}{$value.dokter_tujuan}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.tgl_rujukan)}{$value.tgl_rujukan}{else}-{/if}</td>
+              <td style="white-space: nowrap;">
+                {if: isset($value.keterangan_jawab) && $value.keterangan_jawab != ''}
+                  <span class="label label-success">Sudah Dijawab</span>
+                {else}
+                  <span class="label label-warning">Belum Dijawab</span>
+                {/if}
+              </td>
+              <td style="white-space: nowrap; width: 17%;">
+                <a href="#jawab_rujukan_internal" class="btn btn-xs btn-primary" data-no_rawat="{if: isset($value.no_rawat)}{$value.no_rawat}{else}-{/if}" data-kd_dokter="{if: isset($value.kd_dokter)}{$value.kd_dokter}{else}-{/if}" data-nm_dokter="{if: isset($value.kd_dokter_tujuan)}{$value.dokter_tujuan}{else}-{/if}" data-kd_dokter_tujuan="{if: isset($value.kd_dokter_tujuan)}{$value.kd_dokter_tujuan}{else}-{/if}" data-dokter_tujuan="{if: isset($value.dokter_tujuan)}{$value.dokter_tujuan}{else}-{/if}" data-kd_poli_tujuan="{if: isset($value.kd_poli_tujuan)}{$value.kd_poli_tujuan}{else}-{/if}" data-poli_tujuan="{if: isset($value.poli_tujuan)}{$value.poli_tujuan}{else}-{/if}" data-keterangan="{if: isset($value.keterangan)}{$value.keterangan}{else}-{/if}" data-keterangan_jawab="{if: isset($value.keterangan_jawab)}{$value.keterangan_jawab}{else}-{/if}">Jawab</a><a href="#hapus_rujukan_internal" class="btn btn-xs btn-danger" data-no_rawat="{if: isset($value.no_rawat)}{$value.no_rawat}{else}-{/if}">Hapus</a>
+              </td>
+            </tr>
+            {/loop}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 <div class="modal fade" id="asuransiModal" tabindex="-1" role="dialog">
@@ -234,11 +338,18 @@
       "searchPlaceholder": "Search..."
     },
     "lengthChange": false,
-    "scrollX": true,
+    "scrollX": false,
+    "autoWidth": false,
+    "columnDefs": [
+      { "width": "12%", "targets": [0, 2] },
+      { "width": "15%", "targets": 1 },
+      { "width": "10%", "targets": [3, 4, 7, 8] },
+      { "width": "12%", "targets": [5, 6] },
+      { "width": "7%", "targets": 9 }
+    ],
     dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
   });
-  var t = $(".dataTables").DataTable().rows().count();
-  $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+
 </script>
 <script type="text/javascript">
    $(function () {
@@ -258,4 +369,53 @@
   $('body').on('hidden.bs.modal', '.modal', function () {
       $(this).removeData('bs.modal');
   });
+</script>
+<script>
+$(document).ready(function() {
+  // Function to update tab counters
+  function updateTabCounters() {
+    // Get total entries from DataTables pagination for rawat jalan
+    var rawatJalanCount = 0;
+    var rujukanInternalCount = 0;
+    
+    // Check if dokter ralan table has DataTables initialized
+    if ($.fn.DataTable.isDataTable('#dokter-ralan .dataTables')) {
+      var dokterRalanTable = $('#dokter-ralan .dataTables').DataTable();
+      rawatJalanCount = dokterRalanTable.page.info().recordsTotal;
+    } else {
+      // Fallback to counting visible rows if DataTables not initialized
+      rawatJalanCount = $('#dokter-ralan tbody tr').length;
+    }
+    
+    // Check if rujukan internal table has DataTables initialized
+    if ($.fn.DataTable.isDataTable('#rujukan-internal .dataTables')) {
+      var rujukanInternalTable = $('#rujukan-internal .dataTables').DataTable();
+      rujukanInternalCount = rujukanInternalTable.page.info().recordsTotal;
+    } else {
+      // Fallback to counting visible rows if DataTables not initialized
+      rujukanInternalCount = $('#rujukan-internal tbody tr').length;
+    }
+    
+    // Update badge counters
+    $('#count-dokter-ralan').text(rawatJalanCount);
+    $('#count-rujukan-internal').text(rujukanInternalCount);
+  }
+  
+  // Update counters on page load with delay to ensure DataTables is initialized
+  setTimeout(function() {
+    updateTabCounters();
+  }, 500);
+  
+  // Update counters when tab is shown
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    setTimeout(function() {
+      updateTabCounters();
+    }, 100);
+  });
+  
+  // Update counters when DataTables is redrawn
+  $(document).on('draw.dt', '.dataTables', function() {
+    updateTabCounters();
+  });
+});
 </script>

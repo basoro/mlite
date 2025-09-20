@@ -1433,7 +1433,8 @@ $("#form_soap").on("click",".assesment", function(event){
   return false;
 });
 
-$('a[href="#rujuk_internal"]').click(function(event){
+// Event delegation untuk rujuk internal - bekerja untuk elemen dinamis
+$(document).on('click', 'a[href="#rujuk_internal"]', function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var no_rawat = $(this).attr("data-no_rawat");
@@ -1478,15 +1479,100 @@ $('a[href="#rujuk_internal"]').click(function(event){
             no_rawat: no_rawat,
             kd_poli: kd_poli,
             kd_dokter: kd_dokter,
-            isi_rujukan: isi_rujukan,
+            isi_rujukan: isi_rujukan, 
           } ,function(data) {
-            alert('Rujukan internal telah disimpan!');
+            var data = JSON.parse(data);
+            alert(data.message);
+            // Reload display setelah simpan
+            $("#display").load(baseURL + '/dokter_ralan/display?t=' + mlite.token);
           });
         }
       }
     }
   });
   $('select').selectator();
+  event.stopPropagation();
+  return false;
+});
+
+// Event delegation untuk edit rujukan internal
+$(document).on('click', 'a[href="#jawab_rujukan_internal"]', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat");
+  var dokter_tujuan = $(this).attr("data-dokter_tujuan");
+  var poli_tujuan = $(this).attr("data-poli_tujuan");
+  var keterangan = $(this).attr("data-keterangan");
+  var keterangan_jawab = $(this).attr("data-keterangan_jawab");
+  var url = baseURL + '/dokter_ralan/editrujukaninternal?t=' + mlite.token;
+  var edit_rujukan_internal = ''
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Poli Tujuan</label>'
+      + '<input type="text" value="' + poli_tujuan + '" class="form-control" readonly>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Dokter Tujuan</label>'
+      + '<input type="text" value="' + dokter_tujuan + '" class="form-control" readonly>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Isi Rujukan</label>'
+      + '<textarea name="isi_rujukan" id="isi_rujukan" class="form-control" rows="6" readonly> ' + keterangan + ' </textarea>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Jawab Rujukan</label>'
+      + '<textarea name="jawab_rujukan" id="jawab_rujukan" class="form-control" rows="6" required> ' + keterangan_jawab + ' </textarea>'
+      + '</div>'
+      + '';
+
+  // tampilkan dialog konfirmasi
+  bootbox.dialog({
+    message: edit_rujukan_internal,
+    title: 'Jawab Rujukan Internal',
+    buttons: {
+      main: {
+        label: 'Update',
+        className: 'btn-primary',
+        callback() {
+          var jawab_rujukan = $('#jawab_rujukan').val();
+          $.post(url, {
+            no_rawat: no_rawat,
+            jawab_rujukan: jawab_rujukan,
+          } ,function(data) {
+            var data = JSON.parse(data);
+            alert(data.message);
+            // Reload display setelah update
+            $("#display").load(baseURL + '/dokter_ralan/display?t=' + mlite.token);
+          });
+        }
+      }
+    }
+  });
+  $('select').selectator();
+  event.stopPropagation();
+  return false;
+});
+
+// Event delegation untuk hapus rujukan internal
+$(document).on('click', 'a[href="#hapus_rujukan_internal"]', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat");
+  var url = baseURL + '/dokter_ralan/hapusrujukaninternal?t=' + mlite.token;
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus rujukan internal ini?", function(result){
+    if (result){
+      $.post(url, {
+        no_rawat: no_rawat
+      } ,function(data) {
+        // console.log(data);
+        var data = JSON.parse(data);
+        alert(data.message);
+        // Reload display setelah hapus
+        $("#display").load(baseURL + '/dokter_ralan/display?t=' + mlite.token);
+      });
+    }
+  });
   event.stopPropagation();
   return false;
 });

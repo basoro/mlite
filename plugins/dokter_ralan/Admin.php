@@ -141,6 +141,57 @@ class Admin extends AdminModule
           $this->assign['list'][] = $row;
         }
 
+        // Query untuk rujukan internal
+        $sql_rujukan_internal = "SELECT 
+            reg_periksa.no_rkm_medis,
+            pasien.nm_pasien,
+            reg_periksa.no_rawat,
+            p1.nm_poli as poli_asal,
+            p2.nm_poli as poli_tujuan,
+            d1.nm_dokter as dokter_perujuk,
+            d2.nm_dokter as dokter_tujuan,
+            reg_periksa.tgl_registrasi as tgl_rujukan,
+            mlite_rujukan_internal_poli.kd_poli as kd_poli_tujuan,
+            mlite_rujukan_internal_poli.kd_dokter as kd_dokter_tujuan,
+            mlite_rujukan_internal_poli.isi_rujukan as keterangan,
+            mlite_rujukan_internal_poli.jawab_rujukan as keterangan_jawab
+          FROM mlite_rujukan_internal_poli
+          INNER JOIN reg_periksa ON mlite_rujukan_internal_poli.no_rawat = reg_periksa.no_rawat
+          INNER JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis
+          INNER JOIN poliklinik p1 ON reg_periksa.kd_poli = p1.kd_poli
+          INNER JOIN poliklinik p2 ON mlite_rujukan_internal_poli.kd_poli = p2.kd_poli
+          INNER JOIN dokter d1 ON reg_periksa.kd_dokter = d1.kd_dokter
+          INNER JOIN dokter d2 ON mlite_rujukan_internal_poli.kd_dokter = d2.kd_dokter
+          INNER JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj
+          WHERE reg_periksa.kd_poli != '$igd'
+          AND reg_periksa.tgl_registrasi BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'";
+
+        if ($this->core->getUserInfo('role') != 'admin') {
+          if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+            $sql_rujukan_internal .= " AND reg_periksa.kd_dokter = '$username'";
+          } else {
+            $sql_rujukan_internal .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
+          }
+        }
+        if($status_periksa == 'belum') {
+          $sql_rujukan_internal .= " AND reg_periksa.stts = 'Belum'";
+        }
+        if($status_periksa == 'selesai') {
+          $sql_rujukan_internal .= " AND reg_periksa.stts = 'Sudah'";
+        }
+        if($status_periksa == 'lunas') {
+          $sql_rujukan_internal .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
+        }
+
+        $stmt = $this->db()->pdo()->prepare($sql_rujukan_internal);
+        $stmt->execute();
+        $rows_rujukan = $stmt->fetchAll();
+
+        $this->assign['list_rujukan_internal'] = [];
+        foreach ($rows_rujukan as $row) {
+          $this->assign['list_rujukan_internal'][] = $row;
+        }
+
     }
 
     public function postSaveDetail()
@@ -2155,7 +2206,64 @@ class Admin extends AdminModule
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data rujukan internal']);
             }
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+        }
+        exit();
+    }
+
+    public function postHapusrujukaninternal()
+    {
+        try {
+            // Get POST data
+            $no_rawat = isset($_POST['no_rawat']) ? $_POST['no_rawat'] : '';
+
+            if (empty($no_rawat)) {
+                echo json_encode(['status' => 'error', 'message' => 'No rawat tidak boleh kosong']);
+                exit();
+            }
+
+            // Delete rujukan internal
+            $result = $this->db('mlite_rujukan_internal_poli')->where('no_rawat', $no_rawat)->delete();
+
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Rujukan internal berhasil dihapus']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus rujukan internal atau data tidak ditemukan']);
+            }
+        } catch (\Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+        }
+        exit();
+    }
+
+    public function postEditrujukaninternal()
+    {
+        try {
+            // Get POST data
+            $no_rawat = isset($_POST['no_rawat']) ? $_POST['no_rawat'] : '';
+            $jawab_rujukan = isset($_POST['jawab_rujukan']) ? $_POST['jawab_rujukan'] : '';
+
+            if (empty($jawab_rujukan)) {
+                echo json_encode(['status' => 'error', 'message' => 'Jawaban rujukan tidak boleh kosong']);
+                exit();
+            }
+
+            // Update rujukan internal
+            $data = [
+                'jawab_rujukan' => $jawab_rujukan
+            ];
+
+            $result = $this->db('mlite_rujukan_internal_poli')
+                ->where('no_rawat', $no_rawat)
+                ->save($data);
+
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Rujukan internal berhasil diupdate']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal mengupdate rujukan internal']);
+            }
+        } catch (\Exception $e) {
             echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
         }
         exit();
