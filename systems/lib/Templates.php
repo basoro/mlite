@@ -176,10 +176,6 @@ class Templates
                 $result = '';
             }
 
-            if (HTML_BEAUTY) {
-               $tidyHTML = new Indenter;
-               return $tidyHTML->indent($result);
-            }
             return $result;
         }
     }

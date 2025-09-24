@@ -30,6 +30,7 @@ plugins/___siap_insulin
 plugins/siap_insulin
 plugins/pasien_galleries
 plugins/cssd
+plugins/orthanc/docker
 jasperphp
 plugins/utd/Site.php
 plugins/utd/view/adonan.html
