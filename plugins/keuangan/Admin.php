@@ -754,7 +754,7 @@ class Admin extends AdminModule
             
             $this->notify('success', 'Posting jurnal berhasil disimpan. Total Debet: '.number_format($total_debet,2).' - Total Kredit: '.number_format($total_kredit,2));
             
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             // Rollback jika ada error
             $this->db()->pdo()->rollback();
             $this->notify('failure', 'Gagal menyimpan jurnal: '.$e->getMessage());

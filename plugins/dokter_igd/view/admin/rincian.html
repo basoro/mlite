@@ -20,6 +20,7 @@
               <th colspan="2">Aksi</th>
             </tr>
           </thead>
+          {if: isset($resep) && !empty($resep.0.resep_dokter)}
           <tbody>
             {loop: $resep}
             <tr>
@@ -48,6 +49,7 @@
             {/loop}
             {/loop}
           </tbody>
+          {/if}
           <tfoot>
             <tr>
               <th colspan="3">Total Biaya Obat</th>
@@ -85,10 +87,10 @@
               <th>Keterangan</th>
             </tr>
             <tr>
-              <td>{$value.nama_racik}</td>
-              <td>{$value.jml_dr}</td>
-              <td>{$value.aturan_pakai}</td>
-              <td>{$value.keterangan}</td>
+              <td>{if: isset($value.nama_racik)}{$value.nama_racik}{else}-{/if}</td>
+              <td>{if: isset($value.jml_dr)}{$value.jml_dr}{else}-{/if}</td>
+              <td>{if: isset($value.aturan_pakai)}{$value.aturan_pakai}{else}-{/if}</td>
+              <td>{if: isset($value.keterangan)}{$value.keterangan}{else}-{/if}</td>
             </tr>
             <tr>
               <th>Nama Obat</th>

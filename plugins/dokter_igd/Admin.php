@@ -550,7 +550,7 @@ class Admin extends AdminModule
         $rows_racikan = $this->db('resep_obat')
           ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
           ->where('no_rawat', $_POST['no_rawat'])
-          ->whereIn('resep_obat.no_resep', $resep_racikan_nos)
+          ->in('resep_obat.no_resep', $resep_racikan_nos)
           ->group('resep_obat.no_resep')
           ->group('resep_obat.no_rawat')
           ->group('resep_obat.kd_dokter')
@@ -688,7 +688,7 @@ class Admin extends AdminModule
         $rows_racikan = $this->db('resep_obat')
           ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
           ->where('no_rawat', $_POST['no_rawat'])
-          ->whereIn('resep_obat.no_resep', $resep_racikan_nos)
+          ->in('resep_obat.no_resep', $resep_racikan_nos)
           ->group('resep_obat.no_resep')
           ->group('resep_obat.no_rawat')
           ->group('resep_obat.kd_dokter')
@@ -947,6 +947,7 @@ class Admin extends AdminModule
       if($this->core->getUserInfo('role', null, true) != 'admin') {
         $poliklinik = explode(',', $this->core->getUserInfo('cap', null, true));
       }
+      
       $layanan = $this->db('jns_perawatan')
         ->where('total_byrdr', '<>', '0')
         ->where('status', '1')
@@ -1209,7 +1210,7 @@ class Admin extends AdminModule
           ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
           ->where('no_rawat', $no_rawat)
           ->where('resep_obat.status', 'ralan')
-          ->whereIn('resep_obat.no_resep', $racikan_nos)
+          ->in('resep_obat.no_resep', $racikan_nos)
           ->group('resep_obat.no_resep')
           ->group('resep_obat.no_rawat')
           ->group('resep_obat.kd_dokter')
@@ -1852,7 +1853,7 @@ class Admin extends AdminModule
                 $data['msg'] = 'Gagal menyimpan data triase';
             }
             
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $data['status'] = 'error';
             $data['msg'] = $e->getMessage();
         }
@@ -1880,7 +1881,7 @@ class Admin extends AdminModule
                 $data['msg'] = 'Gagal menghapus data triase';
             }
             
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $data['status'] = 'error';
             $data['msg'] = $e->getMessage();
         }

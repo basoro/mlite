@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DICOM-Viewer</title>
+    <link rel="stylesheet" type="text/css" href="{?=url()?}/assets/css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="{$baseUrl}/css/admin/styles.css?v=2">
+    <script>
+        var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}", admin:"{?=ADMIN?}"};
+    </script>
+</head>
+<body>
+    <div class="app-container">
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="series-container" id="stackWrapper"></div>
+                <div class="metadata-container">
+                    <h3>mLITE DICOM Viewer</h3>
+                    <div id="dicomMetadata"></div>
+                </div>
+            </div>
+            
+            <div class="viewer-container">
+                <div class="toolbar">
+                    <div class="tool-group">
+                        <button class="toolButton" id="wwwcTool" title="Window Width/Window Center">
+                            <i class="fa fa-adjust"></i>
+                        </button>
+                        <button class="toolButton" id="zoomTool" title="Zoom">
+                            <i class="fa fa-search-plus"></i>
+                        </button>
+                        <button class="toolButton" id="panTool" title="Pan">
+                            <i class="fa fa-hand-paper-o"></i>
+                        </button>
+                        <button class="toolButton" id="magnifyTool" title="Magnify">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <button class="toolButton" id="invertTool" title="Invert Colors">
+                            <i class="fa fa-toggle-on"></i>
+                        </button>
+                        <button class="toolButton" id="resetTool" title="Reset Image">
+                            <i class="fa fa-undo"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="tool-group">
+                        <div class="dropdown">
+                            <button class="toolButton dropdown-toggle" id="annotationTools" title="Annotation Tools">
+                                <i class="fa fa-caret-square-o-down "></i>
+                            </button>
+                            <div class="dropdown-content" id="annotationDropdown">
+                                <button class="toolButton" id="lengthTool" title="Length Measurement">
+                                    <i class="fa fa-ruler"></i> Length
+                                </button>
+                                <button class="toolButton" id="angleTool" title="Angle Measurement">
+                                    <i class="fa fa-ruler-combined"></i> Angle
+                                </button>
+                                <button class="toolButton" id="probeTool" title="Probe">
+                                    <i class="fa fa-crosshairs"></i> Probe
+                                </button>
+                                <button class="toolButton" id="ellipticalRoiTool" title="Elliptical ROI">
+                                    <i class="far fa-circle"></i> Elliptical ROI
+                                </button>
+                                <button class="toolButton" id="rectangleRoiTool" title="Rectangle ROI">
+                                    <i class="far fa-square"></i> Rectangle ROI
+                                </button>
+                                <button class="toolButton" id="freehandRoiTool" title="Freehand ROI">
+                                    <i class="fa fa-paint-brush"></i> Freehand ROI
+                                </button>
+                                <button class="toolButton" id="arrowAnnotateTool" title="Arrow Annotation">
+                                    <i class="fa fa-long-arrow-alt-right"></i> Arrow
+                                </button>
+                                <button class="toolButton" id="bidirectionalTool" title="Bidirectional Tool">
+                                    <i class="fa fa-arrows-alt-h"></i> Bidirectional
+                                </button>
+                            </div>
+                        </div>
+                        <button class="toolButton" id="eraserTool" title="Eraser">
+                            <i class="fa fa-eraser"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="tool-group">
+                        <button class="toolButton" id="playClip" title="Play/Pause Cine">
+                            <i class="fa fa-play"></i>
+                        </button>
+                        <div class="playback-controls">
+                            <input type="range" id="frameSlider" min="0" max="0" value="0" step="1">
+                            <span id="frameCounter">Frame: 0/0</span>
+                        </div>
+                    </div>
+                    
+                    <!-- CT Playback Controls -->
+                    <!-- <div class="tool-group" id="ctPlaybackControls" style="display: none;">
+                        <button class="toolButton" id="ctPlayBtn" title="Play/Pause CT Playback">
+                            <i class="fa fa-play"></i>
+                        </button>
+                        <button class="toolButton" id="ctDirectionBtn" title="Forward">
+                            <i class="fa fa-arrow-right"></i>
+                        </button>
+                        <button class="toolButton" id="ctLoopBtn" title="Continuous Loop">
+                            <i class="fa fa-redo"></i>
+                        </button>
+                        <div class="ct-speed-control">
+                            <label for="ctSpeedSlider" style="font-size: 12px; color: #666;">Speed:</label>
+                            <input type="range" id="ctSpeedSlider" min="100" max="2000" value="500" step="100" style="width: 80px;">
+                            <span id="ctSpeedDisplay" style="font-size: 12px; color: #666;">500ms</span>
+                        </div>
+                        <div class="ct-slice-info">
+                            <span id="ctSliceCounter" style="font-size: 12px; color: #666;">0/0</span>
+                        </div>
+                    </div> -->
+                    <div class="file-actions">
+                        <input type="file" id="dicomUpload" accept=".dcm"  style="display: none;" />
+                        <!-- <button class="btn btn-primary" id="uploadBtn">
+                            <i class="fa fa-file-upload"></i> Upload DICOM
+                        </button> -->
+                        <button class="btn btn-secondary" id="captureBtn">
+                            <i class="fa fa-camera"></i> Capture Screenshot
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="image-container">
+                    <div id="dicomImage" class="cornerstone-element"></div>
+                    <div class="frames-sidebar" id="framesSidebar"></div>
+                    
+                    <div class="viewport-overlay">
+                        <div class="overlay-item" id="bottomleft"></div>
+                        <div class="overlay-item" id="bottomright">
+                            <div id="bottomright1"></div>
+                            <div id="bottomright2"></div>
+                        </div>
+                        <div class="overlay-item" id="topleft">
+                            <div id="ctSliceInfo" style="color: #00ff00; font-weight: bold;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- CT Progress Bar -->
+                    <div class="ct-progress-container" id="ctProgressContainer" style="display: none; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: rgba(0,0,0,0.3);">
+                        <div id="ctProgressBar" style="height: 100%; background: #00ff00; width: 0%; transition: width 0.1s;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="app-footer">
+            <span id="frameCount">Total Frames: 0</span>
+            <span id="statusMessage"></span>
+            <div class="ct-keyboard-help" style="font-size: 11px; color: #888; margin-left: 20px;">
+                <span id="ctKeyboardHelp" style="display: none;">CT Controls: Space=Play/Pause, ←→=Navigate, Home/End=First/Last</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script src="{$baseUrl}/js/admin/diacom/hammer.js"></script>
+    <script src="{$baseUrl}/js/admin/diacom/dicomParser.min.js"></script>
+    <script src="{$baseUrl}/js/admin/diacom/cornerstone.js"></script>
+    <script src="{$baseUrl}/js/admin/diacom/cornerstoneMath.min.js"></script>
+    <script src="{$baseUrl}/js/admin/diacom/cornerstoneWADOImageLoader.bundle.min.js"></script>
+    <script src="{$baseUrl}/js/admin/diacom/cornerstoneTools.js"></script>
+    <script src="{?=url([ADMIN, 'orthanc', 'javascripttools'])?}"></script>
+</body>
+</html>

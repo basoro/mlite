@@ -1,0 +1,437 @@
+<div class="row" style="margin-bottom:100px;">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-database"></i> Orthanc Series</h3>
+      </div>
+      <div class="panel-body">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-12">
+                    <h1 class="mb-2">
+                        <i class="fa fa-user-md me-2"></i>
+                        {?=isset_or($studyInfo.PatientName, 'Unknown Patient')?}
+                    </h1>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Patient ID:</strong> {?=isset_or($studyInfo.PatientID, 'N/A')?}</p>
+                            <p class="mb-1"><strong>Study Date:</strong> {?=isset_or($studyInfo.StudyDate, 'N/A')?}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Study Description:</strong> {?=isset_or($studyInfo.StudyDescription, 'N/A')?}</p>
+                            <p class="mb-1"><strong>Accession Number:</strong> {?=isset_or($studyInfo.AccessionNumber, 'N/A')?}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <!-- Error Message -->
+            {if: $error}
+            <div class="alert alert-danger error-message" role="alert">
+                <i class="fa fa-exclamation-triangle me-2"></i>
+                <strong>Error:</strong> {$error}
+            </div>
+            {/if}
+
+            <!-- Loading Spinner -->
+            <div class="loading-spinner text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading series...</p>
+            </div>
+
+            <!-- Series Content -->
+            {if: $series && count($series) > 0}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="mb-3">
+                        <i class="fa fa-images me-2"></i>
+                        Series ({?=count($series)?} found)
+                    </h2>
+                </div>
+            </div>
+
+            <!-- Series Table -->
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover series-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Series #</th>
+                                    <th>Description</th>
+                                    <th>Modality</th>
+                                    <th>Body Part</th>
+                                    <th>Instances</th>
+                                    <th>Date/Time</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {loop: $series as $s}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-primary">{?=isset_or($s.SeriesNumber, 'N/A')?}</span>
+                                    </td>
+                                    <td>
+                                        <strong>{?=isset_or($s.SeriesDescription, 'No Description')?}</strong>
+                                        {if: isset_or($s.ProtocolName, '')}
+                                        <br><small class="text-muted">{?=isset_or($s.ProtocolName, '')?}</small>
+                                        {/if}
+                                    </td>
+                                    <td>
+                                        <span class="badge modality-badge 
+                                            {if: isset_or($s.Modality, 'N/A')}
+                                            {elseif: $s.Modality == 'CT'}bg-info
+                                            {elseif: $s.Modality == 'MR'}bg-success
+                                            {elseif: $s.Modality == 'XR'}bg-warning
+                                            {elseif: $s.Modality == 'US'}bg-secondary
+                                            {else}bg-dark{/if}">
+                                            {?=isset_or($s.Modality, 'N/A')?}
+                                        </span>
+                                    </td>
+                                    <td>{?=isset_or($s.BodyPartExamined, 'N/A')?}</td>
+                                    <td>
+                                        <span class="badge bg-light text-dark">
+                                            <i class="fa fa-layer-group me-1"></i>
+                                            {?=isset_or($s.NumberOfSeriesRelatedInstances, '0')?}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {if: $s.SeriesDate}
+                                        <small>
+                                            {?=isset_or($s.SeriesDate, 'N/A')?}<br>
+                                            {?=isset_or($s.SeriesTime, '')?}
+                                        </small>
+                                        {else}
+                                        <small class="text-muted">N/A</small>
+                                        {/if}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{$baseUrl}/viewer?series={$s.ID}&t={?=$_SESSION['token']?}" 
+                                            class="btn btn-view btn-sm" 
+                                            title="View Series">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                            <button type="button" 
+                                                    class="btn btn-outline-info btn-sm" 
+                                                    onclick="showSeriesDetails('{$s.ID}')" 
+                                                    title="Series Details">
+                                                <i class="fa fa-info-circle"></i>
+                                            </button>
+                                            <button onclick="downloadSeries('{$s.ID}')" 
+                                            class="btn btn-outline-success btn-sm" 
+                                            title="Download Series">
+                                                <i class="fa fa-download"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {/loop}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {else}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <i class="fa fa-images fa-4x mb-3"></i>
+                <h3>No Series Found</h3>
+                <p class="text-muted">This study doesn't contain any series or they couldn't be loaded.</p>
+                <a href="{$baseUrl}/admin/orthanc/studies" class="btn btn-primary">
+                    <i class="fa fa-arrow-left me-2"></i>Back to Studies
+                </a>
+            </div>
+            {/if}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <!-- Series Details Modal -->
+<div class="modal fade" id="seriesDetailsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Series Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="seriesDetailsContent">
+                <div class="text-center py-3">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        // Base URL for API calls - set from template variable
+        const BASE_URL = '{$baseUrl}';
+        
+        // Show loading spinner on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading spinner after content loads
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            if (loadingSpinner) {
+                setTimeout(function() {
+                    loadingSpinner.style.display = 'none';
+                }, 500);
+            }
+        });
+
+        // Show series details in modal
+        function showSeriesDetails(seriesId) {
+            console.log('Loading series details for ID:', seriesId);
+            
+            // Get modal element
+            const modalElement = document.getElementById('seriesDetailsModal');
+            const content = document.getElementById('seriesDetailsContent');
+            
+            if (!modalElement) {
+                console.error('Modal element not found');
+                alert('Error: Modal not found');
+                return;
+            }
+            
+            // Show loading
+            content.innerHTML = `
+                <div class="text-center py-3">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading series details...</p>
+                </div>
+            `;
+            
+            // Initialize modal with Bootstrap 4 syntax
+            let modal;
+            try {
+                // Try Bootstrap 5 first
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    console.log('Using Bootstrap 5 Modal');
+                    modal = new bootstrap.Modal(modalElement);
+                } else if (typeof $ !== 'undefined' && $.fn.modal) {
+                    // Fallback to Bootstrap 4/jQuery
+                    console.log('Using Bootstrap 4/jQuery Modal');
+                    $(modalElement).modal('show');
+                } else {
+                    console.error('No Bootstrap modal library found');
+                    alert('Error: Bootstrap modal not available');
+                    return;
+                }
+                
+                if (modal && modal.show) {
+                    modal.show();
+                }
+            } catch (error) {
+                console.error('Error initializing modal:', error);
+                // Fallback to jQuery if available
+                if (typeof $ !== 'undefined' && $.fn.modal) {
+                    $(modalElement).modal('show');
+                } else {
+                    alert('Error opening modal: ' + error.message);
+                    return;
+                }
+            }
+            
+            // Use the correct API endpoint format with token
+            const token = '{?=$_SESSION["token"]?}';
+            const apiUrl = `${BASE_URL}/api?path=series/${seriesId}&t=${token}`;
+            console.log('Fetching from URL:', apiUrl);
+            console.log('Token:', token);
+            console.log('BASE_URL:', BASE_URL);
+            
+            // Fetch series details
+            fetch(apiUrl)
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    console.log('Response headers:', response.headers.get('content-type'));
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    // Check if response is JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error(`Expected JSON response but got: ${contentType}`);
+                    }
+                    
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Series data received:', data);
+                    
+                    // Handle different response formats
+                    const seriesData = data.data || data;
+                    
+                    content.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Basic Information</h6>
+                                <table class="table table-sm">
+                                    <tr><td><strong>Series ID:</strong></td><td>${seriesData.ID || seriesId}</td></tr>
+                                    <tr><td><strong>Series Number:</strong></td><td>${seriesData.MainDicomTags?.SeriesNumber || seriesData.SeriesNumber || 'N/A'}</td></tr>
+                                    <tr><td><strong>Description:</strong></td><td>${seriesData.MainDicomTags?.SeriesDescription || seriesData.SeriesDescription || 'N/A'}</td></tr>
+                                    <tr><td><strong>Modality:</strong></td><td>${seriesData.MainDicomTags?.Modality || seriesData.Modality || 'N/A'}</td></tr>
+                                    <tr><td><strong>Body Part:</strong></td><td>${seriesData.MainDicomTags?.BodyPartExamined || seriesData.BodyPartExamined || 'N/A'}</td></tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Technical Details</h6>
+                                <table class="table table-sm">
+                                    <tr><td><strong>Instances:</strong></td><td>${seriesData.Instances?.length || seriesData.NumberOfSeriesRelatedInstances || '0'}</td></tr>
+                                    <tr><td><strong>Series Date:</strong></td><td>${seriesData.MainDicomTags?.SeriesDate || seriesData.SeriesDate || 'N/A'}</td></tr>
+                                    <tr><td><strong>Series Time:</strong></td><td>${seriesData.MainDicomTags?.SeriesTime || seriesData.SeriesTime || 'N/A'}</td></tr>
+                                    <tr><td><strong>Protocol:</strong></td><td>${seriesData.MainDicomTags?.ProtocolName || seriesData.ProtocolName || 'N/A'}</td></tr>
+                                    <tr><td><strong>Station Name:</strong></td><td>${seriesData.MainDicomTags?.StationName || seriesData.StationName || 'N/A'}</td></tr>
+                                    <tr><td><strong>Manufacturer:</strong></td><td>${seriesData.MainDicomTags?.Manufacturer || seriesData.Manufacturer || 'N/A'}</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                        ${seriesData.Instances && seriesData.Instances.length > 0 ? `
+                        <div class="mt-3">
+                            <h6>Instances (${seriesData.Instances.length})</h6>
+                            <div class="row">
+                                ${seriesData.Instances.slice(0, 6).map(instanceId => `
+                                    <div class="col-md-2 mb-2">
+                                        <div class="card card-sm">
+                                            <div class="card-body p-2 text-center">
+                                                <i class="fa fa-file-medical fa-2x text-muted mb-1"></i>
+                                                <small class="d-block text-truncate">${instanceId.substring(0, 8)}...</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                                ${seriesData.Instances.length > 6 ? `<div class="col-md-12"><small class="text-muted">... and ${seriesData.Instances.length - 6} more instances</small></div>` : ''}
+                            </div>
+                        </div>` : ''}
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error loading series details:', error);
+                    console.error('Error stack:', error.stack);
+                    content.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fa fa-exclamation-triangle mr-2"></i>
+                            <strong>Error loading series details:</strong><br>
+                            ${error.message}<br>
+                            <small class="text-muted">Series ID: ${seriesId}</small><br>
+                            <small class="text-muted">API URL: ${apiUrl}</small>
+                        </div>
+                        <div class="mt-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="showSeriesDetails('${seriesId}')">
+                                <i class="fa fa-redo mr-1"></i>Retry
+                            </button>
+                        </div>
+                    `;
+                });
+        }
+
+        // Download series function - Direct form submission to avoid HTTPS warnings
+        function downloadSeries(seriesId) {
+            if (!seriesId) {
+                alert('No series ID provided');
+                return;
+            }
+            
+            console.log('Downloading series:', seriesId);
+            
+            // Show loading state
+            var downloadBtn = $('button[onclick="downloadSeries(\'' + seriesId + '\')"]:first');
+            var originalHtml = downloadBtn.html();
+            downloadBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i>');
+            
+            // First verify the series exists
+            var verifyFormData = new FormData();
+            verifyFormData.append('seriesId', seriesId);
+            verifyFormData.append('token', '{?=$_SESSION["token"]?}');
+            verifyFormData.append('verify_only', '1');
+            
+            fetch('{?=url([ADMIN, "orthanc", "downloadseries"])?}', {
+                method: 'POST',
+                body: verifyFormData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Series exists, proceed with download using form submission
+                    var form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{?=url([ADMIN, "orthanc", "downloadseries"])?}';
+                    form.target = '_blank';
+                    form.style.display = 'none';
+                    
+                    // Add form fields
+                    var seriesInput = document.createElement('input');
+                    seriesInput.type = 'hidden';
+                    seriesInput.name = 'seriesId';
+                    seriesInput.value = seriesId;
+                    form.appendChild(seriesInput);
+                    
+                    var tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = 'token';
+                    tokenInput.value = '{?=$_SESSION["token"]?}';
+                    form.appendChild(tokenInput);
+                    
+                    // Submit form for download
+                    document.body.appendChild(form);
+                    form.submit();
+                    
+                    // Clean up form after a delay
+                    setTimeout(function() {
+                        if (document.body.contains(form)) {
+                            document.body.removeChild(form);
+                        }
+                    }, 1000);
+                    
+                    console.log('Series download initiated:', seriesId);
+                    
+                    // Re-enable button after a short delay
+                    setTimeout(function() {
+                        downloadBtn.prop('disabled', false).html(originalHtml);
+                    }, 2000);
+                } else {
+                    throw new Error(data.message || 'Series verification failed');
+                }
+            })
+            .catch(error => {
+                console.error('Download error:', error);
+                alert('Error downloading series: ' + error.message);
+                
+                // Re-enable button
+                downloadBtn.prop('disabled', false).html(originalHtml);
+            });
+        }
+
+        // Add click handlers for view buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const viewButtons = document.querySelectorAll('.btn-view');
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Add loading state
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+                    this.disabled = true;
+                    
+                    // Re-enable after a short delay (in case of navigation issues)
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    }, 3000);
+                });
+            });
+        });
+    </script>

@@ -1,0 +1,1282 @@
+<style>
+.auto-generated {
+    background-color: #f0f8ff !important;
+    border-left: 3px solid #17a2b8 !important;
+}
+
+.auto-gen-indicator {
+    display: block;
+    margin-top: 2px;
+    font-style: italic;
+}
+
+.auto-gen-indicator i {
+    margin-right: 3px;
+}
+
+/* Search Form Styling */
+.search-container .panel-info {
+    border-color: #3498db;
+}
+
+.search-container .panel-info > .panel-heading {
+    background-color: #3498db;
+    border-color: #3498db;
+    color: white;
+}
+
+.search-container .panel-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.search-container .btn-xs {
+    padding: 1px 5px;
+    font-size: 12px;
+}
+
+.search-results-info {
+    font-size: 13px;
+    color: #666;
+}
+
+.search-results-info.text-success {
+    color: #27ae60 !important;
+}
+
+.search-results-info.text-warning {
+    color: #f39c12 !important;
+}
+
+.search-results-info.text-danger {
+    color: #e74c3c !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .search-container .col-md-3,
+    .search-container .col-md-6 {
+        margin-bottom: 10px;
+    }
+    
+    .search-container .btn {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    .search-results-info {
+        display: block;
+        margin-top: 10px;
+        margin-left: 0 !important;
+    }
+}
+
+/* Table improvements */
+#studiesTable {
+    margin-top: 0;
+}
+
+#studiesTable th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+}
+
+#studiesTable tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* No results styling */
+#noResultsRow .alert {
+    border: none;
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+</style>
+
+<div class="row" style="margin-bottom:100px;">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-database"></i> Orthanc Studies</h3>
+      </div>
+      <div class="panel-body">
+        <!-- Search and Filter Form -->
+        <div class="search-container" style="margin-bottom: 20px;">
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <i class="fa fa-search"></i> Search & Filter Studies
+                <button type="button" class="btn btn-xs btn-default pull-right" onclick="toggleSearchForm()">
+                  <i class="fa fa-chevron-down" id="searchToggleIcon"></i>
+                </button>
+              </h4>
+            </div>
+            <div class="panel-body" id="searchFormContainer" style="display: none;">
+              <form id="studiesSearchForm">
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label for="searchPatientName">Patient Name</label>
+                      <input type="text" class="form-control" id="searchPatientName" placeholder="Enter patient name...">
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label for="searchPatientId">Patient ID</label>
+                      <input type="text" class="form-control" id="searchPatientId" placeholder="Enter patient ID...">
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label for="searchStudyDescription">Study Description</label>
+                      <input type="text" class="form-control" id="searchStudyDescription" placeholder="Enter study description...">
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label for="searchModality">Modality</label>
+                      <select class="form-control" id="searchModality">
+                        <option value="">All Modalities</option>
+                        <option value="CT">CT</option>
+                        <option value="MR">MR</option>
+                        <option value="CR">CR</option>
+                        <option value="DR">DR</option>
+                        <option value="US">US</option>
+                        <option value="XA">XA</option>
+                        <option value="RF">RF</option>
+                        <option value="MG">MG</option>
+                        <option value="DX">DX</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label for="searchDateFrom">From Date</label>
+                      <input type="date" class="form-control" id="searchDateFrom">
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label for="searchDateTo">To Date</label>
+                      <input type="date" class="form-control" id="searchDateTo">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>&nbsp;</label><br>
+                      <button type="button" class="btn btn-primary" onclick="performSearch()">
+                        <i class="fa fa-search"></i> Search
+                      </button>
+                      <button type="button" class="btn btn-default" onclick="resetSearch()">
+                        <i class="fa fa-refresh"></i> Reset
+                      </button>
+                      <span class="search-results-info" id="searchResultsInfo" style="margin-left: 15px; font-weight: bold;"></span>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+        <div class="table-container">
+            {if: $studies}
+                <table class="table table-striped table-bordered" id="studiesTable">
+                    <thead>
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Patient ID</th>
+                            <th>Study Date</th>
+                            <th>Study Time</th>
+                            <th>Study Description</th>
+                            <th>Modality</th>
+                            <th>Series</th>
+                            <th>Instances</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loop: $studies as $study}
+                            <tr>
+                                <td>
+                                    <strong>{$study.PatientName}</strong><br>
+                                    <small class="text-muted">
+                                        {if: $study.PatientMainDicomTags.PatientSex}
+                                            {$study.PatientMainDicomTags.PatientSex} - 
+                                        {/if}
+                                        {if: $study.PatientMainDicomTags.PatientBirthDate}
+                                            Born: {?=date('d/m/Y', strtotime($study.PatientMainDicomTags.PatientBirthDate))?}
+                                        {/if}
+                                    </small>
+                                </td>
+                                <td>
+                                    <code>{$study.PatientID}</code>
+                                </td>
+                                <td>
+                                    <span class="label label-info">{$study.StudyDate}</span>
+                                </td>
+                                <td>
+                                    <small>{$study.StudyTime}</small>
+                                </td>
+                                <td>
+                                    <strong>{$study.StudyDescription}</strong><br>
+                                    {if: $study.MainDicomTags.StudyID ?? ''}
+                                        <small class="text-muted">ID: {$study.MainDicomTags.StudyID}</small>
+                                    {/if}
+                                </td>
+                                <td>
+                                    <span class="label label-default">{$study.Modality}</span>
+                                </td>
+                                <td>
+                                    <span class="badge">{$study.SeriesCount}</span>
+                                </td>
+                                <td>
+                                    <span class="badge">{$study.InstancesCount}</span>
+                                </td>
+                                <td class="study-actions">
+                                    <div class="btn-group btn-group-sm">
+                                        <a onclick="window.open('{$baseUrl}/viewer?study={$study.ID}&t={?=$_SESSION['token']?}', '_blank', 'toolbar=no,menubar=no,scrollbars=yes,resizable=yes,width=1200,height=800')" 
+                                           class="btn btn-primary" title="View DICOM" style="cursor:pointer">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                        <a href="{$baseUrl}/series?study={$study.ID}&t={?=$_SESSION['token']?}" 
+                                           class="btn btn-info" title="View Series">
+                                            <i class="fa fa-list"></i>
+                                        </a>
+                                        <button class="btn btn-warning" 
+                                                onclick="openModifyModal('{$study.ID}', '{$study.PatientName}', '{$study.PatientID}')" 
+                                                title="Modify Tags">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-success" 
+                                                onclick="downloadStudy('{$study.ID}')" 
+                                                title="Download Study">
+                                            <i class="fa fa-download"></i>
+                                        </button>
+                                        <button class="btn btn-danger" 
+                                                onclick="deleteStudy('{$study.ID}', '{$study.PatientName}', '{$study.PatientID}')" 
+                                                title="Delete Study">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {/loop}
+                    </tbody>
+                </table>
+            {else}
+                <div class="alert alert-info text-center">
+                    <i class="fa fa-info-circle fa-3x"></i>
+                    <h4>No Studies Found</h4>
+                    <p>Tidak ada DICOM studies yang ditemukan di server Orthanc.</p>
+                    {if: !$error}
+                        <p>Pastikan server Orthanc berjalan dan memiliki data DICOM.</p>
+                    {/if}
+                </div>
+            {/if}
+        </div>
+        
+        <!-- Pagination -->
+        {if: $pagination && $studies}
+        <div class="row">
+          <div class="col-md-12">
+            <div class="pagination-container" style="margin-top: 20px;">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="pagination-info">
+                    <p class="text-muted">
+                      Showing page {$pagination.current_page} 
+                      {if: $pagination.study_date}
+                        for date: <strong>{$pagination.study_date}</strong>
+                      {/if}
+                      (Limit: {$pagination.limit} studies per page)
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <nav aria-label="Studies pagination">
+                    <ul class="pagination pull-right" style="margin: 0;">
+                      {if: $pagination.has_prev}
+                        <li>
+                          <a href="{?=url([ADMIN, 'orthanc', 'studies'])?}?limit={$pagination.limit}&since={$pagination.prev_offset}{if: $pagination.from_date}&from_date={$pagination.from_date}{/if}{if: $pagination.to_date}&to_date={$pagination.to_date}{/if}" 
+                             aria-label="Previous">
+                            <span aria-hidden="true">&laquo; Previous</span>
+                          </a>
+                        </li>
+                      {else}
+                        <li class="disabled">
+                          <span>&laquo; Previous</span>
+                        </li>
+                      {/if}
+                      
+                      <li class="active">
+                        <span>Page {$pagination.current_page}</span>
+                      </li>
+                      
+                      {if: $pagination.has_next}
+                        <li>
+                          <a href="{?=url([ADMIN, 'orthanc', 'studies'])?}?limit={$pagination.limit}&since={$pagination.next_offset}{if: $pagination.from_date}&from_date={$pagination.from_date}{/if}{if: $pagination.to_date}&to_date={$pagination.to_date}{/if}" 
+                             aria-label="Next">
+                            <span aria-hidden="true">Next &raquo;</span>
+                          </a>
+                        </li>
+                      {else}
+                        <li class="disabled">
+                          <span>Next &raquo;</span>
+                        </li>
+                      {/if}
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+              
+              <!-- Page Size Selector -->
+              <div class="row" style="margin-top: 10px;">
+                <div class="col-md-12">
+                  <div class="page-size-selector">
+                    <form method="GET" style="display: inline-block;">
+                      {if: $pagination.from_date}
+                        <input type="hidden" name="from_date" value="{$pagination.from_date}">
+                      {/if}
+                      {if: $pagination.to_date}
+                        <input type="hidden" name="to_date" value="{$pagination.to_date}">
+                      {/if}
+                      <input type="hidden" name="since" value="0">
+                      <label for="limitSelect" class="text-muted" style="margin-right: 5px;">Studies per page:</label>
+                      <select name="limit" id="limitSelect" class="form-control" style="width: auto; display: inline-block;" onchange="this.form.submit()">
+                        <option value="25" {if: $pagination.limit == 25}selected{/if}>25</option>
+                        <option value="50" {if: $pagination.limit == 50}selected{/if}>50</option>
+                        <option value="100" {if: $pagination.limit == 100}selected{/if}>100</option>
+                        <option value="200" {if: $pagination.limit == 200}selected{/if}>200</option>
+                      </select>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/if}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modify Tags Modal -->
+<div class="modal fade" id="modifyTagsModal" tabindex="-1" role="dialog" aria-labelledby="modifyTagsModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modifyTagsModalLabel">Modify <span id="modalStudyInfo"></span></h4>
+      </div>
+      <div class="modal-body">
+        <form id="modifyTagsForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>PatientID</label>
+                <input type="text" class="form-control" id="patientId" name="PatientID">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>PatientName</label>
+                <input type="text" class="form-control" id="patientName" name="PatientName">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>PatientBirthDate</label>
+                <input type="text" class="form-control" id="patientBirthDate" name="PatientBirthDate" placeholder="YYYYMMDD">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>PatientSex</label>
+                <select class="form-control" id="patientSex" name="PatientSex">
+                  <option value="">Select...</option>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                  <option value="O">Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>AccessionNumber</label>
+                <input type="text" class="form-control" id="accessionNumber" name="AccessionNumber">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>InstitutionName</label>
+                <input type="text" class="form-control" id="institutionName" name="InstitutionName">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>ReferringPhysicianName</label>
+                <input type="text" class="form-control" id="referringPhysicianName" name="ReferringPhysicianName">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>RequestingPhysician</label>
+                <input type="text" class="form-control" id="requestingPhysician" name="RequestingPhysician">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>RequestedProcedureDescription</label>
+            <input type="text" class="form-control" id="requestedProcedureDescription" name="RequestedProcedureDescription">
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>StudyDate</label>
+                <input type="text" class="form-control" id="studyDate" name="StudyDate" placeholder="YYYYMMDD">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>StudyTime</label>
+                <input type="text" class="form-control" id="studyTime" name="StudyTime" placeholder="HHMMSS">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>StudyID</label>
+                <input type="text" class="form-control" id="studyId" name="StudyID">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-8">
+              <div class="form-group">
+                <label>StudyDescription</label>
+                <input type="text" class="form-control" id="studyDescription" name="StudyDescription">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>StudyInstanceUID</label>
+                <input type="text" class="form-control" id="studyInstanceUID" name="StudyInstanceUID" readonly>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Insert a DICOM Tag</label>
+            <div class="input-group">
+              <select class="form-control" id="additionalTagSelect">
+                <option value="">Select a tag...</option>
+                <option value="0008,0020">StudyDate (0008,0020)</option>
+                <option value="0008,0030">StudyTime (0008,0030)</option>
+                <option value="0008,0050">AccessionNumber (0008,0050)</option>
+                <option value="0008,0080">InstitutionName (0008,0080)</option>
+                <option value="0008,0090">ReferringPhysicianName (0008,0090)</option>
+                <option value="0008,1030">StudyDescription (0008,1030)</option>
+                <option value="0010,0010">PatientName (0010,0010)</option>
+                <option value="0010,0020">PatientID (0010,0020)</option>
+                <option value="0010,0030">PatientBirthDate (0010,0030)</option>
+                <option value="0010,0040">PatientSex (0010,0040)</option>
+                <option value="0020,000D">StudyInstanceUID (0020,000D)</option>
+                <option value="0020,0010">StudyID (0020,0010)</option>
+              </select>
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-info" onclick="insertDicomTag()">Insert</button>
+              </span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Modification Options</label>
+            <div class="radio">
+              <label>
+                <input type="radio" name="modifyOption" value="generate_new_uids" checked>
+                Modify the original study. <small class="text-muted">(generating new DICOM UIDs)</small>
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="modifyOption" value="keep_original_uids">
+                Modify the original study. <small class="text-muted">(keeping the original DICOM UIDs)</small>
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="modifyOption" value="create_copy">
+                Create a modified copy of the original study. <small class="text-muted">(generating new DICOM UIDs and keeping the original study)</small>
+              </label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="goBackToStudies()">Back</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitModifyTags()">Modify</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var currentStudyId = null;
+
+// Helper function to show alerts
+function showAlert(message, type) {
+    var alertClass = 'alert-' + type;
+    var iconClass = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+    
+    var alertHtml = '<div class="alert ' + alertClass + ' alert-dismissible fade in" role="alert">' +
+        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+            '<span aria-hidden="true">&times;</span>' +
+        '</button>' +
+        '<i class="fa ' + iconClass + '"></i> ' + message +
+    '</div>';
+    
+    // Insert alert at the top of modal body
+    $('#modifyTagsModal .modal-body').prepend(alertHtml);
+    
+    // Auto-hide success alerts after 5 seconds
+    if (type === 'success') {
+        setTimeout(function() {
+            $('#modifyTagsModal .alert-success').fadeOut();
+        }, 5000);
+    }
+}
+
+// Helper function to clear all alerts
+function clearAlerts() {
+    $('#modifyTagsModal .alert').remove();
+}
+
+function openModifyModal(studyId, patientName, patientId) {
+    currentStudyId = studyId;
+    $('#modalStudyInfo').text(patientId + ' | ' + patientName);
+    
+    // Load study data
+    loadStudyData(studyId);
+    
+    $('#modifyTagsModal').modal('show');
+}
+
+function loadStudyData(studyId) {
+    // Show loading state
+    $('#modifyTagsForm input, #modifyTagsForm select').prop('disabled', true);
+    // Make AJAX call to get study details
+    $.ajax({
+        url: '{?=url([ADMIN, "orthanc", "getstudydetails"])?}',
+        type: 'POST',
+        data: {
+            studyId: studyId,
+            token: '{?=$_SESSION["token"]?}'
+        },
+        success: function(response) {
+            console.log('Raw response:', response);
+            try {
+                // Parse response if it's a string
+                if (typeof response === 'string') {
+                    response = JSON.parse(response);
+                }
+                
+                if (response.success && response.data) {
+                    populateForm(response.data);
+                } else {
+                    alert('Error loading study data: ' + (response.message || 'No data received'));
+                }
+            } catch (error) {
+                console.error('Error parsing response:', error);
+                alert('Error loading study data: Invalid response format');
+            }
+        },
+        error: function(xhr, status, error) {
+            alert('Error loading study data: ' + error);
+        },
+        complete: function() {
+            $('#modifyTagsForm input, #modifyTagsForm select').prop('disabled', false);
+        }
+    });
+}
+
+function populateForm(studyData) {
+    try {
+        // Check if we have the expected nested structure
+        if (!studyData || typeof studyData !== 'object') {
+            throw new Error('Invalid study data format');
+        }
+        
+        // Extract nested data objects
+        var patientTags = studyData.PatientMainDicomTags || {};
+        var studyTags = studyData.MainDicomTags || {};
+        
+        // Helper function to format date from YYYYMMDD to YYYY-MM-DD
+        function formatDate(dateStr) {
+            if (!dateStr || dateStr.length !== 8) return dateStr;
+            return dateStr.substring(0, 4) + '-' + dateStr.substring(4, 6) + '-' + dateStr.substring(6, 8);
+        }
+        
+        // Populate patient tags
+        $('#patientId').val(patientTags.PatientID || '');
+        $('#patientName').val(patientTags.PatientName || '');
+        $('#patientBirthDate').val(formatDate(patientTags.PatientBirthDate) || '');
+        
+        // Set patient sex with proper option selection and validation
+        var patientSex = patientTags.PatientSex || '';
+        var $patientSexSelect = $('#patientSex');
+        
+        // Check if the value exists in the select options
+        var validOptions = ['', 'M', 'F', 'O'];
+        if (validOptions.includes(patientSex)) {
+            $patientSexSelect.val(patientSex);
+        } else {
+            // If invalid value, set to empty and log warning
+            console.warn('Invalid PatientSex value:', patientSex, 'Setting to empty');
+            $patientSexSelect.val('');
+        }
+        
+        // Ensure the selection is properly highlighted
+        $patientSexSelect.trigger('change');
+        
+        // Populate study tags with auto-generation for AccessionNumber
+        var accessionNumber = studyTags.AccessionNumber || '';
+        
+        // Auto-generate AccessionNumber if empty
+        if (!accessionNumber || accessionNumber.trim() === '') {
+            var timestamp = new Date().getTime();
+            var randomNum = Math.floor(Math.random() * 9000) + 1000; // 4-digit random number
+            accessionNumber = 'ACC' + timestamp + randomNum;
+            
+            // Add visual indicator for auto-generated value
+            $('#accessionNumber').val(accessionNumber)
+                .addClass('auto-generated')
+                .after('<small class="text-info auto-gen-indicator"><i class="fa fa-magic"></i> Auto-generated</small>');
+        } else {
+            $('#accessionNumber').val(accessionNumber)
+                .removeClass('auto-generated')
+                .next('.auto-gen-indicator').remove();
+        }
+        
+        $('#institutionName').val(studyTags.InstitutionName || '');
+        $('#referringPhysicianName').val(studyTags.ReferringPhysicianName || '');
+        $('#requestingPhysician').val(studyTags.RequestingPhysician || '');
+        $('#requestedProcedureDescription').val(studyTags.RequestedProcedureDescription || '');
+        $('#studyDate').val(formatDate(studyTags.StudyDate) || '');
+        $('#studyTime').val(studyTags.StudyTime || '');
+        $('#studyId').val(studyTags.StudyID || '');
+        $('#studyDescription').val(studyTags.StudyDescription || '');
+        $('#studyInstanceUID').val(studyTags.StudyInstanceUID || '');
+        
+        console.log('Form populated successfully with study data');
+        
+    } catch (error) {
+        console.error('Error populating form:', error);
+        alert('Error populating form: ' + error.message);
+    }
+}
+
+function insertDicomTag() {
+    var selectedTag = $('#additionalTagSelect').val();
+    if (selectedTag) {
+        var tagName = $('#additionalTagSelect option:selected').text().split(' (')[0];
+        
+        // Create new form group for the additional tag
+        var newField = $('<div class="form-group additional-tag">' +
+            '<label>' + tagName + ' (' + selectedTag + ')</label>' +
+            '<div class="input-group">' +
+                '<input type="text" class="form-control" name="' + selectedTag + '" data-tag="' + selectedTag + '">' +
+                '<span class="input-group-btn">' +
+                    '<button type="button" class="btn btn-danger btn-sm" onclick="removeAdditionalTag(this)"><i class="fa fa-trash"></i></button>' +
+                '</span>' +
+            '</div>' +
+        '</div>');
+        
+        // Insert before the modification options
+        newField.insertBefore($('input[name="modifyOption"]').closest('.form-group'));
+        
+        // Reset the select
+        $('#additionalTagSelect').val('');
+    }
+}
+
+function removeAdditionalTag(button) {
+    $(button).closest('.additional-tag').remove();
+}
+
+function submitModifyTags() {
+    if (!currentStudyId) {
+        showAlert('No study selected', 'danger');
+        return;
+    }
+    
+    // Ensure AccessionNumber is not empty before submission
+    var accessionNumberField = $('#accessionNumber');
+    var accessionNumberValue = accessionNumberField.val();
+    
+    if (!accessionNumberValue || accessionNumberValue.trim() === '') {
+        // Auto-generate if still empty
+        var timestamp = new Date().getTime();
+        var randomNum = Math.floor(Math.random() * 9000) + 1000;
+        accessionNumberValue = 'ACC' + timestamp + randomNum;
+        
+        // Remove existing indicator first to avoid duplicates
+        accessionNumberField.next('.auto-gen-indicator').remove();
+        
+        accessionNumberField.val(accessionNumberValue)
+            .addClass('auto-generated')
+            .after('<small class="text-info auto-gen-indicator"><i class="fa fa-magic"></i> Auto-generated at submit</small>');
+        
+        console.log('AccessionNumber auto-generated at submit time:', accessionNumberValue);
+    }
+    
+    // Collect form data
+    var formData = {
+        studyId: currentStudyId,
+        token: '{?=$_SESSION["token"]?}',
+        modifyOption: $('input[name="modifyOption"]:checked').val(),
+        tags: {}
+    };
+    
+    // Collect standard form fields
+    $('#modifyTagsForm input[name], #modifyTagsForm select[name]').each(function() {
+        var name = $(this).attr('name');
+        var value = $(this).val();
+        
+        // Skip modifyOption as it's handled separately
+        if (name === 'modifyOption') {
+            return;
+        }
+        
+        // Include all fields, even if empty (server will handle validation)
+        // This ensures auto-generated AccessionNumber is always included
+        formData.tags[name] = value || '';
+        
+        // Debug log for AccessionNumber specifically
+        if (name === 'AccessionNumber') {
+            console.log('AccessionNumber collected:', value, 'Auto-generated:', $(this).hasClass('auto-generated'));
+        }
+    });
+    
+    // Collect additional DICOM tags
+    $('.additional-tag input[data-tag]').each(function() {
+        var tag = $(this).attr('data-tag');
+        var value = $(this).val();
+        if (value) {
+            formData.tags[tag] = value;
+        }
+    });
+    
+    // Debug: Log the complete form data being sent
+    console.log('Form data being submitted:', formData);
+    console.log('AccessionNumber in tags:', formData.tags.AccessionNumber);
+    console.log('Modify option selected:', formData.modifyOption);
+    
+    // Clear any previous alerts
+    clearAlerts();
+    
+    // Show loading state
+    var submitBtn = $('#modifyTagsModal .btn-primary');
+    var originalText = submitBtn.text();
+    submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+    $('#modifyTagsModal .btn').not('.btn-primary').prop('disabled', true);
+    
+    // Submit the modification
+    $.ajax({
+        url: '{?=url([ADMIN, "orthanc", "modifystudytags"])?}',
+        type: 'POST',
+        data: formData,
+        success: function(response) {
+            console.log(response);
+            try {
+                // Parse response if it's a string
+                if (typeof response === 'string') {
+                    response = JSON.parse(response);
+                }
+                
+                console.log('Modify response:', response);
+                
+                if (response.success) {
+                    // Handle successful modification
+                    var successMessage = response.message || 'Study tags modified successfully';
+                    var operationDetails = '';
+                    
+                    if (response.data) {
+                        var data = response.data;
+                        operationDetails += '<br><strong>Operation Summary:</strong>';
+                        
+                        if (data.ID) {
+                            operationDetails += '<br>• New Study ID: ' + data.ID;
+                        }
+                        
+                        if (data.InstancesCount !== undefined) {
+                            operationDetails += '<br>• Instances Count: ' + data.InstancesCount;
+                        }
+                        
+                        if (data.FailedInstancesCount !== undefined) {
+                            if (data.FailedInstancesCount > 0) {
+                                operationDetails += '<br>• <span class="text-warning">Failed Instances: ' + data.FailedInstancesCount + '</span>';
+                            } else {
+                                operationDetails += '<br>• Failed Instances: 0';
+                            }
+                        }
+                        
+                        if (data.Type) {
+                            operationDetails += '<br>• Resource Type: ' + data.Type;
+                        }
+                        
+                        if (data.IsAnonymization !== undefined) {
+                            operationDetails += '<br>• Anonymization: ' + (data.IsAnonymization ? 'Yes' : 'No');
+                        }
+                    }
+                    
+                    showAlert(successMessage + operationDetails, 'success');
+                    
+                    // Close modal after a short delay to let user see the success message
+                    setTimeout(function() {
+                        // $('#modifyTagsModal').modal('hide');
+                        // Reload the page to show updated data
+                        // location.reload();
+                    }, 2000);
+                    
+                } else {
+                    // Handle failed modification
+                    var errorMessage = response.message || 'Unknown error occurred';
+                    var errorDetails = '';
+                    
+                    if (response.error) {
+                        errorDetails = '<br><strong>Error Details:</strong> ' + response.error;
+                    }
+                    
+                    showAlert('Error modifying study tags: ' + errorMessage + errorDetails, 'danger');
+                }
+                
+            } catch (error) {
+                console.error('Error parsing response:', error);
+                showAlert('Error processing server response: Invalid JSON format', 'danger');
+            }
+        },
+        error: function(xhr, status, error) {
+            var errorMessage = 'Network error occurred';
+            
+            if (xhr.responseText) {
+                try {
+                    var errorResponse = JSON.parse(xhr.responseText);
+                    errorMessage = errorResponse.message || errorMessage;
+                } catch (e) {
+                    errorMessage = xhr.responseText;
+                }
+            }
+            
+            showAlert('Error modifying study tags: ' + errorMessage + ' (Status: ' + status + ')', 'danger');
+        },
+        complete: function() {
+            // Re-enable buttons
+            submitBtn.prop('disabled', false).text(originalText);
+            $('#modifyTagsModal .btn').prop('disabled', false);
+        }
+    });
+}
+
+function downloadStudy(studyId) {
+    if (!studyId) {
+        alert('No study ID provided');
+        return;
+    }
+    
+    // Show loading state
+    var downloadBtn = $('button[onclick="downloadStudy(\'' + studyId + '\')"]:first');
+    var originalHtml = downloadBtn.html();
+    downloadBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i>');
+    
+    // Create download request for binary data
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '{?=url([ADMIN, "orthanc", "downloadstudy"])?}', true);
+    xhr.responseType = 'blob';
+    
+    // Set up form data
+    var formData = new FormData();
+    formData.append('studyId', studyId);
+    formData.append('token', '{?=$_SESSION["token"]?}');
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            // Check if response is actually a blob (binary data)
+            if (xhr.response instanceof Blob) {
+                // Check if it's an error response (JSON) by checking content type
+                if (xhr.response.type === 'application/json') {
+                    // Handle JSON error response
+                    var reader = new FileReader();
+                    reader.onload = function() {
+                        try {
+                            var errorResponse = JSON.parse(reader.result);
+                            alert('Error downloading study: ' + (errorResponse.message || 'Unknown error'));
+                        } catch (e) {
+                            alert('Error downloading study: Invalid response format');
+                        }
+                    };
+                    reader.readAsText(xhr.response);
+                } else {
+                    // Handle successful binary download
+                    var blob = xhr.response;
+                    var url = window.URL.createObjectURL(blob);
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'study_' + studyId + '_' + new Date().getTime() + '.zip';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                }
+            } else {
+                alert('Error downloading study: Invalid response format');
+            }
+        } else {
+            // Handle HTTP error status
+            alert('Error downloading study: HTTP ' + xhr.status + ' - ' + xhr.statusText);
+        }
+        
+        // Re-enable button
+        downloadBtn.prop('disabled', false).html(originalHtml);
+    };
+    
+    xhr.onerror = function() {
+        alert('Error downloading study: Network error occurred');
+        // Re-enable button
+        downloadBtn.prop('disabled', false).html(originalHtml);
+    };
+    
+    xhr.ontimeout = function() {
+        alert('Error downloading study: Request timeout');
+        // Re-enable button
+        downloadBtn.prop('disabled', false).html(originalHtml);
+    };
+    
+    // Set timeout to 5 minutes for large files
+    xhr.timeout = 300000;
+    
+    // Send the request
+    xhr.send(formData);
+}
+
+function goBackToStudies() {
+    $('#modifyTagsModal').modal('hide');
+}
+
+// Clear form when modal is hidden
+$('#modifyTagsModal').on('hidden.bs.modal', function() {
+    $('#modifyTagsForm')[0].reset();
+    $('.additional-tag').remove();
+    // Remove auto-generated indicators and styling
+    $('.auto-gen-indicator').remove();
+    $('#modifyTagsForm input').removeClass('auto-generated');
+    clearAlerts();
+    currentStudyId = null;
+});
+
+// Clear alerts when modal is shown
+$('#modifyTagsModal').on('show.bs.modal', function() {
+    clearAlerts();
+});
+
+// Search and Filter Functions
+var searchTimeout;
+var originalTableRows = [];
+
+// Store original table rows on page load
+$(document).ready(function() {
+    storeOriginalRows();
+    setupSearchEventListeners();
+});
+
+function storeOriginalRows() {
+    originalTableRows = [];
+    $('#studiesTable tbody tr').each(function() {
+        originalTableRows.push($(this).clone());
+    });
+}
+
+function setupSearchEventListeners() {
+    // Real-time search with debounce
+    $('#searchPatientName, #searchPatientId, #searchStudyDescription').on('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(performSearch, 300);
+    });
+    
+    // Immediate search for select and date inputs
+    $('#searchModality, #searchDateFrom, #searchDateTo').on('change', performSearch);
+}
+
+function toggleSearchForm() {
+    var container = $('#searchFormContainer');
+    var icon = $('#searchToggleIcon');
+    
+    if (container.is(':visible')) {
+        container.slideUp();
+        icon.removeClass('fa-chevron-up').addClass('fa-chevron-down');
+    } else {
+        container.slideDown();
+        icon.removeClass('fa-chevron-down').addClass('fa-chevron-up');
+    }
+}
+
+function performSearch() {
+    var searchCriteria = {
+        patientName: $('#searchPatientName').val().toLowerCase().trim(),
+        patientId: $('#searchPatientId').val().toLowerCase().trim(),
+        studyDescription: $('#searchStudyDescription').val().toLowerCase().trim(),
+        modality: $('#searchModality').val().toLowerCase().trim(),
+        dateFrom: $('#searchDateFrom').val(),
+        dateTo: $('#searchDateTo').val()
+    };
+    
+    var visibleCount = 0;
+    var totalCount = originalTableRows.length;
+    
+    // Clear current table
+    $('#studiesTable tbody').empty();
+    
+    // Filter and display matching rows
+    originalTableRows.forEach(function(row) {
+        if (matchesSearchCriteria(row, searchCriteria)) {
+            $('#studiesTable tbody').append(row.clone());
+            visibleCount++;
+        }
+    });
+    
+    // Update search results info
+    updateSearchResultsInfo(visibleCount, totalCount);
+    
+    // Show no results message if needed
+    if (visibleCount === 0) {
+        showNoResultsMessage();
+    }
+}
+
+function matchesSearchCriteria(row, criteria) {
+    var rowData = extractRowData(row);
+    
+    // Check patient name
+    if (criteria.patientName && !rowData.patientName.includes(criteria.patientName)) {
+        return false;
+    }
+    
+    // Check patient ID
+    if (criteria.patientId && !rowData.patientId.includes(criteria.patientId)) {
+        return false;
+    }
+    
+    // Check study description
+    if (criteria.studyDescription && !rowData.studyDescription.includes(criteria.studyDescription)) {
+        return false;
+    }
+    
+    // Check modality
+    if (criteria.modality && !rowData.modality.includes(criteria.modality)) {
+        return false;
+    }
+    
+    // Check date range
+    if (criteria.dateFrom || criteria.dateTo) {
+        var studyDate = parseStudyDate(rowData.studyDate);
+        if (studyDate) {
+            if (criteria.dateFrom && studyDate < new Date(criteria.dateFrom)) {
+                return false;
+            }
+            if (criteria.dateTo && studyDate > new Date(criteria.dateTo)) {
+                return false;
+            }
+        }
+    }
+    
+    return true;
+}
+
+function extractRowData(row) {
+    var cells = row.find('td');
+    return {
+        patientName: cells.eq(0).text().toLowerCase().trim(),
+        patientId: cells.eq(1).text().toLowerCase().trim(),
+        studyDate: cells.eq(2).text().trim(),
+        studyDescription: cells.eq(4).text().toLowerCase().trim(),
+        modality: cells.eq(5).text().toLowerCase().trim()
+    };
+}
+
+function parseStudyDate(dateStr) {
+    // Handle different date formats (YYYYMMDD, YYYY-MM-DD, etc.)
+    if (!dateStr) return null;
+    
+    // Remove any non-digit characters and extract date parts
+    var cleanDate = dateStr.replace(/\D/g, '');
+    if (cleanDate.length === 8) {
+        var year = cleanDate.substring(0, 4);
+        var month = cleanDate.substring(4, 6);
+        var day = cleanDate.substring(6, 8);
+        return new Date(year, month - 1, day);
+    }
+    
+    return null;
+}
+
+function updateSearchResultsInfo(visible, total) {
+    var info = $('#searchResultsInfo');
+    if (visible === total) {
+        info.text('Showing all ' + total + ' studies');
+        info.removeClass('text-warning text-danger').addClass('text-success');
+    } else if (visible === 0) {
+        info.text('No studies found');
+        info.removeClass('text-success text-warning').addClass('text-danger');
+    } else {
+        info.text('Showing ' + visible + ' of ' + total + ' studies');
+        info.removeClass('text-success text-danger').addClass('text-warning');
+    }
+}
+
+function showNoResultsMessage() {
+    var noResultsRow = '<tr id="noResultsRow">' +
+        '<td colspan="9" class="text-center">' +
+            '<div class="alert alert-warning" style="margin: 20px;">' +
+                '<i class="fa fa-search fa-2x"></i><br>' +
+                '<h4>No Studies Found</h4>' +
+                '<p>No studies match your search criteria. Try adjusting your filters.</p>' +
+            '</div>' +
+        '</td>' +
+    '</tr>';
+    
+    $('#studiesTable tbody').html(noResultsRow);
+}
+
+function resetSearch() {
+    // Clear all search inputs
+    $('#studiesSearchForm')[0].reset();
+    
+    // Restore original table
+    $('#studiesTable tbody').empty();
+    originalTableRows.forEach(function(row) {
+        $('#studiesTable tbody').append(row.clone());
+    });
+    
+    // Update search results info
+    updateSearchResultsInfo(originalTableRows.length, originalTableRows.length);
+    
+    // Clear search results info
+    $('#searchResultsInfo').text('');
+}
+
+// Auto-expand search form if there are URL parameters
+$(document).ready(function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('search') || urlParams.has('patient') || urlParams.has('date')) {
+        toggleSearchForm();
+    }
+});
+
+// Delete Study Function
+function deleteStudy(studyId, patientName, patientId) {
+    if (!studyId) {
+        alert('Study ID is required');
+        return;
+    }
+    
+    // Show confirmation dialog
+    var confirmMessage = 'Are you sure you want to delete this study?\n\n' +
+                        'Patient: ' + patientName + '\n' +
+                        'Patient ID: ' + patientId + '\n' +
+                        'Study ID: ' + studyId + '\n\n' +
+                        'This action cannot be undone!';
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    // Find and disable the delete button
+    var deleteBtn = $('button[onclick*="deleteStudy(\'' + studyId + '\')"]:first');
+    var originalText = deleteBtn.html();
+    deleteBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i>');
+    
+    // Make AJAX request to delete study
+    $.ajax({
+        url: '{?=url([ADMIN, "orthanc", "deletestudy"])?}',
+        type: 'POST',
+        data: {
+            studyId: studyId,
+            token: '{?=$_SESSION["token"]?}'
+        },
+        success: function(response) {
+            console.log('Delete response:', response);
+            try {
+                // Parse response if it's a string
+                if (typeof response === 'string') {
+                    response = JSON.parse(response);
+                }
+                
+                if (response.success) {
+                    // Show success message
+                    alert('Study deleted successfully: ' + (response.message || 'Study has been removed from Orthanc server'));
+                    
+                    // Remove the row from table
+                    deleteBtn.closest('tr').fadeOut(500, function() {
+                        $(this).remove();
+                        
+                        // Update original rows array for search functionality
+                        storeOriginalRows();
+                        
+                        // Update search results if search is active
+                        if ($('#searchResultsInfo').text()) {
+                            performSearch();
+                        }
+                    });
+                    
+                } else {
+                    // Handle failed deletion
+                    var errorMessage = response.message || 'Unknown error occurred';
+                    var errorDetails = '';
+                    
+                    if (response.error) {
+                        errorDetails = '\n\nError Details: ' + response.error;
+                    }
+                    
+                    alert('Error deleting study: ' + errorMessage + errorDetails);
+                }
+                
+            } catch (error) {
+                console.error('Error parsing response:', error);
+                alert('Error processing server response: Invalid JSON format');
+            }
+        },
+        error: function(xhr, status, error) {
+            var errorMessage = 'Network error occurred';
+            
+            if (xhr.responseText) {
+                try {
+                    var errorResponse = JSON.parse(xhr.responseText);
+                    errorMessage = errorResponse.message || errorMessage;
+                } catch (e) {
+                    errorMessage = xhr.responseText;
+                }
+            }
+            
+            alert('Error deleting study: ' + errorMessage + ' (Status: ' + status + ')');
+        },
+        complete: function() {
+            // Re-enable button
+            deleteBtn.prop('disabled', false).html(originalText);
+        }
+    });
+}
+
+</script>

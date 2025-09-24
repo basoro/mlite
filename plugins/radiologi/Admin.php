@@ -787,7 +787,7 @@ class Admin extends AdminModule
         $row['gambar_radiologi'] = $this->db('gambar_radiologi')
           ->where('no_rawat', $_POST['no_rawat'])
           ->where('tgl_periksa', $row['tgl_periksa'])
-          ->where('jam', $row['jam'])
+          // ->where('jam', $row['jam'])
           ->toArray();
         $periksa_radiologi[] = $row;
       }

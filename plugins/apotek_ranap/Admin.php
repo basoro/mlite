@@ -406,7 +406,11 @@ class Admin extends AdminModule
       foreach ($rows as $row) {
         $row['resep_dokter'] = $this->db('resep_dokter')->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
         foreach ($row['resep_dokter'] as $value) {
-          $value['ranap'] = $value['jml'] * $value['dasar'];
+          // Ensure 'jml' and 'dasar' keys exist with default values
+          $jml_value = isset($value['jml']) ? floatval($value['jml']) : 0;
+          $dasar_value = isset($value['dasar']) ? floatval($value['dasar']) : 0;
+          
+          $value['ranap'] = $jml_value * $dasar_value;
           $jumlah_total_resep += floatval($value['ranap']);
         }
 
@@ -421,15 +425,6 @@ class Admin extends AdminModule
       }
 
       $rows_racikan = $this->db('resep_obat')
-        ->select('resep_obat.no_resep')
-        ->select('resep_obat.no_rawat')
-        ->select('resep_obat.kd_dokter')
-        ->select('resep_obat.tgl_perawatan')
-        ->select('resep_obat.jam')
-        ->select('resep_obat.tgl_peresepan')
-        ->select('resep_obat.jam_peresepan')
-        ->select('resep_obat.status')
-        ->select('dokter.nm_dokter')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
@@ -442,7 +437,7 @@ class Admin extends AdminModule
       foreach ($rows_racikan as $row) {
         $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
         foreach ($row['resep_dokter_racikan_detail'] as $value) {
-          $value['ranap'] = $value['jml'] * $value['ranap'];
+          $value['ranap'] = $value['jml'] * $value['dasar'];
           $jumlah_total_resep_racikan += floatval($value['ranap']);
         }
 
@@ -469,10 +464,10 @@ class Admin extends AdminModule
         ->where('tgl_perawatan', $row['tgl_perawatan'])
         ->where('jam', $row['jam'])
         ->oneArray();
-        $row['aturan_pakai'] = $aturan_pakai['aturan'];
+        $row['aturan_pakai'] = isset($aturan_pakai['aturan']) ? $aturan_pakai['aturan'] : '';
         $data_barang = $this->db('databarang')->where('kode_brng', $row['kode_brng'])->oneArray();
-        $row['nama_brng'] = $data_barang['nama_brng'];
-        $row['ranap'] = $data_barang['dasar'];
+        $row['nama_brng'] = isset($data_barang['nama_brng']) ? $data_barang['nama_brng'] : '';
+        $row['ranap'] = isset($data_barang['dasar']) ? floatval($data_barang['dasar']) : 0;
         $jumlah_total_obat += floatval($row['total']);
         $detail_pemberian_obat[] = $row;
       }
@@ -486,6 +481,7 @@ class Admin extends AdminModule
       foreach ($rows_pemberian_obat2 as $row) {
         $row['detail_pemberian_obat'] = $this->db('detail_pemberian_obat')
           ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+          ->where('detail_pemberian_obat.status', 'Ranap')
           ->where('no_rawat', $_POST['no_rawat'])
           ->where('tgl_perawatan', $row['tgl_perawatan'])
           ->where('jam', $row['jam'])
@@ -632,7 +628,7 @@ class Admin extends AdminModule
           ->where('tgl_perawatan', $row['tgl_perawatan'])
           ->where('jam', $row['jam'])
           ->oneArray();
-          $row['aturan_pakai'] = $aturan_pakai['aturan'];
+          $row['aturan_pakai'] = isset($aturan_pakai['aturan']) ? $aturan_pakai['aturan'] : '';
           $row['keterangan'] = '';
           $detail_pemberian_obat[] = $row;
         }
@@ -711,7 +707,7 @@ class Admin extends AdminModule
           ->where('tgl_perawatan', $row['tgl_perawatan'])
           ->where('jam', $row['jam'])
           ->oneArray();
-          $row['aturan_pakai'] = $aturan_pakai['aturan'];
+          $row['aturan_pakai'] = isset($aturan_pakai['aturan']) ? $aturan_pakai['aturan'] : '';
           $row['keterangan'] = '';
           $detail_pemberian_obat[] = $row;
         }
@@ -793,7 +789,7 @@ class Admin extends AdminModule
           ->where('tgl_perawatan', $row['tgl_perawatan'])
           ->where('jam', $row['jam'])
           ->oneArray();
-          $row['aturan_pakai'] = $aturan_pakai['aturan'];
+          $row['aturan_pakai'] = isset($aturan_pakai['aturan']) ? $aturan_pakai['aturan'] : '';
           $row['keterangan'] = '';
           $detail_pemberian_obat[] = $row;
         }

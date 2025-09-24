@@ -441,6 +441,7 @@ class Admin extends AdminModule
       foreach ($rows_pemberian_obat2 as $row) {
         $row['detail_pemberian_obat'] = $this->db('detail_pemberian_obat')
           ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+          ->where('detail_pemberian_obat.status', 'Ralan')
           ->where('no_rawat', $_POST['no_rawat'])
           ->where('tgl_perawatan', $row['tgl_perawatan'])
           ->where('jam', $row['jam'])
