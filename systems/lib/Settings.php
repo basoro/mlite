@@ -34,11 +34,21 @@ class Settings
             list($module, $field) = explode('.', $module);
         }
 
+        // Check if module exists in cache
+        if (!isset($this->cache[$module])) {
+            return $field ? null : [];
+        }
+
         if (empty($field)) {
             return $this->cache[$module];
         }
 
-        return isset_or($this->cache[$module][$field]);
+        // Check if field exists in module
+        if (!isset($this->cache[$module][$field])) {
+            return null;
+        }
+
+        return $this->cache[$module][$field];
     }
 
     public function set($module, $field, $value = false)

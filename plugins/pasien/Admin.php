@@ -762,7 +762,7 @@ class Admin extends AdminModule
             ->where('no_rawat', $row['no_rawat'])
             ->where('tgl_periksa', $radiologi_session['tgl_periksa'])
             ->where('jam', $radiologi_session['jam'])
-            ->asc('kd_jenis_prw')
+            ->asc('periksa_radiologi.kd_jenis_prw')
             ->toArray();
           $radiologi_session['hasil_radiologi'] = $this->db('hasil_radiologi')
             ->where('no_rawat', $row['no_rawat'])
