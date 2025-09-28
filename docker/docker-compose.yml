@@ -47,7 +47,25 @@ services:
       - ../mlite_db.sql:/docker-entrypoint-initdb.d/00-mlite_db.sql  # mLITE database schema
       - ./db:/docker-entrypoint-initdb.d/01-custom                   # Custom initialization scripts
     networks:
-      - app-network    # Connect to the same network as PHP and Nginx      
+      - app-network    # Connect to the same network as PHP and Nginx
+
+  # Orthanc DICOM Server Service
+  orthanc:
+    build:
+      context: .   # Build context for Orthanc
+      dockerfile: orthanc/Dockerfile
+    container_name: mlite_orthanc
+    restart: unless-stopped
+    ports:
+      - "8042:8042"   # REST API
+      - "4242:4242"   # DICOM SCP
+    volumes:
+      - ./orthanc/orthanc-db:/var/lib/orthanc/db
+      - ./orthanc/orthanc.json:/etc/orthanc/orthanc.json:ro
+    environment:
+      - ORTHANC_NAME=Orthanc-Headless
+    networks:
+      - app-network      
 
 networks:
   app-network:

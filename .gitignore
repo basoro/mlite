@@ -40,6 +40,9 @@ plugins/pasien_galleries
 # plugins/log_antrian_taskid
 
 docker/mysql*
+docker/orthanc/orthanc-db/*
+docker/orthanc/dummy-dicom/*
+
 # .env
 logs/
 config.php

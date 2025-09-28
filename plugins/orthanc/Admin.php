@@ -170,44 +170,70 @@ class Admin extends AdminModule
 
     public function postSavePACS()
     {
-      if(isset($_POST["image_url"]))
-      {
-       $message = '';
-       $image = '';
-       if(filter_var($_POST["image_url"], FILTER_VALIDATE_URL))
-       {
-         $auth = base64_encode($this->settings->get('orthanc.username').":".$this->settings->get('orthanc.password'));
-         $context = stream_context_create([
-             "http" => [
-                 "header" => "Authorization: Basic $auth"
-             ]
-         ]);
-         $image_data = file_get_contents($_POST["image_url"], false, $context);
-         $filename = time().'.png';
-         $new_image_path = WEBAPPS_PATH.'/radiologi/pages/upload/'.$filename;
-         file_put_contents($new_image_path, $image_data);
-         $message = 'Hasil PACS telah disimpan ke server SIMRS';
-         $result = $this->db('gambar_radiologi')
-           ->save([
-             'no_rawat' => $_POST['no_rawat'],
-             'tgl_periksa' => $_POST['tgl_periksa'],
-             'jam' => $_POST['jam_periksa'],
-             'lokasi_gambar' => 'pages/upload/'.$filename
-           ]);
+        if (isset($_POST["image_url"])) {
+            $message = '';
+            $image   = '';
+            $url     = $_POST["image_url"];
 
-       }
-       else
-       {
-        $message = 'Invalid Url';
-       }
-       $output = array(
-        'message' => $message,
-        'image'  => $image
-       );
-       echo json_encode($output);
-      }
-      exit();
+            // --- Validasi URL ---
+            $valid = false;
+            if (filter_var($url, FILTER_VALIDATE_URL)) {
+                $valid = true;
+            } else {
+                // Fallback validasi Docker container host
+                $parts = parse_url($url);
+                if (
+                    $parts &&
+                    !empty($parts['scheme']) &&
+                    in_array($parts['scheme'], ['http','https'], true) &&
+                    !empty($parts['host']) &&
+                    (
+                        preg_match('/^[a-zA-Z0-9\-_]+$/', $parts['host']) || 
+                        filter_var($parts['host'], FILTER_VALIDATE_IP)
+                    )
+                ) {
+                    $valid = true;
+                }
+            }
+
+            if ($valid) {
+                $auth = base64_encode(
+                    $this->settings->get('orthanc.username') . ":" . 
+                    $this->settings->get('orthanc.password')
+                );
+                $context = stream_context_create([
+                    "http" => [
+                        "header" => "Authorization: Basic $auth"
+                    ]
+                ]);
+
+                $image_data = file_get_contents($url, false, $context);
+                $filename = time() . '.png';
+                $new_image_path = WEBAPPS_PATH . '/radiologi/pages/upload/' . $filename;
+
+                file_put_contents($new_image_path, $image_data);
+
+                $message = 'Hasil PACS telah disimpan ke server SIMRS';
+
+                $result = $this->db('gambar_radiologi')->save([
+                    'no_rawat'      => $_POST['no_rawat'],
+                    'tgl_periksa'   => $_POST['tgl_periksa'],
+                    'jam'           => $_POST['jam_periksa'],
+                    'lokasi_gambar' => 'pages/upload/' . $filename
+                ]);
+            } else {
+                $message = 'Invalid Url';
+            }
+
+            $output = [
+                'message' => $message,
+                'image'   => $image
+            ];
+            echo json_encode($output);
+        }
+        exit();
     }
+
 
     public function postSaveHasilBaca()
     {
@@ -325,7 +351,7 @@ class Admin extends AdminModule
                                 'PatientName' => $study['PatientMainDicomTags']['PatientName'] ?? 'Unknown',
                                 'PatientID' => $study['PatientMainDicomTags']['PatientID'] ?? 'Unknown',
                                 'StudyDescription' => $study['MainDicomTags']['StudyDescription'] ?? 'No Description',
-                                'Modality' => $study['MainDicomTags']['ModalitiesInStudy'] ?? 'Unknown'
+                                'Modality' => $this->getStudyModality($study, $orthanc)
                             ];
                         } else {
                             // Fallback jika expand tidak bekerja
@@ -383,6 +409,29 @@ class Admin extends AdminModule
         ]);
     }
     
+    /**
+     * Helper function untuk mendapatkan modality dari study
+     * Dengan fallback ke series pertama jika tidak ada di study level
+     */
+    private function getStudyModality($study, $orthanc)
+    {
+        // Cek ModalitiesInStudy di study level
+        if (!empty($study['MainDicomTags']['ModalitiesInStudy'])) {
+            return $study['MainDicomTags']['ModalitiesInStudy'];
+        }
+        
+        // Fallback: ambil dari series pertama
+        if (!empty($study['Series'])) {
+            $firstSeriesId = $study['Series'][0];
+            $seriesDetail = $this->getSeriesDetail($firstSeriesId, $orthanc);
+            if ($seriesDetail && !empty($seriesDetail['Modality'])) {
+                return $seriesDetail['Modality'];
+            }
+        }
+        
+        return 'Unknown';
+    }
+
     private function getStudyDetail($studyId, $orthanc)
     {
         try {
@@ -408,7 +457,7 @@ class Admin extends AdminModule
                     'PatientName' => $study['PatientMainDicomTags']['PatientName'] ?? 'Unknown',
                     'PatientID' => $study['PatientMainDicomTags']['PatientID'] ?? 'Unknown',
                     'StudyDescription' => $study['MainDicomTags']['StudyDescription'] ?? 'No Description',
-                    'Modality' => $study['MainDicomTags']['ModalitiesInStudy'] ?? 'Unknown'
+                    'Modality' => $this->getStudyModality($study, $orthanc)
                 ];
             }
         } catch (\Exception $e) {
@@ -625,9 +674,19 @@ class Admin extends AdminModule
             return 'Username atau password Orthanc belum dikonfigurasi';
         }
         
-        // Validasi format URL
-        if (!filter_var($orthanc['server'], FILTER_VALIDATE_URL)) {
-            return 'Format URL server tidak valid. Contoh: http://localhost:8042';
+        $url = $orthanc['server'];
+
+        // Validasi format URL standar
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            // Fallback untuk docker container name
+            $parts = parse_url($url);
+            if (
+                empty($parts['scheme']) || 
+                empty($parts['host'])   || 
+                !preg_match('/^[a-zA-Z0-9\-_]+$/', $parts['host'])
+            ) {
+                return 'Format URL server tidak valid. Contoh: http://localhost:8042 atau http://orthanc:8042';
+            }
         }
         
         return null;
