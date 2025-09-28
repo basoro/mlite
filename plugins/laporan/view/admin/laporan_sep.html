@@ -19,11 +19,12 @@
                 <input type="date" name="tgl_akhir" class="form-control" value="{$tgl_akhir}" required>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
               <div class="form-group">
                 <label>&nbsp;</label><br>
                 <button type="submit" class="btn btn-primary">Tampilkan Laporan</button>
                 <button type="button" class="btn btn-success" onclick="exportExcel()">Export Excel</button>
+                <button type="button" class="btn btn-info" onclick="cetakPdfSep()">Cetak PDF</button>
               </div>
             </div>
           </div>
@@ -50,7 +51,7 @@
             <tbody>
               {loop: $laporan}
               <tr>
-                <td>{$key+1}</td>
+                <td>{?=$key+1?}</td>
                 <td>{$value.no_sep}</td>
                 <td>{$value.no_rawat}</td>
                 <td>{$value.no_rkm_medis}</td>
@@ -84,8 +85,33 @@ $(document).ready(function() {
 });
 
 function exportExcel() {
-  var form = $('form').clone();
+  var form = $('form');
+  
+  // Remove existing export input if any
+  form.find('input[name="export"]').remove();
+  
+  // Add export parameter to existing form
   form.append('<input type="hidden" name="export" value="excel">');
+  
+  // Submit the form
   form.submit();
+  
+  // Remove the export input after submission
+  setTimeout(function() {
+    form.find('input[name="export"]').remove();
+  }, 100);
+}
+
+function cetakPdfSep() {
+  var tgl_awal = document.querySelector('input[name="tgl_awal"]').value;
+  var tgl_akhir = document.querySelector('input[name="tgl_akhir"]').value;
+  
+  if (!tgl_awal || !tgl_akhir) {
+    alert('Silakan pilih rentang tanggal terlebih dahulu!');
+    return;
+  }
+  
+  var url = '{?=url([ADMIN, "laporan", "cetakpdfsep"])?}&tgl_awal=' + tgl_awal + '&tgl_akhir=' + tgl_akhir;
+  window.open(url, '_blank', 'width=800,height=600');
 }
 </script>
