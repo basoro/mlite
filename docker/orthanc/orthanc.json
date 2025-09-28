@@ -20,14 +20,5 @@
   "OrthancExplorer": {
     "Enable": false
   },
-  "Plugins" : [
-    "/usr/share/orthanc/plugins/libOrthancTranscoding.so"
-  ],
-  "Transcoding" : {
-    "Enable": true,
-    "AllowJpeg": true,
-    "AllowJpeg2000": true,
-    "DefaultTransferSyntax": "1.2.840.10008.1.2.4.90"
-  }, 
   "StorageDirectory": "/var/lib/orthanc/db"
 }

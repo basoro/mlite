@@ -112,7 +112,7 @@
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="{$baseUrl}/viewer?series={$s.ID}&t={?=$_SESSION['token']?}" 
+                                            <a onclick="window.open('{$baseUrl}/viewer?series={$s.ID}&t={?=$_SESSION['token']?}', '_blank', 'toolbar=no,menubar=no,scrollbars=yes,resizable=yes,width=1200,height=800')" 
                                             class="btn btn-view btn-sm" 
                                             title="View Series">
                                                 <i class="fa fa-eye"></i>
