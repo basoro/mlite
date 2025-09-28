@@ -528,12 +528,20 @@
               no_rawat: no_rawat,
               status_lanjut: status_lanjut
             } ,function(data) {
-              // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
-              $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
-              $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-              "Status lanjut pasien telah disimpan!"+
-              "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-              "</div>").show();
+              // Tampilkan notifikasi sukses
+              $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+                "Status lanjut pasien telah disimpan!" +
+                "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+                "</div>").show();
+              
+              // Kondisi redirect berdasarkan status_lanjut
+              if (status_lanjut == 'ranap') {
+                // redirect ke plugins/rawat_inap setelah menyimpan status lanjut
+                window.location.href = baseURL + '/rawat_inap/manage?t=' + mlite.token + '&no_rawat=' + no_rawat;
+              } else {
+                // reload display Rawat Jalan untuk status lainnya
+                $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+              }
             });
           }
         }
