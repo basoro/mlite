@@ -1,0 +1,44 @@
+/* CSS untuk Plugin Laporan */
+
+.panel-primary .panel-body {
+    text-align: center;
+    padding: 20px;
+}
+
+.panel-primary .panel-body i {
+    color: #337ab7;
+    margin-bottom: 15px;
+}
+
+.panel-primary .panel-body h4 {
+    margin: 15px 0;
+    color: #333;
+}
+
+.panel-primary .panel-body p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.table-responsive {
+    margin-top: 20px;
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+.btn-group {
+    margin-bottom: 10px;
+}
+
+@media print {
+    .btn, .form-group {
+        display: none;
+    }
+    
+    .panel-heading {
+        background-color: #fff !important;
+        color: #000 !important;
+    }
+}

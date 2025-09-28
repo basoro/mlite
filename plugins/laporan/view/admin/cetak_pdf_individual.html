@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Laporan Individual Pasien TB</title>
+    <script src="{?=url('assets/jscripts/jspdf.min.js')?}"></script>
+    <script src="{?=url('assets/jscripts/jspdf.plugin.autotable.min.js')?}"></script>
+</head>
+<body>
+    <div id="content" style="display: none;">
+        <div class="patient-info">
+            <h3>LAPORAN INDIVIDUAL PASIEN TUBERKULOSIS</h3>
+            <table class="info-table">
+                <tr><td><strong>No. Rawat:</strong></td><td>{$data.no_rawat}</td></tr>
+                <tr><td><strong>No. Rekam Medis:</strong></td><td>{$data.no_rkm_medis}</td></tr>
+                <tr><td><strong>Nama Pasien:</strong></td><td>{$data.nm_pasien}</td></tr>
+                <tr><td><strong>Jenis Kelamin:</strong></td><td>{$data.jk}</td></tr>
+                <tr><td><strong>Tempat/Tgl Lahir:</strong></td><td>{$data.tmp_lahir}, {$data.tgl_lahir}</td></tr>
+                <tr><td><strong>Alamat:</strong></td><td>{$data.alamat}</td></tr>
+                <tr><td><strong>No. Telepon:</strong></td><td>{$data.no_tlp}</td></tr>
+                <tr><td><strong>Tanggal Registrasi:</strong></td><td>{$data.tgl_registrasi}</td></tr>
+                <tr><td><strong>Jam Registrasi:</strong></td><td>{$data.jam_reg}</td></tr>
+                <tr><td><strong>Dokter:</strong></td><td>{$data.nm_dokter}</td></tr>
+                <tr><td><strong>Poliklinik:</strong></td><td>{$data.nm_poli}</td></tr>
+            </table>
+            
+            <h4>DATA TUBERKULOSIS</h4>
+            <table class="tb-data">
+                <tr><td><strong>Tipe Diagnosis:</strong></td><td>{$data.tipe_diagnosis}</td></tr>
+                <tr><td><strong>Klasifikasi Lokasi Anatomi:</strong></td><td>{$data.klasifikasi_lokasi_anatomi}</td></tr>
+                <tr><td><strong>Hasil Akhir Pengobatan:</strong></td><td>{$data.hasil_akhir_pengobatan}</td></tr>
+                <tr><td><strong>Tanggal Mulai Pengobatan:</strong></td><td>{$data.tanggal_mulai_pengobatan}</td></tr>
+                <tr><td><strong>Status Pengobatan:</strong></td><td>{$data.status_pengobatan}</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var doc = new jsPDF('p', 'pt', 'A4'); // portrait orientation
+        
+        // Header dengan logo dan informasi rumah sakit
+        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        if(img) {
+            doc.addImage(img, 'JPEG', 20, 10, 50, 50);
+        }
+        
+        doc.setFontSize(18);
+        doc.text("{$settings.nama_instansi}", 80, 30, null, null, null);
+        doc.setFontSize(10);
+        doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 45, null, null, null);
+        doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 58, null, null, null);
+        
+        // Garis pemisah
+        doc.line(20, 70, 572, 70, null);
+        doc.line(20, 72, 572, 72, null);
+        
+        // Judul laporan
+        doc.setFontSize(16);
+        doc.text("LAPORAN INDIVIDUAL PASIEN TUBERKULOSIS", 20, 95, null, null, null);
+        
+        var yPos = 120;
+        
+        // Data Pasien
+        doc.setFontSize(14);
+        doc.text("DATA PASIEN", 20, yPos, null, null, null);
+        yPos += 20;
+        
+        doc.setFontSize(10);
+        var patientData = [
+            ['No. Rawat', '{$data.no_rawat}'],
+            ['No. Rekam Medis', '{$data.no_rkm_medis}'],
+            ['Nama Pasien', '{$data.nm_pasien}'],
+            ['Jenis Kelamin', '{$data.jk}'],
+            ['Tempat/Tgl Lahir', '{$data.tmp_lahir}, {$data.tgl_lahir}'],
+            ['Alamat', '{$data.alamat}'],
+            ['No. Telepon', '{$data.no_tlp}'],
+            ['Tanggal Registrasi', '{$data.tgl_registrasi}'],
+            ['Jam Registrasi', '{$data.jam_reg}'],
+            ['Dokter', '{$data.nm_dokter}'],
+            ['Poliklinik', '{$data.nm_poli}']
+        ];
+        
+        doc.autoTable({
+            body: patientData,
+            startY: yPos,
+            margin: { left: 20, right: 20 },
+            styles: {
+                fontSize: 10,
+                cellPadding: 5
+            },
+            columnStyles: {
+                0: { fontStyle: 'bold', cellWidth: 120 },
+                1: { cellWidth: 400 }
+            },
+            theme: 'plain'
+        });
+        
+        yPos = doc.lastAutoTable.finalY + 30;
+        
+        // Data TB
+        doc.setFontSize(14);
+        doc.text("DATA TUBERKULOSIS", 20, yPos, null, null, null);
+        yPos += 20;
+        
+        var tbData = [
+            ['Tipe Diagnosis', '{$data.tipe_diagnosis}'],
+            ['Klasifikasi Lokasi Anatomi', '{$data.klasifikasi_lokasi_anatomi}'],
+            ['Hasil Akhir Pengobatan', '{$data.hasil_akhir_pengobatan}'],
+            ['Tanggal Mulai Pengobatan', '{$data.tanggal_mulai_pengobatan}'],
+            ['Status Pengobatan', '{$data.status_pengobatan}'],
+        ];
+        
+        doc.autoTable({
+            body: tbData,
+            startY: yPos,
+            margin: { left: 20, right: 20 },
+            styles: {
+                fontSize: 10,
+                cellPadding: 5
+            },
+            columnStyles: {
+                0: { fontStyle: 'bold', cellWidth: 120 },
+                1: { cellWidth: 400 }
+            },
+            theme: 'striped',
+            headStyles: {
+                fillColor: [41, 128, 185]
+            }
+        });
+        
+        // Footer
+        var pageHeight = doc.internal.pageSize.height;
+        doc.setFontSize(8);
+        doc.text(`© ${new Date().getFullYear()} {$settings.nama_instansi}.`, 20, pageHeight - 20);
+        doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')}`, 20, pageHeight - 10);
+        
+        // Buka PDF di tab baru
+        window.open(doc.output('bloburl'), '_blank', "toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,modal=yes");
+        
+        // Tutup window ini setelah PDF dibuka
+        setTimeout(function() {
+            window.close();
+        }, 1000);
+    });
+    </script>
+</body>
+</html>

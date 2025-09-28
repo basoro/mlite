@@ -403,6 +403,7 @@ $("#form_kontrol").on("click", "#simpan_kontrol", function(event){
   alasan1      : alasan1,
   rtl1          : rtl1
   }, function(data) {
+    console.log(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/dokter_ralan/kontrol?t=' + mlite.token;

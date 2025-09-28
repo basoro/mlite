@@ -113,6 +113,7 @@
                 </ul>
               </li>
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
+              <li><a href="#data_tb" class="data-tb-link" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Data TB</a></li>
               <li><a href="#kirimwaModal" data-toggle="modal" data-no_tlp="{$value.no_tlp}" data-nm_pasien="Yang terhormat {$value.nm_pasien} dengan nomor rekam medik {$value.no_rkm_medis}.&#013;&#010;&#013;&#010;-------------------&#013;&#010; Pesan WhatsApp ini dikirim otomatis oleh {$nama_instansi} &#013;&#010;Terima Kasih">Kirim WhatsApp</a></li>
               {/if}
             </ul>
@@ -799,6 +800,173 @@
   	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   	xhttp.send("api_key=" + api_key + "&sender=" + sender + "&number=" + number + "&message=" + message);
   }
+</script>
+
+<!-- Modal Data TB -->
+<div class="modal fade" id="dataTbModal" tabindex="-1" role="dialog" aria-labelledby="dataTbModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <!-- Content will be loaded here -->
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  // Debug: Check if Data TB links exist
+  $(document).ready(function() {
+    console.log('Document ready, checking Data TB links...');
+    console.log('Data TB links found:', $(".data-tb-link").length);
+    console.log('Display element found:', $("#display").length);
+  });
+  
+  // Use document-level event delegation for better reliability
+  $(document).on("click", ".data-tb-link", function(event){
+    console.log('Data TB link clicked!');
+    var baseURL = mlite.url + '/' + mlite.admin;
+    console.log('Base URL:', baseURL);
+    event.preventDefault();
+    var no_rawat = $(this).attr("data-no_rawat");
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+    
+    console.log('Data attributes:', {no_rawat: no_rawat, no_rkm_medis: no_rkm_medis, nm_pasien: nm_pasien});
+    
+    var modal = $('#dataTbModal');
+    var modalContent = $('#dataTbModal .modal-content');
+    
+    console.log('Modal element found:', modal.length > 0);
+    
+    // Show loading
+    modalContent.html('<div class="modal-body text-center"><i class="fa fa-spinner fa-spin fa-2x"></i><br>Loading...</div>');
+    modal.modal('show');
+    
+    var ajaxUrl = baseURL + '/rawat_jalan/datatb?t=' + mlite.token;
+    console.log('AJAX URL:', ajaxUrl);
+    
+    // Load form
+    $.ajax({
+      url: ajaxUrl,
+      type: 'POST',
+      data: {
+        no_rawat: no_rawat,
+        no_rkm_medis: no_rkm_medis,
+        nm_pasien: nm_pasien
+      },
+      beforeSend: function() {
+        console.log('AJAX request starting...');
+      },
+      success: function(response) {
+        console.log('AJAX success, response:', response);
+        console.log('Response type:', typeof response);
+        console.log('Response length:', response ? response.length : 'undefined');
+        
+        if(response && response.length > 0) {
+          modalContent.html(response);
+          
+          // Wait for DOM to be ready, then bind events
+          setTimeout(function() {
+            var form = modalContent.find('form');
+            console.log('Form found:', form.length);
+            console.log('Form HTML preview:', form.length ? form[0].outerHTML.substring(0, 200) : 'No form found');
+            console.log('Submit buttons found:', modalContent.find('button[type="submit"]').length);
+            
+            if(form.length > 0) {
+              form.attr('id', 'data_tb_form');
+              console.log('Form ID set to:', form.attr('id'));
+              
+              // Bind form submission event
+              form.off('submit').on('submit', function(e) {
+                e.preventDefault();
+                console.log('Form submission started via form submit event');
+                
+                var formData = $(this).serialize();
+                console.log('Form data:', formData);
+                
+                // Show loading state
+                var submitBtn = $(this).find('button[type="submit"]');
+                var originalText = submitBtn.text();
+                submitBtn.prop('disabled', true).text('Menyimpan...');
+                
+                var saveUrl = baseURL + '/rawat_jalan/datatbsave?t=' + mlite.token;
+                console.log('Save URL:', saveUrl);
+                
+                $.ajax({
+                  url: saveUrl,
+                  type: 'POST',
+                  data: formData,
+                  beforeSend: function() {
+                    console.log('Save AJAX request starting...');
+                  },
+                  success: function(response) {
+                    console.log('Save response:', response);
+                    console.log('Save response type:', typeof response);
+                    console.log('Save response length:', response ? response.length : 'undefined');
+                    
+                    try {
+                      var result = typeof response === 'string' ? JSON.parse(response) : response;
+                      console.log('Parsed result:', result);
+                      
+                      if(result.status == 'success') {
+                        alert('Data TB berhasil disimpan');
+                        $('#dataTbModal').modal('hide');
+                        location.reload();
+                      } else {
+                        alert('Error: ' + result.message);
+                      }
+                    } catch(e) {
+                      console.error('JSON parse error:', e);
+                      console.error('Raw response:', response);
+                      alert('Response tidak valid: ' + response);
+                    }
+                  },
+                  error: function(xhr, status, error) {
+                    console.error('Save error:', {xhr: xhr, status: status, error: error});
+                    console.error('Response text:', xhr.responseText);
+                    alert('Terjadi kesalahan saat menyimpan data: ' + error);
+                  },
+                  complete: function() {
+                    submitBtn.prop('disabled', false).text(originalText);
+                    console.log('Save AJAX request completed');
+                  }
+                });
+              });
+              
+              // Also bind click event to submit button as backup
+              form.find('button[type="submit"]').off('click').on('click', function(e) {
+                e.preventDefault();
+                console.log('Submit button clicked, triggering form submit');
+                form.trigger('submit');
+              });
+              
+              // Alternative: Use event delegation on modal content
+              modalContent.off('submit', 'form').on('submit', 'form', function(e) {
+                console.log('Form submitted via event delegation');
+                // This will be handled by the form submit event above
+              });
+              
+              modalContent.off('click', 'button[type="submit"]').on('click', 'button[type="submit"]', function(e) {
+                console.log('Submit button clicked via event delegation');
+                // This will be handled by the button click event above
+              });
+              
+            } else {
+              console.error('No form found in loaded content');
+            }
+          }, 100);
+        } else {
+          console.error('Empty or undefined response received');
+          modalContent.html('<div class="modal-body"><div class="alert alert-danger">Server mengembalikan response kosong. Silakan periksa log server untuk detail error.</div></div>');
+        }
+      },
+      error: function(xhr, status, error) {
+        console.log('AJAX error:', {xhr: xhr, status: status, error: error});
+        console.error('Response text:', xhr.responseText);
+        modalContent.html('<div class="modal-body"><div class="alert alert-danger">Error memuat form Data TB:<br>Status: ' + status + '<br>Error: ' + error + '<br>Response: ' + xhr.responseText + '</div></div>');
+      }
+    });
+    
+    return false;
+  });
 </script>
 
 <script>

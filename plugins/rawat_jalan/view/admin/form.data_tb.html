@@ -1,0 +1,627 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Form Data TB</h4>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <!-- Hidden field untuk no_rawat -->
+    <input type="hidden" name="no_rawat" value="{$no_rawat}" />
+    
+    <!-- Informasi Dasar -->
+    <div class="col-md-12"><h5><strong>Informasi Dasar</strong></h5></div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Nomor Rawat</label>
+          <input type="text" name="no_rawat_display" class="form-control" placeholder="Nomor Rawat" value="{$no_rawat}" readonly />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>ID TB 03</label>
+          <input type="text" name="id_tb_03" class="form-control" placeholder="ID TB 03" value="{if: $data_tb}{$data_tb.id_tb_03}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Periode Laporan</label>
+          <select name="id_periode_laporan" class="form-control">
+              <option value="">Pilih Periode</option>
+              <option value="1" {if: $data_tb && $data_tb.id_periode_laporan == '1'}selected{/if}>1=Januari - Maret</option>
+              <option value="2" {if: $data_tb && $data_tb.id_periode_laporan == '2'}selected{/if}>2=April - Juni</option>
+              <option value="3" {if: $data_tb && $data_tb.id_periode_laporan == '3'}selected{/if}>3=Juli - September</option>
+              <option value="4" {if: $data_tb && $data_tb.id_periode_laporan == '4'}selected{/if}>4=Oktober - Desember</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Tanggal Buat Laporan</label>
+          <input type="datetime-local" name="tanggal_buat_laporan" class="form-control" value="{if: $data_tb}{$data_tb.tanggal_buat_laporan}{else}{?=date('Y-m-d\TH:i')?}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Tahun Buat Laporan</label>
+          <input type="number" name="tahun_buat_laporan" class="form-control" placeholder="Tahun" value="{if: $data_tb}{$data_tb.tahun_buat_laporan}{else}{?=date('Y')?}{/if}" min="2000" max="2099" />
+      </div>
+    </div>
+    
+    <!-- Informasi Wilayah -->
+    <div class="col-md-12"><h5><strong>Informasi Wilayah</strong></h5></div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Kode Wasor</label>
+          <input type="number" name="kd_wasor" class="form-control" placeholder="Kode Wasor" value="{if: $data_tb}{$data_tb.kd_wasor}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>No Reg Kabupaten</label>
+          <input type="number" name="noregkab" class="form-control" placeholder="No Reg Kabupaten" value="{if: $data_tb}{$data_tb.noregkab}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>ID Propinsi</label>
+          <input type="text" name="id_propinsi" class="form-control" placeholder="ID Propinsi" value="{if: $data_tb}{$data_tb.id_propinsi}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Kode Kabupaten</label>
+          <input type="text" name="kd_kabupaten" class="form-control" placeholder="Kode Kabupaten" value="{if: $data_tb}{$data_tb.kd_kabupaten}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>ID Kecamatan</label>
+          <input type="text" name="id_kecamatan" class="form-control" placeholder="ID Kecamatan" value="{if: $data_tb}{$data_tb.id_kecamatan}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>ID Kelurahan</label>
+          <input type="text" name="id_kelurahan" class="form-control" placeholder="ID Kelurahan" value="{if: $data_tb}{$data_tb.id_kelurahan}{/if}" />
+      </div>
+    </div>
+    
+    <!-- Rujukan dan Diagnosis -->
+    <div class="col-md-12"><h5><strong>Rujukan dan Diagnosis</strong></h5></div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Nama Rujukan</label>
+          <select name="nama_rujukan" class="form-control">
+              <option value="">Pilih Rujukan</option>
+              <option value="Inisiatif pasien/Keluarga" {if: $data_tb && $data_tb.nama_rujukan == 'Inisiatif pasien/Keluarga'}selected{/if}>Inisiatif pasien/Keluarga</option>
+              <option value="Anggota Masyarakat/Kader" {if: $data_tb && $data_tb.nama_rujukan == 'Anggota Masyarakat/Kader'}selected{/if}>Anggota Masyarakat/Kader</option>
+              <option value="Faskes" {if: $data_tb && $data_tb.nama_rujukan == 'Faskes'}selected{/if}>Faskes</option>
+              <option value="Dokter Praktek Mandiri" {if: $data_tb && $data_tb.nama_rujukan == 'Dokter Praktek Mandiri'}selected{/if}>Dokter Praktek Mandiri</option>
+              <option value="Poli lain" {if: $data_tb && $data_tb.nama_rujukan == 'Poli lain'}selected{/if}>Poli lain</option>
+              <option value="Lain-lain" {if: $data_tb && $data_tb.nama_rujukan == 'Lain-lain'}selected{/if}>Lain-lain</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Sebutkan</label>
+          <input type="text" name="sebutkan1" class="form-control" placeholder="Sebutkan" value="{if: $data_tb}{$data_tb.sebutkan1}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Tipe Diagnosis</label>
+          <select name="tipe_diagnosis" class="form-control">
+              <option value="">Pilih Tipe Diagnosis</option>
+              <option value="Terkonfirmasi bakteriologis" {if: $data_tb && $data_tb.tipe_diagnosis == 'Terkonfirmasi bakteriologis'}selected{/if}>Terkonfirmasi bakteriologis</option>
+              <option value="Terdiagnosis klinis" {if: $data_tb && $data_tb.tipe_diagnosis == 'Terdiagnosis klinis'}selected{/if}>Terdiagnosis klinis</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Klasifikasi Lokasi Anatomi</label>
+          <select name="klasifikasi_lokasi_anatomi" class="form-control">
+              <option value="">Pilih Lokasi Anatomi</option>
+              <option value="Paru" {if: $data_tb && $data_tb.klasifikasi_lokasi_anatomi == 'Paru'}selected{/if}>Paru</option>
+              <option value="Ekstraparu" {if: $data_tb && $data_tb.klasifikasi_lokasi_anatomi == 'Ekstraparu'}selected{/if}>Ekstraparu</option>
+          </select>
+      </div>
+    </div>
+    
+    <!-- Klasifikasi -->
+    <div class="col-md-12"><h5><strong>Klasifikasi</strong></h5></div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Klasifikasi Riwayat Pengobatan</label>
+          <select name="klasifikasi_riwayat_pengobatan" class="form-control">
+              <option value="">Pilih Riwayat Pengobatan</option>
+              <option value="Baru" {if: $data_tb && $data_tb.klasifikasi_riwayat_pengobatan == 'Baru'}selected{/if}>Baru</option>
+              <option value="Kambuh" {if: $data_tb && $data_tb.klasifikasi_riwayat_pengobatan == 'Kambuh'}selected{/if}>Kambuh</option>
+              <option value="Diobati setelah gagal" {if: $data_tb && $data_tb.klasifikasi_riwayat_pengobatan == 'Diobati setelah gagal'}selected{/if}>Diobati setelah gagal</option>
+              <option value="Diobati Setelah Putus Berobat" {if: $data_tb && $data_tb.klasifikasi_riwayat_pengobatan == 'Diobati Setelah Putus Berobat'}selected{/if}>Diobati Setelah Putus Berobat</option>
+              <option value="Lain-lain" {if: $data_tb && $data_tb.klasifikasi_riwayat_pengobatan == 'Lain-lain'}selected{/if}>Lain-lain</option>
+              <option value="Riwayat Pengobatan Sebelumnya Tidak Diketahui" {if: $data_tb && $data_tb.klasifikasi_riwayat_pengobatan == 'Riwayat Pengobatan Sebelumnya Tidak Diketahui'}selected{/if}>Riwayat Pengobatan Sebelumnya Tidak Diketahui</option>
+              <option value="Pindahan" {if: $data_tb && $data_tb.klasifikasi_riwayat_pengobatan == 'Pindahan'}selected{/if}>Pindahan</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Klasifikasi Status HIV</label>
+          <select name="klasifikasi_status_hiv" class="form-control">
+              <option value="">Pilih Status HIV</option>
+              <option value="Positif" {if: $data_tb && $data_tb.klasifikasi_status_hiv == 'Positif'}selected{/if}>Positif</option>
+              <option value="Negatif" {if: $data_tb && $data_tb.klasifikasi_status_hiv == 'Negatif'}selected{/if}>Negatif</option>
+              <option value="Tidak diketahui" {if: $data_tb && $data_tb.klasifikasi_status_hiv == 'Tidak diketahui'}selected{/if}>Tidak diketahui</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Total Skoring Anak</label>
+          <select name="total_skoring_anak" class="form-control">
+              <option value="">Pilih Skoring</option>
+              <option value="1" {if: $data_tb && $data_tb.total_skoring_anak == '1'}selected{/if}>1</option>
+              <option value="2" {if: $data_tb && $data_tb.total_skoring_anak == '2'}selected{/if}>2</option>
+              <option value="3" {if: $data_tb && $data_tb.total_skoring_anak == '3'}selected{/if}>3</option>
+              <option value="4" {if: $data_tb && $data_tb.total_skoring_anak == '4'}selected{/if}>4</option>
+              <option value="5" {if: $data_tb && $data_tb.total_skoring_anak == '5'}selected{/if}>5</option>
+              <option value="6" {if: $data_tb && $data_tb.total_skoring_anak == '6'}selected{/if}>6</option>
+              <option value="7" {if: $data_tb && $data_tb.total_skoring_anak == '7'}selected{/if}>7</option>
+              <option value="8" {if: $data_tb && $data_tb.total_skoring_anak == '8'}selected{/if}>8</option>
+              <option value="9" {if: $data_tb && $data_tb.total_skoring_anak == '9'}selected{/if}>9</option>
+              <option value="10" {if: $data_tb && $data_tb.total_skoring_anak == '10'}selected{/if}>10</option>
+              <option value="11" {if: $data_tb && $data_tb.total_skoring_anak == '11'}selected{/if}>11</option>
+              <option value="12" {if: $data_tb && $data_tb.total_skoring_anak == '12'}selected{/if}>12</option>
+              <option value="13" {if: $data_tb && $data_tb.total_skoring_anak == '13'}selected{/if}>13</option>
+              <option value="Tidak dilakukan" {if: $data_tb && $data_tb.total_skoring_anak == 'Tidak dilakukan'}selected{/if}>Tidak dilakukan</option>
+          </select>
+      </div>
+    </div>
+    
+    <!-- Konfirmasi Skoring -->
+    <div class="col-md-12"><h5><strong>Konfirmasi Skoring</strong></h5></div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Konfirmasi Skoring 5</label>
+          <select name="konfirmasiSkoring5" class="form-control">
+              <option value="">Pilih Konfirmasi</option>
+              <option value="Uji Tuberkulin Positif" {if: $data_tb && $data_tb.konfirmasiSkoring5 == 'Uji Tuberkulin Positif'}selected{/if}>Uji Tuberkulin Positif</option>
+              <option value="Ada Kontak TB Paru" {if: $data_tb && $data_tb.konfirmasiSkoring5 == 'Ada Kontak TB Paru'}selected{/if}>Ada Kontak TB Paru</option>
+              <option value="Uji Tuberkulin Negatif" {if: $data_tb && $data_tb.konfirmasiSkoring5 == 'Uji Tuberkulin Negatif'}selected{/if}>Uji Tuberkulin Negatif</option>
+              <option value="Tidak Ada Kontak TB Paru" {if: $data_tb && $data_tb.konfirmasiSkoring5 == 'Tidak Ada Kontak TB Paru'}selected{/if}>Tidak Ada Kontak TB Paru</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Konfirmasi Skoring 6</label>
+          <select name="konfirmasiSkoring6" class="form-control">
+              <option value="">Pilih Konfirmasi</option>
+              <option value="Ada Kontak TB Paru" {if: $data_tb && $data_tb.konfirmasiSkoring6 == 'Ada Kontak TB Paru'}selected{/if}>Ada Kontak TB Paru</option>
+              <option value="Tidak Ada" {if: $data_tb && $data_tb.konfirmasiSkoring6 == 'Tidak Ada'}selected{/if}>Tidak Ada</option>
+              <option value="Tidak Jelas Kontak TB Paru" {if: $data_tb && $data_tb.konfirmasiSkoring6 == 'Tidak Jelas Kontak TB Paru'}selected{/if}>Tidak Jelas Kontak TB Paru</option>
+          </select>
+      </div>
+    </div>
+    
+    <!-- Pengobatan -->
+    <div class="col-md-12"><h5><strong>Pengobatan</strong></h5></div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Tanggal Mulai Pengobatan</label>
+          <input type="date" name="tanggal_mulai_pengobatan" class="form-control" value="{if: $data_tb}{$data_tb.tanggal_mulai_pengobatan}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Sumber Obat</label>
+          <select name="sumber_obat" class="form-control">
+              <option value="">Pilih Sumber Obat</option>
+              <option value="Program TB" {if: $data_tb && $data_tb.sumber_obat == 'Program TB'}selected{/if}>Program TB</option>
+              <option value="Bayar Sendiri" {if: $data_tb && $data_tb.sumber_obat == 'Bayar Sendiri'}selected{/if}>Bayar Sendiri</option>
+              <option value="Asuransi" {if: $data_tb && $data_tb.sumber_obat == 'Asuransi'}selected{/if}>Asuransi</option>
+              <option value="Lain-lain" {if: $data_tb && $data_tb.sumber_obat == 'Lain-lain'}selected{/if}>Lain-lain</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Paduan OAT</label>
+          <textarea name="paduan_oat" class="form-control" rows="3" placeholder="Paduan OAT">{if: $data_tb}{$data_tb.paduan_oat}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Sebutkan (Sumber Obat)</label>
+          <textarea name="sebutkan" class="form-control" rows="2" placeholder="Sebutkan">{if: $data_tb}{$data_tb.sebutkan}{/if}</textarea>
+      </div>
+    </div>
+    
+    <!-- Hasil Pemeriksaan Sebelum Pengobatan -->
+    <div class="col-md-12"><h5><strong>Hasil Pemeriksaan Sebelum Pengobatan</strong></h5></div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Hasil Mikroskopis</label>
+          <select name="sebelum_pengobatan_hasil_mikroskopis" class="form-control">
+              <option value="">Pilih Hasil</option>
+              <option value="Negatif" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_mikroskopis == 'Negatif'}selected{/if}>Negatif</option>
+              <option value="1-19" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_mikroskopis == '1-19'}selected{/if}>1-19</option>
+              <option value="1+" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_mikroskopis == '1+'}selected{/if}>1+</option>
+              <option value="2+" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_mikroskopis == '2+'}selected{/if}>2+</option>
+              <option value="3+" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_mikroskopis == '3+'}selected{/if}>3+</option>
+              <option value="Tidak dilakukan" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_mikroskopis == 'Tidak dilakukan'}selected{/if}>Tidak dilakukan</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Hasil Tes Cepat</label>
+          <select name="sebelum_pengobatan_hasil_tes_cepat" class="form-control">
+              <option value="">Pilih Hasil</option>
+              <option value="Rif sensitif" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_tes_cepat == 'Rif sensitif'}selected{/if}>Rif sensitif</option>
+              <option value="Rif resisten" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_tes_cepat == 'Rif resisten'}selected{/if}>Rif resisten</option>
+              <option value="Negatif" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_tes_cepat == 'Negatif'}selected{/if}>Negatif</option>
+              <option value="Rif Indeterminated" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_tes_cepat == 'Rif Indeterminated'}selected{/if}>Rif Indeterminated</option>
+              <option value="Invalid" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_tes_cepat == 'Invalid'}selected{/if}>Invalid</option>
+              <option value="Error" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_tes_cepat == 'Error'}selected{/if}>Error</option>
+              <option value="No Result" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_tes_cepat == 'No Result'}selected{/if}>No Result</option>
+              <option value="Tidak dilakukan" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_tes_cepat == 'Tidak dilakukan'}selected{/if}>Tidak dilakukan</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Hasil Biakan</label>
+          <select name="sebelum_pengobatan_hasil_biakan" class="form-control">
+              <option value="">Pilih Hasil</option>
+              <option value="Negatif" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_biakan == 'Negatif'}selected{/if}>Negatif</option>
+              <option value="1-19 BTA" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_biakan == '1-19 BTA'}selected{/if}>1-19 BTA</option>
+              <option value="1+" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_biakan == '1+'}selected{/if}>1+</option>
+              <option value="2+" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_biakan == '2+'}selected{/if}>2+</option>
+              <option value="3+" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_biakan == '3+'}selected{/if}>3+</option>
+              <option value="4+" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_biakan == '4+'}selected{/if}>4+</option>
+              <option value="NTM" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_biakan == 'NTM'}selected{/if}>NTM</option>
+              <option value="Kontaminasi" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_biakan == 'Kontaminasi'}selected{/if}>Kontaminasi</option>
+              <option value="Tidak dilakukan" {if: $data_tb && $data_tb.sebelum_pengobatan_hasil_biakan == 'Tidak dilakukan'}selected{/if}>Tidak dilakukan</option>
+          </select>
+      </div>
+    </div>
+    
+    <!-- Pemeriksaan Follow Up -->
+    <div class="col-md-12"><h5><strong>Pemeriksaan Follow Up</strong></h5></div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>No Reg Lab Bulan 2</label>
+          <input type="text" name="noreglab_bulan_2" class="form-control" placeholder="No Reg Lab" value="{if: $data_tb}{$data_tb.noreglab_bulan_2}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Hasil Mikroskopis Bulan 2</label>
+          <select name="hasil_mikroskopis_bulan_2" class="form-control">
+              <option value="">Pilih Hasil</option>
+              <option value="Negatif" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_2 == 'Negatif'}selected{/if}>Negatif</option>
+              <option value="1-19" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_2 == '1-19'}selected{/if}>1-19</option>
+              <option value="1+" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_2 == '1+'}selected{/if}>1+</option>
+              <option value="2+" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_2 == '2+'}selected{/if}>2+</option>
+              <option value="3+" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_2 == '3+'}selected{/if}>3+</option>
+              <option value="Tidak dilakukan" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_2 == 'Tidak dilakukan'}selected{/if}>Tidak dilakukan</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>No Reg Lab Bulan 3</label>
+          <input type="text" name="noreglab_bulan_3" class="form-control" placeholder="No Reg Lab" value="{if: $data_tb}{$data_tb.noreglab_bulan_3}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Hasil Mikroskopis Bulan 3</label>
+          <select name="hasil_mikroskopis_bulan_3" class="form-control">
+              <option value="">Pilih Hasil</option>
+              <option value="Negatif" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_3 == 'Negatif'}selected{/if}>Negatif</option>
+              <option value="1-19" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_3 == '1-19'}selected{/if}>1-19</option>
+              <option value="1+" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_3 == '1+'}selected{/if}>1+</option>
+              <option value="2+" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_3 == '2+'}selected{/if}>2+</option>
+              <option value="3+" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_3 == '3+'}selected{/if}>3+</option>
+              <option value="Tidak dilakukan" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_3 == 'Tidak dilakukan'}selected{/if}>Tidak dilakukan</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>No Reg Lab Bulan 5</label>
+          <input type="text" name="noreglab_bulan_5" class="form-control" placeholder="No Reg Lab" value="{if: $data_tb}{$data_tb.noreglab_bulan_5}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Hasil Mikroskopis Bulan 5</label>
+          <select name="hasil_mikroskopis_bulan_5" class="form-control">
+              <option value="">Pilih Hasil</option>
+              <option value="Negatif" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_5 == 'Negatif'}selected{/if}>Negatif</option>
+              <option value="1-19" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_5 == '1-19'}selected{/if}>1-19</option>
+              <option value="1+" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_5 == '1+'}selected{/if}>1+</option>
+              <option value="2+" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_5 == '2+'}selected{/if}>2+</option>
+              <option value="3+" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_5 == '3+'}selected{/if}>3+</option>
+              <option value="Tidak dilakukan" {if: $data_tb && $data_tb.hasil_mikroskopis_bulan_5 == 'Tidak dilakukan'}selected{/if}>Tidak dilakukan</option>
+          </select>
+      </div>
+    </div>
+    
+    <!-- Hasil Akhir Pengobatan -->
+    <div class="col-md-12"><h5><strong>Hasil Akhir Pengobatan</strong></h5></div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>No Reg Lab Akhir Pengobatan</label>
+          <input type="text" name="akhir_pengobatan_noreglab" class="form-control" placeholder="No Reg Lab" value="{if: $data_tb}{$data_tb.akhir_pengobatan_noreglab}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Hasil Mikroskopis Akhir Pengobatan</label>
+          <select name="akhir_pengobatan_hasil_mikroskopis" class="form-control">
+              <option value="">Pilih Hasil</option>
+              <option value="Negatif" {if: $data_tb && $data_tb.akhir_pengobatan_hasil_mikroskopis == 'Negatif'}selected{/if}>Negatif</option>
+              <option value="1-19" {if: $data_tb && $data_tb.akhir_pengobatan_hasil_mikroskopis == '1-19'}selected{/if}>1-19</option>
+              <option value="1+" {if: $data_tb && $data_tb.akhir_pengobatan_hasil_mikroskopis == '1+'}selected{/if}>1+</option>
+              <option value="2+" {if: $data_tb && $data_tb.akhir_pengobatan_hasil_mikroskopis == '2+'}selected{/if}>2+</option>
+              <option value="3+" {if: $data_tb && $data_tb.akhir_pengobatan_hasil_mikroskopis == '3+'}selected{/if}>3+</option>
+              <option value="Tidak dilakukan" {if: $data_tb && $data_tb.akhir_pengobatan_hasil_mikroskopis == 'Tidak dilakukan'}selected{/if}>Tidak dilakukan</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Tanggal Hasil Akhir Pengobatan</label>
+          <input type="date" name="tanggal_hasil_akhir_pengobatan" class="form-control" value="{if: $data_tb}{$data_tb.tanggal_hasil_akhir_pengobatan}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Hasil Akhir Pengobatan</label>
+          <select name="hasil_akhir_pengobatan" class="form-control">
+              <option value="">Pilih Hasil Akhir</option>
+              <option value="Belum" {if: $data_tb && $data_tb.hasil_akhir_pengobatan == 'Belum'}selected{/if}>Belum</option>
+              <option value="Sembuh" {if: $data_tb && $data_tb.hasil_akhir_pengobatan == 'Sembuh'}selected{/if}>Sembuh</option>
+              <option value="Pengobatan Lengkap" {if: $data_tb && $data_tb.hasil_akhir_pengobatan == 'Pengobatan Lengkap'}selected{/if}>Pengobatan Lengkap</option>
+              <option value="Lost To Follow Up" {if: $data_tb && $data_tb.hasil_akhir_pengobatan == 'Lost To Follow Up'}selected{/if}>Lost To Follow Up</option>
+              <option value="Meninggal" {if: $data_tb && $data_tb.hasil_akhir_pengobatan == 'Meninggal'}selected{/if}>Meninggal</option>
+              <option value="Gagal" {if: $data_tb && $data_tb.hasil_akhir_pengobatan == 'Gagal'}selected{/if}>Gagal</option>
+              <option value="Pindah" {if: $data_tb && $data_tb.hasil_akhir_pengobatan == 'Pindah'}selected{/if}>Pindah</option>
+          </select>
+      </div>
+    </div>
+    
+    <!-- Tes HIV -->
+    <div class="col-md-12"><h5><strong>Tes HIV</strong></h5></div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Tanggal Dianjurkan Tes</label>
+          <input type="date" name="tanggal_dianjurkan_tes" class="form-control" value="{if: $data_tb}{$data_tb.tanggal_dianjurkan_tes}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Tanggal Tes HIV</label>
+          <input type="date" name="tanggal_tes_hiv" class="form-control" value="{if: $data_tb}{$data_tb.tanggal_tes_hiv}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Hasil Tes HIV</label>
+          <select name="hasil_tes_hiv" class="form-control">
+              <option value="">Pilih Hasil</option>
+              <option value="Reaktif" {if: $data_tb && $data_tb.hasil_tes_hiv == 'Reaktif'}selected{/if}>Reaktif</option>
+              <option value="Non Reaktif" {if: $data_tb && $data_tb.hasil_tes_hiv == 'Non Reaktif'}selected{/if}>Non Reaktif</option>
+              <option value="Indeterminated" {if: $data_tb && $data_tb.hasil_tes_hiv == 'Indeterminated'}selected{/if}>Indeterminated</option>
+          </select>
+      </div>
+    </div>
+    
+    <!-- Status Tambahan -->
+    <div class="col-md-12"><h5><strong>Status Tambahan</strong></h5></div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>PPK</label>
+          <select name="ppk" class="form-control">
+              <option value="">Pilih</option>
+              <option value="Ya" {if: $data_tb && $data_tb.ppk == 'Ya'}selected{/if}>Ya</option>
+              <option value="Tidak" {if: $data_tb && $data_tb.ppk == 'Tidak'}selected{/if}>Tidak</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>ART</label>
+          <select name="art" class="form-control">
+              <option value="">Pilih</option>
+              <option value="Ya" {if: $data_tb && $data_tb.art == 'Ya'}selected{/if}>Ya</option>
+              <option value="Tidak" {if: $data_tb && $data_tb.art == 'Tidak'}selected{/if}>Tidak</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>TB DM</label>
+          <select name="tb_dm" class="form-control">
+              <option value="">Pilih</option>
+              <option value="Ya" {if: $data_tb && $data_tb.tb_dm == 'Ya'}selected{/if}>Ya</option>
+              <option value="Tidak" {if: $data_tb && $data_tb.tb_dm == 'Tidak'}selected{/if}>Tidak</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+          <label>Terapi DM</label>
+          <select name="terapi_dm" class="form-control">
+              <option value="">Pilih</option>
+              <option value="OHO" {if: $data_tb && $data_tb.terapi_dm == 'OHO'}selected{/if}>OHO</option>
+              <option value="Inj. Insulin" {if: $data_tb && $data_tb.terapi_dm == 'Inj. Insulin'}selected{/if}>Inj. Insulin</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+          <label>Pindah RO</label>
+          <select name="pindah_ro" class="form-control">
+              <option value="">Pilih</option>
+              <option value="Ya" {if: $data_tb && $data_tb.pindah_ro == 'Ya'}selected{/if}>Ya</option>
+              <option value="Tidak" {if: $data_tb && $data_tb.pindah_ro == 'Tidak'}selected{/if}>Tidak</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <div class="form-group">
+          <label>Status Pengobatan</label>
+          <select name="status_pengobatan" class="form-control">
+              <option value="">Pilih Status</option>
+              <option value="Sesuai Standar" {if: $data_tb && $data_tb.status_pengobatan == 'Sesuai Standar'}selected{/if}>Sesuai Standar</option>
+              <option value="Tidak Sesuai Standar" {if: $data_tb && $data_tb.status_pengobatan == 'Tidak Sesuai Standar'}selected{/if}>Tidak Sesuai Standar</option>
+          </select>
+      </div>
+    </div>
+    
+    <!-- Foto Toraks -->
+    <div class="col-md-12"><h5><strong>Foto Toraks</strong></h5></div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Foto Toraks</label>
+          <select name="foto_toraks" class="form-control">
+              <option value="">Pilih Hasil</option>
+              <option value="Positif" {if: $data_tb && $data_tb.foto_toraks == 'Positif'}selected{/if}>Positif</option>
+              <option value="Negatif" {if: $data_tb && $data_tb.foto_toraks == 'Negatif'}selected{/if}>Negatif</option>
+              <option value="Tidak Dilakukan" {if: $data_tb && $data_tb.foto_toraks == 'Tidak Dilakukan'}selected{/if}>Tidak Dilakukan</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Toraks Tidak Dilakukan</label>
+          <select name="toraks_tdk_dilakukan" class="form-control">
+              <option value="">Pilih Alasan</option>
+              <option value="Tidak dilakukan" {if: $data_tb && $data_tb.toraks_tdk_dilakukan == 'Tidak dilakukan'}selected{/if}>Tidak dilakukan</option>
+              <option value="Setelah terapi antibioka non OAT: tidak ada perbaikan Klinis, ada faktor resiko TB, dan atas pertimbangan dokter" {if: $data_tb && $data_tb.toraks_tdk_dilakukan == 'Setelah terapi antibioka non OAT: tidak ada perbaikan Klinis, ada faktor resiko TB, dan atas pertimbangan dokter'}selected{/if}>Setelah terapi antibioka non OAT: tidak ada perbaikan Klinis, ada faktor resiko TB, dan atas pertimbangan dokter</option>
+              <option value="Setelah terapi antibioka non OAT: ada Perbaikan Klinis" {if: $data_tb && $data_tb.toraks_tdk_dilakukan == 'Setelah terapi antibioka non OAT: ada Perbaikan Klinis'}selected{/if}>Setelah terapi antibioka non OAT: ada Perbaikan Klinis</option>
+          </select>
+      </div>
+    </div>
+    
+    <!-- Lain-lain -->
+    <div class="col-md-12"><h5><strong>Lain-lain</strong></h5></div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Keterangan</label>
+          <input type="text" name="keterangan" class="form-control" placeholder="Keterangan" value="{if: $data_tb}{$data_tb.keterangan}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Kode ICD X</label>
+          <input type="text" name="kode_icd_x" class="form-control" placeholder="Kode ICD X" value="{if: $data_tb}{$data_tb.kode_icd_x}{/if}" />
+      </div>
+    </div>
+    
+  </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" id="simpan_data_tb">Simpan</button>
+    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+</div>
+
+<script type="text/javascript">
+$('select').selectator();
+$(document).ready(function(){
+  // Event handler untuk simpan data TB
+  $("#simpan_data_tb").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    
+    // Ambil no_rawat dari field yang benar
+    var no_rawat = $('input[name=no_rawat_display]').val();
+    if(!no_rawat) {
+      alert('No rawat tidak ditemukan!');
+      return false;
+    }
+    var set_no_rawat = no_rawat.replace(/\//g, '');
+    
+    // Ambil semua data form
+    var formData = {
+      no_rawat: no_rawat.trim(),
+      id_tb_03: $('input[name=id_tb_03]').val().trim(),
+      id_periode_laporan: $('select[name=id_periode_laporan]').val(),
+      tanggal_buat_laporan: $('input[name=tanggal_buat_laporan]').val(),
+      tahun_buat_laporan: $('input[name=tahun_buat_laporan]').val(),
+      kd_wasor: $('input[name=kd_wasor]').val(),
+      noregkab: $('input[name=noregkab]').val(),
+      id_propinsi: $('input[name=id_propinsi]').val().trim(),
+      kd_kabupaten: $('input[name=kd_kabupaten]').val().trim(),
+      id_kecamatan: $('input[name=id_kecamatan]').val().trim(),
+      id_kelurahan: $('input[name=id_kelurahan]').val().trim(),
+      nama_rujukan: $('select[name=nama_rujukan]').val(),
+      sebutkan1: $('input[name=sebutkan1]').val().trim(),
+      tipe_diagnosis: $('select[name=tipe_diagnosis]').val(),
+      klasifikasi_lokasi_anatomi: $('select[name=klasifikasi_lokasi_anatomi]').val(),
+      klasifikasi_riwayat_pengobatan: $('select[name=klasifikasi_riwayat_pengobatan]').val(),
+      klasifikasi_status_hiv: $('select[name=klasifikasi_status_hiv]').val(),
+      total_skoring_anak: $('select[name=total_skoring_anak]').val(),
+      konfirmasiSkoring5: $('select[name=konfirmasiSkoring5]').val(),
+      konfirmasiSkoring6: $('select[name=konfirmasiSkoring6]').val(),
+      tanggal_mulai_pengobatan: $('input[name=tanggal_mulai_pengobatan]').val(),
+      paduan_oat: $('textarea[name=paduan_oat]').val().trim(),
+      sumber_obat: $('select[name=sumber_obat]').val(),
+      sebutkan: $('textarea[name=sebutkan]').val().trim(),
+      sebelum_pengobatan_hasil_mikroskopis: $('select[name=sebelum_pengobatan_hasil_mikroskopis]').val(),
+      sebelum_pengobatan_hasil_tes_cepat: $('select[name=sebelum_pengobatan_hasil_tes_cepat]').val(),
+      sebelum_pengobatan_hasil_biakan: $('select[name=sebelum_pengobatan_hasil_biakan]').val(),
+      noreglab_bulan_2: $('input[name=noreglab_bulan_2]').val().trim(),
+      hasil_mikroskopis_bulan_2: $('select[name=hasil_mikroskopis_bulan_2]').val(),
+      noreglab_bulan_3: $('input[name=noreglab_bulan_3]').val().trim(),
+      hasil_mikroskopis_bulan_3: $('select[name=hasil_mikroskopis_bulan_3]').val(),
+      noreglab_bulan_5: $('input[name=noreglab_bulan_5]').val().trim(),
+      hasil_mikroskopis_bulan_5: $('select[name=hasil_mikroskopis_bulan_5]').val(),
+      akhir_pengobatan_noreglab: $('input[name=akhir_pengobatan_noreglab]').val().trim(),
+      akhir_pengobatan_hasil_mikroskopis: $('select[name=akhir_pengobatan_hasil_mikroskopis]').val(),
+      tanggal_hasil_akhir_pengobatan: $('input[name=tanggal_hasil_akhir_pengobatan]').val(),
+      hasil_akhir_pengobatan: $('select[name=hasil_akhir_pengobatan]').val(),
+      tanggal_dianjurkan_tes: $('input[name=tanggal_dianjurkan_tes]').val(),
+      tanggal_tes_hiv: $('input[name=tanggal_tes_hiv]').val(),
+      hasil_tes_hiv: $('select[name=hasil_tes_hiv]').val(),
+      ppk: $('select[name=ppk]').val(),
+      art: $('select[name=art]').val(),
+      tb_dm: $('select[name=tb_dm]').val(),
+      terapi_dm: $('select[name=terapi_dm]').val(),
+      pindah_ro: $('select[name=pindah_ro]').val(),
+      status_pengobatan: $('select[name=status_pengobatan]').val(),
+      foto_toraks: $('select[name=foto_toraks]').val(),
+      toraks_tdk_dilakukan: $('select[name=toraks_tdk_dilakukan]').val(),
+      keterangan: $('input[name=keterangan]').val().trim(),
+      kode_icd_x: $('input[name=kode_icd_x]').val().trim()
+    };
+
+    console.log('Sending form data:', formData);
+    
+    var url = baseURL + '/rawat_jalan/datatbsave/?t=' + mlite.token;
+    $.post(url, formData, function(data) {
+      console.log('Server response:', data);
+      try {
+        var response = typeof data === 'string' ? JSON.parse(data) : data;
+        if(response.status === 'success') {
+          $('.tampildata_data_tb').load(baseURL + '/rawat_jalan/datatbtampil/' + set_no_rawat + '?t=' + mlite.token);
+          alert('Data TB berhasil disimpan!');
+        } else {
+          alert('Error: ' + (response.message || 'Gagal menyimpan data'));
+        }
+      } catch(e) {
+        console.log('Response parsing error:', e);
+        $('.tampildata_data_tb').load(baseURL + '/rawat_jalan/datatbtampil/' + set_no_rawat + '?t=' + mlite.token);
+        alert('Data TB berhasil disimpan!');
+      }
+    }).fail(function(xhr, status, error) {
+      console.log('AJAX Error:', xhr.responseText);
+      alert('Gagal menyimpan data TB: ' + error);
+    });
+  });
+});
+</script>

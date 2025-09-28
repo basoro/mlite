@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Laporan Data Tuberkulosis</title>
+    <script src="{?=url('assets/jscripts/jspdf.min.js')?}"></script>
+    <script src="{?=url('assets/jscripts/jspdf.plugin.autotable.min.js')?}"></script>
+</head>
+<body>
+    <div id="content" style="display: none;">
+        <table id="tbl_laporan_tb" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>No. Rawat</th>
+                    <th>No. RM</th>
+                    <th>Nama Pasien</th>
+                    <th>Tanggal Registrasi</th>
+                    <th>Tipe Diagnosis</th>
+                    <th>Lokasi Anatomi</th>
+                    <th>Hasil Akhir Pengobatan</th>
+                    <th>Tanggal Mulai Pengobatan</th>
+                </tr>
+            </thead>
+            <tbody>
+                {loop: $laporan}
+                <tr>
+                    <td>{$key+1}</td>
+                    <td>{$value.no_rawat}</td>
+                    <td>{$value.no_rkm_medis}</td>
+                    <td>{$value.nm_pasien}</td>
+                    <td>{$value.tgl_registrasi}</td>
+                    <td>{$value.tipe_diagnosis}</td>
+                    <td>{$value.klasifikasi_lokasi_anatomi}</td>
+                    <td>{$value.hasil_akhir_pengobatan}</td>
+                    <td>{$value.tanggal_mulai_pengobatan}</td>
+                </tr>
+                {/loop}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var doc = new jsPDF('l', 'pt', 'A4'); // landscape orientation
+        
+        // Header dengan logo dan informasi rumah sakit
+        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        if(img) {
+            doc.addImage(img, 'JPEG', 20, 10, 50, 50);
+        }
+        
+        doc.setFontSize(18);
+        doc.text("{$settings.nama_instansi}", 80, 30, null, null, null);
+        doc.setFontSize(10);
+        doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 45, null, null, null);
+        doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 58, null, null, null);
+        
+        // Garis pemisah
+        doc.line(20, 70, 820, 70, null);
+        doc.line(20, 72, 820, 72, null);
+        
+        // Judul laporan
+        doc.setFontSize(16);
+        doc.text("LAPORAN DATA TUBERKULOSIS", 20, 95, null, null, null);
+        doc.setFontSize(12);
+        doc.text("Periode: {$tgl_awal} s/d {$tgl_akhir}", 20, 115, null, null, null);
+        
+        // Tabel data
+        const totalPagesExp = "{total_pages_count_string}";
+        doc.autoTable({
+            html: '#tbl_laporan_tb',
+            startY: 130,
+            margin: {
+                left: 20,
+                right: 20
+            },
+            styles: {
+                fontSize: 8,
+                cellPadding: 3
+            },
+            headStyles: {
+                fillColor: [41, 128, 185],
+                textColor: 255,
+                fontStyle: 'bold'
+            },
+            alternateRowStyles: {
+                fillColor: [245, 245, 245]
+            },
+            didDrawPage: function(data) {
+                let footerStr = "Halaman " + doc.internal.getNumberOfPages();
+                if (typeof doc.putTotalPages === 'function') {
+                    footerStr = footerStr + " dari " + totalPagesExp;
+                }
+                doc.setFontSize(8);
+                doc.text(`© ${new Date().getFullYear()} {$settings.nama_instansi}.`, data.settings.margin.left, doc.internal.pageSize.height - 20);
+                doc.text(footerStr, data.settings.margin.left + 700, doc.internal.pageSize.height - 20);
+                doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')}`, data.settings.margin.left + 500, doc.internal.pageSize.height - 10);
+            }
+        });
+        
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPagesExp);
+        }
+        
+        // Buka PDF di tab baru
+        window.open(doc.output('bloburl'), '_blank', "toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,modal=yes");
+        
+        // Tutup window ini setelah PDF dibuka
+        setTimeout(function() {
+            window.close();
+        }, 1000);
+    });
+    </script>
+</body>
+</html>
