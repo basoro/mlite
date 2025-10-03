@@ -709,19 +709,45 @@
     var loadURL =  baseURL + '/jkn_mobile_fktp/antroladdantrian/' + no_rkm_medis + '?t=' + mlite.token;
     // alert(loadURL);
     fetch(loadURL)
-		.then(response => {
-			if (!response.ok) {
-				throw new Error('Network response was not ok');
-			}
-			return response.json();
-		})
-		.then(data => {
-			alert(data.metaData.message);
-		})
-		.catch(error => {
-			alert('There was a problem with the fetch operation:');
-		});
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);
+
+        if (data.metaData.code === "200") {
+            alert("✅ Antrian berhasil ditambahkan");
+        } else if (
+            data.metaData.code === "201" &&
+            data.metaData.message.includes("Anda belum melakukan skrining kesehatan")
+        ) {
+            alert("⚠️ " + data.metaData.message);
+
+            // ukuran popup
+            const width = 1024;
+            const height = 768;
+
+            // posisi tengah layar
+            const left = (screen.width / 2) - (width / 2);
+            const top = (screen.height / 2) - (height / 2);
+
+            window.open(
+                "https://webskrining.bpjs-kesehatan.go.id/skrining",
+                "SkriningBPJS",
+                `width=${width},height=${height},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes`
+            );
+        } else {
+            alert("⚠️ Informasil: " + data.metaData.message);
+        }
+    })
+    .catch(error => {
+        alert("There was a problem with the fetch operation: " + error.message);
+    });
 	}  
+
 	function panggilAntrian(no_rkm_medis){
     var baseURL = mlite.url + '/' + mlite.admin;
     var loadURL =  baseURL + '/jkn_mobile_fktp/antrolpanggilantrian/' + no_rkm_medis + '?t=' + mlite.token;

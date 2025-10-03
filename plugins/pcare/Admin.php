@@ -16,6 +16,7 @@ class Admin extends AdminModule
   private $api_url;
   private $api_url_antrol;
   private $api_url_icare;
+  private $assign;
 
   public function init()
   {
@@ -28,7 +29,7 @@ class Admin extends AdminModule
     $this->api_url = $this->settings->get('pcare.PCareApiUrl');
     $this->api_url_antrol = 'https://apijkn.bpjs-kesehatan.go.id/antreanfktp/';
     $this->api_url_icare = 'https://apijkn.bpjs-kesehatan.go.id/wsIHS/api/pcare/validate';
-    if (strpos($this->api_url, 'dev') !== false) { 
+    if ($this->api_url !== null && strpos($this->api_url, 'dev') !== false) { 
       $this->api_url_antrol = 'https://apijkn-dev.bpjs-kesehatan.go.id/antreanfktp_dev/';
       $this->api_url_icare = 'https://apijkn-dev.bpjs-kesehatan.go.id/ihs_dev/api/pcare/validate';
     }  
@@ -70,7 +71,34 @@ class Admin extends AdminModule
   {
       $this->_addHeaderFiles();
       $this->assign['title'] = 'Pengaturan PCare';
-      $this->assign['pcare'] = htmlspecialchars_array($this->settings('pcare'));
+      
+      // Default settings untuk pcare
+      $defaultSettings = [
+          'usernamePcare' => '',
+          'passwordPcare' => '',
+          'consumerID' => '',
+          'consumerSecret' => '',
+          'consumerUserKey' => '',
+          'consumerUserKeyAntrol' => '',
+          'PCareApiUrl' => '',
+          'kode_fktp' => '',
+          'nama_fktp' => '',
+          'kode_kabupatenkota' => '',
+          'kabupatenkota' => '',
+          'wilayah' => '',
+          'cabang' => ''
+      ];
+      
+      // Ambil settings dari database
+      $dbSettings = $this->settings('pcare');
+      if (!is_array($dbSettings)) {
+          $dbSettings = [];
+      }
+      
+      // Gabungkan default settings dengan database settings
+      $pcareSettings = array_merge($defaultSettings, $dbSettings);
+      
+      $this->assign['pcare'] = htmlspecialchars_array($pcareSettings);
       return $this->draw('settings.html', ['settings' => $this->assign]);
   }
 

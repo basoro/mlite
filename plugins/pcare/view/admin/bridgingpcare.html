@@ -156,16 +156,28 @@
                           <ul class="list-group" id="dokterList" style="z-index:1000;position:absolute;width:100%;"></ul>
                         </div>
                       </div>
-                      <div class="col col-md-12">
+                      <div class="col col-md-6">
                         <div class="form-group">
-                          <label for="poli">Terapi</label>
-                          <textarea name="terapi_bridging" id="terapi_bridging" class="form-control" rows="2" cols="80">{?=isset_or($pemeriksaan.pemeriksaan)?}</textarea>
+                          <label for="poli">Pemeriksaan</label>
+                          <textarea name="anamnesa" id="anamnesa" class="form-control" rows="2" cols="80">{?=isset_or($pemeriksaan.pemeriksaan)?}</textarea>
                         </div>
                       </div>
-                      <div class="col col-md-12">
+                      <div class="col col-md-6">
                         <div class="form-group">
-                          <label for="poli">Anamnesa</label>
-                          <textarea name="anamnesa" id="anamnesa" class="form-control" rows="2" cols="80">{?=isset_or($pemeriksaan.evaluasi)?}</textarea>
+                          <label for="poli">Terapi</label>
+                          <textarea name="terapi_bridging" id="terapi_bridging" class="form-control" rows="2" cols="80">{?=isset_or($pemeriksaan.penilaian)?}</textarea>
+                        </div>
+                      </div>
+                      <div class="col col-md-6">
+                        <div class="form-group">
+                          <label for="poli">Terapi Obat</label>
+                          <input type="text" name="terapiObat" id="terapiObat" class="form-control" value="tidak ada">
+                        </div>
+                      </div>
+                      <div class="col col-md-6">
+                        <div class="form-group">
+                          <label for="poli">Terapi Non Obat</label>
+                          <input type="text" name="terapiNonObat" id="terapiNonObat" class="form-control" value="tidak ada">
                         </div>
                       </div>
                       <div class="col col-md-4">
@@ -538,6 +550,10 @@ $(document).ready(function(){
     var getAlergi2 = $('input:text[name=getAlergi2]').val();
     var getAlergi3 = $('input:text[name=getAlergi3]').val();
     var getPrognosa = $('input:text[name=getPrognosa]').val();
+
+    var terapiObat = $('input:text[name=terapiObat]').val();
+    var terapiNonObat = $('input:text[name=terapiNonObat]').val();
+
     var getDiagnosa1 = $('input:text[name=getDiagnosa1]').val();
     var getDiagnosa2 = $('input:text[name=getDiagnosa2]').val();
     var getDiagnosa3 = $('input:text[name=getDiagnosa3]').val();
@@ -595,6 +611,8 @@ $(document).ready(function(){
       getAlergi2: getAlergi2,
       getAlergi3: getAlergi3,
       getPrognosa: getPrognosa,
+      terapiObat: terapiObat, 
+      terapiNonObat: terapiNonObat, 
       getDiagnosa1: getDiagnosa1,
       getDiagnosa2: getDiagnosa2,
       getDiagnosa3: getDiagnosa3,

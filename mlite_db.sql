@@ -1495,6 +1495,16 @@ CREATE TABLE `mlite_bridging_pcare` (
   `id_user` text NOT NULL,
   `tgl_input` text NOT NULL,
   `status_kirim` text NOT NULL,
+  `kode_alergi_makanan` TEXT DEFAULT NULL,
+  `nama_alergi_makanan` TEXT DEFAULT NULL,
+  `kode_alergi_udara` TEXT DEFAULT NULL,
+  `nama_alergi_udara` TEXT DEFAULT NULL,
+  `kode_alergi_obat` TEXT DEFAULT NULL,
+  `nama_alergi_obat` TEXT DEFAULT NULL,
+  `kode_prognosa` TEXT DEFAULT NULL,
+  `nama_prognosa` TEXT DEFAULT NULL,
+  `terapi_obat` TEXT DEFAULT NULL,
+  `terapi_non_obat` TEXT DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 

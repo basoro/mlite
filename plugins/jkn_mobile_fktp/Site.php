@@ -27,7 +27,7 @@ class Site extends SiteModule
       $this->consumerUserKey = $this->settings->get('pcare.consumerUserKey');
       $this->api_url = $this->settings->get('pcare.PCareApiUrl');
       $this->api_url_antrol = 'https://apijkn.bpjs-kesehatan.go.id/antreanfktp/';
-      if (strpos($this->api_url, 'dev') !== false) { 
+      if ($this->api_url !== null && strpos($this->api_url, 'dev') !== false) { 
         $this->api_url_antrol = 'https://apijkn-dev.bpjs-kesehatan.go.id/antreanfktp_dev/';
       }    
     }
