@@ -73,7 +73,7 @@ class Site extends SiteModule
         $antrean_periksa = $this->db('reg_periksa')->select('no_reg')->select('kd_poli')->where('stts', 'Berkas Diterima')->where('tgl_registrasi', $tanggal)->desc('no_reg')->oneArray();
         $antrean_selesai = $this->db('reg_periksa')->select('no_reg')->where('stts', 'Sudah')->where('tgl_registrasi', $tanggal)->toArray();
         $antrean = $this->db('reg_periksa')->select('no_reg')->where('tgl_registrasi', $tanggal)->toArray();
-        $sisa_antrean = count($antrean) - isset_or($antrean_periksa['no_reg'], '0');
+        $sisa_antrean = count($antrean) - count($antrean_selesai);
         $total = count($antrean);
         
         $kode = '';
