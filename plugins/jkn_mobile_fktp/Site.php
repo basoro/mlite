@@ -59,8 +59,9 @@ class Site extends SiteModule
     {
         $powered = 'Powered by <a href="https://mlite.id/">mLITE.id</a>';
         $fktp = $this->settings->get('settings.nama_instansi');
-        $poliklinik = $this->db('poliklinik')->toArray();
-        echo $this->draw('antrian.html', ['powered' => $powered, 'fktp' => $fktp]);
+        $poliklinik = $this->db('poliklinik')->where('status', '1')->toArray();
+        $penjab = $this->db('penjab')->where('status', '1')->toArray();
+        echo $this->draw('antrian.html', ['powered' => $powered, 'fktp' => $fktp, 'poliklinik' => $poliklinik, 'penjab' => $penjab]);
         exit();
     }
 
@@ -202,16 +203,18 @@ class Site extends SiteModule
 
               if($result) {
                 if($_POST['kd_pj'] == 'BPJ') {
+                    // Untuk pasien BPJ, ambil response dari getAntrolAddAntrian dan kirimkan
                     $this->getAntrolAddAntrian($no_rkm_medis, $kd_poli, $kd_pj);
-                    // $send_data['state'] = 'success';
+                    // Fungsi getAntrolAddAntrian akan mengirim response-nya sendiri
+                    exit();
                 } else {
                     $send_data['state'] = 'success';
+                    echo json_encode($send_data);
                 }
               } else {
                 $send_data['state'] = 'error';
+                echo json_encode($send_data);
               }
-
-              echo json_encode($send_data);
             break;
             default:
               echo 'Default';
@@ -302,29 +305,43 @@ class Site extends SiteModule
         $json = json_decode($output, true);
         // echo json_encode($json);
   
-        $code = $json['metadata']['code'];
-        $message = $json['metadata']['message'];
+        $code = isset_or($json['metadata']['code'], '5000');
+        $message = isset_or($json['metadata']['message'], 'ERROR');
         $stringDecrypt = stringDecrypt($key, isset_or($json['response']));
-        $decompress = '""';
+        $decompress = null;
         if (!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
         }
+        
+        // Pastikan response adalah JSON valid
+        $responseData = null;
+        if (!empty($decompress)) {
+            $responseData = json_decode($decompress, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $responseData = $decompress; // Gunakan string jika bukan JSON valid
+            }
+        }
+        
         if ($json != null) {
-            echo '{
-                "state": "sukses", 
-                "metaData": {
-                  "code": "' . $code . '",
-                  "message": "' . $message . '"
-                },
-                "response": ' . $decompress . '}';
+            $response = [
+                "state" => "success", 
+                "metaData" => [
+                  "code" => $code,
+                  "message" => $message
+                ],
+                "response" => $responseData
+            ];
+            echo json_encode($response);
         } else {
-            echo '{
-                "state": "gagal", 
-                "metaData": {
-                  "code": "5000",
-                  "message": "ERROR"
-                },
-                "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+            $response = [
+                "state" => "error", 
+                "metaData" => [
+                  "code" => "5000",
+                  "message" => "ERROR"
+                ],
+                "response" => "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."
+            ];
+            echo json_encode($response);
         }
   
         exit();

@@ -130,12 +130,14 @@
           <div class="container">
           <form>
             <select class="kd_poli">
-              <option value="UMU">Poli Umum</option>
-              <option value="GIG">Poli Gigi</option>
+              {loop: $poliklinik}
+              <option value="{$value.kd_poli}">{$value.nm_poli}</option>
+              {/loop}
             </select>
             <select class="kd_pj">
-              <option value="BPJ">BPJS</option>
-              <option value="UMU">Umum</option>
+              {loop: $penjab}
+              <option value="{$value.kd_pj}">{$value.png_jawab}</option>
+              {/loop}
             </select>
             <input type="text" class="keypad" disabled="disabled" />
           </form>
@@ -175,31 +177,34 @@
                     kd_pj: kd_pj
                 },
                 success: function (data) {
-                    var data = JSON.parse(data);
-                    if(data.state == 'sukses') {
-                        Swal.fire({
-                          title: data.metaData.code,
-                          text: data.metaData.message,
-                          icon: "success"                
-                        });
-                    } else if(data.state == 'gagal') {
-                        Swal.fire({
-                          title: data.metaData.code,
-                          text: data.metaData.message,
-                          icon: "error"                
-                        });
-                    } else if(data.state == 'success') {
-                        Swal.fire({
-                          title: 'Succes',
-                          text: 'Data pendaftaran telah disimpan',
-                          icon: "success"                
-                        });                      
-                    } else {
+                    try {
+                        var data = JSON.parse(data);
+                        if(data.state == 'success') {
+                            Swal.fire({
+                              title: 'Success',
+                              text: 'Data pendaftaran telah disimpan',
+                              icon: "success"                
+                            });                      
+                        } else if(data.state == 'error') {
+                            Swal.fire({
+                              title: 'Error',
+                              text: 'Gagal menyimpan data',
+                              icon: "error"                
+                            });                      
+                        } else {
+                            Swal.fire({
+                              title: 'Error',
+                              text: 'Response tidak valid dari server',
+                              icon: "error"                
+                            });                      
+                        }
+                    } catch (e) {
+                        console.error('JSON parsing error:', e);
                         Swal.fire({
                           title: 'Error',
-                          text: 'Gagal menyimpan data',
+                          text: 'Gagal memproses response dari server',
                           icon: "error"                
-                        });                      
+                        });
                     }
                 }
             })
