@@ -137,6 +137,9 @@
           <button type="button" name="button" class="btn btn-info" id="buka_riwayat"><i class="fa fa-file-o"></i><span class="hidden-xs"> Riwayat</span></button>
           <button type="button" name="button" class="btn btn-success" id="selesai_soap"><i class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
           <span class="pull-right">
+            {if: $cek_pcare}
+            <a href="#" class="btn btn-danger" id="icare" data-status="fktp"><span class="fa fa-file"></span> iCare</a>
+            {/if}
             <a href="#" class="btn btn-info" id="odontogram"><i class="fa fa-bell"></i><span class="hidden-xs"> Odontogram</span></a>
             <a href="#" class="btn btn-warning assesment"><i class="fa fa-file-text"></i><span class="hidden-xs"> Assesment</span></a>
           </span>
@@ -406,6 +409,23 @@
     }).modal();
     return false;
   });
+  $("#form_soap").on("click","#icare", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $('input:text[name=no_rawat]').val();
+    // var status = $(this).data('data-status');
+    var status = 'fktp';
+    var loadURL =  baseURL + '/icare/riwayat/' + no_rawat.replace(/\//g, '') + '/' + status + '?t=' + mlite.token;
+    console.log(loadURL);
+    var modal = $('#bridgingpcareModal');
+    var modalContent = $('#bridgingpcareModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });  
 </script>
 <script type="text/javascript">
   // tombol buka form diklik
