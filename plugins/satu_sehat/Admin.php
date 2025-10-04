@@ -37,24 +37,6 @@ class Admin extends AdminModule
     $this->organizationid = $this->settings->get('satu_sehat.organizationid');
   }
 
-  public function getTest()
-  {
-    // $searchResult = $this->searchObat('paracetamol');
-    // echo json_encode($searchResult);
-    // echo json_encode($this->getObatByCode('93021992'));
-
-    $row['medications'] = $this->db('resep_obat')
-      ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
-      ->join('mlite_satu_sehat_mapping_obat', 'mlite_satu_sehat_mapping_obat.kode_brng=resep_dokter.kode_brng')
-      ->where('mlite_satu_sehat_mapping_obat.tipe', 'obat')
-      ->where('no_rawat', '2025/06/08/000001')->toArray();
-
-    // echo json_encode($row['medications']);
-    echo date('c', strtotime('2025-06-08'));
-
-    exit();
-  }
-
   public function getObatByCode($code)
   {
     if (!json_decode($this->getToken())->access_token) {
@@ -2445,9 +2427,6 @@ class Admin extends AdminModule
     if (isset($_POST['simpan'])) {
 
       $get_id_organisasi_satusehat = json_decode($this->getOrganization($_POST['dep_id']));
-      // $id_organisasi_satusehat = $get_id_organisasi_satusehat->id;
-
-      // echo json_encode($get_id_organisasi_satusehat, true);
 
       if ($get_id_organisasi_satusehat->issue[0]->code == 'duplicate') {
 
@@ -3114,7 +3093,7 @@ class Admin extends AdminModule
     exit();
   }
 
-  public function getMedication(string $tipe = 'request', string $no_rawat = '')
+  public function getMedication(string $no_rawat = '', string $tipe = 'request')
   {
     // Zona waktu
     $zonawaktu = match ($this->settings->get('satu_sehat.zonawaktu')) {
@@ -3132,7 +3111,7 @@ class Admin extends AdminModule
       $row['medications'] = $this->db('resep_obat')
         ->join('resep_dokter', 'resep_dokter.no_resep = resep_obat.no_resep')
         ->join('mlite_satu_sehat_mapping_obat', 'mlite_satu_sehat_mapping_obat.kode_brng = resep_dokter.kode_brng')
-        ->where('mlite_satu_sehat_mapping_obat.tipe', 'obat')
+        ->where('mlite_satu_sehat_mapping_obat.type', 'obat')
         ->where('no_rawat', $no_rawat)
         ->toArray();
 
@@ -3302,7 +3281,7 @@ class Admin extends AdminModule
       $row['medications'] = $this->db('resep_obat')
         ->join('resep_dokter', 'resep_dokter.no_resep = resep_obat.no_resep')
         ->join('mlite_satu_sehat_mapping_obat', 'mlite_satu_sehat_mapping_obat.kode_brng = resep_dokter.kode_brng')
-        ->where('mlite_satu_sehat_mapping_obat.tipe', 'obat')
+        ->where('mlite_satu_sehat_mapping_obat.type', 'obat')
         ->where('no_rawat', $no_rawat)
         ->toArray();
 
@@ -3556,13 +3535,13 @@ class Admin extends AdminModule
     }
 
     echo $this->draw('medication.html', [
-      'pesan' => $pesan,
-      'response' => $response
+      'pesan' => isset_or($pesan, ''),
+      'response' => isset_or($response, '')
     ]);
     exit();
   }
 
-  public function getMedication_($tipe = '', $no_rawat = '')
+  public function getLaboratory($no_rawat = '', $tipe = '')
   {
 
     $zonawaktu = '+07:00';
@@ -3573,284 +3552,340 @@ class Admin extends AdminModule
       $zonawaktu = '+09:00';
     }
 
-    $no_rawat = revertNoRawat($no_rawat);
-    $row['medications'] = $this->db('resep_obat')
-      ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
-      ->join('mlite_satu_sehat_mapping_obat', 'mlite_satu_sehat_mapping_obat.kode_brng=resep_dokter.kode_brng')
-      ->where('mlite_satu_sehat_mapping_obat.tipe', 'obat')
-      ->where('no_rawat', $no_rawat)->toArray();
+    $permintaan_lab = $this->db('permintaan_lab')
+      ->where('no_rawat', $no_rawat)
+      ->oneArray();
 
+    $no_rawat = revertNoRawat($no_rawat);
     $pesan = '';
     $response = '';
-
-    $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
-    $no_ktp_pasien = $this->core->getPasienInfo('no_ktp', $no_rkm_medis);
-    $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat);
-    $id_dokter = $this->db('mlite_satu_sehat_mapping_praktisi')->select('practitioner_id')->where('kd_dokter', $kd_dokter)->oneArray();
-    $id_pasien = json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id;
-
-    // Variabel statis (atau ambil dari fungsi lain)
-    $patientId      = "Patient/$id_pasien";
-    $practitionerId = "Practitioner/$id_dokter[practitioner_id]";
-
-    $data = [];
+    $laboratory = '';
 
     if ($tipe == 'request') {
 
-      foreach ($row['medications'] as $idx => $med) {
+      // Data resep dan mapping obat
+      $row['permintaan_lab'] = $this->db('permintaan_lab')
+        ->where('no_rawat', $no_rawat)
+        ->oneArray();
+      $mapping_lab = $this->db('mlite_satu_sehat_mapping_lab')->where('kode_lab', $row['permintaan_lab']['kode_lab'])->oneArray();
 
-        // --- 1. Medication  -----------------------------------------------------
-        // $medId = 'med' . ($idx + 1);  // med1, med2, dst.
-        $medId = $this->gen_uuid();
+      // Data pasien dan dokter
+      $no_rkm_medis  = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
+      $nm_pasien = $this->core->getPasienInfo('nm_pasien', $no_rkm_medis);
+      $no_ktp_pasien = $this->core->getPasienInfo('no_ktp', $no_rkm_medis);
+      $kd_dokter     = $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat);
+      $nm_dokter     = $this->core->getPegawaiInfo('nama', $kd_dokter);
+      $id_dokter     = $this->db('mlite_satu_sehat_mapping_praktisi')
+        ->select('practitioner_id')
+        ->where('kd_dokter', $kd_dokter)
+        ->oneArray();
+      $id_pasien     = json_decode($this->getPatient($no_ktp_pasien))
+        ->entry[0]->resource->id;
 
-        $medicationResource = [
-          'resourceType' => 'Medication',
-          'id'           => $medId,
-          'code'         => [
-            'coding' => [[
-              'system'  => 'http://www.whocc.no/atc',
-              'code'    => $med['kode_kfa'],          // kolom mapping
-              'display' => $med['nama_kfa']  // kolom mapping
-            ]],
-            'text' => $med['nama_kfa']             // mis. "Amoxicillin 500 mg Tablet"
-          ],
-          'form' => [
-            'coding' => [[
-              'system'  => 'http://terminology.hl7.org/CodeSystem/medication-form-codes',
-              'code'    => $med['satuan_den'],                      // contoh: Tablet
-              'display' => $med['nama_satuan_den']
-            ]]
-          ]
-        ];
+      $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
+      $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $this->core->getSettings('satu_sehat', 'laboratorium'))->oneArray();
 
-        // --- 2. MedicationRequest  ---------------------------------------------
-        // $mrId = 'medrequest-' . str_pad($idx + 1, 3, '0', STR_PAD_LEFT);   // medrequest-001 ...
-        $mrId = $this->gen_uuid();
-
-        if (preg_match_all('/\d+/', $med['aturan_pakai'], $matches)) {
-          $frequency = (int)$matches[0][0];
-          $dose_value = (int)$matches[0][1];
-        } else {
-          $frequency = (int)0;
-          $dose_value = (int)1;
-        }
-
-        $duration = $med['jml'] / $frequency;
-        $start_date = $med['tgl_peresepan'];
-        $end_date = date('Y-m-d', strtotime($start_date . ' + ' . (int)round($duration) . ' days'));
-
-        $medicationRequestResource = [
-          'resourceType' => 'MedicationRequest',
-          'id'           => $mrId,
-          'status'       => 'active',
-          'intent'       => 'order',
-          'authoredOn'   => date('c'),            // waktu sekarang ISO-8601
-          'subject'      => ['reference' => $patientId],
-          'requester'    => ['reference' => $practitionerId],
-          'medicationReference' => ['reference' => "#$medId"],
-          'dosageInstruction' => [[
-            'text'   => $med['aturan_pakai'],    // mis. "1 tablet 3× sehari selama 5 hari"
-            'timing' => [
-              'repeat' => [
-                'frequency'  => (int)$frequency, // 3
-                'period'     => 1,
-                'periodUnit' => 'd'
-              ]
-            ],
-            'route' => [
-              'coding' => [[
-                'system'  => 'http://terminology.hl7.org/CodeSystem/route-codes',
-                'code'    => $med['kode_route'],
-                'display' => $med['nama_route']
-              ]]
-            ],
-            'doseAndRate' => [[
-              'doseQuantity' => [
-                'value' => (float)$dose_value,   // 1
-                'unit'  => strtolower($med['nama_satuan_den'])
-              ]
-            ]]
-          ]],
-          'dispenseRequest' => [
-            'validityPeriod' => [
-              'start' => $start_date,             // "2025-06-05"
-              'end'   => $end_date                // "2025-06-10"
-            ],
-            'numberOfRepeatsAllowed' => 0,
-            'quantity' => [
-              'value' => (int)$med['jml'],               // 15
-              'unit'  => strtolower($med['nama_satuan_den'])
-            ],
-            'expectedSupplyDuration' => [
-              'value' => (int)$duration,          // 5
-              'unit'  => 'days'
-            ]
-          ]
-        ];
-
-        // --- 3. Bundling keduanya ----------------------------------------------
-        $data[] = [
-          'resourceType' => 'Bundle',
-          'type'         => 'collection',
-          'entry'        => [
-            ['resource' => $medicationResource],
-            ['resource' => $medicationRequestResource]
-          ]
-        ];
-      }
-    } else if ($tipe == 'dispense') {
-      $medication = '{ 
-        "resourceType": "MedicationDispense",
-        "identifier": [
-          {
-            "system": "http://sys-ids.kemkes.go.id/medication-dispense/",
-            "value": "123456789"
-          }
-        ],
-        "status": "completed",
-        "category": {
-          "coding": [
+      $laboratory = '
+        {
+          "resourceType": "ServiceRequest",
+          "identifier": [
             {
-              "system": "http://terminology.hl7.org/CodeSystem/medicationdispense-category",
-              "code": "outpatient",
-              "display": "Outpatient"
+              "system": "http://sys-ids.kemkes.go.id/servicerequest/' . $this->organizationid . '",
+              "value": "' . $permintaan_lab['no_order'] . '"
             }
-          ]
-        },
-        "medicationReference": {
-          "reference": "Medication/93021992",
-          "display": "Ekstrak Phyllanthus niruri Herba 50 mg Kapsul (STIMUNO FORTE)"
-        },
-        "subject": {
-          "reference": "Patient/P02028901234",
-          "display": "BUDI SANTOSO"
-        },
-        "context": {
-          "reference": "Encounter/123456"
-        },
-        "performer": [
-          {
-            "actor": {
-              "reference": "Practitioner/N10000001",
-              "display": "Apt. SUSI SUSANTI, S.Farm"
-            }
-          }
-        ],
-        "location": {
-          "reference": "Location/123456",
-          "display": "Apotek RS Sehat"
-        },
-        "authorizingPrescription": [
-          {
-            "reference": "MedicationRequest/789012"
-          }
-        ],
-        "quantity": {
-          "value": 21,
-          "unit": "Kapsul",
-          "system": "http://terminology.kemkes.go.id/CodeSystem/medication-form",
-          "code": "BS019"
-        },
-        "daysSupply": {
-          "value": 7,
-          "unit": "days",
-          "system": "http://unitsofmeasure.org",
-          "code": "d"
-        },
-        "whenPrepared": "2024-01-20T09:45:00+07:00",
-        "whenHandedOver": "2024-01-20T10:00:00+07:00",
-        "dosageInstruction": [
-          {
-            "sequence": 1,
-            "text": "3 x 1 kapsul sehari setelah makan",
-            "timing": {
-              "repeat": {
-                "frequency": 3,
-                "period": 1,
-                "periodUnit": "d"
-              }
-            },
-            "route": {
+          ],
+          "status": "active",
+          "intent": "order",
+          "priority": "routine",
+          "category": [
+            {
               "coding": [
                 {
-                  "system": "http://terminology.hl7.org/CodeSystem/v3-RouteOfAdministration",
-                  "code": "PO",
-                  "display": "Oral"
+                  "system": "http://snomed.info/sct",
+                  "code": "108252007",
+                  "display": "Laboratory procedure"
                 }
               ]
-            },
-            "doseAndRate": [
+            }
+          ],
+          "code": {
+            "coding": [
               {
-                "type": {
-                  "coding": [
-                    {
-                      "system": "http://terminology.hl7.org/CodeSystem/dose-rate-type",
-                      "code": "ordered",
-                      "display": "Ordered"
-                    }
-                  ]
-                },
-                "doseQuantity": {
-                  "value": 1,
-                  "unit": "Kapsul",
-                  "system": "http://terminology.kemkes.go.id/CodeSystem/medication-form",
-                  "code": "BS019"
-                }
+                "system": "http://loinc.org",
+                "code": "24323-8",
+                "display": "Comprehensive metabolic 2000 panel - Serum or Plasma"
               }
-            ]
-          }
-        ]        
-      }';
-    }
+            ],
+            "text": "Panel Metabolik Komprehensif"
+          },
+          "subject": {
+            "reference": "Patient/' . $id_pasien . '",
+            "display": "' . $nm_pasien . '"
+          },
+          "encounter": {
+            "reference": "Encounter/' . $mlite_satu_sehat_response['encounter_id'] . '"
+          },
+          "occurrenceDateTime": "' . $mlite_satu_sehat_response['tanggal_periksa'] . 'T' . $mlite_satu_sehat_response['waktu_periksa'] . $zonawaktu . '",
+          "requester": {
+            "reference": "Practitioner/' . $id_dokter['practitioner_id'] . '",
+            "display": "' . $nm_dokter . '"  
+          },
+          "performer": [
+            {
+              "reference": "Organization/' . $mlite_satu_sehat_lokasi['organization_id'] . '",
+              "display": "' . $mlite_satu_sehat_lokasi['lokasi'] . '"
+            }
+          ],
+          "reasonCode": [
+            {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "73211009",
+                  "display": "Diabetes mellitus"
+                }
+              ],
+              "text": "Kontrol Diabetes Mellitus"
+            }
+          ],
+          "specimen": [
+            {
+              "reference": "Specimen/SPEC-20231214-001",
+              "display": "Serum darah vena"
+            }
+          ]
+        }
+      ';
 
-    $curl = curl_init();
+      $url = $this->fhirurl . '/ServiceRequest';
+      $curl = curl_init();
 
-    curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->fhirurl . '/MedicationRequest',
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => '',
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 0,
-      CURLOPT_FOLLOWLOCATION => true,
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
-      CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS => json_encode($data)
-    ));
+      curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => $laboratory,
+      ));
 
-    $response = curl_exec($curl);
+      $response = curl_exec($curl);
 
-    $id_medication_request = json_decode($response)->id;
-    $pesan = 'Gagal mengirim medication request platform Satu Sehat!!';
-    if ($id_medication_request) {
-      $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
-      if ($mlite_satu_sehat_response) {
+      $id_laboratory_request = json_decode($response)->id;
+      $pesan = 'Gagal mengirim laboratory request lab PK platform Satu Sehat!!';
+      if ($id_laboratory_request) {
         $this->db('mlite_satu_sehat_response')
           ->where('no_rawat', $no_rawat)
           ->save([
-            'no_rawat' => $no_rawat,
-            'id_medication_request' => $id_medication_request
+            'id_lab_pk_request' => $id_laboratory_request
           ]);
-      } else {
-        $this->db('mlite_satu_sehat_response')
-          ->save([
-            'no_rawat' => $no_rawat,
-            'id_medication_request' => $id_medication_request
-          ]);
+        $pesan = 'Sukses mengirim laboratory request lab PK platform Satu Sehat!!';
       }
-      $pesan = 'Sukses mengirim medication request platform Satu Sehat!!';
+
+      curl_close($curl);
+
     }
+    if ($tipe == 'specimen') {
+      $laboratory = '
+        {
+          "resourceType": "Specimen",
+          "identifier": [
+            {
+              "system": "http://sys-ids.kemkes.go.id/specimen/8529d474-30e0-4fee-81a4-7a5234003a1b",
+              "value": "SPEC-20231214-001"
+            }
+          ],
+          "status": "available",
+          "type": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "119364003",
+                "display": "Serum specimen"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/P02029555482"
+          },
+          "receivedTime": "2023-12-14T08:45:00+07:00",
+          "collection": {
+            "collectedDateTime": "2023-12-14T08:30:00+07:00",
+            "method": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "28520004",
+                  "display": "Venipuncture"
+                }
+              ]
+            },
+            "bodySite": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "368208006",
+                  "display": "Left upper arm"
+                }
+              ]
+            }
+          }
+        }
+      ';
+    }
+    if ($tipe == 'observation') {
+      $laboratory = '
+        {
+          "resourceType": "Observation",
+          "identifier": [
+            {
+              "system": "http://sys-ids.kemkes.go.id/observation/8529d474-30e0-4fee-81a4-7a5234003a1b",
+              "value": "OBS-LAB-20231214-001"
+            }
+          ],
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2345-7",
+                "display": "Glucose [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Glukosa Darah"
+          },
+          "subject": {
+            "reference": "Patient/P02029555482"
+          },
+          "encounter": {
+            "reference": "Encounter/E20231214001"
+          },
+          "effectiveDateTime": "2023-12-14T08:30:00+07:00",
+          "issued": "2023-12-14T10:30:00+07:00",
+          "performer": [
+            {
+              "reference": "Practitioner/LAB001",
+              "display": "dr. Siti Nurhaliza, Sp.PK"
+            }
+          ],
+          "valueQuantity": {
+            "value": 180,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "H",
+                  "display": "High"
+                }
+              ]
+            }
+          ],
+          "referenceRange": [
+            {
+              "low": {
+                "value": 70,
+                "unit": "mg/dL"
+              },
+              "high": {
+                "value": 140,
+                "unit": "mg/dL"
+              },
+              "text": "70-140 mg/dL"
+            }
+          ],
+          "specimen": {
+            "reference": "Specimen/SPEC-20231214-001"
+          }
+        }
+      ';
+    }
+    if ($tipe == 'diagnostic') {
+      $laboratory = '
+        {
+          "resourceType": "DiagnosticReport",
+          "identifier": [
+            {
+              "system": "http://sys-ids.kemkes.go.id/diagnosticreport/8529d474-30e0-4fee-81a4-7a5234003a1b",
+              "value": "DR-LAB-20231214-001"
+            }
+          ],
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                  "code": "LAB",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "24323-8",
+                "display": "Comprehensive metabolic 2000 panel - Serum or Plasma"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/P02029555482"
+          },
+          "encounter": {
+            "reference": "Encounter/E20231214001"
+          },
+          "effectiveDateTime": "2023-12-14T08:30:00+07:00",
+          "issued": "2023-12-14T10:30:00+07:00",
+          "performer": [
+            {
+              "reference": "Organization/LAB-001"
+            }
+          ],
+          "result": [
+            {
+              "reference": "Observation/OBS-LAB-20231214-001"
+            },
+            {
+              "reference": "Observation/OBS-LAB-20231214-002"
+            }
+          ],
+          "specimen": [
+            {
+              "reference": "Specimen/SPEC-20231214-001"
+            }
+          ],
+          "conclusion": "Hasil pemeriksaan menunjukkan kadar glukosa darah tinggi, konsisten dengan diagnosis diabetes mellitus."
+        }
+      ';
+    };
 
-    curl_close($curl);
-
-    // header('Content-Type: application/json');
-    // echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);    
-
-    echo $this->draw('medication.html', ['pesan' => $pesan, 'response' => $response]);
+    echo $this->draw('laboratory.html', ['pesan' => $pesan, 'response' => $response]);
     exit();
   }
-
-  public function getLaboratory($no_rawat = '', $no_order = '', $cat = '', $tipe = '')
+  
+  public function getLaboratory__($no_rawat = '', $no_order = '', $cat = '', $tipe = '')
   {
 
     $zonawaktu = '+07:00';
@@ -3940,6 +3975,38 @@ class Admin extends AdminModule
             ]
           }
         ';
+
+        $url = $this->fhirurl . '/ServiceRequest';
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => $url,
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS => $laboratory,
+        ));
+
+        $response = curl_exec($curl);
+
+        $id_laboratory_request = json_decode($response)->id;
+        $pesan = 'Gagal mengirim laboratory request lab PK platform Satu Sehat!!';
+        if ($id_laboratory_request) {
+          $this->db('mlite_satu_sehat_response')
+            ->where('no_rawat', $no_rawat)
+            ->save([
+              'id_lab_pk_request' => $id_laboratory_request
+            ]);
+          $pesan = 'Sukses mengirim laboratory request lab PK platform Satu Sehat!!';
+        }
+
+        curl_close($curl);
+
       }
       if ($tipe == 'specimen') {
         $laboratory = '

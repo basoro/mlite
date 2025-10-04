@@ -43,6 +43,22 @@
                                 {/loop}
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label>Mapping Instalasi Praktisi Laboratorium</label>
+                            <select name="satu_sehat[praktisilab]" class="form-control">
+                                {loop: $bidang} 
+                                    <option value="{$value.nama}" {if: $value.nama == $satu_sehat.praktisilab}selected{/if} >{$value.nama}</option>
+                                {/loop}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Mapping Instalasi Praktisi Radiologi</label>
+                            <select name="satu_sehat[praktisirad]" class="form-control">
+                                {loop: $bidang} 
+                                    <option value="{$value.nama}" {if: $value.nama == $satu_sehat.praktisirad}selected{/if} >{$value.nama}</option>
+                                {/loop}
+                            </select>
+                        </div>                        
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
@@ -86,10 +102,18 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Mapping Instalasi Praktisi Laboratorium</label>
-                            <select name="satu_sehat[praktisilab]" class="form-control">
-                                {loop: $bidang} 
-                                    <option value="{$value.nama}" {if: $value.nama == $satu_sehat.praktisilab}selected{/if} >{$value.nama}</option>
+                            <label>Departemen Laboratorium</label>
+                            <select name="satu_sehat[laboratorium]" class="form-control">
+                                {loop: $mapping_lokasi} 
+                                    <option value="{$value.kode}" {if: $value.kode == $satu_sehat.laboratorium}selected{/if} >{$value.lokasi}</option> 
+                                {/loop}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Departemen Radiologi</label>
+                            <select name="satu_sehat[radiologi]" class="form-control">
+                                {loop: $mapping_lokasi} 
+                                    <option value="{$value.kode}" {if: $value.kode == $satu_sehat.radiologi}selected{/if} >{$value.lokasi}</option> 
                                 {/loop}
                             </select>
                         </div>
