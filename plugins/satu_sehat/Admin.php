@@ -2313,10 +2313,6 @@ class Admin extends AdminModule
     }
     // });
     $mapping_lab = $this->db('mlite_satu_sehat_mapping_lab')
-      ->select([
-        'id_template'=>'mlite_satu_sehat_mapping_lab.id_template',
-        'Pemeriksaan'=>'template_laboratorium.Pemeriksaan'
-      ])
       ->leftJoin('template_laboratorium', 'template_laboratorium.id_template = mlite_satu_sehat_mapping_lab.id_template')
       ->toArray();
     // $filtered = json_decode($filtered,true);
@@ -2343,11 +2339,11 @@ class Admin extends AdminModule
         [
           'kd_jenis_prw' => $_POST['kd_jenis_prw'],
           'code' => $_POST['code'],
-          'code_system' => $_POST['code_system'],
+          'system' => $_POST['code_system'],
           'display' => $_POST['display'],
-          'sample_code' => $_POST['sample_code'],
-          'sample_system' => $_POST['sample_system'],
-          'sample_display' => $_POST['sample_display']
+          'sampel_code' => $_POST['sample_code'],
+          'sampel_system' => $_POST['sample_system'],
+          'sampel_display' => $_POST['sample_display']
         ]
       );
 
@@ -2403,25 +2399,23 @@ class Admin extends AdminModule
       $parts = explode(":", $_POST['id_template']);
       $id_template = trim($parts[0]);
       $kd_jenis_prw = trim($parts[1]);
-      
-      if ($_POST['is_template'] == '') {
-        $id_template = "";
+
+      $is_template = isset($_POST['is_template']) ? $_POST['is_template'] : null;
+      if ($is_template === '' || $id_template === '') {
+        $this->notify('danger', 'Pilih template laboratorium terlebih dahulu');
+        redirect(url([ADMIN, 'satu_sehat', 'mappinglab']));
+        return;
       }
-      
-      // echo $_POST['id_template'];
-      // echo '<br>';
-      // echo $_POST['is_template'];
-      // exit();
+
       $query = $this->db('mlite_satu_sehat_mapping_lab')->save(
         [
-          'id_template' => $id_template,
-          'kd_jenis_prw' => $kd_jenis_prw,
-          'jenis_pemeriksaan' => $_POST['type'],
-          'code_loinc' => $return_json[0]['Code'],
-          'display_loinc' => $return_json[0]['Display'],
-          'code_kptl' => '',
-          'display_kptl' => '',
-          'unit_of_measure' => $return_json[0]['Unit_of_Measure']
+          'id_template' => (int)$id_template,
+          'code' => $return_json[0]['Code'],
+          'system' => $return_json[0]['Code_System'],
+          'display' => $return_json[0]['Display'],
+          'sampel_code' => '',
+          'sampel_system' => '',
+          'sampel_display' => ''
         ]
       );
 
@@ -5748,13 +5742,6 @@ class Admin extends AdminModule
     $length = intval($_POST['length'] ?? 10);
     $draw   = intval($_POST['draw'] ?? 1); // untuk datatables tracking
 
-    // Hitung total records tanpa filter (total di DB pada tanggal itu)
-    // $totalRecords = $this->db('reg_periksa')
-    //     ->where('tgl_registrasi', $periode)
-    //     ->where('stts', '!=', 'Batal')
-    //     ->where('status_lanjut', 'Ralan')
-    //     ->count();    
-
     $data_response = [];
     $query = $this->db('reg_periksa')
       ->where('reg_periksa.tgl_registrasi', $periode)
@@ -5784,20 +5771,6 @@ class Admin extends AdminModule
       $row['praktisi_id'] = $praktisi_id['practitioner_id'];
 
       $mlite_billing = $this->db('mlite_billing')->where('no_rawat', $row['no_rawat'])->oneArray();
-      if ($this->settings->get('satu_sehat.billing') == 'khanza') {
-        $mlite_billing = $this->db('nota_jalan')->select([
-          'tgl_billing' => 'tanggal'
-        ])
-          ->where('no_rawat', $row['no_rawat'])
-          ->oneArray();
-        if ($status_lanjut == 'Ranap') {
-          $mlite_billing = $this->db('nota_inap')->select([
-            'tgl_billing' => 'tanggal'
-          ])
-            ->where('no_rawat', $row['no_rawat'])
-            ->oneArray();
-        }
-      }
       $row['tgl_pulang'] = isset_or($mlite_billing['tgl_billing'], '');
 
       if ($row['status_lanjut'] == 'Ranap') {
@@ -5879,25 +5852,27 @@ class Admin extends AdminModule
 
       $row['service_request_lab_mb'] = isset_or($row['permintaan_lab']['tgl_permintaan'], '');
 
-      $row['specimen_lab_pk'] = $row['permintaan_lab'];
+      $row['specimen_lab_pk'] = isset_or($row['permintaan_lab']['tgl_sampel'], '');
 
       $row['specimen_lab_pa'] = $row['permintaan_lab'];
 
       $row['specimen_lab_mb'] = $row['permintaan_lab'];
 
-      $row['observation_lab_pk'] = $row['permintaan_lab'];
+      $row['observation_lab_pk'] = isset_or($row['permintaan_lab']['tgl_hasil'], '');
 
       $row['observation_lab_pa'] = $row['permintaan_lab'];
 
       $row['observation_lab_mb'] = $row['permintaan_lab'];
 
-      $row['diagnostic_report_lab_pk'] = $row['permintaan_lab'];
+      $row['diagnostic_report_lab_pk'] = isset_or($row['permintaan_lab']['tgl_hasil'], '');
 
       $row['diagnostic_report_lab_pa'] = $row['permintaan_lab'];
 
       $row['diagnostic_report_lab_mb'] = $row['permintaan_lab'];
 
-      $row['care_plan'] = $row['pemeriksaan'];
+      $row['care_plan'] = $this->db('rawat_jl_dr')
+        ->where('no_rawat', $row['no_rawat'])
+        ->oneArray();
 
       $row['id_encounter'] = isset_or($mlite_satu_sehat_response['id_encounter'], '');
       $row['id_condition'] = isset_or($mlite_satu_sehat_response['id_condition'], '');

@@ -45,7 +45,6 @@
             <th>Kode Perawatan</th>
             <th>Nama Perawatan</th>
             <th>Code</th>
-            <th>Code System</th>
             <th>Display</th>
             <th>Sample Code</th>
             <th>Sample System</th>
@@ -60,11 +59,10 @@
             <td>{$value.kd_jenis_prw}</td>
             <td>{$value.nm_perawatan}</td>
             <td>{$value.code}</td>
-            <td>{$value.code_system}</td>
             <td>{$value.display}</td>
-            <td>{$value.sample_code}</td>
-            <td>{$value.sample_system}</td>
-            <td>{$value.sample_display}</td>
+            <td>{?=isset_or($value.sample_code,'')?}</td>
+            <td>{?=isset_or($value.sample_system,'')?}</td>
+            <td>{?=isset_or($value.sample_display,'')?}</td>
         </tr>
         {/loop}
         </tbody>
