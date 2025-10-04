@@ -310,7 +310,7 @@
             { data: 'id_procedure' , 
             render:function(data, type, row) {
                 if(row.id_procedure == '' && row.prosedur_pasien != ''){
-                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="procedure" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
                 }else if(row.id_procedure == '' && row.prosedur_pasien == ''){
                     return `<span class="badge badge-error">Prosedur Kosong</span>`; 
                 }else{return `${data}`}
@@ -319,7 +319,7 @@
             { data: 'id_composition', 
             render:function(data, type, row) {
                 if(row.id_composition == '' && row.adime_gizi != ''){
-                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="dietgizi" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
                 }else if(row.id_composition == '' && row.adime_gizi == ''){
                     return `<span class="badge badge-error">Adime Gizi Kosong</span>`; 
                 }else{return `${data}`}

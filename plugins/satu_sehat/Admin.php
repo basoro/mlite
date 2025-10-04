@@ -2689,7 +2689,7 @@ class Admin extends AdminModule
     $nama_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
     $tgl_registrasi = $this->core->getRegPeriksaInfo('tgl_registrasi', $no_rawat);
     $adime_gizi = $this->db('catatan_adime_gizi')->where('no_rawat', $no_rawat)->oneArray();
-    $instruksi = $adime_gizi['instruksi'];
+    $instruksi = isset_or($adime_gizi['instruksi'], '');
 
     $curl = curl_init();
 
@@ -2773,7 +2773,7 @@ class Admin extends AdminModule
 
     $response = curl_exec($curl);
 
-    $id_composition = json_decode($response)->id;
+    $id_composition = isset_or(json_decode($response)->id, '');
     $pesan = 'Gagal mengirim composition platform Satu Sehat!!';
     if ($id_composition) {
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
@@ -2796,7 +2796,7 @@ class Admin extends AdminModule
 
     curl_close($curl);
     // echo $response;
-    echo '<pre>' . $data . '</pre>';
+    // echo '<pre>' . $data . '</pre>';
 
     echo $this->draw('dietgizi.html', ['pesan' => $pesan, 'response' => $response]);
     exit();
@@ -5811,8 +5811,8 @@ class Admin extends AdminModule
         ->where('prioritas', '1')
         ->oneArray();
 
-      // $row['adime_gizi'] = $this->db('catatan_adime_gizi')
-      //   ->where('no_rawat', $row['no_rawat'])->oneArray();
+      $row['adime_gizi'] = $this->db('catatan_adime_gizi')
+        ->where('no_rawat', $row['no_rawat'])->oneArray();
 
       $row['immunization'] = $this->db('resep_obat')
         ->join('resep_dokter','resep_dokter.no_resep=resep_obat.no_resep')
