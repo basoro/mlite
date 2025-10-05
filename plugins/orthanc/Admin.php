@@ -1715,6 +1715,45 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function getRender($id, $width = 512)
+    {
+        $username = $this->settings->get('orthanc.username');
+        $password = $this->settings->get('orthanc.password');
+        $url = $this->settings->get('orthanc.server') . "/instances/$id/rendered/?width=$width";
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERPWD, "$username:$password");
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+        $data = curl_exec($ch);
+        $err  = curl_error($ch);
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        curl_close($ch);
+
+        if ($data === false || $err) {
+            http_response_code(500);
+            echo "Error fetching image: " . ($err ?: 'unknown error');
+            exit;
+        }
+
+        if ($code < 200 || $code >= 300) {
+            http_response_code($code);
+            echo "Orthanc returned HTTP status $code";
+            exit;
+        }
+
+        header('Content-Type: ' . ($contentType ?: 'image/jpeg'));
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        echo $data;
+        exit();
+    }
+
     private function _addHeaderFiles()
     {
         // CSS

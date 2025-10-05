@@ -26,8 +26,7 @@
       {if: isset($pacs.Instances) && !empty($pacs.Instances)}
       {loop: $pacs.Instances}
   		<div class="col-md-6">
-        <!-- <a href="{?=url()?}/{?=ADMIN?}/orthanc/viewer?series={$value.ID}&t={?=$_SESSION['token']?}" onclick="window.open(this.href, '_blank', 'toolbar=no,menubar=no,scrollbars=yes,resizable=yes,location=no,directories=no,status=no,width=1200,height=800'); return false;"><img class="img-responsive" src="{$orthanc}/instances/{$value.Instances[0]}/rendered/?width=600"></a><br> -->
-        <a href="{?=url()?}/{?=ADMIN?}/orthanc/viewer?study={$value.ParentStudy}&t={?=$_SESSION['token']?}" onclick="window.open(this.href, '_blank', 'toolbar=no,menubar=no,scrollbars=yes,resizable=yes,location=no,directories=no,status=no,width=1200,height=800'); return false;"><img class="img-responsive" src="{$orthanc}/instances/{$value.Instances[0]}/rendered/?width=600"></a><br>
+        <a href="{?=url()?}/{?=ADMIN?}/orthanc/viewer?study={$value.ParentStudy}&t={?=$_SESSION['token']?}" onclick="window.open(this.href, '_blank', 'toolbar=no,menubar=no,scrollbars=yes,resizable=yes,location=no,directories=no,status=no,width=1200,height=800'); return false;"><img class="img-responsive" src="{?=url([ADMIN, 'orthanc', 'render', $value.Instances[0], '600'])?}"></a><br>
         <div class="title">Tanggal: {?=date('Y-m-d', strtotime($value.MainDicomTags.SeriesDate))?}</div>
         Deskripsi: {?=isset_or($value.MainDicomTags.AcquisitionDeviceProcessingDescription, 'N/A')?}<br>
         <button type="button" class="btn btn-xs btn-success simpansimrs" data-image_url="{$orthanc}/instances/{$value.Instances[0]}/rendered">Simpan ke SIMRS</button><br><br>
