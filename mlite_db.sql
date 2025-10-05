@@ -1929,6 +1929,7 @@ CREATE TABLE `mlite_satu_sehat_lokasi` (
 
 CREATE TABLE `mlite_satu_sehat_mapping_lab` (
   `id_template` int NOT NULL,
+  `kd_jenis_prw` varchar(15) DEFAULT NULL,
   `code` varchar(15) DEFAULT NULL,
   `system` varchar(100) NOT NULL,
   `display` varchar(80) DEFAULT NULL,
