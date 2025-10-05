@@ -4096,7 +4096,7 @@ class Admin extends AdminModule
         ]
       }';
 
-      echo json_decode(json_encode($radiologi));
+      // echo json_decode(json_encode($radiologi));
 
       $url = $this->fhirurl . '/ServiceRequest';
       $curl = curl_init();
@@ -5574,7 +5574,7 @@ class Admin extends AdminModule
 
   public function getTes() {
 
-    $accessionNumber = "PR202510040001"; // Accession Number yang dikirim di DICOM
+    $accessionNumber = "PR202510050001"; // Accession Number yang dikirim di DICOM
     $token = json_decode($this->getToken())->access_token;
 
     $ch = curl_init("https://api-satusehat.kemkes.go.id/fhir-r4/v1/ServiceRequest?identifier=$accessionNumber");
