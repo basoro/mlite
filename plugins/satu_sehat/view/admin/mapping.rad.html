@@ -186,7 +186,7 @@ $('#select_rad').on('change', function () {
                 const originalText = $(this).html();
                 $(this).html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
 
-                const apiKey = '';
+                const apiKey = "{?=$this->core->settings->get('satu_sehat.api_openai')?}";
                 const requestData = {
                     model: "openai/gpt-4o",
                     messages: [
