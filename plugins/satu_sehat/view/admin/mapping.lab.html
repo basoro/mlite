@@ -113,7 +113,7 @@ $select.selectator({
         search: 'Search here...'
     },
     load: function (search, callback) {
-      if (search.length < 5) {
+      if (search.length < 3) {
         callback([{ value: '', text: 'Ketik minimal 3 huruf...' }]);
         return;
       }
@@ -140,7 +140,7 @@ $select.selectator({
         });
     },
     delay: 300,
-    minSearchLength: 5,
+    minSearchLength: 3,
     valueField: 'value',
     textField: 'text',
     render: {
@@ -166,10 +166,117 @@ $('#select_lab').on('change', function () {
         <p><label>Kode</label><input type="text" name="code" class="form-control" value="${detail.Code}"></p>
         <p><label>Nama Pemeriksaan</label><input type="text" name="display" class="form-control" value="${detail.Nama_Pemeriksaan}"></p>
         <p><label>Code System</label><input type="text" name="code_system" class="form-control" value="${detail.Code_System}"></p>
-        <p><label>Sample Code</label><input type="text" name="sample_code" class="form-control" value=""></p>
+        <p><label>Sample Code</label>
+            <div class="input-group">
+                <input type="text" name="sample_code" id="sample_code" class="form-control" value="">
+                <span class="input-group-btn">
+                    <button type="button" id="AIGenerateSampleCode" class="btn btn-primary" title="Generate Sample Code dengan AI">
+                        <i class="fas fa-robot"></i> AI Generate
+                    </button>
+                </span>
+            </div>
+        </p>
         <p><label>Sample Display</label><input type="text" name="sample_display" class="form-control" value=""></p>
         <p><label>Sample System</label><input type="text" name="sample_system" class="form-control" value=""></p>
         `);
+        
+        // Setup button AI Generate setelah elemen dibuat
+        setupAIGenerateButton();
+    }
+});
+
+// Fungsi untuk setup button AI Generate
+function setupAIGenerateButton() {
+    $('#AIGenerateSampleCode').off('click').on('click', function() {
+        const displayName = $('input[name="display"]').val();
+        const code = $('input[name="code"]').val();
+        
+        if (!displayName) {
+            alert('Nama pemeriksaan tidak ditemukan');
+            return;
+        }
+        
+        // Tambahkan loading indicator
+        const originalText = $(this).html();
+        $(this).html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
+        
+        // API Key dari file Untitled-1
+        const apiKey = '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';
+        
+        const requestData = {
+            model: "openai/gpt-4o",
+            messages: [
+                {
+                    role: "user", 
+                    content: `Buatkan resource FHIR Specimen (JSON) untuk pemeriksaan laboratorium "${displayName}" dengan kode LOINC ${code}. Struktur WAJIB: resourceType="Specimen", id="{specimen_id}", type.coding (array) dengan system="http://snomed.info/sct", code, dan display; subject.reference="Patient/{patient_id}"; collection.collectedDateTime dalam format ISO8601 (contoh: "2025-10-06T07:45:00+08:00"). Isi code dan display sesuai sampel yang relevan. Balas HANYA dengan objek JSON mentah tanpa backticks/label/teks tambahan.`
+                }
+            ]
+        };
+        
+        fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.choices && data.choices[0] && data.choices[0].message) {
+                const responseContent = (data.choices[0].message.content || '').trim();
+
+                const extractJSONBlock = (text) => {
+                    // Jika dibungkus kode fence, ambil isi di dalamnya
+                    const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+                    const raw = fenced ? fenced[1].trim() : text;
+                    // Ambil substring dari { pertama sampai } terakhir
+                    const start = raw.indexOf('{');
+                    const end = raw.lastIndexOf('}');
+                    if (start !== -1 && end !== -1 && end > start) {
+                        const candidate = raw.slice(start, end + 1);
+                        try { return JSON.parse(candidate); } catch (e) {}
+                    }
+                    // Coba parse langsung
+                    try { return JSON.parse(raw); } catch (e) { return null; }
+                };
+
+                const specimenData = extractJSONBlock(responseContent);
+
+                if (specimenData && specimenData.type && specimenData.type.coding && specimenData.type.coding[0]) {
+                    const coding = specimenData.type.coding[0];
+                    const sanitize = (s) => (typeof s === 'string' ? s.replace(/`/g, '').trim() : s);
+                    $('input[name="sample_code"]').val(coding.code || '');
+                    $('input[name="sample_display"]').val(coding.display || '');
+                    $('input[name="sample_system"]').val(sanitize(coding.system) || '');
+                    alert('Data Specimen berhasil di-generate!');
+                } else {
+                    throw new Error('Struktur JSON Specimen tidak valid atau field coding tidak ditemukan');
+                }
+            } else {
+                throw new Error('Invalid response format from API');
+            }
+        })
+        .catch(error => {
+            console.error('Error generating sample code:', error);
+            alert('Gagal generate sample code: ' + error.message);
+        })
+        .finally(() => {
+            // Kembalikan button ke state semula
+            $(this).html(originalText).prop('disabled', false);
+        });
+    });
+}
+
+// Setup button saat halaman pertama kali load (jika detail sudah ada)
+$(document).ready(function() {
+    if ($('#AIGenerateSampleCode').length) {
+        setupAIGenerateButton();
     }
 });
 
