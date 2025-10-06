@@ -10,7 +10,7 @@ class Templates
     private $tmp = 'tmp/';
 
     private $tags = [
-                '{\*(.*?)\*}' => 'self::comment',
+                '{\*(.*?)\*}' => self::class . '::comment',
                 '{noparse}(.*?){\/noparse}' => self::class . '::noParse',
                 '{if: ([^}]*)}' => '<?php if ($1): ?>',
                 '{else}' => '<?php else: ?>',
@@ -209,7 +209,7 @@ class Templates
 
     public function comment($content)
     {
-        return null;
+        return '';
     }
 
     private function searchTags($content)

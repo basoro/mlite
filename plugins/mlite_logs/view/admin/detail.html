@@ -3,18 +3,27 @@
     <h4 class="modal-title">Detail mlite_query_logs</h4>
 </div>
 <div class="modal-body">
+<style>
+#tbl_detail_mlite_query_logs td.text-wrap { white-space: pre-wrap; word-break: break-word; }
+#tbl_detail_mlite_query_logs td { vertical-align: top; }
+</style>
     <table id="tbl_detail_mlite_query_logs" class="table table-bordered table-striped" style="width:100%">
         <thead>
         </thead>
         <tbody>
             {loop: $detail}
-            <tr><td>Id</td><td>{$value.id}</td><tr>
-<tr><td>Sql Text</td><td>{$value.sql_text}</td><tr>
-<tr><td>Bindings</td><td>{$value.bindings}</td><tr>
-<tr><td>Created At</td><td>{$value.created_at}</td><tr>
-<tr><td>Error Message</td><td>{$value.error_message}</td><tr>
-<tr><td>Username</td><td>{$value.username}</td><tr>
-
+            <tr><td>Id</td></tr>
+            <tr><td>{$value.id}</td></tr>
+            <tr><td>Sql Text</td></tr>
+            <tr><td class="text-wrap">{$value.sql_text}</td></tr>
+            <tr><td>Bindings</td></tr>
+            <tr><td class="text-wrap">{$value.bindings}</td></tr>
+            <tr><td>Created At</td></tr>
+            <tr><td>{$value.created_at}</td></tr>
+            <tr><td>Error Message</td></tr>
+            <tr><td>{$value.error_message}</td></tr>
+            <tr><td>Fullname</td></tr>
+            <tr><td>{?=$this->core->getUserInfo('fullname', null, $value['username'])?}</td></tr>
             {/loop}
         </tbody>
     </table>
@@ -38,8 +47,8 @@ $(document).ready(function() {
         doc.setFontSize(10);
         doc.text("{$settings.alamat} - {$settings.kota} - {$settings.propinsi}", 80, 46, null, null, null);
         doc.text("Telepon: {$settings.nomor_telepon} - Email: {$settings.email}", 80, 56, null, null, null);
-        doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
-        doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
+        doc.line(20,70,572,70,null); 
+        doc.line(20,72,572,72,null); 
         doc.setFontSize(14);
         doc.text("Data Detail", 20, 95, null, null, null);
         const totalPagesExp = "{total_pages_count_string}";        

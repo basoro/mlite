@@ -1812,7 +1812,11 @@ public function postHapusResepResponse()
   private function _getSEPInfo($field, $no_rawat)
   {
       $row = $this->db('bridging_sep')->where('no_rawat', $no_rawat)->oneArray();
-      return $row[$field];
+      // Pastikan array memiliki key yang diminta, jika tidak kembalikan string kosong
+      if (!is_array($row) || !array_key_exists($field, $row)) {
+          return '';
+      }
+      return $row[$field] ?? '';
   }
 
   public function convertNorawat($text)

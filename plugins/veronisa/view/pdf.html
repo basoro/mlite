@@ -994,9 +994,9 @@ Ralan :
 				 Telp : {$billing_mlite_settings.nomor_telepon}<br>
          E-Mail : {$billing_mlite_settings.email}<br>
 				Website : {$billing_mlite_settings.website}</p></td>
-			<td align="right"><strong   style="font-size: 12px" >BUKTI PEMBAYARAN</strong>
+  			<td align="right"><strong   style="font-size: 12px" >BUKTI PEMBAYARAN</strong>
 				<p align="right" style="font-size: 10px;">
-				Kode Faktur : {$billing_mlite.kd_billing}<br>
+				Kode Faktur : {?=isset_or($billing_mlite.kd_billing, '-')?}<br>
 				Nama Pasien : {$billing_mlite_pasien.nm_pasien}<br>
 				No RM : {$billing_mlite_pasien.no_rkm_medis}<br>
 				Alamat : {$billing_mlite_pasien.alamat}<br></p>

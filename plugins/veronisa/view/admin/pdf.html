@@ -65,11 +65,11 @@ Ralan :
           <table>
             <tr>
               <td width="420">
-                            <b><u>PRB : {$print_sep.bpjs_prb.prb}</u></b>
+                            <b><u>PRB : {?=$print_sep['bpjs_prb']['prb'] ?? '-'?}</u></b>
               </td>
               <td width="580">
                 <center>
-                  <img src="{?=url()?}/api/barcode/?codetype=code39&size=60&text={$print_sep.bridging_sep.no_sep}" alt="" width="200px">
+                  <img src="{?=url()?}/api/barcode/?codetype=code39&size=60&text={?=isset_or($print_sep.bridging_sep.no_sep, '0101010101010100101010')?}" alt="" width="200px">
                 </center>
               </td>
             </tr>
@@ -87,7 +87,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.no_sep}
+                {if: isset($print_sep.bridging_sep.no_sep)}{$print_sep.bridging_sep.no_sep}{/if}
               </td>
             </tr>
           </table>
@@ -104,7 +104,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.tglsep}
+                {if: isset($print_sep.bridging_sep.tglsep)}{$print_sep.bridging_sep.tglsep}{/if}
               </td>
             </tr>
           </table>
@@ -121,7 +121,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.no_kartu} ( MR: {$print_sep.bridging_sep.nomr})
+                {if: isset($print_sep.bridging_sep.no_kartu)}{$print_sep.bridging_sep.no_kartu}{/if} ( MR: {if: isset($print_sep.bridging_sep.nomr)}{$print_sep.bridging_sep.nomr}{/if})
               </td>
               <td width="90">
                 Peserta
@@ -130,7 +130,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.peserta}
+                {if: isset($print_sep.bridging_sep.peserta)}{$print_sep.bridging_sep.peserta}{/if}
               </td>
             </tr>
           </table>
@@ -147,7 +147,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.nama_pasien}
+                {if: isset($print_sep.bridging_sep.nama_pasien)}{$print_sep.bridging_sep.nama_pasien}{/if}
               </td>
               <td width="90">
                 COB
@@ -156,7 +156,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.cob}
+                {if: isset($print_sep.bridging_sep.cob)}{$print_sep.bridging_sep.cob}{/if}
               </td>
             </tr>
           </table>
@@ -173,7 +173,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.tanggal_lahir} Kelamin: {$print_sep.bridging_sep.jkel}
+                {if: isset($print_sep.bridging_sep.tanggal_lahir)}{$print_sep.bridging_sep.tanggal_lahir}{/if} Kelamin: {if: isset($print_sep.bridging_sep.jkel)}{$print_sep.bridging_sep.jkel}{/if}
               </td>
               <td width="90">
                 Jns. Rawat
@@ -182,7 +182,7 @@ Ralan :
                 :
               </td>
               <td>
-                {if: $print_sep.bridging_sep.jnspelayanan == 2}R.Jalan{else}R.Inap{/if}
+                {if: isset($print_sep.bridging_sep.jnspelayanan)}{if: $print_sep.bridging_sep.jnspelayanan == 2}R.Jalan{else}R.Inap{/if}{/if}
               </td>
             </tr>
           </table>
@@ -199,7 +199,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.notelep}
+                {if: isset($print_sep.bridging_sep.notelep)}{$print_sep.bridging_sep.notelep}{/if}
               </td>
               <td width="90">
                 Kls. Rawat
@@ -208,7 +208,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.kelas_naik}
+                {if: isset($print_sep.kelas_naik)}{$print_sep.kelas_naik}{/if}
               </td>
             </tr>
           </table>
@@ -225,7 +225,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.nmpolitujuan}
+                {if: isset($print_sep.bridging_sep.nmpolitujuan)}{$print_sep.bridging_sep.nmpolitujuan}{/if}
               </td>
               <td width="90">
                 Kls. Hak
@@ -234,7 +234,7 @@ Ralan :
                 :
               </td>
               <td>
-                Kelas {$print_sep.bridging_sep.klsrawat}
+                Kelas {if: isset($print_sep.bridging_sep.klsrawat)}{$print_sep.bridging_sep.klsrawat}{/if}
               </td>
             </tr>
           </table>
@@ -251,7 +251,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.nmdpdjp}
+                {if: isset($print_sep.bridging_sep.nmdpdjp)}{$print_sep.bridging_sep.nmdpdjp}{/if}
               </td>
             </tr>
           </table>
@@ -268,7 +268,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.nmppkrujukan}
+                {if: isset($print_sep.bridging_sep.nmppkrujukan)}{$print_sep.bridging_sep.nmppkrujukan}{/if}
               </td>
             </tr>
           </table>
@@ -285,7 +285,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.nmdiagnosaawal}
+                {if: isset($print_sep.bridging_sep.nmdiagnosaawal)}{$print_sep.bridging_sep.nmdiagnosaawal}{/if}
               </td>
             </tr>
           </table>
@@ -302,7 +302,7 @@ Ralan :
                 :
               </td>
               <td width="550" valign="top">
-                {$print_sep.bridging_sep.catatan}
+                {if: isset($print_sep.bridging_sep.catatan)}{$print_sep.bridging_sep.catatan}{/if}
               </td>
               <td width="200" halign="center" valign="bottom">
                 Pasien/Keluarga Pasien
@@ -321,12 +321,12 @@ Ralan :
                   *Saya Menyetujui BPJS Kesehatan menggunakan informasi Medis Pasien jika diperlukan.<br>
                   **SEP bukan sebagai bukti penjaminan peserta<br>
                   Cetakan ke 1 {?=date("d/m/Y H:i:s A")?}<br>
-                  Masa berlaku {$print_sep.bridging_sep.tglrujukan} s/d {$print_sep.batas_rujukan}
+                  Masa berlaku {if: isset($print_sep.bridging_sep.tglrujukan)}{$print_sep.bridging_sep.tglrujukan}{/if} s/d {if: isset($print_sep.batas_rujukan)}{$print_sep.batas_rujukan}{/if}
                 </i>
               </td>
               <td valign="bottom" halign="center" padding="0" margin="0">
                 <div id="qrcodeSEP" style="margin-top:10px;width:80px;"></div><br>
-                {$print_sep.bridging_sep.nama_pasien}<br>
+                {if: isset($print_sep.bridging_sep.nama_pasien)}{$print_sep.bridging_sep.nama_pasien}{/if}<br>
               </td>
             </tr>
           </table>
@@ -973,7 +973,7 @@ Ralan :
 				Website : {$billing_mlite_settings.website}</p></td>
 			<td align="right"><strong   style="font-size: 12px" >BUKTI PEMBAYARAN</strong>
 				<p align="right" style="font-size: 10px;">
-				Kode Faktur : {$billing_mlite.kd_billing}<br>
+				Kode Faktur : {?=isset_or($billing_mlite.kd_billing, '-')?}<br>
 				Nama Pasien : {$billing_mlite_pasien.nm_pasien}<br>
 				No RM : {$billing_mlite_pasien.no_rkm_medis}<br>
 				Alamat : {$billing_mlite_pasien.alamat}<br></p>
@@ -1137,7 +1137,7 @@ Ralan :
 				<td></td>
 				<td></td>
 			</tr>
-			{loop: $billing_mlite_detail.tambahan_biaya}
+			{loop: isset_or($billing_mlite_detail.tambahan_biaya, [])}
 			<tr border='0', height='20px'>
 				<td></td>
 				<td>- {$value.nama_biaya}</td>
@@ -1149,20 +1149,20 @@ Ralan :
 			<tr >
 				<td colspan="2"></td>
 				<td colspan="2">Jumlah</td>
-				<td>Rp. <span class="pull-right">{?= number_format($billing_mlite.jumlah_total,2,',','.')?}</span></td>
+				<td>Rp. <span class="pull-right">{?= number_format(isset_or($billing_mlite.jumlah_total, 0),2,',','.')?}</span></td>
 			</tr>
 			<tr >
 				<td colspan="2"></td>
 				<td colspan="2">Potongan</td>
-				<td>Rp. <span class="pull-right">{?= number_format($billing_mlite.potongan,2,',','.')?}</span></td>
+				<td>Rp. <span class="pull-right">{?= number_format(isset_or($billing_mlite.potongan, 0),2,',','.')?}</span></td>
 			</tr>
 			<tr >
 				<td colspan="2"></td>
 				<td colspan="2">Jumlah Bayar</td>
-				<td>Rp. <span class="pull-right">{?= number_format($billing_mlite.jumlah_harus_bayar,2,',','.')?}</span></td>
+				<td>Rp. <span class="pull-right">{?= number_format(isset_or($billing_mlite.jumlah_harus_bayar, 0),2,',','.')?}</span></td>
 			</tr>
 			<tr >
-				<td style="font-size: 9pt;" colspan="6"><i>Terbilang : # {?=terbilang($billing_mlite.jumlah_harus_bayar,3,"")?} Rupiah # </i></td>
+				<td style="font-size: 9pt;" colspan="6"><i>Terbilang : # {?=terbilang(isset_or($billing_mlite.jumlah_harus_bayar, 0),3,"")?} Rupiah # </i></td>
 			</tr>
 			<tr>
 				<td colspan="3"></td>
@@ -1233,7 +1233,7 @@ Ralan :
    {/if}
   </fieldset>
   <br><br><br>
-  {if: $berkas_digital_pasien}
+  {if: isset_or($berkas_digital_pasien, [])}
   <!-- Berkas Digital -->
   <fieldset style="page-break-before:always;">
     <h2><center>Identitas Pasien</center></h2>
@@ -1281,12 +1281,12 @@ Ralan :
   {/if}
   <script>
   	jQuery('#qrcodeSEP').qrcode({
-  		text	: "No.SEP: {$print_sep.bridging_sep.no_sep}"
+  		text	: "No.SEP: {if: isset($print_sep.bridging_sep.no_sep)}{$print_sep.bridging_sep.no_sep}{/if}"
   	});
   </script>
   <script>
   	jQuery('#qrCodePasien').qrcode({
-  		text	: "Nama Pasien: {$print_sep.bridging_sep.nama_pasien}"
+  		text	: "Nama Pasien: {if: isset($print_sep.bridging_sep.nama_pasien)}{$print_sep.bridging_sep.nama_pasien}{/if}"
   	});
   </script>
   <script>

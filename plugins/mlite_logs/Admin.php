@@ -66,7 +66,7 @@ class Admin extends AdminModule
 'bindings'=>$row['bindings'],
 'created_at'=>$row['created_at'],
 'error_message'=>$row['error_message'],
-'username'=>$row['username']
+'username'=>$this->core->getUserInfo('fullname', null, $row['username'])
 
             ];
         }
@@ -110,44 +110,6 @@ $username = $_POST['username'];
 
                 echo json_encode(["status" => "success", "message" => "Data berhasil ditambahkan."]);
 
-            } elseif ($act == 'edit') {
-                $id = $_POST['id'];
-$sql_text = $_POST['sql_text'];
-$bindings = $_POST['bindings'];
-$created_at = $_POST['created_at'];
-$error_message = $_POST['error_message'];
-$username = $_POST['username'];
-
-
-                $sql = "UPDATE mlite_query_logs SET id=?, sql_text=?, bindings=?, created_at=?, error_message=?, username=? WHERE id=?";
-                $binds = [$id, $sql_text, $bindings, $created_at, $error_message, $username,$id];
-                $stmt = $this->db()->pdo()->prepare($sql);
-                $stmt->execute($binds);
-
-                if($this->settings->get('settings.log_query') == 'ya') {
-                    \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
-                }
-                echo json_encode(["status" => "success", "message" => "Data berhasil diperbarui."]);
-
-            } elseif ($act == 'del') {
-                $id= $_POST['id'];
-
-                $sql = "DELETE FROM mlite_query_logs WHERE id='$id'";
-                $binds = [];
-
-                $stmt = $this->db()->pdo()->prepare($sql);
-                $stmt->execute();
-
-                if($this->settings->get('settings.log_query') == 'ya') {
-                    \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
-                }
-
-                if ($stmt->rowCount() > 0) {
-                    echo json_encode(["status" => "success", "message" => "Data berhasil dihapus."]);
-                } else {
-                    echo json_encode(["status" => "error", "message" => "Data tidak ditemukan atau gagal dihapus."]);
-                }
-
             } elseif ($act == 'lihat') {
                 $search_field = $_POST['search_field_mlite_query_logs'] ?? '';
                 $search_text = $_POST['search_text_mlite_query_logs'] ?? '';
@@ -174,7 +136,7 @@ $username = $_POST['username'];
 'bindings'=>$row['bindings'],
 'created_at'=>$row['created_at'],
 'error_message'=>$row['error_message'],
-'username'=>$row['username']
+'username'=>$this->core->getUserInfo('fullname', null, $row['username'])
                     ];
                 }
 

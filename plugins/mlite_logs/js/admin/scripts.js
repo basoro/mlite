@@ -25,11 +25,11 @@ jQuery().ready(function () {
         },
         "columns": [
 { 'data': 'id' },
+{ 'data': 'username' },
+{ 'data': 'created_at' },
 { 'data': 'sql_text' },
 { 'data': 'bindings' },
-{ 'data': 'created_at' },
-{ 'data': 'error_message' },
-{ 'data': 'username' }
+{ 'data': 'error_message' }
 
         ],
         "columnDefs": [
@@ -108,186 +108,10 @@ jQuery().ready(function () {
     });
 
     // ==============================================================
-    // FORM VALIDASI
-    // ==============================================================
-
-    $("form[name='form_mlite_query_logs']").validate({
-        rules: {
-id: 'required',
-sql_text: 'required',
-bindings: 'required',
-created_at: 'required',
-error_message: 'required',
-username: 'required'
-
-        },
-        messages: {
-id:'id tidak boleh kosong!',
-sql_text:'sql_text tidak boleh kosong!',
-bindings:'bindings tidak boleh kosong!',
-created_at:'created_at tidak boleh kosong!',
-error_message:'error_message tidak boleh kosong!',
-username:'username tidak boleh kosong!'
-
-        },
-        submitHandler: function (form) {
- var id= $('#id').val();
-var sql_text= $('#sql_text').val();
-var bindings= $('#bindings').val();
-var created_at= $('#created_at').val();
-var error_message= $('#error_message').val();
-var username= $('#username').val();
-
- var typeact = $('#typeact').val();
-
- var formData = new FormData(form); // tambahan
- formData.append('typeact', typeact); // tambahan
-
-            $.ajax({
-                url: "{?=url([ADMIN,'mlite_logs','aksi'])?}",
-                method: "POST",
-                contentType: false, // tambahan
-                processData: false, // tambahan
-                data: formData,
-                success: function (data) {
-                    try {
-                        data = JSON.parse(data);
-                        var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
-                        audio.play();
-                        if (data.status === "success") {
-                            bootbox.alert(data.message);
-                            $("#modal_mlite_query_logs").modal('hide');
-                            var_tbl_mlite_query_logs.draw();
-                        } else {
-                            bootbox.alert("Gagal: " + data.message);
-                        }
-                    } catch (e) {
-                        bootbox.alert("Terjadi kesalahan saat memproses respons server.");
-                    }
-                }
-            })
-        }
-    });
-
-    // ==============================================================
     // CLICK ICON SEARCH DI INPUT SEARCH
     // ==============================================================
     $("#search_mlite_query_logs").click(function () {
         var_tbl_mlite_query_logs.draw();
-    });
-
-    // ===========================================
-    // Ketika tombol Edit di tekan
-    // ===========================================
-
-    $("#edit_data_mlite_query_logs").click(function () {
-        var rowData = var_tbl_mlite_query_logs.rows({ selected: true }).data()[0];
-        if (rowData != null) {
-
-            var id = rowData['id'];
-var sql_text = rowData['sql_text'];
-var bindings = rowData['bindings'];
-var created_at = rowData['created_at'];
-var error_message = rowData['error_message'];
-var username = rowData['username'];
-
-
-
-            $("#typeact").val("edit");
-  
-            $('#id').val(id);
-$('#sql_text').val(sql_text);
-$('#bindings').val(bindings);
-$('#created_at').val(created_at);
-$('#error_message').val(error_message);
-$('#username').val(username);
-
-            $("#id").prop('readonly', true); // GA BISA DIEDIT KALAU READONLY
-            $('#modal-title').text("Edit Data mLITE Logs");
-            $("#modal_mlite_query_logs").modal();
-        }
-        else {
-            alert("Silakan pilih data yang akan di edit.");
-        }
-
-    });
-
-    // ==============================================================
-    // TOMBOL  DELETE DI CLICK
-    // ==============================================================
-    jQuery("#hapus_data_mlite_query_logs").click(function () {
-        var rowData = var_tbl_mlite_query_logs.rows({ selected: true }).data()[0];
-
-
-        if (rowData) {
-var id = rowData['id'];
-            bootbox.confirm("Anda yakin akan menghapus data dengan id = " + id + "?", function(result) {
-                if (result) {
-                    $.ajax({
-                        url: "{?=url([ADMIN,'mlite_logs','aksi'])?}",
-                        method: "POST",
-                        data: {
-                            id: id,
-                            typeact: 'del'
-                        },
-                        success: function (data) {
-                            try {
-                                data = JSON.parse(data);
-                                var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
-                                audio.play();
-                                bootbox.alert(data.message);
-                                if(data.status === 'success') {
-                                    var_tbl_mlite_query_logs.draw();
-                                }
-                            } catch (e) {
-                                bootbox.alert("Terjadi kesalahan saat menghapus.");
-                            }
-                        },
-                        error: function () {
-                            bootbox.alert("Gagal terhubung ke server.");
-                        }
-                    });
-                }
-            });
-        }
-        else {
-            bootbox.alert("Pilih satu baris untuk dihapus");
-        }
-    });
-
-    // ==============================================================
-    // TOMBOL TAMBAH DATA DI CLICK
-    // ==============================================================
-
-    if(window.location.search.indexOf('no_rawat') !== -1) { 
-        let searchParams = new URLSearchParams(window.location.search)
-        $('#search_text_mlite_query_logs').val(searchParams.get('no_rawat'));
-        var_tbl_mlite_query_logs.draw();
-        if(searchParams.get('modal') == 'true') {
-            $("#modal_mlite_query_logs").modal();
-            $('#no_rawat').val(searchParams.get('no_rawat'));    
-        }
-    }
-
-    jQuery("#tambah_data_mlite_query_logs").click(function () {
-
-        $('#id').val('');
-$('#sql_text').val('');
-$('#bindings').val('');
-$('#created_at').val('');
-$('#error_message').val('');
-$('#username').val('');
-
-
-        if(window.location.search.indexOf('no_rawat') !== -1) { 
-            $('#no_rawat').val(searchParams.get('no_rawat'));
-        }
-
-        $("#typeact").val("add");
-        $("#id").prop('disabled', false);
-        
-        $('#modal-title').text("Tambah Data mLITE Logs");
-        $("#modal_mlite_query_logs").modal();
     });
 
     // ===========================================
