@@ -33,64 +33,64 @@ all: help
 ## Docker Compose Operations
 build: ## Build all services
 	@echo "$(BLUE)Building all services...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) build
+	docker compose -f $(COMPOSE_FILE) build
 	@echo "$(GREEN)Build completed!$(NC)"
 
 up: ## Start all containers
 	@echo "$(BLUE)Starting all containers...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) up -d
+	docker compose -f $(COMPOSE_FILE) up -d
 	@echo "$(GREEN)All containers started!$(NC)"
 	@make status
 
 down: ## Stop and remove containers
 	@echo "$(YELLOW)Stopping and removing containers...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) down
+	docker compose -f $(COMPOSE_FILE) down
 	@echo "$(GREEN)All containers stopped!$(NC)"
 
 restart: ## Restart all containers
 	@echo "$(YELLOW)Restarting all containers...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) restart
+	docker compose -f $(COMPOSE_FILE) restart
 	@echo "$(GREEN)All containers restarted!$(NC)"
 
 logs: ## Show logs from all containers
 	@echo "$(BLUE)Showing logs from all containers...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) logs
+	docker compose -f $(COMPOSE_FILE) logs
 
 logs-follow: ## Follow logs in real-time
 	@echo "$(BLUE)Following logs in real-time (Ctrl+C to stop)...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) logs -f
+	docker compose -f $(COMPOSE_FILE) logs -f
 
 ps: ## Show running containers
 	@echo "$(BLUE)Running containers:$(NC)"
-	docker-compose -f $(COMPOSE_FILE) ps
+	docker compose -f $(COMPOSE_FILE) ps
 
 status: ## Show status of all services
 	@echo "$(BLUE)Service Status:$(NC)"
-	@docker-compose -f $(COMPOSE_FILE) ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
+	@docker compose -f $(COMPOSE_FILE) ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
 
 ## Shell Access
 php: ## Access PHP container shell
 	@echo "$(BLUE)Accessing PHP container shell...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) exec $(PHP_CONTAINER) /bin/bash
+	docker compose -f $(COMPOSE_FILE) exec $(PHP_CONTAINER) /bin/bash
 
 mysql: ## Access MySQL container shell
 	@echo "$(BLUE)Accessing MySQL container shell...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) exec $(DB_CONTAINER) mysql -u$(DB_USER) -p$(DB_PASSWORD) $(DB_NAME)
+	docker compose -f $(COMPOSE_FILE) exec $(DB_CONTAINER) mysql -u$(DB_USER) -p$(DB_PASSWORD) $(DB_NAME)
 
 orthanc: ## Access Orthanc container shell
 	@echo "$(BLUE)Accessing Orthanc container shell...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) exec $(ORTHANC_CONTAINER) /bin/bash
+	docker compose -f $(COMPOSE_FILE) exec $(ORTHANC_CONTAINER) /bin/bash
 
 nginx: ## Access Nginx container shell
 	@echo "$(BLUE)Accessing Nginx container shell...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) exec $(NGINX_CONTAINER) /bin/bash
+	docker compose -f $(COMPOSE_FILE) exec $(NGINX_CONTAINER) /bin/bash
 
 ## Database Operations
 db-backup: ## Backup database
 	@echo "$(BLUE)Creating database backup...$(NC)"
 	@mkdir -p $(BACKUP_DIR)
 	@BACKUP_FILE="$(BACKUP_DIR)/$(DB_NAME)_$$(date +%Y%m%d_%H%M%S).sql"; \
-	docker-compose -f $(COMPOSE_FILE) exec -T $(DB_CONTAINER) mysqldump -u$(DB_USER) -p$(DB_PASSWORD) $(DB_NAME) > $$BACKUP_FILE && \
+	docker compose -f $(COMPOSE_FILE) exec -T $(DB_CONTAINER) mysqldump -u$(DB_USER) -p$(DB_PASSWORD) $(DB_NAME) > $$BACKUP_FILE && \
 	echo "$(GREEN)Database backup created: $$BACKUP_FILE$(NC)" || \
 	echo "$(RED)Database backup failed!$(NC)"
 
@@ -104,17 +104,17 @@ db-restore: ## Restore database (Usage: make db-restore FILE=backup.sql)
 		exit 1; \
 	fi
 	@echo "$(YELLOW)Restoring database from $(FILE)...$(NC)"
-	@docker-compose -f $(COMPOSE_FILE) exec -T $(DB_CONTAINER) mysql -u$(DB_USER) -p$(DB_PASSWORD) $(DB_NAME) < $(FILE)
+	@docker compose -f $(COMPOSE_FILE) exec -T $(DB_CONTAINER) mysql -u$(DB_USER) -p$(DB_PASSWORD) $(DB_NAME) < $(FILE)
 	@echo "$(GREEN)Database restored successfully!$(NC)"
 
 db-shell: ## Access MySQL shell directly
 	@echo "$(BLUE)Accessing MySQL shell...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) exec $(DB_CONTAINER) mysql -u$(DB_USER) -p$(DB_PASSWORD)
+	docker compose -f $(COMPOSE_FILE) exec $(DB_CONTAINER) mysql -u$(DB_USER) -p$(DB_PASSWORD)
 
 ## Cleanup Operations
 clean: ## Clean up containers and images (keep volumes and dummy data)
 	@echo "$(YELLOW)Cleaning up containers and images (keeping volumes and dummy-dicom)...$(NC)"
-	@docker-compose down --rmi all
+	@docker compose down --rmi all
 	@docker system prune -f --volumes
 	@echo "$(GREEN)Cleanup completed (volumes and dummy-dicom preserved)$(NC)"
 
@@ -122,7 +122,7 @@ clean-all: ## Clean up everything except dummy DICOM data
 	@echo "$(RED)WARNING: This will remove all containers, images, and volumes except dummy-dicom data!$(NC)"
 	@echo "$(YELLOW)Press Ctrl+C to cancel, or wait 5 seconds to continue...$(NC)"
 	@sleep 5
-	@docker-compose down -v --rmi all
+	@docker compose down -v --rmi all
 	@docker system prune -af --volumes
 	@echo "$(GREEN)Complete cleanup finished (dummy-dicom data preserved)$(NC)"
 
@@ -152,7 +152,7 @@ top: ## Show top processes in containers
 	@echo "$(BLUE)Top processes in containers:$(NC)"
 	@for container in $(PHP_CONTAINER) $(DB_CONTAINER) $(ORTHANC_CONTAINER) $(NGINX_CONTAINER); do \
 		echo "\n$(YELLOW)=== $$container ===$(NC)"; \
-		docker-compose -f $(COMPOSE_FILE) exec $$container ps aux 2>/dev/null || echo "Container not running"; \
+		docker compose -f $(COMPOSE_FILE) exec $$container ps aux 2>/dev/null || echo "Container not running"; \
 	done
 
 ## Help
@@ -194,7 +194,7 @@ help: ## Show this help message
 ## Orthanc Testing Commands
 orthanc-test: ## Test Orthanc server connection
 	@echo "$(YELLOW)Testing Orthanc server connection...$(NC)"
-	@if docker-compose -f $(COMPOSE_FILE) ps orthanc | grep -q "Up"; then \
+	@if docker compose -f $(COMPOSE_FILE) ps orthanc | grep -q "Up"; then \
 		echo "$(GREEN)Orthanc container is running$(NC)"; \
 		curl -s http://localhost:8042/system 2>/dev/null && echo "$(GREEN)Orthanc API is accessible$(NC)" || echo "$(RED)Orthanc API is not accessible$(NC)"; \
 	else \
@@ -224,11 +224,11 @@ orthanc-web: ## Open Orthanc web interface
 
 orthanc-logs: ## Show Orthanc container logs
 	@echo "$(YELLOW)Showing Orthanc container logs...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) logs -f orthanc
+	docker compose -f $(COMPOSE_FILE) logs -f orthanc
 
 orthanc-restart: ## Restart only Orthanc container
 	@echo "$(YELLOW)Restarting Orthanc container...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) restart orthanc
+	docker compose -f $(COMPOSE_FILE) restart orthanc
 	@echo "$(GREEN)Orthanc container restarted$(NC)"
 
 
