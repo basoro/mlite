@@ -1,32 +1,38 @@
 #!/bin/bash
 # mLITE Docker Entrypoint Script
-# Initializes mLITE application environment for PHP 8.3
+# Initializes mLITE application environment for PHP 8.3+
+
 set -e
 
-# Create and set permissions for mLITE upload directories
-mkdir -p /var/www/public/uploads
-chmod -R 777 /var/www/public/uploads
+echo "🔧 Initializing mLITE environment..."
 
-# Create temporary directory for mLITE operations
-mkdir -p /var/www/public/tmp
-chmod -R 777 /var/www/public/tmp
+# Ensure correct working directory
+cd /var/www/public || exit 1
 
-# Create backup directory for mLITE data
-mkdir -p /var/www/public/backups &&
-chmod -R 777 /var/www/public/backups &&
+# --- Folder setup ---
+for dir in uploads tmp backups admin/tmp; do
+  mkdir -p "/var/www/public/${dir}"
+  chmod -R 777 "/var/www/public/${dir}"
+done
 
-# Create admin temporary directory
-mkdir -p /var/www/public/admin/tmp
-chmod -R 777 /var/www/public/admin/tmp
+# --- Update database config ---
+if [ -f /var/www/public/config.php ]; then
+  echo "⚙️ Updating config.php database host to 'mysql'..."
+  sed -i 's/localhost/mysql/g' /var/www/public/config.php
+fi
 
-# Configure database connection for Docker environment
-sed -i 's/localhost/mysql/g' /var/www/public/config.php
+# --- Composer install (only if vendor folder missing) ---
+if [ ! -d /var/www/public/vendor ]; then
+  echo "📦 Installing Composer dependencies..."
+  composer install --no-dev --optimize-autoloader
+else
+  echo "✅ Composer dependencies already installed, skipping."
+fi
 
-# Install PHP dependencies optimized for production
-composer install --no-dev --optimize-autoloader
+# --- Fix mPDF temp directory permissions (if exists) ---
+if [ -d /var/www/public/vendor/mpdf/mpdf/tmp ]; then
+  chmod -R 777 /var/www/public/vendor/mpdf/mpdf/tmp
+fi
 
-# Set permissions for mPDF temporary directory
-chmod -R 777 /var/www/public/vendor/mpdf/mpdf/tmp
-
-# Start PHP-FPM for mLITE application
+echo "🚀 Starting PHP-FPM..."
 exec php-fpm

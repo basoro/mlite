@@ -1,72 +1,66 @@
-# mLITE Docker Compose Configuration
-# Updated for PHP 8.3 compatibility with mLITE PHP 7.4 - 8.3+ requirements
-
 services:
-  # PHP 8.3 Service for mLITE
   php:
     build:
-      context: .              # Build context is current directory
+      context: .
       dockerfile: php/Dockerfile
-    container_name: mlite_php # Name our container
+    container_name: mlite_php
     volumes:
-      - ../:/var/www/public   # Mount our source code
+      - ../:/var/www/public       # <== BENAR, karena file ini di dalam /docker/
+    depends_on:
+      - mysql
     networks:
-      - app-network          # Connect to our network
+      - app-network
     environment:
-      PHP_IDE_CONFIG: serverName=Docker # For Xdebug PHP 8.3 debugging
-    # Make container restart unless stopped manually
+      PHP_IDE_CONFIG: serverName=Docker
     restart: unless-stopped
 
-  # Nginx Service
   nginx:
-    image: nginx:latest      # Use official Nginx image
+    image: nginx:latest
     container_name: mlite_nginx
     ports:
-      - "80:80"           # Map port 8080 on our PC to 80 in container
+      - "8080:80"                 # <== disarankan pakai 8080 agar tidak bentrok port 80 host
     volumes:
-      - ../:/var/www/public  # Mount same source code
+      - ../:/var/www/public
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - php                 # Wait for PHP container
+      - php
     networks:
       - app-network
     restart: unless-stopped
 
-  # MySQL Service for mLITE Database
   mysql:
-    image: ${MYSQL_VERSION}  # MySQL version defined in .env file
+    image: mysql:8.0
     container_name: mlite_mysql
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: true
-      MYSQL_DATABASE: mlite    # mLITE default database name
+      MYSQL_DATABASE: mlite
     ports:
-      - 3308:3306 # Map port 3308 on our PC to 3306 in container
+      - "3308:3306"
     volumes:
-      - ./mysql:/var/lib/mysql                                        # MySQL data persistence
-      - ../mlite_db.sql:/docker-entrypoint-initdb.d/00-mlite_db.sql  # mLITE database schema
-      - ./db:/docker-entrypoint-initdb.d/01-custom                   # Custom initialization scripts
+      - ./mysql:/var/lib/mysql
+      - ../mlite_db.sql:/docker-entrypoint-initdb.d/00-mlite_db.sql
+      - ./db:/docker-entrypoint-initdb.d/01-custom
     networks:
-      - app-network    # Connect to the same network as PHP and Nginx
+      - app-network
 
-  # Orthanc DICOM Server Service
   orthanc:
     build:
-      context: .   # Build context for Orthanc
+      context: .
       dockerfile: orthanc/Dockerfile
     container_name: mlite_orthanc
     restart: unless-stopped
     ports:
-      - "8042:8042"   # REST API
-      - "4242:4242"   # DICOM SCP
+      - "8042:8042"
+      - "4242:4242"
     volumes:
       - ./orthanc/orthanc-db:/var/lib/orthanc/db
       - ./orthanc/orthanc.json:/etc/orthanc/orthanc.json:ro
     environment:
       - ORTHANC_NAME=Orthanc-Headless
     networks:
-      - app-network      
+      - app-network
 
 networks:
   app-network:
-    driver: bridge          # Standard Docker network type
+    driver: bridge
