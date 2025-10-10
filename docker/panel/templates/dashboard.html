@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Nginx Manager{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex justify-between items-center">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-800">Site Management</h2>
+            <p class="text-gray-600 mt-2">Manage your Nginx reverse proxy configurations</p>
+        </div>
+        <a href="{{ url_for('add_site') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition flex items-center">
+            <i class="fas fa-plus mr-2"></i>
+            Add New Site
+        </a>
+    </div>
+</div>
+
+<!-- System Status -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="bg-white rounded-lg shadow-md p-4">
+        <div class="flex items-center">
+            <i class="fas fa-server text-blue-600 text-xl mr-3"></i>
+            <div>
+                <h3 class="font-semibold text-gray-800">Nginx Status</h3>
+                <p class="text-sm {% if nginx_status %}text-green-600{% else %}text-red-600{% endif %}">
+                    {{ 'Running' if nginx_status else 'Stopped' }}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-4">
+        <div class="flex items-center">
+            <i class="fas fa-globe text-green-600 text-xl mr-3"></i>
+            <div>
+                <h3 class="font-semibold text-gray-800">DNS Status</h3>
+                <p class="text-sm {% if dns_status %}text-green-600{% else %}text-red-600{% endif %}">
+                    {{ 'Running' if dns_status else 'Stopped' }}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-4">
+        <div class="flex items-center">
+            <i class="fas fa-network-wired text-purple-600 text-xl mr-3"></i>
+            <div>
+                <h3 class="font-semibold text-gray-800">Total Sites</h3>
+                <p class="text-sm text-gray-600">{{ sites|length }} configured</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for site in sites %}
+    <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+        <div class="flex justify-between items-start mb-4">
+            <div class="flex-1">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ site.domain }}</h3>
+                <div class="flex items-center text-gray-600 mb-2">
+                    {% if site.type == 'php' %}
+                    <i class="fas fa-code mr-2"></i>
+                    <span>Type: PHP-FPM</span>
+                    {% else %}
+                    <i class="fas fa-exchange-alt mr-2"></i>
+                    <span>Type: Nginx Proxy</span>
+                    {% endif %}
+                </div>
+                <div class="flex items-center text-gray-600 mb-2">
+                    {% if site.type == 'php' %}
+                    <i class="fas fa-folder mr-2"></i>
+                    <span>Root: {{ site.root or '/var/www/public' }}</span>
+                    {% else %}
+                    <i class="fas fa-network-wired mr-2"></i>
+                    <span>Port: {{ site.port }}</span>
+                    {% endif %}
+                </div>
+                <div class="flex items-center text-gray-500 text-sm">
+                    <i class="fas fa-calendar mr-2"></i>
+                    <span>{{ site.created_at }}</span>
+                </div>
+            </div>
+            <div class="flex flex-col space-y-2">
+                <a href="http://{{ site.domain }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition">
+                    <i class="fas fa-external-link-alt"></i>
+                </a>
+                <button onclick="confirmDelete('{{ site.domain }}')" class="text-red-600 hover:text-red-800 transition">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="pt-4 border-t border-gray-200">
+            <div class="flex items-center text-sm text-gray-500">
+                <i class="fas fa-file-code mr-2"></i>
+                <span>{{ site.config_file }}</span>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-span-full">
+        <div class="bg-white rounded-lg shadow-md p-12 text-center">
+            <i class="fas fa-server text-gray-400 text-6xl mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">No Sites Configured</h3>
+            <p class="text-gray-600 mb-6">Get started by adding your first site configuration</p>
+            <a href="{{ url_for('add_site') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition inline-flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Add Your First Site
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 m-4 max-w-md w-full">
+        <div class="flex items-center mb-4">
+            <i class="fas fa-exclamation-triangle text-red-600 text-2xl mr-3"></i>
+            <h3 class="text-lg font-semibold text-gray-800">Delete Site Configuration</h3>
+        </div>
+        <p class="text-gray-600 mb-6">Are you sure you want to delete the site configuration for <span id="deleteDomain" class="font-semibold"></span>? This action cannot be undone.</p>
+        <div class="flex justify-end space-x-3">
+            <button onclick="closeDeleteModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition">
+                Cancel
+            </button>
+            <a id="confirmDeleteBtn" href="#" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition">
+                Delete
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(domain) {
+    document.getElementById('deleteDomain').textContent = domain;
+    document.getElementById('confirmDeleteBtn').href = '/delete-site/' + domain;
+    document.getElementById('deleteModal').classList.remove('hidden');
+    document.getElementById('deleteModal').classList.add('flex');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+    document.getElementById('deleteModal').classList.remove('flex');
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('deleteModal');
+    if (event.target === modal) {
+        closeDeleteModal();
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,3 @@
+# Dynamic hosts for Nginx Manager
+# Format: IP_ADDRESS DOMAIN_NAME
+127.0.0.1 mlite.loc

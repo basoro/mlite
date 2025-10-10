@@ -9,23 +9,48 @@ services:
     depends_on:
       - mysql
     networks:
-      - app-network
+      app-network:
+        ipv4_address: 10.20.0.6
     environment:
       PHP_IDE_CONFIG: serverName=Docker
+    restart: unless-stopped
+
+  panel:
+    build:
+      context: ./panel
+      dockerfile: Dockerfile
+    container_name: mlite_panel
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./panel:/app
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./dns:/app/dns  # DNS management access
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - NGINX_CONTAINER_NAME=mlite_nginx
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+    command: python app.py
+    networks:
+      - app-network
     restart: unless-stopped
 
   nginx:
     image: nginx:latest
     container_name: mlite_nginx
     ports:
-      - "8080:80"                 # <== disarankan pakai 8080 agar tidak bentrok port 80 host
+      - "80:80"
+      - "8080:8080"
     volumes:
       - ../:/var/www/public
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - php
+      - panel
     networks:
-      - app-network
+      app-network:
+        ipv4_address: 10.20.0.5
     restart: unless-stopped
 
   mysql:
@@ -61,6 +86,29 @@ services:
     networks:
       - app-network
 
+  dns:
+    image: 4km3/dnsmasq:latest
+    container_name: mlite_dns
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    volumes:
+      - ./dns/dnsmasq.conf:/etc/dnsmasq.conf
+      - ./dns/dnsmasq.hosts:/etc/dnsmasq.hosts
+      - ./dns/dnsmasq.log:/var/log/dnsmasq.log
+    environment:
+      - DNSMASQ_CONF=/etc/dnsmasq.conf
+    networks:
+      app-network:
+        ipv4_address: 10.20.0.10
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+
 networks:
   app-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 10.20.0.0/16
+          gateway: 10.20.0.1

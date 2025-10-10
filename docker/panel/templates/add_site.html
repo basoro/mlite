@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Add Site - Nginx Manager{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Add New Site</h2>
+            <p class="text-gray-600">Configure a new site (Reverse Proxy or PHP-FPM)</p>
+        </div>
+
+        <form method="POST" class="space-y-6">
+            <div>
+                <label for="domain" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-globe mr-1"></i>
+                    Domain Name
+                </label>
+                <input type="text" 
+                       id="domain" 
+                       name="domain" 
+                       required
+                       placeholder="example.com"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                       oninput="validateDomain(this)">
+                <p class="mt-1 text-sm text-gray-500">Enter the domain name without http:// or https://</p>
+                <div id="domainError" class="mt-1 text-sm text-red-600 hidden">
+                    Please enter a valid domain name
+                </div>
+            </div>
+
+            <div>
+                <label for="site_type" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-layer-group mr-1"></i>
+                    Site Type
+                </label>
+                <select id="site_type" name="site_type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" onchange="onTypeChange()">
+                    <option value="proxy" selected>Nginx Proxy</option>
+                    <option value="php">PHP-FPM</option>
+                </select>
+                <p class="mt-1 text-sm text-gray-500">Choose how Nginx should serve this domain</p>
+            </div>
+
+            <div id="portGroup">
+                <label for="port" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-network-wired mr-1"></i>
+                    Backend Port
+                </label>
+                <input type="number" 
+                       id="port" 
+                       name="port" 
+                       min="1" 
+                       max="65535"
+                       placeholder="3000"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                       oninput="validatePort(this)">
+                <p class="mt-1 text-sm text-gray-500">Enter the port number where your backend service is running</p>
+                <div id="portError" class="mt-1 text-sm text-red-600 hidden">
+                    Port must be between 1 and 65535
+                </div>
+            </div>
+
+            <div id="rootGroup" class="hidden">
+                <label for="root_dir" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-folder mr-1"></i>
+                    Root Directory
+                </label>
+                <input type="text" 
+                       id="root_dir" 
+                       name="root_dir" 
+                       placeholder="/var/www/public"
+                       value="/var/www/public"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                       oninput="updatePreview()">
+                <p class="mt-1 text-sm text-gray-500">Directory to serve for PHP-FPM sites (mounted in Nginx)</p>
+                <p class="mt-1 text-xs text-blue-600">Direktori akan dibuat otomatis di bawah <code class="bg-blue-100 px-1 rounded">/var/www/public</code>. Hanya path di dalam base tersebut yang diizinkan.</p>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-4">
+                <h3 class="text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Configuration Preview
+                </h3>
+                <pre class="text-xs text-gray-600 bg-white p-3 rounded border overflow-x-auto"><code id="configPreview">server {
+    listen 80;
+    server_name example.com;
+    
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}</code></pre>
+            </div>
+
+            <div class="bg-blue-50 rounded-lg p-4">
+                <h3 class="text-sm font-medium text-blue-700 mb-2">
+                    <i class="fas fa-globe mr-1"></i>
+                    DNS Integration
+                </h3>
+                <p class="text-sm text-blue-600">
+                    This domain will be automatically added to the local DNS server for resolution.
+                    You can access your site at <code class="text-xs bg-blue-100 px-1 py-0.5 rounded">http://your-domain</code> 
+                    from other containers or configured clients.
+                </p>
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <a href="{{ url_for('dashboard') }}" class="px-6 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                    Cancel
+                </a>
+                <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed" id="submitBtn">
+                    <i class="fas fa-plus mr-2"></i>
+                    Add Site
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function validateDomain(input) {
+    const domain = input.value.trim();
+    const domainError = document.getElementById('domainError');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$/;
+    
+    if (domain && !domainRegex.test(domain)) {
+        domainError.classList.remove('hidden');
+        submitBtn.disabled = true;
+        return false;
+    } else {
+        domainError.classList.add('hidden');
+        submitBtn.disabled = false;
+        updatePreview();
+        return true;
+    }
+}
+
+function validatePort(input) {
+    const port = parseInt(input.value);
+    const portError = document.getElementById('portError');
+    const submitBtn = document.getElementById('submitBtn');
+    const type = document.getElementById('site_type').value;
+    
+    if (type === 'php') {
+        portError.classList.add('hidden');
+        submitBtn.disabled = false;
+        updatePreview();
+        return true;
+    }
+
+    if (input.value && (isNaN(port) || port < 1 || port > 65535)) {
+        portError.classList.remove('hidden');
+        submitBtn.disabled = true;
+        return false;
+    } else {
+        portError.classList.add('hidden');
+        submitBtn.disabled = false;
+        updatePreview();
+        return true;
+    }
+}
+
+function onTypeChange() {
+    const type = document.getElementById('site_type').value;
+    const portGroup = document.getElementById('portGroup');
+    const rootGroup = document.getElementById('rootGroup');
+    
+    if (type === 'php') {
+        portGroup.classList.add('hidden');
+        rootGroup.classList.remove('hidden');
+    } else {
+        rootGroup.classList.add('hidden');
+        portGroup.classList.remove('hidden');
+    }
+    updatePreview();
+}
+
+function updatePreview() {
+    const domain = document.getElementById('domain').value || 'example.com';
+    const type = document.getElementById('site_type').value;
+    const port = document.getElementById('port').value || '3000';
+    const root = document.getElementById('root_dir').value || '/var/www/public';
+    
+    let config = '';
+    if (type === 'php') {
+        config = `server {\n    listen 80;\n    server_name ${domain};\n\n    root ${root};\n    index index.php index.html;\n\n    access_log /var/log/nginx/access.log;\n    error_log  /var/log/nginx/error.log;\n\n    location / {\n        try_files $uri $uri/ /index.php?$args;\n    }\n\n    location ~ \\.php$ {\n        include fastcgi_params;\n        fastcgi_pass php:9000;\n        fastcgi_index index.php;\n        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n\n        fastcgi_buffer_size 128k;\n        fastcgi_buffers 4 256k;\n        fastcgi_busy_buffers_size 256k;\n    }\n\n    location ~ /\\. {\n        deny all;\n    }\n}`;
+    } else {
+        config = `server {\n    listen 80;\n    server_name ${domain};\n    \n    location / {\n        proxy_pass http://localhost:${port};\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}`;
+    }
+    
+    document.getElementById('configPreview').textContent = config;
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', function() {
+    onTypeChange();
+    updatePreview();
+});
+</script>
+{% endblock %}

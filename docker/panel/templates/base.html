@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Nginx Manager{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <i class="fas fa-server text-blue-600 text-2xl mr-3"></i>
+                    <h1 class="text-xl font-bold text-gray-800">Nginx Manager</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{{ url_for('dashboard') }}" class="text-gray-600 hover:text-blue-600 transition">
+                        <i class="fas fa-home mr-1"></i> Dashboard
+                    </a>
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 rounded-full {% if nginx_status %}bg-green-500{% else %}bg-red-500{% endif %} mr-2"></div>
+                        <span class="text-sm text-gray-600">
+                            Nginx {% if nginx_status %}Running{% else %}Stopped{% endif %}
+                        </span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 rounded-full {% if dns_status %}bg-green-500{% else %}bg-red-500{% endif %} mr-2"></div>
+                        <span class="text-sm text-gray-600">
+                            DNS {% if dns_status %}Running{% else %}Stopped{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-6">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} mb-4 p-4 rounded-lg 
+                            {% if category == 'success' %}bg-green-100 text-green-700 border border-green-200
+                            {% elif category == 'error' %}bg-red-100 text-red-700 border border-red-200
+                            {% else %}bg-yellow-100 text-yellow-700 border border-yellow-200{% endif %}">
+                            <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} mr-2"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-white border-t mt-12">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="text-center text-gray-600">
+                <p>&copy; 2024 Nginx Manager. Built with Flask & TailwindCSS</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

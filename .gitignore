@@ -43,6 +43,7 @@ plugins/pasien_galleries
 docker/mysql*
 docker/orthanc/orthanc-db/*
 docker/orthanc/dummy-dicom/*
+docker/.trae
 
 # .env
 logs/

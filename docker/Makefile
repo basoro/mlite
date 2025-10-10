@@ -7,6 +7,8 @@ DB_CONTAINER = mlite_mysql
 PHP_CONTAINER = mlite_php
 ORTHANC_CONTAINER = mlite_orthanc
 NGINX_CONTAINER = mlite_nginx
+FLASK_APP_CONTAINER = mlite_panel
+DNS_CONTAINER = mlite_dns
 
 DB_NAME = mlite_db
 DB_USER = mlite
@@ -25,7 +27,7 @@ YELLOW = \033[1;33m
 BLUE = \033[0;34m
 NC = \033[0m
 
-.PHONY: build up down restart logs logs-follow ps status php mysql orthanc nginx db-backup db-restore clean help orthanc-test orthanc-upload-dummy orthanc-status
+.PHONY: build up down restart logs logs-follow ps status php mysql orthanc nginx panel dns db-backup db-restore clean help orthanc-test orthanc-upload-dummy orthanc-status nginx-status nginx-reload nginx-logs dns-status dns-logs dns-test
 
 ## Build all services
 build:
@@ -75,6 +77,25 @@ orthanc:
 
 nginx:
 	@docker compose -f $(COMPOSE_FILE) exec $(NGINX_CONTAINER) /bin/bash
+
+panel:
+	@docker compose -f $(COMPOSE_FILE) exec panel /bin/bash
+
+dns:
+	@docker compose -f $(COMPOSE_FILE) exec $(DNS_CONTAINER) /bin/bash
+
+## Nginx Manager Commands
+nginx-status:
+	@echo "$(BLUE)Checking Nginx status...$(NC)"
+	@curl -s http://localhost:5001/api/nginx-status | jq . || echo "$(RED)Nginx Manager not accessible$(NC)"
+
+nginx-reload:
+	@echo "$(YELLOW)Reloading Nginx configuration...$(NC)"
+	@curl -s http://localhost:5001/api/reload-nginx | jq . || echo "$(RED)Failed to reload nginx$(NC)"
+
+nginx-logs:
+	@echo "$(BLUE)Nginx Manager logs:$(NC)"
+	@docker compose -f $(COMPOSE_FILE) logs panel
 
 ## Database backup
 db-backup:
@@ -144,4 +165,31 @@ help:
 	@echo "  make orthanc-test        - Test Orthanc connection"
 	@echo "  make orthanc-upload-dummy- Upload dummy DICOM files"
 	@echo "  make orthanc-status      - Show Orthanc system info"
+	@echo "  make panel               - Access Panel container"
+	@echo "  make dns                 - Access DNS container"
+	@echo "  make nginx-status        - Check Nginx Manager status"
+	@echo "  make nginx-reload        - Reload Nginx via Manager"
+	@echo "  make nginx-logs          - Show Nginx Manager logs"
+	@echo "  make dns-status          - Check DNS status"
+	@echo "  make dns-logs            - Show DNS logs"
+	@echo "  make dns-test            - Test DNS resolution"
 	@echo "  make clean               - Remove all containers/images"
+
+## DNS Commands
+dns-status:
+	@echo "$(BLUE)Checking DNS status...$(NC)"
+	@curl -s http://localhost:5001/api/dns-status | jq . || echo "$(RED)DNS Manager not accessible$(NC)"
+
+dns-logs:
+	@echo "$(BLUE)DNS logs:$(NC)"
+	@docker compose -f $(COMPOSE_FILE) logs dns
+
+dns-test:
+	@echo "$(BLUE)Testing DNS resolution...$(NC)"
+	@if docker compose -f $(COMPOSE_FILE) ps $(DNS_CONTAINER) | grep -q "Up"; then \
+		echo "$(GREEN)DNS container is running$(NC)"; \
+		echo "Testing DNS server at $(DNS_SERVER_IP)..."; \
+		nslookup panel.local $(DNS_SERVER_IP) || echo "$(RED)DNS test failed$(NC)"; \
+	else \
+		echo "$(RED)DNS container is not running$(NC)"; \
+	fi
