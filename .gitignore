@@ -44,6 +44,8 @@ docker/mysql*
 docker/orthanc/orthanc-db/*
 docker/orthanc/dummy-dicom/*
 docker/.trae
+docker/nginx/conf.d/*
+docker/dns/dnsmasq.log
 
 # .env
 logs/

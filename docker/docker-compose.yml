@@ -1,16 +1,75 @@
 services:
-  php:
+  php74:
     build:
       context: .
-      dockerfile: php/Dockerfile
-    container_name: mlite_php
+      dockerfile: php/Dockerfile-7.4
+    container_name: mlite_php74
     volumes:
-      - ../:/var/www/public       # <== BENAR, karena file ini di dalam /docker/
+      - ../:/var/www/public
     depends_on:
       - mysql
     networks:
-      app-network:
-        ipv4_address: 10.20.0.6
+      - app-network
+    environment:
+      PHP_IDE_CONFIG: serverName=Docker
+    restart: unless-stopped
+
+  php80:
+    build:
+      context: .
+      dockerfile: php/Dockerfile-8.0
+    container_name: mlite_php80
+    volumes:
+      - ../:/var/www/public
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    environment:
+      PHP_IDE_CONFIG: serverName=Docker
+    restart: unless-stopped
+
+  php81:
+    build:
+      context: .
+      dockerfile: php/Dockerfile-8.1
+    container_name: mlite_php81
+    volumes:
+      - ../:/var/www/public
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    environment:
+      PHP_IDE_CONFIG: serverName=Docker
+    restart: unless-stopped
+
+  php82:
+    build:
+      context: .
+      dockerfile: php/Dockerfile-8.2
+    container_name: mlite_php82
+    volumes:
+      - ../:/var/www/public
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    environment:
+      PHP_IDE_CONFIG: serverName=Docker
+    restart: unless-stopped
+
+  php83:
+    build:
+      context: .
+      dockerfile: php/Dockerfile
+    container_name: mlite_php83
+    volumes:
+      - ../:/var/www/public
+    depends_on:
+      - mysql
+    networks:
+      - app-network
     environment:
       PHP_IDE_CONFIG: serverName=Docker
     restart: unless-stopped
@@ -36,6 +95,86 @@ services:
       - app-network
     restart: unless-stopped
 
+  php56:
+    build:
+      context: .
+      dockerfile: php/Dockerfile-5.6
+    platform: linux/amd64
+    container_name: mlite_php56
+    volumes:
+      - ../:/var/www/public
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    environment:
+      PHP_IDE_CONFIG: serverName=Docker
+    restart: unless-stopped
+
+  php70:
+    build:
+      context: .
+      dockerfile: php/Dockerfile-7.0
+    platform: linux/amd64
+    container_name: mlite_php70
+    volumes:
+      - ../:/var/www/public
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    environment:
+      PHP_IDE_CONFIG: serverName=Docker
+    restart: unless-stopped
+
+  php71:
+    build:
+      context: .
+      dockerfile: php/Dockerfile-7.1
+    platform: linux/amd64
+    container_name: mlite_php71
+    volumes:
+      - ../:/var/www/public
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    environment:
+      PHP_IDE_CONFIG: serverName=Docker
+    restart: unless-stopped
+
+  php72:
+    build:
+      context: .
+      dockerfile: php/Dockerfile-7.2
+    platform: linux/amd64
+    container_name: mlite_php72
+    volumes:
+      - ../:/var/www/public
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    environment:
+      PHP_IDE_CONFIG: serverName=Docker
+    restart: unless-stopped
+
+  php73:
+    build:
+      context: .
+      dockerfile: php/Dockerfile-7.3
+    platform: linux/amd64
+    container_name: mlite_php73
+    volumes:
+      - ../:/var/www/public
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    environment:
+      PHP_IDE_CONFIG: serverName=Docker
+    restart: unless-stopped
+
   nginx:
     image: nginx:latest
     container_name: mlite_nginx
@@ -46,7 +185,16 @@ services:
       - ../:/var/www/public
       - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
-      - php
+      - php56
+      - php70
+      - php71
+      - php72
+      - php73
+      - php74
+      - php80
+      - php81
+      - php82
+      - php83
       - panel
     networks:
       app-network:

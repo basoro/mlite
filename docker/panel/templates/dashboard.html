@@ -75,16 +75,25 @@
                     <span>Port: {{ site.port }}</span>
                     {% endif %}
                 </div>
+                {% if site.type == 'php' %}
+                <div class="flex items-center text-gray-600 mb-2">
+                    <i class="fab fa-php mr-2"></i>
+                    <span>PHP: {{ site.php_version or '8.3' }}</span>
+                </div>
+                {% endif %}
                 <div class="flex items-center text-gray-500 text-sm">
                     <i class="fas fa-calendar mr-2"></i>
                     <span>{{ site.created_at }}</span>
                 </div>
             </div>
             <div class="flex flex-col space-y-2">
-                <a href="http://{{ site.domain }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition">
+                <a href="http://{{ site.domain }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition" title="Open Site">
                     <i class="fas fa-external-link-alt"></i>
                 </a>
-                <button onclick="confirmDelete('{{ site.domain }}')" class="text-red-600 hover:text-red-800 transition">
+                <a href="{{ url_for('edit_vhost', site_name=site.domain) }}" class="text-gray-600 hover:text-gray-800 transition" title="Edit Vhost">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <button onclick="confirmDelete('{{ site.domain }}')" class="text-red-600 hover:text-red-800 transition" title="Delete">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>

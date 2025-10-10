@@ -1,0 +1,58 @@
+# mLITE Docker PHP 8.0 Environment
+# Compatible with mLITE PHP requirements
+FROM php:8.0-fpm
+
+# Install system dependencies required for mLITE
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libjpeg-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    libicu-dev \
+    libfreetype6-dev \
+    zip \
+    unzip && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions required by mLITE
+RUN docker-php-ext-install \
+    pdo_mysql \
+    mysqli \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    intl \
+    zip \
+    opcache
+
+RUN docker-php-ext-enable mysqli
+
+# Configure GD extension with FreeType and JPEG support
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install -j$(nproc) gd
+
+# Install Redis and Xdebug via PECL
+RUN pecl install redis && docker-php-ext-enable redis
+RUN pecl install xdebug && docker-php-ext-enable xdebug
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy custom PHP configuration
+COPY ./php/php.ini /usr/local/etc/php/conf.d/custom.ini
+
+# Working directory
+WORKDIR /var/www/public
+
+# Entrypoint
+COPY ./php/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Expose PHP-FPM port
+EXPOSE 9000

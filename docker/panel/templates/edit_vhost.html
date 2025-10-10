@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Edit Vhost - {{ site_name }}{% endblock %}
+{% block content %}
+<div class="bg-white rounded-lg shadow p-6">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h3 class="text-2xl font-semibold text-gray-800">Edit Vhost: <span class="font-mono">{{ site_name }}</span></h3>
+      <p class="text-sm text-gray-500">File: <span class="font-mono">/etc/nginx/conf.d/{{ site_name }}.conf</span></p>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="inline-flex items-center px-2 py-1 rounded text-sm {% if nginx_status %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+        <i class="fas {% if nginx_status %}fa-check-circle{% else %}fa-times-circle{% endif %} mr-1"></i>
+        Nginx {% if nginx_status %}Running{% else %}Stopped{% endif %}
+      </span>
+      <span class="inline-flex items-center px-2 py-1 rounded text-sm {% if dns_status %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+        <i class="fas {% if dns_status %}fa-check-circle{% else %}fa-times-circle{% endif %} mr-1"></i>
+        DNS {% if dns_status %}Running{% else %}Stopped{% endif %}
+      </span>
+    </div>
+  </div>
+
+  <form method="POST" action="{{ url_for('edit_vhost', site_name=site_name) }}" class="space-y-4">
+    <div>
+      <label for="editor" class="block text-sm font-medium text-gray-700 mb-2">Konfigurasi Nginx (.conf)</label>
+      <textarea id="editor" name="content" class="hidden">{{ content }}</textarea>
+      <div id="cm-container" class="border rounded overflow-hidden"></div>
+    </div>
+    <div class="flex items-center gap-3">
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-flex items-center">
+        <i class="fas fa-save mr-2"></i>
+        Simpan dan Reload Nginx
+      </button>
+      <a href="{{ url_for('dashboard') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded inline-flex items-center">
+        <i class="fas fa-arrow-left mr-2"></i>
+        Batal
+      </a>
+    </div>
+    <p class="text-xs text-gray-500">Tip: Tekan <span class="font-mono">Ctrl/⌘ + S</span> untuk menyimpan.</p>
+  </form>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/nginx/nginx.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var textarea = document.getElementById('editor');
+    var container = document.getElementById('cm-container');
+    var editor = CodeMirror(container, {
+      value: textarea.value || '',
+      lineNumbers: true,
+      mode: 'text/x-nginx-conf',
+      theme: 'material',
+      tabSize: 2,
+      indentUnit: 2,
+      viewportMargin: Infinity,
+      matchBrackets: true,
+    });
+    editor.setSize('100%', 500);
+
+    // Sync back to textarea on submit
+    var form = textarea.closest('form');
+    form.addEventListener('submit', function() {
+      textarea.value = editor.getValue();
+    });
+
+    // Ctrl/Cmd + S to submit
+    editor.on('keydown', function(cm, e) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        textarea.value = editor.getValue();
+        form.submit();
+      }
+    });
+  });
+</script>
+{% endblock %}

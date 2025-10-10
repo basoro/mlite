@@ -1,6 +1,6 @@
 #!/bin/bash
 # mLITE Docker Entrypoint Script
-# Initializes mLITE application environment for PHP 8.3+
+# Initializes mLITE application environment for PHP-FPM across versions
 
 set -e
 
@@ -21,10 +21,14 @@ if [ -f /var/www/public/config.php ]; then
   sed -i 's/localhost/mysql/g' /var/www/public/config.php
 fi
 
-# --- Composer install (only if vendor folder missing) ---
+# --- Composer install (only if vendor folder missing and composer exists) ---
 if [ ! -d /var/www/public/vendor ]; then
-  echo "📦 Installing Composer dependencies..."
-  composer install --no-dev --optimize-autoloader
+  if command -v composer >/dev/null 2>&1; then
+    echo "📦 Installing Composer dependencies..."
+    composer install --no-dev --optimize-autoloader || true
+  else
+    echo "ℹ️ Composer not available in this image, skipping install."
+  fi
 else
   echo "✅ Composer dependencies already installed, skipping."
 fi

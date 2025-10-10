@@ -3,6 +3,7 @@ import subprocess
 import requests
 import shlex
 import re
+import shutil
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 
@@ -38,8 +39,36 @@ def get_sites():
                         with open(filepath, 'r') as f:
                             content = f.read()
                             # Detect type and extract information
-                            if 'fastcgi_pass php:9000' in content:
+                            # PHP-FPM detection: parse fastcgi_pass host:9000 to infer version
+                            m_fcgi = re.search(r"fastcgi_pass\s+([a-zA-Z0-9_-]+):9000", content)
+                            if m_fcgi:
                                 site_type = 'php'
+                                php_host = m_fcgi.group(1)
+                                php_version = None
+                                # Map host to version (supports php56–php83)
+                                m_ver = re.search(r"php(\d{2})", php_host)
+                                if m_ver:
+                                    code = m_ver.group(1)
+                                    if code == '56':
+                                        php_version = '5.6'
+                                    elif code == '70':
+                                        php_version = '7.0'
+                                    elif code == '71':
+                                        php_version = '7.1'
+                                    elif code == '72':
+                                        php_version = '7.2'
+                                    elif code == '73':
+                                        php_version = '7.3'
+                                    elif code == '74':
+                                        php_version = '7.4'
+                                    elif code == '80':
+                                        php_version = '8.0'
+                                    elif code == '81':
+                                        php_version = '8.1'
+                                    elif code == '82':
+                                        php_version = '8.2'
+                                    elif code == '83':
+                                        php_version = '8.3'
                                 # extract root directive
                                 m = re.search(r"^\s*root\s+([^;]+);", content, re.MULTILINE)
                                 if m:
@@ -58,6 +87,7 @@ def get_sites():
                         'type': site_type or 'proxy',
                         'port': port,
                         'root': root_dir,
+                        'php_version': php_version if site_type == 'php' else None,
                         'config_file': filename,
                         'created_at': datetime.fromtimestamp(os.path.getctime(filepath)).strftime('%Y-%m-%d %H:%M:%S')
                     })
@@ -134,23 +164,37 @@ def create_default_index(root_dir, domain):
 """
         quoted_index = shlex.quote(index_path)
         last_err = None
-        for container in (NGINX_CONTAINER_NAME, PHP_CONTAINER_NAME):
-            try:
-                cmd = ['docker', 'exec', container, 'sh', '-c', f"cat > {quoted_index} << 'EOF'\n{content}\nEOF\nchmod 644 {quoted_index}"]
-                res = subprocess.run(cmd, capture_output=True, text=True)
-                if res.returncode == 0:
-                    return True, 'Default index.html created'
-                last_err = res.stderr.strip() or res.stdout.strip()
-            except Exception as e:
-                last_err = str(e)
+        # Write via Nginx container (shared mount). Fallbacks are unnecessary with unified mount.
+        try:
+            cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"cat > {quoted_index} << 'EOF'\n{content}\nEOF\nchmod 644 {quoted_index}"]
+            res = subprocess.run(cmd, capture_output=True, text=True)
+            if res.returncode == 0:
+                return True, 'Default index.html created'
+            last_err = res.stderr.strip() or res.stdout.strip()
+        except Exception as e:
+            last_err = str(e)
         return False, f'Failed to create index.html: {last_err or "unknown error"}'
     except Exception as e:
         return False, f'Failed to prepare index content: {str(e)}'
 
 
-def create_nginx_config(domain, site_type='proxy', port=None, root_dir='/var/www/public'):
+def create_nginx_config(domain, site_type='proxy', port=None, root_dir='/var/www/public', php_version='8.3'):
     """Create nginx configuration file for either reverse proxy or PHP-FPM"""
     if site_type == 'php':
+        # Map php_version to container host name
+        version_map = {
+            '5.6': 'php56',
+            '7.0': 'php70',
+            '7.1': 'php71',
+            '7.2': 'php72',
+            '7.3': 'php73',
+            '7.4': 'php74',
+            '8.0': 'php80',
+            '8.1': 'php81',
+            '8.2': 'php82',
+            '8.3': 'php83',
+        }
+        php_host = version_map.get(php_version, 'php83')
         config_content = f"""server {{
     listen 80;
     server_name {domain};
@@ -167,7 +211,7 @@ def create_nginx_config(domain, site_type='proxy', port=None, root_dir='/var/www
 
     location ~ \\.php$ {{
         include fastcgi_params;
-        fastcgi_pass php:9000;
+        fastcgi_pass {php_host}:9000;
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 
@@ -361,6 +405,7 @@ def add_site():
         site_type = request.form.get('site_type', 'proxy').strip()
         port = request.form.get('port', '').strip()
         root_dir = request.form.get('root_dir', '/var/www/public').strip()
+        php_version = request.form.get('php_version', '8.3').strip()
         
         # Validation
         if not domain:
@@ -413,7 +458,7 @@ def add_site():
         # Create nginx config
         created = False
         if site_type == 'php':
-            created = create_nginx_config(domain, site_type='php', root_dir=root_dir)
+            created = create_nginx_config(domain, site_type='php', root_dir=root_dir, php_version=php_version)
         else:
             created = create_nginx_config(domain, site_type='proxy', port=port)
         
@@ -552,6 +597,99 @@ def api_remove_dns_record():
         'success': success,
         'message': message
     })
+
+# Helpers for vhost .conf editing
+CONF_MAX_SIZE = 200 * 1024  # 200KB safety limit
+SITE_NAME_REGEX = re.compile(r'^[a-zA-Z0-9.-]+$')
+
+def is_valid_site_name(name: str) -> bool:
+    return bool(name) and SITE_NAME_REGEX.match(name) is not None and '/' not in name and '\\' not in name
+
+def get_conf_path(site_name: str) -> str:
+    filename = f"{site_name}.conf"
+    path = os.path.normpath(os.path.join(NGINX_CONF_DIR, filename))
+    base_norm = os.path.normpath(NGINX_CONF_DIR)
+    if not path.startswith(base_norm):
+        raise ValueError('Invalid path resolved')
+    return path
+
+def read_conf_file(site_name: str) -> tuple[bool, str, str]:
+    try:
+        if not is_valid_site_name(site_name):
+            return False, '', 'Invalid site name'
+        path = get_conf_path(site_name)
+        if not os.path.exists(path):
+            return False, '', 'Configuration file not found'
+        with open(path, 'r') as f:
+            content = f.read()
+        return True, content, ''
+    except Exception as e:
+        return False, '', str(e)
+
+def backup_conf_file(site_name: str) -> tuple[bool, str]:
+    try:
+        path = get_conf_path(site_name)
+        ts = datetime.now().strftime('%Y%m%d_%H%M%S')
+        backup_path = f"{path}.bak_{ts}"
+        shutil.copyfile(path, backup_path)
+        return True, backup_path
+    except Exception as e:
+        return False, str(e)
+
+def write_conf_file(site_name: str, content: str) -> tuple[bool, str]:
+    try:
+        if len(content.encode('utf-8')) > CONF_MAX_SIZE:
+            return False, 'Configuration too large'
+        path = get_conf_path(site_name)
+        with open(path, 'w') as f:
+            f.write(content)
+        return True, ''
+    except Exception as e:
+        return False, str(e)
+
+@app.route('/edit_vhost/<site_name>', methods=['GET', 'POST'])
+def edit_vhost(site_name):
+    nginx_status = check_nginx_status()
+    dns_status = check_dns_status()
+    if not is_valid_site_name(site_name):
+        flash('Invalid site name', 'error')
+        return redirect(url_for('dashboard'))
+    if request.method == 'GET':
+        ok, content, err = read_conf_file(site_name)
+        if not ok:
+            flash(err, 'error')
+            return redirect(url_for('dashboard'))
+        return render_template('edit_vhost.html', site_name=site_name, content=content, nginx_status=nginx_status, dns_status=dns_status)
+    # POST: save changes with backup and reload nginx
+    new_content = request.form.get('content', '')
+    if not new_content:
+        flash('Content cannot be empty', 'error')
+        return redirect(url_for('edit_vhost', site_name=site_name))
+    # Backup first
+    b_ok, backup_path_or_err = backup_conf_file(site_name)
+    if not b_ok:
+        flash(f'Backup failed: {backup_path_or_err}', 'error')
+        return redirect(url_for('edit_vhost', site_name=site_name))
+    # Write file
+    w_ok, w_err = write_conf_file(site_name, new_content)
+    if not w_ok:
+        flash(f'Write failed: {w_err}', 'error')
+        return redirect(url_for('edit_vhost', site_name=site_name))
+    # Test and reload
+    success, message = reload_nginx()
+    if success:
+        flash('Vhost configuration saved and Nginx reloaded successfully', 'success')
+        return redirect(url_for('dashboard'))
+    else:
+        # Revert from backup on failure
+        try:
+            shutil.copyfile(backup_path_or_err, get_conf_path(site_name))
+            reload_nginx()
+        except Exception:
+            pass
+        flash(f'Nginx test/reload failed: {message}. Changes reverted.', 'error')
+        return redirect(url_for('edit_vhost', site_name=site_name))
+    return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     # Ensure nginx conf directory exists
