@@ -7,23 +7,27 @@ import shutil
 import yaml
 import json
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, session
 from flask import stream_with_context
 import logging
 import time
+from functools import wraps
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s in %(module)s: %(message)s')
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.secret_key = 'nginx-manager-secret-key'
+# Default admin credentials (can be overridden via env PANEL_ADMIN_USER/PANEL_ADMIN_PASS)
+app.config['ADMIN_USER'] = os.environ.get('PANEL_ADMIN_USER', 'admin')
+app.config['ADMIN_PASS'] = os.environ.get('PANEL_ADMIN_PASS', 'admin123')
 
 @app.context_processor
 def inject_config():
     return dict(config=app.config)
 
 # Configuration
-NGINX_CONF_DIR = '/etc/nginx/conf.d'
+NGINX_CONF_DIR = os.environ.get('NGINX_CONF_DIR', '/etc/nginx/conf.d')
 NGINX_CONTAINER_NAME = os.environ.get('NGINX_CONTAINER_NAME', 'mlite_nginx')
 PHP_CONTAINER_NAME = os.environ.get('PHP_CONTAINER_NAME', 'mlite_php')
 DNS_HOSTS_FILE = '/app/dns/dnsmasq.hosts'
@@ -91,6 +95,13 @@ def get_sites():
                                     if 'proxy_pass http://localhost:' in line:
                                         port = line.split('proxy_pass http://localhost:')[1].split(';')[0].strip()
                                         break
+                            else:
+                                # Detect static site by try_files fallback to index.html and absence of PHP fastcgi
+                                if re.search(r"try_files\s+\$uri\s+\$uri/\s+/index\.html", content) and 'fastcgi_pass' not in content:
+                                    site_type = 'static'
+                                    m = re.search(r"^\s*root\s+([^;]+);", content, re.MULTILINE)
+                                    if m:
+                                        root_dir = m.group(1).strip()
                     except Exception as e:
                         print(f"Error reading config file {filename}: {e}")
                     
@@ -230,6 +241,26 @@ def create_nginx_config(domain, site_type='proxy', port=None, root_dir='/var/www
         fastcgi_buffer_size 128k;
         fastcgi_buffers 4 256k;
         fastcgi_busy_buffers_size 256k;
+    }}
+
+    location ~ /\\. {{
+        deny all;
+    }}
+}}
+"""
+    elif site_type == 'static':
+        config_content = f"""server {{
+    listen 80;
+    server_name {domain};
+
+    root {root_dir};
+    index index.html;
+
+    access_log /var/log/nginx/access.log;
+    error_log  /var/log/nginx/error.log;
+
+    location / {{
+        try_files $uri $uri/ /index.html;
     }}
 
     location ~ /\\. {{
@@ -828,7 +859,46 @@ def check_nginx_status():
     except Exception:
         return False
 
+# Simple login-required decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('logged_in'):
+            next_url = request.path if request.method == 'GET' else None
+            return redirect(url_for('login', next=next_url))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        if not username or not password:
+            flash('Username dan password wajib diisi', 'error')
+            return render_template('login.html')
+        if username == app.config.get('ADMIN_USER') and password == app.config.get('ADMIN_PASS'):
+            session['logged_in'] = True
+            session['username'] = username
+            next_url = request.args.get('next')
+            if next_url and next_url.startswith('/'):
+                return redirect(next_url)
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Username atau password salah', 'error')
+            return render_template('login.html')
+    if session.get('logged_in'):
+        return redirect(url_for('dashboard'))
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('Anda telah logout', 'success')
+    return redirect(url_for('login'))
+
 @app.route('/')
+@login_required
 def dashboard():
     """Dashboard page showing all sites - HOT RELOAD TEST"""
     sites = get_sites()
@@ -837,6 +907,7 @@ def dashboard():
     return render_template('dashboard.html', sites=sites, nginx_status=nginx_status, dns_status=dns_status)
 
 @app.route('/add-site', methods=['GET', 'POST'])
+@login_required
 def add_site():
     nginx_status = check_nginx_status()
     dns_status = check_dns_status()
@@ -886,6 +957,24 @@ def add_site():
                 ok_idx, msg_idx = create_default_index(root_dir, domain)
                 if not ok_idx:
                     flash(f'Peringatan: {msg_idx}', 'warning')
+        elif site_type == 'static':
+            if not root_dir:
+                flash('Root directory is required for Static sites', 'error')
+                return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+            try:
+                safe_root = safe_join(PHP_WEBROOT_BASE, root_dir)
+            except ValueError as ve:
+                flash(str(ve), 'error')
+                return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+            ok, msg = ensure_directory(safe_root)
+            if not ok:
+                flash(msg, 'error')
+                return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+            root_dir = safe_root
+            if CREATE_DEFAULT_INDEX:
+                ok_idx, msg_idx = create_default_index(root_dir, domain)
+                if not ok_idx:
+                    flash(f'Peringatan: {msg_idx}', 'warning')
         else:
             flash('Invalid site type', 'error')
             return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
@@ -900,6 +989,8 @@ def add_site():
         created = False
         if site_type == 'php':
             created = create_nginx_config(domain, site_type='php', root_dir=root_dir, php_version=php_version)
+        elif site_type == 'static':
+            created = create_nginx_config(domain, site_type='static', root_dir=root_dir)
         else:
             created = create_nginx_config(domain, site_type='proxy', port=port)
         
@@ -1089,6 +1180,7 @@ def write_conf_file(site_name: str, content: str) -> tuple[bool, str]:
         return False, str(e)
 
 @app.route('/edit_vhost/<site_name>', methods=['GET', 'POST'])
+@login_required
 def edit_vhost(site_name):
     nginx_status = check_nginx_status()
     dns_status = check_dns_status()
@@ -1133,6 +1225,7 @@ def edit_vhost(site_name):
     return redirect(url_for('dashboard'))
 
 @app.route('/containers')
+@login_required
 def containers():
     """Container management page"""
     print("[DEBUG] === CONTAINERS ROUTE STARTED ===")

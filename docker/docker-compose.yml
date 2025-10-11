@@ -88,6 +88,8 @@ services:
       - ./dns:/app/dns  # DNS management access
       - /var/run/docker.sock:/var/run/docker.sock
       - ./docker-compose.yml:/app/docker-compose.yml
+    env_file:
+      - .env
     environment:
       - NGINX_CONTAINER_NAME=mlite_nginx
       - FLASK_ENV=development

@@ -7,7 +7,7 @@
     <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md p-8">
         <div class="mb-6">
             <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">Add New Site</h2>
-            <p class="text-gray-600 dark:text-gray-400">Configure a new site (Reverse Proxy or PHP-FPM)</p>
+            <p class="text-gray-600 dark:text-gray-400">Configure a new site (Reverse Proxy, PHP-FPM, or Static)</p>
         </div>
 
         <form method="POST" class="space-y-6">
@@ -37,6 +37,7 @@
                 <select id="site_type" name="site_type" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" onchange="onTypeChange()">
                     <option value="proxy" selected>Nginx Proxy</option>
                     <option value="php">PHP-FPM</option>
+                    <option value="static">Static Site</option>
                 </select>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Choose how Nginx should serve this domain</p>
             </div>
@@ -72,26 +73,28 @@
                        value="/var/www/public"
                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white"
                        oninput="updatePreview()">
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Directory to serve for PHP-FPM sites (mounted in Nginx)</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Directory to serve for PHP-FPM or Static sites (mounted in Nginx)</p>
                 <p class="mt-1 text-xs text-blue-600 dark:text-blue-300">Direktori akan dibuat otomatis di bawah <code class="bg-blue-100 dark:bg-blue-900/40 dark:text-blue-200 px-1 rounded">/var/www/public</code>. Hanya path di dalam base tersebut yang diizinkan.</p>
 
-                <label for="php_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mt-4">
-                    <i class="fab fa-php mr-1"></i>
-                    PHP Version
-                </label>
-                <select id="php_version" name="php_version" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" onchange="updatePreview()">
-                    <option value="8.3" selected>PHP 8.3</option>
-                    <option value="8.2">PHP 8.2</option>
-                    <option value="8.1">PHP 8.1</option>
-                    <option value="8.0">PHP 8.0</option>
-                    <option value="7.4">PHP 7.4</option>
-                    <option value="7.3">PHP 7.3</option>
-                    <option value="7.2">PHP 7.2</option>
-                    <option value="7.1">PHP 7.1</option>
-                    <option value="7.0">PHP 7.0</option>
-                    <option value="5.6">PHP 5.6</option>
-                </select>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Versi PHP akan menentukan kontainer PHP-FPM yang digunakan untuk fastcgi_pass.</p>
+                <div id="phpVersionGroup" class="mt-4">
+                    <label for="php_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="fab fa-php mr-1"></i>
+                        PHP Version
+                    </label>
+                    <select id="php_version" name="php_version" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" onchange="updatePreview()">
+                        <option value="8.3" selected>PHP 8.3</option>
+                        <option value="8.2">PHP 8.2</option>
+                        <option value="8.1">PHP 8.1</option>
+                        <option value="8.0">PHP 8.0</option>
+                        <option value="7.4">PHP 7.4</option>
+                        <option value="7.3">PHP 7.3</option>
+                        <option value="7.2">PHP 7.2</option>
+                        <option value="7.1">PHP 7.1</option>
+                        <option value="7.0">PHP 7.0</option>
+                        <option value="5.6">PHP 5.6</option>
+                    </select>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Versi PHP akan menentukan kontainer PHP-FPM yang digunakan untuk fastcgi_pass.</p>
+                </div>
             </div>
 
             <div class="bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
@@ -164,7 +167,7 @@ function validatePort(input) {
     const submitBtn = document.getElementById('submitBtn');
     const type = document.getElementById('site_type').value;
     
-    if (type === 'php') {
+    if (type === 'php' || type === 'static') {
         portError.classList.add('hidden');
         submitBtn.disabled = false;
         updatePreview();
@@ -187,10 +190,16 @@ function onTypeChange() {
     const type = document.getElementById('site_type').value;
     const portGroup = document.getElementById('portGroup');
     const rootGroup = document.getElementById('rootGroup');
+    const phpVersionGroup = document.getElementById('phpVersionGroup');
     
-    if (type === 'php') {
+    if (type === 'php' || type === 'static') {
         portGroup.classList.add('hidden');
         rootGroup.classList.remove('hidden');
+        if (type === 'php') {
+            phpVersionGroup.classList.remove('hidden');
+        } else {
+            phpVersionGroup.classList.add('hidden');
+        }
     } else {
         rootGroup.classList.add('hidden');
         portGroup.classList.remove('hidden');
@@ -210,6 +219,8 @@ function updatePreview() {
     let config = '';
     if (type === 'php') {
         config = `server {\n    listen 80;\n    server_name ${domain};\n\n    root ${root};\n    index index.php index.html;\n\n    access_log /var/log/nginx/access.log;\n    error_log  /var/log/nginx/error.log;\n\n    location / {\n        try_files $uri $uri/ /index.php?$args;\n    }\n\n    location ~ \\.php$ {\n        include fastcgi_params;\n        fastcgi_pass ${phpHost}:9000;\n        fastcgi_index index.php;\n        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n\n        fastcgi_buffer_size 128k;\n        fastcgi_buffers 4 256k;\n        fastcgi_busy_buffers_size 256k;\n    }\n\n    location ~ /\\. {\n        deny all;\n    }\n}`;
+    } else if (type === 'static') {
+        config = `server {\n    listen 80;\n    server_name ${domain};\n\n    root ${root};\n    index index.html;\n\n    access_log /var/log/nginx/access.log;\n    error_log  /var/log/nginx/error.log;\n\n    location / {\n        try_files $uri $uri/ /index.html;\n    }\n\n    location ~ /\\. {\n        deny all;\n    }\n}`;
     } else {
         config = `server {\n    listen 80;\n    server_name ${domain};\n    \n    location / {\n        proxy_pass http://localhost:${port};\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}`;
     }
