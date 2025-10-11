@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block title %}Edit Vhost - {{ site_name }}{% endblock %}
 {% block content %}
-<div class="bg-white rounded-lg shadow p-6">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
   <div class="flex items-center justify-between mb-4">
     <div>
-      <h3 class="text-2xl font-semibold text-gray-800">Edit Vhost: <span class="font-mono">{{ site_name }}</span></h3>
-      <p class="text-sm text-gray-500">File: <span class="font-mono">/etc/nginx/conf.d/{{ site_name }}.conf</span></p>
+      <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">Edit Vhost: <span class="font-mono">{{ site_name }}</span></h3>
+      <p class="text-sm text-gray-500 dark:text-gray-400">File: <span class="font-mono">/etc/nginx/conf.d/{{ site_name }}.conf</span></p>
     </div>
     <div class="flex items-center gap-3">
       <span class="inline-flex items-center px-2 py-1 rounded text-sm {% if nginx_status %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
@@ -21,57 +21,69 @@
 
   <form method="POST" action="{{ url_for('edit_vhost', site_name=site_name) }}" class="space-y-4">
     <div>
-      <label for="editor" class="block text-sm font-medium text-gray-700 mb-2">Konfigurasi Nginx (.conf)</label>
-      <textarea id="editor" name="content" class="hidden">{{ content }}</textarea>
-      <div id="cm-container" class="border rounded overflow-hidden"></div>
+      <label for="editor" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Konfigurasi Nginx (.conf)</label>
+      <textarea id="editor-textarea" name="content" class="hidden">{{ content }}</textarea>
+      <div id="monaco-container" class="border border-gray-200 dark:border-gray-700 rounded overflow-hidden" style="height: 520px;"></div>
     </div>
     <div class="flex items-center gap-3">
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-flex items-center">
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-flex items-center shadow">
         <i class="fas fa-save mr-2"></i>
         Simpan dan Reload Nginx
       </button>
-      <a href="{{ url_for('dashboard') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded inline-flex items-center">
+      <a href="{{ url_for('dashboard') }}" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 px-4 py-2 rounded inline-flex items-center">
         <i class="fas fa-arrow-left mr-2"></i>
         Batal
       </a>
     </div>
-    <p class="text-xs text-gray-500">Tip: Tekan <span class="font-mono">Ctrl/⌘ + S</span> untuk menyimpan.</p>
+    <p class="text-xs text-gray-500 dark:text-gray-400">Tip: Tekan <span class="font-mono">Ctrl/⌘ + S</span> untuk menyimpan.</p>
   </form>
 </div>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/nginx/nginx.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Monaco Editor -->
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.51.0/min/vs/loader.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    var textarea = document.getElementById('editor');
-    var container = document.getElementById('cm-container');
-    var editor = CodeMirror(container, {
-      value: textarea.value || '',
-      lineNumbers: true,
-      mode: 'text/x-nginx-conf',
-      theme: 'material',
-      tabSize: 2,
-      indentUnit: 2,
-      viewportMargin: Infinity,
-      matchBrackets: true,
-    });
-    editor.setSize('100%', 500);
+    const textarea = document.getElementById('editor-textarea');
+    const container = document.getElementById('monaco-container');
 
-    // Sync back to textarea on submit
-    var form = textarea.closest('form');
-    form.addEventListener('submit', function() {
-      textarea.value = editor.getValue();
-    });
+    // AMD loader config for Monaco
+    window.require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.51.0/min/vs' } });
+    window.require(['vs/editor/editor.main'], function() {
+      const editor = monaco.editor.create(container, {
+        value: textarea.value || '',
+        language: 'nginx',
+        theme: document.documentElement.classList.contains('dark') ? 'vs-dark' : 'vs',
+        automaticLayout: true,
+        minimap: { enabled: false },
+        fontSize: 13,
+        lineNumbers: 'on',
+        smoothScrolling: true,
+        scrollBeyondLastLine: false,
+      });
 
-    // Ctrl/Cmd + S to submit
-    editor.on('keydown', function(cm, e) {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
-        e.preventDefault();
-        textarea.value = editor.getValue();
-        form.submit();
+      // Sync theme on toggle
+      const themeToggle = document.getElementById('theme-toggle');
+      if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+          const isDark = document.documentElement.classList.contains('dark');
+          monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs');
+        });
       }
+
+      // Submit handler: put content back into textarea
+      const form = textarea.closest('form');
+      form.addEventListener('submit', function() {
+        textarea.value = editor.getValue();
+      });
+
+      // Ctrl/Cmd + S to submit
+      container.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+          e.preventDefault();
+          textarea.value = editor.getValue();
+          form.submit();
+        }
+      });
     });
   });
 </script>

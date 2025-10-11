@@ -4,15 +4,15 @@
 
 {% block content %}
 <div class="max-w-2xl mx-auto">
-    <div class="bg-white rounded-lg shadow-md p-8">
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md p-8">
         <div class="mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Add New Site</h2>
-            <p class="text-gray-600">Configure a new site (Reverse Proxy or PHP-FPM)</p>
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">Add New Site</h2>
+            <p class="text-gray-600 dark:text-gray-400">Configure a new site (Reverse Proxy or PHP-FPM)</p>
         </div>
 
         <form method="POST" class="space-y-6">
             <div>
-                <label for="domain" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="domain" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <i class="fas fa-globe mr-1"></i>
                     Domain Name
                 </label>
@@ -21,28 +21,28 @@
                        name="domain" 
                        required
                        placeholder="example.com"
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white"
                        oninput="validateDomain(this)">
-                <p class="mt-1 text-sm text-gray-500">Enter the domain name without http:// or https://</p>
-                <div id="domainError" class="mt-1 text-sm text-red-600 hidden">
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Enter the domain name without http:// or https://</p>
+                <div id="domainError" class="mt-1 text-sm text-red-600 dark:text-red-400 hidden">
                     Please enter a valid domain name
                 </div>
             </div>
 
             <div>
-                <label for="site_type" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="site_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <i class="fas fa-layer-group mr-1"></i>
                     Site Type
                 </label>
-                <select id="site_type" name="site_type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" onchange="onTypeChange()">
+                <select id="site_type" name="site_type" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" onchange="onTypeChange()">
                     <option value="proxy" selected>Nginx Proxy</option>
                     <option value="php">PHP-FPM</option>
                 </select>
-                <p class="mt-1 text-sm text-gray-500">Choose how Nginx should serve this domain</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Choose how Nginx should serve this domain</p>
             </div>
 
             <div id="portGroup">
-                <label for="port" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="port" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <i class="fas fa-network-wired mr-1"></i>
                     Backend Port
                 </label>
@@ -52,16 +52,16 @@
                        min="1" 
                        max="65535"
                        placeholder="3000"
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white"
                        oninput="validatePort(this)">
-                <p class="mt-1 text-sm text-gray-500">Enter the port number where your backend service is running</p>
-                <div id="portError" class="mt-1 text-sm text-red-600 hidden">
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Enter the port number where your backend service is running</p>
+                <div id="portError" class="mt-1 text-sm text-red-600 dark:text-red-400 hidden">
                     Port must be between 1 and 65535
                 </div>
             </div>
 
             <div id="rootGroup" class="hidden">
-                <label for="root_dir" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="root_dir" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <i class="fas fa-folder mr-1"></i>
                     Root Directory
                 </label>
@@ -70,16 +70,16 @@
                        name="root_dir" 
                        placeholder="/var/www/public"
                        value="/var/www/public"
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white"
                        oninput="updatePreview()">
-                <p class="mt-1 text-sm text-gray-500">Directory to serve for PHP-FPM sites (mounted in Nginx)</p>
-                <p class="mt-1 text-xs text-blue-600">Direktori akan dibuat otomatis di bawah <code class="bg-blue-100 px-1 rounded">/var/www/public</code>. Hanya path di dalam base tersebut yang diizinkan.</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Directory to serve for PHP-FPM sites (mounted in Nginx)</p>
+                <p class="mt-1 text-xs text-blue-600 dark:text-blue-300">Direktori akan dibuat otomatis di bawah <code class="bg-blue-100 dark:bg-blue-900/40 dark:text-blue-200 px-1 rounded">/var/www/public</code>. Hanya path di dalam base tersebut yang diizinkan.</p>
 
-                <label for="php_version" class="block text-sm font-medium text-gray-700 mb-2 mt-4">
+                <label for="php_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mt-4">
                     <i class="fab fa-php mr-1"></i>
                     PHP Version
                 </label>
-                <select id="php_version" name="php_version" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" onchange="updatePreview()">
+                <select id="php_version" name="php_version" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" onchange="updatePreview()">
                     <option value="8.3" selected>PHP 8.3</option>
                     <option value="8.2">PHP 8.2</option>
                     <option value="8.1">PHP 8.1</option>
@@ -91,15 +91,15 @@
                     <option value="7.0">PHP 7.0</option>
                     <option value="5.6">PHP 5.6</option>
                 </select>
-                <p class="mt-1 text-xs text-gray-500">Versi PHP akan menentukan kontainer PHP-FPM yang digunakan untuk fastcgi_pass.</p>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Versi PHP akan menentukan kontainer PHP-FPM yang digunakan untuk fastcgi_pass.</p>
             </div>
 
-            <div class="bg-gray-50 rounded-lg p-4">
-                <h3 class="text-sm font-medium text-gray-700 mb-2">
+            <div class="bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <i class="fas fa-info-circle mr-1"></i>
                     Configuration Preview
                 </h3>
-                <pre class="text-xs text-gray-600 bg-white p-3 rounded border overflow-x-auto"><code id="configPreview">server {
+                <pre class="text-xs text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-x-auto"><code id="configPreview">server {
     listen 80;
     server_name example.com;
     
@@ -113,20 +113,20 @@
 }</code></pre>
             </div>
 
-            <div class="bg-blue-50 rounded-lg p-4">
-                <h3 class="text-sm font-medium text-blue-700 mb-2">
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <h3 class="text-sm font-medium text-blue-700 dark:text-blue-200 mb-2">
                     <i class="fas fa-globe mr-1"></i>
                     DNS Integration
                 </h3>
-                <p class="text-sm text-blue-600">
+                <p class="text-sm text-blue-600 dark:text-blue-300">
                     This domain will be automatically added to the local DNS server for resolution.
-                    You can access your site at <code class="text-xs bg-blue-100 px-1 py-0.5 rounded">http://your-domain</code> 
+                    You can access your site at <code class="text-xs bg-blue-100 dark:bg-blue-900/40 dark:text-blue-200 px-1 py-0.5 rounded">http://your-domain</code> 
                     from other containers or configured clients.
                 </p>
             </div>
 
             <div class="flex justify-end space-x-4">
-                <a href="{{ url_for('dashboard') }}" class="px-6 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                <a href="{{ url_for('dashboard') }}" class="px-6 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                     Cancel
                 </a>
                 <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed" id="submitBtn">

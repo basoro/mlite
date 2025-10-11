@@ -1,164 +1,210 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - Nginx Manager{% endblock %}
+{% block title %}Dashboard - SLEMP Panel{% endblock %}
 
 {% block content %}
 <div class="mb-8">
-    <div class="flex justify-between items-center">
-        <div>
-            <h2 class="text-3xl font-bold text-gray-800">Site Management</h2>
-            <p class="text-gray-600 mt-2">Manage your Nginx reverse proxy configurations</p>
-        </div>
-        <a href="{{ url_for('add_site') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition flex items-center">
-            <i class="fas fa-plus mr-2"></i>
-            Add New Site
-        </a>
+  <div class="flex justify-between items-center">
+    <div>
+      <h2 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Site Management</h2>
+      <p class="text-gray-600 dark:text-gray-400 mt-2">Manage your Nginx reverse proxy configurations</p>
     </div>
+    <a href="{{ url_for('add_site') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition flex items-center shadow">
+      <i class="fas fa-plus mr-2"></i>
+      Add New Site
+    </a>
+  </div>
 </div>
 
-<!-- System Status -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-    <div class="bg-white rounded-lg shadow-md p-4">
-        <div class="flex items-center">
-            <i class="fas fa-server text-blue-600 text-xl mr-3"></i>
-            <div>
-                <h3 class="font-semibold text-gray-800">Nginx Status</h3>
-                <p class="text-sm {% if nginx_status %}text-green-600{% else %}text-red-600{% endif %}">
-                    {{ 'Running' if nginx_status else 'Stopped' }}
-                </p>
-            </div>
-        </div>
+<!-- Status + Charts -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-4">
+    <div class="flex items-center">
+      <i class="fas fa-server text-blue-600 dark:text-blue-400 text-xl mr-3"></i>
+      <div>
+        <h3 class="font-semibold text-gray-800 dark:text-gray-100">Nginx Status</h3>
+        <p id="nginx-status-text" class="text-sm {{ 'text-green-600 dark:text-green-400' if nginx_status else 'text-red-600 dark:text-red-400' }}">
+          {{ 'Running' if nginx_status else 'Stopped' }}
+        </p>
+      </div>
     </div>
-    <div class="bg-white rounded-lg shadow-md p-4">
-        <div class="flex items-center">
-            <i class="fas fa-globe text-green-600 text-xl mr-3"></i>
-            <div>
-                <h3 class="font-semibold text-gray-800">DNS Status</h3>
-                <p class="text-sm {% if dns_status %}text-green-600{% else %}text-red-600{% endif %}">
-                    {{ 'Running' if dns_status else 'Stopped' }}
-                </p>
-            </div>
-        </div>
+  </div>
+  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-4">
+    <div class="flex items-center">
+      <i class="fas fa-globe text-green-600 dark:text-green-400 text-xl mr-3"></i>
+      <div>
+        <h3 class="font-semibold text-gray-800 dark:text-gray-100">DNS Status</h3>
+        <p id="dns-status-text" class="text-sm {{ 'text-green-600 dark:text-green-400' if dns_status else 'text-red-600 dark:text-red-400' }}">
+          {{ 'Running' if dns_status else 'Stopped' }}
+        </p>
+      </div>
     </div>
-    <div class="bg-white rounded-lg shadow-md p-4">
-        <div class="flex items-center">
-            <i class="fas fa-network-wired text-purple-600 text-xl mr-3"></i>
-            <div>
-                <h3 class="font-semibold text-gray-800">Total Sites</h3>
-                <p class="text-sm text-gray-600">{{ sites|length }} configured</p>
-            </div>
-        </div>
+  </div>
+  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-4">
+    <div class="flex items-center">
+      <i class="fas fa-network-wired text-purple-600 dark:text-purple-400 text-xl mr-3"></i>
+      <div>
+        <h3 class="font-semibold text-gray-800 dark:text-gray-100">Total Sites</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">{{ sites|length }} configured</p>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- Simple chart area -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-4">
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="font-semibold text-gray-800 dark:text-gray-100">Requests (Mock)</h3>
+      <button id="refresh-chart" class="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600">Refresh</button>
+    </div>
+    <canvas id="requestsChart" class="!bg-transparent" height="120"></canvas>
+  </div>
+  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-4">
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="font-semibold text-gray-800 dark:text-gray-100">Nginx Reloads (Mock)</h3>
+    </div>
+    <canvas id="reloadsChart" class="!bg-transparent" height="120"></canvas>
+  </div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {% for site in sites %}
-    <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
-        <div class="flex justify-between items-start mb-4">
-            <div class="flex-1">
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ site.domain }}</h3>
-                <div class="flex items-center text-gray-600 mb-2">
-                    {% if site.type == 'php' %}
-                    <i class="fas fa-code mr-2"></i>
-                    <span>Type: PHP-FPM</span>
-                    {% else %}
-                    <i class="fas fa-exchange-alt mr-2"></i>
-                    <span>Type: Nginx Proxy</span>
-                    {% endif %}
-                </div>
-                <div class="flex items-center text-gray-600 mb-2">
-                    {% if site.type == 'php' %}
-                    <i class="fas fa-folder mr-2"></i>
-                    <span>Root: {{ site.root or '/var/www/public' }}</span>
-                    {% else %}
-                    <i class="fas fa-network-wired mr-2"></i>
-                    <span>Port: {{ site.port }}</span>
-                    {% endif %}
-                </div>
-                {% if site.type == 'php' %}
-                <div class="flex items-center text-gray-600 mb-2">
-                    <i class="fab fa-php mr-2"></i>
-                    <span>PHP: {{ site.php_version or '8.3' }}</span>
-                </div>
-                {% endif %}
-                <div class="flex items-center text-gray-500 text-sm">
-                    <i class="fas fa-calendar mr-2"></i>
-                    <span>{{ site.created_at }}</span>
-                </div>
-            </div>
-            <div class="flex flex-col space-y-2">
-                <a href="http://{{ site.domain }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition" title="Open Site">
-                    <i class="fas fa-external-link-alt"></i>
-                </a>
-                <a href="{{ url_for('edit_vhost', site_name=site.domain) }}" class="text-gray-600 hover:text-gray-800 transition" title="Edit Vhost">
-                    <i class="fas fa-edit"></i>
-                </a>
-                <button onclick="confirmDelete('{{ site.domain }}')" class="text-red-600 hover:text-red-800 transition" title="Delete">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
+  {% for site in sites %}
+  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-6 hover:shadow-lg transition">
+    <div class="flex justify-between items-start mb-4">
+      <div class="flex-1">
+        <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">{{ site.domain }}</h3>
+        <div class="flex items-center text-gray-600 dark:text-gray-400 mb-2">
+          {% if site.type == 'php' %}
+          <i class="fas fa-code mr-2"></i>
+          <span>Type: PHP-FPM</span>
+          {% else %}
+          <i class="fas fa-exchange-alt mr-2"></i>
+          <span>Type: Nginx Proxy</span>
+          {% endif %}
         </div>
-        
-        <div class="pt-4 border-t border-gray-200">
-            <div class="flex items-center text-sm text-gray-500">
-                <i class="fas fa-file-code mr-2"></i>
-                <span>{{ site.config_file }}</span>
-            </div>
+        <div class="flex items-center text-gray-600 dark:text-gray-400 mb-2">
+          {% if site.type == 'php' %}
+          <i class="fas fa-folder mr-2"></i>
+          <span>Root: {{ site.root or '/var/www/public' }}</span>
+          {% else %}
+          <i class="fas fa-network-wired mr-2"></i>
+          <span>Port: {{ site.port }}</span>
+          {% endif %}
         </div>
+        {% if site.type == 'php' %}
+        <div class="flex items-center text-gray-600 dark:text-gray-400 mb-2">
+          <i class="fab fa-php mr-2"></i>
+          <span>PHP: {{ site.php_version or '8.3' }}</span>
+        </div>
+        {% endif %}
+        <div class="flex items-center text-gray-500 dark:text-gray-400 text-sm">
+          <i class="fas fa-calendar mr-2"></i>
+          <span>{{ site.created_at }}</span>
+        </div>
+      </div>
+      <div class="flex flex-col space-y-2">
+        <a href="http://{{ site.domain }}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition" title="Open Site">
+          <i class="fas fa-external-link-alt"></i>
+        </a>
+        <a href="{{ url_for('edit_vhost', site_name=site.domain) }}" class="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition" title="Edit Vhost">
+          <i class="fas fa-edit"></i>
+        </a>
+        <button onclick="confirmDelete('{{ site.domain }}')" class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition" title="Delete">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
     </div>
-    {% else %}
-    <div class="col-span-full">
-        <div class="bg-white rounded-lg shadow-md p-12 text-center">
-            <i class="fas fa-server text-gray-400 text-6xl mb-4"></i>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">No Sites Configured</h3>
-            <p class="text-gray-600 mb-6">Get started by adding your first site configuration</p>
-            <a href="{{ url_for('add_site') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition inline-flex items-center">
-                <i class="fas fa-plus mr-2"></i>
-                Add Your First Site
-            </a>
-        </div>
+    <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+        <i class="fas fa-file-code mr-2"></i>
+        <span>{{ site.config_file }}</span>
+      </div>
     </div>
-    {% endfor %}
+  </div>
+  {% else %}
+  <div class="col-span-full">
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-12 text-center">
+      <i class="fas fa-server text-gray-400 dark:text-gray-500 text-6xl mb-4"></i>
+      <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">No Sites Configured</h3>
+      <p class="text-gray-600 dark:text-gray-400 mb-6">Get started by adding your first site configuration</p>
+      <a href="{{ url_for('add_site') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition inline-flex items-center shadow">
+        <i class="fas fa-plus mr-2"></i>
+        Add Your First Site
+      </a>
+    </div>
+  </div>
+  {% endfor %}
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 m-4 max-w-md w-full">
-        <div class="flex items-center mb-4">
-            <i class="fas fa-exclamation-triangle text-red-600 text-2xl mr-3"></i>
-            <h3 class="text-lg font-semibold text-gray-800">Delete Site Configuration</h3>
-        </div>
-        <p class="text-gray-600 mb-6">Are you sure you want to delete the site configuration for <span id="deleteDomain" class="font-semibold"></span>? This action cannot be undone.</p>
-        <div class="flex justify-end space-x-3">
-            <button onclick="closeDeleteModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition">
-                Cancel
-            </button>
-            <a id="confirmDeleteBtn" href="#" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition">
-                Delete
-            </a>
-        </div>
+<div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 dark:bg-gray-900 dark:bg-opacity-60 hidden items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-lg p-6 m-4 max-w-md w-full shadow-xl">
+    <div class="flex items-center mb-4">
+      <i class="fas fa-exclamation-triangle text-red-600 text-2xl mr-3"></i>
+      <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Delete Site Configuration</h3>
     </div>
+    <p class="text-gray-600 dark:text-gray-400 mb-6">Are you sure you want to delete the site configuration for <span id="deleteDomain" class="font-semibold"></span>? This action cannot be undone.</p>
+    <div class="flex justify-end space-x-3">
+      <button onclick="closeDeleteModal()" class="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition">Cancel</button>
+      <a id="confirmDeleteBtn" href="#" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition">Delete</a>
+    </div>
+  </div>
 </div>
 
 <script>
 function confirmDelete(domain) {
-    document.getElementById('deleteDomain').textContent = domain;
-    document.getElementById('confirmDeleteBtn').href = '/delete-site/' + domain;
-    document.getElementById('deleteModal').classList.remove('hidden');
-    document.getElementById('deleteModal').classList.add('flex');
+  document.getElementById('deleteDomain').textContent = domain;
+  document.getElementById('confirmDeleteBtn').href = '/delete-site/' + domain;
+  document.getElementById('deleteModal').classList.remove('hidden');
+  document.getElementById('deleteModal').classList.add('flex');
 }
-
 function closeDeleteModal() {
-    document.getElementById('deleteModal').classList.add('hidden');
-    document.getElementById('deleteModal').classList.remove('flex');
+  document.getElementById('deleteModal').classList.add('hidden');
+  document.getElementById('deleteModal').classList.remove('flex');
 }
-
-// Close modal when clicking outside
 window.onclick = function(event) {
-    const modal = document.getElementById('deleteModal');
-    if (event.target === modal) {
-        closeDeleteModal();
-    }
+  const modal = document.getElementById('deleteModal');
+  if (event.target === modal) {
+    closeDeleteModal();
+  }
+};
+
+// Simple charts using Chart.js CDN
+;(function initCharts(){
+  const cdn = document.createElement('script');
+  cdn.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+  cdn.onload = () => {
+    const ctx1 = document.getElementById('requestsChart').getContext('2d');
+    const ctx2 = document.getElementById('reloadsChart').getContext('2d');
+    const labels = Array.from({length: 12}, (_, i) => `T${i+1}`);
+    const data1 = labels.map(() => Math.floor(50 + Math.random()*150));
+    const data2 = labels.map(() => Math.floor(Math.random()*10));
+    const chart1 = new Chart(ctx1, { type: 'line', data: { labels, datasets: [{ label: 'Requests', data: data1, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.2)' }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true }}}});
+    const chart2 = new Chart(ctx2, { type: 'bar', data: { labels, datasets: [{ label: 'Reloads', data: data2, backgroundColor: '#8b5cf6' }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true }}}});
+    document.getElementById('refresh-chart').addEventListener('click', () => {
+      chart1.data.datasets[0].data = labels.map(() => Math.floor(50 + Math.random()*150));
+      chart2.data.datasets[0].data = labels.map(() => Math.floor(Math.random()*10));
+      chart1.update();
+      chart2.update();
+    });
+  };
+  document.body.appendChild(cdn);
+})();
+
+// Poll text status to sync with base header dots
+async function pollTextStatus(){
+  try {
+    const [ng, dn] = await Promise.all([
+      fetch('/api/nginx-status').then(r => r.json()),
+      fetch('/api/dns-status').then(r => r.json())
+    ]);
+    document.getElementById('nginx-status-text').className = 'text-sm ' + (ng.status === 'running' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400');
+    document.getElementById('nginx-status-text').textContent = (ng.status === 'running') ? 'Running' : 'Stopped';
+    document.getElementById('dns-status-text').className = 'text-sm ' + (dn.status === 'running' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400');
+    document.getElementById('dns-status-text').textContent = (dn.status === 'running') ? 'Running' : 'Stopped';
+  } catch (e) {}
 }
+setInterval(pollTextStatus, 5000);
 </script>
 {% endblock %}

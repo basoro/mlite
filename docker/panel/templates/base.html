@@ -1,78 +1,336 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Nginx Manager{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SLEMP Panel{% endblock %}</title>
+   <script>
+     // Pre-init theme to avoid FOUC: respect saved value only
+      (function(){
+        try {
+          const saved = localStorage.getItem('theme');
+          const useDark = saved === 'dark';
+          document.documentElement.classList.toggle('dark', useDark);
+          const rootStyle = document.documentElement.style;
+          const vars = useDark ? {
+            '--bg': '#111827',
+            '--text': '#f3f4f6',
+            '--muted': '#9ca3af',
+            '--card': '#1f2937',
+            '--border': '#374151',
+            '--surface': 'rgba(17,24,39,0.7)',
+            '--link': '#60a5fa',
+            '--link-hover': '#93c5fd'
+          } : {
+            '--bg': '#f3f4f6',
+            '--text': '#111827',
+            '--muted': '#4b5563',
+            '--card': '#ffffff',
+            '--border': '#e5e7eb',
+            '--surface': 'rgba(255,255,255,0.7)',
+            '--link': '#2563eb',
+            '--link-hover': '#1d4ed8'
+          };
+          Object.entries(vars).forEach(([k,v]) => rootStyle.setProperty(k,v));
+          rootStyle.setProperty('color-scheme', useDark ? 'dark' : 'light');
+        } catch (e) {}
+      })();
+     // Tailwind dark mode via class (set before CDN)
+     window.tailwind = window.tailwind || {};
+     window.tailwind.config = { darkMode: 'class' };
+   </script>
+   <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f3f4f6;
+        --text: #111827;
+        --muted: #4b5563;
+        --card: #ffffff;
+        --border: #e5e7eb;
+        --surface: rgba(255,255,255,0.7);
+        --link: #2563eb;
+        --link-hover: #1d4ed8;
+      }
+      html.dark {
+        color-scheme: dark;
+        --bg: #111827;
+        --text: #f3f4f6;
+        --muted: #9ca3af;
+        --card: #1f2937;
+        --border: #374151;
+        --surface: rgba(17,24,39,0.7);
+        --link: #60a5fa;
+        --link-hover: #93c5fd;
+      }
+
+      html, body { background-color: var(--bg); color: var(--text); }
+      header { background-color: var(--surface); border-color: var(--border); }
+
+      /* Override common Tailwind utility colors using CSS vars */
+      .bg-white { background-color: var(--card) !important; }
+      .bg-gray-100 { background-color: var(--bg) !important; }
+      .text-gray-900, .text-gray-800 { color: var(--text) !important; }
+      .text-gray-700, .text-gray-600, .text-gray-500 { color: var(--muted) !important; }
+      .border-gray-200, .border-gray-300 { border-color: var(--border) !important; }
+
+      /* Buttons and surfaces that use translucent backgrounds */
+      .bg-white\/70, .dark\:bg-gray-900\/70, .bg-gray-900\/70 { background-color: var(--surface) !important; }
+
+      /* Action button colors mapped to variables so they stay readable */
+      .text-blue-600 { color: var(--link) !important; }
+      .hover\:text-blue-800:hover { color: var(--link-hover) !important; }
+
+      /* Ensure canvas and charts don't get opaque backgrounds */
+      canvas { background-color: transparent !important; }
+
+      /* Info card overrides to ensure dark mode works reliably */
+      .bg-gray-50 { background-color: var(--card) !important; }
+      html.dark .bg-gray-50 { background-color: rgba(17,24,39,0.2) !important; }
+
+      .bg-blue-50 { background-color: #eff6ff !important; }
+      html.dark .bg-blue-50 { background-color: rgba(30,58,138,0.2) !important; }
+
+      .border-blue-200 { border-color: #bfdbfe !important; }
+      html.dark .border-blue-200 { border-color: #1e40af !important; }
+
+      .text-blue-700 { color: var(--link) !important; }
+      html.dark .text-blue-200 { color: #bfdbfe !important; }
+
+      /* Ensure code blocks inherit theme colors */
+      pre, code { background-color: inherit !important; color: inherit !important; }
+    </style>
 </head>
-<body class="bg-gray-100">
-    <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center">
-                    <i class="fas fa-server text-blue-600 text-2xl mr-3"></i>
-                    <h1 class="text-xl font-bold text-gray-800">Nginx Manager</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="{{ url_for('dashboard') }}" class="text-gray-600 hover:text-blue-600 transition">
-                        <i class="fas fa-home mr-1"></i> Dashboard
-                    </a>
-                    <div class="flex items-center">
-                        <div class="w-3 h-3 rounded-full {% if nginx_status %}bg-green-500{% else %}bg-red-500{% endif %} mr-2"></div>
-                        <span class="text-sm text-gray-600">
-                            Nginx {% if nginx_status %}Running{% else %}Stopped{% endif %}
-                        </span>
-                    </div>
-                    <div class="flex items-center">
-                        <div class="w-3 h-3 rounded-full {% if dns_status %}bg-green-500{% else %}bg-red-500{% endif %} mr-2"></div>
-                        <span class="text-sm text-gray-600">
-                            DNS {% if dns_status %}Running{% else %}Stopped{% endif %}
-                        </span>
-                    </div>
-                </div>
-            </div>
+<body class="h-full bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+  <!-- Header -->
+  <header class="sticky top-0 z-40 backdrop-blur bg-white/70 dark:bg-gray-900/70 border-b border-gray-200 dark:border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Left: Brand -->
+        <div class="flex items-center gap-3">
+          <div class="h-8 w-8 rounded bg-blue-600 text-white grid place-items-center shadow-sm">S</div>
+          <div class="font-semibold">SLEMP Panel</div>
+          <span class="ml-2 px-2 py-0.5 text-xs rounded bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-300">Flask</span>
         </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto px-4 py-8">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="mb-6">
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} mb-4 p-4 rounded-lg 
-                            {% if category == 'success' %}bg-green-100 text-green-700 border border-green-200
-                            {% elif category == 'error' %}bg-red-100 text-red-700 border border-red-200
-                            {% else %}bg-yellow-100 text-yellow-700 border border-yellow-200{% endif %}">
-                            <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} mr-2"></i>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-
-        {% block content %}{% endblock %}
-    </main>
-
-    <footer class="bg-white border-t mt-12">
-        <div class="max-w-7xl mx-auto px-4 py-6">
-            <div class="text-center text-gray-600">
-                <p>&copy; 2024 Nginx Manager. Built with Flask & TailwindCSS</p>
+        <!-- Center: Navigation -->
+        <nav class="hidden md:flex items-center gap-6 text-sm">
+          <a href="{{ url_for('dashboard') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Dashboard</a>
+          <a href="{{ url_for('dashboard') }}" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition">Nginx</a>
+          <a href="{{ url_for('dashboard') }}" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition">PHP-FPM</a>
+          <a href="{{ url_for('dashboard') }}" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition">MySQL</a>
+          <a href="{{ url_for('dashboard') }}" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition">Files</a>
+        </nav>
+        <!-- Right: Actions -->
+        <div class="flex items-center gap-3">
+          <!-- Status dots -->
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex h-2.5 w-2.5 rounded-full" id="nginx-dot"></span>
+              <span class="text-xs" id="nginx-label">Nginx</span>
             </div>
+            <div class="flex items-center gap-2">
+              <span class="inline-flex h-2.5 w-2.5 rounded-full" id="dns-dot"></span>
+              <span class="text-xs" id="dns-label">DNS</span>
+            </div>
+          </div>
+          <!-- Theme toggle -->
+          <button id="theme-toggle" class="ml-2 p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800" title="Toggle theme" aria-label="Toggle theme">
+            <span id="theme-icon">☀️</span>
+          </button>
+          <!-- Actions dropdown -->
+          <div class="relative">
+            <button id="action-toggle" class="px-3 py-2 rounded bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900 hover:opacity-90 transition">
+              Actions <i class="fa fa-chevron-down ml-1 text-xs"></i>
+            </button>
+            <div id="action-menu" class="hidden absolute right-0 mt-2 w-44 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 shadow-lg">
+              <button class="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="reloadNginx()">
+                <i class="fa fa-rotate mr-2"></i> Reload Nginx
+              </button>
+              <button class="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="changePassword()">
+                <i class="fa fa-key mr-2"></i> Password
+              </button>
+              <button class="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="logout()">
+                <i class="fa fa-right-from-bracket mr-2"></i> Logout
+              </button>
+            </div>
+          </div>
+          <!-- Mobile menu -->
+          <button id="mobile-toggle" class="md:hidden p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800" aria-label="Open menu">
+            <i class="fa fa-bars"></i>
+          </button>
         </div>
-    </footer>
+      </div>
+    </div>
+    <!-- Mobile nav -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-gray-800">
+      <div class="px-4 py-3 space-y-2">
+        <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">Dashboard</a>
+        <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">Nginx</a>
+        <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">PHP-FPM</a>
+        <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">MySQL</a>
+        <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">Files</a>
+      </div>
+    </div>
+  </header>
 
-    <script>
-        // Auto-hide alerts after 5 seconds
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                alert.style.opacity = '0';
-                setTimeout(() => alert.remove(), 300);
-            });
-        }, 5000);
-    </script>
+  <!-- Main -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-4 right-4 hidden"></div>
+
+  <script>
+    // Theme management: robust toggle that updates CSS variables and forces repaint
+    (function(){
+      const btn = document.getElementById('theme-toggle');
+      const icon = document.getElementById('theme-icon');
+      const rootStyle = document.documentElement.style;
+    
+      const themeVarsLight = {
+        '--bg': '#f3f4f6',
+        '--text': '#111827',
+        '--muted': '#4b5563',
+        '--card': '#ffffff',
+        '--border': '#e5e7eb',
+        '--surface': 'rgba(255,255,255,0.7)',
+        '--link': '#2563eb',
+        '--link-hover': '#1d4ed8'
+      };
+      const themeVarsDark = {
+        '--bg': '#111827',
+        '--text': '#f3f4f6',
+        '--muted': '#9ca3af',
+        '--card': '#1f2937',
+        '--border': '#374151',
+        '--surface': 'rgba(17,24,39,0.7)',
+        '--link': '#60a5fa',
+        '--link-hover': '#93c5fd'
+      };
+    
+      function applyVariables(useDark) {
+        const vars = useDark ? themeVarsDark : themeVarsLight;
+        Object.entries(vars).forEach(([k,v]) => rootStyle.setProperty(k, v));
+        rootStyle.setProperty('color-scheme', useDark ? 'dark' : 'light');
+      }
+    
+      function forceReflow() {
+        document.documentElement.classList.add('theme-flip');
+        void document.documentElement.offsetWidth;
+        document.documentElement.classList.remove('theme-flip');
+      }
+    
+      function applyFromSaved() {
+        const saved = localStorage.getItem('theme');
+        const useDark = saved === 'dark';
+        document.documentElement.classList.toggle('dark', useDark);
+        if (document.body) document.body.classList.toggle('dark', useDark);
+        if (icon) icon.textContent = useDark ? '🌙' : '☀️';
+        applyVariables(useDark);
+        forceReflow();
+      }
+    
+      function toggle() {
+        const useDark = !document.documentElement.classList.contains('dark');
+        document.documentElement.classList.toggle('dark', useDark);
+        if (document.body) document.body.classList.toggle('dark', useDark);
+        localStorage.setItem('theme', useDark ? 'dark' : 'light');
+        if (icon) icon.textContent = useDark ? '🌙' : '☀️';
+        applyVariables(useDark);
+        forceReflow();
+      }
+    
+      applyFromSaved();
+      if (btn) btn.addEventListener('click', toggle);
+    })();
+
+    // Mobile menu toggle
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Actions dropdown toggle
+    const actionToggle = document.getElementById('action-toggle');
+    const actionMenu = document.getElementById('action-menu');
+    actionToggle.addEventListener('click', () => {
+      actionMenu.classList.toggle('hidden');
+    });
+    document.addEventListener('click', (e) => {
+      if (!actionMenu.contains(e.target) && !actionToggle.contains(e.target)) {
+        actionMenu.classList.add('hidden');
+      }
+    });
+
+    // Toast helper
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'fixed bottom-4 right-4 px-4 py-2 rounded shadow-lg text-sm ' +
+        (type === 'success' ? 'bg-green-600 text-white' : type === 'error' ? 'bg-red-600 text-white' : 'bg-gray-900 text-white');
+      toast.style.opacity = '0';
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.style.opacity = '1', 0);
+      setTimeout(() => { toast.style.opacity = '0'; toast.classList.add('hidden'); }, 3000);
+    }
+
+    // Status initialization
+    function setStatusDot(el, running) {
+      el.className = 'inline-flex h-2.5 w-2.5 rounded-full ' + (running ? 'bg-green-500' : 'bg-red-500');
+    }
+    function setStatusLabel(el, name, running) {
+      el.textContent = `${name} ${running ? 'Running' : 'Stopped'}`;
+      el.className = 'text-xs ' + (running ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400');
+    }
+    // Init dots based on server-rendered vars (fallback)
+    const nginxRunning = {{ nginx_status | default(false) | tojson }};
+    const dnsRunning = {{ dns_status | default(false) | tojson }};
+    setStatusDot(document.getElementById('nginx-dot'), nginxRunning);
+    setStatusLabel(document.getElementById('nginx-label'), 'Nginx', nginxRunning);
+    setStatusDot(document.getElementById('dns-dot'), dnsRunning);
+    setStatusLabel(document.getElementById('dns-label'), 'DNS', dnsRunning);
+
+    // Poll real-time status
+    async function pollStatus() {
+      try {
+        const [ng, dn] = await Promise.all([
+          fetch('/api/nginx-status').then(r => r.json()),
+          fetch('/api/dns-status').then(r => r.json())
+        ]);
+        const ngRunning = ng.status === 'running';
+        const dnRunning = dn.status === 'running';
+        setStatusDot(document.getElementById('nginx-dot'), ngRunning);
+        setStatusLabel(document.getElementById('nginx-label'), 'Nginx', ngRunning);
+        setStatusDot(document.getElementById('dns-dot'), dnRunning);
+        setStatusLabel(document.getElementById('dns-label'), 'DNS', dnRunning);
+      } catch (e) {}
+    }
+    setInterval(pollStatus, 5000);
+
+    // Actions
+    async function reloadNginx() {
+      try {
+        const res = await fetch('/api/reload-nginx');
+        const data = await res.json();
+        if (data.success) {
+          showToast('Nginx reloaded successfully', 'success');
+          pollStatus();
+        } else {
+          showToast(data.message || 'Failed to reload nginx', 'error');
+        }
+      } catch (e) {
+        showToast('Error contacting server', 'error');
+      }
+    }
+    function changePassword() {
+      showToast('Password change is not configured', 'info');
+    }
+    function logout() {
+      showToast('Logout is not configured', 'info');
+    }
+  </script>
 </body>
 </html>
