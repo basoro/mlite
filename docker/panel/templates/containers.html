@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block title %}Container Management - SLEMP Panel{% endblock %}
+
+{% block content %}
+<div id="buildLogModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-3xl mx-4">
+    <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Build Logs</h2>
+      <button onclick="closeBuildLog()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="p-4">
+      <pre id="buildLogContent" class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-3 rounded max-h-96 overflow-auto text-xs"></pre>
+    </div>
+    <div class="flex justify-end gap-2 px-4 py-3 border-t dark:border-gray-700">
+      <button onclick="closeBuildLog()" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="startLogModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-3xl mx-4">
+    <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Start Logs</h2>
+      <button onclick="closeStartLog()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="p-4">
+      <pre id="startLogContent" class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-3 rounded max-h-96 overflow-auto text-xs"></pre>
+    </div>
+    <div class="flex justify-end gap-2 px-4 py-3 border-t dark:border-gray-700">
+      <button onclick="closeStartLog()" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let buildSource = null;
+let startSource = null;
+let buildShouldReload = false;
+let startShouldReload = false;
+function openBuildLog(service) {
+  const modal = document.getElementById('buildLogModal');
+  const content = document.getElementById('buildLogContent');
+  content.textContent = '';
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  buildShouldReload = false;
+  if (buildSource) { buildSource.close(); }
+  buildSource = new EventSource(`/container/build-log/${service}`);
+  buildSource.onmessage = (e) => {
+    content.textContent += e.data + "\n";
+    content.scrollTop = content.scrollHeight;
+  };
+  buildSource.addEventListener('done', (e) => {
+    content.textContent += `\n[Build ${e.data}]\n`;
+    content.scrollTop = content.scrollHeight;
+    if ((e.data || '').toLowerCase() === 'success') {
+      buildShouldReload = true;
+    }
+    if (buildSource) { buildSource.close(); }
+  });
+  buildSource.onerror = (e) => {
+    content.textContent += "\n[Error streaming logs]\n";
+    content.scrollTop = content.scrollHeight;
+    buildShouldReload = false;
+    if (buildSource) { buildSource.close(); }
+  };
+}
+function closeBuildLog() {
+  const modal = document.getElementById('buildLogModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  if (buildSource) { buildSource.close(); buildSource = null; }
+  if (buildShouldReload) { window.location.reload(); }
+}
+function openStartLog(service) {
+  const modal = document.getElementById('startLogModal');
+  const content = document.getElementById('startLogContent');
+  content.textContent = '';
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  startShouldReload = false;
+  if (startSource) { startSource.close(); }
+  startSource = new EventSource(`/container/start-log/${service}`);
+  startSource.onmessage = (e) => {
+    content.textContent += e.data + "\n";
+    content.scrollTop = content.scrollHeight;
+  };
+  startSource.addEventListener('done', (e) => {
+    content.textContent += `\n[Start ${e.data}]\n`;
+    content.scrollTop = content.scrollHeight;
+    if ((e.data || '').toLowerCase() === 'success') {
+      startShouldReload = true;
+    }
+    if (startSource) { startSource.close(); }
+  });
+  startSource.onerror = (e) => {
+    content.textContent += "\n[Error streaming logs]\n";
+    content.scrollTop = content.scrollHeight;
+    startShouldReload = false;
+    if (startSource) { startSource.close(); }
+  };
+}
+function closeStartLog() {
+  const modal = document.getElementById('startLogModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  if (startSource) { startSource.close(); startSource = null; }
+  if (startShouldReload) { window.location.reload(); }
+}
+</script>
+
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Container Management</h1>
+      <p class="text-gray-600 dark:text-gray-400 mt-1">Manage Docker containers for your SLEMP stack</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="refreshContainers()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-2">
+        <i class="fas fa-sync-alt"></i>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Status Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Containers</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ containers|length }}</p>
+        </div>
+        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
+          <i class="fas fa-cube text-blue-600 dark:text-blue-400"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Running</p>
+          <p class="text-2xl font-bold text-green-600 dark:text-green-400">
+            {{ containers|selectattr('running')|list|length }}
+          </p>
+        </div>
+        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
+          <i class="fas fa-play text-green-600 dark:text-green-400"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Stopped</p>
+          <p class="text-2xl font-bold text-red-600 dark:text-red-400">
+            {{ containers|rejectattr('running')|list|length }}
+          </p>
+        </div>
+        <div class="p-3 bg-red-100 dark:bg-red-900 rounded-full">
+          <i class="fas fa-stop text-red-600 dark:text-red-400"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container Categories -->
+  {% for category_name, category_containers in categories.items() %}
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {% if category_name == 'PHP Containers' %}
+          <i class="fab fa-php text-purple-600 dark:text-purple-400 mr-2"></i>
+        {% elif category_name == 'Web Services' %}
+          <i class="fas fa-globe text-blue-600 dark:text-blue-400 mr-2"></i>
+        {% else %}
+          <i class="fas fa-database text-green-600 dark:text-green-400 mr-2"></i>
+        {% endif %}
+        {{ category_name }} ({{ category_containers|length }})
+      </h2>
+    </div>
+    
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-700">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Service
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Status
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Image
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Ports
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Info
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          {% for container in category_containers %}
+          <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-8 w-8">
+                  {% if container.running %}
+                  <div class="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                    <i class="fas fa-play text-green-600 dark:text-green-400 text-xs"></i>
+                  </div>
+                  {% else %}
+                  <div class="h-8 w-8 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center">
+                    <i class="fas fa-stop text-red-600 dark:text-red-400 text-xs"></i>
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ container.service }}</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400">{{ container.name }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              {% if container.running %}
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                <i class="fas fa-circle text-xs mr-1"></i>
+                Running
+              </span>
+              {% else %}
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
+                <i class="fas fa-circle text-xs mr-1"></i>
+                Stopped
+              </span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              {{ container.image.split('/')[-1] if container.image else 'custom-build' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              {% if container.ports %}
+                {% for port in container.ports %}
+                  {% if port.get('PublishedPort') %}
+                    <span class="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 mr-1 mb-1">
+                      {{ port.get('PublishedPort') }}:{{ port.get('TargetPort', '') }}
+                    </span>
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                <span class="text-gray-400 dark:text-gray-500">-</span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              <div class="text-xs space-y-1">
+                <div><i class="fas fa-hdd text-gray-400 mr-1"></i> {{ container.volumes }} volumes</div>
+                <div><i class="fas fa-cog text-gray-400 mr-1"></i> {{ container.environment }} env</div>
+                {% if container.depends_on %}
+                  <div><i class="fas fa-link text-gray-400 mr-1"></i> {{ container.depends_on|length }} deps</div>
+                {% endif %}
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="flex items-center gap-1 flex-wrap">
+                {% if container.service != 'panel' %}
+                  {% if container.running %}
+                    <form method="POST" action="{{ url_for('container_down', service_name=container.service) }}" style="display: inline;">
+                      <button type="submit" class="px-2 py-1 text-xs bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-800 transition" title="Stop">
+                        <i class="fas fa-stop"></i>
+                      </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('container_restart', service_name=container.service) }}" style="display: inline;">
+                      <button type="submit" class="px-2 py-1 text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 rounded hover:bg-yellow-200 dark:hover:bg-yellow-800 transition" title="Restart">
+                        <i class="fas fa-redo"></i>
+                      </button>
+                    </form>
+                  {% else %}
+                    <button type="button" onclick="openStartLog('{{ container.service }}')" class="px-2 py-1 text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded hover:bg-green-200 dark:hover:bg-green-800 transition" title="Start & Stream Logs">
+                      <i class="fas fa-play"></i>
+                    </button>
+                  {% endif %}
+                  {% if container.build %}
+                    <button type="button" onclick="openBuildLog('{{ container.service }}')" class="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-800 transition" title="Build">
+                      <i class="fas fa-hammer"></i>
+                    </button>
+                  {% endif %}
+                {% else %}
+                  <span class="text-xs text-gray-400 dark:text-gray-500">Panel</span>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+              <i class="fas fa-cube text-4xl mb-4 opacity-50"></i>
+              <p>No containers in this category</p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- Notes -->
+  <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <i class="fas fa-info-circle text-blue-600 dark:text-blue-400"></i>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">Container Management Notes</h3>
+        <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+          <ul class="list-disc list-inside space-y-1">
+            <li>mlite_panel container cannot be managed from here for safety reasons</li>
+            <li>Build operation may take several minutes depending on container size</li>
+            <li>Container changes will affect your running services</li>
+            <li>Use restart to apply configuration changes without full rebuild</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script id="containers-data" type="application/json">{{ containers|tojson }}</script>
+<script id="categories-data" type="application/json">{{ categories|tojson }}</script>
+
+<script>
+function refreshContainers() {
+  // Reload page to refresh container status
+  window.location.reload();
+}
+
+// Auto refresh every 30 seconds
+setInterval(function() {
+  // Only refresh if no forms are being submitted
+  if (!document.querySelector('form[loading]')) {
+    refreshContainers();
+  }
+}, 30000);
+
+// Add loading state to forms
+document.querySelectorAll('form').forEach(form => {
+  form.addEventListener('submit', function() {
+    this.setAttribute('loading', 'true');
+    // Disable buttons to prevent double submission
+    this.querySelectorAll('button').forEach(btn => {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    });
+  });
+});
+
+// Console logging for debugging (JS-only loops to avoid linter issues)
+const containersData = JSON.parse(document.getElementById('containers-data').textContent);
+const categoriesData = JSON.parse(document.getElementById('categories-data').textContent);
+
+console.log('=== CONTAINER MANAGEMENT DEBUG INFO ===');
+console.log('Categories:', categoriesData);
+console.log('Containers:', containersData);
+
+Object.entries(categoriesData).forEach(([categoryName, categoryContainers]) => {
+  console.log(`${categoryName} (${categoryContainers.length} services):`);
+  categoryContainers.forEach(container => {
+    console.log(`  - ${container.service}: ${container.name} (${container.status})`);
+  });
+});
+
+console.log('Total services found:', containersData.length);
+console.log('Total categories:', Object.keys(categoriesData).length);
+console.log('=== END DEBUG INFO ===');
+</script>
+{% endblock %}

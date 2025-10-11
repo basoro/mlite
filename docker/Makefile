@@ -149,6 +149,14 @@ orthanc-status:
 	@echo "$(YELLOW)Checking Orthanc system status...$(NC)"
 	@curl -s -u "$(ORTHANC_USER):$(ORTHANC_PASS)" "$(ORTHANC_API)/system" | jq .
 
+## Panel rebuild
+panel-rebuild:
+	@echo "$(YELLOW)Rebuilding panel service...$(NC)"
+	@DOCKER_BUILDKIT=1 docker compose -f $(COMPOSE_FILE) build --progress=plain panel
+	@docker compose -f $(COMPOSE_FILE) up -d --force-recreate panel
+	@echo "$(GREEN)Panel rebuilt and restarted!$(NC)"
+	@make status
+
 ## Help
 help:
 	@echo "$(GREEN)mLITE Docker Commands$(NC)"

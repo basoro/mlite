@@ -5,7 +5,7 @@ services:
       dockerfile: php/Dockerfile-7.4
     container_name: mlite_php74
     volumes:
-      - ../:/var/www/public
+      - ${HOST_PROJECT_DIR}:/var/www/public
     depends_on:
       - mysql
     networks:
@@ -20,7 +20,7 @@ services:
       dockerfile: php/Dockerfile-8.0
     container_name: mlite_php80
     volumes:
-      - ../:/var/www/public
+      - ${HOST_PROJECT_DIR}:/var/www/public
     depends_on:
       - mysql
     networks:
@@ -35,7 +35,7 @@ services:
       dockerfile: php/Dockerfile-8.1
     container_name: mlite_php81
     volumes:
-      - ../:/var/www/public
+      - ${HOST_PROJECT_DIR}:/var/www/public
     depends_on:
       - mysql
     networks:
@@ -50,7 +50,7 @@ services:
       dockerfile: php/Dockerfile-8.2
     container_name: mlite_php82
     volumes:
-      - ../:/var/www/public
+      - ${HOST_PROJECT_DIR}:/var/www/public
     depends_on:
       - mysql
     networks:
@@ -65,7 +65,7 @@ services:
       dockerfile: php/Dockerfile
     container_name: mlite_php83
     volumes:
-      - ../:/var/www/public
+      - ${HOST_PROJECT_DIR}:/var/www/public
     depends_on:
       - mysql
     networks:
@@ -83,9 +83,11 @@ services:
       - "5001:5000"
     volumes:
       - ./panel:/app
+      - ../:/workspace
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./dns:/app/dns  # DNS management access
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./docker-compose.yml:/app/docker-compose.yml
     environment:
       - NGINX_CONTAINER_NAME=mlite_nginx
       - FLASK_ENV=development
@@ -102,7 +104,7 @@ services:
     platform: linux/amd64
     container_name: mlite_php56
     volumes:
-      - ../:/var/www/public
+      - ${HOST_PROJECT_DIR}:/var/www/public
     depends_on:
       - mysql
     networks:
@@ -118,7 +120,7 @@ services:
     platform: linux/amd64
     container_name: mlite_php70
     volumes:
-      - ../:/var/www/public
+      - ${HOST_PROJECT_DIR}:/var/www/public
     depends_on:
       - mysql
     networks:
@@ -134,7 +136,7 @@ services:
     platform: linux/amd64
     container_name: mlite_php71
     volumes:
-      - ../:/var/www/public
+      - ${HOST_PROJECT_DIR}:/var/www/public
     depends_on:
       - mysql
     networks:
@@ -150,7 +152,7 @@ services:
     platform: linux/amd64
     container_name: mlite_php72
     volumes:
-      - ../:/var/www/public
+      - ${HOST_PROJECT_DIR}:/var/www/public
     depends_on:
       - mysql
     networks:
@@ -166,7 +168,7 @@ services:
     platform: linux/amd64
     container_name: mlite_php73
     volumes:
-      - ../:/var/www/public
+      - ${HOST_PROJECT_DIR}:/var/www/public
     depends_on:
       - mysql
     networks:
@@ -182,7 +184,7 @@ services:
       - "80:80"
       - "8080:8080"
     volumes:
-      - ../:/var/www/public
+      - ${HOST_PROJECT_DIR}:/var/www/public
       - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - php56

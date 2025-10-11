@@ -39,8 +39,12 @@
      window.tailwind = window.tailwind || {};
      window.tailwind.config = { darkMode: 'class' };
    </script>
+   {% if config.DEBUG %}
    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+   {% else %}
+   <link href="/static/css/tailwind.css" rel="stylesheet">
+   {% endif %}
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
       :root {
         color-scheme: light;
@@ -116,6 +120,7 @@
         <!-- Center: Navigation -->
         <nav class="hidden md:flex items-center gap-6 text-sm">
           <a href="{{ url_for('dashboard') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Dashboard</a>
+          <a href="{{ url_for('containers') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Containers</a>
           <a href="{{ url_for('dashboard') }}" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition">Nginx</a>
           <a href="{{ url_for('dashboard') }}" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition">PHP-FPM</a>
           <a href="{{ url_for('dashboard') }}" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition">MySQL</a>
@@ -166,6 +171,7 @@
     <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-gray-800">
       <div class="px-4 py-3 space-y-2">
         <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">Dashboard</a>
+        <a href="{{ url_for('containers') }}" class="block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">Containers</a>
         <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">Nginx</a>
         <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">PHP-FPM</a>
         <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">MySQL</a>
