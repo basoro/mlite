@@ -80,7 +80,7 @@ services:
       dockerfile: Dockerfile
     container_name: mlite_panel
     ports:
-      - "5001:5000"
+      - ${HOST_PROJECT_PORT}:5000
     volumes:
       - ./panel:/app
       - ../:/workspace
