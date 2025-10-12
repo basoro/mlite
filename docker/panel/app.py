@@ -27,7 +27,7 @@ def inject_config():
     return dict(config=app.config)
 
 # Configuration
-NGINX_CONF_DIR = os.environ.get('NGINX_CONF_DIR', '/etc/nginx/conf.d')
+NGINX_CONF_DIR = os.environ.get('NGINX_CONF_DIR', os.path.join(os.environ.get('HOST_PROJECT_DIR', '/Users/basoro/Slemp/data/www/mlite.loc'), 'docker', 'nginx', 'conf.d'))
 NGINX_CONTAINER_NAME = os.environ.get('NGINX_CONTAINER_NAME', 'mlite_nginx')
 PHP_CONTAINER_NAME = os.environ.get('PHP_CONTAINER_NAME', 'mlite_php')
 # Base web root inside containers (mounted from host ../)
@@ -363,37 +363,31 @@ def get_services_from_compose():
     print("[DEBUG] === get_services_from_compose() STARTED ===")
     
     try:
-        # Resolve paths relative to this file
+        # Resolve candidate paths (prefer container-mounted first)
         current_file = os.path.abspath(__file__)
         current_dir = os.path.dirname(current_file)
         parent_dir = os.path.dirname(current_dir)
-        compose_path = os.path.join(parent_dir, 'docker-compose.yml')
-        
+        candidates = [
+            ('/app/docker-compose.yml', '/app'),
+            (os.path.join(parent_dir, 'docker-compose.yml'), parent_dir),
+            ('/workspace/docker/docker-compose.yml', '/workspace/docker'),
+            ('/Users/basoro/Slemp/data/www/mlite.loc/docker/docker-compose.yml', '/Users/basoro/Slemp/data/www/mlite.loc/docker')
+        ]
         print(f"[DEBUG] Current file: {current_file}")
         print(f"[DEBUG] Current dir: {current_dir}")
         print(f"[DEBUG] Parent dir: {parent_dir}")
-        print(f"[DEBUG] Primary compose path: {compose_path}")
-        print(f"[DEBUG] Primary path exists: {os.path.exists(compose_path)}")
+        for path, _ in candidates:
+            print(f"[DEBUG] Candidate compose path exists? {path}: {os.path.exists(path)}")
         
-        # Alternative paths (container mount and host path)
-        alt_path1 = '/app/docker-compose.yml'
-        alt_path2 = '/Users/basoro/Slemp/data/www/mlite.loc/docker/docker-compose.yml'
-        print(f"[DEBUG] Alt path 1 (/app/docker-compose.yml) exists: {os.path.exists(alt_path1)}")
-        print(f"[DEBUG] Alt path 2 (host) exists: {os.path.exists(alt_path2)}")
-        
-        # Choose a valid path
-        if not os.path.exists(compose_path):
-            print(f"[WARN] Primary compose file not found: {compose_path}")
-            if os.path.exists(alt_path1):
-                compose_path = alt_path1
-                print(f"[DEBUG] Using container-mounted path: {compose_path}")
-            elif os.path.exists(alt_path2):
-                compose_path = alt_path2
-                print(f"[DEBUG] Using host path: {compose_path}")
-            else:
-                print("[ERROR] No docker-compose.yml found in any checked path")
-                print("[DEBUG] === get_services_from_compose() COMPLETED (no file) ===")
-                return []
+        compose_path = None
+        for path, _ in candidates:
+            if os.path.exists(path):
+                compose_path = path
+                break
+        if not compose_path:
+            print("[ERROR] No docker-compose.yml found in any checked path")
+            print("[DEBUG] === get_services_from_compose() COMPLETED (no file) ===")
+            return []
         
         print(f"[DEBUG] Reading compose file: {compose_path}")
         with open(compose_path, 'r') as f:
@@ -439,6 +433,156 @@ def get_services_from_compose():
         import traceback
         print(f"[ERROR] Traceback: {traceback.format_exc()}")
         print("[DEBUG] === get_services_from_compose() COMPLETED (exception) ===")
+        return []
+
+def get_php_containers():
+    """Get PHP container data for PHP-FPM page, consistent with docker ps logic."""
+    print("[DEBUG] === get_php_containers() STARTED ===")
+    try:
+        # Use docker ps JSON per-line for reliable status/ports
+        cmd = ['docker', 'ps', '-a', '--format', '{{json .}}']
+        print(f"[DEBUG] Running: {' '.join(cmd)}")
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        
+        containers = []
+        lines = result.stdout.strip().split('\n') if result.stdout.strip() else []
+        print(f"[DEBUG] Found {len(lines)} containers total")
+        
+        php_versions = ['php56', 'php70', 'php71', 'php72', 'php73', 'php74', 'php80', 'php81', 'php82', 'php83']
+        version_map = {
+            '56': '5.6', '70': '7.0', '71': '7.1', '72': '7.2', '73': '7.3',
+            '74': '7.4', '80': '8.0', '81': '8.1', '82': '8.2', '83': '8.3'
+        }
+        
+        for line in lines:
+            if not line.strip():
+                continue
+            try:
+                obj = json.loads(line)
+                container_name = obj.get('Names') or obj.get('Name') or ''
+                matched_ver = None
+                for php_ver in php_versions:
+                    if php_ver in container_name:
+                        matched_ver = php_ver
+                        break
+                if not matched_ver:
+                    continue
+                
+                print(f"[DEBUG] Found PHP container: {container_name}")
+                status_text = obj.get('Status', '') or ''
+                running = status_text.lower().startswith('up')
+                ports_parsed = parse_ports_string(obj.get('Ports', '') or '')
+                # Convert to display strings like "host:container" or just "container"
+                ports_display = []
+                for p in deduplicate_ports(ports_parsed):
+                    pub = str(p.get('PublishedPort') or '')
+                    tgt = str(p.get('TargetPort') or '')
+                    if pub and tgt:
+                        ports_display.append(f"{pub}:{tgt}")
+                    elif tgt:
+                        ports_display.append(tgt)
+                
+                # Derive PHP version code (e.g., 83 -> 8.3)
+                code = matched_ver.replace('php', '')
+                php_version = version_map.get(code, code)
+                
+                containers.append({
+                    'name': container_name,
+                    'running': running,
+                    'status': 'Running' if running else 'Stopped',
+                    'php_version': php_version,
+                    'ports': ports_display,
+                    'created': obj.get('CreatedAt', ''),
+                    'image': obj.get('Image', '')
+                })
+            except (json.JSONDecodeError, KeyError, IndexError) as e:
+                print(f"[WARN] Error parsing container data: {e}")
+                continue
+        
+        print(f"[DEBUG] Found {len(containers)} PHP containers")
+        print("[DEBUG] === get_php_containers() COMPLETED ===")
+        return containers
+        
+    except subprocess.CalledProcessError as e:
+        print(f"[ERROR] Error getting PHP containers: {e}")
+        print("[DEBUG] === get_php_containers() COMPLETED (error) ===")
+        return []
+    except Exception as e:
+        print(f"[ERROR] Unexpected error getting PHP containers: {e}")
+        print("[DEBUG] === get_php_containers() COMPLETED (exception) ===")
+        return []
+
+def get_mysql_containers():
+    """Get MySQL container data for MySQL management page, consistent with docker ps logic."""
+    print("[DEBUG] === get_mysql_containers() STARTED ===")
+    try:
+        # Use docker ps JSON per-line for reliable status/ports
+        cmd = ['docker', 'ps', '-a', '--format', '{{json .}}']
+        print(f"[DEBUG] Running: {' '.join(cmd)}")
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        
+        containers = []
+        lines = result.stdout.strip().split('\n') if result.stdout.strip() else []
+        print(f"[DEBUG] Found {len(lines)} containers total")
+        
+        # MySQL container identifiers
+        mysql_identifiers = ['mysql', 'mariadb', 'percona']
+        
+        for line in lines:
+            if not line.strip():
+                continue
+            try:
+                obj = json.loads(line)
+                container_name = obj.get('Names') or obj.get('Name') or ''
+                
+                # Check if this is a MySQL container
+                is_mysql = False
+                for identifier in mysql_identifiers:
+                    if identifier in container_name.lower():
+                        is_mysql = True
+                        break
+                
+                if not is_mysql:
+                    continue
+                
+                print(f"[DEBUG] Found MySQL container: {container_name}")
+                status_text = obj.get('Status', '') or ''
+                running = status_text.lower().startswith('up')
+                ports_parsed = parse_ports_string(obj.get('Ports', '') or '')
+                
+                # Convert to display strings like "host:container" or just "container"
+                ports_display = []
+                for p in deduplicate_ports(ports_parsed):
+                    pub = str(p.get('PublishedPort') or '')
+                    tgt = str(p.get('TargetPort') or '')
+                    if pub and tgt:
+                        ports_display.append(f"{pub}:{tgt}")
+                    elif tgt:
+                        ports_display.append(tgt)
+                
+                containers.append({
+                    'name': container_name,
+                    'running': running,
+                    'status': 'Running' if running else 'Stopped',
+                    'ports': ports_display,
+                    'created': obj.get('CreatedAt', ''),
+                    'image': obj.get('Image', '')
+                })
+            except (json.JSONDecodeError, KeyError, IndexError) as e:
+                print(f"[WARN] Error parsing container data: {e}")
+                continue
+        
+        print(f"[DEBUG] Found {len(containers)} MySQL containers")
+        print("[DEBUG] === get_mysql_containers() COMPLETED ===")
+        return containers
+        
+    except subprocess.CalledProcessError as e:
+        print(f"[ERROR] Error getting MySQL containers: {e}")
+        print("[DEBUG] === get_mysql_containers() COMPLETED (error) ===")
+        return []
+    except Exception as e:
+        print(f"[ERROR] Unexpected error getting MySQL containers: {e}")
+        print("[DEBUG] === get_mysql_containers() COMPLETED (exception) ===")
         return []
 
 def parse_ports_string(ports_str: str):
@@ -536,11 +680,34 @@ def get_container_status():
     container_data = {}
 
     try:
-        compose_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'docker-compose.yml')
-        print(f"[DEBUG] Using compose file for ps: {compose_path}")
-        cmd = ['docker', 'compose', '-f', compose_path, 'ps', '--format', 'json']
-        print(f"[DEBUG] Running: {' '.join(cmd)}")
-        result = subprocess.run(cmd, capture_output=True, text=True, cwd=os.path.dirname(compose_path))
+        # Prefer container-mounted compose file, fallback to parent and host paths
+        current_file = os.path.abspath(__file__)
+        current_dir = os.path.dirname(current_file)
+        parent_dir = os.path.dirname(current_dir)
+        candidates = [
+            ('/app/docker-compose.yml', '/app'),
+            (os.path.join(parent_dir, 'docker-compose.yml'), parent_dir),
+            ('/workspace/docker/docker-compose.yml', '/workspace/docker'),
+            ('/Users/basoro/Slemp/data/www/mlite.loc/docker/docker-compose.yml', '/Users/basoro/Slemp/data/www/mlite.loc/docker')
+        ]
+
+        compose_path = None
+        compose_cwd = None
+        for path, cwd in candidates:
+            if os.path.exists(path):
+                compose_path = path
+                compose_cwd = cwd
+                break
+
+        if not compose_path:
+            print("[ERROR] No docker-compose.yml found for container status")
+            return container_data
+
+        base = get_compose_cmd_base()
+        project = get_compose_project()
+        cmd = base + ['-f', compose_path] + (['--project-name', project] if project else []) + ['ps', '--format', 'json']
+        print(f"[DEBUG] Running: {' '.join(cmd)} (cwd={compose_cwd})")
+        result = subprocess.run(cmd, capture_output=True, text=True, cwd=compose_cwd)
         print(f"[DEBUG] docker compose ps exit: {result.returncode}")
         if result.stderr:
             print(f"[DEBUG] stderr: {result.stderr.strip()}")
@@ -552,12 +719,14 @@ def get_container_status():
                 containers = []
                 for line in lines:
                     if line.strip():
-                        containers.append(json.loads(line))
-
+                        try:
+                            containers.append(json.loads(line))
+                        except json.JSONDecodeError as e:
+                            print(f"[WARN] JSON decode error: {e}")
                 for container in containers:
                     service_name = container.get('Service', '')
                     container_data[service_name] = {
-                        'running': 'running' in container.get('State', '').lower(),
+                        'running': 'running' in (container.get('State', '') or '').lower(),
                         'status': container.get('State', 'unknown'),
                         'created': container.get('CreatedAt', ''),
                         'image': container.get('Image', ''),
@@ -1308,6 +1477,94 @@ def container_start_log(service_name):
 
     return Response(stream_with_context(generate()), mimetype='text/event-stream')
 
+@app.route('/nginx')
+def nginx_page():
+    """Nginx management page"""
+    try:
+        # Get nginx container info
+        docker_ps_status = get_container_status_via_docker_ps()
+        nginx_info = docker_ps_status.get(NGINX_CONTAINER_NAME, {
+            'running': False,
+            'status': 'not found',
+            'image': 'unknown',
+            'ports': [],
+            'created': ''
+        })
+        # Format ports for display
+        try:
+            ports_list = deduplicate_ports(nginx_info.get('ports', []) or [])
+            formatted = []
+            for p in ports_list:
+                pub = str(p.get('PublishedPort')) if p.get('PublishedPort') is not None else ''
+                tgt = str(p.get('TargetPort')) if p.get('TargetPort') is not None else ''
+                if pub and tgt:
+                    formatted.append(f"{pub}:{tgt}")
+                elif tgt:
+                    formatted.append(tgt)
+            nginx_ports_display = ', '.join(formatted)
+        except Exception:
+            nginx_ports_display = ''
+        
+        # Get nginx configuration files (enabled and disabled)
+        config_files = []
+        if os.path.exists(NGINX_CONF_DIR):
+            for filename in os.listdir(NGINX_CONF_DIR):
+                if filename.endswith('.conf') or filename.endswith('.conf.disabled'):
+                    filepath = os.path.join(NGINX_CONF_DIR, filename)
+                    try:
+                        with open(filepath, 'r') as f:
+                            content = f.read()
+                        # Parse config info
+                        enabled = filename.endswith('.conf')
+                        domain = filename.replace('.conf.disabled', '').replace('.conf', '')
+                        site_type = 'proxy'
+                        port = None
+                        root_dir = None
+                        if 'fastcgi_pass' in content:
+                            site_type = 'php'
+                        elif 'proxy_pass' in content:
+                            site_type = 'proxy'
+                            for line in content.split('\n'):
+                                if 'proxy_pass http://localhost:' in line:
+                                    port = line.split('proxy_pass http://localhost:')[1].split(';')[0].strip()
+                                    break
+                        else:
+                            site_type = 'static'
+                        config_files.append({
+                            'domain': domain,
+                            'type': site_type,
+                            'port': port,
+                            'root_dir': root_dir,
+                            'filename': filename,
+                            'created': datetime.fromtimestamp(os.path.getctime(filepath)).strftime('%Y-%m-%d %H:%M:%S'),
+                            'enabled': enabled
+                        })
+                    except Exception as e:
+                        print(f"Error reading config file {filename}: {e}")
+        
+        # Get nginx logs
+        logs = []
+        try:
+            # Get last 50 lines of nginx logs
+            result = subprocess.run([
+                'docker', 'logs', '--tail', '50', NGINX_CONTAINER_NAME
+            ], capture_output=True, text=True, timeout=10)
+            
+            if result.returncode == 0:
+                logs = result.stdout.strip().split('\n')[-20:]  # Last 20 lines
+        except Exception as e:
+            print(f"Error getting nginx logs: {e}")
+        
+        return render_template('nginx.html',
+                             nginx_info=nginx_info,
+                             nginx_ports_display=nginx_ports_display,
+                             config_files=config_files,
+                             logs=logs,
+                             nginx_container_name=NGINX_CONTAINER_NAME)
+    except Exception as e:
+        flash(f'Error loading nginx page: {str(e)}', 'error')
+        return redirect(url_for('dashboard'))
+
 @app.route('/container/restart/<service_name>', methods=['POST'])
 def container_restart(service_name):
     """Restart specific container"""
@@ -1388,6 +1645,279 @@ def get_resolved_compose_file():
         return out_path
     except Exception:
         return '/workspace/docker/docker-compose.yml'
+
+@app.route('/nginx/toggle/<domain>', methods=['POST'])
+@login_required
+def toggle_site(domain):
+    """Enable/Disable a site's nginx config by renaming .conf <-> .conf.disabled"""
+    try:
+        if not is_valid_site_name(domain):
+            flash('Invalid domain name', 'error')
+            return redirect(url_for('nginx_page'))
+        conf_path = get_conf_path(domain)
+        disabled_path = os.path.normpath(os.path.join(NGINX_CONF_DIR, f"{domain}.conf.disabled"))
+        # Determine current state
+        enabled = os.path.exists(conf_path)
+        if enabled:
+            # Disable: move to .conf.disabled
+            try:
+                shutil.move(conf_path, disabled_path)
+            except Exception as e:
+                flash(f'Failed to disable site: {str(e)}', 'error')
+                return redirect(url_for('nginx_page'))
+            success, message = reload_nginx()
+            if not success:
+                # revert
+                try:
+                    shutil.move(disabled_path, conf_path)
+                except Exception:
+                    pass
+                flash(f'Failed to reload nginx: {message}', 'error')
+            else:
+                flash('Site disabled and nginx reloaded', 'success')
+        else:
+            # Enable: move .conf.disabled back to .conf
+            if not os.path.exists(disabled_path):
+                flash('Disabled config not found', 'error')
+                return redirect(url_for('nginx_page'))
+            try:
+                shutil.move(disabled_path, conf_path)
+            except Exception as e:
+                flash(f'Failed to enable site: {str(e)}', 'error')
+                return redirect(url_for('nginx_page'))
+            success, message = reload_nginx()
+            if not success:
+                # revert
+                try:
+                    shutil.move(conf_path, disabled_path)
+                except Exception:
+                    pass
+                flash(f'Failed to reload nginx: {message}', 'error')
+            else:
+                flash('Site enabled and nginx reloaded', 'success')
+    except Exception as e:
+        flash(f'Error toggling site: {str(e)}', 'error')
+    return redirect(url_for('nginx_page'))
+
+@app.route('/nginx/delete/<domain>', methods=['POST'])
+@login_required
+def nginx_delete_site(domain):
+    """Delete a site's nginx config (.conf or .conf.disabled) and reload nginx"""
+    try:
+        if not is_valid_site_name(domain):
+            flash('Invalid domain name', 'error')
+            return redirect(url_for('nginx_page'))
+        conf_path = get_conf_path(domain)
+        disabled_path = os.path.normpath(os.path.join(NGINX_CONF_DIR, f"{domain}.conf.disabled"))
+        removed = False
+        # Try remove enabled .conf
+        if os.path.exists(conf_path):
+            try:
+                os.remove(conf_path)
+                removed = True
+            except Exception as e:
+                flash(f'Failed to delete config: {str(e)}', 'error')
+                return redirect(url_for('nginx_page'))
+        # Or remove disabled file
+        elif os.path.exists(disabled_path):
+            try:
+                os.remove(disabled_path)
+                removed = True
+            except Exception as e:
+                flash(f'Failed to delete disabled config: {str(e)}', 'error')
+                return redirect(url_for('nginx_page'))
+        else:
+            flash('Config file not found', 'error')
+            return redirect(url_for('nginx_page'))
+        # Reload nginx if removed
+        if removed:
+            success, message = reload_nginx()
+            if success:
+                flash('Config deleted and nginx reloaded', 'success')
+            else:
+                flash(f'Config deleted but reload failed: {message}', 'warning')
+    except Exception as e:
+        flash(f'Error deleting site: {str(e)}', 'error')
+    return redirect(url_for('nginx_page'))
+
+# PHP-FPM Routes
+@app.route('/php-fpm')
+@login_required
+def php_fpm():
+    """PHP-FPM management page"""
+    nginx_status = check_nginx_status()
+    php_containers = get_php_containers()
+    return render_template('php_fpm.html', php_containers=php_containers, nginx_status=nginx_status)
+
+@app.route('/api/php-containers')
+@login_required
+def api_php_containers():
+    """API endpoint to get PHP containers status"""
+    try:
+        containers = get_php_containers()
+        return jsonify({
+            'success': True,
+            'containers': containers
+        })
+    except Exception as e:
+        logger.error(f"Error getting PHP containers: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# MySQL Routes
+@app.route('/mysql')
+@login_required
+def mysql():
+    """MySQL management page"""
+    nginx_status = check_nginx_status()
+    mysql_containers = get_mysql_containers()
+    return render_template('mysql.html', mysql_containers=mysql_containers, nginx_status=nginx_status)
+
+@app.route('/api/mysql-containers')
+@login_required
+def api_mysql_containers():
+    """API endpoint to get MySQL containers status"""
+    try:
+        containers = get_mysql_containers()
+        return jsonify({
+            'success': True,
+            'containers': containers
+        })
+    except Exception as e:
+        logger.error(f"Error getting MySQL containers: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/container/start-log/<container_name>')
+@login_required
+def api_container_start_log(container_name):
+    """API endpoint to stream start logs for containers (PHP/MySQL) via compose."""
+    # Resolve compose service name from container name
+    service_name, err = resolve_service_from_container_name(container_name)
+    if not service_name:
+        return Response(f"data: Invalid container: {err or 'unknown'}\n\n", mimetype='text/event-stream')
+    if not re.match(r'^[a-zA-Z0-9_-]+$', service_name):
+        return Response("data: Invalid service name\n\n", mimetype='text/event-stream')
+    if service_name == 'panel':
+        return Response("data: Cannot control panel container\n\n", mimetype='text/event-stream')
+
+    project = get_compose_project()
+    base = get_compose_cmd_base()
+    resolved_file = get_resolved_compose_file()
+    cmd = base + ['-f', resolved_file] + (['--project-name', project] if project else []) + ['up', '-d', '--no-deps', service_name]
+
+    log_dir = '/app/tmp'
+    try:
+        os.makedirs(log_dir, exist_ok=True)
+    except Exception:
+        pass
+    log_path = os.path.join(log_dir, f"start_{service_name}_{int(time.time())}.log")
+
+    def generate():
+        yield f"data: Running: {' '.join(cmd)}\n\n"
+        try:
+            with open(log_path, 'w') as lf:
+                lf.write(f"Running: {' '.join(cmd)}\n")
+                env = os.environ.copy()
+                proj_dir = get_project_dir()
+                if proj_dir:
+                    env['HOST_PROJECT_DIR'] = proj_dir
+                proc = subprocess.Popen(
+                    cmd,
+                    cwd='/workspace/docker',
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    bufsize=1
+                )
+                for line in proc.stdout:
+                    if line:
+                        lf.write(line)
+                        lf.flush()
+                        yield f"data: {line.strip()}\n\n"
+                rc = proc.wait()
+                lf.write(f"\nStart finished with code {rc}\n")
+                yield "event: done\n"
+                yield f"data: {'success' if rc == 0 else 'error'}\n\n"
+        except Exception as e:
+            try:
+                with open(log_path, 'a') as lf:
+                    lf.write(f"\nStart error: {str(e)}\n")
+            except Exception:
+                pass
+            yield f"data: Start error: {str(e)}\n\n"
+            yield "event: done\n"
+    
+    return Response(generate(), mimetype='text/event-stream')
+
+# Helper to resolve compose service name from a container name
+def resolve_service_from_container_name(container_name):
+    try:
+        res = subprocess.run(
+            ['docker', 'inspect', '-f', '{{ index .Config.Labels "com.docker.compose.service" }}|{{ index .Config.Labels "com.docker.compose.project" }}', container_name],
+            capture_output=True, text=True, timeout=5
+        )
+        if res.returncode != 0:
+            return None, "Container not found"
+        out = res.stdout.strip()
+        parts = out.split('|') if out else []
+        service = parts[0] if len(parts) > 0 else ''
+        project = parts[1] if len(parts) > 1 else ''
+        expected_project = get_compose_project()
+        if expected_project and project and project != expected_project:
+            return None, "Container belongs to different project"
+        if not service:
+            if container_name.startswith('mlite_'):
+                return container_name.replace('mlite_', ''), None
+            return None, "Service label missing"
+        return service, None
+    except Exception as e:
+        return None, str(e)
+
+@app.route('/api/container/<container_name>/<action>', methods=['POST'])
+@login_required
+def api_container_control(container_name, action):
+    """API endpoint to control containers (PHP/MySQL)"""
+    if action not in ['start', 'stop', 'restart']:
+        return jsonify({
+            'success': False,
+            'error': 'Invalid action'
+        }), 400
+
+    service_name, err = resolve_service_from_container_name(container_name)
+    if not service_name:
+        return jsonify({
+            'success': False,
+            'error': f'Invalid container: {err or "unknown"}'
+        }), 400
+
+    if service_name == 'panel':
+        return jsonify({
+            'success': False,
+            'error': 'Cannot control panel container'
+        }), 400
+
+    if action == 'start':
+        success, message = start_container(service_name)
+    elif action == 'stop':
+        success, message = stop_container(service_name)
+    else:
+        success, message = restart_container(service_name)
+
+    if success:
+        return jsonify({
+            'success': True,
+            'message': message
+        })
+    else:
+        return jsonify({
+            'success': False,
+            'error': message
+        }), 500
 
 if __name__ == '__main__':
     # Ensure nginx conf directory exists

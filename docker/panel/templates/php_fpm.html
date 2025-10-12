@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}PHP-FPM Management - SLEMP Panel{% endblock %}
+
+{% block content %}
+<div id="startLogModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-3xl mx-4">
+    <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Start Logs</h2>
+      <button onclick="closeStartLog()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="p-4">
+      <pre id="startLogContent" class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-3 rounded max-h-96 overflow-auto text-xs"></pre>
+    </div>
+    <div class="flex justify-end gap-2 px-4 py-3 border-t dark:border-gray-700">
+      <button onclick="closeStartLog()" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let startSource = null;
+let startShouldReload = false;
+
+function openStartLog(service) {
+  const modal = document.getElementById('startLogModal');
+  const content = document.getElementById('startLogContent');
+  content.textContent = '';
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  startShouldReload = false;
+  
+  if (startSource) { startSource.close(); }
+  
+  startSource = new EventSource(`/api/container/start-log/${service}`);
+  startSource.onmessage = (e) => {
+    content.textContent += e.data + "\n";
+    content.scrollTop = content.scrollHeight;
+  };
+  
+  startSource.addEventListener('done', (e) => {
+    content.textContent += `\n[Start ${e.data}]\n`;
+    content.scrollTop = content.scrollHeight;
+    if ((e.data || '').toLowerCase() === 'success') {
+      startShouldReload = true;
+    }
+    if (startSource) { startSource.close(); }
+  });
+  
+  startSource.onerror = (e) => {
+    content.textContent += "\n[Error streaming logs]\n";
+    content.scrollTop = content.scrollHeight;
+    startShouldReload = false;
+    if (startSource) { startSource.close(); }
+  };
+}
+
+function closeStartLog() {
+  const modal = document.getElementById('startLogModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  if (startSource) { startSource.close(); startSource = null; }
+  if (startShouldReload) { window.location.reload(); }
+}
+
+function controlContainer(containerName, action) {
+  const button = event.target.closest('button');
+  const originalContent = button.innerHTML;
+  
+  // Show loading state
+  button.disabled = true;
+  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  
+  fetch(`/api/container/${containerName}/${action}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Show success message
+      showNotification(data.message, 'success');
+      // Reload page after short delay
+      setTimeout(() => window.location.reload(), 1000);
+    } else {
+      showNotification(data.error || 'Operation failed', 'error');
+      // Restore button
+      button.disabled = false;
+      button.innerHTML = originalContent;
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showNotification('Network error occurred', 'error');
+    // Restore button
+    button.disabled = false;
+    button.innerHTML = originalContent;
+  });
+}
+
+function showNotification(message, type) {
+  const notification = document.createElement('div');
+  notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+    type === 'success' 
+      ? 'bg-green-500 text-white' 
+      : 'bg-red-500 text-white'
+  }`;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
+
+function refreshPhpContainers() {
+  window.location.reload();
+}
+
+// Auto refresh every 30 seconds
+// setInterval(function() {
+//   refreshPhpContainers();
+// }, 30000);
+</script>
+
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">
+        <i class="fab fa-php text-purple-600 dark:text-purple-400 mr-3"></i>
+        PHP-FPM Management
+      </h1>
+      <p class="text-gray-600 dark:text-gray-400 mt-1">Manage PHP-FPM containers and versions</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="refreshPhpContainers()" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition flex items-center gap-2">
+        <i class="fas fa-sync-alt"></i>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Status Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total PHP Containers</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ php_containers|length }}</p>
+        </div>
+        <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
+          <i class="fab fa-php text-purple-600 dark:text-purple-400"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Running</p>
+          <p class="text-2xl font-bold text-green-600 dark:text-green-400">
+            {{ php_containers|selectattr('running')|list|length }}
+          </p>
+        </div>
+        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
+          <i class="fas fa-play text-green-600 dark:text-green-400"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Stopped</p>
+          <p class="text-2xl font-bold text-red-600 dark:text-red-400">
+            {{ php_containers|rejectattr('running')|list|length }}
+          </p>
+        </div>
+        <div class="p-3 bg-red-100 dark:bg-red-900 rounded-full">
+          <i class="fas fa-stop text-red-600 dark:text-red-400"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHP Containers Table -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <i class="fab fa-php text-purple-600 dark:text-purple-400 mr-2"></i>
+        PHP-FPM Containers ({{ php_containers|length }})
+      </h2>
+    </div>
+    
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-700">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Service
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Status
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              PHP Version
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Ports
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Created
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          {% for container in php_containers %}
+          <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-8 w-8">
+                  {% if container.running %}
+                  <div class="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                    <i class="fab fa-php text-green-600 dark:text-green-400 text-xs"></i>
+                  </div>
+                  {% else %}
+                  <div class="h-8 w-8 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center">
+                    <i class="fab fa-php text-red-600 dark:text-red-400 text-xs"></i>
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ container.name }}</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400">{{ container.image }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              {% if container.running %}
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                <i class="fas fa-circle text-xs mr-1"></i>
+                Running
+              </span>
+              {% else %}
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
+                <i class="fas fa-circle text-xs mr-1"></i>
+                Stopped
+              </span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200">
+                <i class="fab fa-php text-xs mr-1"></i>
+                PHP {{ container.php_version }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              {% if container.ports %}
+                {% for port in container.ports %}
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 mr-1 mb-1">
+                    {{ port }}
+                  </span>
+                {% endfor %}
+              {% else %}
+                <span class="text-gray-400 dark:text-gray-500">-</span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              {{ container.created[:19] if container.created else '-' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="flex items-center gap-1 flex-wrap">
+                {% if container.running %}
+                  <button onclick="controlContainer('{{ container.name }}', 'stop')" 
+                          class="px-2 py-1 text-xs bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-800 transition" 
+                          title="Stop">
+                    <i class="fas fa-stop"></i>
+                  </button>
+                  <button onclick="controlContainer('{{ container.name }}', 'restart')" 
+                          class="px-2 py-1 text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 rounded hover:bg-yellow-200 dark:hover:bg-yellow-800 transition" 
+                          title="Restart">
+                    <i class="fas fa-redo"></i>
+                  </button>
+                {% else %}
+                  <button onclick="openStartLog('{{ container.name }}')" 
+                          class="px-2 py-1 text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded hover:bg-green-200 dark:hover:bg-green-800 transition" 
+                          title="Start & Stream Logs">
+                    <i class="fas fa-play"></i>
+                  </button>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+              <i class="fab fa-php text-4xl mb-4 opacity-50"></i>
+              <p>No PHP containers found</p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <i class="fas fa-info-circle text-purple-600 dark:text-purple-400"></i>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-purple-800 dark:text-purple-200">PHP-FPM Management Notes</h3>
+        <div class="mt-2 text-sm text-purple-700 dark:text-purple-300">
+          <ul class="list-disc list-inside space-y-1">
+            <li>Each PHP version runs in its own container for isolation</li>
+            <li>PHP containers are automatically configured with FPM</li>
+            <li>Restart containers to apply configuration changes</li>
+            <li>Container logs are available when starting services</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script id="php-containers-data" type="application/json">{{ php_containers|tojson }}</script>
+
+<script>
+console.log('=== PHP-FPM MANAGEMENT DEBUG INFO ===');
+const phpContainersData = JSON.parse(document.getElementById('php-containers-data').textContent);
+console.log('PHP Containers:', phpContainersData);
+console.log('Total PHP containers:', phpContainersData.length);
+console.log('Running PHP containers:', phpContainersData.filter(c => c.running).length);
+console.log('=== END DEBUG INFO ===');
+</script>
+{% endblock %}

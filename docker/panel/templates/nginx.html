@@ -1,0 +1,477 @@
+{% extends "base.html" %}
+
+{% block title %}Nginx Management - MLite Panel{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Nginx Management</h1>
+        <p class="text-gray-600">Manage your Nginx container and configurations</p>
+    </div>
+
+    <!-- Start Log Modal -->
+    <div id="startLogModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-3xl mx-4">
+        <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Start Logs</h2>
+          <button onclick="closeStartLog()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-4">
+          <pre id="startLogContent" class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-3 rounded max-h-96 overflow-auto text-xs"></pre>
+        </div>
+        <div class="flex justify-end gap-2 px-4 py-3 border-t dark:border-gray-700">
+          <button onclick="closeStartLog()" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Site Modal -->
+    <div id="addSiteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl mx-4">
+        <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Add New Site</h2>
+          <button onclick="closeAddSiteModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-4">
+          <form id="addSiteForm" class="space-y-4" onsubmit="submitAddSiteForm(event)">
+            <div>
+              <label for="domainModal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Domain Name</label>
+              <input type="text" id="domainModal" name="domain" required placeholder="example.com" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" oninput="validateDomainModal(this)">
+              <div id="domainErrorModal" class="mt-1 text-sm text-red-600 dark:text-red-400 hidden">Please enter a valid domain name</div>
+            </div>
+            <div>
+              <label for="site_type_modal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Site Type</label>
+              <select id="site_type_modal" name="site_type" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" onchange="onTypeChangeModal()">
+                <option value="proxy" selected>Nginx Proxy</option>
+                <option value="php">PHP-FPM</option>
+                <option value="static">Static Site</option>
+              </select>
+            </div>
+            <div id="portGroupModal">
+              <label for="portModal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Backend Port</label>
+              <input type="number" id="portModal" name="port" min="1" max="65535" placeholder="3000" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" oninput="validatePortModal(this)">
+              <div id="portErrorModal" class="mt-1 text-sm text-red-600 dark:text-red-400 hidden">Port must be between 1 and 65535</div>
+            </div>
+            <div id="rootGroupModal" class="hidden">
+              <label for="root_dir_modal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Root Directory</label>
+              <input type="text" id="root_dir_modal" name="root_dir" value="/var/www/public" placeholder="/var/www/public" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" oninput="updatePreviewModal()">
+            </div>
+            <div id="phpVersionGroupModal" class="hidden">
+              <label for="php_version_modal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PHP Version</label>
+              <select id="php_version_modal" name="php_version" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" onchange="updatePreviewModal()">
+                <option value="8.3" selected>8.3</option>
+                <option value="8.2">8.2</option>
+                <option value="8.1">8.1</option>
+                <option value="8.0">8.0</option>
+                <option value="7.4">7.4</option>
+                <option value="7.3">7.3</option>
+                <option value="7.2">7.2</option>
+                <option value="7.1">7.1</option>
+                <option value="7.0">7.0</option>
+                <option value="5.6">5.6</option>
+              </select>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
+              <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Configuration Preview</h3>
+              <pre class="text-xs text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-x-auto"><code id="configPreviewModal"></code></pre>
+            </div>
+            <div class="flex justify-end gap-2">
+              <button type="button" onclick="closeAddSiteModal()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Cancel</button>
+              <button type="submit" id="submitAddSiteBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium">Add Site</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nginx Container Status -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Container Status</h2>
+            <div class="flex items-center space-x-2">
+                {% if nginx_info.running %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <svg class="w-2 h-2 mr-1" fill="currentColor" viewBox="0 0 8 8">
+                            <circle cx="4" cy="4" r="3"/>
+                        </svg>
+                        Running
+                    </span>
+                {% else %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <svg class="w-2 h-2 mr-1" fill="currentColor" viewBox="0 0 8 8">
+                            <circle cx="4" cy="4" r="3"/>
+                        </svg>
+                        Stopped
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="text-sm font-medium text-gray-500">Container Name</div>
+                <div class="text-lg font-semibold text-gray-900">{{ nginx_container_name }}</div>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="text-sm font-medium text-gray-500">Image</div>
+                <div class="text-lg font-semibold text-gray-900">{{ nginx_info.image }}</div>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="text-sm font-medium text-gray-500">Status</div>
+                <div class="text-lg font-semibold text-gray-900">{{ nginx_info.status }}</div>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="text-sm font-medium text-gray-500">Created</div>
+                <div class="text-lg font-semibold text-gray-900">{{ nginx_info.created }}</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="text-sm font-medium text-gray-500">Ports</div>
+                <div class="text-sm text-gray-900">
+                    {% if nginx_ports_display %}
+                        {{ nginx_ports_display }}
+                    {% else %}
+                        <span class="text-gray-500">No ports exposed</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="text-sm font-medium text-gray-500">Actions</div>
+                <div class="flex space-x-2">
+                    {% if nginx_info.running %}
+                        <button onclick="controlNginxContainer('{{ nginx_container_name }}', 'stop')" class="inline-flex items-center px-3 py-2 border border-red-300 text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6"></path>
+                            </svg>
+                            Stop
+                        </button>
+                        <button onclick="controlNginxContainer('{{ nginx_container_name }}', 'restart')" class="inline-flex items-center px-3 py-2 border border-yellow-300 text-sm leading-4 font-medium rounded-md text-yellow-700 bg-white hover:bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"></path>
+                            </svg>
+                            Restart
+                        </button>
+                    {% else %}
+                        <button onclick="openStartLog('{{ nginx_container_name }}')" class="inline-flex items-center px-3 py-2 border border-green-300 text-sm leading-4 font-medium rounded-md text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Start
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Website list -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Website List</h2>
+            <button onclick="openAddSiteModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Add New Site
+            </button>
+        </div>
+        {% if config_files %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Domain</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipe</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Port</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for config in config_files %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        <a href="http://{{ config.domain }}" target="_blank" rel="noopener" class="text-blue-600 hover:underline">{{ config.domain }}</a>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ config.type }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ config.port or '-' }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ config.created }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {% if config.enabled %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Enabled</span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-700">Disabled</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center space-x-2">
+                                        <a href="{{ url_for('edit_vhost', site_name=config.domain) }}" class="inline-flex items-center px-3 py-2 border border-blue-300 text-sm leading-4 font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h2m-2 4h2m-2 4h2M4 7h16M4 15h16"></path>
+                                            </svg>
+                                            Edit
+                                        </a>
+                                        <form method="POST" action="{{ url_for('toggle_site', domain=config.domain) }}" class="inline">
+                                            {% if config.enabled %}
+                                                <button type="submit" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6"></path>
+                                                    </svg>
+                                                    Disable
+                                                </button>
+                                            {% else %}
+                                                <button type="submit" class="inline-flex items-center px-3 py-2 border border-green-300 text-sm leading-4 font-medium rounded-md text-green-700 bg-white hover:bg-green-50">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    Enable
+                                                </button>
+                                            {% endif %}
+                                        </form>
+                                        <form method="POST" action="{{ url_for('nginx_delete_site', domain=config.domain) }}" class="inline" onsubmit="return confirm('Hapus konfigurasi {{ config.domain }}?');">
+                                            <button type="submit" class="inline-flex items-center px-3 py-2 border border-red-300 text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-600">No configuration files found.</p>
+        {% endif %}
+    </div>
+
+    <!-- Logs -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Logs</h2>
+        <div class="bg-black text-green-200 font-mono text-xs p-4 rounded overflow-auto max-h-96" id="logs">
+            {% for line in logs %}
+                <div>{{ line }}</div>
+            {% endfor %}
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Auto-refresh setiap 5 detik.</p>
+    </div>
+</div>
+
+<script>
+// SSE start log
+let startSource = null;
+let startShouldReload = false;
+function openStartLog(containerName) {
+  const modal = document.getElementById('startLogModal');
+  const content = document.getElementById('startLogContent');
+  content.textContent = '';
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  startShouldReload = false;
+  if (startSource) { startSource.close(); }
+  startSource = new EventSource(`/api/container/start-log/${containerName}`);
+  startSource.onmessage = (e) => {
+    content.textContent += e.data + "\n";
+    content.scrollTop = content.scrollHeight;
+  };
+  startSource.addEventListener('done', (e) => {
+    content.textContent += `\n[Start ${e.data}]\n`;
+    content.scrollTop = content.scrollHeight;
+    if ((e.data || '').toLowerCase() === 'success') {
+      startShouldReload = true;
+    }
+    if (startSource) { startSource.close(); }
+  });
+  startSource.onerror = (e) => {
+    content.textContent += "\n[Error streaming logs]\n";
+    content.scrollTop = content.scrollHeight;
+    startShouldReload = false;
+    if (startSource) { startSource.close(); }
+  };
+}
+function closeStartLog() {
+  const modal = document.getElementById('startLogModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  if (startSource) { startSource.close(); startSource = null; }
+  if (startShouldReload) { window.location.reload(); }
+}
+
+// Control nginx via AJAX
+function controlNginxContainer(containerName, action) {
+  const button = event.target.closest('button');
+  const originalContent = button.innerHTML;
+  button.disabled = true;
+  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  fetch(`/api/container/${containerName}/${action}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      showToast(data.message || 'Operation succeeded', 'success');
+      setTimeout(() => window.location.reload(), 1000);
+    } else {
+      showToast(data.error || 'Operation failed', 'error');
+      button.disabled = false;
+      button.innerHTML = originalContent;
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    showToast('Network error occurred', 'error');
+    button.disabled = false;
+    button.innerHTML = originalContent;
+  });
+}
+
+// Add Site Modal logic
+function openAddSiteModal(){
+  const modal = document.getElementById('addSiteModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  onTypeChangeModal();
+  updatePreviewModal();
+}
+function closeAddSiteModal(){
+  const modal = document.getElementById('addSiteModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+function validateDomainModal(input){
+  const domain = input.value.trim();
+  const err = document.getElementById('domainErrorModal');
+  const submitBtn = document.getElementById('submitAddSiteBtn');
+  const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$/;
+  if (domain && !domainRegex.test(domain)) {
+    err.classList.remove('hidden');
+    submitBtn.disabled = true;
+    return false;
+  } else {
+    err.classList.add('hidden');
+    submitBtn.disabled = false;
+    updatePreviewModal();
+    return true;
+  }
+}
+function validatePortModal(input){
+  const type = document.getElementById('site_type_modal').value;
+  const port = parseInt(input.value, 10);
+  const err = document.getElementById('portErrorModal');
+  const submitBtn = document.getElementById('submitAddSiteBtn');
+  if (type === 'php' || type === 'static') {
+    err.classList.add('hidden');
+    submitBtn.disabled = false;
+    updatePreviewModal();
+    return true;
+  }
+  if (input.value && (isNaN(port) || port < 1 || port > 65535)) {
+    err.classList.remove('hidden');
+    submitBtn.disabled = true;
+    return false;
+  } else {
+    err.classList.add('hidden');
+    submitBtn.disabled = false;
+    updatePreviewModal();
+    return true;
+  }
+}
+function onTypeChangeModal(){
+  const type = document.getElementById('site_type_modal').value;
+  const portGroup = document.getElementById('portGroupModal');
+  const rootGroup = document.getElementById('rootGroupModal');
+  const phpGroup = document.getElementById('phpVersionGroupModal');
+  if (type === 'php') {
+    portGroup.classList.add('hidden');
+    rootGroup.classList.remove('hidden');
+    phpGroup.classList.remove('hidden');
+  } else if (type === 'static') {
+    portGroup.classList.add('hidden');
+    rootGroup.classList.remove('hidden');
+    phpGroup.classList.add('hidden');
+  } else {
+    rootGroup.classList.add('hidden');
+    portGroup.classList.remove('hidden');
+    phpGroup.classList.add('hidden');
+  }
+  updatePreviewModal();
+}
+function updatePreviewModal(){
+  const domain = document.getElementById('domainModal').value || 'example.com';
+  const type = document.getElementById('site_type_modal').value;
+  const port = document.getElementById('portModal').value || '3000';
+  const root = document.getElementById('root_dir_modal').value || '/var/www/public';
+  const phpVersion = document.getElementById('php_version_modal').value || '8.3';
+  const map = { '5.6':'php56','7.0':'php70','7.1':'php71','7.2':'php72','7.3':'php73','7.4':'php74','8.0':'php80','8.1':'php81','8.2':'php82','8.3':'php83' };
+  const phpHost = map[phpVersion] || 'php83';
+  let config = '';
+  if (type === 'php') {
+    config = `server {\n    listen 80;\n    server_name ${domain};\n\n    root ${root};\n    index index.php index.html;\n\n    access_log /var/log/nginx/access.log;\n    error_log  /var/log/nginx/error.log;\n\n    location / {\n        try_files $uri $uri/ /index.php?$args;\n    }\n\n    location ~ \\.php$ {\n        include fastcgi_params;\n        fastcgi_pass ${phpHost}:9000;\n        fastcgi_index index.php;\n        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n\n        fastcgi_buffer_size 128k;\n        fastcgi_buffers 4 256k;\n        fastcgi_busy_buffers_size 256k;\n    }\n\n    location ~ /\\. {\n        deny all;\n    }\n}`;
+  } else if (type === 'static') {
+    config = `server {\n    listen 80;\n    server_name ${domain};\n\n    root ${root};\n    index index.html;\n\n    access_log /var/log/nginx/access.log;\n    error_log  /var/log/nginx/error.log;\n\n    location / {\n        try_files $uri $uri/ /index.html;\n    }\n\n    location ~ /\\. {\n        deny all;\n    }\n}`;
+  } else {
+    config = `server {\n    listen 80;\n    server_name ${domain};\n    \n    location / {\n        proxy_pass http://localhost:${port};\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}`;
+  }
+  document.getElementById('configPreviewModal').textContent = config;
+}
+function submitAddSiteForm(e){
+  e.preventDefault();
+  const btn = document.getElementById('submitAddSiteBtn');
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  const fd = new FormData();
+  fd.append('domain', document.getElementById('domainModal').value.trim());
+  const type = document.getElementById('site_type_modal').value;
+  fd.append('site_type', type);
+  if (type === 'proxy') { fd.append('port', document.getElementById('portModal').value.trim()); }
+  if (type === 'php' || type === 'static') { fd.append('root_dir', document.getElementById('root_dir_modal').value.trim()); }
+  if (type === 'php') { fd.append('php_version', document.getElementById('php_version_modal').value); }
+  fetch('/add-site', { method: 'POST', body: fd })
+    .then(resp => {
+      if (resp.redirected || resp.ok) {
+        showToast('Site added successfully', 'success');
+        closeAddSiteModal();
+        setTimeout(() => { window.location.reload(); }, 600);
+        return;
+      }
+      return resp.text().then(() => {
+        showToast('Failed to add site. Check inputs.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = original;
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      showToast('Network error occurred', 'error');
+      btn.disabled = false;
+      btn.innerHTML = original;
+    });
+}
+// Initialize modal preview
+document.addEventListener('DOMContentLoaded', function(){ onTypeChangeModal(); updatePreviewModal(); });
+
+// Auto-refresh logs every 5 seconds
+setInterval(function() {
+    fetch('{{ url_for('nginx_page') }}')
+        .then(() => {
+            const el = document.getElementById('logs');
+            if (!el) return;
+        })
+        .catch(() => {});
+}, 5000);
+</script>
+{% endblock %}

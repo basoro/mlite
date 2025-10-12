@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block title %}MySQL Management - SLEMP Panel{% endblock %}
+
+{% block content %}
+<div id="startLogModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-3xl mx-4">
+    <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Start Logs</h2>
+      <button onclick="closeStartLog()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="p-4">
+      <pre id="startLogContent" class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-3 rounded max-h-96 overflow-auto text-xs"></pre>
+    </div>
+    <div class="flex justify-end gap-2 px-4 py-3 border-t dark:border-gray-700">
+      <button onclick="closeStartLog()" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let startSource = null;
+let startShouldReload = false;
+function openStartLog(container_name) {
+  const modal = document.getElementById('startLogModal');
+  const content = document.getElementById('startLogContent');
+  content.textContent = '';
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  startShouldReload = false;
+  if (startSource) { startSource.close(); }
+  startSource = new EventSource(`/api/container/start-log/${container_name}`);
+  startSource.onmessage = (e) => {
+    content.textContent += e.data + "\n";
+    content.scrollTop = content.scrollHeight;
+  };
+  startSource.addEventListener('done', (e) => {
+    content.textContent += `\n[Start ${e.data}]\n`;
+    content.scrollTop = content.scrollHeight;
+    if ((e.data || '').toLowerCase() === 'success') {
+      startShouldReload = true;
+    }
+    if (startSource) { startSource.close(); }
+  });
+  startSource.onerror = (e) => {
+    content.textContent += "\n[Error streaming logs]\n";
+    content.scrollTop = content.scrollHeight;
+    startShouldReload = false;
+    if (startSource) { startSource.close(); }
+  };
+}
+function closeStartLog() {
+  const modal = document.getElementById('startLogModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  if (startSource) { startSource.close(); startSource = null; }
+  if (startShouldReload) { window.location.reload(); }
+}
+
+function refreshMySQLContainers() {
+  window.location.reload();
+}
+
+function controlMySQLContainer(container_name, action) {
+  const button = event.target.closest('button');
+  const originalText = button.innerHTML;
+  
+  button.disabled = true;
+  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  
+  fetch(`/api/container/${container_name}/${action}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Show success notification
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded shadow-lg z-50';
+      notification.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${data.message}`;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+        window.location.reload();
+      }, 2000);
+    } else {
+      // Show error notification
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded shadow-lg z-50';
+      notification.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i>${data.error}`;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+      
+      button.disabled = false;
+      button.innerHTML = originalText;
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded shadow-lg z-50';
+    notification.innerHTML = '<i class="fas fa-exclamation-circle mr-2"></i>Network error occurred';
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+    
+    button.disabled = false;
+    button.innerHTML = originalText;
+  });
+}
+
+// Auto refresh every 30 seconds
+// setInterval(function() {
+//   refreshMySQLContainers();
+// }, 30000);
+</script>
+
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">
+        <i class="fas fa-database text-blue-600 dark:text-blue-400 mr-2"></i>
+        MySQL Management
+      </h1>
+      <p class="text-gray-600 dark:text-gray-400 mt-1">Manage MySQL database containers for your SLEMP stack</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="refreshMySQLContainers()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-2">
+        <i class="fas fa-sync-alt"></i>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Status Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total MySQL Containers</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ mysql_containers|length }}</p>
+        </div>
+        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
+          <i class="fas fa-database text-blue-600 dark:text-blue-400"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Running</p>
+          <p class="text-2xl font-bold text-green-600 dark:text-green-400">
+            {{ mysql_containers|selectattr('running')|list|length }}
+          </p>
+        </div>
+        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
+          <i class="fas fa-play text-green-600 dark:text-green-400"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Stopped</p>
+          <p class="text-2xl font-bold text-red-600 dark:text-red-400">
+            {{ mysql_containers|rejectattr('running')|list|length }}
+          </p>
+        </div>
+        <div class="p-3 bg-red-100 dark:bg-red-900 rounded-full">
+          <i class="fas fa-stop text-red-600 dark:text-red-400"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MySQL Containers Table -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <i class="fas fa-server text-blue-600 dark:text-blue-400 mr-2"></i>
+        MySQL Containers ({{ mysql_containers|length }})
+      </h2>
+    </div>
+    
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-700">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Service
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Status
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Image
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Ports
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Created
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          {% for container in mysql_containers %}
+          <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <i class="fas fa-database text-blue-600 dark:text-blue-400 text-lg"></i>
+                </div>
+                <div class="ml-3">
+                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {{ container.name }}
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400">
+                    MySQL Database
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              {% if container.running %}
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                <i class="fas fa-circle text-xs mr-1"></i>
+                Running
+              </span>
+              {% else %}
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                <i class="fas fa-circle text-xs mr-1"></i>
+                Stopped
+              </span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+              {{ container.image }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              {% if container.ports %}
+                {% for port in container.ports %}
+                  <span class="inline-block bg-gray-100 dark:bg-gray-700 rounded px-2 py-1 text-xs mr-1 mb-1">
+                    {{ port }}
+                  </span>
+                {% endfor %}
+              {% else %}
+                <span class="text-gray-400 dark:text-gray-500">-</span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              {{ container.created }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="flex space-x-2">
+                {% if container.running %}
+                <button onclick="controlMySQLContainer('{{ container.name }}', 'stop')" 
+                        class="inline-flex items-center px-3 py-1.5 border border-red-300 dark:border-red-600 text-red-700 dark:text-red-400 text-xs font-medium rounded hover:bg-red-50 dark:hover:bg-red-900 transition">
+                  <i class="fas fa-stop mr-1"></i>
+                  Stop
+                </button>
+                <button onclick="controlMySQLContainer('{{ container.name }}', 'restart')" 
+                        class="inline-flex items-center px-3 py-1.5 border border-yellow-300 dark:border-yellow-600 text-yellow-700 dark:text-yellow-400 text-xs font-medium rounded hover:bg-yellow-50 dark:hover:bg-yellow-900 transition">
+                  <i class="fas fa-redo mr-1"></i>
+                  Restart
+                </button>
+                {% else %}
+                <button onclick="openStartLog('{{ container.name }}')" 
+                        class="inline-flex items-center px-3 py-1.5 border border-green-300 dark:border-green-600 text-green-700 dark:text-green-400 text-xs font-medium rounded hover:bg-green-50 dark:hover:bg-green-900 transition">
+                  <i class="fas fa-play mr-1"></i>
+                  Start
+                </button>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="6" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+              <i class="fas fa-database text-4xl mb-4 text-gray-300 dark:text-gray-600"></i>
+              <p class="text-lg">No MySQL containers found</p>
+              <p class="text-sm">MySQL containers will appear here when they are created</p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MySQL Management Notes -->
+  <div class="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <i class="fas fa-info-circle text-blue-600 dark:text-blue-400"></i>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">MySQL Container Management</h3>
+        <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+          <ul class="list-disc list-inside space-y-1">
+            <li>MySQL container provides database services for all PHP applications</li>
+            <li>Default port mapping: 3308:3306 (host:container)</li>
+            <li>Database files are persisted in ./mysql directory</li>
+            <li>Use restart to apply configuration changes without full rebuild</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+console.log('=== MYSQL MANAGEMENT DEBUG INFO ===');
+console.log('MySQL Containers:', {{ mysql_containers|tojson }});
+console.log('Total MySQL containers:', {{ mysql_containers|length }});
+console.log('=== END DEBUG INFO ===');
+</script>
+{% endblock %}
