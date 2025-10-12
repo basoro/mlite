@@ -134,32 +134,15 @@
               <span class="inline-flex h-2.5 w-2.5 rounded-full" id="nginx-dot"></span>
               <span class="text-xs" id="nginx-label">Nginx</span>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="inline-flex h-2.5 w-2.5 rounded-full" id="dns-dot"></span>
-              <span class="text-xs" id="dns-label">DNS</span>
-            </div>
           </div>
           <!-- Theme toggle -->
-          <button id="theme-toggle" class="ml-2 p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800" title="Toggle theme" aria-label="Toggle theme">
+          <button id="theme-toggle" class="ml-2 px-3 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800" title="Toggle theme" aria-label="Toggle theme">
             <span id="theme-icon">☀️</span>
           </button>
-          <!-- Actions dropdown -->
-          <div class="relative">
-            <button id="action-toggle" class="px-3 py-2 rounded bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900 hover:opacity-90 transition">
-              Actions <i class="fa fa-chevron-down ml-1 text-xs"></i>
-            </button>
-            <div id="action-menu" class="hidden absolute right-0 mt-2 w-44 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 shadow-lg">
-              <button class="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="reloadNginx()">
-                <i class="fa fa-rotate mr-2"></i> Reload Nginx
-              </button>
-              <button class="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="changePassword()">
-                <i class="fa fa-key mr-2"></i> Password
-              </button>
-              <button class="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="logout()">
-                <i class="fa fa-right-from-bracket mr-2"></i> Logout
-              </button>
-            </div>
-          </div>
+          <!-- Actions logout -->
+          <button class="text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="logout()">
+            <i class="fa fa-right-from-bracket mr-2"></i>
+          </button>
           <!-- Mobile menu -->
           <button id="mobile-toggle" class="md:hidden p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800" aria-label="Open menu">
             <i class="fa fa-bars"></i>
@@ -259,18 +242,6 @@
       mobileMenu.classList.toggle('hidden');
     });
 
-    // Actions dropdown toggle
-    const actionToggle = document.getElementById('action-toggle');
-    const actionMenu = document.getElementById('action-menu');
-    actionToggle.addEventListener('click', () => {
-      actionMenu.classList.toggle('hidden');
-    });
-    document.addEventListener('click', (e) => {
-      if (!actionMenu.contains(e.target) && !actionToggle.contains(e.target)) {
-        actionMenu.classList.add('hidden');
-      }
-    });
-
     // Toast helper
     function showToast(message, type = 'info') {
       const toast = document.getElementById('toast');
@@ -293,25 +264,16 @@
     }
     // Init dots based on server-rendered vars (fallback)
     const nginxRunning = {{ nginx_status | default(false) | tojson }};
-    const dnsRunning = {{ dns_status | default(false) | tojson }};
     setStatusDot(document.getElementById('nginx-dot'), nginxRunning);
     setStatusLabel(document.getElementById('nginx-label'), 'Nginx', nginxRunning);
-    setStatusDot(document.getElementById('dns-dot'), dnsRunning);
-    setStatusLabel(document.getElementById('dns-label'), 'DNS', dnsRunning);
 
     // Poll real-time status
     async function pollStatus() {
       try {
-        const [ng, dn] = await Promise.all([
-          fetch('/api/nginx-status').then(r => r.json()),
-          fetch('/api/dns-status').then(r => r.json())
-        ]);
+        const ng = await fetch('/api/nginx-status').then(r => r.json());
         const ngRunning = ng.status === 'running';
-        const dnRunning = dn.status === 'running';
         setStatusDot(document.getElementById('nginx-dot'), ngRunning);
         setStatusLabel(document.getElementById('nginx-label'), 'Nginx', ngRunning);
-        setStatusDot(document.getElementById('dns-dot'), dnRunning);
-        setStatusLabel(document.getElementById('dns-label'), 'DNS', dnRunning);
       } catch (e) {}
     }
     setInterval(pollStatus, 5000);

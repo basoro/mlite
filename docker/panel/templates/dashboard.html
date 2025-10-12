@@ -17,7 +17,7 @@
 </div>
 
 <!-- Status + Charts -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
   <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-4">
     <div class="flex items-center">
       <i class="fas fa-server text-blue-600 dark:text-blue-400 text-xl mr-3"></i>
@@ -25,17 +25,6 @@
         <h3 class="font-semibold text-gray-800 dark:text-gray-100">Nginx Status</h3>
         <p id="nginx-status-text" class="text-sm {{ 'text-green-600 dark:text-green-400' if nginx_status else 'text-red-600 dark:text-red-400' }}">
           {{ 'Running' if nginx_status else 'Stopped' }}
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-4">
-    <div class="flex items-center">
-      <i class="fas fa-globe text-green-600 dark:text-green-400 text-xl mr-3"></i>
-      <div>
-        <h3 class="font-semibold text-gray-800 dark:text-gray-100">DNS Status</h3>
-        <p id="dns-status-text" class="text-sm {{ 'text-green-600 dark:text-green-400' if dns_status else 'text-red-600 dark:text-red-400' }}">
-          {{ 'Running' if dns_status else 'Stopped' }}
         </p>
       </div>
     </div>
@@ -195,14 +184,9 @@ window.onclick = function(event) {
 // Poll text status to sync with base header dots
 async function pollTextStatus(){
   try {
-    const [ng, dn] = await Promise.all([
-      fetch('/api/nginx-status').then(r => r.json()),
-      fetch('/api/dns-status').then(r => r.json())
-    ]);
+    const ng = await fetch('/api/nginx-status').then(r => r.json());
     document.getElementById('nginx-status-text').className = 'text-sm ' + (ng.status === 'running' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400');
     document.getElementById('nginx-status-text').textContent = (ng.status === 'running') ? 'Running' : 'Stopped';
-    document.getElementById('dns-status-text').className = 'text-sm ' + (dn.status === 'running' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400');
-    document.getElementById('dns-status-text').textContent = (dn.status === 'running') ? 'Running' : 'Stopped';
   } catch (e) {}
 }
 setInterval(pollTextStatus, 5000);

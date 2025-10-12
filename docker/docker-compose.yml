@@ -85,7 +85,6 @@ services:
       - ./panel:/app
       - ../:/workspace
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./dns:/app/dns  # DNS management access
       - /var/run/docker.sock:/var/run/docker.sock
       - ./docker-compose.yml:/app/docker-compose.yml
     env_file:
@@ -201,8 +200,7 @@ services:
       - php83
       - panel
     networks:
-      app-network:
-        ipv4_address: 10.20.0.5
+      - app-network
     restart: unless-stopped
 
   mysql:
@@ -238,29 +236,7 @@ services:
     networks:
       - app-network
 
-  dns:
-    image: 4km3/dnsmasq:latest
-    container_name: mlite_dns
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-    volumes:
-      - ./dns/dnsmasq.conf:/etc/dnsmasq.conf
-      - ./dns/dnsmasq.hosts:/etc/dnsmasq.hosts
-      - ./dns/dnsmasq.log:/var/log/dnsmasq.log
-    environment:
-      - DNSMASQ_CONF=/etc/dnsmasq.conf
-    networks:
-      app-network:
-        ipv4_address: 10.20.0.10
-    restart: unless-stopped
-    cap_add:
-      - NET_ADMIN
 
 networks:
   app-network:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 10.20.0.0/16
-          gateway: 10.20.0.1

@@ -30,9 +30,6 @@ def inject_config():
 NGINX_CONF_DIR = os.environ.get('NGINX_CONF_DIR', '/etc/nginx/conf.d')
 NGINX_CONTAINER_NAME = os.environ.get('NGINX_CONTAINER_NAME', 'mlite_nginx')
 PHP_CONTAINER_NAME = os.environ.get('PHP_CONTAINER_NAME', 'mlite_php')
-DNS_HOSTS_FILE = '/app/dns/dnsmasq.hosts'
-DNS_CONTAINER_NAME = 'mlite_dns'
-DNS_SERVER_IP = '10.20.0.10'
 # Base web root inside containers (mounted from host ../)
 PHP_WEBROOT_BASE = '/var/www/public'
 # Optional toggle to create default index.html after directory creation (env CREATE_DEFAULT_INDEX=1/0)
@@ -331,83 +328,6 @@ def reload_nginx():
     except Exception as e:
         return False, f"Error reloading nginx: {str(e)}"
 
-def add_dns_record(domain, ip_address='127.0.0.1'):
-    """Add DNS record to dnsmasq hosts file"""
-    try:
-        # Ensure directory exists
-        os.makedirs(os.path.dirname(DNS_HOSTS_FILE), exist_ok=True)
-        
-        # Read existing records
-        existing_records = []
-        if os.path.exists(DNS_HOSTS_FILE):
-            with open(DNS_HOSTS_FILE, 'r') as f:
-                existing_records = f.readlines()
-        
-        # Check if domain already exists
-        for record in existing_records:
-            if domain in record:
-                return True, "Domain already exists in DNS"
-        
-        # Add new record
-        with open(DNS_HOSTS_FILE, 'a') as f:
-            f.write(f"{ip_address} {domain}\n")
-        
-        # Reload dnsmasq
-        return reload_dnsmasq()
-        
-    except Exception as e:
-        return False, f"Error adding DNS record: {str(e)}"
-
-def remove_dns_record(domain):
-    """Remove DNS record from dnsmasq hosts file"""
-    try:
-        if not os.path.exists(DNS_HOSTS_FILE):
-            return True, "No DNS records file found"
-        
-        # Read existing records
-        with open(DNS_HOSTS_FILE, 'r') as f:
-            existing_records = f.readlines()
-        
-        # Filter out records containing the domain
-        filtered_records = [record for record in existing_records if domain not in record]
-        
-        # Write back filtered records
-        with open(DNS_HOSTS_FILE, 'w') as f:
-            f.writelines(filtered_records)
-        
-        # Reload dnsmasq
-        return reload_dnsmasq()
-        
-    except Exception as e:
-        return False, f"Error removing DNS record: {str(e)}"
-
-def reload_dnsmasq():
-    """Reload dnsmasq service"""
-    try:
-        # Send SIGHUP to dnsmasq to reload configuration
-        result = subprocess.run([
-            'docker', 'exec', DNS_CONTAINER_NAME, 'killall', '-HUP', 'dnsmasq'
-        ], capture_output=True, text=True)
-        
-        if result.returncode == 0:
-            return True, "DNS reloaded successfully"
-        else:
-            return False, f"DNS reload failed: {result.stderr}"
-    except Exception as e:
-        return False, f"Error reloading DNS: {str(e)}"
-
-def check_dns_status():
-    """Check if DNS container is running"""
-    try:
-        result = subprocess.run(
-            ['docker', 'inspect', '-f', '{{.State.Running}}', DNS_CONTAINER_NAME],
-            capture_output=True, text=True
-        )
-        if result.returncode == 0:
-            return result.stdout.strip().lower() == 'true'
-    except Exception:
-        pass
-    return False
 
 def ensure_compose_env():
     """Write /workspace/docker/.env with HOST_PROJECT_DIR to ensure Compose variable substitution."""
@@ -903,14 +823,12 @@ def dashboard():
     """Dashboard page showing all sites - HOT RELOAD TEST"""
     sites = get_sites()
     nginx_status = check_nginx_status()
-    dns_status = check_dns_status()
-    return render_template('dashboard.html', sites=sites, nginx_status=nginx_status, dns_status=dns_status)
+    return render_template('dashboard.html', sites=sites, nginx_status=nginx_status)
 
 @app.route('/add-site', methods=['GET', 'POST'])
 @login_required
 def add_site():
     nginx_status = check_nginx_status()
-    dns_status = check_dns_status()
     """Add new site page"""
     if request.method == 'POST':
         domain = request.form.get('domain', '').strip()
@@ -922,34 +840,34 @@ def add_site():
         # Validation
         if not domain:
             flash('Domain is required', 'error')
-            return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+            return render_template('add_site.html', nginx_status=nginx_status)
         
         if site_type == 'proxy':
             if not port:
                 flash('Port is required for proxy sites', 'error')
-                return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+                return render_template('add_site.html', nginx_status=nginx_status)
             try:
                 port_int = int(port)
                 if port_int < 1 or port_int > 65535:
                     flash('Port must be between 1 and 65535', 'error')
-                    return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+                    return render_template('add_site.html', nginx_status=nginx_status)
             except ValueError:
                 flash('Port must be a valid number', 'error')
-                return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+                return render_template('add_site.html', nginx_status=nginx_status)
         elif site_type == 'php':
             if not root_dir:
                 flash('Root directory is required for PHP-FPM sites', 'error')
-                return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+                return render_template('add_site.html', nginx_status=nginx_status)
             # Validate and ensure directory within /var/www/public
             try:
                 safe_root = safe_join(PHP_WEBROOT_BASE, root_dir)
             except ValueError as ve:
                 flash(str(ve), 'error')
-                return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+                return render_template('add_site.html', nginx_status=nginx_status)
             ok, msg = ensure_directory(safe_root)
             if not ok:
                 flash(msg, 'error')
-                return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+                return render_template('add_site.html', nginx_status=nginx_status)
             # Use the safe normalized root in config
             root_dir = safe_root
             # Optionally create default index.html (non-blocking if fails)
@@ -960,16 +878,16 @@ def add_site():
         elif site_type == 'static':
             if not root_dir:
                 flash('Root directory is required for Static sites', 'error')
-                return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+                return render_template('add_site.html', nginx_status=nginx_status)
             try:
                 safe_root = safe_join(PHP_WEBROOT_BASE, root_dir)
             except ValueError as ve:
                 flash(str(ve), 'error')
-                return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+                return render_template('add_site.html', nginx_status=nginx_status)
             ok, msg = ensure_directory(safe_root)
             if not ok:
                 flash(msg, 'error')
-                return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+                return render_template('add_site.html', nginx_status=nginx_status)
             root_dir = safe_root
             if CREATE_DEFAULT_INDEX:
                 ok_idx, msg_idx = create_default_index(root_dir, domain)
@@ -977,13 +895,13 @@ def add_site():
                     flash(f'Peringatan: {msg_idx}', 'warning')
         else:
             flash('Invalid site type', 'error')
-            return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+            return render_template('add_site.html', nginx_status=nginx_status)
 
         # Check if domain already exists
         existing_sites = get_sites()
         if any(site['domain'] == domain for site in existing_sites):
             flash('Domain already exists', 'error')
-            return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+            return render_template('add_site.html', nginx_status=nginx_status)
         
         # Create nginx config
         created = False
@@ -995,36 +913,25 @@ def add_site():
             created = create_nginx_config(domain, site_type='proxy', port=port)
         
         if created:
-            # Add DNS record
-            dns_success, dns_message = add_dns_record(domain)
-            if not dns_success:
-                print(f"DNS warning: {dns_message}")
-            
             # Reload nginx
             success, message = reload_nginx()
             if success:
                 flash('Site added successfully', 'success')
                 return redirect(url_for('dashboard'))
             else:
-                # If reload fails, delete the config file and DNS record
+                # If reload fails, delete the config file
                 delete_nginx_config(domain)
-                remove_dns_record(domain)
                 flash(f'Failed to reload nginx: {message}', 'error')
         else:
             flash('Failed to create configuration file', 'error')
             # Fallthrough to final render
     
-    return render_template('add_site.html', nginx_status=nginx_status, dns_status=dns_status)
+    return render_template('add_site.html', nginx_status=nginx_status)
 
 @app.route('/delete-site/<domain>')
 def delete_site(domain):
     """Delete site configuration"""
     if delete_nginx_config(domain):
-        # Remove DNS record
-        dns_success, dns_message = remove_dns_record(domain)
-        if not dns_success:
-            print(f"DNS warning: {dns_message}")
-        
         success, message = reload_nginx()
         if success:
             flash('Site deleted successfully', 'success')
@@ -1060,71 +967,6 @@ def api_nginx_status():
 def api_reload_nginx():
     """API endpoint to reload nginx"""
     success, message = reload_nginx()
-    return jsonify({
-        'success': success,
-        'message': message
-    })
-
-@app.route('/api/dns-status')
-def api_dns_status():
-    """API endpoint for DNS status"""
-    dns_running = check_dns_status()
-    
-    return jsonify({
-        'status': 'running' if dns_running else 'stopped',
-        'server_ip': DNS_SERVER_IP
-    })
-
-@app.route('/api/dns-records')
-def api_dns_records():
-    """API endpoint to get DNS records"""
-    records = []
-    try:
-        if os.path.exists(DNS_HOSTS_FILE):
-            with open(DNS_HOSTS_FILE, 'r') as f:
-                for line in f:
-                    line = line.strip()
-                    if line and not line.startswith('#'):
-                        parts = line.split()
-                        if len(parts) >= 2:
-                            records.append({
-                                'ip': parts[0],
-                                'domain': parts[1]
-                            })
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
-    return jsonify({
-        'records': records,
-        'total': len(records)
-    })
-
-@app.route('/api/add-dns-record', methods=['POST'])
-def api_add_dns_record():
-    """API endpoint to add DNS record"""
-    data = request.get_json()
-    domain = data.get('domain', '').strip()
-    ip_address = data.get('ip', '127.0.0.1').strip()
-    
-    if not domain:
-        return jsonify({'error': 'Domain is required'}), 400
-    
-    success, message = add_dns_record(domain, ip_address)
-    return jsonify({
-        'success': success,
-        'message': message
-    })
-
-@app.route('/api/remove-dns-record', methods=['POST'])
-def api_remove_dns_record():
-    """API endpoint to remove DNS record"""
-    data = request.get_json()
-    domain = data.get('domain', '').strip()
-    
-    if not domain:
-        return jsonify({'error': 'Domain is required'}), 400
-    
-    success, message = remove_dns_record(domain)
     return jsonify({
         'success': success,
         'message': message
@@ -1183,7 +1025,6 @@ def write_conf_file(site_name: str, content: str) -> tuple[bool, str]:
 @login_required
 def edit_vhost(site_name):
     nginx_status = check_nginx_status()
-    dns_status = check_dns_status()
     if not is_valid_site_name(site_name):
         flash('Invalid site name', 'error')
         return redirect(url_for('dashboard'))
@@ -1192,7 +1033,7 @@ def edit_vhost(site_name):
         if not ok:
             flash(err, 'error')
             return redirect(url_for('dashboard'))
-        return render_template('edit_vhost.html', site_name=site_name, content=content, nginx_status=nginx_status, dns_status=dns_status)
+        return render_template('edit_vhost.html', site_name=site_name, content=content, nginx_status=nginx_status)
     # POST: save changes with backup and reload nginx
     new_content = request.form.get('content', '')
     if not new_content:
@@ -1230,7 +1071,6 @@ def containers():
     """Container management page"""
     print("[DEBUG] === CONTAINERS ROUTE STARTED ===")
     nginx_status = check_nginx_status()
-    dns_status = check_dns_status()
 
     services = get_services_from_compose()
     print(f"[DEBUG] get_services_from_compose() returned {len(services)} services")
@@ -1273,7 +1113,7 @@ def containers():
         print(f"[DEBUG] Category '{cat_name}': {len(cat_items)} items")
 
     print("[DEBUG] === CONTAINERS ROUTE COMPLETED ===")
-    return render_template('containers.html', categories=categories, containers=containers_data, nginx_status=nginx_status, dns_status=dns_status)
+    return render_template('containers.html', categories=categories, containers=containers_data, nginx_status=nginx_status)
 
 @app.route('/container/build/<service_name>', methods=['POST'])
 def container_build(service_name):
@@ -1553,5 +1393,5 @@ if __name__ == '__main__':
     # Ensure nginx conf directory exists
     os.makedirs(NGINX_CONF_DIR, exist_ok=True)
     
-    app.run(host='0.0.0.0', port=5000, debug=True)# Hot reload test - Fri Oct 10 20:21:00 WITA 2025
-# Hot reload test - Fri Oct 10 20:40:45 WITA 2025
+    port = int(os.environ.get('PORT') or os.environ.get('FLASK_RUN_PORT') or 5000)
+    app.run(host='0.0.0.0', port=port, debug=True)
