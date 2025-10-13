@@ -2317,12 +2317,6 @@ def mysql():
     mysql_containers = get_mysql_containers()
     return render_template('mysql.html', mysql_containers=mysql_containers, nginx_status=nginx_status)
 
-@app.route('/mysql-management')
-@login_required
-def mysql_management():
-    """MySQL database management page"""
-    nginx_status = check_nginx_status()
-    return render_template('mysql_management.html', nginx_status=nginx_status)
 
 # --- MySQL Configuration Endpoints ---
 @app.route('/api/mysql/get-config', methods=['GET'])
