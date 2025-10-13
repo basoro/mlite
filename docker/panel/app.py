@@ -1422,7 +1422,26 @@ def dashboard():
     """Dashboard page showing all sites - HOT RELOAD TEST"""
     sites = get_sites()
     nginx_status = check_nginx_status()
-    return render_template('dashboard.html', sites=sites, nginx_status=nginx_status)
+    
+    # MySQL status and total databases
+    mysql_containers = get_mysql_containers()
+    mysql_running = any(c.get('running') for c in mysql_containers) if mysql_containers else False
+    total_databases = 0
+    if mysql_running:
+        try:
+            rows = _exec_mysql('SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name NOT IN ("mysql","information_schema","performance_schema","sys")', expect_output=True, dictionary=False)
+            if rows and rows[0] and rows[0][0].isdigit():
+                total_databases = int(rows[0][0])
+            else:
+                # Fallback: SHOW DATABASES and count non-system schemas
+                dbs = _exec_mysql('SHOW DATABASES', expect_output=True, dictionary=False)
+                if dbs:
+                    non_system = [r[0] for r in dbs if r and r[0] not in ['mysql','information_schema','performance_schema','sys']]
+                    total_databases = len(non_system)
+        except Exception:
+            total_databases = 0
+    
+    return render_template('dashboard.html', sites=sites, nginx_status=nginx_status, mysql_running=mysql_running, total_databases=total_databases)
 
 @app.route('/add-site', methods=['GET', 'POST'])
 @login_required

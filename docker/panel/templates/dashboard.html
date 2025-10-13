@@ -17,7 +17,7 @@
 </div>
 
 <!-- Status + Charts -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
   <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-4">
     <div class="flex items-center">
       <i class="fas fa-server text-blue-600 dark:text-blue-400 text-xl mr-3"></i>
@@ -35,6 +35,26 @@
       <div>
         <h3 class="font-semibold text-gray-800 dark:text-gray-100">Total Sites</h3>
         <p class="text-sm text-gray-600 dark:text-gray-400">{{ sites|length }} configured</p>
+      </div>
+    </div>
+  </div>
+  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-4">
+    <div class="flex items-center">
+      <i class="fas fa-database text-green-600 dark:text-green-400 text-xl mr-3"></i>
+      <div>
+        <h3 class="font-semibold text-gray-800 dark:text-gray-100">MySQL Status</h3>
+        <p class="text-sm {{ 'text-green-600 dark:text-green-400' if mysql_running else 'text-red-600 dark:text-red-400' }}">
+          {{ 'Running' if mysql_running else 'Stopped' }}
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-4">
+    <div class="flex items-center">
+      <i class="fas fa-list-ol text-indigo-600 dark:text-indigo-400 text-xl mr-3"></i>
+      <div>
+        <h3 class="font-semibold text-gray-800 dark:text-gray-100">Total Databases</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">{{ total_databases }} databases</p>
       </div>
     </div>
   </div>
