@@ -85,14 +85,6 @@ dns:
 	@docker compose -f $(COMPOSE_FILE) exec $(DNS_CONTAINER) /bin/bash
 
 ## Nginx Manager Commands
-nginx-status:
-	@echo "$(BLUE)Checking Nginx status...$(NC)"
-	@curl -s http://localhost:5001/api/nginx-status | jq . || echo "$(RED)Nginx Manager not accessible$(NC)"
-
-nginx-reload:
-	@echo "$(YELLOW)Reloading Nginx configuration...$(NC)"
-	@curl -s http://localhost:5001/api/reload-nginx | jq . || echo "$(RED)Failed to reload nginx$(NC)"
-
 nginx-logs:
 	@echo "$(BLUE)Nginx Manager logs:$(NC)"
 	@docker compose -f $(COMPOSE_FILE) logs panel
@@ -155,6 +147,12 @@ panel-rebuild:
 	@DOCKER_BUILDKIT=1 docker compose -f $(COMPOSE_FILE) build --progress=plain panel
 	@docker compose -f $(COMPOSE_FILE) up -d --force-recreate panel
 	@echo "$(GREEN)Panel rebuilt and restarted!$(NC)"
+	@echo "$(BLUE)Starting nginx service...$(NC)"
+	@docker compose -f $(COMPOSE_FILE) up -d --no-deps nginx
+	@echo "$(BLUE)Starting php83 service...$(NC)"
+	@docker compose -f $(COMPOSE_FILE) up -d --no-deps php83
+	@echo "$(BLUE)Starting mysql service...$(NC)"
+	@docker compose -f $(COMPOSE_FILE) up -d --no-deps mysql
 	@make status
 
 ## Help
@@ -184,10 +182,6 @@ help:
 	@echo "  make clean               - Remove all containers/images"
 
 ## DNS Commands
-dns-status:
-	@echo "$(BLUE)Checking DNS status...$(NC)"
-	@curl -s http://localhost:5001/api/dns-status | jq . || echo "$(RED)DNS Manager not accessible$(NC)"
-
 dns-logs:
 	@echo "$(BLUE)DNS logs:$(NC)"
 	@docker compose -f $(COMPOSE_FILE) logs dns

@@ -1258,6 +1258,105 @@ def restart_container(service_name):
         logger.exception(f"Restart error for service={service_name}")
         return False, f"Restart error: {str(e)}"
 
+
+def remove_container(service_name):
+    """Remove (delete) container(s) for a specific service"""
+    if service_name == 'panel':
+        logger.warning("Attempted to remove panel container; operation blocked")
+        return False, "Cannot control panel container"
+    try:
+        project = get_compose_project()
+        base = get_compose_cmd_base()
+        resolved_file = get_resolved_compose_file()
+        cmd = base + ['-f', resolved_file] + (['--project-name', project] if project else []) + ['rm', '-f', '-s', service_name]
+        logger.info(f"Removing container: service={service_name}, cmd={' '.join(cmd)}")
+        start_time = datetime.now()
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        duration = (datetime.now() - start_time).total_seconds()
+        logger.info(f"Remove result: rc={result.returncode}, duration={duration}s, stdout='{result.stdout.strip()}', stderr='{result.stderr.strip()}'")
+        
+        if result.returncode == 0:
+            return True, f"Container {service_name} removed successfully"
+        # Fallback: remove by container IDs filtered by labels
+        logger.info(f"Compose rm failed for service={service_name}, attempting docker rm by labels")
+        label_filters = ['--filter', f'label=com.docker.compose.service={service_name}']
+        if project:
+            label_filters += ['--filter', f'label=com.docker.compose.project={project}']
+        ps_cmd = ['docker', 'ps', '-a', '-q'] + label_filters
+        ps_res = subprocess.run(ps_cmd, capture_output=True, text=True, timeout=10)
+        ids = [line.strip() for line in ps_res.stdout.splitlines() if line.strip()]
+        logger.info(f"Fallback discovered {len(ids)} container(s) for service={service_name}: {ids}")
+        if ids:
+            rm_cmd = ['docker', 'rm', '-f'] + ids
+            rm_res = subprocess.run(rm_cmd, capture_output=True, text=True, timeout=30)
+            logger.info(f"Fallback rm result: rc={rm_res.returncode}, stdout='{rm_res.stdout.strip()}', stderr='{rm_res.stderr.strip()}'")
+            if rm_res.returncode == 0:
+                return True, f"Container(s) for {service_name} removed"
+            else:
+                return False, f"Fallback remove failed: {rm_res.stderr or rm_res.stdout}"
+        else:
+            return False, f"Remove failed: {result.stderr or result.stdout}"
+    except subprocess.TimeoutExpired as te:
+        logger.error(f"Remove timeout for service={service_name}: {str(te)}")
+        return False, "Remove timeout (1 minute)"
+    except Exception as e:
+        logger.exception(f"Remove error for service={service_name}")
+        return False, f"Remove error: {str(e)}"
+
+
+def remove_image(service_name):
+    """Remove built image(s) for a specific service (build-capable)."""
+    if service_name == 'panel':
+        logger.warning("Attempted to remove panel image; operation blocked")
+        return False, "Cannot control panel container"
+    try:
+        project = get_compose_project()
+        images_to_remove = set()
+        # Prefer discovering images via existing containers
+        label_filters = ['--filter', f'label=com.docker.compose.service={service_name}']
+        if project:
+            label_filters += ['--filter', f'label=com.docker.compose.project={project}']
+        ps_cmd = ['docker', 'ps', '-a', '-q'] + label_filters
+        ps_res = subprocess.run(ps_cmd, capture_output=True, text=True, timeout=10)
+        ids = [line.strip() for line in ps_res.stdout.splitlines() if line.strip()]
+        for cid in ids:
+            insp = subprocess.run(['docker', 'inspect', '-f', '{{.Image}}|{{.Config.Image}}', cid], capture_output=True, text=True, timeout=5)
+            if insp.returncode == 0:
+                out = (insp.stdout or '').strip()
+                parts = out.split('|') if out else []
+                img_id = parts[0] if len(parts) > 0 else ''
+                if img_id:
+                    images_to_remove.add(img_id)
+        # If no containers found, try image repository patterns
+        if not images_to_remove:
+            patterns = []
+            if project:
+                patterns.append(f"{project}-{service_name}")
+                patterns.append(f"{project}_{service_name}")
+            patterns.append(f"mlite_{service_name}")
+            img_res = subprocess.run(['docker', 'images', '--format', '{{.Repository}} {{.ID}}'], capture_output=True, text=True, timeout=10)
+            for line in (img_res.stdout or '').splitlines():
+                try:
+                    repo, imgid = line.strip().split()
+                except ValueError:
+                    continue
+                if any(p in repo for p in patterns):
+                    images_to_remove.add(imgid)
+        if not images_to_remove:
+            return False, "No images found for service"
+        rm_cmd = ['docker', 'rmi', '-f'] + list(images_to_remove)
+        rm_res = subprocess.run(rm_cmd, capture_output=True, text=True, timeout=60)
+        if rm_res.returncode == 0:
+            return True, f"Image(s) for {service_name} removed"
+        else:
+            return False, f"Remove image failed: {rm_res.stderr or rm_res.stdout}"
+    except subprocess.TimeoutExpired as te:
+        logger.error(f"Remove image timeout for service={service_name}: {str(te)}")
+        return False, "Remove image timeout (1 minute)"
+    except Exception as e:
+        logger.exception(f"Remove image error for service={service_name}")
+        return False, f"Remove image error: {str(e)}"
+
 def check_nginx_status():
     """Check if nginx container is running (via docker inspect), fallback to process check"""
     try:
@@ -1602,6 +1701,27 @@ def containers():
     print(f"[DEBUG] get_container_status_via_docker_ps() returned {len(docker_ps_status)} items")
 
     containers_data = []
+    # Build local Docker images catalog once
+    images_catalog = {}
+    project_name = None
+    try:
+        project_name = get_compose_project()
+    except Exception:
+        project_name = None
+    try:
+        img_res = subprocess.run(['docker', 'images', '--format', '{{.Repository}}|{{.Tag}}|{{.ID}}'], capture_output=True, text=True, timeout=10)
+        for line in (img_res.stdout or '').splitlines():
+            parts = line.strip().split('|')
+            if len(parts) >= 3:
+                repo = parts[0] or ''
+                tag = parts[1] or ''
+                img_id = parts[2] or ''
+                full = f"{repo}:{tag}" if repo and tag else repo
+                if full:
+                    images_catalog[full] = img_id
+    except Exception as e:
+        print(f"[WARN] Failed to list docker images: {e}")
+
     print(f"[DEBUG] Processing {len(services)} services...")
     for service in services:
         service_name = service['name']
@@ -1613,6 +1733,21 @@ def containers():
             'image': service['image'],
             'ports': []
         })
+        # Determine if an image exists for this service
+        container_exists = container_name in docker_ps_status
+        has_image = False
+        if container_exists:
+            has_image = True
+        elif service.get('build'):
+            patterns = []
+            if project_name:
+                patterns.append(f"{project_name}-{service_name}")
+                patterns.append(f"{project_name}_{service_name}")
+            patterns.append(f"mlite_{service_name}")
+            for repo in images_catalog.keys():
+                if any(p in repo for p in patterns):
+                    has_image = True
+                    break
         containers_data.append({
             'name': container_name,
             'service': service_name,
@@ -1624,7 +1759,10 @@ def containers():
             'build': service['build'],
             'volumes': service['volumes'],
             'environment': service['environment'],
-            'depends_on': service['depends_on']
+            'depends_on': service['depends_on'],
+            'exists': container_exists,
+            'has_container': container_exists,
+            'has_image': has_image
         })
 
     print(f"[DEBUG] Final containers_data: {len(containers_data)} items")
@@ -1753,6 +1891,50 @@ def container_down(service_name):
             flash('Tidak dapat menghentikan container panel dari UI.', 'error')
         else:
             flash(f"Gagal stop: {message}. Lihat logs untuk detail.", 'error')
+    
+    return redirect(url_for('containers'))
+
+@app.route('/container/remove/<service_name>', methods=['POST'])
+@login_required
+def container_remove(service_name):
+    """Remove specific container"""
+    logger.info(f"[container_remove] POST received for service='{service_name}'")
+    if not re.match(r'^[a-zA-Z0-9_-]+$', service_name):
+        logger.warning(f"[container_remove] Invalid service name: '{service_name}'")
+        flash('Invalid service name', 'error')
+        return redirect(url_for('containers'))
+    
+    success, message = remove_container(service_name)
+    logger.info(f"[container_remove] remove_container returned success={success}, message='{message}'")
+    if success:
+        flash(message, 'success')
+    else:
+        if 'Cannot control panel container' in message:
+            flash('Tidak dapat menghapus container panel dari UI.', 'error')
+        else:
+            flash(f"Gagal hapus container: {message}.", 'error')
+    
+    return redirect(url_for('containers'))
+
+@app.route('/container/remove-image/<service_name>', methods=['POST'])
+@login_required
+def container_remove_image(service_name):
+    """Remove image for specific service"""
+    logger.info(f"[container_remove_image] POST received for service='{service_name}'")
+    if not re.match(r'^[a-zA-Z0-9_-]+$', service_name):
+        logger.warning(f"[container_remove_image] Invalid service name: '{service_name}'")
+        flash('Invalid service name', 'error')
+        return redirect(url_for('containers'))
+    
+    success, message = remove_image(service_name)
+    logger.info(f"[container_remove_image] remove_image returned success={success}, message='{message}'")
+    if success:
+        flash(message, 'success')
+    else:
+        if 'Cannot control panel container' in message:
+            flash('Tidak dapat menghapus image panel dari UI.', 'error')
+        else:
+            flash(f"Gagal hapus image: {message}.", 'error')
     
     return redirect(url_for('containers'))
 

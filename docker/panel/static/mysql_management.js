@@ -111,12 +111,15 @@ function openSetRootPasswordModal() {
   loadCurrentRootPassword();
   const input = document.getElementById('rootPassword');
   if (input) input.focus();
-  const toggle = document.getElementById('toggleRootPasswordVisibility');
-  if (toggle) {
-    toggle.onchange = function() {
+  const toggleBtn = document.getElementById('toggleRootPasswordBtn');
+  if (toggleBtn) {
+    toggleBtn.onclick = function() {
       const inp = document.getElementById('rootPassword');
       if (!inp) return;
-      inp.type = this.checked ? 'text' : 'password';
+      const icon = this.querySelector('i');
+      const toText = inp.type === 'password';
+      inp.type = toText ? 'text' : 'password';
+      if (icon) icon.className = toText ? 'fas fa-eye-slash' : 'fas fa-eye';
     };
   }
 }
@@ -127,8 +130,13 @@ function closeSetRootPasswordModal() {
   document.getElementById('rootPassword').value = '';
   const currentLabel = document.getElementById('currentRootPassword');
   if (currentLabel) currentLabel.textContent = '';
-  const toggle = document.getElementById('toggleRootPasswordVisibility');
-  if (toggle) toggle.checked = false;
+  const toggleBtn = document.getElementById('toggleRootPasswordBtn');
+  if (toggleBtn) {
+    const icon = toggleBtn.querySelector('i');
+    const inp = document.getElementById('rootPassword');
+    if (inp) inp.type = 'password';
+    if (icon) icon.className = 'fas fa-eye';
+  }
 }
 
 function openEditConfigModal() {
