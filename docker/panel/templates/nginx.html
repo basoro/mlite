@@ -73,11 +73,71 @@
             </div>
             <div class="bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
               <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Configuration Preview</h3>
-              <pre class="text-xs text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-x-auto"><code id="configPreviewModal"></code></pre>
+              <textarea id="configPreviewModal" rows="15" class="w-full font-mono text-xs bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-700"></textarea>
             </div>
             <div class="flex justify-end gap-2">
               <button type="button" onclick="closeAddSiteModal()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Cancel</button>
               <button type="submit" id="submitAddSiteBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium">Add Site</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Site Modal -->
+    <div id="editSiteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl mx-4">
+        <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Edit Site</h2>
+          <button onclick="closeEditSiteModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-4">
+          <form id="editSiteForm" class="space-y-4" onsubmit="submitEditSiteForm(event)">
+            <input type="hidden" id="edit_domain_original" />
+            <div>
+              <label for="edit_domain" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Domain Name</label>
+              <input type="text" id="edit_domain" name="domain" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" oninput="validateEditDomain(this)">
+              <div id="edit_domain_error" class="mt-1 text-sm text-red-600 dark:text-red-400 hidden">Please enter a valid domain name</div>
+            </div>
+            <div>
+              <label for="edit_site_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Site Type</label>
+              <select id="edit_site_type" name="site_type" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" onchange="onEditTypeChange()">
+                <option value="proxy">Nginx Proxy</option>
+                <option value="php">PHP-FPM</option>
+                <option value="static">Static Site</option>
+              </select>
+            </div>
+            <div id="edit_port_group" class="hidden">
+              <label for="edit_port" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Backend Port</label>
+              <input type="number" id="edit_port" name="port" min="1" max="65535" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" oninput="validateEditPort(this)">
+              <div id="edit_port_error" class="mt-1 text-sm text-red-600 dark:text-red-400 hidden">Port must be between 1 and 65535</div>
+            </div>
+            <div id="edit_root_group" class="hidden">
+              <label for="edit_root_dir" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Root Directory</label>
+              <input type="text" id="edit_root_dir" name="root_dir" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" oninput="updateEditPreview()">
+            </div>
+            <div id="edit_php_group" class="hidden">
+              <label for="edit_php_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PHP Version</label>
+              <select id="edit_php_version" name="php_version" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" onchange="updateEditPreview()">
+                <option value="8.3">8.3</option>
+                <option value="8.2">8.2</option>
+                <option value="8.1">8.1</option>
+                <option value="8.0">8.0</option>
+                <option value="7.4">7.4</option>
+                <option value="7.3">7.3</option>
+                <option value="7.2">7.2</option>
+                <option value="7.1">7.1</option>
+                <option value="7.0">7.0</option>
+                <option value="5.6">5.6</option>
+              </select>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
+              <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Configuration Preview</h3>
+              <textarea id="edit_config_preview" rows="15" class="w-full font-mono text-xs bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-700"></textarea>
+            </div>
+            <div class="flex justify-end gap-2">
+              <button type="button" onclick="closeEditSiteModal()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Cancel</button>
+              <button type="submit" id="submitEditSiteBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium">Save Changes</button>
             </div>
           </form>
         </div>
@@ -214,12 +274,12 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center space-x-2">
-                                        <a href="{{ url_for('edit_vhost', site_name=config.domain) }}" class="inline-flex items-center px-3 py-2 border border-blue-300 text-sm leading-4 font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50">
+                                        <button onclick="openEditSiteModal('{{ config.domain }}')" class="inline-flex items-center px-3 py-2 border border-blue-300 text-sm leading-4 font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h2m-2 4h2m-2 4h2M4 7h16M4 15h16"></path>
                                             </svg>
                                             Edit
-                                        </a>
+                                        </button>
                                         <form method="POST" action="{{ url_for('toggle_site', domain=config.domain) }}" class="inline">
                                             {% if config.enabled %}
                                                 <button type="submit" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
@@ -425,7 +485,7 @@ function updatePreviewModal(){
   } else {
     config = `server {\n    listen 80;\n    server_name ${domain};\n    \n    location / {\n        proxy_pass http://localhost:${port};\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}`;
   }
-  document.getElementById('configPreviewModal').textContent = config;
+  document.getElementById('configPreviewModal').value = config;
 }
 function submitAddSiteForm(e){
   e.preventDefault();
@@ -440,19 +500,21 @@ function submitAddSiteForm(e){
   if (type === 'proxy') { fd.append('port', document.getElementById('portModal').value.trim()); }
   if (type === 'php' || type === 'static') { fd.append('root_dir', document.getElementById('root_dir_modal').value.trim()); }
   if (type === 'php') { fd.append('php_version', document.getElementById('php_version_modal').value); }
+  // include editable content (optional, backend may ignore)
+  const cfg = document.getElementById('configPreviewModal')?.value || '';
+  fd.append('content', cfg);
   fetch('/add-site', { method: 'POST', body: fd })
     .then(resp => {
-      if (resp.redirected || resp.ok) {
+      if (resp.redirected) {
         showToast('Site added successfully', 'success');
-        closeAddSiteModal();
-        setTimeout(() => { window.location.reload(); }, 600);
-        return;
+        window.location.href = resp.url;
+      } else {
+        return resp.text().then(() => {
+          showToast('Failed to add site. Check inputs.', 'error');
+          btn.disabled = false;
+          btn.innerHTML = original;
+        });
       }
-      return resp.text().then(() => {
-        showToast('Failed to add site. Check inputs.', 'error');
-        btn.disabled = false;
-        btn.innerHTML = original;
-      });
     })
     .catch(err => {
       console.error(err);
@@ -473,5 +535,172 @@ setInterval(function() {
         })
         .catch(() => {});
 }, 5000);
+
+// Edit Site Modal logic
+function openEditSiteModal(domain){
+  const modal = document.getElementById('editSiteModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  // Reset form
+  document.getElementById('edit_domain_original').value = domain;
+  document.getElementById('edit_domain').value = domain;
+  document.getElementById('edit_port').value = '';
+  document.getElementById('edit_root_dir').value = '';
+  document.getElementById('edit_php_version').value = '8.3';
+  // Load existing config via GET (HTML page). We'll parse minimal info client-side if needed.
+  fetch(`/edit_vhost/${encodeURIComponent(domain)}`)
+    .then(resp => resp.text())
+    .then(html => {
+      // Try to infer type/port/root via heuristics from content text
+      const contentMatch = html.match(/<textarea[^>]*id="editor-textarea"[^>]*>([\s\S]*?)<\/textarea>/);
+      const content = contentMatch ? contentMatch[1] : '';
+      let type = 'proxy';
+      let port = '';
+      let root = '';
+      let phpVersion = '8.3';
+      if (/fastcgi_pass\s+([a-zA-Z0-9_-]+):9000/.test(content)) {
+        type = 'php';
+        const m = content.match(/fastcgi_pass\s+([a-zA-Z0-9_-]+):9000/);
+        if (m){
+          const host = m[1];
+          const map = { php56:'5.6', php70:'7.0', php71:'7.1', php72:'7.2', php73:'7.3', php74:'7.4', php80:'8.0', php81:'8.1', php82:'8.2', php83:'8.3' };
+          phpVersion = map[host] || '8.3';
+        }
+        const rm = content.match(/^\s*root\s+([^;]+);/m);
+        if (rm) root = rm[1].trim();
+      } else if (/proxy_pass\s+http:\/\/localhost:/.test(content)) {
+        type = 'proxy';
+        const pm = content.match(/proxy_pass\s+http:\/\/localhost:(\d+)/);
+        if (pm) port = pm[1];
+      } else {
+        type = 'static';
+        const rm = content.match(/^\s*root\s+([^;]+);/m);
+        if (rm) root = rm[1].trim();
+      }
+      document.getElementById('edit_site_type').value = type;
+      document.getElementById('edit_port').value = port;
+      document.getElementById('edit_root_dir').value = root;
+      document.getElementById('edit_php_version').value = phpVersion;
+      onEditTypeChange();
+      updateEditPreview();
+    })
+    .catch(err => {
+      console.error(err);
+      showToast('Failed to load current config', 'error');
+    });
+}
+function closeEditSiteModal(){
+  const modal = document.getElementById('editSiteModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+function validateEditDomain(input){
+  const domain = input.value.trim();
+  const err = document.getElementById('edit_domain_error');
+  const submitBtn = document.getElementById('submitEditSiteBtn');
+  const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$/;
+  if (domain && !domainRegex.test(domain)) {
+    err.classList.remove('hidden');
+    submitBtn.disabled = true;
+    return false;
+  } else {
+    err.classList.add('hidden');
+    submitBtn.disabled = false;
+    updateEditPreview();
+    return true;
+  }
+}
+function validateEditPort(input){
+  const type = document.getElementById('edit_site_type').value;
+  const port = parseInt(input.value, 10);
+  const err = document.getElementById('edit_port_error');
+  const submitBtn = document.getElementById('submitEditSiteBtn');
+  if (type === 'php' || type === 'static') {
+    err.classList.add('hidden');
+    submitBtn.disabled = false;
+    updateEditPreview();
+    return true;
+  }
+  if (input.value && (isNaN(port) || port < 1 || port > 65535)) {
+    err.classList.remove('hidden');
+    submitBtn.disabled = true;
+    return false;
+  } else {
+    err.classList.add('hidden');
+    submitBtn.disabled = false;
+    updateEditPreview();
+    return true;
+  }
+}
+function onEditTypeChange(){
+  const type = document.getElementById('edit_site_type').value;
+  const portGroup = document.getElementById('edit_port_group');
+  const rootGroup = document.getElementById('edit_root_group');
+  const phpGroup = document.getElementById('edit_php_group');
+  if (type === 'php') {
+    portGroup.classList.add('hidden');
+    rootGroup.classList.remove('hidden');
+    phpGroup.classList.remove('hidden');
+  } else if (type === 'static') {
+    portGroup.classList.add('hidden');
+    rootGroup.classList.remove('hidden');
+    phpGroup.classList.add('hidden');
+  } else {
+    rootGroup.classList.add('hidden');
+    portGroup.classList.remove('hidden');
+    phpGroup.classList.add('hidden');
+  }
+  updateEditPreview();
+}
+function updateEditPreview(){
+  const domain = document.getElementById('edit_domain').value || 'example.com';
+  const type = document.getElementById('edit_site_type').value;
+  const port = document.getElementById('edit_port').value || '3000';
+  const root = document.getElementById('edit_root_dir').value || '/var/www/public';
+  const phpVersion = document.getElementById('edit_php_version').value || '8.3';
+  const map = { '5.6':'php56','7.0':'php70','7.1':'php71','7.2':'php72','7.3':'php73','7.4':'php74','8.0':'php80','8.1':'php81','8.2':'php82','8.3':'php83' };
+  const phpHost = map[phpVersion] || 'php83';
+  let config = '';
+  if (type === 'php') {
+    config = `server {\n    listen 80;\n    server_name ${domain};\n\n    root ${root};\n    index index.php index.html;\n\n    access_log /var/log/nginx/access.log;\n    error_log  /var/log/nginx/error.log;\n\n    location / {\n        try_files $uri $uri/ /index.php?$args;\n    }\n\n    location ~ \\.php$ {\n        include fastcgi_params;\n        fastcgi_pass ${phpHost}:9000;\n        fastcgi_index index.php;\n        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n\n        fastcgi_buffer_size 128k;\n        fastcgi_buffers 4 256k;\n        fastcgi_busy_buffers_size 256k;\n    }\n\n    location ~ /\\. {\n        deny all;\n    }\n}`;
+  } else if (type === 'static') {
+    config = `server {\n    listen 80;\n    server_name ${domain};\n\n    root ${root};\n    index index.html;\n\n    access_log /var/log/nginx/access.log;\n    error_log  /var/log/nginx/error.log;\n\n    location / {\n        try_files $uri $uri/ /index.html;\n    }\n\n    location ~ /\\. {\n        deny all;\n    }\n}`;
+  } else {
+    config = `server {\n    listen 80;\n    server_name ${domain};\n    \n    location / {\n        proxy_pass http://localhost:${port};\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}`;
+  }
+  document.getElementById('edit_config_preview').value = config;
+}
+function submitEditSiteForm(e){
+  e.preventDefault();
+  const btn = document.getElementById('submitEditSiteBtn');
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i>';
+  const domainOriginal = document.getElementById('edit_domain_original').value.trim();
+  // Build content from editable textarea
+  const content = document.getElementById('edit_config_preview').value;
+  const fd = new FormData();
+  fd.append('content', content);
+  fetch(`/edit_vhost/${encodeURIComponent(domainOriginal)}`, { method: 'POST', body: fd })
+    .then(resp => {
+      if (resp.redirected || resp.ok) {
+        showToast('Site updated successfully', 'success');
+        closeEditSiteModal();
+        setTimeout(() => { window.location.reload(); }, 600);
+        return;
+      }
+      return resp.text().then(() => {
+        showToast('Failed to update site.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = original;
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      showToast('Network error occurred', 'error');
+      btn.disabled = false;
+      btn.innerHTML = original;
+    });
+}
 </script>
 {% endblock %}

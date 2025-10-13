@@ -40,6 +40,7 @@
      window.tailwind.config = { darkMode: 'class' };
    </script>
    <script src="https://cdn.tailwindcss.com"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
       :root {
@@ -120,7 +121,7 @@
           <a href="{{ url_for('nginx_page') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Nginx</a>
           <a href="{{ url_for('php_fpm') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition">PHP-FPM</a>
           <a href="{{ url_for('mysql') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition">MySQL</a>
-          <a href="{{ url_for('dashboard') }}" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition">Files</a>
+          <a href="{{ url_for('files') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Files</a>
         </nav>
         <!-- Right: Actions -->
         <div class="flex items-center gap-3">
@@ -293,8 +294,221 @@
       showToast('Password change is not configured', 'info');
     }
     function logout() {
-  window.location.href = '/logout';
-}
-  </script>
+      window.location.href = '/logout';
+    }
+
+    function formatFileSize(bytes) {
+
+        if (bytes === null) return '-';
+        if (bytes === 0) return '0 Bytes';
+        
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'];
+        let i = Math.floor(Math.log(bytes) / Math.log(1024));
+        
+        if (i < 0) i = 0; // antisipasi ukuran < 1 Byte
+        if (i >= sizes.length) i = sizes.length - 1;
+        
+        const size = bytes / Math.pow(1024, i);
+        return size.toFixed(2) + ' ' + sizes[i];
+    }
+
+    function formatDate(timestamp) {
+        return new Date(timestamp * 1000).toLocaleString();
+    }
+
+    // Helper function to show custom alert modal
+    function showAlert(message, title = 'Pemberitahuan') {
+        return new Promise((resolve) => {
+            // Remove any existing alert modals to prevent conflicts
+            const existingModals = document.querySelectorAll('.alert-modal');
+            existingModals.forEach(modal => {
+                if (modal.parentNode) {
+                    modal.parentNode.removeChild(modal);
+                }
+            });
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-[200] alert-modal';
+            modal.setAttribute('data-modal-type', 'alert');
+            
+            // Determine modal width based on content
+            const isWideContent = message.includes('<table') || message.includes('DNS Records');
+            const modalWidth = isWideContent ? 'w-11/12 md:w-5/6 lg:w-4/5 xl:w-3/4 max-w-7xl' : 'w-96';
+            const textAlign = isWideContent ? 'text-left' : 'text-center';
+            
+            modal.innerHTML = `
+                <div class="relative top-10 mx-auto p-5 border ${modalWidth} shadow-lg rounded-md bg-white dark:bg-gray-800">
+                    <div class="mt-3 ${textAlign}">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">${title}</h3>
+                        <div class="mt-4">
+                            <div class="text-sm text-gray-600 dark:text-gray-300">${message}</div>
+                        </div>
+                        <div class="flex justify-center mt-6">
+                            <button id="alertOkBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">OK</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            const handleOk = () => {
+                if (modal.parentNode) {
+                    modal.parentNode.removeChild(modal);
+                }
+                resolve();
+            };
+            
+            document.getElementById('alertOkBtn').addEventListener('click', handleOk);
+            modal.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === 'Escape') {
+                    handleOk();
+                }
+            });
+        });
+    }
+
+    // Helper function to show custom confirm modal
+    function showConfirm(message, title = 'Konfirmasi') {
+        return new Promise((resolve) => {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-[200]';
+            modal.innerHTML = `
+                <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+                    <div class="mt-3 text-center">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">${title}</h3>
+                        <div class="mt-4">
+                            <p class="text-sm text-gray-600 dark:text-gray-300">${message}</p>
+                        </div>
+                        <div class="flex justify-center space-x-3 mt-6">
+                            <button id="confirmCancelBtn" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500">Batal</button>
+                            <button id="confirmOkBtn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Ya</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            const handleOk = () => {
+                document.body.removeChild(modal);
+                resolve(true);
+            };
+            
+            const handleCancel = () => {
+                document.body.removeChild(modal);
+                resolve(false);
+            };
+            
+            document.getElementById('confirmOkBtn').addEventListener('click', handleOk);
+            document.getElementById('confirmCancelBtn').addEventListener('click', handleCancel);
+            
+            modal.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    handleOk();
+                } else if (e.key === 'Escape') {
+                    handleCancel();
+                }
+            });
+        });
+    }
+
+    // Notification system
+    function showNotification(message, type = 'info') {
+        // Remove existing notifications
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notif => notif.remove());
+
+        const notification = document.createElement('div');
+        notification.className = `notification fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm transition-all duration-300 transform translate-x-full`;
+        
+        const colors = {
+            'success': 'bg-green-500 text-white',
+            'error': 'bg-red-500 text-white',
+            'warning': 'bg-yellow-500 text-black',
+            'info': 'bg-blue-500 text-white'
+        };
+        
+        notification.className += ` ${colors[type] || colors.info}`;
+        notification.innerHTML = `
+            <div class="flex items-center justify-between">
+                <span>${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-lg font-bold">&times;</button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+        }, 100);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => notification.remove(), 300);
+            }
+        }, 5000);
+    }
+
+    // Helper function to show custom prompt modal
+    function showPrompt(message, defaultValue = '', title = 'Input') {
+        return new Promise((resolve) => {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-[100]';
+            modal.innerHTML = `
+                <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+                    <div class="mt-3 text-center">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">${title}</h3>
+                        <div class="mt-4">
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">${message}</p>
+                            <input type="text" id="promptInput" 
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                    value="${defaultValue}">
+                        </div>
+                        <div class="flex justify-center space-x-3 mt-6">
+                            <button id="promptCancelBtn" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500">Batal</button>
+                            <button id="promptOkBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">OK</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            const input = document.getElementById('promptInput');
+            input.focus();
+            input.select();
+            
+            const handleOk = () => {
+                const value = input.value;
+                document.body.removeChild(modal);
+                resolve(value);
+            };
+            
+            const handleCancel = () => {
+                document.body.removeChild(modal);
+                resolve(null);
+            };
+            
+            document.getElementById('promptOkBtn').addEventListener('click', handleOk);
+            document.getElementById('promptCancelBtn').addEventListener('click', handleCancel);
+            
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleOk();
+                }
+            });
+            
+            modal.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    handleCancel();
+                }
+            });
+        });
+    }
+</script>
 </body>
 </html>

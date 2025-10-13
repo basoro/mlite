@@ -12,9 +12,20 @@ from flask import stream_with_context
 import logging
 import time
 from functools import wraps
+from collections import deque
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s in %(module)s: %(message)s')
 logger = logging.getLogger(__name__)
+
+# Helper untuk memformat timestamp Docker menjadi "YYYY-MM-DD H:i:s" tanpa zona waktu
+def format_created_field(s: str) -> str:
+    try:
+        if not s:
+            return ''
+        m = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', s)
+        return m.group(1) if m else s
+    except Exception:
+        return s
 
 app = Flask(__name__)
 app.secret_key = 'nginx-manager-secret-key'
@@ -34,6 +45,95 @@ PHP_CONTAINER_NAME = os.environ.get('PHP_CONTAINER_NAME', 'mlite_php')
 PHP_WEBROOT_BASE = '/var/www/public'
 # Optional toggle to create default index.html after directory creation (env CREATE_DEFAULT_INDEX=1/0)
 CREATE_DEFAULT_INDEX = os.environ.get('CREATE_DEFAULT_INDEX', '1') == '1'
+
+# Simple in-memory cache for Nginx network stats
+NETWORK_STATS_CACHE = {
+    'history': deque(maxlen=60),  # keep last 60 samples
+    'last_fetch_at': 0,
+    'last_value': None
+}
+NETWORK_STATS_POLL_INTERVAL_SEC = 3
+
+def parse_size_to_bytes(s: str) -> int:
+    try:
+        s = s.strip()
+        parts = s.split()
+        if len(parts) == 1:
+            val_unit = parts[0]
+            num_str = ''.join(ch for ch in val_unit if (ch.isdigit() or ch == '.' or ch == ','))
+            unit = ''.join(ch for ch in val_unit if ch.isalpha())
+        else:
+            num_str, unit = parts[0], parts[1]
+        num = float(num_str.replace(',', '')) if num_str else 0.0
+        unit = unit.upper() if unit else 'B'
+        if unit in ['B']:
+            mult = 1
+        elif unit in ['KB', 'KIB', 'K']:
+            mult = 1024
+        elif unit in ['MB', 'MIB', 'M']:
+            mult = 1024**2
+        elif unit in ['GB', 'GIB', 'G']:
+            mult = 1024**3
+        elif unit in ['TB', 'TIB', 'T']:
+            mult = 1024**4
+        else:
+            mult = 1
+        return int(num * mult)
+    except Exception:
+        return 0
+
+def get_nginx_netio_once():
+    """Sample rx/tx bytes for the nginx container using `docker stats --no-stream`.
+    Returns (rx_bytes, tx_bytes)."""
+    try:
+        result = subprocess.run(
+            ['docker', 'stats', '--no-stream', '--format', '{{json .}}', NGINX_CONTAINER_NAME],
+            capture_output=True, text=True, timeout=8
+        )
+        if result.returncode != 0:
+            raise RuntimeError(result.stderr or 'docker stats failed')
+        line = (result.stdout or '').strip().splitlines()
+        if not line:
+            raise RuntimeError('no stats output')
+        obj = json.loads(line[0])
+        netio = obj.get('NetIO', '')
+        parts = [p.strip() for p in netio.split('/')]
+        rx_str = parts[0] if len(parts) > 0 else '0 B'
+        tx_str = parts[1] if len(parts) > 1 else '0 B'
+        rx = parse_size_to_bytes(rx_str)
+        tx = parse_size_to_bytes(tx_str)
+        return rx, tx
+    except Exception as e:
+        logger.error(f"Error sampling nginx net stats: {e}")
+        return 0, 0
+
+def get_container_network_stats():
+    """Return time series of nginx container network stats (rx/tx total bytes).
+    Uses simple caching to avoid frequent docker calls."""
+    now = time.time()
+    try:
+        if now - (NETWORK_STATS_CACHE['last_fetch_at'] or 0) >= NETWORK_STATS_POLL_INTERVAL_SEC:
+            rx, tx = get_nginx_netio_once()
+            NETWORK_STATS_CACHE['last_fetch_at'] = now
+            NETWORK_STATS_CACHE['last_value'] = (rx, tx)
+            NETWORK_STATS_CACHE['history'].append({
+                'timestamp': datetime.now().strftime('%H:%M'),
+                'rx': rx,
+                'tx': tx
+            })
+        if not NETWORK_STATS_CACHE['history']:
+            rx, tx = get_nginx_netio_once()
+            NETWORK_STATS_CACHE['last_fetch_at'] = now
+            NETWORK_STATS_CACHE['last_value'] = (rx, tx)
+            NETWORK_STATS_CACHE['history'].append({
+                'timestamp': datetime.now().strftime('%H:%M'),
+                'rx': rx,
+                'tx': tx
+            })
+        return list(NETWORK_STATS_CACHE['history'])
+    except Exception as e:
+        logger.error(f"Error building network stats: {e}")
+        return []
 
 def get_sites():
     """Get list of configured sites with detected type and relevant info"""
@@ -492,7 +592,7 @@ def get_php_containers():
                     'status': 'Running' if running else 'Stopped',
                     'php_version': php_version,
                     'ports': ports_display,
-                    'created': obj.get('CreatedAt', ''),
+                    'created': format_created_field(obj.get('CreatedAt', '')),
                     'image': obj.get('Image', '')
                 })
             except (json.JSONDecodeError, KeyError, IndexError) as e:
@@ -665,7 +765,7 @@ def get_container_status_via_docker_ps():
                 status_by_name[name] = {
                     'running': running,
                     'status': status_text or ('running' if running else 'stopped'),
-                    'created': obj.get('CreatedAt', ''),
+                    'created': format_created_field(obj.get('CreatedAt', '')),
                     'image': obj.get('Image', ''),
                     'ports': ports_list
                 }
@@ -1098,6 +1198,7 @@ def add_site():
     return render_template('add_site.html', nginx_status=nginx_status)
 
 @app.route('/delete-site/<domain>')
+@login_required
 def delete_site(domain):
     """Delete site configuration"""
     if delete_nginx_config(domain):
@@ -1112,6 +1213,7 @@ def delete_site(domain):
     return redirect(url_for('dashboard'))
 
 @app.route('/api/sites')
+@login_required
 def api_sites():
     """API endpoint to get all sites"""
     sites = get_sites()
@@ -1121,6 +1223,7 @@ def api_sites():
     })
 
 @app.route('/api/nginx-status')
+@login_required
 def api_nginx_status():
     """API endpoint for nginx status"""
     sites = get_sites()
@@ -1132,7 +1235,26 @@ def api_nginx_status():
         'sites': sites
     })
 
+@app.route('/api/network-stats')
+@login_required
+def api_network_stats():
+    """API endpoint to get network stats for nginx container (mlite_nginx)."""
+    try:
+        series = get_container_network_stats()
+        return jsonify({
+            'success': True,
+            'network': series
+        })
+    except Exception as e:
+        logger.error(f"Error in /api/network-stats: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'network': []
+        }), 500
+
 @app.route('/api/reload-nginx')
+@login_required
 def api_reload_nginx():
     """API endpoint to reload nginx"""
     success, message = reload_nginx()
@@ -1285,6 +1407,7 @@ def containers():
     return render_template('containers.html', categories=categories, containers=containers_data, nginx_status=nginx_status)
 
 @app.route('/container/build/<service_name>', methods=['POST'])
+@login_required
 def container_build(service_name):
     """Build specific container"""
     # Security: validate service name
@@ -1301,6 +1424,7 @@ def container_build(service_name):
     return redirect(url_for('containers'))
 
 @app.route('/container/build-log/<service_name>')
+@login_required
 def container_build_log(service_name):
     """Stream build logs for specific service via SSE and persist to temp file"""
     # Validate service name
@@ -1363,6 +1487,7 @@ def container_build_log(service_name):
     return Response(stream_with_context(generate()), mimetype='text/event-stream')
 
 @app.route('/container/up/<service_name>', methods=['POST'])
+@login_required
 def container_up(service_name):
     """Start specific container"""
     if not re.match(r'^[a-zA-Z0-9_-]+$', service_name):
@@ -1378,6 +1503,7 @@ def container_up(service_name):
     return redirect(url_for('containers'))
 
 @app.route('/container/down/<service_name>', methods=['POST'])
+@login_required
 def container_down(service_name):
     """Stop specific container"""
     logger.info(f"[container_down] POST received for service='{service_name}'")
@@ -1420,6 +1546,7 @@ def categorize_services(containers):
 
 # Add SSE start-log route
 @app.route('/container/start-log/<service_name>')
+@login_required
 def container_start_log(service_name):
     """Stream start (compose up) logs for specific service via SSE."""
     if not re.match(r'^[a-zA-Z0-9_-]+$', service_name):
@@ -1478,6 +1605,7 @@ def container_start_log(service_name):
     return Response(stream_with_context(generate()), mimetype='text/event-stream')
 
 @app.route('/nginx')
+@login_required
 def nginx_page():
     """Nginx management page"""
     try:
@@ -1566,6 +1694,7 @@ def nginx_page():
         return redirect(url_for('dashboard'))
 
 @app.route('/container/restart/<service_name>', methods=['POST'])
+@login_required
 def container_restart(service_name):
     """Restart specific container"""
     if not re.match(r'^[a-zA-Z0-9_-]+$', service_name):
@@ -1791,6 +1920,572 @@ def api_mysql_containers():
             'success': False,
             'error': str(e)
         }), 500
+
+@app.route('/files')
+@login_required
+def files():
+    """Files management page"""
+    nginx_status = check_nginx_status()
+    return render_template('files.html', nginx_status=nginx_status)
+
+@app.route('/api/files', methods=['GET'])
+@login_required
+def list_files():
+    base_path = request.args.get('path', '/')
+    # Normalize path to prevent directory traversal and ensure absolute path inside container
+    base_path = os.path.normpath(base_path)
+    if base_path.startswith('..') or not base_path.startswith('/'):
+        return jsonify({'error': 'Invalid path'}), 400
+
+    try:
+        # Use docker exec to list files inside the Nginx container with detailed metadata
+        quoted = shlex.quote(base_path)
+        cmd = [
+            'docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c',
+            (
+                'p=' + quoted + ' ; '\
+                'if [ ! -d "$p" ]; then echo "__ERROR__|Not a directory"; exit 2; fi; '\
+                'for f in "$p"/.* "$p"/*; do '\
+                '  bn="$(basename "$f")"; '\
+                '  [ "$bn" = "." ] && continue; [ "$bn" = ".." ] && continue; '\
+                '  [ ! -e "$f" ] && continue; '\
+                '  stat -c "%n|%F|%s|%Y|%a|%A|%U|%G" "$f" || true; '\
+                'done'
+            )
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
+        if result.returncode != 0:
+            err = (result.stderr or result.stdout or '').strip()
+            return jsonify({'error': f'Container access failed: {err}'}), 400
+
+        files = []
+        lines = (result.stdout or '').splitlines()
+        for ln in lines:
+            ln = ln.strip()
+            if not ln:
+                continue
+            if ln.startswith('__ERROR__|'):
+                # Path not a directory
+                return jsonify({'error': ln.split('|', 1)[1]}), 400
+            parts = ln.split('|')
+            if len(parts) != 8:
+                continue
+            full_path, ftype, size, modified, mode, permissions, owner, group = parts
+            name = os.path.basename(full_path)
+            if name in ('.', '..'):
+                continue
+            is_dir = ftype.lower().startswith('directory')
+            file_info = {
+                'name': name,
+                'path': os.path.normpath(os.path.join(base_path, name)),
+                'is_dir': is_dir,
+                'size': None if is_dir else int(size),
+                'modified': int(modified),
+                'permissions': permissions,
+                'owner': owner,
+                'group': group,
+                'mode': mode
+            }
+            files.append(file_info)
+        return jsonify(files)
+    except Exception as e:
+        return jsonify({'error': f'Could not access directory in container: {str(e)}'}), 400
+
+# Backup and restore endpoints removed
+
+@app.route('/api/files/upload', methods=['POST'])
+@login_required
+def upload_file():
+    logger.info('File upload attempt')
+    from werkzeug.utils import secure_filename
+    import tempfile
+    
+    # Handle both single and multiple file uploads
+    files = request.files.getlist('files') if 'files' in request.files else []
+    if not files and 'file' in request.files:
+        files = [request.files['file']]
+    
+    if not files:
+        return jsonify({'error': 'No files selected'}), 400
+    
+    upload_path = request.form.get('path', '/')
+    upload_path = os.path.normpath(upload_path)
+    if upload_path.startswith('..') or not upload_path.startswith('/'):
+        return jsonify({'error': 'Invalid path'}), 400
+
+    try:
+        uploaded_files = []
+        failed_files = []
+        
+        for file in files:
+            if file.filename == '':
+                continue
+            
+            try:
+                filename = secure_filename(file.filename)
+                target_path = os.path.normpath(os.path.join(upload_path, filename))
+                
+                # Handle duplicate filenames inside container
+                counter = 1
+                original_filename = filename
+                while True:
+                    q = shlex.quote(target_path)
+                    check_cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"[ -e {q} ] && echo EXISTS || true"]
+                    chk = subprocess.run(check_cmd, capture_output=True, text=True)
+                    if 'EXISTS' in (chk.stdout or ''):
+                        name, ext = os.path.splitext(original_filename)
+                        filename = f"{name}_{counter}{ext}"
+                        target_path = os.path.normpath(os.path.join(upload_path, filename))
+                        counter += 1
+                    else:
+                        break
+                    
+                # Save to temp file in panel container
+                temp_dir = tempfile.mkdtemp(prefix='panel_upload_')
+                temp_path = os.path.join(temp_dir, filename)
+                file.save(temp_path)
+                
+                # Ensure destination directory exists inside container
+                dest_dir = os.path.dirname(target_path) or '/'
+                dest_q = shlex.quote(dest_dir)
+                mkcmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"mkdir -p {dest_q}"]
+                mk = subprocess.run(mkcmd, capture_output=True, text=True)
+                if mk.returncode != 0:
+                    raise Exception((mk.stderr or mk.stdout or 'mkdir failed').strip())
+                
+                # Copy file into container
+                cp_cmd = ['docker', 'cp', temp_path, f"{NGINX_CONTAINER_NAME}:{target_path}"]
+                cp = subprocess.run(cp_cmd, capture_output=True, text=True)
+                
+                # Cleanup temp
+                try:
+                    os.remove(temp_path)
+                    os.rmdir(temp_dir)
+                except Exception:
+                    pass
+                
+                if cp.returncode != 0:
+                    raise Exception((cp.stderr or cp.stdout or 'docker cp failed').strip())
+                
+                uploaded_files.append({
+                    'original_name': file.filename,
+                    'saved_name': filename,
+                    'path': target_path
+                })
+                logger.info(f'File uploaded successfully: {target_path}')
+                
+            except Exception as e:
+                failed_files.append({
+                    'filename': file.filename,
+                    'error': str(e)
+                })
+                logger.error(f'Failed to upload {file.filename}: {str(e)}')
+        
+        response_data = {
+            'uploaded_files': uploaded_files,
+            'failed_files': failed_files,
+            'total_uploaded': len(uploaded_files),
+            'total_failed': len(failed_files)
+        }
+        
+        if uploaded_files:
+            response_data['message'] = f'Successfully uploaded {len(uploaded_files)} file(s)'
+            if failed_files:
+                response_data['message'] += f', {len(failed_files)} file(s) failed'
+        else:
+            response_data['message'] = 'No files were uploaded'
+            
+        return jsonify(response_data)
+        
+    except Exception as e:
+        logger.error(f'Upload error: {str(e)}')
+        return jsonify({'error': f'Could not upload files: {str(e)}'}), 400
+
+@app.route('/api/files/delete', methods=['POST'])
+@login_required
+def delete_file():
+    logger.info('File deletion attempt')
+    path = request.json.get('path')
+    if not path:
+        return jsonify({'error': 'No path specified'}), 400
+    
+    path = os.path.normpath(path)
+    if path.startswith('..') or not path.startswith('/'):
+        return jsonify({'error': 'Invalid path'}), 400
+    
+    try:
+        q = shlex.quote(path)
+        cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"if [ -e {q} ]; then if [ -d {q} ]; then rm -rf {q}; else rm -f {q}; fi; else echo NOTFOUND; fi"]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        out = (res.stdout or '').strip()
+        if 'NOTFOUND' in out:
+            return jsonify({'error': 'File or directory not found'}), 404
+        if res.returncode != 0:
+            return jsonify({'error': (res.stderr or res.stdout or 'Delete failed').strip()}), 400
+        logger.info(f'Deleted successfully in container: {path}')
+        return jsonify({'message': 'File/directory deleted successfully'})
+    except Exception as e:
+        return jsonify({'error': f'Could not delete: {str(e)}'}), 400
+
+@app.route('/api/files/chmod', methods=['POST'])
+@login_required
+def chmod_file():
+    logger.info('File chmod attempt')
+    path = request.json.get('path')
+    mode = request.json.get('mode')
+    if not path or mode is None:
+        return jsonify({'error': 'Path and mode must be specified'}), 400
+    
+    path = os.path.normpath(path)
+    if path.startswith('..') or not path.startswith('/'):
+        return jsonify({'error': 'Invalid path'}), 400
+    
+    try:
+        # Expect mode as octal string like "755" or integer
+        if isinstance(mode, str):
+            if not re.fullmatch(r'[0-7]{3,4}', mode):
+                return jsonify({'error': 'Invalid mode format'}), 400
+            mode_str = mode
+        elif isinstance(mode, int):
+            mode_str = format(mode, 'o')
+        else:
+            return jsonify({'error': 'Invalid mode type'}), 400
+        
+        qpath = shlex.quote(path)
+        qmode = shlex.quote(mode_str)
+        cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"chmod {qmode} {qpath} || echo __ERR__"]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        if res.returncode != 0 or '__ERR__' in (res.stdout or ''):
+            return jsonify({'error': (res.stderr or res.stdout or 'chmod failed').strip()}), 400
+        logger.info(f'Permissions changed in container: {path} to {mode_str}')
+        return jsonify({'message': 'Permissions changed successfully'})
+    except Exception as e:
+         return jsonify({'error': f'Could not change permissions: {str(e)}'}), 400
+
+@app.route('/api/files/chown', methods=['POST'])
+@login_required
+def chown_file():
+    logger.info('File chown attempt')
+    path = request.json.get('path')
+    owner = request.json.get('owner')
+    group = request.json.get('group')
+    if not path:
+        return jsonify({'error': 'Path must be specified'}), 400
+    
+    path = os.path.normpath(path)
+    if path.startswith('..') or not path.startswith('/'):
+        return jsonify({'error': 'Invalid path'}), 400
+    
+    try:
+        # Build chown target string (owner[:group])
+        target = ''
+        if owner and group:
+            target = f"{owner}:{group}"
+        elif owner and not group:
+            target = str(owner)
+        elif group and not owner:
+            target = f":{group}"
+        else:
+            return jsonify({'error': 'Owner or group must be specified'}), 400
+        
+        qpath = shlex.quote(path)
+        qtarget = shlex.quote(target)
+        cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"chown {qtarget} {qpath} || echo __ERR__"]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        if res.returncode != 0 or '__ERR__' in (res.stdout or ''):
+            return jsonify({'error': (res.stderr or res.stdout or 'chown failed').strip()}), 400
+        logger.info(f'Ownership changed in container: {path} to {target}')
+        return jsonify({'message': 'Ownership changed successfully'})
+    except Exception as e:
+        return jsonify({'error': f'Could not change ownership: {str(e)}'}), 400
+
+@app.route('/api/files/rename', methods=['POST'])
+@login_required
+def rename_file():
+    logger.info('File rename attempt')
+    old_path = request.json.get('old_path')
+    new_path = request.json.get('new_path')
+    if not old_path or not new_path:
+        return jsonify({'error': 'Both old and new paths must be specified'}), 400
+    
+    old_path = os.path.normpath(old_path)
+    new_path = os.path.normpath(new_path)
+    if old_path.startswith('..') or new_path.startswith('..') or not old_path.startswith('/') or not new_path.startswith('/'):
+        return jsonify({'error': 'Invalid path'}), 400
+    
+    try:
+        qold = shlex.quote(old_path)
+        qnew = shlex.quote(new_path)
+        cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"if [ ! -e {qold} ]; then echo __SRC_NOT_FOUND__; exit 1; fi; if [ -e {qnew} ]; then echo __DST_EXISTS__; exit 1; fi; mv {qold} {qnew} || echo __ERR__"]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        out = (res.stdout or '')
+        if '__SRC_NOT_FOUND__' in out:
+            return jsonify({'error': 'Source file or directory not found'}), 404
+        if '__DST_EXISTS__' in out:
+            return jsonify({'error': 'Destination already exists'}), 400
+        if res.returncode != 0 or '__ERR__' in out:
+            return jsonify({'error': (res.stderr or res.stdout or 'rename failed').strip()}), 400
+        logger.info(f'File/directory renamed in container from {old_path} to {new_path}')
+        return jsonify({'message': 'File/directory renamed successfully'})
+    except Exception as e:
+        return jsonify({'error': f'Could not rename: {str(e)}'}), 400
+
+@app.route('/api/files/download', methods=['GET'])
+@login_required
+def download_file():
+    logger.info('File download attempt')
+    path = request.args.get('path')
+    if not path:
+        return jsonify({'error': 'No path specified'}), 400
+    
+    path = os.path.normpath(path)
+    if path.startswith('..') or not path.startswith('/'):
+        return jsonify({'error': 'Invalid path'}), 400
+    
+    try:
+        q = shlex.quote(path)
+        # Ensure it is a regular file inside container
+        check_cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"[ -f {q} ] || echo __NOT_FILE__"]
+        chk = subprocess.run(check_cmd, capture_output=True, text=True)
+        if '__NOT_FILE__' in (chk.stdout or ''):
+            return jsonify({'error': 'File not found or is a directory'}), 404
+        if chk.returncode != 0:
+            return jsonify({'error': (chk.stderr or chk.stdout or 'Check failed').strip()}), 400
+        
+        # Stream file content via docker exec cat
+        def generate():
+            cat_cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"cat {q}"]
+            proc = subprocess.Popen(cat_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            try:
+                while True:
+                    chunk = proc.stdout.read(8192)
+                    if not chunk:
+                        break
+                    yield chunk
+            finally:
+                proc.stdout.close()
+                proc.wait()
+        
+        basename = os.path.basename(path)
+        headers = {
+            'Content-Type': 'application/octet-stream',
+            'Content-Disposition': f'attachment; filename="{basename}"'
+        }
+        logger.info(f'File downloaded from container: {path}')
+        return Response(generate(), headers=headers)
+    except Exception as e:
+        return jsonify({'error': f'Could not download file: {str(e)}'}), 400
+
+@app.route('/api/files/compress', methods=['POST'])
+@login_required
+def compress_files():
+    logger.info('File compression attempt')
+    data = request.json
+    paths = data.get('paths', [])
+    archive_name = data.get('archive_name', 'archive.zip')
+    
+    if not paths:
+        return jsonify({'error': 'No files specified'}), 400
+    
+    # Validate paths inside container
+    safe_paths = []
+    for p in paths:
+        p = os.path.normpath(p)
+        if p.startswith('..') or not p.startswith('/'):
+            return jsonify({'error': 'Invalid path'}), 400
+        safe_paths.append(p)
+    
+    try:
+        # Determine archive directory (use dirname of first path)
+        first_path = os.path.normpath(safe_paths[0])
+        archive_dir = os.path.dirname(first_path) or '/'
+        
+        # Ensure archive name ends with .zip
+        if not archive_name.endswith('.zip'):
+            archive_name += '.zip'
+        
+        # Build zip command inside container
+        qdir = shlex.quote(archive_dir)
+        qarchive = shlex.quote(os.path.join(archive_dir, archive_name))
+        qfiles = ' '.join(shlex.quote(p) for p in safe_paths)
+        cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"cd {qdir} && zip -r {qarchive} {qfiles} || echo __ERR__"]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        if res.returncode != 0 or '__ERR__' in (res.stdout or ''):
+            return jsonify({'error': (res.stderr or res.stdout or 'zip failed').strip()}), 400
+        
+        logger.info(f'Files compressed in container to: {os.path.join(archive_dir, archive_name)}')
+        return jsonify({'message': 'Files compressed successfully', 'archive_path': os.path.join(archive_dir, archive_name)})
+    except Exception as e:
+        return jsonify({'error': f'Could not compress files: {str(e)}'}), 400
+
+@app.route('/api/files/uncompress', methods=['POST'])
+@login_required
+def uncompress_file():
+    logger.info('File uncompression attempt')
+    data = request.json
+    archive_path = data.get('path')
+    extract_to = data.get('extract_to')
+    
+    if not archive_path:
+        return jsonify({'error': 'No archive path specified'}), 400
+    
+    archive_path = os.path.normpath(archive_path)
+    if archive_path.startswith('..') or not archive_path.startswith('/'):
+        return jsonify({'error': 'Invalid path'}), 400
+    
+    # If extract_to is not specified, extract to the same directory as the archive
+    if not extract_to:
+        extract_to = os.path.dirname(archive_path)
+    else:
+        extract_to = os.path.normpath(extract_to)
+        if extract_to.startswith('..') or not extract_to.startswith('/'):
+            return jsonify({'error': 'Invalid extraction path'}), 400
+    
+    try:
+        qarchive = shlex.quote(archive_path)
+        qextract = shlex.quote(extract_to)
+        # Determine archive type and extract via container tools
+        if archive_path.endswith('.zip'):
+            cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"unzip -o {qarchive} -d {qextract} || echo __ERR__"]
+        elif archive_path.endswith(('.tar', '.tar.gz', '.tgz', '.tar.bz2')):
+            cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"mkdir -p {qextract} && tar -xf {qarchive} -C {qextract} || echo __ERR__"]
+        else:
+            return jsonify({'error': 'Unsupported archive format. Supported: .zip, .tar, .tar.gz, .tgz, .tar.bz2'}), 400
+        
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        if res.returncode != 0 or '__ERR__' in (res.stdout or ''):
+            return jsonify({'error': (res.stderr or res.stdout or 'extract failed').strip()}), 400
+        
+        logger.info(f'Archive extracted in container: {archive_path} to {extract_to}')
+        return jsonify({'message': 'Archive extracted successfully', 'extract_path': extract_to})
+    except Exception as e:
+        return jsonify({'error': f'Could not extract archive: {str(e)}'}), 400
+
+@app.route('/api/files/create-directory', methods=['POST'])
+@login_required
+def create_directory():
+    logger.info('Directory creation attempt')
+    path = request.json.get('path')
+    if not path:
+        return jsonify({'error': 'No path specified'}), 400
+    
+    path = os.path.normpath(path)
+    if path.startswith('..') or not path.startswith('/'):
+        return jsonify({'error': 'Invalid path'}), 400
+    
+    try:
+        q = shlex.quote(path)
+        cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"mkdir -p {q} || echo __ERR__"]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        if res.returncode != 0 or '__ERR__' in (res.stdout or ''):
+            return jsonify({'error': (res.stderr or res.stdout or 'mkdir failed').strip()}), 400
+        logger.info(f'Directory created successfully in container: {path}')
+        return jsonify({'message': 'Directory created successfully'})
+    except Exception as e:
+        return jsonify({'error': f'Could not create directory: {str(e)}'}), 400
+
+@app.route('/api/files/read', methods=['POST'])
+@login_required
+def read_file():
+    path = request.json.get('path')
+    if not path:
+        return jsonify({'error': 'No path specified'}), 400
+    
+    path = os.path.normpath(path)
+    if path.startswith('..') or not path.startswith('/'):
+        return jsonify({'error': 'Invalid path'}), 400
+    
+    try:
+        q = shlex.quote(path)
+        # Ensure file and not directory
+        check_cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"[ -f {q} ] || echo __NOT_FILE__"]
+        chk = subprocess.run(check_cmd, capture_output=True, text=True)
+        if '__NOT_FILE__' in (chk.stdout or ''):
+            return jsonify({'error': 'File not found or is a directory'}), 404
+        if chk.returncode != 0:
+            return jsonify({'error': (chk.stderr or chk.stdout or 'Check failed').strip()}), 400
+        
+        # Read content via docker exec cat
+        cat_cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"cat {q}"]
+        res = subprocess.run(cat_cmd, capture_output=True, text=True)
+        if res.returncode != 0:
+            return jsonify({'error': (res.stderr or res.stdout or 'Read failed').strip()}), 400
+        content = res.stdout
+        logger.info(f'File read from container: {path}, content length: {len(content)}')
+        return jsonify({
+            'content': content,
+            'path': path
+        })
+    except Exception as e:
+        logger.error(f'Error reading file {path}: {str(e)}')
+        return jsonify({'error': f'Could not read file: {str(e)}'}), 400
+
+@app.route('/api/files/new', methods=['POST'])
+@login_required
+def create_new_file():
+    try:
+        data = request.json
+        file_path = data.get('path')
+        file_name = data.get('name')
+        
+        if not file_path or not file_name:
+            return jsonify({'error': 'Path and filename are required'}), 400
+            
+        # Normalize path to prevent directory traversal
+        full_path = os.path.normpath(os.path.join(file_path, file_name))
+        if full_path.startswith('..') or not full_path.startswith('/'):
+            return jsonify({'error': 'Invalid path'}), 400
+            
+        # Create empty file inside container if not exists
+        qpath = shlex.quote(full_path)
+        cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"[ -e {qpath} ] && echo __EXISTS__ || (mkdir -p $(dirname {qpath}) && touch {qpath}) || echo __ERR__"]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        out = (res.stdout or '')
+        if '__EXISTS__' in out:
+            return jsonify({'error': 'File already exists'}), 400
+        if res.returncode != 0 or '__ERR__' in out:
+            return jsonify({'error': (res.stderr or res.stdout or 'create failed').strip()}), 400
+            
+        logger.info(f'New file created in container: {full_path}')
+        return jsonify({'message': 'File created successfully'})
+    except Exception as e:
+        logger.error(f'Error creating new file: {str(e)}')
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/files/save', methods=['POST'])
+@login_required
+def save_file():
+    path = request.json.get('path')
+    content = request.json.get('content')
+    if not path or content is None:
+        return jsonify({'error': 'Both path and content must be specified'}), 400
+    
+    path = os.path.normpath(path)
+    if path.startswith('..') or not path.startswith('/'):
+        return jsonify({'error': 'Invalid path'}), 400
+    
+    try:
+        qpath = shlex.quote(path)
+        # Ensure file exists and is not a directory
+        check_cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"[ -f {qpath} ] || echo __NOT_FILE__"]
+        chk = subprocess.run(check_cmd, capture_output=True, text=True)
+        if '__NOT_FILE__' in (chk.stdout or ''):
+            return jsonify({'error': 'File not found or is a directory'}), 404
+        if chk.returncode != 0:
+            return jsonify({'error': (chk.stderr or chk.stdout or 'Check failed').strip()}), 400
+        
+        # Write content using docker exec and tee (safe for most text)
+        # We will base64-encode content to avoid shell quoting issues
+        import base64
+        b64 = base64.b64encode(content.encode('utf-8')).decode('ascii')
+        qb64 = shlex.quote(b64)
+        cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"echo {qb64} | base64 -d > {qpath} || echo __ERR__"]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        if res.returncode != 0 or '__ERR__' in (res.stdout or ''):
+            return jsonify({'error': (res.stderr or res.stdout or 'write failed').strip()}), 400
+        return jsonify({'message': 'File saved successfully'})
+    except Exception as e:
+        return jsonify({'error': f'Could not save file: {str(e)}'}), 400
 
 @app.route('/api/container/start-log/<container_name>')
 @login_required

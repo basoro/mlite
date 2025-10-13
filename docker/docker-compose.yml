@@ -179,7 +179,9 @@ services:
     restart: unless-stopped
 
   nginx:
-    image: nginx:latest
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     container_name: mlite_nginx
     ports:
       - "80:80"
