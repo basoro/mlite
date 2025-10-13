@@ -17,6 +17,237 @@ from collections import deque
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s in %(module)s: %(message)s')
 logger = logging.getLogger(__name__)
 
+# MySQL (Docker-based) helpers
+# Use docker exec to run mysql commands inside the mlite_mysql container.
+# Provide minimal compatibility with cursor/connection interface used by routes.
+try:
+    import mysql.connector  # optional, only for Error types referenced in except blocks
+except Exception:
+    class _DummyMySQLError(Exception):
+        pass
+    class _DummyPoolError(Exception):
+        pass
+    class _DummyPooling:
+        class MySQLConnectionPool:
+            def __init__(self, **kwargs):
+                pass
+            def _remove_connections(self):
+                pass
+    class _DummyConnector:
+        Error = _DummyMySQLError
+        PoolError = _DummyPoolError
+        pooling = _DummyPooling
+    class mysql:
+        connector = _DummyConnector()
+
+MYSQL_CONTAINER_NAME = os.environ.get('MYSQL_CONTAINER_NAME', 'mlite_mysql')
+
+def get_mysql_config_path():
+    """Return path to persisted MySQL config JSON for root access."""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        return os.path.join(base_dir, 'mysql_config.json')
+    except Exception:
+        return 'mysql_config.json'
+
+
+def load_mysql_config():
+    """Load MySQL access config from JSON (root user/password)."""
+    default_cfg = {
+        'user': 'root',
+        'password': '',
+        'host': 'localhost',  # within container
+    }
+    cfg_path = get_mysql_config_path()
+    try:
+        if os.path.exists(cfg_path):
+            with open(cfg_path, 'r') as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    # ensure keys
+                    for k in default_cfg:
+                        data.setdefault(k, default_cfg[k])
+                    return data
+    except Exception as e:
+        logger.warning(f"Failed to load MySQL config: {e}")
+    return default_cfg
+
+
+def save_mysql_config(cfg: dict) -> bool:
+    """Persist MySQL access config to JSON file."""
+    try:
+        cfg_path = get_mysql_config_path()
+        with open(cfg_path, 'w') as f:
+            json.dump(cfg or {}, f)
+        return True
+    except Exception as e:
+        logger.error(f"Failed to save MySQL config: {e}")
+        return False
+
+# Global configuration used by routes
+_db_cfg_loaded = load_mysql_config()
+# Expose as the name expected by routes
+db_config = {
+    'user': _db_cfg_loaded.get('user', 'root'),
+    'password': _db_cfg_loaded.get('password', ''),
+    # The following keys are kept for compatibility when routes pass db_config to pooling
+    'host': _db_cfg_loaded.get('host', 'localhost'),
+    'database': None,
+}
+connection_pool = None  # not used with docker-based access, kept for compatibility
+
+
+def _build_mysql_cli_args(user: str, password: str, database: str = None, batch: bool = True, skip_column_names: bool = False):
+    args = ['mysql', f'-u{user}']
+    if password:
+        args.append(f'-p{password}')
+    if database:
+        args.extend(['-D', database])
+    if batch:
+        args.append('--batch')
+        args.append('--raw')
+    if skip_column_names:
+        args.append('--skip-column-names')
+    return args
+
+
+def _exec_mysql(sql: str, db: str = None, expect_output: bool = True, dictionary: bool = False):
+    """Run given SQL inside MySQL container and parse output.
+    - When dictionary=True, keep column names in first line and return list of dicts.
+    - When dictionary=False, skip column names and return list of lists.
+    """
+    user = db_config.get('user', 'root')
+    pwd = db_config.get('password', '')
+    skip_cols = not dictionary
+    cli_args = _build_mysql_cli_args(user, pwd, database=db, batch=True, skip_column_names=skip_cols)
+    cmd = ['docker', 'exec', MYSQL_CONTAINER_NAME] + cli_args + ['-e', sql]
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        if result.returncode != 0:
+            stderr = (result.stderr or '').strip()
+            stdout = (result.stdout or '').strip()
+            raise RuntimeError(stderr or stdout or 'mysql cli error')
+        out = (result.stdout or '').strip()
+        if not expect_output:
+            return []
+        if not out:
+            return []
+        lines = out.splitlines()
+        # Parse tab-separated output
+        if dictionary:
+            if not lines:
+                return []
+            headers = lines[0].split('\t')
+            rows = []
+            for line in lines[1:]:
+                cols = line.split('\t')
+                row = {headers[i]: (cols[i] if i < len(cols) else None) for i in range(len(headers))}
+                rows.append(row)
+            return rows
+        else:
+            rows = []
+            for line in lines:
+                cols = line.split('\t')
+                rows.append(cols)
+            return rows
+    except Exception as e:
+        logger.error(f"MySQL exec error: {e}")
+        raise
+
+
+def _format_sql_with_params(sql: str, params: tuple or list or None):
+    if not params:
+        return sql
+    def esc(val):
+        s = str(val)
+        s = s.replace("\\", "\\\\").replace("'", "\\'")
+        return f"'{s}'"
+    out = sql
+    for p in params:
+        out = out.replace('%s', esc(p), 1)
+    return out
+
+
+class DockerMySQLCursor:
+    def __init__(self, dictionary: bool = False, database: str or None = None):
+        self.dictionary = dictionary
+        self.database = database
+        self._last_result = []
+        self.rowcount = 0
+    def execute(self, sql: str, params: tuple or list or None = None):
+        formatted = _format_sql_with_params(sql, params)
+        # Decide if we expect output: SELECT/SHOW/DESCRIBE returns rows
+        is_select_like = bool(re.match(r"\s*(SELECT|SHOW|DESCRIBE|EXPLAIN)\b", formatted, re.IGNORECASE))
+        if is_select_like:
+            self._last_result = _exec_mysql(formatted, db=self.database, expect_output=True, dictionary=self.dictionary)
+            # For select-like, rowcount equals number of returned rows
+            try:
+                self.rowcount = len(self._last_result)
+            except Exception:
+                self.rowcount = 0
+        else:
+            # Execute DML/DDL, then query ROW_COUNT() to emulate affected rows
+            rows = _exec_mysql(f"{formatted}; SELECT ROW_COUNT();", db=self.database, expect_output=True, dictionary=False)
+            # ROW_COUNT() result should be last line
+            try:
+                if rows:
+                    last = rows[-1]
+                    # rows are list of columns; take first value
+                    val = int((last[0] if isinstance(last, (list, tuple)) and last else last))
+                    self.rowcount = val
+                else:
+                    self.rowcount = 0
+            except Exception:
+                self.rowcount = 0
+            # Non-select queries don't have result sets
+            self._last_result = []
+    def fetchall(self):
+        return self._last_result
+    def fetchone(self):
+        try:
+            return self._last_result[0] if self._last_result else None
+        except Exception:
+            return None
+    def close(self):
+        pass
+
+
+class DockerMySQLConnection:
+    def __init__(self, database: str or None = None):
+        self.database = database
+        self._autocommit = True
+    def cursor(self, dictionary: bool = False):
+        return DockerMySQLCursor(dictionary=dictionary, database=self.database)
+    def commit(self):
+        # mysql CLI executes in autocommit by default, nothing needed
+        pass
+    def close(self):
+        pass
+    # Provide minimal compatibility with connector API
+    @property
+    def autocommit(self):
+        return self._autocommit
+    @autocommit.setter
+    def autocommit(self, value):
+        # No effect; mysql CLI runs statements independently
+        self._autocommit = bool(value)
+    def cmd_query(self, sql: str):
+        # Handle USE to switch default database; otherwise run as no-output command
+        m = re.match(r"\s*USE\s+`?([a-zA-Z0-9_]+)`?\s*;?\s*$", sql, re.IGNORECASE)
+        if m:
+            self.database = m.group(1)
+        try:
+            _exec_mysql(sql, db=self.database, expect_output=False, dictionary=False)
+        except Exception as e:
+            # Surface error via exception to mimic connector behavior
+            raise e
+
+
+def create_mysql_connection(database: str or None = None):
+    """Return a docker-backed MySQL connection shim compatible with route usage."""
+    return DockerMySQLConnection(database=database)
+
+
 # Helper untuk memformat timestamp Docker menjadi "YYYY-MM-DD H:i:s" tanpa zona waktu
 def format_created_field(s: str) -> str:
     try:
@@ -1904,6 +2135,113 @@ def mysql():
     mysql_containers = get_mysql_containers()
     return render_template('mysql.html', mysql_containers=mysql_containers, nginx_status=nginx_status)
 
+@app.route('/mysql-management')
+@login_required
+def mysql_management():
+    """MySQL database management page"""
+    nginx_status = check_nginx_status()
+    return render_template('mysql_management.html', nginx_status=nginx_status)
+
+# --- MySQL Configuration Endpoints ---
+@app.route('/api/mysql/get-config', methods=['GET'])
+@login_required
+def get_mysql_config_file():
+    """Read MySQL configuration from inside the Docker container."""
+    try:
+        # Prefer the primary my.cnf if present (effective config), then common defaults
+        candidate_files = [
+            '/etc/my.cnf',
+            '/etc/mysql/my.cnf',
+            '/etc/mysql/mysql.conf.d/mysqld.cnf',
+            '/etc/mysql/mariadb.conf.d/50-server.cnf',
+            '/etc/mysql/conf.d/99-custom.cnf'
+        ]
+        chosen_path = None
+        for path in candidate_files:
+            try:
+                check = subprocess.run(['docker', 'exec', MYSQL_CONTAINER_NAME, 'test', '-f', path], capture_output=True, text=True)
+                if check.returncode == 0:
+                    chosen_path = path
+                    break
+            except Exception:
+                continue
+        if not chosen_path:
+            # If no file, pick a writable directory for future saves
+            dir_candidates = ['/etc/mysql/conf.d', '/etc/mysql/mysql.conf.d', '/etc/mysql/mariadb.conf.d', '/etc']
+            for d in dir_candidates:
+                check = subprocess.run(['docker', 'exec', MYSQL_CONTAINER_NAME, 'test', '-d', d], capture_output=True, text=True)
+                if check.returncode == 0:
+                    chosen_path = os.path.join(d, '99-custom.cnf')
+                    break
+        if not chosen_path:
+            return jsonify({'success': False, 'error': 'No suitable MySQL config location found in container'}), 404
+        # Read content if file exists; otherwise provide a minimal template
+        read_cmd = ['docker', 'exec', MYSQL_CONTAINER_NAME, 'bash', '-lc', f"if [ -f '{chosen_path}' ]; then cat '{chosen_path}'; fi"]
+        read_result = subprocess.run(read_cmd, capture_output=True, text=True)
+        content = read_result.stdout if read_result.returncode == 0 else ''
+        if not content.strip():
+            content = '[mysqld]\n'
+        return jsonify({'success': True, 'path': chosen_path, 'config': content})
+    except Exception as e:
+        logger.error(f"Error reading MySQL config: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/mysql/save-config', methods=['POST'])
+@login_required
+def save_mysql_config_file():
+    """Save MySQL configuration into the container and restart MySQL."""
+    try:
+        data = request.get_json(silent=True) or {}
+        config_content = data.get('config')
+        if not isinstance(config_content, str) or not config_content.strip():
+            return jsonify({'success': False, 'error': 'Config content is required'}), 400
+        # Determine target path: prefer /etc/my.cnf if present
+        target_path = None
+        check_my = subprocess.run(['docker', 'exec', MYSQL_CONTAINER_NAME, 'test', '-f', '/etc/my.cnf'], capture_output=True, text=True)
+        if check_my.returncode == 0:
+            target_path = '/etc/my.cnf'
+        else:
+            # Fallback to conf directories
+            dir_candidates = ['/etc/mysql/conf.d', '/etc/mysql/mysql.conf.d', '/etc/mysql/mariadb.conf.d', '/etc']
+            for d in dir_candidates:
+                check = subprocess.run(['docker', 'exec', MYSQL_CONTAINER_NAME, 'test', '-d', d], capture_output=True, text=True)
+                if check.returncode == 0:
+                    target_path = f"{d}/99-custom.cnf"
+                    break
+        if not target_path:
+            return jsonify({'success': False, 'error': 'MySQL config location not found in container'}), 404
+        ts = int(time.time())
+        backup_and_write = (
+            f"if [ -f '{target_path}' ]; then cp '{target_path}' '{target_path}.backup.{ts}'; fi; "
+            f"cat > '{target_path}' <<'EOF'\n{config_content}\nEOF"
+        )
+        write_cmd = ['docker', 'exec', '-i', MYSQL_CONTAINER_NAME, 'bash', '-lc', backup_and_write]
+        write_result = subprocess.run(write_cmd, capture_output=True, text=True)
+        if write_result.returncode != 0:
+            return jsonify({'success': False, 'error': write_result.stderr or write_result.stdout}), 500
+        # Restart MySQL by restarting the container
+        restart_result = subprocess.run(['docker', 'restart', MYSQL_CONTAINER_NAME], capture_output=True, text=True)
+        if restart_result.returncode != 0:
+            return jsonify({'success': False, 'error': f"Failed to restart MySQL container: {restart_result.stderr or restart_result.stdout}"}), 500
+        time.sleep(3)
+        # Optional verification
+        try:
+            connection = create_mysql_connection()
+            cursor = connection.cursor(dictionary=True)
+            cursor.execute('SHOW VARIABLES LIKE "log_bin"')
+            lb = cursor.fetchone()
+            cursor.execute('SHOW VARIABLES LIKE "server_id"')
+            sid = cursor.fetchone()
+            logger.info(f"Post-save config: log_bin={lb}, server_id={sid}")
+            cursor.close()
+            connection.close()
+        except Exception as ve:
+            logger.warning(f"MySQL verification failed after config save: {ve}")
+        return jsonify({'success': True, 'message': f"Configuration saved to {target_path} and MySQL restarted"})
+    except Exception as e:
+        logger.error(f"Error saving MySQL config: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/mysql-containers')
 @login_required
 def api_mysql_containers():
@@ -2613,6 +2951,1534 @@ def api_container_control(container_name, action):
             'success': False,
             'error': message
         }), 500
+
+@app.route('/api/mysql-info')
+@login_required
+def mysql_info():
+    try:
+        connection = create_mysql_connection()
+        connection.autocommit = True
+        connection.cmd_query('USE mysql')
+        cursor = connection.cursor()
+        cursor.execute('SHOW VARIABLES LIKE "%version%"')
+        version = cursor.fetchall()
+        cursor.execute('SHOW STATUS')
+        status = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        # Safely convert list-of-lists to dict, only using pairs
+        def pairs_to_dict(rows):
+            out = {}
+            for r in rows:
+                try:
+                    if isinstance(r, (list, tuple)) and len(r) >= 2:
+                        out[str(r[0])] = r[1]
+                except Exception:
+                    continue
+            return out
+        return jsonify({
+            'version': pairs_to_dict(version),
+            'status': pairs_to_dict(status)
+        })
+    except Exception as e:
+        logger.error(f'MySQL info error: {e}')
+        return jsonify({'error': str(e)}), 500
+
+# MySQL Database Management
+@app.route('/api/mysql/execute-query', methods=['POST'])
+@login_required
+def execute_query():
+    logger.info('Database query execution requested')
+    try:
+        data = request.get_json()
+        database = data.get('database')
+        query = data.get('query')
+
+        if not database or not query:
+            return jsonify({'error': 'Database and query are required'}), 400
+
+        connection = create_mysql_connection()
+        connection.cmd_query(f'USE `{database}`')
+
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute(query)
+
+        if query.strip().upper().startswith(('SELECT', 'SHOW', 'DESCRIBE', 'EXPLAIN')):
+            result = cursor.fetchall()
+        else:
+            connection.commit()
+            result = [{'affected_rows': cursor.rowcount}]
+
+        cursor.close()
+        connection.close()
+
+        return jsonify(result)
+
+    except mysql.connector.Error as err:
+        logger.error(f'MySQL error: {err}')
+        return jsonify({'error': str(err)}), 500
+    except Exception as e:
+        logger.error(f'Error executing query: {e}')
+        return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/api/mysql/tables')
+@login_required
+def list_tables():
+    logger.info('Table list requested')
+    connection = None
+    cursor = None
+    try:
+        db_name = request.args.get('database')
+        if not db_name:
+            logger.warning('Database name not provided')
+            return jsonify({'error': 'Database name is required'}), 400
+        # Validate database name (prevent SQL injection)
+        if not re.match(r'^[a-zA-Z0-9_]+$', db_name):
+            logger.warning(f'Invalid database name format: {db_name}')
+            return jsonify({'error': 'Invalid database name format'}), 400
+        try:
+            connection = create_mysql_connection()
+            connection.cmd_query(f'USE `{db_name}`')
+            cursor = connection.cursor(dictionary=True)
+            # Test connection
+            cursor.execute('SELECT 1')
+            cursor.fetchone()
+        except mysql.connector.Error as e:
+            logger.error(f'Database connection error: {str(e)}')
+            return jsonify({'error': 'Database connection error'}), 500
+        try:
+            # Get list of tables with information
+            cursor.execute("""
+                SELECT 
+                    table_name as name,
+                    `table_rows` as `rows`,
+                    ROUND((data_length + index_length) / 1024 / 1024, 2) as size
+                FROM information_schema.tables 
+                WHERE table_schema = %s
+                AND table_type = 'BASE TABLE'
+            """, (db_name,))
+            table_list = cursor.fetchall()
+            # Handle null values
+            for table in table_list:
+                table['rows'] = table['rows'] if table['rows'] is not None else 0
+                table['size'] = table['size'] if table['size'] is not None else 0
+        except mysql.connector.Error as e:
+            logger.error(f'Error listing tables: {str(e)}')
+            raise
+        return jsonify(table_list)
+    except mysql.connector.Error as e:
+        error_msg = f'MySQL Error ({e.errno}): {e.msg}'
+        logger.error(f'Error listing tables: {error_msg}')
+        return jsonify({'error': error_msg}), 500
+    except Exception as e:
+        error_msg = f'Unexpected error: {str(e)}'
+        logger.error(f'Error listing tables: {error_msg}')
+        return jsonify({'error': error_msg}), 500
+    finally:
+        if cursor:
+            try:
+                cursor.close()
+            except Exception as e:
+                logger.error(f'Error closing cursor: {str(e)}')
+        if connection:
+            try:
+                connection.close()
+            except Exception as e:
+                logger.error(f'Error closing connection: {str(e)}')
+
+@app.route('/api/mysql/databases')
+@login_required
+def list_databases():
+    logger.info('Database list requested')
+    try:
+        connection = create_mysql_connection()
+        cursor = connection.cursor()
+        # Get list of databases
+        cursor.execute('SHOW DATABASES')
+        databases = cursor.fetchall()
+        # Get size of each database
+        db_list = []
+        for row in databases:
+            # Support both list-of-lists and list-of-tuples
+            db_name = row[0] if isinstance(row, (list, tuple)) and row else row
+            if db_name not in ['information_schema', 'performance_schema', 'mysql', 'sys']:
+                cursor.execute(f"""
+                    SELECT 
+                        ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) 
+                    FROM information_schema.tables 
+                    WHERE table_schema = '{db_name}'
+                    GROUP BY table_schema;
+                """)
+                size_row = cursor.fetchone()
+                size_val = None
+                if isinstance(size_row, dict):
+                    # dictionary cursor case
+                    size_val = list(size_row.values())[0] if size_row else None
+                elif isinstance(size_row, (list, tuple)):
+                    size_val = size_row[0] if size_row else None
+                else:
+                    size_val = size_row
+                db_list.append({
+                    'name': db_name,
+                    'size': float(size_val) if size_val is not None else 0
+                })
+        cursor.close()
+        connection.close()
+        return jsonify(db_list)
+    except Exception as e:
+        logger.error(f'List databases error: {e}')
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/mysql/create-db', methods=['POST'])
+@login_required
+def create_database():
+    logger.info('Database creation attempt')
+    try:
+        data = request.json
+        db_name = data.get('name')
+        db_user = data.get('user')
+        db_password = data.get('password')
+        
+        if not db_name:
+            logger.warning('Database name not provided')
+            return jsonify({'error': 'Nama database diperlukan'}), 400
+
+        # Validate database name (prevent SQL injection)
+        if not re.match(r'^[a-zA-Z0-9_]+$', db_name):
+            logger.warning(f'Invalid database name format: {db_name}')
+            return jsonify({'error': 'Format nama database tidak valid. Gunakan hanya huruf, angka, dan underscore'}), 400
+
+        # Validate username if provided
+        if db_user and not re.match(r'^[a-zA-Z0-9_]+$', db_user):
+            logger.warning(f'Invalid username format: {db_user}')
+            return jsonify({'error': 'Format username tidak valid. Gunakan hanya huruf, angka, dan underscore'}), 400
+
+        connection = create_mysql_connection()
+        cursor = connection.cursor()
+
+        # Create database
+        cursor.execute(f'CREATE DATABASE `{db_name}`')
+        
+        # Create user and grant privileges if username and password provided
+        if db_user and db_password:
+            try:
+                # Check if user already exists
+                cursor.execute("SELECT User FROM mysql.user WHERE User = %s AND Host = 'localhost'", (db_user,))
+                user_exists = cursor.fetchone()
+                
+                if user_exists:
+                    # User exists, just grant privileges
+                    cursor.execute(f"GRANT ALL PRIVILEGES ON `{db_name}`.* TO '{db_user}'@'localhost'")
+                    cursor.execute("FLUSH PRIVILEGES")
+                    logger.info(f'Granted privileges on {db_name} to existing user {db_user}')
+                else:
+                    # Create new user
+                    cursor.execute(f"CREATE USER '{db_user}'@'localhost' IDENTIFIED BY %s", (db_password,))
+                    # Grant all privileges on the database to the user
+                    cursor.execute(f"GRANT ALL PRIVILEGES ON `{db_name}`.* TO '{db_user}'@'localhost'")
+                    cursor.execute("FLUSH PRIVILEGES")
+                    logger.info(f'Created new user {db_user} and granted privileges on {db_name}')
+            except mysql.connector.Error as user_err:
+                logger.warning(f'Error handling user {db_user}: {user_err}')
+                # Continue without failing the database creation
+                pass
+            
+        # Check if user exists before closing connection
+        user_created_or_exists = False
+        if db_user:
+            try:
+                cursor.execute("SELECT User FROM mysql.user WHERE User = %s AND Host = 'localhost'", (db_user,))
+                user_created_or_exists = cursor.fetchone() is not None
+            except mysql.connector.Error:
+                user_created_or_exists = False
+        
+        connection.commit()
+        cursor.close()
+        connection.close()
+        
+        if db_user:
+            if user_created_or_exists:
+                logger.info(f'Database {db_name} created and privileges granted to user {db_user}')
+                return jsonify({'message': f'Database "{db_name}" berhasil dibuat dan privileges diberikan ke user "{db_user}"'})
+            else:
+                logger.info(f'Database {db_name} created successfully')
+                return jsonify({'message': f'Database "{db_name}" berhasil dibuat (user gagal dibuat)'})
+        else:
+            logger.info(f'Database {db_name} created successfully')
+            return jsonify({'message': f'Database "{db_name}" berhasil dibuat'})
+    except mysql.connector.Error as err:
+        logger.error(f'MySQL error during database creation: {err}')
+        if err.errno == 1007:  # Database already exists
+            return jsonify({'error': f'Database "{db_name}" sudah ada'}), 400
+        elif err.errno == 1045:  # Access denied
+            return jsonify({'error': 'Akses ditolak. Periksa konfigurasi MySQL'}), 500
+        else:
+            return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
+    except Exception as e:
+        logger.error(f'Unexpected error during database creation: {e}')
+        return jsonify({'error': f'Terjadi kesalahan: {str(e)}'}), 500
+
+@app.route('/api/mysql/delete-db', methods=['POST'])
+@login_required
+def delete_database():
+    logger.info('Database deletion attempt')
+    try:
+        db_name = request.json.get('name')
+        if not db_name:
+            logger.warning('Database name not provided for deletion')
+            return jsonify({'error': 'Nama database diperlukan'}), 400
+
+        # Validate database name (prevent SQL injection)
+        if not re.match(r'^[a-zA-Z0-9_]+$', db_name):
+            logger.warning(f'Invalid database name format for deletion: {db_name}')
+            return jsonify({'error': 'Format nama database tidak valid'}), 400
+
+        connection = create_mysql_connection()
+        cursor = connection.cursor()
+
+        # Drop database
+        cursor.execute(f'DROP DATABASE `{db_name}`')
+        connection.commit()
+        cursor.close()
+        connection.close()
+        
+        logger.info(f'Database {db_name} deleted successfully')
+        return jsonify({'message': f'Database "{db_name}" berhasil dihapus'})
+    except mysql.connector.Error as err:
+        logger.error(f'MySQL error during database deletion: {err}')
+        if err.errno == 1008:  # Database doesn't exist
+            return jsonify({'error': f'Database "{db_name}" tidak ditemukan'}), 400
+        elif err.errno == 1045:  # Access denied
+            return jsonify({'error': 'Akses ditolak. Periksa konfigurasi MySQL'}), 500
+        else:
+            return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
+    except Exception as e:
+        logger.error(f'Unexpected error during database deletion: {e}')
+        return jsonify({'error': f'Terjadi kesalahan: {str(e)}'}), 500
+
+@app.route('/api/mysql/delete-table', methods=['POST'])
+@login_required
+def delete_table():
+    logger.info('Table deletion requested')
+    try:
+        data = request.get_json()
+        db_name = data.get('database')
+        table_name = data.get('table')
+        
+        if not db_name or not table_name:
+            logger.warning('Database name or table name not provided')
+            return jsonify({'error': 'Nama database dan tabel diperlukan'}), 400
+        
+        # Validate database and table names (prevent SQL injection)
+        if not re.match(r'^[a-zA-Z0-9_]+$', db_name):
+            logger.warning(f'Invalid database name format for table deletion: {db_name}')
+            return jsonify({'error': 'Format nama database tidak valid'}), 400
+            
+        if not re.match(r'^[a-zA-Z0-9_]+$', table_name):
+            logger.warning(f'Invalid table name format for deletion: {table_name}')
+            return jsonify({'error': 'Format nama tabel tidak valid'}), 400
+
+        connection = create_mysql_connection()
+        cursor = connection.cursor()
+
+        # Use the specified database
+        cursor.execute(f'USE `{db_name}`')
+        
+        # Drop table
+        cursor.execute(f'DROP TABLE `{table_name}`')
+        connection.commit()
+        cursor.close()
+        connection.close()
+        
+        logger.info(f'Table {table_name} deleted successfully from database {db_name}')
+        return jsonify({'message': f'Tabel "{table_name}" berhasil dihapus dari database "{db_name}"'})
+    except mysql.connector.Error as err:
+        logger.error(f'MySQL error during table deletion: {err}')
+        if err.errno == 1051:  # Table doesn't exist
+            return jsonify({'error': f'Tabel "{table_name}" tidak ditemukan dalam database "{db_name}"'}), 400
+        elif err.errno == 1049:  # Database doesn't exist
+            return jsonify({'error': f'Database "{db_name}" tidak ditemukan'}), 400
+        elif err.errno == 1045:  # Access denied
+            return jsonify({'error': 'Akses ditolak. Periksa konfigurasi MySQL'}), 500
+        else:
+            return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
+    except Exception as e:
+        logger.error(f'Unexpected error during table deletion: {e}')
+        return jsonify({'error': f'Terjadi kesalahan: {str(e)}'}), 500
+
+@app.route('/api/mysql/get-root-password', methods=['GET'])
+@login_required
+def get_root_password():
+    """Return current root password from db_config (do not query MySQL)."""
+    try:
+        pwd = db_config.get('password', '')
+        return jsonify({'password': pwd or ''})
+    except Exception as e:
+        logger.error(f'Error getting root password: {e}')
+        return jsonify({'error': 'Failed to get root password'}), 500
+
+@app.route('/api/mysql/set-root-password', methods=['POST'])
+@login_required
+def set_root_password():
+    logger.info('Root password change requested')
+    try:
+        data = request.get_json()
+        new_password = data.get('password', '')
+        
+        # Connect to MySQL as root with current password from db_config
+        connection = create_mysql_connection()
+        cursor = connection.cursor()
+        
+        # Set new password for root user
+        if new_password:
+            cursor.execute("ALTER USER 'root'@'localhost' IDENTIFIED BY %s", (new_password,))
+        else:
+            cursor.execute("ALTER USER 'root'@'localhost' IDENTIFIED BY ''")
+        
+        connection.commit()
+        cursor.close()
+        connection.close()
+        
+        # Update the global db_config with new password
+        global db_config
+        old_password = db_config['password']
+        db_config['password'] = new_password
+        logger.info(f'Password updated in db_config: from "{old_password}" to "{new_password}"')
+        logger.info(f'Current db_config password: {db_config["password"]}')
+        
+        # Save configuration to JSON file for persistence
+        if save_mysql_config(db_config):
+            logger.info('Password configuration saved to file successfully')
+        else:
+            logger.warning('Failed to save password configuration to file')
+        
+        # Reinitialize connection pool with new password
+        global connection_pool
+        try:
+            if connection_pool:
+                connection_pool._remove_connections()
+            connection_pool = mysql.connector.pooling.MySQLConnectionPool(**db_config)
+            logger.info('Connection pool reinitialized with new password')
+        except Exception as e:
+            logger.warning(f'Failed to reinitialize connection pool: {str(e)}')
+            connection_pool = None
+        
+        # Restart SLEMP to reload database configuration
+        try:
+            logger.info('Restarting SLEMP to reload database configuration')
+            restart_result = subprocess.run(['supervisorctl', 'restart', 'slemp'], capture_output=True, text=True, timeout=30)
+            if restart_result.returncode == 0:
+                logger.info('SLEMP restarted successfully')
+            else:
+                logger.warning(f'Failed to restart SLEMP: {restart_result.stderr}')
+        except Exception as e:
+            logger.warning(f'Error restarting SLEMP: {str(e)}')
+        
+        logger.info('Root password changed successfully')
+        return jsonify({'message': 'Password root MySQL berhasil diubah'})
+        
+    except mysql.connector.Error as err:
+        logger.error(f'MySQL error during password change: {err}')
+        if err.errno == 1045:  # Access denied
+            return jsonify({'error': 'Akses ditolak. Password root saat ini mungkin sudah berubah'}), 500
+        else:
+            return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
+    except Exception as e:
+        logger.error(f'Unexpected error during password change: {e}')
+        return jsonify({'error': f'Terjadi kesalahan: {str(e)}'}), 500
+
+@app.route('/api/mysql/users', methods=['GET'])
+@login_required
+def get_mysql_users():
+    """Get list of MySQL users"""
+    try:
+        connection = create_mysql_connection()
+        cursor = connection.cursor(dictionary=True)
+        
+        # Get all users
+        cursor.execute("SELECT User, Host FROM mysql.user WHERE User != '' ORDER BY User, Host")
+        users = cursor.fetchall()
+        
+        # Get privileges for each user
+        for user in users:
+            try:
+                cursor.execute(f"SHOW GRANTS FOR '{user['User']}'@'{user['Host']}'")
+                grants = cursor.fetchall()
+                privileges = []
+                for grant in grants:
+                    grant_text = list(grant.values())[0]
+                    if 'ALL PRIVILEGES' in grant_text:
+                        privileges.append('ALL PRIVILEGES')
+                    elif 'GRANT' in grant_text:
+                        # Extract specific privileges
+                        start = grant_text.find('GRANT ') + 6
+                        end = grant_text.find(' ON')
+                        if start < end:
+                            privileges.append(grant_text[start:end])
+                user['privileges'] = ', '.join(privileges) if privileges else 'No privileges'
+            except Exception:
+                user['privileges'] = 'Unable to determine'
+        
+        cursor.close()
+        connection.close()
+        
+        return jsonify({'users': users})
+        
+    except mysql.connector.Error as err:
+        logger.error(f'MySQL error getting users: {err}')
+        return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
+    except Exception as e:
+        logger.error(f'Error getting MySQL users: {str(e)}')
+        return jsonify({'error': f'Terjadi kesalahan: {str(e)}'}), 500
+
+@app.route('/api/mysql/create-user', methods=['POST'])
+@login_required
+def create_mysql_user():
+    """Create a new MySQL user"""
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+        host = data.get('host', '%')
+        privileges = data.get('privileges', 'ALL')
+        
+        if not username or not password:
+            return jsonify({'error': 'Username dan password harus diisi'}), 400
+        
+        connection = create_mysql_connection()
+        cursor = connection.cursor()
+        
+        # Create user
+        cursor.execute(f"CREATE USER '{username}'@'{host}' IDENTIFIED BY %s", (password,))
+        
+        # Grant privileges
+        if privileges == 'ALL':
+            cursor.execute(f"GRANT ALL PRIVILEGES ON *.* TO '{username}'@'{host}'")
+        else:
+            cursor.execute(f"GRANT {privileges} ON *.* TO '{username}'@'{host}'")
+        
+        # Flush privileges
+        cursor.execute("FLUSH PRIVILEGES")
+        
+        connection.commit()
+        cursor.close()
+        connection.close()
+        
+        logger.info(f'MySQL user created: {username}@{host}')
+        return jsonify({'message': f'User {username}@{host} berhasil dibuat'})
+        
+    except mysql.connector.Error as err:
+        logger.error(f'MySQL error creating user: {err}')
+        if err.errno == 1396:  # User already exists
+            return jsonify({'error': f'User {username}@{host} sudah ada'}), 400
+        else:
+            return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
+    except Exception as e:
+        logger.error(f'Error creating MySQL user: {str(e)}')
+        return jsonify({'error': f'Terjadi kesalahan: {str(e)}'}), 500
+
+@app.route('/api/mysql/delete-user', methods=['DELETE'])
+@login_required
+def delete_mysql_user():
+    """Delete a MySQL user"""
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        host = data.get('host')
+        
+        if not username or not host:
+            return jsonify({'error': 'Username dan host harus diisi'}), 400
+        
+        # Prevent deletion of root user
+        if username == 'root':
+            return jsonify({'error': 'User root tidak dapat dihapus'}), 400
+        
+        connection = create_mysql_connection()
+        cursor = connection.cursor()
+        
+        # Drop user
+        cursor.execute(f"DROP USER '{username}'@'{host}'")
+        
+        # Flush privileges
+        cursor.execute("FLUSH PRIVILEGES")
+        
+        connection.commit()
+        cursor.close()
+        connection.close()
+        
+        logger.info(f'MySQL user deleted: {username}@{host}')
+        return jsonify({'message': f'User {username}@{host} berhasil dihapus'})
+        
+    except mysql.connector.Error as err:
+        logger.error(f'MySQL error deleting user: {err}')
+        if err.errno == 1396:  # User doesn't exist
+            return jsonify({'error': f'User {username}@{host} tidak ditemukan'}), 404
+        else:
+            return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
+    except Exception as e:
+        logger.error(f'Error deleting MySQL user: {str(e)}')
+        return jsonify({'error': f'Terjadi kesalahan: {str(e)}'}), 500
+
+@app.route('/api/mysql/update-user', methods=['PUT'])
+@login_required
+def update_mysql_user():
+    """Update a MySQL user's password, privileges, and host"""
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        host = data.get('host')
+        new_host = data.get('new_host', host)  # Use original host if new_host not provided
+        password = data.get('password')
+        privileges = data.get('privileges', 'ALL PRIVILEGES')
+        
+        if not username or not host or not password or not new_host:
+            return jsonify({'error': 'Username, host, new_host, dan password harus diisi'}), 400
+        
+        connection = create_mysql_connection()
+        cursor = connection.cursor()
+        
+        # If host is changing, we need to create a new user and drop the old one
+        if host != new_host:
+            # Create new user with new host
+            cursor.execute(f"CREATE USER '{username}'@'{new_host}' IDENTIFIED BY %s", (password,))
+            
+            # Grant privileges to new user
+            if privileges == 'ALL PRIVILEGES':
+                cursor.execute(f"GRANT ALL PRIVILEGES ON *.* TO '{username}'@'{new_host}'")
+            else:
+                cursor.execute(f"GRANT {privileges} ON *.* TO '{username}'@'{new_host}'")
+            
+            # Drop old user
+            try:
+                cursor.execute(f"DROP USER '{username}'@'{host}'")
+            except mysql.connector.Error as err:
+                if err.errno != 1396:  # Ignore if user doesn't exist
+                    raise
+            
+            logger.info(f'MySQL user host changed: {username}@{host} -> {username}@{new_host}')
+            message = f'User {username}@{new_host} berhasil diupdate (host diubah dari {host})'
+        else:
+            # Just update password and privileges for existing user
+            cursor.execute(f"ALTER USER '{username}'@'{host}' IDENTIFIED BY %s", (password,))
+            
+            # Update privileges if specified
+            if privileges and privileges != 'CURRENT':
+                # First revoke all privileges
+                cursor.execute(f"REVOKE ALL PRIVILEGES ON *.* FROM '{username}'@'{host}'")
+                
+                # Grant new privileges
+                if privileges == 'ALL PRIVILEGES':
+                    cursor.execute(f"GRANT ALL PRIVILEGES ON *.* TO '{username}'@'{host}'")
+                else:
+                    cursor.execute(f"GRANT {privileges} ON *.* TO '{username}'@'{host}'")
+            
+            logger.info(f'MySQL user updated: {username}@{host}')
+            message = f'User {username}@{host} berhasil diupdate'
+        
+        # Flush privileges
+        cursor.execute("FLUSH PRIVILEGES")
+        
+        connection.commit()
+        cursor.close()
+        connection.close()
+        
+        return jsonify({'message': message})
+        
+    except mysql.connector.Error as err:
+        logger.error(f'MySQL error updating user: {err}')
+        if err.errno == 1396:  # User doesn't exist
+            return jsonify({'error': f'User {username}@{host} tidak ditemukan'}), 404
+        elif err.errno == 1007:  # User already exists
+            return jsonify({'error': f'User {username}@{new_host} sudah ada'}), 409
+        else:
+            return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
+    except Exception as e:
+        logger.error(f'Error updating MySQL user: {str(e)}')
+        return jsonify({'error': f'Terjadi kesalahan: {str(e)}'}), 500
+
+# MySQL Replication Management
+@app.route('/api/mysql/replication/status', methods=['GET'])
+@login_required
+def get_replication_status():
+    """Get MySQL replication status"""
+    try:
+        connection = create_mysql_connection()
+        if not connection:
+            return jsonify({'success': False, 'error': 'Failed to connect to MySQL'})
+        
+        cursor = connection.cursor(dictionary=True)
+        status = {'master': None, 'slave': []}
+        
+        # Check master status
+        try:
+            cursor.execute("SHOW MASTER STATUS")
+            master_result = cursor.fetchone()
+            if master_result:
+                status['master'] = {
+                    'file': master_result.get('File'),
+                    'position': master_result.get('Position'),
+                    'binlog_do_db': master_result.get('Binlog_Do_DB'),
+                    'binlog_ignore_db': master_result.get('Binlog_Ignore_DB')
+                }
+        except mysql.connector.Error:
+            pass  # Master not configured
+        
+        # Check slave status
+        try:
+            cursor.execute("SHOW SLAVE STATUS")
+            slave_result = cursor.fetchone()
+            if slave_result:
+                status['slave'] = [{
+                    'master_host': slave_result.get('Master_Host'),
+                    'master_user': slave_result.get('Master_User'),
+                    'master_port': slave_result.get('Master_Port'),
+                    'slave_io_running': slave_result.get('Slave_IO_Running'),
+                    'slave_sql_running': slave_result.get('Slave_SQL_Running'),
+                    'seconds_behind_master': slave_result.get('Seconds_Behind_Master'),
+                    'master_log_file': slave_result.get('Master_Log_File'),
+                    'read_master_log_pos': slave_result.get('Read_Master_Log_Pos'),
+                    'relay_log_file': slave_result.get('Relay_Log_File'),
+                    'relay_log_pos': slave_result.get('Relay_Log_Pos'),
+                    'last_errno': slave_result.get('Last_Errno'),
+                    'last_error': slave_result.get('Last_Error')
+                }]
+        except mysql.connector.Error:
+            pass  # Slave not configured
+        
+        cursor.close()
+        connection.close()
+        
+        return jsonify({'success': True, 'status': status})
+        
+    except Exception as e:
+        logger.error(f'Error getting replication status: {str(e)}')
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/api/mysql/replication/setup-master', methods=['POST'])
+@login_required
+def setup_mysql_master():
+    """Setup MySQL as master for replication (inside Docker container)."""
+    try:
+        data = request.get_json()
+        server_id = data.get('server_id', 1)
+        log_bin = data.get('log_bin', 'mysql-bin')
+
+        if not isinstance(server_id, int) or server_id < 1 or server_id > 4294967295:
+            return jsonify({'success': False, 'error': 'Invalid server ID. Must be between 1 and 4294967295'})
+
+        # Prefer editing /etc/my.cnf to ensure effective config, else fallback to conf.d drop-in
+        use_mycnf = subprocess.run(['docker', 'exec', MYSQL_CONTAINER_NAME, 'test', '-f', '/etc/my.cnf'], capture_output=True, text=True).returncode == 0
+        cfg_name = '99-replication.cnf'
+        cfg_content = (
+            "[mysqld]\n"
+            f"server-id = {server_id}\n"
+            f"log-bin = {log_bin}\n"
+            "binlog-format = ROW\n"
+            "expire-logs-days = 7\n"
+        )
+
+        if use_mycnf:
+            # Ensure conf.d exists and is included by my.cnf; also remove disabling directives
+            shell_script = (
+                "set -e; "
+                # Backup my.cnf
+                "ts=$(date +%s); cp /etc/my.cnf /etc/my.cnf.backup.$ts; "
+                # Ensure conf.d directory exists
+                "mkdir -p /etc/mysql/conf.d; "
+                # Remove disabling directives and conflicting lines
+                "sed -i -E '/^\\s*(disable-log-bin|skip-log-bin)\\b/d' /etc/my.cnf; "
+                "sed -i -E '/^\\s*server-id\\s*=.*/d' /etc/my.cnf; "
+                "sed -i -E '/^\\s*log-bin\\s*=.*/d' /etc/my.cnf; "
+                # Ensure !includedir directive present
+                "grep -qE '^\\s*!includedir\\s+/etc/mysql/conf.d' /etc/my.cnf || echo '\n!includedir /etc/mysql/conf.d' >> /etc/my.cnf; "
+                # Write drop-in replication config
+                f"cat > /etc/mysql/conf.d/{cfg_name} <<'EOF'\n{cfg_content}EOF"
+            )
+            write_result = subprocess.run(['docker', 'exec', '-i', MYSQL_CONTAINER_NAME, 'bash', '-lc', shell_script], capture_output=True, text=True)
+            if write_result.returncode != 0:
+                return jsonify({'success': False, 'error': f"Failed to update /etc/my.cnf and write replication config: {write_result.stderr or write_result.stdout}"})
+            cfg_path = f"/etc/mysql/conf.d/{cfg_name}"
+        else:
+            # Fallback: write drop-in to an available conf directory
+            candidate_dirs = [
+                '/etc/mysql/mariadb.conf.d',
+                '/etc/mysql/mysql.conf.d',
+                '/etc/mysql/conf.d'
+            ]
+            target_dir = None
+            for d in candidate_dirs:
+                try:
+                    check = subprocess.run(['docker', 'exec', MYSQL_CONTAINER_NAME, 'test', '-d', d], capture_output=True, text=True)
+                    if check.returncode == 0:
+                        target_dir = d
+                        break
+                except Exception:
+                    continue
+            if not target_dir:
+                return jsonify({'success': False, 'error': 'MySQL config directory not found in container'})
+            cfg_path = f"{target_dir}/{cfg_name}"
+            write_cmd = ['docker', 'exec', '-i', MYSQL_CONTAINER_NAME, 'bash', '-lc', f"cat > '{cfg_path}' <<'EOF'\n{cfg_content}EOF"]
+            write_result = subprocess.run(write_cmd, capture_output=True, text=True)
+            if write_result.returncode != 0:
+                return jsonify({'success': False, 'error': f"Failed to write replication config: {write_result.stderr or write_result.stdout}"})
+
+        # Restart MySQL by restarting the container
+        restart_result = subprocess.run(['docker', 'restart', MYSQL_CONTAINER_NAME], capture_output=True, text=True)
+        if restart_result.returncode != 0:
+            return jsonify({'success': False, 'error': f"Failed to restart MySQL container: {restart_result.stderr}"})
+        # Wait a bit for MySQL to come up
+        time.sleep(3)
+
+        # Verify variables before master status
+        connection = create_mysql_connection()
+        cursor = connection.cursor(dictionary=True)
+        try:
+            cursor.execute('SHOW VARIABLES LIKE "log_bin"')
+            lb = cursor.fetchone() or {}
+            cursor.execute('SHOW VARIABLES LIKE "server_id"')
+            sid = cursor.fetchone() or {}
+            lb_val = (lb.get('Value') or lb.get('value') or '').upper()
+            sid_val = int((sid.get('Value') or sid.get('value') or 0))
+            logger.info(f"After setup-master: log_bin={lb_val}, server_id={sid_val}, cfg_path={cfg_path}")
+            if lb_val != 'ON' or sid_val == 0:
+                cursor.close(); connection.close()
+                return jsonify({'success': False, 'error': f'Master not active: log_bin={lb_val}, server_id={sid_val}. Config at {cfg_path}.'})
+        except Exception as e:
+            logger.warning(f"Variable check failed: {e}")
+
+        # Check master status
+        try:
+            cursor.execute("SHOW MASTER STATUS")
+            master_status = cursor.fetchone()
+        except Exception as e:
+            master_status = None
+            logger.error(f"Error checking master status: {e}")
+
+        if not master_status:
+            cursor.close()
+            connection.close()
+            return jsonify({'success': False, 'error': 'Master setup failed - no master status found (ensure binlog is enabled)'});
+
+        # Create replication user if provided
+        replication_user = data.get('replication_user')
+        replication_password = data.get('replication_password')
+        logger.info(f'Received replication_user: {replication_user}, has_password: {bool(replication_password)}')
+        if replication_user and replication_password:
+            try:
+                # Check if user exists first
+                cursor.execute("SELECT User FROM mysql.user WHERE User = %s AND Host = '%'", (replication_user,))
+                user_exists = cursor.fetchone() is not None
+                if user_exists:
+                    cursor.execute(f"DROP USER '{replication_user}'@'%'")
+                cursor.execute(f"CREATE USER '{replication_user}'@'%' IDENTIFIED BY '{replication_password}'")
+                cursor.execute(f"GRANT REPLICATION SLAVE ON *.* TO '{replication_user}'@'%'")
+                cursor.execute("FLUSH PRIVILEGES")
+                logger.info(f'Replication user {replication_user} prepared')
+            except Exception as user_error:
+                logger.error(f'Failed to create replication user {replication_user}: {str(user_error)}')
+                # Don't fail the entire setup if user creation fails
+        else:
+            logger.warning(f'Replication user not created - user: {replication_user}, password provided: {bool(replication_password)}')
+
+        cursor.close()
+        connection.close()
+
+        logger.info(f'MySQL master setup completed inside container with server-id {server_id}')
+        return jsonify({
+            'success': True,
+            'message': 'Master setup completed successfully',
+            'master_status': master_status,
+            'replication_user_created': bool(replication_user and replication_password)
+        })
+
+    except Exception as e:
+        logger.error(f'Error setting up MySQL master: {str(e)}')
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/api/mysql/replication/setup-slave', methods=['POST'])
+@login_required
+def setup_mysql_slave():
+    """Setup MySQL as slave for replication"""
+    try:
+        data = request.get_json()
+        master_host = data.get('master_host')
+        master_user = data.get('master_user')
+        master_password = data.get('master_password')
+        master_log_file = data.get('master_log_file', '')
+        master_log_pos = data.get('master_log_pos', 0)
+        server_id = data.get('server_id', 2)
+        
+        if not all([master_host, master_user, master_password]):
+            return jsonify({'success': False, 'error': 'Master host, user, and password are required'})
+        
+        if not isinstance(server_id, int) or server_id < 1 or server_id > 4294967295:
+            return jsonify({'success': False, 'error': 'Invalid server ID. Must be between 1 and 4294967295'})
+        
+        # Write slave config inside container and restart via Docker
+        container = MYSQL_CONTAINER_NAME
+        script_template = r"""
+set -euo pipefail
+TS=$(date +%s)
+FILES=( "/etc/my.cnf" "/etc/mysql/my.cnf" "/etc/mysql/mysql.conf.d/mysqld.cnf" )
+DIRS=( "/etc/mysql/conf.d" "/etc/mysql/mysql.conf.d" )
+sanitize_file() {
+  local f="$1"
+  [ -f "$f" ] || return 0
+  cp "$f" "$f.backup.$TS" || true
+  sed -E '/^[[:space:]]*(server[-_]?id|relay[-_]?log|read[-_]?only)[[:space:]]*(=|$)/d' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+}
+for f in "${FILES[@]}"; do sanitize_file "$f"; done
+for d in "${DIRS[@]}"; do
+  if [ -d "$d" ]; then
+    for cf in "$d"/*.cnf; do [ -f "$cf" ] || continue; sanitize_file "$cf"; done
+  fi
+done
+mkdir -p /etc/mysql/conf.d || true
+cat > /etc/mysql/conf.d/99-slave.cnf <<EOC
+[mysqld]
+server-id = __SERVER_ID__
+relay-log = relay-bin
+read-only = 1
+EOC
+"""
+        script = script_template.replace("__SERVER_ID__", str(server_id))
+        exec_res = subprocess.run(
+            ['docker','exec',container,'bash','-lc', f"cat >/tmp/setup_slave.sh <<'SCRIPT_EOF'\n{script}\nSCRIPT_EOF\nbash /tmp/setup_slave.sh"],
+            capture_output=True, text=True
+        )
+        if exec_res.returncode != 0:
+            return jsonify({'success': False, 'error': f"Failed to update slave config in container: {exec_res.stderr or exec_res.stdout}"})
+        restart_res = subprocess.run(['docker','restart',container], capture_output=True, text=True)
+        if restart_res.returncode != 0:
+            return jsonify({'success': False, 'error': f"Failed to restart container: {restart_res.stderr or restart_res.stdout}"})
+        time.sleep(3)
+        
+        # Setup slave connection
+        connection = create_mysql_connection()
+        if not connection:
+            return jsonify({'success': False, 'error': 'Failed to connect to MySQL after restart'})
+        
+        cursor = connection.cursor()
+        
+        # Stop slave if running (ignore error if already stopped)
+        try:
+            cursor.execute("STOP SLAVE")
+        except Exception as stop_error:
+            # Ignore error if slave is already stopped
+            if "Slave already has been stopped" not in str(stop_error):
+                logger.warning(f'Error stopping slave (ignored): {str(stop_error)}')
+        
+        # Configure master connection
+        change_master_sql = f"""
+        CHANGE MASTER TO
+        MASTER_HOST='{master_host}',
+        MASTER_USER='{master_user}',
+        MASTER_PASSWORD='{master_password}'
+        """
+        
+        if master_log_file and master_log_pos > 0:
+            change_master_sql += f",\nMASTER_LOG_FILE='{master_log_file}',\nMASTER_LOG_POS={master_log_pos}"
+        
+        cursor.execute(change_master_sql)
+        
+        # Start slave
+        cursor.execute("START SLAVE")
+        
+        # Check slave status
+        cursor.execute("SHOW SLAVE STATUS")
+        slave_status = cursor.fetchone()
+        
+        cursor.close()
+        connection.close()
+        
+        logger.info(f'MySQL slave setup completed for master {master_host}')
+        return jsonify({
+            'success': True, 
+            'message': 'Slave setup completed successfully',
+            'slave_status': slave_status
+        })
+        
+    except Exception as e:
+        logger.error(f'Error setting up MySQL slave: {str(e)}')
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/api/mysql/replication/start-slave', methods=['POST'])
+@login_required
+def start_mysql_slave():
+    """Start MySQL slave replication"""
+    try:
+        connection = create_mysql_connection()
+        if not connection:
+            return jsonify({'success': False, 'error': 'Failed to connect to MySQL'})
+        
+        cursor = connection.cursor()
+        cursor.execute("START SLAVE")
+        cursor.close()
+        connection.close()
+        
+        logger.info('MySQL slave started')
+        return jsonify({'success': True, 'message': 'Slave started successfully'})
+        
+    except Exception as e:
+        logger.error(f'Error starting MySQL slave: {str(e)}')
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/api/mysql/replication/stop-slave', methods=['POST'])
+@login_required
+def stop_mysql_slave():
+    """Stop MySQL slave replication"""
+    try:
+        connection = create_mysql_connection()
+        if not connection:
+            return jsonify({'success': False, 'error': 'Failed to connect to MySQL'})
+        
+        cursor = connection.cursor()
+        try:
+            cursor.execute("STOP SLAVE")
+            logger.info('MySQL slave stopped')
+            message = 'Slave stopped successfully'
+        except Exception as stop_error:
+            if "Slave already has been stopped" in str(stop_error):
+                logger.info('MySQL slave was already stopped')
+                message = 'Slave was already stopped'
+            else:
+                raise stop_error
+        
+        cursor.close()
+        connection.close()
+        
+        return jsonify({'success': True, 'message': message})
+        
+    except Exception as e:
+        logger.error(f'Error stopping MySQL slave: {str(e)}')
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/api/mysql/replication/reset-slave', methods=['POST'])
+@login_required
+def reset_mysql_slave():
+    """Reset MySQL slave configuration and clean slave-related config inside Docker container"""
+    try:
+        # First reset the slave inside MySQL
+        connection = create_mysql_connection()
+        if not connection:
+            return jsonify({'success': False, 'error': 'Failed to connect to MySQL'})
+        
+        cursor = connection.cursor()
+        try:
+            cursor.execute("STOP SLAVE")
+        except Exception as stop_error:
+            if "Slave already has been stopped" not in str(stop_error):
+                logger.warning(f'Error stopping slave during reset (ignored): {str(stop_error)}')
+        
+        cursor.execute("RESET SLAVE ALL")
+        cursor.close()
+        connection.close()
+
+        # Then clean slave-related configuration files inside the container and restart MySQL
+        container = MYSQL_CONTAINER_NAME
+        script = r"""
+set -euo pipefail
+TS=$(date +%s)
+FILES=( "/etc/my.cnf" "/etc/mysql/my.cnf" "/etc/mysql/mysql.conf.d/mysqld.cnf" "/etc/mysql/mariadb.conf.d/50-server.cnf" )
+DIRS=( "/etc/mysql/conf.d" "/etc/mysql/mysql.conf.d" "/etc/mysql/mariadb.conf.d" )
+sanitize_file() {
+  local f="$1"
+  [ -f "$f" ] || return 0
+  cp "$f" "$f.backup.$TS" || true
+  sed -E '/^[[:space:]]*(server[-_]?id|relay[-_]?log|read[-_]?only)[[:space:]]*(=|$)/d' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+}
+for f in "${FILES[@]}"; do sanitize_file "$f"; done
+for d in "${DIRS[@]}"; do
+  if [ -d "$d" ]; then
+    rm -f "$d"/*slave*.cnf || true
+    rm -f "$d"/99-slave.cnf || true
+    rm -f "$d"/*replication*.cnf || true
+    for cf in "$d"/*.cnf; do [ -f "$cf" ] || continue; sanitize_file "$cf"; done
+  fi
+done
+"""
+        exec_res = subprocess.run(
+            ['docker','exec',container,'bash','-lc', f"cat >/tmp/reset_slave.sh <<'SCRIPT_EOF'\n{script}\nSCRIPT_EOF\nbash /tmp/reset_slave.sh"],
+            capture_output=True, text=True
+        )
+        if exec_res.returncode != 0:
+            return jsonify({'success': False, 'error': f"Failed to clean slave config in container: {exec_res.stderr or exec_res.stdout}"})
+        restart_res = subprocess.run(['docker','restart',container], capture_output=True, text=True)
+        if restart_res.returncode != 0:
+            return jsonify({'success': False, 'error': f"Failed to restart container: {restart_res.stderr or restart_res.stdout}"})
+        time.sleep(3)
+
+        # Verify that slave status is cleared (optional)
+        connection2 = create_mysql_connection()
+        slave_status = None
+        if connection2:
+            try:
+                cur2 = connection2.cursor(dictionary=True)
+                cur2.execute("SHOW SLAVE STATUS")
+                slave_status = cur2.fetchone()
+                cur2.close()
+            finally:
+                connection2.close()
+        
+        logger.info('MySQL slave reset and configuration cleaned')
+        return jsonify({'success': True, 'message': 'Slave reset and configuration cleaned successfully', 'slave_status': slave_status})
+        
+    except Exception as e:
+        logger.error(f'Error resetting MySQL slave: {str(e)}')
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/api/mysql/replication/disable-master', methods=['POST'])
+@login_required
+def disable_mysql_master():
+    """Disable MySQL/MariaDB master (turn off binary logging) inside Docker container"""
+    try:
+        container = MYSQL_CONTAINER_NAME
+        # Shell script to sanitize all relevant config files and ensure binlog off
+        script = r"""
+set -euo pipefail
+TS=$(date +%s)
+# Detect flavor (MariaDB vs MySQL)
+FLAVOR="mysql"
+if mysql --version 2>/dev/null | grep -qi mariadb; then FLAVOR="mariadb"; fi
+# Candidate files and directories
+FILES=(
+  "/etc/my.cnf"
+  "/etc/mysql/my.cnf"
+  "/etc/mysql/mysql.conf.d/mysqld.cnf"
+  "/etc/mysql/mariadb.conf.d/50-server.cnf"
+)
+DIRS=("/etc/mysql/conf.d" "/etc/mysql/mysql.conf.d" "/etc/mysql/mariadb.conf.d")
+# Function to sanitize config files by removing replication/binlog directives
+sanitize_file() {
+  local f="$1"
+  [ -f "$f" ] || return 0
+  cp "$f" "$f.backup.$TS" || true
+  sed -E '/^[[:space:]]*(server[-_]?id|log[-_]?bin|binlog[-_]?format|expire[-_]?logs[-_]?days|binlog[-_]?do[-_]?db|binlog[-_]?ignore[-_]?db)[[:space:]]*(=|$)/d' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+}
+# Process candidate files
+for f in "${FILES[@]}"; do sanitize_file "$f"; done
+# Process drop-in directories: remove replication-related cnf files and scrub others
+for d in "${DIRS[@]}"; do
+  if [ -d "$d" ]; then
+    # Remove specific replication config files if any
+    rm -f "$d"/*replication*.cnf || true
+    rm -f "$d"/99-replication.cnf || true
+    # Scrub all *.cnf under this dir
+    for cf in "$d"/*.cnf; do
+      [ -f "$cf" ] || continue
+      sanitize_file "$cf"
+    done
+  fi
+done
+# For MariaDB, explicitly disable binlog to be safe
+if [ "$FLAVOR" = "mariadb" ]; then
+  TARGET="/etc/my.cnf"
+  [ -f "$TARGET" ] || TARGET="/etc/mysql/my.cnf"
+  if [ -f "$TARGET" ]; then
+    cp "$TARGET" "$TARGET.backup.$TS" || true
+    sed -E '/^[[:space:]]*(log[-_]?bin|binlog[-_]?format)[[:space:]]*(=|$)/d' "$TARGET" > "$TARGET.tmp" && mv "$TARGET.tmp" "$TARGET"
+    if ! grep -qi '^\[mysqld\]' "$TARGET"; then
+      printf '[mysqld]\n' >> "$TARGET"
+    fi
+    printf 'disable-log-bin\n' >> "$TARGET"
+  else
+    cat > "$TARGET" <<EOC
+[mysqld]
+disable-log-bin
+EOC
+  fi
+else
+  # For MySQL, remove log_bin directives and ensure disabling via skip-log-bin
+  TARGET="/etc/mysql/mysql.conf.d/mysqld.cnf"
+  if [ -f "$TARGET" ]; then
+    cp "$TARGET" "$TARGET.backup.$TS" || true
+    sed -E '/^[[:space:]]*log[-_]?bin[[:space:]]*(=|$)/d' "$TARGET" > "$TARGET.tmp" && mv "$TARGET.tmp" "$TARGET"
+  fi
+  mkdir -p /etc/mysql/conf.d || true
+  cat > /etc/mysql/conf.d/99-disable-binlog.cnf <<EOC
+[mysqld]
+skip-log-bin
+EOC
+fi
+"""
+        exec_res = subprocess.run(
+            ['docker', 'exec', container, 'bash', '-lc', f"cat >/tmp/disable_master.sh <<'SCRIPT_EOF'\n{script}\nSCRIPT_EOF\nbash /tmp/disable_master.sh"],
+            capture_output=True, text=True
+        )
+        if exec_res.returncode != 0:
+            return jsonify({'success': False, 'error': f"Failed to update config in container: {exec_res.stderr or exec_res.stdout}"})
+        # Restart MySQL container to apply changes
+        restart_res = subprocess.run(['docker', 'restart', container], capture_output=True, text=True)
+        if restart_res.returncode != 0:
+            return jsonify({'success': False, 'error': f"Failed to restart container: {restart_res.stderr or restart_res.stdout}"})
+        time.sleep(3)
+        # Verify that binary logging is OFF
+        connection = create_mysql_connection()
+        if not connection:
+            return jsonify({'success': False, 'error': 'Failed to connect to MySQL after restart'})
+        cursor = connection.cursor(dictionary=True)
+        try:
+            cursor.execute('SHOW VARIABLES LIKE "log_bin"')
+            lb = cursor.fetchone()
+            log_bin_state = (lb or {}).get('Value') or (lb or {}).get('value')
+        except Exception as e:
+            log_bin_state = None
+        # Also check master status emptiness
+        master_empty = True
+        try:
+            cursor.execute("SHOW MASTER STATUS")
+            mr = cursor.fetchone()
+            if mr:
+                master_empty = False
+        except Exception:
+            master_empty = True
+        # Attempt reset if still enabled
+        if (log_bin_state and str(log_bin_state).upper() == 'ON') or (not master_empty):
+            try:
+                cursor.execute("RESET MASTER")
+                cursor.execute('SHOW VARIABLES LIKE "log_bin"')
+                lb2 = cursor.fetchone()
+                log_bin_state = (lb2 or {}).get('Value') or (lb2 or {}).get('value')
+                cursor.execute("SHOW MASTER STATUS")
+                mr2 = cursor.fetchone()
+                master_empty = not bool(mr2)
+            except Exception:
+                pass
+        cursor.close()
+        connection.close()
+        if (log_bin_state and str(log_bin_state).upper() == 'ON') or (not master_empty):
+            return jsonify({'success': False, 'error': 'Binary logging is still ON; check other config files enabling log-bin.'})
+        logger.info('MySQL master replication disabled successfully (log_bin=OFF)')
+        return jsonify({'success': True, 'message': 'Master replication disabled successfully'})
+    
+    except Exception as e:
+        logger.error(f'Error disabling MySQL master: {str(e)}')
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/api/mysql/error-logs', methods=['GET'])
+def get_mysql_error_logs():
+    """Get MySQL error logs"""
+    try:
+        # Common MySQL error log paths
+        error_log_paths = [
+            '/var/log/mysql/error.log',
+            '/var/log/mysqld.log',
+            '/var/log/mysql.err',
+            '/usr/local/var/mysql/*.err'
+        ]
+        
+        logs_content = ""
+        log_found = False
+        
+        for log_path in error_log_paths:
+            if '*' in log_path:
+                # Handle wildcard paths
+                import glob
+                matching_files = glob.glob(log_path)
+                for file_path in matching_files:
+                    if os.path.exists(file_path):
+                        try:
+                            with open(file_path, 'r') as f:
+                                # Get last 100 lines
+                                lines = f.readlines()
+                                recent_lines = lines[-100:] if len(lines) > 100 else lines
+                                logs_content += f"\n=== {file_path} ===\n"
+                                logs_content += ''.join(recent_lines)
+                                log_found = True
+                        except Exception as e:
+                            logs_content += f"\nError reading {file_path}: {str(e)}\n"
+            else:
+                if os.path.exists(log_path):
+                    try:
+                        with open(log_path, 'r') as f:
+                            # Get last 100 lines
+                            lines = f.readlines()
+                            recent_lines = lines[-100:] if len(lines) > 100 else lines
+                            logs_content += f"\n=== {log_path} ===\n"
+                            logs_content += ''.join(recent_lines)
+                            log_found = True
+                    except Exception as e:
+                        logs_content += f"\nError reading {log_path}: {str(e)}\n"
+        
+        if not log_found:
+            logs_content = "No MySQL error logs found in common locations."
+        
+        # Format logs for HTML display
+        formatted_logs = logs_content.replace('\n', '<br>').replace(' ', '&nbsp;')
+        
+        return jsonify({
+            'success': True,
+            'logs': formatted_logs
+        })
+        
+    except Exception as e:
+        logger.error(f'Error getting MySQL error logs: {str(e)}')
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/api/mysql/replication-logs', methods=['GET'])
+def get_mysql_replication_logs():
+    """Get MySQL replication-related logs"""
+    try:
+        connection = create_mysql_connection()
+        if not connection:
+            return jsonify({'success': False, 'message': 'Failed to connect to MySQL'})
+        
+        cursor = connection.cursor(dictionary=True)
+        logs_content = ""
+        
+        # Get replication status for error information
+        try:
+            cursor.execute("SHOW SLAVE STATUS")
+            slave_status = cursor.fetchone()
+            
+            if slave_status:
+                logs_content += "=== Slave Status Information ===\n"
+                logs_content += f"Slave_IO_Running: {slave_status.get('Slave_IO_Running', 'N/A')}\n"
+                logs_content += f"Slave_SQL_Running: {slave_status.get('Slave_SQL_Running', 'N/A')}\n"
+                logs_content += f"Last_IO_Error: {slave_status.get('Last_IO_Error', 'None')}\n"
+                logs_content += f"Last_SQL_Error: {slave_status.get('Last_SQL_Error', 'None')}\n"
+                logs_content += f"Seconds_Behind_Master: {slave_status.get('Seconds_Behind_Master', 'N/A')}\n"
+                logs_content += f"Master_Log_File: {slave_status.get('Master_Log_File', 'N/A')}\n"
+                logs_content += f"Read_Master_Log_Pos: {slave_status.get('Read_Master_Log_Pos', 'N/A')}\n\n"
+            else:
+                logs_content += "=== No Slave Configuration Found ===\n\n"
+        except Exception as e:
+            logs_content += f"Error getting slave status: {str(e)}\n\n"
+        
+        # Get binary log information
+        try:
+            cursor.execute("SHOW BINARY LOGS")
+            binary_logs = cursor.fetchall()
+            
+            if binary_logs:
+                logs_content += "=== Binary Logs ===\n"
+                for log in binary_logs:
+                    logs_content += f"{log.get('Log_name', 'N/A')} - Size: {log.get('File_size', 'N/A')} bytes\n"
+                logs_content += "\n"
+            else:
+                logs_content += "=== No Binary Logs Found ===\n\n"
+        except Exception as e:
+            logs_content += f"Binary logs not available: {str(e)}\n\n"
+        
+        # Get master status
+        try:
+            cursor.execute("SHOW MASTER STATUS")
+            master_status = cursor.fetchone()
+            
+            if master_status:
+                logs_content += "=== Master Status ===\n"
+                logs_content += f"File: {master_status.get('File', 'N/A')}\n"
+                logs_content += f"Position: {master_status.get('Position', 'N/A')}\n"
+                logs_content += f"Binlog_Do_DB: {master_status.get('Binlog_Do_DB', 'N/A')}\n"
+                logs_content += f"Binlog_Ignore_DB: {master_status.get('Binlog_Ignore_DB', 'N/A')}\n\n"
+            else:
+                logs_content += "=== No Master Configuration Found ===\n\n"
+        except Exception as e:
+            logs_content += f"Master status not available: {str(e)}\n\n"
+        
+        cursor.close()
+        connection.close()
+        
+        if not logs_content.strip():
+            logs_content = "No replication information available."
+        
+        # Format logs for HTML display
+        formatted_logs = logs_content.replace('\n', '<br>').replace(' ', '&nbsp;')
+        
+        return jsonify({
+            'success': True,
+            'logs': formatted_logs
+        })
+        
+    except Exception as e:
+        logger.error(f'Error getting MySQL replication logs: {str(e)}')
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/api/mysql/general-logs', methods=['GET'])
+def get_mysql_general_logs():
+    """Get MySQL general logs"""
+    try:
+        # Common MySQL general log paths
+        general_log_paths = [
+            '/var/log/mysql/mysql.log',
+            '/var/log/mysql/general.log',
+            '/usr/local/var/mysql/general.log'
+        ]
+        
+        logs_content = ""
+        log_found = False
+        
+        for log_path in general_log_paths:
+            if os.path.exists(log_path):
+                try:
+                    with open(log_path, 'r') as f:
+                        # Get last 100 lines
+                        lines = f.readlines()
+                        recent_lines = lines[-100:] if len(lines) > 100 else lines
+                        logs_content += f"\n=== {log_path} ===\n"
+                        logs_content += ''.join(recent_lines)
+                        log_found = True
+                except Exception as e:
+                    logs_content += f"\nError reading {log_path}: {str(e)}\n"
+        
+        if not log_found:
+            logs_content = "No MySQL general logs found. General logging may be disabled.\n\n"
+            logs_content += "To enable general logging, add the following to your MySQL configuration:\n"
+            logs_content += "general_log = 1\n"
+            logs_content += "general_log_file = /var/log/mysql/general.log"
+        
+        # Format logs for HTML display
+        formatted_logs = logs_content.replace('\n', '<br>').replace(' ', '&nbsp;')
+        
+        return jsonify({
+            'success': True,
+            'logs': formatted_logs
+        })
+        
+    except Exception as e:
+        logger.error(f'Error getting MySQL general logs: {str(e)}')
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/api/mysql/slow-logs', methods=['GET'])
+def get_mysql_slow_logs():
+    """Get MySQL slow query logs"""
+    try:
+        # Common MySQL slow log paths
+        slow_log_paths = [
+            '/var/log/mysql/mysql-slow.log',
+            '/var/log/mysql/slow.log',
+            '/usr/local/var/mysql/slow.log'
+        ]
+        
+        logs_content = ""
+        log_found = False
+        
+        for log_path in slow_log_paths:
+            if os.path.exists(log_path):
+                try:
+                    with open(log_path, 'r') as f:
+                        # Get last 50 entries (slow logs can be verbose)
+                        lines = f.readlines()
+                        recent_lines = lines[-200:] if len(lines) > 200 else lines
+                        logs_content += f"\n=== {log_path} ===\n"
+                        logs_content += ''.join(recent_lines)
+                        log_found = True
+                except Exception as e:
+                    logs_content += f"\nError reading {log_path}: {str(e)}\n"
+        
+        if not log_found:
+            logs_content = "No MySQL slow query logs found. Slow query logging may be disabled.\n\n"
+            logs_content += "To enable slow query logging, add the following to your MySQL configuration:\n"
+            logs_content += "slow_query_log = 1\n"
+            logs_content += "slow_query_log_file = /var/log/mysql/mysql-slow.log\n"
+            logs_content += "long_query_time = 2"
+        
+        # Format logs for HTML display
+        formatted_logs = logs_content.replace('\n', '<br>').replace(' ', '&nbsp;')
+        
+        return jsonify({
+            'success': True,
+            'logs': formatted_logs
+        })
+        
+    except Exception as e:
+        logger.error(f'Error getting MySQL slow logs: {str(e)}')
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/api/mysql/analyze-slow-logs', methods=['GET'])
+def analyze_mysql_slow_logs():
+    """Analyze MySQL slow query logs"""
+    try:
+        connection = create_mysql_connection()
+        if not connection:
+            return jsonify({'success': False, 'message': 'Failed to connect to MySQL'})
+        
+        cursor = connection.cursor(dictionary=True)
+        analysis_content = ""
+        
+        # Get slow query log status
+        try:
+            cursor.execute("SHOW VARIABLES LIKE 'slow_query_log'")
+            slow_log_status = cursor.fetchone()
+            
+            cursor.execute("SHOW VARIABLES LIKE 'long_query_time'")
+            long_query_time = cursor.fetchone()
+            
+            cursor.execute("SHOW VARIABLES LIKE 'slow_query_log_file'")
+            slow_log_file = cursor.fetchone()
+            
+            analysis_content += "=== Slow Query Log Configuration ===\n"
+            analysis_content += f"Slow Query Log: {slow_log_status.get('Value', 'N/A') if slow_log_status else 'N/A'}\n"
+            analysis_content += f"Long Query Time: {long_query_time.get('Value', 'N/A') if long_query_time else 'N/A'} seconds\n"
+            analysis_content += f"Slow Log File: {slow_log_file.get('Value', 'N/A') if slow_log_file else 'N/A'}\n\n"
+            
+        except Exception as e:
+            analysis_content += f"Error getting slow log configuration: {str(e)}\n\n"
+        
+        # Get process list for currently running queries
+        try:
+            cursor.execute("SHOW PROCESSLIST")
+            processes = cursor.fetchall()
+            
+            long_running = [p for p in processes if p.get('Time', 0) > 5 and p.get('Command') not in ['Sleep', 'Binlog Dump']]
+            
+            if long_running:
+                analysis_content += "=== Currently Long Running Queries ===\n"
+                for process in long_running:
+                    analysis_content += f"ID: {process.get('Id', 'N/A')}, User: {process.get('User', 'N/A')}, "
+                    analysis_content += f"Time: {process.get('Time', 'N/A')}s, State: {process.get('State', 'N/A')}\n"
+                    analysis_content += f"Info: {process.get('Info', 'N/A')[:100]}...\n\n"
+            else:
+                analysis_content += "=== No Long Running Queries Found ===\n\n"
+                
+        except Exception as e:
+            analysis_content += f"Error getting process list: {str(e)}\n\n"
+        
+        # Get query cache statistics
+        try:
+            cursor.execute("SHOW STATUS LIKE 'Qcache%'")
+            qcache_stats = cursor.fetchall()
+            
+            if qcache_stats:
+                analysis_content += "=== Query Cache Statistics ===\n"
+                for stat in qcache_stats:
+                    analysis_content += f"{stat.get('Variable_name', 'N/A')}: {stat.get('Value', 'N/A')}\n"
+                analysis_content += "\n"
+                
+        except Exception as e:
+            analysis_content += f"Query cache statistics not available: {str(e)}\n\n"
+        
+        # Get table lock statistics
+        try:
+            cursor.execute("SHOW STATUS LIKE 'Table_locks%'")
+            lock_stats = cursor.fetchall()
+            
+            if lock_stats:
+                analysis_content += "=== Table Lock Statistics ===\n"
+                for stat in lock_stats:
+                    analysis_content += f"{stat.get('Variable_name', 'N/A')}: {stat.get('Value', 'N/A')}\n"
+                analysis_content += "\n"
+                
+        except Exception as e:
+            analysis_content += f"Table lock statistics not available: {str(e)}\n\n"
+        
+        cursor.close()
+        connection.close()
+        
+        if not analysis_content.strip():
+            analysis_content = "No slow query analysis data available."
+        
+        # Format analysis for HTML display
+        formatted_analysis = analysis_content.replace('\n', '<br>').replace(' ', '&nbsp;')
+        
+        return jsonify({
+            'success': True,
+            'analysis': formatted_analysis
+        })
+        
+    except Exception as e:
+        logger.error(f'Error analyzing MySQL slow logs: {str(e)}')
+        return jsonify({'success': False, 'message': str(e)})
 
 if __name__ == '__main__':
     # Ensure nginx conf directory exists

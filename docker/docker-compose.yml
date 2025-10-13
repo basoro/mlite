@@ -217,7 +217,6 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
       - ../mlite_db.sql:/docker-entrypoint-initdb.d/00-mlite_db.sql
-      - ./db:/docker-entrypoint-initdb.d/01-custom
     networks:
       - app-network
 

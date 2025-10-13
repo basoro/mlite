@@ -1,0 +1,493 @@
+{% extends "base.html" %}
+
+{% block title %}MySQL Database Management - SLEMP Panel{% endblock %}
+
+{% block content %}
+<!-- Modals -->
+<div id="createDatabaseModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md mx-4">
+    <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Create Database</h2>
+      <button onclick="closeCreateDatabaseModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="p-4">
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Database Name</label>
+        <input type="text" id="newDatabaseName" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="my_database">
+      </div>
+    </div>
+    <div class="flex justify-end gap-2 px-4 py-3 border-t dark:border-gray-700">
+      <button onclick="closeCreateDatabaseModal()" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Cancel</button>
+      <button onclick="createDatabase()" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>
+    </div>
+  </div>
+</div>
+
+<div id="createUserModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md mx-4">
+    <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Create User</h2>
+      <button onclick="closeCreateUserModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="p-4">
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Username</label>
+        <input type="text" id="newUsername" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="username">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
+        <input type="password" id="newUserPassword" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="password">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Host</label>
+        <input type="text" id="newUserHost" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" value="%" placeholder="%">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Privileges</label>
+        <select id="newUserPrivileges" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="ALL PRIVILEGES">ALL PRIVILEGES</option>
+          <option value="SELECT,INSERT,UPDATE,DELETE">SELECT,INSERT,UPDATE,DELETE</option>
+          <option value="SELECT">SELECT</option>
+          <option value="CUSTOM">CUSTOM</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex justify-end gap-2 px-4 py-3 border-t dark:border-gray-700">
+      <button onclick="closeCreateUserModal()" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Cancel</button>
+      <button onclick="createUser()" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>
+    </div>
+  </div>
+</div>
+
+<div id="setRootPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md mx-4">
+    <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Set Root Password</h2>
+      <button onclick="closeSetRootPasswordModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="p-4">
+      <div class="mb-4 space-y-2">
+        <div class="text-sm text-gray-600 dark:text-gray-400">
+          <span class="font-medium">Current Password:</span>
+          <span id="currentRootPassword" class="ml-2">(loading...)</span>
+        </div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">New Password</label>
+        <div class="flex items-center gap-2">
+          <input type="password" id="rootPassword" class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter new root password">
+          <label class="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
+            <input type="checkbox" id="toggleRootPasswordVisibility">
+            Show
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-end gap-2 px-4 py-3 border-t dark:border-gray-700">
+      <button onclick="closeSetRootPasswordModal()" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Cancel</button>
+      <button onclick="setRootPassword()" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Set Password</button>
+    </div>
+  </div>
+</div>
+
+<div id="editConfigModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl mx-4">
+    <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Edit MySQL Configuration</h2>
+      <button onclick="closeEditConfigModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="p-4">
+      <textarea id="mysqlConfigContent" class="w-full h-96 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="MySQL configuration..."></textarea>
+    </div>
+    <div class="flex justify-end gap-2 px-4 py-3 border-t dark:border-gray-700">
+      <button onclick="closeEditConfigModal()" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Cancel</button>
+      <button onclick="saveMySQLConfig()" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">
+        <i class="fas fa-database text-blue-600 dark:text-blue-400 mr-2"></i>
+        MySQL Database Management
+      </h1>
+      <p class="text-gray-600 dark:text-gray-400 mt-1">Manage MySQL databases, tables, users, and queries</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="refreshAllData()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-2">
+        <i class="fas fa-sync-alt"></i>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- MySQL Info Card -->
+  <div id="mysqlInfoCard" class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">MySQL Server Information</h3>
+        <div id="mysqlInfoContent" class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <div class="flex items-center">
+            <i class="fas fa-spinner fa-spin mr-2"></i>
+            Loading MySQL information...
+          </div>
+        </div>
+      </div>
+      <div id="mysqlStatusBadge" class="px-3 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-full text-sm">
+        <i class="fas fa-exclamation-triangle mr-1"></i>
+        Checking...
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="border-b border-gray-200 dark:border-gray-700">
+    <nav class="-mb-px flex space-x-8">
+      <button onclick="switchTab('databases')" id="tab-databases" class="tab-button active py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600 dark:text-blue-400">
+        <i class="fas fa-database mr-2"></i>Databases
+      </button>
+      <button onclick="switchTab('tables')" id="tab-tables" class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+        <i class="fas fa-table mr-2"></i>Tables
+      </button>
+      <button onclick="switchTab('users')" id="tab-users" class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+        <i class="fas fa-users mr-2"></i>Users
+      </button>
+      <button onclick="switchTab('queries')" id="tab-queries" class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+        <i class="fas fa-code mr-2"></i>Queries
+      </button>
+      <button onclick="switchTab('replication')" id="tab-replication" class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+        <i class="fas fa-sync mr-2"></i>Replication
+      </button>
+      <button onclick="switchTab('logs')" id="tab-logs" class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+        <i class="fas fa-file-alt mr-2"></i>Logs
+      </button>
+    </nav>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    <!-- Databases Tab -->
+    <div id="databases-tab" class="tab-panel">
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <i class="fas fa-database text-blue-600 dark:text-blue-400 mr-2"></i>
+            Databases
+          </h2>
+          <button onclick="openCreateDatabaseModal()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition flex items-center gap-2">
+            <i class="fas fa-plus"></i>
+            Create Database
+          </button>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Database</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tables</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Size</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="databasesTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tr>
+                <td colspan="4" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <i class="fas fa-spinner fa-spin mr-2"></i>
+                  Loading databases...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tables Tab -->
+    <div id="tables-tab" class="tab-panel hidden">
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <i class="fas fa-table text-blue-600 dark:text-blue-400 mr-2"></i>
+            Tables
+          </h2>
+          <select id="databaseSelector" onchange="loadTables()" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+            <option value="">Select Database</option>
+          </select>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Table</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Rows</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Size</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tablesTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tr>
+                <td colspan="4" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                  Please select a database first
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Tab -->
+    <div id="users-tab" class="tab-panel hidden">
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <i class="fas fa-users text-blue-600 dark:text-blue-400 mr-2"></i>
+            MySQL Users
+          </h2>
+          <button onclick="openCreateUserModal()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition flex items-center gap-2">
+            <i class="fas fa-plus"></i>
+            Create User
+          </button>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">User</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Host</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Privileges</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tr>
+                <td colspan="4" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <i class="fas fa-spinner fa-spin mr-2"></i>
+                  Loading users...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Queries Tab -->
+    <div id="queries-tab" class="tab-panel hidden">
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <i class="fas fa-code text-blue-600 dark:text-blue-400 mr-2"></i>
+            SQL Query Editor
+          </h2>
+        </div>
+        
+        <div class="p-4">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Database</label>
+            <select id="queryDatabase" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+              <option value="">Select Database</option>
+            </select>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SQL Query</label>
+            <textarea id="sqlQuery" class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your SQL query here..."></textarea>
+          </div>
+          
+          <div class="flex gap-2 mb-4">
+            <button onclick="executeQuery()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-2">
+              <i class="fas fa-play"></i>
+              Execute
+            </button>
+            <button onclick="clearQuery()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+              Clear
+            </button>
+          </div>
+          
+          <div id="queryResults" class="border border-gray-200 dark:border-gray-600 rounded-md overflow-hidden hidden">
+            <div class="px-4 py-2 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center">
+              <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">Query Results</h3>
+              <span id="queryStatus" class="text-xs"></span>
+            </div>
+            <div class="overflow-x-auto">
+              <table id="queryResultsTable" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody>
+                  <tr>
+                    <td class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                      Query results will appear here
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Replication Tab -->
+    <div id="replication-tab" class="tab-panel hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <i class="fas fa-crown text-blue-600 dark:text-blue-400 mr-2"></i>
+              Master Configuration
+            </h2>
+          </div>
+          <div class="p-4">
+            <div id="masterStatus" class="mb-4">
+              <div class="flex items-center">
+                <i class="fas fa-spinner fa-spin mr-2"></i>
+                Loading master status...
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="setupMaster()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                Setup Master
+              </button>
+              <button onclick="disableMaster()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+                Disable Master
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <i class="fas fa-slave text-blue-600 dark:text-blue-400 mr-2"></i>
+              Slave Configuration
+            </h2>
+          </div>
+          <div class="p-4">
+            <div id="slaveStatus" class="mb-4">
+              <div class="flex items-center">
+                <i class="fas fa-spinner fa-spin mr-2"></i>
+                Loading slave status...
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="setupSlave()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                Setup Slave
+              </button>
+              <button onclick="startSlave()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                Start Slave
+              </button>
+              <button onclick="stopSlave()" class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition">
+                Stop Slave
+              </button>
+              <button onclick="resetSlave()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+                Reset Slave
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logs Tab -->
+    <div id="logs-tab" class="tab-panel hidden">
+      <div class="space-y-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <i class="fas fa-exclamation-triangle text-blue-600 dark:text-blue-400 mr-2"></i>
+              Error Logs
+            </h2>
+            <button onclick="loadErrorLogs()" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm">
+              Refresh
+            </button>
+          </div>
+          <div class="p-4">
+            <pre id="errorLogs" class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-3 rounded text-xs overflow-auto max-h-64"></pre>
+          </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <i class="fas fa-sync text-blue-600 dark:text-blue-400 mr-2"></i>
+              Replication Logs
+            </h2>
+            <button onclick="loadReplicationLogs()" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm">
+              Refresh
+            </button>
+          </div>
+          <div class="p-4">
+            <pre id="replicationLogs" class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-3 rounded text-xs overflow-auto max-h-64"></pre>
+          </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <i class="fas fa-tachometer-alt text-blue-600 dark:text-blue-400 mr-2"></i>
+              Slow Query Logs
+            </h2>
+            <div class="flex gap-2">
+              <button onclick="analyzeSlowLogs()" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm">
+                Analyze
+              </button>
+              <button onclick="loadSlowLogs()" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm">
+                Refresh
+              </button>
+            </div>
+          </div>
+          <div class="p-4">
+            <pre id="slowLogs" class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-3 rounded text-xs overflow-auto max-h-64"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <i class="fas fa-cogs text-blue-600 dark:text-blue-400 mr-2"></i>
+        MySQL Configuration
+      </h2>
+    </div>
+    <div class="p-4">
+      <div class="flex flex-wrap gap-3">
+        <button onclick="openSetRootPasswordModal()" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition flex items-center gap-2">
+          <i class="fas fa-key"></i>
+          Set Root Password
+        </button>
+        <button onclick="openEditConfigModal()" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition flex items-center gap-2">
+          <i class="fas fa-edit"></i>
+          Edit Configuration
+        </button>
+        <button onclick="getMySQLInfo()" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition flex items-center gap-2">
+          <i class="fas fa-info"></i>
+          Server Info
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Include JavaScript -->
+<script src="{{ url_for('static', filename='mysql_management.js') }}"></script>
+<script>
+// Initialize the page
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('MySQL Management page loaded');
+  loadDatabases();
+  loadUsers();
+  getMySQLInfo();
+  loadReplicationStatus();
+  
+  // Set default tab
+  switchTab('databases');
+});
+</script>
+{% endblock %}

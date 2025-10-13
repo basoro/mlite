@@ -135,6 +135,10 @@ function controlMySQLContainer(container_name, action) {
       <p class="text-gray-600 dark:text-gray-400 mt-1">Manage MySQL database containers for your SLEMP stack</p>
     </div>
     <div class="flex items-center gap-3">
+      <a href="{{ url_for('mysql_management') }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition flex items-center gap-2">
+        <i class="fas fa-tools"></i>
+        MySQL Management
+      </a>
       <button onclick="refreshMySQLContainers()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-2">
         <i class="fas fa-sync-alt"></i>
         Refresh
@@ -187,11 +191,14 @@ function controlMySQLContainer(container_name, action) {
 
   <!-- MySQL Containers Table -->
   <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex items-center justify-between">
       <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
         <i class="fas fa-server text-blue-600 dark:text-blue-400 mr-2"></i>
         MySQL Containers ({{ mysql_containers|length }})
       </h2>
+      <a href="{{ url_for('mysql_management') }}" class="text-sm px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700">
+        Go to Management
+      </a>
     </div>
     
     <div class="overflow-x-auto">
@@ -310,13 +317,12 @@ function controlMySQLContainer(container_name, action) {
         <i class="fas fa-info-circle text-blue-600 dark:text-blue-400"></i>
       </div>
       <div class="ml-3">
-        <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">MySQL Container Management</h3>
+        <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">MySQL Containers vs. Database Management</h3>
         <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
           <ul class="list-disc list-inside space-y-1">
-            <li>MySQL container provides database services for all PHP applications</li>
-            <li>Default port mapping: 3308:3306 (host:container)</li>
-            <li>Database files are persisted in ./mysql directory</li>
-            <li>Use restart to apply configuration changes without full rebuild</li>
+            <li><strong>Containers</strong>: Start/stop/restart layanan MySQL, lihat image, ports, dan waktu pembuatan.</li>
+            <li><strong>Database Management</strong>: Kelola database, tabel, user, eksekusi query, logs, replikasi, dan konfigurasi.</li>
+            <li>Gunakan tombol <strong>MySQL Management</strong> di atas untuk masuk ke halaman manajemen database.</li>
           </ul>
         </div>
       </div>
