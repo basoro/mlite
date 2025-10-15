@@ -133,8 +133,8 @@ function closeStartLog() {
           <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Containers</p>
           <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ containers|length }}</p>
         </div>
-        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
-          <i class="fas fa-cube text-blue-600 dark:text-blue-400"></i>
+        <div class="p-3">
+          <i class="fas fa-cube fa-3x text-blue-600 dark:text-blue-400"></i>
         </div>
       </div>
     </div>
@@ -142,13 +142,13 @@ function closeStartLog() {
     <div class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Running</p>
-          <p class="text-2xl font-bold text-green-600 dark:text-green-400">
+          <p class="text-sm font-medium text-gray-900 dark:text-gray-700">Running</p>
+          <p class="text-2xl font-bold text-green-900 dark:text-green-700">
             {{ containers|selectattr('running')|list|length }}
           </p>
         </div>
-        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
-          <i class="fas fa-play text-green-600 dark:text-green-400"></i>
+        <div class="p-3">
+          <i class="fas fa-play fa-3x text-green-900 dark:text-green-700"></i>
         </div>
       </div>
     </div>
@@ -161,8 +161,8 @@ function closeStartLog() {
             {{ containers|rejectattr('running')|list|length }}
           </p>
         </div>
-        <div class="p-3 bg-red-100 dark:bg-red-900 rounded-full">
-          <i class="fas fa-stop text-red-600 dark:text-red-400"></i>
+        <div class="p-3">
+          <i class="fas fa-stop fa-3x text-red-900 dark:text-red-700"></i>
         </div>
       </div>
     </div>

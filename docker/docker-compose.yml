@@ -85,14 +85,18 @@ services:
       - ./panel:/app
       - ../:/workspace
       - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx:/workspace/docker/nginx
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
       - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - .env
     environment:
       - NGINX_CONTAINER_NAME=mlite_nginx
+      - CERTBOT_CONTAINER_NAME=mlite_certbot
       - FLASK_ENV=development
       - FLASK_DEBUG=1
-      - NGINX_CONF_DIR=/etc/nginx/conf.d  
+      - NGINX_CONF_DIR=/workspace/docker/nginx/conf.d  
     command: python app.py
     networks:
       - app-network
@@ -185,10 +189,13 @@ services:
     container_name: mlite_nginx
     ports:
       - "80:80"
+      - "443:443"
       - "8080:8080"
     volumes:
       - ${HOST_PROJECT_DIR}:/var/www/public
       - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/blocked_ips.conf:/etc/nginx/blocked_ips.conf
+      - ./certbot/www:/var/www/certbot
     depends_on:
       - php56
       - php70
@@ -201,6 +208,7 @@ services:
       - php82
       - php83
       - panel
+      - certbot
     networks:
       - app-network
     restart: unless-stopped
@@ -236,6 +244,18 @@ services:
       - ORTHANC_NAME=Orthanc-Headless
     networks:
       - app-network
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: mlite_certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: ["/bin/sh","-c"]
+    command: "sleep infinity"
+    networks:
+      - app-network
+    restart: unless-stopped
 
 
 networks:

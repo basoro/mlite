@@ -6,7 +6,7 @@ import re
 import shutil
 import yaml
 import json
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, session
 from flask import stream_with_context
 import logging
@@ -271,6 +271,7 @@ def inject_config():
 # Configuration
 NGINX_CONF_DIR = os.environ.get('NGINX_CONF_DIR', os.path.join(os.environ.get('HOST_PROJECT_DIR', '/Users/basoro/Slemp/data/www/mlite.loc'), 'docker', 'nginx', 'conf.d'))
 NGINX_CONTAINER_NAME = os.environ.get('NGINX_CONTAINER_NAME', 'mlite_nginx')
+CERTBOT_CONTAINER_NAME = os.environ.get('CERTBOT_CONTAINER_NAME', 'mlite_certbot')
 PHP_CONTAINER_NAME = os.environ.get('PHP_CONTAINER_NAME', 'mlite_php')
 # Base web root inside containers (mounted from host ../)
 PHP_WEBROOT_BASE = '/var/www/public'
@@ -1661,6 +1662,16 @@ def write_conf_file(site_name: str, content: str) -> tuple[bool, str]:
     except Exception as e:
         return False, str(e)
 
+@app.route('/api/vhost/<site_name>', methods=['GET'])
+@login_required
+def api_vhost(site_name):
+    if not is_valid_site_name(site_name):
+        return jsonify({'error': 'Invalid site name'}), 400
+    ok, content, err = read_conf_file(site_name)
+    if not ok:
+        return jsonify({'error': err}), 404
+    return jsonify({'site_name': site_name, 'content': content})
+
 @app.route('/edit_vhost/<site_name>', methods=['GET', 'POST'])
 @login_required
 def edit_vhost(site_name):
@@ -2067,7 +2078,18 @@ def nginx_page():
         
         # Get nginx configuration files (enabled and disabled)
         config_files = []
+        try:
+            logger.info(f"[nginx_page] NGINX_CONF_DIR={NGINX_CONF_DIR}")
+        except Exception:
+            pass
         if os.path.exists(NGINX_CONF_DIR):
+            try:
+                dir_list = sorted(os.listdir(NGINX_CONF_DIR))
+                logger.info(f"[nginx_page] conf.d list: {dir_list}")
+                siti_path = os.path.join(NGINX_CONF_DIR, 'siti.loc.conf')
+                logger.info(f"[nginx_page] siti.loc.conf path: {siti_path} exists={os.path.exists(siti_path)}")
+            except Exception as e:
+                logger.warning(f"[nginx_page] Failed to list conf dir: {e}")
             for filename in os.listdir(NGINX_CONF_DIR):
                 if filename.endswith('.conf') or filename.endswith('.conf.disabled'):
                     filepath = os.path.join(NGINX_CONF_DIR, filename)
@@ -2077,6 +2099,10 @@ def nginx_page():
                         # Parse config info
                         enabled = filename.endswith('.conf')
                         domain = filename.replace('.conf.disabled', '').replace('.conf', '')
+                        try:
+                            logger.info(f"[nginx_page] Found config file {filename}, domain={domain}, enabled={enabled}")
+                        except Exception:
+                            pass
                         site_type = 'proxy'
                         port = None
                         root_dir = None
@@ -2090,6 +2116,9 @@ def nginx_page():
                                     break
                         else:
                             site_type = 'static'
+                        # SSL status parsing
+                        ssl_enabled = ('listen 443' in content) and ('ssl_certificate' in content)
+                        https_redirect = ('return 301 https://$host$request_uri' in content) or ('return 301 https://' in content)
                         config_files.append({
                             'domain': domain,
                             'type': site_type,
@@ -2097,7 +2126,9 @@ def nginx_page():
                             'root_dir': root_dir,
                             'filename': filename,
                             'created': datetime.fromtimestamp(os.path.getctime(filepath)).strftime('%Y-%m-%d %H:%M:%S'),
-                            'enabled': enabled
+                            'enabled': enabled,
+                            'ssl_enabled': ssl_enabled,
+                            'https_redirect': https_redirect
                         })
                     except Exception as e:
                         print(f"Error reading config file {filename}: {e}")
@@ -2300,6 +2331,238 @@ def nginx_delete_site(domain):
     except Exception as e:
         flash(f'Error deleting site: {str(e)}', 'error')
     return redirect(url_for('nginx_page'))
+
+# --- SSL Helpers & API ---
+
+def _ssl_paths(domain: str):
+    ssl_dir = os.path.join(NGINX_CONF_DIR, 'ssl', domain)
+    return ssl_dir, os.path.join(ssl_dir, 'fullchain.pem'), os.path.join(ssl_dir, 'privkey.pem')
+
+@app.route('/api/nginx/ssl/status/<domain>', methods=['GET'])
+@login_required
+def api_ssl_status(domain):
+    try:
+        if not is_valid_site_name(domain):
+            return jsonify({'success': False, 'error': 'Invalid domain'}), 400
+        conf_path = get_conf_path(domain)
+        disabled_path = os.path.normpath(os.path.join(NGINX_CONF_DIR, f"{domain}.conf.disabled"))
+        target_path = conf_path if os.path.exists(conf_path) else (disabled_path if os.path.exists(disabled_path) else None)
+        if not target_path:
+            return jsonify({'success': False, 'error': 'Config not found'}), 404
+        with open(target_path, 'r') as f:
+            content = f.read()
+        ssl_enabled = ('listen 443' in content) and ('ssl_certificate' in content)
+        https_redirect = ('return 301 https://$host$request_uri' in content) or ('return 301 https://' in content)
+        ssl_dir, cert_path, key_path = _ssl_paths(domain)
+        return jsonify({
+            'success': True,
+            'ssl_enabled': ssl_enabled,
+            'https_redirect': https_redirect,
+            'cert_exists': os.path.exists(cert_path) and os.path.exists(key_path),
+            'cert_path': f'/etc/nginx/conf.d/ssl/{domain}/fullchain.pem',
+            'key_path': f'/etc/nginx/conf.d/ssl/{domain}/privkey.pem',
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/nginx/ssl/configure', methods=['POST'])
+@login_required
+def api_ssl_configure():
+    try:
+        payload = request.json if request.is_json else request.form
+        domain = payload.get('domain')
+        enable_ssl = str(payload.get('enable_ssl', 'true')).lower() in ['true', '1', 'yes']
+        force_redirect = str(payload.get('force_redirect', 'true')).lower() in ['true', '1', 'yes']
+        if not domain or not is_valid_site_name(domain):
+            return jsonify({'success': False, 'error': 'Invalid domain'}), 400
+        conf_path = get_conf_path(domain)
+        disabled_path = os.path.normpath(os.path.join(NGINX_CONF_DIR, f"{domain}.conf.disabled"))
+        target_path = conf_path if os.path.exists(conf_path) else (disabled_path if os.path.exists(disabled_path) else None)
+        if not target_path:
+            return jsonify({'success': False, 'error': 'Config not found'}), 404
+        with open(target_path, 'r') as f:
+            content = f.read()
+        ssl_dir, cert_path, key_path = _ssl_paths(domain)
+        os.makedirs(ssl_dir, exist_ok=True)
+        # Try Let's Encrypt via certbot container (webroot) if email provided
+        le_live_dir = os.path.join('/etc', 'letsencrypt', 'live', domain)
+        if (not os.path.exists(cert_path) or not os.path.exists(key_path)) and (payload.get('email') or os.environ.get('LE_EMAIL')):
+            try:
+                email_addr = (payload.get('email') or os.environ.get('LE_EMAIL'))
+                # Ensure webroot exists (mounted into panel and nginx)
+                try:
+                    os.makedirs('/var/www/certbot', exist_ok=True)
+                except Exception:
+                    pass
+                # Run certbot in container using webroot challenge
+                cmd = [
+                    'docker', 'exec', CERTBOT_CONTAINER_NAME, 'certbot', 'certonly',
+                    '--webroot', '-w', '/var/www/certbot',
+                    '-d', domain, '--email', email_addr,
+                    '--agree-tos', '--non-interactive', '--preferred-challenges', 'http'
+                ]
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=240)
+                if result.returncode == 0 and os.path.exists(le_live_dir):
+                    src_cert = os.path.join(le_live_dir, 'fullchain.pem')
+                    src_key = os.path.join(le_live_dir, 'privkey.pem')
+                    if os.path.exists(src_cert) and os.path.exists(src_key):
+                        shutil.copy2(src_cert, cert_path)
+                        shutil.copy2(src_key, key_path)
+                else:
+                    logger.warning(f"Certbot (container) failed for {domain}: {result.stderr or result.stdout}")
+            except Exception as ce:
+                logger.error(f"Certbot (container) error for {domain}: {ce}")
+        if not os.path.exists(cert_path) or not os.path.exists(key_path):
+            # Fallback: Generate self-signed certificate
+            cmd = [
+                'openssl', 'req', '-x509', '-nodes', '-newkey', 'rsa:2048',
+                '-days', '365', '-subj', f"/CN={domain}",
+                '-addext', f"subjectAltName=DNS:{domain}",
+                '-addext', 'extendedKeyUsage=serverAuth',
+                '-addext', 'keyUsage=digitalSignature,keyEncipherment',
+                '-addext', 'basicConstraints=CA:FALSE',
+                '-keyout', key_path, '-out', cert_path
+            ]
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=20)
+            if result.returncode != 0:
+                return jsonify({'success': False, 'error': (result.stderr or result.stdout or 'openssl failed')}), 500
+        ssl_enabled = ('listen 443' in content) and ('ssl_certificate' in content)
+        https_redirect_present = ('return 301 https://$host$request_uri' in content) or ('return 301 https://' in content)
+        if enable_ssl and not ssl_enabled:
+            # Build SSL server block based on site type
+            site_type = 'proxy'
+            port = None
+            root_dir = None
+            php_fastcgi_line = None
+            if 'fastcgi_pass' in content:
+                site_type = 'php'
+                for line in content.split('\n'):
+                    if line.strip().startswith('root '):
+                        try:
+                            root_dir = line.strip().split('root ')[1].split(';')[0].strip()
+                        except Exception:
+                            pass
+                    if 'fastcgi_pass' in line:
+                        php_fastcgi_line = line.strip()
+            elif 'proxy_pass' in content:
+                site_type = 'proxy'
+                for line in content.split('\n'):
+                    if 'proxy_pass http://localhost:' in line:
+                        try:
+                            port = line.split('proxy_pass http://localhost:')[1].split(';')[0].strip()
+                        except Exception:
+                            pass
+                        break
+            else:
+                site_type = 'static'
+                for line in content.split('\n'):
+                    if line.strip().startswith('root '):
+                        try:
+                            root_dir = line.strip().split('root ')[1].split(';')[0].strip()
+                        except Exception:
+                            pass
+            ssl_block = [
+                'server {',
+                '    listen 443 ssl;',
+                f'    server_name {domain};',
+                f'    ssl_certificate /etc/nginx/conf.d/ssl/{domain}/fullchain.pem;',
+                f'    ssl_certificate_key /etc/nginx/conf.d/ssl/{domain}/privkey.pem;',
+                '    ssl_protocols TLSv1.2 TLSv1.3;',
+                '    ssl_prefer_server_ciphers on;',
+            ]
+            if site_type == 'php':
+                if root_dir:
+                    ssl_block.append(f'    root {root_dir};')
+                ssl_block.extend([
+                    '    index index.php index.html;',
+                    '',
+                    '    location / {',
+                    '        try_files $uri $uri/ /index.php?$args;',
+                    '    }',
+                    '    location ~ \\ .php$ {',
+                    '        include fastcgi_params;',
+                    php_fastcgi_line or '        fastcgi_pass php83:9000;',
+                    '        fastcgi_index index.php;',
+                    '        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;',
+                    '        fastcgi_buffer_size 128k;',
+                    '        fastcgi_buffers 4 256k;',
+                    '        fastcgi_busy_buffers_size 256k;',
+                    '    }',
+                    '    location ~ /\\ . {',
+                    '        deny all;',
+                    '    }',
+                ])
+            elif site_type == 'proxy':
+                ssl_block.extend([
+                    '    location / {',
+                    f'        proxy_pass http://localhost:{port or "80"};',
+                    '        proxy_set_header Host $host;',
+                    '        proxy_set_header X-Real-IP $remote_addr;',
+                    '        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;',
+                    '        proxy_set_header X-Forwarded-Proto $scheme;',
+                    '    }',
+                ])
+            else:
+                if root_dir:
+                    ssl_block.append(f'    root {root_dir};')
+                ssl_block.extend([
+                    '    index index.html;',
+                    '    location / {',
+                    '        try_files $uri $uri/ /index.html;',
+                    '    }',
+                    '    location ~ /\\ . {',
+                    '        deny all;',
+                    '    }',
+                ])
+            ssl_block.append('}')
+            content = content + '\n' + '\n'.join(ssl_block) + '\n'
+        if force_redirect and not https_redirect_present:
+            redirect_block = (
+                'server {\n'
+                '    listen 80;\n'
+                f'    server_name {domain};\n'
+                '    location /.well-known/acme-challenge/ {\n'
+                '        root /var/www/certbot;\n'
+                '        try_files $uri =404;\n'
+                '    }\n'
+                '    location / {\n'
+                '        return 301 https://$host$request_uri;\n'
+                '    }\n'
+                '}\n'
+            )
+            content = redirect_block + '\n' + content
+        ok_write, err_write = write_conf_file(domain, content)
+        if not ok_write:
+            return jsonify({'success': False, 'error': err_write}), 500
+        success, message = reload_nginx()
+        return jsonify({'success': success, 'message': message})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/nginx/ssl/disable', methods=['POST'])
+@login_required
+def api_ssl_disable():
+    try:
+        payload = request.json if request.is_json else request.form
+        domain = payload.get('domain')
+        if not domain or not is_valid_site_name(domain):
+            return jsonify({'success': False, 'error': 'Invalid domain'}), 400
+        conf_path = get_conf_path(domain)
+        disabled_path = os.path.normpath(os.path.join(NGINX_CONF_DIR, f"{domain}.conf.disabled"))
+        target_path = conf_path if os.path.exists(conf_path) else (disabled_path if os.path.exists(disabled_path) else None)
+        if not target_path:
+            return jsonify({'success': False, 'error': 'Config not found'}), 404
+        with open(target_path, 'r') as f:
+            content = f.read()
+        content = re.sub(r"server\s*\{.*?listen\s+443\s+ssl;.*?\}", "", content, flags=re.DOTALL)
+        content = re.sub(r"server\s*\{[^}]*listen\s+80;[^}]*?(?:return\s+301\s+https://|\.well-known/acme-challenge)[^}]*\}", "", content, flags=re.DOTALL)
+        ok_write, err_write = write_conf_file(domain, content)
+        if not ok_write:
+            return jsonify({'success': False, 'error': err_write}), 500
+        success, message = reload_nginx()
+        return jsonify({'success': success, 'message': message})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 # PHP-FPM Routes
 @app.route('/php-fpm')
@@ -4675,9 +4938,761 @@ def analyze_mysql_slow_logs():
         logger.error(f'Error analyzing MySQL slow logs: {str(e)}')
         return jsonify({'success': False, 'message': str(e)})
 
+# ModSecurity per-site helpers
+
+def _parse_modsecurity_status_from_content(content: str) -> tuple[str, bool]:
+    """Parse ModSecurity status from vhost content.
+    Returns (configured, effective_enabled).
+    configured: 'on'|'off'|'inherit'
+    effective_enabled: True if ModSecurity is active for this site considering global default on.
+    """
+    try:
+        has_on = re.search(r"\bmodsecurity\s+on\s*;", content, re.IGNORECASE) is not None
+        has_off = re.search(r"\bmodsecurity\s+off\s*;", content, re.IGNORECASE) is not None
+        if has_off:
+            return 'off', False
+        if has_on:
+            return 'on', True
+        return 'inherit', True
+    except Exception:
+        return 'inherit', True
+
+
+def get_modsecurity_status(site_name: str) -> dict:
+    ok, content, err = read_conf_file(site_name)
+    if not ok:
+        return {
+            'site_name': site_name,
+            'configured': 'inherit',
+            'effective_enabled': True,
+            'error': err
+        }
+    configured, effective = _parse_modsecurity_status_from_content(content)
+    return {
+        'site_name': site_name,
+        'configured': configured,
+        'effective_enabled': effective
+    }
+
+
+def _set_modsecurity_status_in_content(content: str, enabled: bool) -> str:
+    """Update vhost content to set modsecurity on/off at server scope."""
+    updated = re.sub(r"\bmodsecurity\s+(on|off)\s*;", "", content, flags=re.IGNORECASE)
+    directive = "modsecurity on;" if enabled else "modsecurity off;"
+    m = re.search(r"(server\s*\{)", updated)
+    if m:
+        start = m.end()
+        return updated[:start] + "\n    " + directive + updated[start:]
+    return directive + "\n" + updated
+
+
+def update_modsecurity_status(site_name: str, enabled: bool) -> tuple[bool, str]:
+    ok, content, err = read_conf_file(site_name)
+    if not ok:
+        return False, err
+    backup_ok, backup_path = backup_conf_file(site_name)
+    if not backup_ok:
+        logger.warning(f"Failed to backup vhost for {site_name}: {backup_path}")
+    new_content = _set_modsecurity_status_in_content(content, enabled)
+    ok_w, err_w = write_conf_file(site_name, new_content)
+    if not ok_w:
+        return False, err_w
+    success, message = reload_nginx()
+    if not success:
+        return False, f"Updated file but failed to reload nginx: {message}"
+    return True, "ModSecurity status updated and nginx reloaded"
+
+
+@app.route('/api/modsecurity/<site_name>', methods=['GET', 'POST'])
+@login_required
+def api_modsecurity_site(site_name):
+    if not is_valid_site_name(site_name):
+        return jsonify({'success': False, 'message': 'Invalid site name'}), 400
+    if request.method == 'GET':
+        status = get_modsecurity_status(site_name)
+        return jsonify({'success': True, **status})
+    else:
+        data = request.get_json(silent=True) or {}
+        enabled = bool(data.get('enabled', True))
+        ok, msg = update_modsecurity_status(site_name, enabled)
+        return jsonify({'success': ok, 'message': msg})
+
+
+
+
+# --- ModSecurity Dashboard Helpers & API ---
+
+MODSEC_AUDIT_PATH = '/var/log/modsecurity/audit.log'
+
+def _parse_time(ts_str):
+    try:
+        if ts_str is None:
+            return None
+        # Numeric epoch (int/float)
+        if isinstance(ts_str, (int, float)):
+            return datetime.fromtimestamp(float(ts_str), tz=timezone.utc)
+        s = str(ts_str).strip()
+        # Numeric epoch string
+        try:
+            if s.replace('.', '', 1).isdigit():
+                return datetime.fromtimestamp(float(s), tz=timezone.utc)
+        except Exception:
+            pass
+        # Normalize Zulu and ensure timezone awareness
+        s = s.replace('Z', '+00:00')
+        # Try ISO formats with offset
+        try:
+            dt = datetime.fromisoformat(s)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt.astimezone(timezone.utc)
+        except Exception:
+            pass
+        # Try common ModSecurity format: 'Mon, 21 Aug 2023 10:14:23'
+        try:
+            dt = datetime.strptime(s[:19], '%a, %d %b %Y %H:%M:%S')
+            return dt.replace(tzinfo=timezone.utc)
+        except Exception:
+            pass
+        # Try ModSecurity ctime-like format: 'Tue Oct 14 18:18:15 2025'
+        try:
+            dt = datetime.strptime(s, '%a %b %d %H:%M:%S %Y')
+            return dt.replace(tzinfo=timezone.utc)
+        except Exception:
+            pass
+        # Try alternative ModSecurity format e.g. '2023-08-21 10:14:23'
+        try:
+            dt = datetime.strptime(s[:19], '%Y-%m-%d %H:%M:%S')
+            return dt.replace(tzinfo=timezone.utc)
+        except Exception:
+            pass
+        return None
+    except Exception:
+        return None
+
+def read_modsec_audit_lines(max_lines: int = 5000):
+    try:
+        cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"tail -n {max_lines} {shlex.quote(MODSEC_AUDIT_PATH)} 2>/dev/null || true"]
+        res = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+        return (res.stdout or '').splitlines()
+    except Exception as e:
+        logger.error(f"Error reading ModSecurity audit log: {e}")
+        return []
+
+def _parse_modsec_event(obj: dict) -> dict:
+    tx = obj.get('transaction', {}) if isinstance(obj, dict) else {}
+    req = tx.get('request', {})
+    resp = tx.get('response', {})
+    msgs = obj.get('messages', []) if isinstance(obj, dict) else []
+    rule_ids = []
+    severity = None
+    try:
+        for m in msgs:
+            det = m.get('details', {})
+            rid = det.get('rule_id') or det.get('id')
+            if rid:
+                rule_ids.append(str(rid))
+            sev = det.get('severity') or m.get('severity')
+            if sev and not severity:
+                severity = sev
+    except Exception:
+        pass
+    ts = tx.get('time_stamp') or obj.get('timestamp')
+    ip = tx.get('client_ip') or obj.get('client_ip')
+    method = req.get('method') or obj.get('method')
+    uri = req.get('uri') or obj.get('uri')
+    status = resp.get('status') or obj.get('status')
+    # Extract domain from absolute URI or Host header
+    domain = None
+    try:
+        if isinstance(uri, str) and (uri.startswith('http://') or uri.startswith('https://')):
+            from urllib.parse import urlparse
+            parsed = urlparse(uri)
+            domain = parsed.hostname or parsed.netloc or None
+        if not domain:
+            headers = req.get('headers') or tx.get('request_headers') or {}
+            host_val = None
+            if isinstance(headers, dict):
+                host_val = headers.get('Host') or headers.get('host') or headers.get('HOST')
+            if not host_val:
+                host_val = req.get('host') or tx.get('host')
+            domain = host_val or domain
+    except Exception:
+        domain = None
+    dt = _parse_time(ts)
+    bucket = None
+    try:
+        if dt:
+            bucket = dt.strftime('%Y-%m-%d %H:%M')
+        elif isinstance(ts, str) and len(ts) >= 16:
+            bucket = ts[:16]
+    except Exception:
+        bucket = 'unknown'
+    # Debug logging (limited)
+    try:
+        print(f"[modsec] _parse_modsec_event ts_raw={ts} parsed={dt.isoformat() if dt else None} bucket={bucket}")
+    except Exception:
+        pass
+    return {
+        'timestamp': ts,
+        'bucket': bucket or 'unknown',
+        'datetime': dt.isoformat() if dt else None,
+        'src_ip': ip,
+        'rule_ids': rule_ids,
+        'severity': severity,
+        'method': method,
+        'uri': uri,
+        'domain': domain,
+        'status': status,
+    }
+
+def get_modsec_events(limit=1000, since=None, until=None, ip=None, rule_id=None):
+    lines = read_modsec_audit_lines(max_lines=max(1000, limit * 10))
+    events = []
+    for ln in lines:
+        ln = ln.strip()
+        if not ln:
+            continue
+        try:
+            obj = json.loads(ln)
+        except Exception:
+            continue
+        ev = _parse_modsec_event(obj)
+        events.append(ev)
+    # Filter
+    def in_range(ev):
+        dt = None
+        if ev.get('datetime'):
+            try:
+                dt = datetime.fromisoformat(ev['datetime'])
+            except Exception:
+                dt = None
+        ok = True
+        if since:
+            try:
+                since_dt = datetime.fromisoformat(since)
+                ok = ok and (dt is None or dt >= since_dt)
+            except Exception:
+                pass
+        if until:
+            try:
+                until_dt = datetime.fromisoformat(until)
+                ok = ok and (dt is None or dt <= until_dt)
+            except Exception:
+                pass
+        if ip:
+            ok = ok and (ev.get('src_ip') == ip)
+        if rule_id:
+            ok = ok and (rule_id in (ev.get('rule_ids') or []))
+        return ok
+    events = [e for e in events if in_range(e)]
+    events = events[-limit:] if limit and len(events) > limit else events
+    return events
+
+def aggregate_modsec_stats(events):
+    series = {}
+    rule_counts = {}
+    ip_counts = {}
+    total = len(events)
+    today = week = month = 0
+    now = datetime.now().astimezone()  # use server local timezone
+    debug_samples = 0
+    for ev in events:
+        b = ev.get('bucket', 'unknown')
+        series[b] = series.get(b, 0) + 1
+        for rid in (ev.get('rule_ids') or []):
+            rule_counts[rid] = rule_counts.get(rid, 0) + 1
+        ip = ev.get('src_ip')
+        if ip:
+            ip_counts[ip] = ip_counts.get(ip, 0) + 1
+        # totals by time ranges
+        try:
+            dt_str = ev.get('datetime') or ev.get('timestamp') or None
+            dt = _parse_time(dt_str) if dt_str else None
+            if dt:
+                dt_local = dt.astimezone(now.tzinfo)
+                if debug_samples < 5:
+                    try:
+                        diff_days = (now - dt_local).days
+                        print(f"[modsec] dt_str={dt_str} parsed_utc={dt.isoformat()} parsed_local={dt_local.isoformat()} diff_days={diff_days}", flush=True)
+                        debug_samples += 1
+                    except Exception:
+                        pass
+                if dt_local.date() == now.date():
+                    today += 1
+                if (now - dt_local) <= timedelta(days=7):
+                    week += 1
+                if dt_local.year == now.year and dt_local.month == now.month:
+                    month += 1
+        except Exception as e:
+            try:
+                if debug_samples < 5:
+                    print(f"[modsec] aggregate error: {e}", flush=True)
+                    debug_samples += 1
+            except Exception:
+                pass
+            pass
+    series_list = sorted([{'bucket': k, 'count': v} for k, v in series.items()], key=lambda x: x['bucket'])
+    top_rules = sorted([{'rule_id': k, 'count': v} for k, v in rule_counts.items()], key=lambda x: x['count'], reverse=True)[:10]
+    top_ips = sorted([{'ip': k, 'count': v} for k, v in ip_counts.items()], key=lambda x: x['count'], reverse=True)[:10]
+    unique_ips = len(ip_counts)
+    return {
+        'total': total,
+        'unique_ips': unique_ips,
+        'today': today,
+        'week': week,
+        'month': month,
+        'series': series_list,
+        'top_rules': top_rules,
+        'top_ips': top_ips,
+    }
+
+@app.route('/api/modsecurity/stats')
+@login_required
+def api_modsec_stats():
+    limit = int(request.args.get('limit', '2000') or '2000')
+    events = get_modsec_events(limit=limit)
+    stats = aggregate_modsec_stats(events)
+    # Hitung jumlah IP terblokir dari blocked_ips.conf
+    try:
+        blocked_ips_file = os.path.join(os.path.dirname(NGINX_CONF_DIR), 'blocked_ips.conf')
+        blocked_ips_count = 0
+        if os.path.exists(blocked_ips_file):
+            with open(blocked_ips_file, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith('deny ') and line.endswith(';'):
+                        blocked_ips_count += 1
+        stats['blocked_ips_count'] = blocked_ips_count
+    except Exception:
+        stats['blocked_ips_count'] = 0
+    return jsonify({'success': True, **stats})
+
+@app.route('/api/modsecurity/attacks')
+@login_required
+def api_modsec_attacks():
+    limit = int(request.args.get('limit', '500') or '500')
+    since = request.args.get('since')
+    until = request.args.get('until')
+    ip = request.args.get('ip')
+    rule_id = request.args.get('rule_id')
+    events = get_modsec_events(limit=limit, since=since, until=until, ip=ip, rule_id=rule_id)
+    return jsonify({'success': True, 'events': events, 'count': len(events)})
+
+@app.route('/api/modsecurity/top-rules')
+@login_required
+def api_modsec_top_rules():
+    limit = int(request.args.get('limit', '2000') or '2000')
+    events = get_modsec_events(limit=limit)
+    stats = aggregate_modsec_stats(events)
+    return jsonify({'success': True, 'top_rules': stats['top_rules']})
+
+@app.route('/api/modsecurity/top-ips')
+@login_required
+def api_modsec_top_ips():
+    limit = int(request.args.get('limit', '2000') or '2000')
+    events = get_modsec_events(limit=limit)
+    stats = aggregate_modsec_stats(events)
+    return jsonify({'success': True, 'top_ips': stats['top_ips']})
+
+@app.route('/modsecurity-dashboard')
+@login_required
+def modsecurity_dashboard_page():
+    nginx_status = check_nginx_status()
+    return render_template('modsecurity_dashboard.html', nginx_status=nginx_status)
+
+@app.route('/api/modsecurity-logs/<domain>')
+@login_required
+def api_modsec_logs_by_domain(domain):
+    """Get ModSecurity logs filtered by domain with date range support"""
+    if not is_valid_site_name(domain):
+        return jsonify({'success': False, 'error': 'Invalid domain name'}), 400
+    
+    # Get date range parameters
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    
+    # Convert date strings to datetime objects
+    since = None
+    until = None
+    
+    if start_date:
+        try:
+            since = datetime.fromisoformat(start_date).replace(tzinfo=timezone.utc)
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Invalid start_date format'}), 400
+    
+    if end_date:
+        try:
+            # Add one day to include the entire end date
+            until = datetime.fromisoformat(end_date).replace(tzinfo=timezone.utc) + timedelta(days=1)
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Invalid end_date format'}), 400
+    
+    # Get events with domain filtering
+    events = get_modsec_events_by_domain(domain, since=since, until=until)
+    
+    # Format logs for frontend
+    logs = []
+    for event in events:
+        # Get the most relevant rule ID and message
+        rule_ids = event.get('rule_ids', [])
+        rule_id = rule_ids[0] if rule_ids else None
+        
+        # Extract message from event or use default
+        message = 'ModSecurity rule triggered'
+        if event.get('severity'):
+            message = f"{event['severity']} severity rule triggered"
+        
+        logs.append({
+            'time': event.get('bucket', 'unknown'),
+            'ip': event.get('src_ip', 'unknown'),
+            'method': event.get('method', 'unknown'),
+            'uri': event.get('uri', 'unknown'),
+            'rule_id': rule_id,
+            'severity': event.get('severity', 'unknown'),
+            'action': 'blocked' if event.get('status') and str(event.get('status')).startswith('4') else 'detected',
+            'message': message,
+            'domain': event.get('domain', domain)
+        })
+    
+    return jsonify({
+        'success': True,
+        'domain': domain,
+        'logs': logs,
+        'count': len(logs),
+        'date_range': {
+            'start_date': start_date,
+            'end_date': end_date
+        }
+    })
+
+@app.route('/api/block-ip', methods=['POST'])
+@login_required
+def api_block_ip():
+    """Block an IP address using nginx configuration"""
+    try:
+        data = request.get_json()
+        if not data or 'ip' not in data:
+            return jsonify({'success': False, 'error': 'IP address is required'}), 400
+        
+        ip = data['ip'].strip()
+        
+        # Validate IP address format
+        import ipaddress
+        try:
+            ipaddress.ip_address(ip)
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Invalid IP address format'}), 400
+        
+        # Path to blocked IPs file
+        blocked_ips_file = os.path.join(os.path.dirname(NGINX_CONF_DIR), 'blocked_ips.conf')
+        
+        # Read existing blocked IPs
+        blocked_ips = set()
+        if os.path.exists(blocked_ips_file):
+            with open(blocked_ips_file, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith('deny ') and line.endswith(';'):
+                        blocked_ip = line[5:-1].strip()
+                        blocked_ips.add(blocked_ip)
+        
+        # Check if IP is already blocked
+        if ip in blocked_ips:
+            return jsonify({'success': True, 'message': f'IP {ip} is already blocked'})
+        
+        # Add IP to blocked list
+        blocked_ips.add(ip)
+        
+        # Write updated blocked IPs file
+        with open(blocked_ips_file, 'w') as f:
+            f.write('# Blocked IPs for ModSecurity\n')
+            for blocked_ip in sorted(blocked_ips):
+                f.write(f'deny {blocked_ip};\n')
+        
+        # Ensure server configs include blocked_ips.conf
+        update_server_configs_with_blocked_ips()
+        
+        # Reload nginx configuration
+        reload_result = subprocess.run(['docker', 'exec', 'mlite_nginx', 'nginx', '-s', 'reload'], 
+                                     capture_output=True, text=True, timeout=30)
+        
+        if reload_result.returncode != 0:
+            return jsonify({'success': False, 'error': f'Failed to reload nginx: {reload_result.stderr}'}), 500
+        
+        return jsonify({'success': True, 'message': f'IP {ip} has been blocked successfully'})
+        
+    except Exception as e:
+        logger.error(f"Error blocking IP: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/unblock-ip', methods=['POST'])
+@login_required
+def api_unblock_ip():
+    """Unblock an IP address from nginx configuration"""
+    try:
+        data = request.get_json()
+        if not data or 'ip' not in data:
+            return jsonify({'success': False, 'error': 'IP address is required'}), 400
+        
+        ip = data['ip'].strip()
+        
+        # Validate IP address format
+        import ipaddress
+        try:
+            ipaddress.ip_address(ip)
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Invalid IP address format'}), 400
+        
+        # Path to blocked IPs file
+        blocked_ips_file = os.path.join(os.path.dirname(NGINX_CONF_DIR), 'blocked_ips.conf')
+        
+        # Read existing blocked IPs
+        blocked_ips = set()
+        if os.path.exists(blocked_ips_file):
+            with open(blocked_ips_file, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith('deny ') and line.endswith(';'):
+                        blocked_ip = line[5:-1].strip()
+                        blocked_ips.add(blocked_ip)
+        
+        # Check if IP is blocked
+        if ip not in blocked_ips:
+            return jsonify({'success': True, 'message': f'IP {ip} is not blocked'})
+        
+        # Remove IP from blocked list
+        blocked_ips.discard(ip)
+        
+        # Write updated blocked IPs file
+        with open(blocked_ips_file, 'w') as f:
+            f.write('# Blocked IPs for ModSecurity\n')
+            for blocked_ip in sorted(blocked_ips):
+                f.write(f'deny {blocked_ip};\n')
+        
+        # Ensure server configs include blocked_ips.conf
+        update_server_configs_with_blocked_ips()
+        
+        # Reload nginx configuration
+        reload_result = subprocess.run(['docker', 'exec', 'mlite_nginx', 'nginx', '-s', 'reload'], 
+                                     capture_output=True, text=True, timeout=30)
+        
+        if reload_result.returncode != 0:
+            return jsonify({'success': False, 'error': f'Failed to reload nginx: {reload_result.stderr}'}), 500
+        
+        return jsonify({'success': True, 'message': f'IP {ip} has been unblocked successfully'})
+        
+    except Exception as e:
+        logger.error(f"Error unblocking IP: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/blocked-ips', methods=['GET'])
+@login_required
+def api_blocked_ips():
+    """Get list of blocked IP addresses"""
+    try:
+        # Path to blocked IPs file
+        blocked_ips_file = os.path.join(os.path.dirname(NGINX_CONF_DIR), 'blocked_ips.conf')
+        
+        # Read existing blocked IPs
+        blocked_ips = []
+        if os.path.exists(blocked_ips_file):
+            with open(blocked_ips_file, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith('deny ') and line.endswith(';'):
+                        blocked_ip = line[5:-1].strip()
+                        blocked_ips.append(blocked_ip)
+        
+        return jsonify({'success': True, 'blocked_ips': sorted(blocked_ips)})
+        
+    except Exception as e:
+        logger.error(f"Error getting blocked IPs: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+def get_modsec_events_by_domain(domain, limit=1000, since=None, until=None):
+    """Get ModSecurity events filtered by specific domain"""
+    lines = read_modsec_audit_lines(max_lines=max(1000, limit * 10))
+    events = []
+    
+    for ln in lines:
+        ln = ln.strip()
+        if not ln:
+            continue
+        try:
+            obj = json.loads(ln)
+        except Exception:
+            continue
+        
+        ev = _parse_modsec_event(obj)
+        
+        # Filter by domain - case insensitive comparison
+        event_domain = ev.get('domain', '').lower()
+        target_domain = domain.lower()
+        
+        # Check if this event belongs to the target domain
+        if not event_domain or target_domain not in event_domain:
+            continue
+        
+        # Apply date range filter
+        def in_range(ev):
+            dt = None
+            if ev.get('datetime'):
+                try:
+                    dt = datetime.fromisoformat(ev['datetime'])
+                except Exception:
+                    dt = None
+            ok = True
+            if since:
+                ok = ok and (dt is None or dt >= since)
+            if until:
+                ok = ok and (dt is None or dt <= until)
+            return ok
+        
+        if in_range(ev):
+            events.append(ev)
+    
+    # Limit results and return most recent first
+    events = events[-limit:] if limit and len(events) > limit else events
+    return events
+
+def ensure_blocked_ips_config():
+    """Ensure blocked IPs configuration is included in nginx main config"""
+    try:
+        # Path to main nginx config
+        main_config_path = os.path.join(os.path.dirname(NGINX_CONF_DIR), 'nginx.conf')
+        include_line = f"    include /etc/nginx/blocked_ips.conf;"
+        
+        # Check if main config exists and read it
+        if os.path.exists(main_config_path):
+            with open(main_config_path, 'r') as f:
+                config_content = f.read()
+            
+            # Check if blocked_ips.conf is already included
+            if "include /etc/nginx/blocked_ips.conf" in config_content:
+                return True  # Already included
+            
+            # Add include directive to http block
+            if 'http {' in config_content:
+                # Find the http block and add include directive
+                lines = config_content.split('\n')
+                new_lines = []
+                in_http_block = False
+                http_brace_count = 0
+                
+                for line in lines:
+                    new_lines.append(line)
+                    
+                    if 'http {' in line:
+                        in_http_block = True
+                        http_brace_count = 1
+                    elif in_http_block:
+                        if '{' in line:
+                            http_brace_count += line.count('{')
+                        if '}' in line:
+                            http_brace_count -= line.count('}')
+                            
+                        # Add include directive before the closing brace of http block
+                        if http_brace_count == 1 and line.strip() == '}':
+                            # Remove the closing brace we just added
+                            new_lines.pop()
+                            # Add our include directive
+                            new_lines.append(include_line)
+                            # Add the closing brace back
+                            new_lines.append(line)
+                            in_http_block = False
+                
+                # Write updated config
+                with open(main_config_path, 'w') as f:
+                    f.write('\n'.join(new_lines))
+                
+                return True
+        
+        # If main config doesn't exist or we couldn't modify it, 
+        # we'll rely on per-server include directives
+        return False
+        
+    except Exception as e:
+        logger.error(f"Error ensuring blocked IPs config: {e}")
+        return False
+
+def update_server_configs_with_blocked_ips():
+    """Update all server configurations to include blocked_ips.conf"""
+    try:
+        blocked_ips_file = os.path.join(os.path.dirname(NGINX_CONF_DIR), 'blocked_ips.conf')
+        include_directive = f"    include /etc/nginx/blocked_ips.conf;"
+        
+        # Process all .conf files in nginx conf directory
+        for filename in os.listdir(NGINX_CONF_DIR):
+            if filename.endswith('.conf') and filename != 'blocked_ips.conf':
+                config_path = os.path.join(NGINX_CONF_DIR, filename)
+                
+                try:
+                    with open(config_path, 'r') as f:
+                        content = f.read()
+                    
+                    # Update or add blocked_ips include
+                    if 'include /etc/nginx/conf.d/blocked_ips.conf' in content:
+                        content = content.replace('/etc/nginx/conf.d/blocked_ips.conf', '/etc/nginx/blocked_ips.conf')
+                        with open(config_path, 'w') as f:
+                            f.write(content)
+                        logger.info(f"Replaced old include path in {filename}")
+                        continue
+                    
+                    if 'include /etc/nginx/blocked_ips.conf' in content:
+                        continue
+                    
+                    # Add include directive to server block
+                    if 'server {' in content:
+                        lines = content.split('\n')
+                        new_lines = []
+                        in_server_block = False
+                        server_brace_count = 0
+                        include_added = False
+                        
+                        for line in lines:
+                            new_lines.append(line)
+                            
+                            if 'server {' in line and not include_added:
+                                in_server_block = True
+                                server_brace_count = 1
+                            elif in_server_block and not include_added:
+                                if '{' in line:
+                                    server_brace_count += line.count('{')
+                                if '}' in line:
+                                    server_brace_count -= line.count('}')
+                                
+                                # Add include directive after the opening brace of server block
+                                if server_brace_count >= 1 and line.strip() == '':
+                                    # Find a good place to add the include (after server_name or listen)
+                                    prev_lines = [l.strip() for l in new_lines[-5:] if l.strip()]
+                                    if any('server_name' in l or 'listen' in l for l in prev_lines):
+                                        new_lines.append(include_directive)
+                                        include_added = True
+                        
+                        # Write updated config
+                        with open(config_path, 'w') as f:
+                            f.write('\n'.join(new_lines))
+                        
+                        logger.info(f"Updated {filename} with blocked_ips include")
+                
+                except Exception as e:
+                    logger.error(f"Error updating {filename}: {e}")
+                    continue
+        
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error updating server configs: {e}")
+        return False
+
 if __name__ == '__main__':
     # Ensure nginx conf directory exists
     os.makedirs(NGINX_CONF_DIR, exist_ok=True)
+    
+    # Ensure blocked IPs configuration is included in nginx
+    ensure_blocked_ips_config()
     
     port = int(os.environ.get('PORT') or os.environ.get('FLASK_RUN_PORT') or 5000)
     app.run(host='0.0.0.0', port=port, debug=True)

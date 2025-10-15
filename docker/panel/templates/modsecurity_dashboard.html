@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+{% block title %}ModSecurity Dashboard{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold text-gray-900">ModSecurity Dashboard</h1>
+    <span class="text-sm text-gray-500">Auto-refresh setiap 30 detik</span>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+    <div class="bg-white shadow rounded p-4">
+      <div class="text-sm text-gray-500">Total</div>
+      <div id="stat-total" class="text-2xl font-bold">0</div>
+    </div>
+    <div class="bg-white shadow rounded p-4">
+      <div class="text-sm text-gray-500">Total Unik IP</div>
+      <div id="stat-unique-ips" class="text-2xl font-bold">0</div>
+    </div>
+    <div class="bg-white shadow rounded p-4">
+      <div class="text-sm text-gray-500">Total Blok IP</div>
+      <div id="stat-blocked-ips" class="text-2xl font-bold">0</div>
+    </div>
+  </div>
+
+  <!-- Charts & Top Lists -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
+    <div class="bg-white shadow rounded p-4 lg:col-span-2">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold">Grafik Serangan per Waktu</h2>
+        <div>
+          <select id="range-select" class="border rounded px-2 py-1 text-sm">
+            <option value="2h">2 jam</option>
+            <option value="24h">24 jam</option>
+            <option value="7d">7 hari</option>
+          </select>
+        </div>
+      </div>
+      <div id="attackChart" style="height:280px;"></div>
+    </div>
+    <div class="bg-white shadow rounded p-4">
+      <h2 class="text-lg font-semibold">Top Rule IDs</h2>
+      <ul id="top-rules" class="mt-2 space-y-2 text-sm"></ul>
+      <h2 class="text-lg font-semibold mt-6">Top Source IPs</h2>
+      <ul id="top-ips" class="mt-2 space-y-2 text-sm"></ul>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white shadow rounded p-4 mt-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+      <div>
+        <label class="text-sm text-gray-600">Sejak (ISO)</label>
+        <input id="filter-since" type="text" class="w-full border rounded px-2 py-1" placeholder="2025-10-14T00:00:00+00:00" />
+      </div>
+      <div>
+        <label class="text-sm text-gray-600">Sampai (ISO)</label>
+        <input id="filter-until" type="text" class="w-full border rounded px-2 py-1" placeholder="2025-10-15T00:00:00+00:00" />
+      </div>
+      <div>
+        <label class="text-sm text-gray-600">IP</label>
+        <input id="filter-ip" type="text" class="w-full border rounded px-2 py-1" placeholder="1.2.3.4" />
+      </div>
+      <div>
+        <label class="text-sm text-gray-600">Rule ID</label>
+        <input id="filter-rule" type="text" class="w-full border rounded px-2 py-1" placeholder="942100" />
+      </div>
+      <div>
+        <button id="apply-filters" class="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Events Table -->
+  <div class="bg-white shadow rounded p-4 mt-4">
+    <div class="flex items-center justify-between mb-2">
+      <h2 class="text-lg font-semibold">Detail Serangan</h2>
+      <div class="text-sm text-gray-500" id="events-count">0 events</div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead>
+          <tr>
+            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Waktu</th>
+            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">IP</th>
+            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-40">Domain</th>
+            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
+            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-64">URI</th>
+            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Rule IDs</th>
+            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Severity</th>
+          </tr>
+        </thead>
+        <tbody id="events-body" class="divide-y divide-gray-200 text-sm"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+<script>
+let chart; // will hold echarts instance
+const base = window.location.origin;
+
+function loadScript(src, next){
+  const prevDefine = window.define;
+  const prevRequire = window.require;
+  const s = document.createElement('script');
+  s.src = src;
+  s.onload = () => {
+    window.define = prevDefine;
+    window.require = prevRequire;
+    if (window.echarts) {
+      console.log('ECharts loaded:', src);
+    } else if (next) {
+      console.warn('ECharts global not found, trying fallback:', src);
+      next();
+    } else {
+      console.error('Failed to load ECharts from all CDNs');
+    }
+  };
+  s.onerror = () => {
+    window.define = prevDefine;
+    window.require = prevRequire;
+    if (next) {
+      console.warn('Failed loading:', src, 'trying fallback');
+      next();
+    } else {
+      console.error('Failed to load ECharts:', src);
+    }
+  };
+  try { window.define = undefined; window.require = undefined; } catch(e) {}
+  document.body.appendChild(s);
+}
+
+async function ensureEcharts(){
+  if (window.echarts) return true;
+  return await new Promise((resolve) => {
+    loadScript('https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js', () =>
+      loadScript('https://unpkg.com/echarts@5.5.0/dist/echarts.min.js', () =>
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js')
+      )
+    );
+    // give small delay to allow attach
+    setTimeout(() => resolve(!!window.echarts), 500);
+  });
+}
+
+async function fetchJson(url){
+  const res = await fetch(url, { credentials: 'same-origin' });
+  if(!res.ok){ throw new Error(`Bad response: ${res.status}`); }
+  try{ return await res.json(); }catch(e){ console.error('JSON parse failed', e); return {}; }
+}
+function fetchStats(){
+  return fetchJson(`${base}/api/modsecurity/stats`).catch(e=>{ console.error('stats error', e); return { success:false, series:[], total:0, today:0, week:0, month:0 }; });
+}
+function fetchTopRules(){
+  return fetchJson(`${base}/api/modsecurity/top-rules`).catch(e=>{ console.error('top-rules error', e); return { success:false, top_rules:[] }; });
+}
+function fetchTopIps(){
+  return fetchJson(`${base}/api/modsecurity/top-ips`).catch(e=>{ console.error('top-ips error', e); return { success:false, top_ips:[] }; });
+}
+function fetchEvents(params={}){
+  const q = new URLSearchParams(params);
+  return fetchJson(`${base}/api/modsecurity/attacks?${q.toString()}`).catch(e=>{ console.error('events error', e); return { success:false, events:[] }; });
+}
+function buildSeriesFromEvents(events){
+  try{
+    const map = new Map();
+    const range = document.getElementById('range-select')?.value || '24h';
+    const bucketByDay = range === '7d';
+    (Array.isArray(events)?events:[]).forEach(ev=>{
+      const tStr = ev.datetime || ev.timestamp || ev.bucket;
+      if(!tStr) return;
+      const d = new Date(tStr);
+      if(isNaN(d)){
+        const label = tStr;
+        map.set(label, (map.get(label)||0) + 1);
+        return;
+      }
+      if(bucketByDay){
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,'0');
+        const day = String(d.getDate()).padStart(2,'0');
+        const label = `${y}-${m}-${day}`;
+        map.set(label, (map.get(label)||0) + 1);
+      } else {
+        const hh = String(d.getHours()).padStart(2,'0');
+        const mm = String(d.getMinutes()).padStart(2,'0');
+        const label = `${hh}:${mm}`;
+        map.set(label, (map.get(label)||0) + 1);
+      }
+    });
+    return Array.from(map.entries()).sort((a,b)=>a[0].localeCompare(b[0])).map(([label,count])=>({label, value: count}));
+  }catch(e){ console.error('buildSeriesFromEvents failed', e); return []; }
+}
+function renderStats(s, fallbackSeries){
+  try{
+    document.getElementById('stat-total').textContent = s.total ?? 0;
+    const uniqueIpsEl = document.getElementById('stat-unique-ips');
+    const blockedIpsEl = document.getElementById('stat-blocked-ips');
+    if (uniqueIpsEl) uniqueIpsEl.textContent = s.unique_ips ?? 0;
+    if (blockedIpsEl) blockedIpsEl.textContent = s.blocked_ips_count ?? 0;
+
+    const raw = Array.isArray(s.series) ? s.series : [];
+    let normalized = raw.map(x=>({
+      label: x.bucket ?? x.time ?? x.timestamp ?? '',
+      value: x.count ?? x.total ?? x.value ?? 0
+    })).filter(x=>x.label);
+    if(normalized.length === 0 && Array.isArray(fallbackSeries) && fallbackSeries.length){
+      normalized = fallbackSeries;
+    }
+    const labels = normalized.map(x=>x.label);
+    const data = normalized.map(x=>x.value);
+
+    // Guard: pastikan ECharts tersedia
+    if (!window.echarts) {
+      console.warn('ECharts not available, skipping chart render');
+      return;
+    }
+
+    const isDark = document.documentElement.classList.contains('dark');
+    const axisLabelColor = isDark ? '#d1d5db' : '#4b5563';
+    const axisLineColor = isDark ? '#374151' : '#d1d5db';
+    const splitLineColor = isDark ? '#1f2937' : '#e5e7eb';
+
+    const dom = document.getElementById('attackChart');
+    if (!dom) { console.error('attackChart container not found'); return; }
+
+    if (chart && chart.dispose) { try { chart.dispose(); } catch(_){} }
+    chart = echarts.init(dom);
+
+    chart.setOption({
+      grid: { left: 30, right: 10, top: 20, bottom: 20 },
+      tooltip: { trigger: 'axis' },
+      legend: { show: false, textStyle: { color: axisLabelColor } },
+      xAxis: { type: 'category', data: labels, axisLabel: { color: axisLabelColor }, axisLine: { lineStyle: { color: axisLineColor } } },
+      yAxis: { type: 'value', min: 0, axisLabel: { color: axisLabelColor }, splitLine: { lineStyle: { color: splitLineColor } } },
+      series: [{
+        name: 'Attacks', type: 'line', smooth: true, data,
+        lineStyle: { color: '#2563eb', width: 2 }, itemStyle: { color: '#2563eb' }, areaStyle: { color: 'rgba(37,99,235,0.15)' }
+      }]
+    });
+
+    window.addEventListener('resize', () => { chart && chart.resize && chart.resize(); });
+  }catch(e){ console.error('renderStats failed', e); }
+}
+function renderTop(listEl, items, key){
+  try{
+    listEl.innerHTML = '';
+    const arr = Array.isArray(items) ? items : [];
+    arr.forEach(it=>{
+      const li = document.createElement('li');
+      li.className = 'flex justify-between';
+      li.innerHTML = `<span>${it[key] ?? '-'}</span><span class='text-gray-500'>${it.count ?? 0}</span>`;
+      listEl.appendChild(li);
+    });
+    if(arr.length===0){
+      const li = document.createElement('li'); li.textContent = 'No data'; listEl.appendChild(li);
+    }
+  }catch(e){ console.error('renderTop failed', e); }
+}
+function fmtTime(ev){
+  return ev.datetime || ev.timestamp || ev.bucket || '-';
+}
+function renderEvents(res){
+  try{
+    const tbody = document.getElementById('events-body');
+    tbody.innerHTML = '';
+    const evs = Array.isArray(res.events) ? res.events : [];
+    console.log('Rendering events:', evs.length, evs.slice(0,3));
+    document.getElementById('events-count').textContent = `${evs.length} events`;
+    evs.forEach(ev=>{
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-gray-50';
+      const domain = ev.domain || ev.host || (function(){ try{ const u = new URL(ev.uri||'', window.location.origin); return u.host || ''; }catch(_){ return ''; }})();
+      tr.innerHTML = `
+        <td class='px-3 py-2'>${fmtTime(ev)}</td>
+        <td class='px-3 py-2'>${ev.src_ip||'-'}</td>
+        <td class='px-3 py-2 whitespace-nowrap w-40'>${domain || '-'}</td>
+        <td class='px-3 py-2'>${ev.method||'-'}</td>
+        <td class='px-3 py-2 break-all w-64'>${ev.uri||'-'}</td>
+        <td class='px-3 py-2'>${(ev.rule_ids||[]).join(', ')}</td>
+        <td class='px-3 py-2'>${ev.status||'-'}</td>
+        <td class='px-3 py-2'>${ev.severity||'-'}</td>`;
+      tbody.appendChild(tr);
+    });
+  }catch(e){ console.error('renderEvents failed', e); }
+}
+async function loadAll(){
+  try{
+    await ensureEcharts();
+
+    // Build query params only when filled to avoid 'undefined' filters
+    const sinceVal = document.getElementById('filter-since').value.trim();
+    const untilVal = document.getElementById('filter-until').value.trim();
+    const ipVal = document.getElementById('filter-ip').value.trim();
+    const ruleVal = document.getElementById('filter-rule').value.trim();
+    const params = {};
+    if (sinceVal) params.since = sinceVal;
+    if (untilVal) params.until = untilVal;
+    if (ipVal) params.ip = ipVal;
+    if (ruleVal) params.rule_id = ruleVal;
+
+    document.getElementById('events-count').textContent = 'Loading...';
+
+    const [stats, rules, ips, events] = await Promise.all([
+      fetchStats(), fetchTopRules(), fetchTopIps(), fetchEvents(params)
+    ]);
+
+    const fbSeries = buildSeriesFromEvents(events && events.events ? events.events : []);
+
+    if(stats){ renderStats(stats, fbSeries); } else { renderStats({}, fbSeries); }
+    if(rules && rules.success){ renderTop(document.getElementById('top-rules'), rules.top_rules, 'rule_id'); } else { renderTop(document.getElementById('top-rules'), [], 'rule_id'); }
+    if(ips && ips.success){ renderTop(document.getElementById('top-ips'), ips.top_ips, 'ip'); } else { renderTop(document.getElementById('top-ips'), [], 'ip'); }
+
+    console.log('ModSecurity events response:', events);
+    if(events && events.success){ renderEvents(events); } else { renderEvents({ events: [] }); }
+  }catch(e){ console.error('loadAll failed', e); }
+}
+document.getElementById('apply-filters').addEventListener('click', loadAll);
+document.getElementById('range-select').addEventListener('change', loadAll);
+setInterval(loadAll, 30000);
+document.addEventListener('DOMContentLoaded', loadAll);
+</script>
+{% endblock %}

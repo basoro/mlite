@@ -94,50 +94,136 @@
         <div class="p-4">
           <form id="editSiteForm" class="space-y-4" onsubmit="submitEditSiteForm(event)">
             <input type="hidden" id="edit_domain_original" />
-            <div>
-              <label for="edit_domain" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Domain Name</label>
-              <input type="text" id="edit_domain" name="domain" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" oninput="validateEditDomain(this)">
-              <div id="edit_domain_error" class="mt-1 text-sm text-red-600 dark:text-red-400 hidden">Please enter a valid domain name</div>
-            </div>
-            <div>
-              <label for="edit_site_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Site Type</label>
-              <select id="edit_site_type" name="site_type" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" onchange="onEditTypeChange()">
-                <option value="proxy">Nginx Proxy</option>
-                <option value="php">PHP-FPM</option>
-                <option value="static">Static Site</option>
-              </select>
-            </div>
-            <div id="edit_port_group" class="hidden">
-              <label for="edit_port" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Backend Port</label>
-              <input type="number" id="edit_port" name="port" min="1" max="65535" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" oninput="validateEditPort(this)">
-              <div id="edit_port_error" class="mt-1 text-sm text-red-600 dark:text-red-400 hidden">Port must be between 1 and 65535</div>
-            </div>
-            <div id="edit_root_group" class="hidden">
-              <label for="edit_root_dir" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Root Directory</label>
-              <input type="text" id="edit_root_dir" name="root_dir" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" oninput="updateEditPreview()">
-            </div>
-            <div id="edit_php_group" class="hidden">
-              <label for="edit_php_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PHP Version</label>
-              <select id="edit_php_version" name="php_version" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white" onchange="updateEditPreview()">
-                <option value="8.3">8.3</option>
-                <option value="8.2">8.2</option>
-                <option value="8.1">8.1</option>
-                <option value="8.0">8.0</option>
-                <option value="7.4">7.4</option>
-                <option value="7.3">7.3</option>
-                <option value="7.2">7.2</option>
-                <option value="7.1">7.1</option>
-                <option value="7.0">7.0</option>
-                <option value="5.6">5.6</option>
-              </select>
-            </div>
             <div class="bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
-              <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Configuration Preview</h3>
-              <textarea id="edit_config_preview" rows="15" class="w-full font-mono text-xs bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-700"></textarea>
+              <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Edit Nginx Configuration</h3>
+              <textarea id="edit_config_preview" rows="24" class="w-full font-mono text-xs bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-700"></textarea>
             </div>
             <div class="flex justify-end gap-2">
               <button type="button" onclick="closeEditSiteModal()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Cancel</button>
               <button type="submit" id="submitEditSiteBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ModSecurity Logs Modal -->
+    <div id="modSecLogsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-6xl mx-4 max-h-[90vh]">
+        <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Detail Serangan ModSecurity - <span id="modSecLogsDomain"></span></h2>
+          <button onclick="closeModSecLogsModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-4 flex flex-col h-[calc(90vh-120px)]">
+          <!-- Filter Controls -->
+          <div class="flex flex-wrap items-center gap-4 mb-4 p-3 bg-gray-50 dark:bg-gray-900/20 rounded-lg">
+            <div class="flex items-center gap-2">
+              <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Periode:</label>
+              <select id="modSecPeriod" class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700">
+                <option value="today" selected>Hari Ini</option>
+                <option value="7days">7 Hari Terakhir</option>
+                <option value="30days">30 Hari Terakhir</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+            <div id="modSecCustomDate" class="hidden flex items-center gap-2">
+              <input type="date" id="modSecStartDate" class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700">
+              <span class="text-sm text-gray-500">sampai</span>
+              <input type="date" id="modSecEndDate" class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700">
+            </div>
+            <button onclick="loadModSecLogs()" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">
+              <i class="fas fa-search mr-1"></i>Filter
+            </button>
+            <button onclick="exportModSecLogs('csv')" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">
+              <i class="fas fa-file-csv mr-1"></i>CSV
+            </button>
+            <button onclick="exportModSecLogs('json')" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">
+              <i class="fas fa-file-code mr-1"></i>JSON
+            </button>
+            <button onclick="loadModSecLogs()" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">
+              <i class="fas fa-sync-alt mr-1"></i>Refresh
+            </button>
+          </div>
+          
+          <!-- Stats Summary -->
+          <div id="modSecStats" class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+            <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+              <div class="text-sm font-medium text-blue-600 dark:text-blue-400">Total Serangan</div>
+              <div id="totalAttacks" class="text-2xl font-bold text-blue-700 dark:text-blue-300">0</div>
+            </div>
+            <div class="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+              <div class="text-sm font-medium text-red-600 dark:text-red-400">Serangan dari IP Terblokir</div>
+              <div id="blockedAttacks" class="text-2xl font-bold text-red-700 dark:text-red-300">0</div>
+            </div>
+            <div class="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg">
+              <div class="text-sm font-medium text-yellow-600 dark:text-yellow-400">IP Unik</div>
+              <div id="uniqueIPs" class="text-2xl font-bold text-yellow-700 dark:text-yellow-300">0</div>
+            </div>
+            <div class="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
+              <div class="text-sm font-medium text-green-600 dark:text-green-400">Rule Terpicu</div>
+              <div id="triggeredRules" class="text-2xl font-bold text-green-700 dark:text-green-300">0</div>
+            </div>
+            <div class="bg-indigo-50 dark:bg-indigo-900/20 p-3 rounded-lg">
+              <div class="text-sm font-medium text-indigo-600 dark:text-indigo-400">IP Diblokir</div>
+              <div id="blockedIPsCount" class="text-2xl font-bold text-indigo-700 dark:text-indigo-300">0</div>
+            </div>
+          </div>
+
+          <!-- Logs Table -->
+          <div class="flex-1 min-h-0 overflow-y-auto">
+            <table id="modSecLogsTable" class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0">
+                <tr>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Waktu</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">IP Address</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Method</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">URI</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Rule ID</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Severity</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Message</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="modSecLogsBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
+                <tr>
+                  <td colspan="8" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">Memuat data...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SSL Configuration Modal -->
+    <div id="sslConfigModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl mx-4">
+        <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Konfigurasi SSL / Let's Encrypt</h2>
+          <button onclick="closeSSLModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-4">
+          <form id="sslConfigForm" class="space-y-4" onsubmit="submitSSLConfig(event)">
+            <input type="hidden" id="ssl_domain" />
+            <div class="flex items-center justify-between">
+              <label class="flex items-center space-x-2">
+                <input type="checkbox" id="enable_ssl" class="rounded border-gray-300" />
+                <span class="text-sm text-gray-700 dark:text-gray-300">Enable Let's Encrypt SSL</span>
+              </label>
+              <label class="flex items-center space-x-2">
+                <input type="checkbox" id="force_https" class="rounded border-gray-300" />
+                <span class="text-sm text-gray-700 dark:text-gray-300">Force HTTPS redirect</span>
+              </label>
+            </div>
+            <div>
+              <label for="le_email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Let's Encrypt</label>
+              <input type="email" id="le_email" placeholder="admin@example.com" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition dark:bg-gray-700 dark:text-white">
+              <p class="text-xs text-gray-500 mt-1">Digunakan untuk registrasi dan notifikasi Let's Encrypt.</p>
+            </div>
+            <div class="flex justify-end gap-2">
+              <button type="button" onclick="closeSSLModal()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Cancel</button>
+              <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded font-medium">Simpan</button>
             </div>
           </form>
         </div>
@@ -245,6 +331,8 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Port</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ModSecurity</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SSL</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -271,6 +359,38 @@
                                     {% else %}
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-700">Disabled</span>
                                     {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center space-x-2">
+                                        <span id="modsec-status-{{ config.domain }}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-700">Loading...</span>
+                                        <button id="modsec-btn-{{ config.domain }}" data-domain="{{ config.domain }}" data-enabled="" onclick="toggleModSec('{{ config.domain }}')" class="inline-flex items-center px-2.5 py-1 border border-gray-300 text-xs leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" disabled>
+                                            Toggle
+                                        </button>
+                                        <button onclick="openModSecLogsModal('{{ config.domain }}')" class="inline-flex items-center px-2.5 py-1 border border-blue-300 text-xs leading-4 font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                            Logs
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center space-x-2">
+                                        {% if config.ssl_enabled %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">SSL Enabled</span>
+                                        {% else %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-700">No SSL</span>
+                                        {% endif %}
+                                        {% if config.https_redirect %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">HTTPS Redirect</span>
+                                        {% endif %}
+                                        <button onclick="openSSLModal('{{ config.domain }}', {{ 'true' if config.ssl_enabled else 'false' }}, {{ 'true' if config.https_redirect else 'false' }})" class="inline-flex items-center px-2.5 py-1 border border-purple-300 text-xs leading-4 font-medium rounded-md text-purple-700 bg-white hover:bg-purple-50">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11V7a4 4 0 10-8 0v4m8 0V7m0 4v4a4 4 0 108 0v-4m-8 0h8"></path>
+                                            </svg>
+                                            SSL/Let's Encrypt
+                                        </button>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center space-x-2">
@@ -541,48 +661,15 @@ function openEditSiteModal(domain){
   const modal = document.getElementById('editSiteModal');
   modal.classList.remove('hidden');
   modal.classList.add('flex');
-  // Reset form
   document.getElementById('edit_domain_original').value = domain;
-  document.getElementById('edit_domain').value = domain;
-  document.getElementById('edit_port').value = '';
-  document.getElementById('edit_root_dir').value = '';
-  document.getElementById('edit_php_version').value = '8.3';
-  // Load existing config via GET (HTML page). We'll parse minimal info client-side if needed.
-  fetch(`/edit_vhost/${encodeURIComponent(domain)}`)
-    .then(resp => resp.text())
-    .then(html => {
-      // Try to infer type/port/root via heuristics from content text
-      const contentMatch = html.match(/<textarea[^>]*id="editor-textarea"[^>]*>([\s\S]*?)<\/textarea>/);
-      const content = contentMatch ? contentMatch[1] : '';
-      let type = 'proxy';
-      let port = '';
-      let root = '';
-      let phpVersion = '8.3';
-      if (/fastcgi_pass\s+([a-zA-Z0-9_-]+):9000/.test(content)) {
-        type = 'php';
-        const m = content.match(/fastcgi_pass\s+([a-zA-Z0-9_-]+):9000/);
-        if (m){
-          const host = m[1];
-          const map = { php56:'5.6', php70:'7.0', php71:'7.1', php72:'7.2', php73:'7.3', php74:'7.4', php80:'8.0', php81:'8.1', php82:'8.2', php83:'8.3' };
-          phpVersion = map[host] || '8.3';
-        }
-        const rm = content.match(/^\s*root\s+([^;]+);/m);
-        if (rm) root = rm[1].trim();
-      } else if (/proxy_pass\s+http:\/\/localhost:/.test(content)) {
-        type = 'proxy';
-        const pm = content.match(/proxy_pass\s+http:\/\/localhost:(\d+)/);
-        if (pm) port = pm[1];
-      } else {
-        type = 'static';
-        const rm = content.match(/^\s*root\s+([^;]+);/m);
-        if (rm) root = rm[1].trim();
-      }
-      document.getElementById('edit_site_type').value = type;
-      document.getElementById('edit_port').value = port;
-      document.getElementById('edit_root_dir').value = root;
-      document.getElementById('edit_php_version').value = phpVersion;
-      onEditTypeChange();
-      updateEditPreview();
+  // Load existing config via API JSON
+  fetch(`/api/vhost/${encodeURIComponent(domain)}`)
+    .then(resp => resp.json())
+    .then(data => {
+      if (!data || data.error) { throw new Error((data && data.error) ? data.error : 'No data'); }
+      const content = data.content || '';
+      const previewEl = document.getElementById('edit_config_preview');
+      if (previewEl) { previewEl.value = content; }
     })
     .catch(err => {
       console.error(err);
@@ -594,90 +681,32 @@ function closeEditSiteModal(){
   modal.classList.add('hidden');
   modal.classList.remove('flex');
 }
-function validateEditDomain(input){
-  const domain = input.value.trim();
-  const err = document.getElementById('edit_domain_error');
-  const submitBtn = document.getElementById('submitEditSiteBtn');
-  const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$/;
-  if (domain && !domainRegex.test(domain)) {
-    err.classList.remove('hidden');
-    submitBtn.disabled = true;
-    return false;
-  } else {
-    err.classList.add('hidden');
-    submitBtn.disabled = false;
-    updateEditPreview();
-    return true;
-  }
-}
-function validateEditPort(input){
-  const type = document.getElementById('edit_site_type').value;
-  const port = parseInt(input.value, 10);
-  const err = document.getElementById('edit_port_error');
-  const submitBtn = document.getElementById('submitEditSiteBtn');
-  if (type === 'php' || type === 'static') {
-    err.classList.add('hidden');
-    submitBtn.disabled = false;
-    updateEditPreview();
-    return true;
-  }
-  if (input.value && (isNaN(port) || port < 1 || port > 65535)) {
-    err.classList.remove('hidden');
-    submitBtn.disabled = true;
-    return false;
-  } else {
-    err.classList.add('hidden');
-    submitBtn.disabled = false;
-    updateEditPreview();
-    return true;
-  }
-}
-function onEditTypeChange(){
-  const type = document.getElementById('edit_site_type').value;
-  const portGroup = document.getElementById('edit_port_group');
-  const rootGroup = document.getElementById('edit_root_group');
-  const phpGroup = document.getElementById('edit_php_group');
-  if (type === 'php') {
-    portGroup.classList.add('hidden');
-    rootGroup.classList.remove('hidden');
-    phpGroup.classList.remove('hidden');
-  } else if (type === 'static') {
-    portGroup.classList.add('hidden');
-    rootGroup.classList.remove('hidden');
-    phpGroup.classList.add('hidden');
-  } else {
-    rootGroup.classList.add('hidden');
-    portGroup.classList.remove('hidden');
-    phpGroup.classList.add('hidden');
-  }
-  updateEditPreview();
-}
-function updateEditPreview(){
-  const domain = document.getElementById('edit_domain').value || 'example.com';
-  const type = document.getElementById('edit_site_type').value;
-  const port = document.getElementById('edit_port').value || '3000';
-  const root = document.getElementById('edit_root_dir').value || '/var/www/public';
-  const phpVersion = document.getElementById('edit_php_version').value || '8.3';
-  const map = { '5.6':'php56','7.0':'php70','7.1':'php71','7.2':'php72','7.3':'php73','7.4':'php74','8.0':'php80','8.1':'php81','8.2':'php82','8.3':'php83' };
-  const phpHost = map[phpVersion] || 'php83';
-  let config = '';
-  if (type === 'php') {
-    config = `server {\n    listen 80;\n    server_name ${domain};\n\n    root ${root};\n    index index.php index.html;\n\n    access_log /var/log/nginx/access.log;\n    error_log  /var/log/nginx/error.log;\n\n    location / {\n        try_files $uri $uri/ /index.php?$args;\n    }\n\n    location ~ \\.php$ {\n        include fastcgi_params;\n        fastcgi_pass ${phpHost}:9000;\n        fastcgi_index index.php;\n        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n\n        fastcgi_buffer_size 128k;\n        fastcgi_buffers 4 256k;\n        fastcgi_busy_buffers_size 256k;\n    }\n\n    location ~ /\\. {\n        deny all;\n    }\n}`;
-  } else if (type === 'static') {
-    config = `server {\n    listen 80;\n    server_name ${domain};\n\n    root ${root};\n    index index.html;\n\n    access_log /var/log/nginx/access.log;\n    error_log  /var/log/nginx/error.log;\n\n    location / {\n        try_files $uri $uri/ /index.html;\n    }\n\n    location ~ /\\. {\n        deny all;\n    }\n}`;
-  } else {
-    config = `server {\n    listen 80;\n    server_name ${domain};\n    \n    location / {\n        proxy_pass http://localhost:${port};\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}`;
-  }
-  document.getElementById('edit_config_preview').value = config;
-}
+
+// Nonaktifkan state dan generator karena editor kini textarea polos
+// (disisakan sebagai no-op untuk kompatibilitas)
+let editOriginalContent = '';
+let editDirty = false;
+function markDirtyAndUpdate(){ /* no-op */ }
+
+// Monaco editor dinonaktifkan; gunakan textarea saja
+let editMonacoEditor = null;
+function initEditMonaco(){ /* no-op */ }
+function syncMonacoToTextarea(){ /* no-op */ }
+
+// Validasi lama dinonaktifkan
+function validateEditDomain(input){ return true; }
+function validateEditPort(input){ return true; }
+function onEditTypeChange(){ /* no-op */ }
+function updateEditPreview(){ /* no-op */ }
+
 function submitEditSiteForm(e){
   e.preventDefault();
   const btn = document.getElementById('submitEditSiteBtn');
   const original = btn.innerHTML;
   btn.disabled = true;
-  btn.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i>';
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
   const domainOriginal = document.getElementById('edit_domain_original').value.trim();
-  // Build content from editable textarea
+  // Ambil konten dari textarea
   const content = document.getElementById('edit_config_preview').value;
   const fd = new FormData();
   fd.append('content', content);
@@ -702,5 +731,442 @@ function submitEditSiteForm(e){
       btn.innerHTML = original;
     });
 }
+
+// Add ModSecurity per-site status & toggle
+function refreshModSec(domain) {
+  const statusEl = document.getElementById(`modsec-status-${domain}`);
+  const btnEl = document.getElementById(`modsec-btn-${domain}`);
+  if (!statusEl || !btnEl) return;
+  btnEl.disabled = true;
+  fetch(`/api/modsecurity/${domain}`)
+    .then(r => r.json())
+    .then(data => {
+      if (!data.success) {
+        statusEl.textContent = 'Error';
+        statusEl.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800';
+        btnEl.disabled = false;
+        return;
+      }
+      const enabled = !!data.effective_enabled;
+      const configured = (data.configured || 'inherit');
+      statusEl.textContent = enabled ? (configured === 'inherit' ? 'On (inherit)' : 'On') : 'Off';
+      statusEl.className = enabled
+        ? 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'
+        : 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-700';
+      btnEl.dataset.enabled = String(enabled);
+      btnEl.innerHTML = enabled
+        ? '<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6"></path></svg> Disable WAF'
+        : '<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Enable WAF';
+      btnEl.disabled = false;
+    })
+    .catch(err => {
+      console.error(err);
+      statusEl.textContent = 'Error';
+      statusEl.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800';
+      btnEl.disabled = false;
+    });
+}
+
+function toggleModSec(domain) {
+  const btnEl = document.getElementById(`modsec-btn-${domain}`);
+  if (!btnEl) return;
+  const original = btnEl.innerHTML;
+  const currentlyEnabled = (btnEl.dataset.enabled || 'true') === 'true';
+  const nextEnabled = !currentlyEnabled;
+  btnEl.disabled = true;
+  btnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  fetch(`/api/modsecurity/${domain}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ enabled: nextEnabled })
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        showToast(data.message || 'ModSecurity updated', 'success');
+        refreshModSec(domain);
+      } else {
+        showToast(data.message || 'Failed to update ModSecurity', 'error');
+        btnEl.disabled = false;
+        btnEl.innerHTML = original;
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      showToast('Network error', 'error');
+      btnEl.disabled = false;
+      btnEl.innerHTML = original;
+    });
+}
+
+function initModSec() {
+  const domains = {{ config_files | map(attribute='domain') | list | tojson }};
+  domains.forEach(d => refreshModSec(d));
+}
+
+document.addEventListener('DOMContentLoaded', initModSec);
+
+// ModSecurity Logs Modal Functions
+let currentModSecDomain = '';
+let modSecLogsData = [];
+
+function openModSecLogsModal(domain) {
+  currentModSecDomain = domain;
+  document.getElementById('modSecLogsDomain').textContent = domain;
+  document.getElementById('modSecLogsModal').classList.remove('hidden');
+  document.getElementById('modSecLogsModal').classList.add('flex');
+  
+  loadBlockedIPs(); // Load blocked IPs first
+  loadModSecLogs();
+  
+  // Set default period to today
+  document.getElementById('modSecPeriod').value = 'today';
+  document.getElementById('modSecCustomDate').classList.add('hidden');
+  
+  // Load logs
+  loadModSecLogs();
+}
+
+function closeModSecLogsModal() {
+  document.getElementById('modSecLogsModal').classList.add('hidden');
+  document.getElementById('modSecLogsModal').classList.remove('flex');
+  currentModSecDomain = '';
+  modSecLogsData = [];
+}
+
+function loadModSecLogs() {
+  const period = document.getElementById('modSecPeriod').value;
+  let startDate, endDate;
+  
+  const today = new Date();
+  const formatDate = (date) => date.toISOString().split('T')[0];
+  
+  switch (period) {
+    case 'today':
+      startDate = endDate = formatDate(today);
+      break;
+    case '7days':
+      startDate = formatDate(new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000));
+      endDate = formatDate(today);
+      break;
+    case '30days':
+      startDate = formatDate(new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000));
+      endDate = formatDate(today);
+      break;
+    case 'custom':
+      startDate = document.getElementById('modSecStartDate').value;
+      endDate = document.getElementById('modSecEndDate').value;
+      if (!startDate || !endDate) {
+        showToast('Please select both start and end dates', 'error');
+        return;
+      }
+      break;
+  }
+  
+  // Show loading state
+  document.getElementById('modSecLogsBody').innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">Memuat data...</td></tr>';
+  
+  // Fetch logs from API
+  fetch(`/api/modsecurity-logs/${encodeURIComponent(currentModSecDomain)}?start_date=${startDate}&end_date=${endDate}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        modSecLogsData = data.logs || [];
+        displayModSecLogs();
+        updateModSecStats();
+      } else {
+        showToast(data.error || 'Failed to load logs', 'error');
+        document.getElementById('modSecLogsBody').innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-red-500 dark:text-red-400">Gagal memuat data</td></tr>';
+      }
+    })
+    .catch(error => {
+      console.error('Error loading ModSecurity logs:', error);
+      showToast('Network error occurred', 'error');
+      document.getElementById('modSecLogsBody').innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-red-500 dark:text-red-400">Error memuat data</td></tr>';
+    });
+}
+
+function displayModSecLogs() {
+  const tbody = document.getElementById('modSecLogsBody');
+  
+  if (modSecLogsData.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">Tidak ada data serangan</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = modSecLogsData.map(log => `
+    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+      <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">${log.time || '-'}</td>
+      <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">${log.ip || '-'}</td>
+      <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">${log.method || '-'}</td>
+      <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100 max-w-xs truncate" title="${log.uri || ''}">${log.uri || '-'}</td>
+      <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">${log.rule_id || '-'}</td>
+      <td class="px-4 py-2 text-sm">
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getSeverityClass(log.severity)}">
+          ${log.severity || 'unknown'}
+        </span>
+      </td>
+      <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">${log.action || '-'}</td>
+      <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100 max-w-md truncate" title="${log.message || ''}">${log.message || '-'}</td>
+      <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">
+        <button onclick="toggleIPBlock('${log.ip || ''}')" 
+                class="px-2 py-1 text-xs rounded ${isIPBlocked(log.ip) ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} text-white"
+                ${!log.ip ? 'disabled' : ''}>
+          <i class="fas ${isIPBlocked(log.ip) ? 'fa-unlock' : 'fa-ban'}"></i>
+          ${isIPBlocked(log.ip) ? 'Unblock' : 'Block'}
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function getSeverityClass(severity) {
+  if (!severity) return 'bg-gray-100 text-gray-800';
+  
+  const sev = severity.toLowerCase();
+  if (sev.includes('critical') || sev.includes('emergency')) {
+    return 'bg-red-100 text-red-800';
+  } else if (sev.includes('error') || sev.includes('alert')) {
+    return 'bg-orange-100 text-orange-800';
+  } else if (sev.includes('warning')) {
+    return 'bg-yellow-100 text-yellow-800';
+  } else if (sev.includes('notice') || sev.includes('info')) {
+    return 'bg-blue-100 text-blue-800';
+  } else {
+    return 'bg-gray-100 text-gray-800';
+  }
+}
+
+// IP Blocking Functions
+let blockedIPs = []; // Cache untuk daftar IP yang diblokir
+
+function loadBlockedIPs() {
+  fetch('/api/blocked-ips')
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        blockedIPs = data.blocked_ips || [];
+        // Refresh tampilan jika modal sedang terbuka
+        const modalEl = document.getElementById('modSecLogsModal');
+        if (modalEl && !modalEl.classList.contains('hidden')) {
+          displayModSecLogs();
+          updateModSecStats();
+        }
+      }
+    })
+    .catch(error => {
+      console.error('Error loading blocked IPs:', error);
+    });
+}
+
+function isIPBlocked(ipAddress) {
+  return ipAddress && blockedIPs.includes(ipAddress);
+}
+
+function toggleIPBlock(ipAddress, currentStatus) {
+  if (!ipAddress) {
+    showToast('IP address tidak valid', 'error');
+    return;
+  }
+  
+  const action = isIPBlocked(ipAddress) ? 'unblock' : 'block';
+  const confirmMessage = `Apakah Anda yakin ingin ${action === 'block' ? 'memblokir' : 'membuka blokir'} IP ${ipAddress}?`;
+  
+  if (confirm(confirmMessage)) {
+    const endpoint = action === 'block' ? '/api/block-ip' : '/api/unblock-ip';
+    
+    // Show loading state
+    showToast(`Processing ${action}...`, 'info');
+    
+    fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ip: ipAddress
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Show success notification
+        showToast(`${action === 'block' ? 'IP diblokir' : 'IP dibuka blokir'} berhasil: ${ipAddress}`, 'success');
+        
+        // Reload blocked IPs and logs to reflect changes
+        loadBlockedIPs();
+        loadModSecLogs();
+      } else {
+        showToast(`Gagal ${action} IP: ${data.message || data.error}`, 'error');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showToast('Terjadi kesalahan saat memproses permintaan', 'error');
+    });
+  }
+}
+
+function updateModSecStats() {
+  const totalAttacks = modSecLogsData.length;
+
+  const blockedIPsCount = Array.isArray(blockedIPs) ? blockedIPs.length : 0;
+  const blockedAttacks = modSecLogsData.filter(log => {
+    const ip = log && log.ip;
+    return ip && blockedIPs.includes(ip);
+  }).length;
+  
+  const uniqueIPs = new Set(modSecLogsData.map(log => log.ip).filter(ip => ip)).size;
+  const triggeredRules = new Set(modSecLogsData.map(log => log.rule_id).filter(id => id)).size;
+  
+  document.getElementById('totalAttacks').textContent = totalAttacks;
+  document.getElementById('blockedAttacks').textContent = blockedAttacks;
+  document.getElementById('uniqueIPs').textContent = uniqueIPs;
+  document.getElementById('triggeredRules').textContent = triggeredRules;
+  const blockedIPsEl = document.getElementById('blockedIPsCount');
+  if (blockedIPsEl) blockedIPsEl.textContent = blockedIPsCount;
+}
+
+function exportModSecLogs(format) {
+  if (modSecLogsData.length === 0) {
+    showToast('No data to export', 'warning');
+    return;
+  }
+  
+  const domain = currentModSecDomain;
+  const timestamp = new Date().toISOString().split('T')[0];
+  
+  if (format === 'csv') {
+    const headers = ['Time', 'IP Address', 'Method', 'URI', 'Rule ID', 'Severity', 'Action', 'Message'];
+    const csvContent = [
+      headers.join(','),
+      ...modSecLogsData.map(log => [
+        `"${(log.time || '').replace(/"/g, '""')}"`,
+        `"${(log.ip || '').replace(/"/g, '""')}"`,
+        `"${(log.method || '').replace(/"/g, '""')}"`,
+        `"${(log.uri || '').replace(/"/g, '""')}"`,
+        `"${(log.rule_id || '').replace(/"/g, '""')}"`,
+        `"${(log.severity || '').replace(/"/g, '""')}"`,
+        `"${(log.action || '').replace(/"/g, '""')}"`,
+        `"${(log.message || '').replace(/"/g, '""')}"`
+      ].join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `modsecurity-logs-${domain}-${timestamp}.csv`;
+    link.click();
+  } else if (format === 'json') {
+    const jsonContent = JSON.stringify({
+      domain: domain,
+      export_date: new Date().toISOString(),
+      total_records: modSecLogsData.length,
+      logs: modSecLogsData
+    }, null, 2);
+    
+    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `modsecurity-logs-${domain}-${timestamp}.json`;
+    link.click();
+  }
+  
+  showToast(`Exported ${modSecLogsData.length} records as ${format.toUpperCase()}`, 'success');
+}
+
+// Handle period change
+document.getElementById('modSecPeriod').addEventListener('change', function() {
+  const customDateDiv = document.getElementById('modSecCustomDate');
+  if (this.value === 'custom') {
+    customDateDiv.classList.remove('hidden');
+  } else {
+    customDateDiv.classList.add('hidden');
+  }
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+  const modal = document.getElementById('modSecLogsModal');
+  if (event.target === modal) {
+    closeModSecLogsModal();
+  }
+});
+
+// SSL Modal & API Logic
+let currentSSLDomain = '';
+function openSSLModal(domain, currentEnabled, currentRedirect) {
+  currentSSLDomain = domain;
+  document.getElementById('ssl_domain').value = domain;
+  const enableEl = document.getElementById('enable_ssl');
+  const redirectEl = document.getElementById('force_https');
+  enableEl.checked = !!currentEnabled;
+  redirectEl.checked = !!currentRedirect;
+  const modal = document.getElementById('sslConfigModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  // Refresh status from server
+  fetch(`/api/nginx/ssl/status/${encodeURIComponent(domain)}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data && data.success) {
+        enableEl.checked = !!data.ssl_enabled;
+        redirectEl.checked = !!data.https_redirect;
+      }
+    })
+    .catch(err => { console.warn('SSL status fetch failed', err); });
+}
+function closeSSLModal() {
+  const modal = document.getElementById('sslConfigModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  currentSSLDomain = '';
+}
+function submitSSLConfig(e) {
+  e.preventDefault();
+  const domain = document.getElementById('ssl_domain').value;
+  const enable = document.getElementById('enable_ssl').checked;
+  const force = document.getElementById('force_https').checked;
+  const email = document.getElementById('le_email').value.trim();
+  const formBtn = e.target.querySelector('button[type="submit"]');
+  const original = formBtn.innerHTML;
+  formBtn.disabled = true;
+  formBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  let endpoint = '/api/nginx/ssl/configure';
+  let payload = { domain: domain, enable_ssl: enable, force_redirect: force, email: email };
+  if (!enable) {
+    endpoint = '/api/nginx/ssl/disable';
+    payload = { domain: domain };
+  }
+  fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data && data.success) {
+      showToast('Konfigurasi SSL diperbarui', 'success');
+      closeSSLModal();
+      setTimeout(() => window.location.reload(), 800);
+    } else {
+      showToast(data.error || data.message || 'Gagal memperbarui SSL', 'error');
+      formBtn.disabled = false;
+      formBtn.innerHTML = original;
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    showToast('Terjadi kesalahan jaringan', 'error');
+    formBtn.disabled = false;
+    formBtn.innerHTML = original;
+  });
+}
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+  const modal = document.getElementById('sslConfigModal');
+  if (event.target === modal) { closeSSLModal(); }
+});
+
 </script>
 {% endblock %}
