@@ -662,14 +662,38 @@ def reload_nginx():
 
 
 def ensure_compose_env():
-    """Write /workspace/docker/.env with HOST_PROJECT_DIR to ensure Compose variable substitution."""
+    """Ensure /workspace/docker/.env contains HOST_PROJECT_DIR without overwriting other variables."""
     try:
         proj_dir = get_project_dir()
         if not proj_dir:
             return False
         env_path = '/workspace/docker/.env'
+
+        # Read existing .env content if available
+        existing_lines = []
+        try:
+            with open(env_path, 'r') as f:
+                existing_lines = f.readlines()
+        except FileNotFoundError:
+            existing_lines = []
+
+        # Prepare the updated HOST_PROJECT_DIR line
+        host_line = f"HOST_PROJECT_DIR={proj_dir}\n"
+        updated = False
+        for idx, line in enumerate(existing_lines):
+            stripped = line.strip()
+            if stripped.startswith('HOST_PROJECT_DIR='):
+                existing_lines[idx] = host_line
+                updated = True
+                break
+
+        # Append if not present
+        if not updated:
+            existing_lines.append(host_line)
+
+        # Write back, preserving other variables
         with open(env_path, 'w') as f:
-            f.write(f"HOST_PROJECT_DIR={proj_dir}\n")
+            f.writelines(existing_lines)
         return True
     except Exception:
         return False

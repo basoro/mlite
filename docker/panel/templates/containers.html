@@ -282,12 +282,12 @@ function closeStartLog() {
                         <i class="fas fa-redo"></i>
                       </button>
                     </form>
-                  {% else %}
+                  {% elif not container.build or container.has_image %}
                     <button type="button" onclick="openStartLog('{{ container.service }}')" class="px-2 py-1 text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded hover:bg-green-200 dark:hover:bg-green-800 transition" title="Start & Stream Logs">
                       <i class="fas fa-play"></i>
                     </button>
                   {% endif %}
-                  {% if container.build %}
+                  {% if container.build and not container.running and not container.has_container %}
                     <button type="button" onclick="openBuildLog('{{ container.service }}')" class="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-800 transition" title="Build">
                       <i class="fas fa-hammer"></i>
                     </button>
@@ -301,7 +301,7 @@ function closeStartLog() {
                     </form>
                   {% endif %}
 
-                  {% if container.build and not container.running and container.has_image %}
+                  {% if container.build and not container.running and container.has_image and not container.has_container %}
                     <form method="POST" action="{{ url_for('container_remove_image', service_name=container.service) }}" style="display: inline;" onsubmit="return confirm('Hapus image untuk service {{ container.service }}? Tindakan ini akan menghapus image lokal.');">
                       <button type="submit" class="px-2 py-1 text-xs bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-800 transition" title="Remove Image">
                         <i class="fas fa-trash-alt"></i>

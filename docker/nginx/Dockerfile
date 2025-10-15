@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
     dh-autoreconf \
     doxygen \
     git \
+    zip \
+    unzip \
     libcurl4-openssl-dev \
     liblmdb-dev \
     libxml2-dev \
