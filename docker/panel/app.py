@@ -2050,6 +2050,28 @@ def container_start_log(service_name):
     project = get_compose_project()
     base = get_compose_cmd_base()
     resolved_file = get_resolved_compose_file()
+    # Guard against missing compose file and provide fallbacks
+    if not resolved_file or not isinstance(resolved_file, str):
+        try:
+            # Try repo docker directory relative to this file
+            repo_docker_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+            candidate = os.path.join(repo_docker_dir, 'docker-compose.yml')
+            if os.path.exists(candidate):
+                resolved_file = candidate
+            else:
+                host_proj = os.environ.get('HOST_PROJECT_DIR', '') or ''
+                if host_proj:
+                    candidate2 = os.path.join(host_proj, 'docker', 'docker-compose.yml')
+                    if os.path.exists(candidate2):
+                        resolved_file = candidate2
+        except Exception:
+            pass
+    if not resolved_file:
+        def generate_error():
+            yield "data: Compose file not found; cannot start service.\n\n"
+            yield "event: done\n"
+            yield "data: error\n\n"
+        return Response(stream_with_context(generate_error()), mimetype='text/event-stream')
     cmd = base + ['-f', resolved_file] + (['--project-name', project] if project else []) + ['up', '-d', '--no-deps', service_name]
 
     log_dir = '/app/tmp'
@@ -2066,11 +2088,17 @@ def container_start_log(service_name):
                 lf.write(f"Running: {' '.join(cmd)}\n")
                 env = os.environ.copy()
                 proj_dir = get_project_dir()
-                if proj_dir:
-                    env['HOST_PROJECT_DIR'] = proj_dir
+                # Only set env if valid non-empty string
+                if isinstance(proj_dir, str) and proj_dir.strip():
+                    env['HOST_PROJECT_DIR'] = proj_dir.strip()
+                # Choose a sane cwd for compose, prefer directory of resolved compose file
+                compose_dir = os.path.dirname(resolved_file) if isinstance(resolved_file, str) and resolved_file else None
+                if not compose_dir or not os.path.isdir(compose_dir):
+                    # Fall back to repo docker dir next to this app
+                    compose_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
                 proc = subprocess.Popen(
                     cmd,
-                    cwd='/workspace/docker',
+                    cwd=compose_dir,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                     text=True,
