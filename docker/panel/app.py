@@ -2274,6 +2274,7 @@ def get_resolved_compose_file():
     """
     try:
         src_path = '/workspace/docker/docker-compose.yml'
+        # If source compose doesn't exist, return it directly (caller will handle)
         if not os.path.exists(src_path):
             return src_path
         with open(src_path, 'r') as f:
@@ -2282,7 +2283,9 @@ def get_resolved_compose_file():
         if not isinstance(data, dict):
             raise Exception('compose data invalid')
         services = data.get('services', {})
-        compose_dir_host = os.path.join(host_dir, 'docker') if host_dir else None
+        # Compose dir on host only if host_dir is valid string and non-empty
+        valid_host_dir = host_dir if (isinstance(host_dir, str) and host_dir.strip()) else None
+        compose_dir_host = os.path.join(valid_host_dir, 'docker') if valid_host_dir else None
         for svc_name, svc in (services or {}).items():
             vols = svc.get('volumes')
             if not vols:
@@ -2294,14 +2297,14 @@ def get_resolved_compose_file():
                     if len(parts) >= 2:
                         src = parts[0]
                         rest = ':'.join(parts[1:])
-                        # Convert only host-side src
-                        if host_dir:
+                        # Convert only host-side src when host_dir is valid
+                        if valid_host_dir:
                             if src == '${HOST_PROJECT_DIR}':
-                                src = host_dir
+                                src = valid_host_dir
                             elif src.startswith('./') and compose_dir_host:
                                 src = os.path.join(compose_dir_host, src[2:])
                             elif src.startswith('../'):
-                                src = os.path.join(host_dir, src[3:])
+                                src = os.path.join(valid_host_dir, src[3:])
                         new_v = f"{src}:{rest}"
                         new_vols.append(new_v)
                     else:
@@ -2314,6 +2317,7 @@ def get_resolved_compose_file():
             f.write(yaml.safe_dump(data, sort_keys=False))
         return out_path
     except Exception:
+        # On error, safely fallback to original compose path (no None)
         return '/workspace/docker/docker-compose.yml'
 
 @app.route('/nginx/toggle/<domain>', methods=['POST'])
@@ -3459,6 +3463,18 @@ def api_container_start_log(container_name):
     project = get_compose_project()
     base = get_compose_cmd_base()
     resolved_file = get_resolved_compose_file()
+    # Determine working directory based on resolved compose file
+    compose_cwd = '/workspace'
+    try:
+        if resolved_file and resolved_file.startswith('/workspace/docker/'):
+            compose_cwd = '/workspace/docker'
+        elif resolved_file and resolved_file.startswith('/workspace/'):
+            compose_cwd = '/workspace'
+    except Exception:
+        compose_cwd = '/workspace'
+    # If resolved_file is falsy, fallback to original compose path
+    if not resolved_file:
+        resolved_file = '/workspace/docker/docker-compose.yml'
     cmd = base + ['-f', resolved_file] + (['--project-name', project] if project else []) + ['up', '-d', '--no-deps', service_name]
 
     log_dir = '/app/tmp'
@@ -3475,11 +3491,11 @@ def api_container_start_log(container_name):
                 lf.write(f"Running: {' '.join(cmd)}\n")
                 env = os.environ.copy()
                 proj_dir = get_project_dir()
-                if proj_dir:
+                if isinstance(proj_dir, str) and proj_dir.strip():
                     env['HOST_PROJECT_DIR'] = proj_dir
                 proc = subprocess.Popen(
                     cmd,
-                    cwd='/workspace/docker',
+                    cwd=compose_cwd,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                     text=True,
