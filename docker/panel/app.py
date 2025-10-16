@@ -5177,14 +5177,36 @@ def get_modsecurity_status(site_name: str) -> dict:
 
 
 def _set_modsecurity_status_in_content(content: str, enabled: bool) -> str:
-    """Update vhost content to set modsecurity on/off at server scope."""
-    updated = re.sub(r"\bmodsecurity\s+(on|off)\s*;", "", content, flags=re.IGNORECASE)
+    """Update vhost content to set modsecurity on/off only at server scope; keep ACME location off."""
+    lines = content.splitlines()
     directive = "modsecurity on;" if enabled else "modsecurity off;"
-    m = re.search(r"(server\s*\{)", updated)
-    if m:
-        start = m.end()
-        return updated[:start] + "\n    " + directive + updated[start:]
-    return directive + "\n" + updated
+    new_lines = []
+    depth = 0
+    in_server = False
+    for line in lines:
+        stripped = line.strip()
+        # Enter server block
+        if not in_server and re.search(r"\bserver\s*\{", line) and depth == 0:
+            in_server = True
+            new_lines.append(line)
+            depth += line.count('{') - line.count('}')
+            # Insert directive at top-level of server block
+            new_lines.append("    " + directive)
+            continue
+        if in_server:
+            # Only remove existing modsecurity directive at server scope (depth==1)
+            if depth == 1 and (not stripped.startswith('#')) and re.search(r"\bmodsecurity\s+(on|off)\s*;", stripped, flags=re.IGNORECASE):
+                # Skip this line; we've inserted new directive already
+                pass
+            else:
+                new_lines.append(line)
+            depth += line.count('{') - line.count('}')
+            if depth <= 0:
+                in_server = False
+        else:
+            new_lines.append(line)
+            depth += line.count('{') - line.count('}')
+    return "\n".join(new_lines)
 
 
 def update_modsecurity_status(site_name: str, enabled: bool) -> tuple[bool, str]:
