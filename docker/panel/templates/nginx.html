@@ -544,7 +544,7 @@ function validateDomainModal(input){
   const domain = input.value.trim();
   const err = document.getElementById('domainErrorModal');
   const submitBtn = document.getElementById('submitAddSiteBtn');
-  const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$/;
+  const domainRegex = /^(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])\.)+[A-Za-z]{2,}$/;
   if (domain && !domainRegex.test(domain)) {
     err.classList.remove('hidden');
     submitBtn.disabled = true;
