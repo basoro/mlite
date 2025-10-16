@@ -2441,20 +2441,8 @@ def api_ssl_configure():
                     logger.warning(f"Certbot (nginx) failed for {domain}: {result.stderr or result.stdout}")
             except Exception as ce:
                 logger.error(f"Certbot (nginx) error for {domain}: {ce}")
-        if not os.path.exists(cert_path) or not os.path.exists(key_path):
-            # Fallback: Generate self-signed certificate
-            cmd = [
-                'openssl', 'req', '-x509', '-nodes', '-newkey', 'rsa:2048',
-                '-days', '365', '-subj', f"/CN={domain}",
-                '-addext', f"subjectAltName=DNS:{domain}",
-                '-addext', 'extendedKeyUsage=serverAuth',
-                '-addext', 'keyUsage=digitalSignature,keyEncipherment',
-                '-addext', 'basicConstraints=CA:FALSE',
-                '-keyout', key_path, '-out', cert_path
-            ]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=20)
-            if result.returncode != 0:
-                return jsonify({'success': False, 'error': (result.stderr or result.stdout or 'openssl failed')}), 500
+        if enable_ssl and (not os.path.exists(cert_path) or not os.path.exists(key_path)):
+            return jsonify({'success': False, 'error': "Let's Encrypt certificate not available. Ensure port 80 is open, DNS points to host, ACME challenge is served at '/.well-known/acme-challenge', and a valid email is provided. Check panel logs for certbot output."}), 400
         ssl_enabled = ('listen 443' in content) and ('ssl_certificate' in content)
         https_redirect_present = ('return 301 https://$host$request_uri' in content) or ('return 301 https://' in content)
         if enable_ssl and not ssl_enabled:
@@ -2592,6 +2580,84 @@ def api_ssl_disable():
         return jsonify({'success': success, 'message': message})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/nginx/ssl/letsencrypt-log/<domain>')
+@login_required
+def api_letsencrypt_log(domain):
+    """Stream Let's Encrypt generation logs via SSE while running certbot inside nginx container."""
+    try:
+        if not is_valid_site_name(domain):
+            return Response("data: Invalid domain\n\n", mimetype='text/event-stream')
+        email = request.args.get('email') or os.environ.get('LE_EMAIL')
+        if not email:
+            return Response("data: Email is required for Let's Encrypt\n\n", mimetype='text/event-stream')
+        try:
+            subprocess.run(['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', 'mkdir -p /var/www/certbot/.well-known/acme-challenge'], capture_output=True, text=True, timeout=20)
+        except Exception:
+            pass
+        cmd = [
+            'docker', 'exec', NGINX_CONTAINER_NAME, 'certbot', 'certonly',
+            '--webroot', '-w', '/var/www/certbot',
+            '-d', domain, '--email', email,
+            '--agree-tos', '--non-interactive', '--preferred-challenges', 'http',
+            '--debug'
+        ]
+        log_dir = '/app/tmp'
+        try:
+            os.makedirs(log_dir, exist_ok=True)
+        except Exception:
+            pass
+        log_path = os.path.join(log_dir, f"letsencrypt_{domain}_{int(time.time())}.log")
+        ssl_dir, cert_path, key_path = _ssl_paths(domain)
+        os.makedirs(ssl_dir, exist_ok=True)
+        def generate():
+            yield f"data: Running: {' '.join(cmd)}\n\n"
+            try:
+                with open(log_path, 'w') as lf:
+                    lf.write(f"Running: {' '.join(cmd)}\n")
+                    proc = subprocess.Popen(
+                        cmd,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        text=True,
+                        bufsize=1
+                    )
+                    for line in proc.stdout:
+                        if line:
+                            lf.write(line)
+                            lf.flush()
+                            yield f"data: {line.strip()}\n\n"
+                    rc = proc.wait()
+                    lf.write(f"\nCertbot finished with code {rc}\n")
+                    status = 'error'
+                    if rc == 0:
+                        try:
+                            src_fullchain = f"{NGINX_CONTAINER_NAME}:/etc/letsencrypt/live/{domain}/fullchain.pem"
+                            src_privkey = f"{NGINX_CONTAINER_NAME}:/etc/letsencrypt/live/{domain}/privkey.pem"
+                            cp_cert = subprocess.run(['docker', 'cp', src_fullchain, cert_path], capture_output=True, text=True, timeout=20)
+                            yield f"data: Copying fullchain.pem: rc={cp_cert.returncode}\n\n"
+                            cp_key = subprocess.run(['docker', 'cp', src_privkey, key_path], capture_output=True, text=True, timeout=20)
+                            yield f"data: Copying privkey.pem: rc={cp_key.returncode}\n\n"
+                            if cp_cert.returncode == 0 and cp_key.returncode == 0:
+                                status = 'success'
+                            else:
+                                status = 'error'
+                        except Exception as ce:
+                            yield f"data: Error copying certs: {str(ce)}\n\n"
+                            status = 'error'
+                    yield "event: done\n"
+                    yield f"data: {status}\n\n"
+            except Exception as e:
+                try:
+                    with open(log_path, 'a') as lf:
+                        lf.write(f"\nCertbot error: {str(e)}\n")
+                except Exception:
+                    pass
+                yield f"data: Certbot error: {str(e)}\n\n"
+                yield "event: done\n"
+        return Response(generate(), mimetype='text/event-stream')
+    except Exception as e:
+        return Response(f"data: Internal error: {str(e)}\n\n", mimetype='text/event-stream')
 
 # PHP-FPM Routes
 @app.route('/php-fpm')

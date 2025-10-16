@@ -34,6 +34,22 @@
       </div>
     </div>
 
+    <!-- Let's Encrypt Log Modal -->
+    <div id="letsEncryptLogModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-3xl mx-4">
+        <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Let's Encrypt Logs</h2>
+          <button onclick="closeLetsEncryptLog()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-4">
+          <pre id="letsEncryptLogContent" class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-3 rounded max-h-96 overflow-auto text-xs"></pre>
+        </div>
+        <div class="flex justify-end gap-2 px-4 py-3 border-t dark:border-gray-700">
+          <button onclick="closeLetsEncryptLog()" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add Site Modal -->
     <div id="addSiteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl mx-4">
@@ -1131,6 +1147,73 @@ function closeSSLModal() {
   modal.classList.remove('flex');
   currentSSLDomain = '';
 }
+
+// SSE Let's Encrypt log
+let leSource = null;
+let leShouldReload = false;
+function openLetsEncryptLog(domain, email, force) {
+  const modal = document.getElementById('letsEncryptLogModal');
+  const content = document.getElementById('letsEncryptLogContent');
+  content.textContent = '';
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  leShouldReload = false;
+  if (leSource) { leSource.close(); }
+  const url = `/api/nginx/ssl/letsencrypt-log/${encodeURIComponent(domain)}${email ? `?email=${encodeURIComponent(email)}` : ''}`;
+  leSource = new EventSource(url);
+  leSource.onmessage = (e) => {
+    content.textContent += e.data + "\n";
+    content.scrollTop = content.scrollHeight;
+  };
+  leSource.addEventListener('done', (e) => {
+    const status = (e.data || '').toLowerCase();
+    content.textContent += `\n[Let's Encrypt ${e.data}]\n`;
+    content.scrollTop = content.scrollHeight;
+    if (leSource) { leSource.close(); }
+    if (status === 'success') {
+      const payload = {
+        domain: domain,
+        enable_ssl: true,
+        force_redirect: !!force,
+        email: email || ''
+      };
+      fetch('/api/nginx/ssl/configure', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.success) {
+          showToast('Konfigurasi SSL diperbarui', 'success');
+          try { closeSSLModal(); } catch (e) {}
+          leShouldReload = true;
+          setTimeout(() => { closeLetsEncryptLog(); }, 500);
+        } else {
+          showToast(data.error || data.message || 'Gagal memperbarui SSL', 'error');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        showToast('Terjadi kesalahan jaringan saat menyimpan konfigurasi', 'error');
+      });
+    } else {
+      showToast('Gagal generate sertifikat Let\'s Encrypt', 'error');
+    }
+  });
+  leSource.onerror = (e) => {
+    content.textContent += "\n[Error streaming logs]\n";
+    content.scrollTop = content.scrollHeight;
+    if (leSource) { leSource.close(); }
+  };
+}
+function closeLetsEncryptLog() {
+  const modal = document.getElementById('letsEncryptLogModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  if (leSource) { leSource.close(); leSource = null; }
+  if (leShouldReload) { window.location.reload(); }
+}
 function submitSSLConfig(e) {
   e.preventDefault();
   const domain = document.getElementById('ssl_domain').value;
@@ -1143,10 +1226,22 @@ function submitSSLConfig(e) {
   formBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
   let endpoint = '/api/nginx/ssl/configure';
   let payload = { domain: domain, enable_ssl: enable, force_redirect: force, email: email };
-  if (!enable) {
-    endpoint = '/api/nginx/ssl/disable';
-    payload = { domain: domain };
+  if (enable) {
+    if (!email) {
+      showToast('Email Let\'s Encrypt diperlukan untuk generate sertifikat', 'warning');
+      formBtn.disabled = false;
+      formBtn.innerHTML = original;
+      return;
+    }
+    // Buka modal log dan jalankan proses generate letsencrypt via SSE
+    openLetsEncryptLog(domain, email, force);
+    formBtn.disabled = false;
+    formBtn.innerHTML = original;
+    return;
   }
+  // Jika disable SSL, langsung panggil endpoint disable
+  endpoint = '/api/nginx/ssl/disable';
+  payload = { domain: domain };
   fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
