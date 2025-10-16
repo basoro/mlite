@@ -2404,13 +2404,30 @@ def api_ssl_status(domain):
         ssl_enabled = ('listen 443' in content) and ('ssl_certificate' in content)
         https_redirect = ('return 301 https://$host$request_uri' in content) or ('return 301 https://' in content)
         ssl_dir, cert_path, key_path = _ssl_paths(domain)
+        # Check certs inside nginx container as primary source
+        container_fullchain = f"/etc/letsencrypt/live/{domain}/fullchain.pem"
+        container_privkey = f"/etc/letsencrypt/live/{domain}/privkey.pem"
+        container_cert_exists = False
+        try:
+            check_cmd = [
+                'docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c',
+                f"test -f {shlex.quote(container_fullchain)} && test -f {shlex.quote(container_privkey)} && echo OK || echo MISSING"
+            ]
+            chk = subprocess.run(check_cmd, capture_output=True, text=True, timeout=10)
+            container_cert_exists = (chk.returncode == 0 and 'OK' in (chk.stdout or ''))
+        except Exception:
+            container_cert_exists = False
+        host_cert_exists = os.path.exists(cert_path) and os.path.exists(key_path)
         return jsonify({
             'success': True,
             'ssl_enabled': ssl_enabled,
             'https_redirect': https_redirect,
-            'cert_exists': os.path.exists(cert_path) and os.path.exists(key_path),
+            'cert_exists': container_cert_exists or host_cert_exists,
             'cert_path': f'/etc/letsencrypt/live/{domain}/fullchain.pem',
             'key_path': f'/etc/letsencrypt/live/{domain}/privkey.pem',
+            'host_cert_path': f'/etc/nginx/conf.d/ssl/{domain}/fullchain.pem',
+            'host_key_path': f'/etc/nginx/conf.d/ssl/{domain}/privkey.pem',
+            'source': 'container' if container_cert_exists else ('host' if host_cert_exists else 'none')
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -2453,93 +2470,43 @@ def api_ssl_configure():
                 ]
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=240)
                 if result.returncode == 0:
-                    # Copy issued certs from Nginx container to host-mounted nginx conf dir
-                    try:
-                        os.makedirs(ssl_dir, exist_ok=True)
-                    except Exception as e:
-                        logger.warning(f"Failed to ensure SSL dir {ssl_dir}: {e}")
-
+                    # Verify certs exist inside container only; no copy to host
                     src_fullchain_abs = f"/etc/letsencrypt/live/{domain}/fullchain.pem"
                     src_privkey_abs = f"/etc/letsencrypt/live/{domain}/privkey.pem"
-
-                    # Verify source files exist inside container
                     try:
                         check_cmd = [
                             'docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c',
                             f"test -f {shlex.quote(src_fullchain_abs)} && test -f {shlex.quote(src_privkey_abs)} && echo OK || echo MISSING"
                         ]
                         check = subprocess.run(check_cmd, capture_output=True, text=True, timeout=20)
-                    except Exception as e:
-                        logger.warning(f"Failed to check certs in container for {domain}: {e}")
-                        check = None
-
-                    if (check and check.returncode == 0 and 'OK' in (check.stdout or '')):
-                        # Attempt docker cp with absolute container paths
-                        src_fullchain_cp = f"{NGINX_CONTAINER_NAME}:{src_fullchain_abs}"
-                        src_privkey_cp = f"{NGINX_CONTAINER_NAME}:{src_privkey_abs}"
-                        cp_cert = subprocess.run(['docker', 'cp', src_fullchain_cp, cert_path], capture_output=True, text=True, timeout=30)
-                        cp_key = subprocess.run(['docker', 'cp', src_privkey_cp, key_path], capture_output=True, text=True, timeout=30)
-
-                        if cp_cert.returncode != 0 or cp_key.returncode != 0:
-                            logger.warning(
-                                f"docker cp failed for {domain}: cert rc={cp_cert.returncode} err={(cp_cert.stderr or '').strip()} | "
-                                f"key rc={cp_key.returncode} err={(cp_key.stderr or '').strip()} — falling back to stream copy"
-                            )
-                            # Fallback: stream file contents via docker exec cat
-                            try:
-                                cat_cert = subprocess.run([
-                                    'docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"cat {shlex.quote(src_fullchain_abs)}"
-                                ], capture_output=True, text=True, timeout=30)
-                                cat_key = subprocess.run([
-                                    'docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"cat {shlex.quote(src_privkey_abs)}"
-                                ], capture_output=True, text=True, timeout=30)
-
-                                if cat_cert.returncode == 0 and cat_cert.stdout:
-                                    try:
-                                        with open(cert_path, 'wb') as f:
-                                            f.write(cat_cert.stdout.encode())
-                                    except Exception as werr:
-                                        logger.error(f"Failed writing fullchain to host for {domain}: {werr}")
-                                else:
-                                    logger.error(f"Fallback read fullchain failed: rc={cat_cert.returncode} err={(cat_cert.stderr or '').strip()}")
-
-                                if cat_key.returncode == 0 and cat_key.stdout:
-                                    try:
-                                        with open(key_path, 'wb') as f:
-                                            f.write(cat_key.stdout.encode())
-                                    except Exception as werr:
-                                        logger.error(f"Failed writing privkey to host for {domain}: {werr}")
-                                else:
-                                    logger.error(f"Fallback read privkey failed: rc={cat_key.returncode} err={(cat_key.stderr or '').strip()}")
-                            except Exception as fe:
-                                logger.error(f"Fallback copy error for {domain}: {fe}")
-
-                        # Post-copy verification and permissions
-                        try:
-                            if os.path.exists(cert_path):
-                                os.chmod(cert_path, 0o644)
-                            if os.path.exists(key_path):
-                                os.chmod(key_path, 0o600)
-                        except Exception as pe:
-                            logger.warning(f"Failed to set permissions on cert files for {domain}: {pe}")
-
-                        if os.path.exists(cert_path) and os.path.exists(key_path):
-                            logger.info(f"SSL certs copied to host for {domain}: cert={cert_path}, key={key_path}")
+                        if check.returncode == 0 and 'OK' in (check.stdout or ''):
+                            logger.info(f"Let's Encrypt certs present in container for {domain}")
                         else:
                             logger.warning(
-                                f"SSL certs missing on host after copy for {domain}: "
-                                f"cert_exists={os.path.exists(cert_path)} key_exists={os.path.exists(key_path)}"
+                                f"Certbot succeeded but certs not found in container for {domain}: "
+                                f"stdout={(check.stdout or '').strip()} stderr={(check.stderr or '').strip()}"
                             )
-                    else:
-                        logger.warning(
-                            f"Certbot succeeded but certs not found in container for {domain}: "
-                            f"stdout={(check.stdout or '').strip()} stderr={(check.stderr or '').strip()}"
-                        )
+                    except Exception as e:
+                        logger.warning(f"Failed to verify certs in container for {domain}: {e}")
                 else:
                     logger.warning(f"Certbot (nginx) failed for {domain}: {result.stderr or result.stdout}")
             except Exception as ce:
                 logger.error(f"Certbot (nginx) error for {domain}: {ce}")
-        if enable_ssl and (not os.path.exists(cert_path) or not os.path.exists(key_path)):
+        # Determine certificate availability from container or host
+        container_fullchain = f"/etc/letsencrypt/live/{domain}/fullchain.pem"
+        container_privkey = f"/etc/letsencrypt/live/{domain}/privkey.pem"
+        container_cert_exists = False
+        try:
+            check_cmd = [
+                'docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c',
+                f"test -f {shlex.quote(container_fullchain)} && test -f {shlex.quote(container_privkey)} && echo OK || echo MISSING"
+            ]
+            chk = subprocess.run(check_cmd, capture_output=True, text=True, timeout=10)
+            container_cert_exists = (chk.returncode == 0 and 'OK' in (chk.stdout or ''))
+        except Exception:
+            container_cert_exists = False
+        host_cert_exists = os.path.exists(cert_path) and os.path.exists(key_path)
+        if enable_ssl and not (container_cert_exists or host_cert_exists):
             return jsonify({'success': False, 'error': "Let's Encrypt certificate not available. Ensure port 80 is open, DNS points to host, ACME challenge is served at '/.well-known/acme-challenge', and a valid email is provided. Check panel logs for certbot output."}), 400
         ssl_enabled = ('listen 443' in content) and ('ssl_certificate' in content)
         https_redirect_present = ('return 301 https://$host$request_uri' in content) or ('return 301 https://' in content)
@@ -2576,12 +2543,16 @@ def api_ssl_configure():
                             root_dir = line.strip().split('root ')[1].split(';')[0].strip()
                         except Exception:
                             pass
+            # Choose cert paths: prefer host copies if present, else container paths
+            use_host_paths = os.path.exists(cert_path) and os.path.exists(key_path)
+            cert_ref = cert_path if use_host_paths else f"/etc/letsencrypt/live/{domain}/fullchain.pem"
+            key_ref = key_path if use_host_paths else f"/etc/letsencrypt/live/{domain}/privkey.pem"
             ssl_block = [
                 'server {',
                 '    listen 443 ssl;',
                 f'    server_name {domain};',
-                f'    ssl_certificate /etc/letsencrypt/live/{domain}/fullchain.pem;',
-                f'    ssl_certificate_key /etc/letsencrypt/live/{domain}/privkey.pem;',
+                f'    ssl_certificate {cert_ref};',
+                f'    ssl_certificate_key {key_ref};',
                 '    ssl_protocols TLSv1.2 TLSv1.3;',
                 '    ssl_prefer_server_ciphers on;',
             ]
@@ -2733,13 +2704,23 @@ def api_letsencrypt_log(domain):
                             src_fullchain = f"{NGINX_CONTAINER_NAME}:/etc/letsencrypt/live/{domain}/fullchain.pem"
                             src_privkey = f"{NGINX_CONTAINER_NAME}:/etc/letsencrypt/live/{domain}/privkey.pem"
                             cp_cert = subprocess.run(['docker', 'cp', src_fullchain, cert_path], capture_output=True, text=True, timeout=20)
-                            yield f"data: Copying fullchain.pem: rc={cp_cert.returncode}\n\n"
+                            yield f"data: Copying fullchain.pem: rc={cp_cert.returncode} err={(cp_cert.stderr or '').strip()}\n\n"
                             cp_key = subprocess.run(['docker', 'cp', src_privkey, key_path], capture_output=True, text=True, timeout=20)
-                            yield f"data: Copying privkey.pem: rc={cp_key.returncode}\n\n"
+                            yield f"data: Copying privkey.pem: rc={cp_key.returncode} err={(cp_key.stderr or '').strip()}\n\n"
                             if cp_cert.returncode == 0 and cp_key.returncode == 0:
                                 status = 'success'
                             else:
-                                status = 'error'
+                                # If copy failed, check if certs are present in container and allow success
+                                check_cmd = [
+                                    'docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c',
+                                    f"test -f /etc/letsencrypt/live/{domain}/fullchain.pem && test -f /etc/letsencrypt/live/{domain}/privkey.pem && echo OK || echo MISSING"
+                                ]
+                                chk = subprocess.run(check_cmd, capture_output=True, text=True, timeout=10)
+                                if chk.returncode == 0 and 'OK' in (chk.stdout or ''):
+                                    status = 'success'
+                                    yield f"data: Certs exist in container; proceeding without host copy.\n\n"
+                                else:
+                                    status = 'error'
                         except Exception as ce:
                             yield f"data: Error copying certs: {str(ce)}\n\n"
                             status = 'error'
