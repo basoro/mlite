@@ -5143,17 +5143,64 @@ def analyze_mysql_slow_logs():
 
 def _parse_modsecurity_status_from_content(content: str) -> tuple[str, bool]:
     """Parse ModSecurity status from vhost content.
-    Returns (configured, effective_enabled).
-    configured: 'on'|'off'|'inherit'
-    effective_enabled: True if ModSecurity is active for this site considering global default on.
+    Only consider directives at server scope for server blocks that listen on 80 or 443.
+    Ignore directives inside location blocks (e.g., ACME challenge should remain off).
+
+    Returns (configured, effective_enabled):
+    - configured: 'on'|'off'|'inherit' representing server-level configuration across 80/443 blocks
+    - effective_enabled: True if ModSecurity effectively enabled (global default assumed on for 'inherit')
     """
     try:
-        has_on = re.search(r"\bmodsecurity\s+on\s*;", content, re.IGNORECASE) is not None
-        has_off = re.search(r"\bmodsecurity\s+off\s*;", content, re.IGNORECASE) is not None
-        if has_off:
-            return 'off', False
-        if has_on:
+        lines = content.splitlines()
+        depth = 0
+        in_server = False
+        server_listen_ports = set()
+        server_modsec = None  # 'on' | 'off' | None
+        configs = []  # per targeted server block ('on'|'off'|'inherit')
+        for line in lines:
+            stripped = line.strip()
+            # Enter server block
+            if not in_server and re.search(r"\bserver\s*\{", line) and depth == 0:
+                in_server = True
+                server_listen_ports = set()
+                server_modsec = None
+                depth += line.count('{') - line.count('}')
+                continue
+            if in_server:
+                # Detect listen ports only at server scope
+                if depth == 1 and re.search(r"\blisten\s+(?:\S+:)?(80|443)\b", stripped):
+                    try:
+                        m = re.search(r"\blisten\s+(?:\S+:)?(80|443)\b", stripped)
+                        if m:
+                            server_listen_ports.add(m.group(1))
+                    except Exception:
+                        pass
+                # Capture modsecurity directive only at server scope (ignore comments)
+                if depth == 1 and (not stripped.startswith('#')):
+                    if re.search(r"\bmodsecurity\s+on\s*;", stripped, re.IGNORECASE):
+                        server_modsec = 'on'
+                    elif re.search(r"\bmodsecurity\s+off\s*;", stripped, re.IGNORECASE):
+                        server_modsec = 'off'
+                # Update depth and finalize server block when closing
+                depth += line.count('{') - line.count('}')
+                if depth <= 0:
+                    # End of server block; consider only if it listens on 80 or 443
+                    if ('80' in server_listen_ports) or ('443' in server_listen_ports):
+                        if server_modsec is None:
+                            configs.append('inherit')
+                        else:
+                            configs.append(server_modsec)
+                    in_server = False
+            else:
+                depth += line.count('{') - line.count('}')
+        # Determine overall configured status across targeted server blocks
+        if not configs:
+            return 'inherit', True
+        if all(c == 'on' for c in configs):
             return 'on', True
+        if all(c == 'off' for c in configs):
+            return 'off', False
+        # Mixed or partial -> treat as inherit to avoid misleading UI
         return 'inherit', True
     except Exception:
         return 'inherit', True
