@@ -192,6 +192,8 @@ services:
       - ${HOST_PROJECT_DIR}:/var/www/public
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/blocked_ips.conf:/etc/nginx/blocked_ips.conf
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     depends_on:
       - php56
       - php70
