@@ -271,7 +271,6 @@ def inject_config():
 # Configuration
 NGINX_CONF_DIR = os.environ.get('NGINX_CONF_DIR', os.path.join(os.environ.get('HOST_PROJECT_DIR', '/Users/basoro/Slemp/data/www/mlite.loc'), 'docker', 'nginx', 'conf.d'))
 NGINX_CONTAINER_NAME = os.environ.get('NGINX_CONTAINER_NAME', 'mlite_nginx')
-CERTBOT_CONTAINER_NAME = os.environ.get('CERTBOT_CONTAINER_NAME', 'mlite_certbot')
 PHP_CONTAINER_NAME = os.environ.get('PHP_CONTAINER_NAME', 'mlite_php')
 # Base web root inside containers (mounted from host ../)
 PHP_WEBROOT_BASE = '/var/www/public'
@@ -2413,29 +2412,35 @@ def api_ssl_configure():
         if (not os.path.exists(cert_path) or not os.path.exists(key_path)) and (payload.get('email') or os.environ.get('LE_EMAIL')):
             try:
                 email_addr = (payload.get('email') or os.environ.get('LE_EMAIL'))
-                # Ensure webroot exists (mounted into panel and nginx)
+                # Ensure ACME webroot exists inside Nginx container
                 try:
-                    os.makedirs('/var/www/certbot', exist_ok=True)
+                    subprocess.run(['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', 'mkdir -p /var/www/certbot/.well-known/acme-challenge'], capture_output=True, text=True, timeout=20)
                 except Exception:
                     pass
-                # Run certbot in container using webroot challenge
+                # Run certbot inside Nginx container using webroot challenge
                 cmd = [
-                    'docker', 'exec', CERTBOT_CONTAINER_NAME, 'certbot', 'certonly',
+                    'docker', 'exec', NGINX_CONTAINER_NAME, 'certbot', 'certonly',
                     '--webroot', '-w', '/var/www/certbot',
                     '-d', domain, '--email', email_addr,
                     '--agree-tos', '--non-interactive', '--preferred-challenges', 'http'
                 ]
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=240)
-                if result.returncode == 0 and os.path.exists(le_live_dir):
-                    src_cert = os.path.join(le_live_dir, 'fullchain.pem')
-                    src_key = os.path.join(le_live_dir, 'privkey.pem')
-                    if os.path.exists(src_cert) and os.path.exists(src_key):
-                        shutil.copy2(src_cert, cert_path)
-                        shutil.copy2(src_key, key_path)
+                if result.returncode == 0:
+                    # Copy issued certs from Nginx container to host-mounted nginx conf dir
+                    try:
+                        os.makedirs(ssl_dir, exist_ok=True)
+                    except Exception:
+                        pass
+                    src_fullchain = f"{NGINX_CONTAINER_NAME}:/etc/letsencrypt/live/{domain}/fullchain.pem"
+                    src_privkey = f"{NGINX_CONTAINER_NAME}:/etc/letsencrypt/live/{domain}/privkey.pem"
+                    cp_cert = subprocess.run(['docker', 'cp', src_fullchain, cert_path], capture_output=True, text=True, timeout=20)
+                    cp_key = subprocess.run(['docker', 'cp', src_privkey, key_path], capture_output=True, text=True, timeout=20)
+                    if cp_cert.returncode != 0 or cp_key.returncode != 0:
+                        logger.warning(f"Failed to copy certs from nginx container for {domain}: cert rc={cp_cert.returncode}, key rc={cp_key.returncode}")
                 else:
-                    logger.warning(f"Certbot (container) failed for {domain}: {result.stderr or result.stdout}")
+                    logger.warning(f"Certbot (nginx) failed for {domain}: {result.stderr or result.stdout}")
             except Exception as ce:
-                logger.error(f"Certbot (container) error for {domain}: {ce}")
+                logger.error(f"Certbot (nginx) error for {domain}: {ce}")
         if not os.path.exists(cert_path) or not os.path.exists(key_path):
             # Fallback: Generate self-signed certificate
             cmd = [

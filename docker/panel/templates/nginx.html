@@ -4,10 +4,19 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <div class="mb-8">
+    <!-- Page Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
         <h1 class="text-3xl font-bold text-gray-800 mb-2">Nginx Management</h1>
         <p class="text-gray-600">Manage your Nginx container and configurations</p>
-    </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="{{ url_for('modsecurity_dashboard_page') }}" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition flex items-center shadow">
+          <i class="fas fa-shield-alt mr-2"></i>
+          Security
+        </a>
+      </div>
+    </div>    
 
     <!-- Start Log Modal -->
     <div id="startLogModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">

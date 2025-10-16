@@ -22,7 +22,11 @@ RUN apt-get update && apt-get install -y \
     libtool \
     automake \
     autoconf \
+    certbot \
     && rm -rf /var/lib/apt/lists/*
+
+# Prepare ACME webroot
+RUN mkdir -p /var/www/certbot/.well-known/acme-challenge
 
 # Build and install libmodsecurity (ModSecurity v3)
 RUN set -eux; \
