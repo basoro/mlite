@@ -2516,16 +2516,47 @@ def api_ssl_configure():
             port = None
             root_dir = None
             php_fastcgi_line = None
+            # Helper: extract root from main server (listen 80) block, ignoring location blocks
+            def _extract_root_from_main_server(c: str):
+                lines = c.splitlines()
+                depth = 0
+                in_server = False
+                saw_listen80 = False
+                root_val = None
+                for line in lines:
+                    stripped = line.strip()
+                    if not in_server and re.search(r'\bserver\s*\{', line) and depth == 0:
+                        in_server = True
+                        saw_listen80 = False
+                        root_val = None
+                        depth += line.count('{') - line.count('}')
+                        continue
+                    if in_server:
+                        if depth == 1 and re.search(r'\blisten\s+(?:\S+:)?80\b', stripped):
+                            saw_listen80 = True
+                        if depth == 1 and stripped.startswith('root '):
+                            if root_val is None:
+                                m = re.search(r'root\s+([^;]+);', stripped)
+                                if m:
+                                    root_val = m.group(1).strip()
+                        depth += line.count('{') - line.count('}')
+                        if depth <= 0:
+                            if saw_listen80:
+                                return root_val
+                            in_server = False
+                    else:
+                        depth += line.count('{') - line.count('}')
+                return None
+
             if 'fastcgi_pass' in content:
                 site_type = 'php'
+                # Use root from main server block, ignore ACME location root
+                root_dir = _extract_root_from_main_server(content)
+                # Capture fastcgi_pass line as-is
                 for line in content.split('\n'):
-                    if line.strip().startswith('root '):
-                        try:
-                            root_dir = line.strip().split('root ')[1].split(';')[0].strip()
-                        except Exception:
-                            pass
                     if 'fastcgi_pass' in line:
                         php_fastcgi_line = line.strip()
+                        break
             elif 'proxy_pass' in content:
                 site_type = 'proxy'
                 for line in content.split('\n'):
@@ -2537,12 +2568,8 @@ def api_ssl_configure():
                         break
             else:
                 site_type = 'static'
-                for line in content.split('\n'):
-                    if line.strip().startswith('root '):
-                        try:
-                            root_dir = line.strip().split('root ')[1].split(';')[0].strip()
-                        except Exception:
-                            pass
+                # Use root from main server block, ignore ACME location root
+                root_dir = _extract_root_from_main_server(content)
             # Choose cert paths: prefer host copies if present, else container paths
             use_host_paths = os.path.exists(cert_path) and os.path.exists(key_path)
             cert_ref = cert_path if use_host_paths else f"/etc/letsencrypt/live/{domain}/fullchain.pem"
