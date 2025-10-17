@@ -172,3 +172,44 @@ if [ -d docker ]; then
 else
   echo '⚠️  docker/ directory not found after extraction.'
 fi
+
+# ==========================================================
+# 🎉 Final Info Section
+# ==========================================================
+
+address=""
+n=0
+while [ "$address" == '' ]; do
+  address=$(curl -s ifconfig.me || echo "")
+  let n++
+  sleep 0.1
+  if [ $n -gt 5 ]; then
+    address="SERVER_IP"
+  fi
+done
+
+# ==========================================================
+# 🔍 Baca variabel dari docker/.env
+# ==========================================================
+ENV_FILE="docker/.env"
+if [ -f "$ENV_FILE" ]; then
+  yellow "Loading environment variables from $ENV_FILE..."
+  export $(grep -v '^#' "$ENV_FILE" | xargs)
+else
+  red "⚠️  File $ENV_FILE not found. Using default values."
+fi
+
+port=${PORT:-7788}
+username=${USERNAME:-admin}
+password=${PASSWORD:-admin}
+
+echo -e "=================================================================="
+echo -e "\033[32mCongratulations! Install succeeded!\033[0m"
+echo -e "=================================================================="
+echo "mLITE-Panel: http://$address:$port"
+echo -e "username: $username"
+echo -e "password: $password"
+echo -e "\033[33mWarning:\033[0m"
+echo -e "\033[33mIf you cannot access the panel,\033[0m"
+echo -e "\033[33mrelease the following ports (7788|80|443) in the firewall.\033[0m"
+echo -e "=================================================================="
