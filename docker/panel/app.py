@@ -469,10 +469,10 @@ def safe_join(base, path):
 
 
 def ensure_directory(path):
-    """Create directory via Nginx container (shared mount) if not exists with 0755 permissions and nginx ownership."""
+    """Create directory via Nginx container (shared mount) if not exists with 0755 permissions and root ownership."""
     try:
         quoted = shlex.quote(path)
-        cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"mkdir -p {quoted} && chmod 755 {quoted} && chown nginx:nginx {quoted}"]
+        cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"mkdir -p {quoted} && chmod 755 {quoted} && chown root:root {quoted}"]
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode == 0:
             return True, 'Directory ensured via container'
@@ -517,7 +517,7 @@ def create_default_index(root_dir, domain):
         last_err = None
         # Write via Nginx container (shared mount). Fallbacks are unnecessary with unified mount.
         try:
-            cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"cat > {quoted_index} << 'EOF'\n{content}\nEOF\nchmod 644 {quoted_index} && chown nginx:nginx {quoted_index}"]
+            cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"cat > {quoted_index} << 'EOF'\n{content}\nEOF\nchmod 644 {quoted_index} && chown root:root {quoted_index}"]
             res = subprocess.run(cmd, capture_output=True, text=True)
             if res.returncode == 0:
                 return True, 'Default index.html created'
