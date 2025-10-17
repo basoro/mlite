@@ -469,10 +469,10 @@ def safe_join(base, path):
 
 
 def ensure_directory(path):
-    """Create directory via Nginx container (shared mount) if not exists with 0755 permissions."""
+    """Create directory via Nginx container (shared mount) if not exists with 0755 permissions and nginx ownership."""
     try:
         quoted = shlex.quote(path)
-        cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"mkdir -p {quoted} && chmod 755 {quoted}"]
+        cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"mkdir -p {quoted} && chmod 755 {quoted} && chown nginx:nginx {quoted}"]
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode == 0:
             return True, 'Directory ensured via container'
@@ -517,7 +517,7 @@ def create_default_index(root_dir, domain):
         last_err = None
         # Write via Nginx container (shared mount). Fallbacks are unnecessary with unified mount.
         try:
-            cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"cat > {quoted_index} << 'EOF'\n{content}\nEOF\nchmod 644 {quoted_index}"]
+            cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"cat > {quoted_index} << 'EOF'\n{content}\nEOF\nchmod 644 {quoted_index} && chown nginx:nginx {quoted_index}"]
             res = subprocess.run(cmd, capture_output=True, text=True)
             if res.returncode == 0:
                 return True, 'Default index.html created'
@@ -2450,7 +2450,6 @@ def api_ssl_configure():
         with open(target_path, 'r') as f:
             content = f.read()
         ssl_dir, cert_path, key_path = _ssl_paths(domain)
-        os.makedirs(ssl_dir, exist_ok=True)
         # Try Let's Encrypt via certbot container (webroot) if email provided
         le_live_dir = os.path.join('/etc', 'letsencrypt', 'live', domain)
         if (not os.path.exists(cert_path) or not os.path.exists(key_path)) and (payload.get('email') or os.environ.get('LE_EMAIL')):
