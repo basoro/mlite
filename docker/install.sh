@@ -150,19 +150,23 @@ else
 fi
 
 # ==========================================================
-# 🎉 Final Info Section
+# 🎉 Final Info Section (revisi anti-hang)
 # ==========================================================
 
-address=""
-n=0
-while [ "$address" == '' ]; do
-  address=$(curl -s ifconfig.me || echo "")
-  let n++
-  sleep 0.1
-  if [ $n -gt 5 ]; then
-    address="SERVER_IP"
-  fi
-done
+# Ambil alamat IP server
+echo
+echo "🌐 Detecting server IP address..."
+address=$(hostname -I 2>/dev/null | awk '{print $1}')
+
+# Jika hostname -I gagal, coba fallback ke ifconfig.me (timeout 3 detik)
+if [ -z "$address" ]; then
+  address=$(curl -s --max-time 3 ifconfig.me || echo "")
+fi
+
+# Jika tetap kosong, beri default
+if [ -z "$address" ]; then
+  address="SERVER_IP"
+fi
 
 # ==========================================================
 # 🔍 Baca variabel dari docker/.env
@@ -170,22 +174,31 @@ done
 ENV_FILE="docker/.env"
 if [ -f "$ENV_FILE" ]; then
   yellow "Loading environment variables from $ENV_FILE..."
-  export $(grep -v '^#' "$ENV_FILE" | xargs)
+  # Hindari error jika .env kosong
+  set +e
+  export $(grep -v '^#' "$ENV_FILE" | xargs) 2>/dev/null || true
+  set -e
 else
   red "⚠️  File $ENV_FILE not found. Using default values."
 fi
 
+# Ambil nilai dari env atau gunakan default
 port=${PORT:-7788}
 username=${USERNAME:-admin}
 password=${PASSWORD:-admin}
 
+# ==========================================================
+# ✅ Tampilkan hasil akhir
+# ==========================================================
+echo
 echo -e "=================================================================="
-echo -e "\033[32mCongratulations! Install succeeded!\033[0m"
+echo -e "\033[32m🎉 Congratulations! Install succeeded!\033[0m"
 echo -e "=================================================================="
-echo "mLITE-Panel: http://$address:$port"
-echo -e "username: $username"
-echo -e "password: $password"
-echo -e "\033[33mWarning:\033[0m"
+echo "🌐 mLITE-Panel: http://$address:$port"
+echo -e "👤 username: $username"
+echo -e "🔑 password: $password"
+echo
+echo -e "\033[33m⚠️  Warning:\033[0m"
 echo -e "\033[33mIf you cannot access the panel,\033[0m"
 echo -e "\033[33mrelease the following ports (7788|80|443) in the firewall.\033[0m"
 echo -e "=================================================================="
