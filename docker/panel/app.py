@@ -560,6 +560,10 @@ def create_nginx_config(domain, site_type='proxy', port=None, root_dir='/var/www
         try_files $uri $uri/ /index.php?$args;
     }}
 
+    location /admin {{
+        try_files $uri $uri/ /admin/index.php?$args;
+    }}
+
     location ~ \\.php$ {{
         include fastcgi_params;
         fastcgi_pass {php_host}:9000;
@@ -2591,7 +2595,10 @@ def api_ssl_configure():
                     '    location / {',
                     '        try_files $uri $uri/ /index.php?$args;',
                     '    }',
-                    '    location ~ \\ .php$ {',
+                    '    location /admin {',
+                    '        try_files $uri $uri/ /admin/index.php?$args;',
+                    '    }',
+                    '    location ~ \\.php$ {',
                     '        include fastcgi_params;',
                     php_fastcgi_line or '        fastcgi_pass php83:9000;',
                     '        fastcgi_index index.php;',
@@ -2600,7 +2607,7 @@ def api_ssl_configure():
                     '        fastcgi_buffers 4 256k;',
                     '        fastcgi_busy_buffers_size 256k;',
                     '    }',
-                    '    location ~ /\\ . {',
+                    '    location ~ /\\. {',
                     '        deny all;',
                     '    }',
                 ])
