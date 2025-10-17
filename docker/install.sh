@@ -53,7 +53,6 @@ echo
 echo '🚀 Starting Docker daemon in background...'
 nohup dockerd > /var/log/dockerd.log 2>&1 &
 sleep 5
-docker info && echo '✅ Docker daemon is running!' || echo '⚠️ Docker daemon failed to start.'
 
 echo
 echo '📦 Installing Docker Compose plugin...'
@@ -127,18 +126,6 @@ usermod -aG docker "${SUDO_USER:-$USER}" || true
 rm -rf /tmp/docker /tmp/docker.tgz
 green "✅ Docker static binaries installed successfully!"
 
-# --- Write post-install steps into temp file ---
-TMP_SCRIPT="/tmp/post_install.sh"
-cat > "$TMP_SCRIPT" <<'EOS'
-#!/usr/bin/env bash
-set -e
-
-echo
-echo '🐳 Testing Docker setup...'
-docker version || echo '⚠️  Docker daemon may still be starting.'
-echo
-echo '✅ Docker is ready to use without re-login!'
-
 if [ "$SKIP_COMPOSE" = "true" ]; then
   echo "⏭️  Skipping Docker Compose build/up step (--skip-compose used)."
   exit 0
@@ -161,20 +148,3 @@ if [ -d docker ]; then
 else
   echo '⚠️  docker/ directory not found after extraction.'
 fi
-EOS
-
-chmod +x "$TMP_SCRIPT"
-
-# --- Execute the script as the correct user ---
-if [ -n "${SUDO_USER}" ]; then
-  yellow "Applying docker group membership for ${SUDO_USER}..."
-  su - "${SUDO_USER}" -c "SKIP_COMPOSE=$SKIP_COMPOSE bash $TMP_SCRIPT"
-else
-  yellow "Applying docker group membership for current user..."
-  newgrp docker <<EOC
-SKIP_COMPOSE=$SKIP_COMPOSE bash $TMP_SCRIPT
-EOC
-fi
-
-# --- Cleanup optional ---
-rm -f "$TMP_SCRIPT"
