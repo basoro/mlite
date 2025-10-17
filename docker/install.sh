@@ -132,22 +132,10 @@ if [ "$SKIP_COMPOSE" = "true" ]; then
 fi
 
 echo
-echo '⬇️  Downloading docker.tar.gz from basoro.id...'
-curl --insecure -sSLo docker.tar.gz https://basoro.id/downloads/docker.tar.gz && echo '📦 docker.tar.gz downloaded successfully.'
-echo
-echo '📂 Extracting docker.tar.gz...'
-tar -xzf docker.tar.gz && echo '✅ docker.tar.gz extracted successfully.'
-
-if [ -d docker ]; then
-  echo
-  echo '🚀 Entering docker/ directory and running compose commands...'
-  cd docker || exit 1
-  docker compose -f docker-compose.yml build panel
-  docker compose -f docker-compose.yml up -d panel
-  echo '✅ Docker Compose panel service started successfully!'
-else
-  echo '⚠️  docker/ directory not found after extraction.'
-fi
+echo '🚀 Running compose commands...'
+docker compose -f docker-compose.yml build panel
+docker compose -f docker-compose.yml up -d panel
+echo '✅ Docker Compose panel service started successfully!'
 
 # ==========================================================
 # 🎉 Final Info Section (revisi anti-hang)
@@ -171,7 +159,7 @@ fi
 # ==========================================================
 # 🔍 Baca variabel dari docker/.env
 # ==========================================================
-ENV_FILE="docker/.env"
+ENV_FILE=".env"
 if [ -f "$ENV_FILE" ]; then
   yellow "Loading environment variables from $ENV_FILE..."
   # Hindari error jika .env kosong
