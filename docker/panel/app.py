@@ -4545,12 +4545,19 @@ EOC
             if "Slave already has been stopped" not in str(stop_error):
                 logger.warning(f'Error stopping slave (ignored): {str(stop_error)}')
         
-        # Configure master connection
+        # Validasi master host reachable dari dalam container
+        try:
+            subprocess.run(['docker','exec',container,'bash','-lc', f"nc -z -w2 {master_host} 3306"], capture_output=True, text=True, timeout=5)
+        except Exception as host_check_err:
+            logger.warning(f"Master host reachability check failed (ignored): {host_check_err}")
+        
+        # Configure master connection (sertakan MASTER_PORT)
         change_master_sql = f"""
         CHANGE MASTER TO
         MASTER_HOST='{master_host}',
         MASTER_USER='{master_user}',
-        MASTER_PASSWORD='{master_password}'
+        MASTER_PASSWORD='{master_password}',
+        MASTER_PORT=3306
         """
         
         if master_log_file and master_log_pos > 0:
@@ -4558,11 +4565,14 @@ EOC
         
         cursor.execute(change_master_sql)
         
-        # Start slave
-        cursor.execute("START SLAVE")
+        # Start slave dengan penanganan error
+        try:
+            cursor.execute("START SLAVE")
+        except Exception as start_err:
+            logger.warning(f"START SLAVE error: {start_err}")
         
-        # Beri waktu agar slave benar-benar mulai
-        time.sleep(2)
+        # Beri waktu lebih lama agar slave benar-benar mulai
+        time.sleep(5)
         
         # Check slave status dengan dictionary cursor
         cursor.close()
