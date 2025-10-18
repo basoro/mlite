@@ -4571,6 +4571,8 @@ EOC
             change_master_sql += f",\nMASTER_LOG_FILE='{master_log_file}',\nMASTER_LOG_POS={master_log_pos}"
         
         # Eksekusi CHANGE MASTER TO dengan penanganan error detail
+        # Tambah delay 10 detik sebelum CHANGE MASTER TO untuk memastikan MySQL siap
+        time.sleep(10)
         try:
             cursor.execute(change_master_sql)
         except Exception as cm_err:
