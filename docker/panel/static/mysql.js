@@ -1099,6 +1099,8 @@ function setupSlave() {
       master_host: masterHost,
       master_user: masterUser,
       master_password: masterPassword,
+      master_log_file: '',
+      master_log_pos: 0,
       server_id: parseInt(serverId)
     })
   })
