@@ -4570,7 +4570,7 @@ EOC
 @app.route('/api/mysql/replication/start-slave', methods=['POST'])
 @login_required
 def start_mysql_slave():
-    """Start MySQL slave replication"""
+    """Start MySQL slave replication and verify status"""
     try:
         connection = create_mysql_connection()
         if not connection:
@@ -4581,8 +4581,37 @@ def start_mysql_slave():
         cursor.close()
         connection.close()
         
-        logger.info('MySQL slave started')
-        return jsonify({'success': True, 'message': 'Slave started successfully'})
+        # Beri waktu agar slave benar-benar mulai
+        time.sleep(2)
+        
+        # Cek status slave
+        conn2 = create_mysql_connection()
+        if not conn2:
+            logger.warning('Started slave but cannot reconnect to verify status')
+            return jsonify({'success': True, 'message': 'Slave started successfully (verification skipped: reconnect failed)'})
+        try:
+            cur2 = conn2.cursor(dictionary=True)
+            cur2.execute("SHOW SLAVE STATUS")
+            status = cur2.fetchone()
+            cur2.close()
+        finally:
+            conn2.close()
+        
+        if not status:
+            logger.info('Slave started, but SHOW SLAVE STATUS returns empty (not configured)')
+            return jsonify({'success': False, 'error': 'Slave not configured or status unavailable after start', 'status': None})
+        
+        io = str(status.get('Slave_IO_Running') or status.get('slave_io_running') or '')
+        sql = str(status.get('Slave_SQL_Running') or status.get('slave_sql_running') or '')
+        is_running = (io == 'Yes' and sql == 'Yes')
+        
+        if not is_running:
+            last_error = status.get('Last_Error') or status.get('Last_SQL_Error') or status.get('Last_IO_Error')
+            logger.warning(f"Slave start verification failed: IO={io}, SQL={sql}, error={last_error}")
+            return jsonify({'success': False, 'error': f"Slave not running after START SLAVE (IO={io}, SQL={sql})", 'last_error': last_error, 'status': status})
+        
+        logger.info('MySQL slave started and verified running')
+        return jsonify({'success': True, 'message': 'Slave started successfully', 'status': status})
         
     except Exception as e:
         logger.error(f'Error starting MySQL slave: {str(e)}')
