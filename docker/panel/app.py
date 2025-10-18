@@ -4285,7 +4285,8 @@ def get_replication_status():
                     'binlog_do_db': master_result.get('Binlog_Do_DB'),
                     'binlog_ignore_db': master_result.get('Binlog_Ignore_DB')
                 }
-        except mysql.connector.Error:
+        except Exception as e:
+            logger.debug(f"Master status check failed: {e}")
             pass  # Master not configured
         
         # Check slave status
@@ -4307,7 +4308,8 @@ def get_replication_status():
                     'last_errno': slave_result.get('Last_Errno'),
                     'last_error': slave_result.get('Last_Error')
                 }]
-        except mysql.connector.Error:
+        except Exception as e:
+            logger.debug(f"Slave status check failed: {e}")
             pass  # Slave not configured
         
         cursor.close()
