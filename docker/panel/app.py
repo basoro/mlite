@@ -3679,8 +3679,8 @@ def execute_query():
 
         return jsonify(result)
 
-    except mysql.connector.Error as err:
-        logger.error(f'MySQL error: {err}')
+    except Exception as err:
+        logger.error(f'MySQL error executing query: {err}')
         return jsonify({'error': str(err)}), 500
     except Exception as e:
         logger.error(f'Error executing query: {e}')
@@ -3708,7 +3708,7 @@ def list_tables():
             # Test connection
             cursor.execute('SELECT 1')
             cursor.fetchone()
-        except mysql.connector.Error as e:
+        except Exception as e:
             logger.error(f'Database connection error: {str(e)}')
             return jsonify({'error': 'Database connection error'}), 500
         try:
@@ -3727,12 +3727,14 @@ def list_tables():
             for table in table_list:
                 table['rows'] = table['rows'] if table['rows'] is not None else 0
                 table['size'] = table['size'] if table['size'] is not None else 0
-        except mysql.connector.Error as e:
+        except Exception as e:
             logger.error(f'Error listing tables: {str(e)}')
             raise
         return jsonify(table_list)
-    except mysql.connector.Error as e:
-        error_msg = f'MySQL Error ({e.errno}): {e.msg}'
+    except Exception as e:
+        errno = getattr(e, 'errno', None)
+        msg = getattr(e, 'msg', str(e))
+        error_msg = f'MySQL Error ({errno}): {msg}' if errno is not None else f'Unexpected error: {str(e)}'
         logger.error(f'Error listing tables: {error_msg}')
         return jsonify({'error': error_msg}), 500
     except Exception as e:
@@ -3843,7 +3845,7 @@ def create_database():
                     cursor.execute(f"GRANT ALL PRIVILEGES ON `{db_name}`.* TO '{db_user}'@'localhost'")
                     cursor.execute("FLUSH PRIVILEGES")
                     logger.info(f'Created new user {db_user} and granted privileges on {db_name}')
-            except mysql.connector.Error as user_err:
+            except Exception as user_err:
                 logger.warning(f'Error handling user {db_user}: {user_err}')
                 # Continue without failing the database creation
                 pass
@@ -3854,7 +3856,7 @@ def create_database():
             try:
                 cursor.execute("SELECT User FROM mysql.user WHERE User = %s AND Host = 'localhost'", (db_user,))
                 user_created_or_exists = cursor.fetchone() is not None
-            except mysql.connector.Error:
+            except Exception:
                 user_created_or_exists = False
         
         connection.commit()
@@ -3871,11 +3873,12 @@ def create_database():
         else:
             logger.info(f'Database {db_name} created successfully')
             return jsonify({'message': f'Database "{db_name}" berhasil dibuat'})
-    except mysql.connector.Error as err:
+    except Exception as err:
         logger.error(f'MySQL error during database creation: {err}')
-        if err.errno == 1007:  # Database already exists
+        errno = getattr(err, 'errno', None)
+        if errno == 1007:  # Database already exists
             return jsonify({'error': f'Database "{db_name}" sudah ada'}), 400
-        elif err.errno == 1045:  # Access denied
+        elif errno == 1045:  # Access denied
             return jsonify({'error': 'Akses ditolak. Periksa konfigurasi MySQL'}), 500
         else:
             return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
@@ -3909,11 +3912,12 @@ def delete_database():
         
         logger.info(f'Database {db_name} deleted successfully')
         return jsonify({'message': f'Database "{db_name}" berhasil dihapus'})
-    except mysql.connector.Error as err:
+    except Exception as err:
         logger.error(f'MySQL error during database deletion: {err}')
-        if err.errno == 1008:  # Database doesn't exist
+        errno = getattr(err, 'errno', None)
+        if errno == 1008:  # Database doesn't exist
             return jsonify({'error': f'Database "{db_name}" tidak ditemukan'}), 400
-        elif err.errno == 1045:  # Access denied
+        elif errno == 1045:  # Access denied
             return jsonify({'error': 'Akses ditolak. Periksa konfigurasi MySQL'}), 500
         else:
             return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
@@ -3957,13 +3961,14 @@ def delete_table():
         
         logger.info(f'Table {table_name} deleted successfully from database {db_name}')
         return jsonify({'message': f'Tabel "{table_name}" berhasil dihapus dari database "{db_name}"'})
-    except mysql.connector.Error as err:
+    except Exception as err:
         logger.error(f'MySQL error during table deletion: {err}')
-        if err.errno == 1051:  # Table doesn't exist
+        errno = getattr(err, 'errno', None)
+        if errno == 1051:  # Table doesn't exist
             return jsonify({'error': f'Tabel "{table_name}" tidak ditemukan dalam database "{db_name}"'}), 400
-        elif err.errno == 1049:  # Database doesn't exist
+        elif errno == 1049:  # Database doesn't exist
             return jsonify({'error': f'Database "{db_name}" tidak ditemukan'}), 400
-        elif err.errno == 1045:  # Access denied
+        elif errno == 1045:  # Access denied
             return jsonify({'error': 'Akses ditolak. Periksa konfigurasi MySQL'}), 500
         else:
             return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
@@ -4042,9 +4047,10 @@ def set_root_password():
         logger.info('Root password changed successfully')
         return jsonify({'message': 'Password root MySQL berhasil diubah'})
         
-    except mysql.connector.Error as err:
+    except Exception as err:
         logger.error(f'MySQL error during password change: {err}')
-        if err.errno == 1045:  # Access denied
+        errno = getattr(err, 'errno', None)
+        if errno == 1045:  # Access denied
             return jsonify({'error': 'Akses ditolak. Password root saat ini mungkin sudah berubah'}), 500
         else:
             return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
@@ -4089,7 +4095,7 @@ def get_mysql_users():
         
         return jsonify({'users': users})
         
-    except mysql.connector.Error as err:
+    except Exception as err:
         logger.error(f'MySQL error getting users: {err}')
         return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
     except Exception as e:
@@ -4132,9 +4138,10 @@ def create_mysql_user():
         logger.info(f'MySQL user created: {username}@{host}')
         return jsonify({'message': f'User {username}@{host} berhasil dibuat'})
         
-    except mysql.connector.Error as err:
+    except Exception as err:
         logger.error(f'MySQL error creating user: {err}')
-        if err.errno == 1396:  # User already exists
+        errno = getattr(err, 'errno', None)
+        if errno == 1396:  # User already exists
             return jsonify({'error': f'User {username}@{host} sudah ada'}), 400
         else:
             return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
@@ -4174,9 +4181,10 @@ def delete_mysql_user():
         logger.info(f'MySQL user deleted: {username}@{host}')
         return jsonify({'message': f'User {username}@{host} berhasil dihapus'})
         
-    except mysql.connector.Error as err:
+    except Exception as err:
         logger.error(f'MySQL error deleting user: {err}')
-        if err.errno == 1396:  # User doesn't exist
+        errno = getattr(err, 'errno', None)
+        if errno == 1396:  # User doesn't exist
             return jsonify({'error': f'User {username}@{host} tidak ditemukan'}), 404
         else:
             return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
@@ -4216,8 +4224,9 @@ def update_mysql_user():
             # Drop old user
             try:
                 cursor.execute(f"DROP USER '{username}'@'{host}'")
-            except mysql.connector.Error as err:
-                if err.errno != 1396:  # Ignore if user doesn't exist
+            except Exception as err:
+                errno = getattr(err, 'errno', None)
+                if errno != 1396:  # Ignore if user doesn't exist
                     raise
             
             logger.info(f'MySQL user host changed: {username}@{host} -> {username}@{new_host}')
@@ -4249,11 +4258,12 @@ def update_mysql_user():
         
         return jsonify({'message': message})
         
-    except mysql.connector.Error as err:
+    except Exception as err:
         logger.error(f'MySQL error updating user: {err}')
-        if err.errno == 1396:  # User doesn't exist
+        errno = getattr(err, 'errno', None)
+        if errno == 1396:  # User doesn't exist
             return jsonify({'error': f'User {username}@{host} tidak ditemukan'}), 404
-        elif err.errno == 1007:  # User already exists
+        elif errno == 1007:  # User already exists
             return jsonify({'error': f'User {username}@{new_host} sudah ada'}), 409
         else:
             return jsonify({'error': f'Error MySQL: {str(err)}'}), 500
