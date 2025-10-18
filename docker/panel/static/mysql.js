@@ -1008,6 +1008,7 @@ function displayReplicationStatus(data) {
       </div>
     `;
   }
+}
 
 // Add handler to call backend skip-error
 function skipReplicationError() {
@@ -1047,8 +1048,6 @@ function skipReplicationError() {
         btn.innerHTML = '<i class="fas fa-forward"></i> Skip Error';
       }
     });
-}
-
 }
 
 function setupMaster() {
