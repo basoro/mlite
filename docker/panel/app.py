@@ -4530,28 +4530,35 @@ EOC
             return jsonify({'success': False, 'error': f"Failed to restart container: {restart_res.stderr or restart_res.stdout}"})
         time.sleep(3)
         
-        # Setup slave connection
-        connection = create_mysql_connection()
+        # Tunggu MySQL siap setelah restart dengan retry
+        max_attempts = 10
+        attempt = 0
+        connection = None
+        while attempt < max_attempts:
+            connection = create_mysql_connection()
+            if connection:
+                break
+            attempt += 1
+            time.sleep(1)
         if not connection:
-            return jsonify({'success': False, 'error': 'Failed to connect to MySQL after restart'})
+            return jsonify({'success': False, 'error': 'Failed to connect to MySQL after restart (timeout waiting for server ready)'})
         
         cursor = connection.cursor()
         
-        # Stop slave if running (ignore error if already stopped)
+        # Stop slave jika sedang berjalan (abaikan error jika sudah berhenti)
         try:
             cursor.execute("STOP SLAVE")
         except Exception as stop_error:
-            # Ignore error if slave is already stopped
             if "Slave already has been stopped" not in str(stop_error):
                 logger.warning(f'Error stopping slave (ignored): {str(stop_error)}')
         
-        # Validasi master host reachable dari dalam container
+        # Validasi master host dapat dijangkau dari dalam container
         try:
             subprocess.run(['docker','exec',container,'bash','-lc', f"nc -z -w2 {master_host} 3306"], capture_output=True, text=True, timeout=5)
         except Exception as host_check_err:
             logger.warning(f"Master host reachability check failed (ignored): {host_check_err}")
         
-        # Configure master connection (sertakan MASTER_PORT)
+        # Bangun SQL CHANGE MASTER TO (sertakan MASTER_PORT)
         change_master_sql = f"""
         CHANGE MASTER TO
         MASTER_HOST='{master_host}',
@@ -4563,7 +4570,14 @@ EOC
         if master_log_file and master_log_pos > 0:
             change_master_sql += f",\nMASTER_LOG_FILE='{master_log_file}',\nMASTER_LOG_POS={master_log_pos}"
         
-        cursor.execute(change_master_sql)
+        # Eksekusi CHANGE MASTER TO dengan penanganan error detail
+        try:
+            cursor.execute(change_master_sql)
+        except Exception as cm_err:
+            logger.error(f"CHANGE MASTER TO failed: {cm_err}; sql={change_master_sql}")
+            cursor.close()
+            connection.close()
+            return jsonify({'success': False, 'error': f'CHANGE MASTER TO failed: {cm_err}'})
         
         # Start slave dengan penanganan error
         try:
@@ -4574,7 +4588,7 @@ EOC
         # Beri waktu lebih lama agar slave benar-benar mulai
         time.sleep(5)
         
-        # Check slave status dengan dictionary cursor
+        # Check status slave
         cursor.close()
         connection.close()
         
