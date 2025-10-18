@@ -970,6 +970,22 @@ function displayReplicationStatus(data) {
     const isRunning = (ioRunning === 'Yes' && sqlRunning === 'Yes');
     const masterHost = slaveObj.master_host || slaveObj.Master_Host || 'N/A';
     const behind = slaveObj.seconds_behind_master ?? slaveObj.Seconds_Behind_Master;
+    const lastErrno = slaveObj.last_errno ?? slaveObj.Last_Errno;
+    const lastError = slaveObj.last_error ?? slaveObj.Last_Error;
+
+    // Build actions
+    let actionsHtml = '';
+    if (!isRunning && lastErrno) {
+      actionsHtml = `
+        <div class="mt-2">
+          <button onclick="skipReplicationError()" class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 transition text-sm flex items-center gap-2">
+            <i class="fas fa-forward"></i>
+            Skip Error
+          </button>
+          ${lastError ? `<div class=\"mt-1 text-xs text-red-600 dark:text-red-400\"><strong>Error:</strong> ${lastError}</div>` : ''}
+        </div>
+      `;
+    }
 
     slaveStatus.innerHTML = `
       <div class="space-y-2">
@@ -981,6 +997,7 @@ function displayReplicationStatus(data) {
           <div><strong>Master:</strong> ${masterHost}</div>
           <div><strong>Behind:</strong> ${behind != null ? behind : 'N/A'} seconds</div>
         </div>
+        ${actionsHtml}
       </div>
     `;
   } else {
@@ -991,6 +1008,47 @@ function displayReplicationStatus(data) {
       </div>
     `;
   }
+
+// Add handler to call backend skip-error
+function skipReplicationError() {
+  const btn = event?.currentTarget;
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Skipping...';
+  }
+  showNotification('Skipping one replication error transaction...', 'info');
+  fetch('/api/mysql/replication/skip-error', { method: 'POST' })
+    .then(async (response) => {
+      const text = await response.text();
+      let data;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch (e) {
+        throw new Error('Invalid JSON response');
+      }
+      if (!response.ok) {
+        const errMsg = (data && data.error) ? data.error : 'Failed to skip replication error';
+        throw new Error(errMsg);
+      }
+      return data;
+    })
+    .then(data => {
+      const msg = data?.message || data?.success || 'Replication error skipped';
+      showNotification(typeof msg === 'string' ? msg : 'Replication error skipped', 'success');
+      loadReplicationStatus();
+    })
+    .catch(error => {
+      console.error('Error skipping replication error:', error);
+      showNotification('Error skipping replication error: ' + error.message, 'error');
+    })
+    .finally(() => {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-forward"></i> Skip Error';
+      }
+    });
+}
+
 }
 
 function setupMaster() {
@@ -1089,6 +1147,19 @@ function setupSlave() {
   if (!masterHost || !masterUser || !masterPassword || !serverId) {
     return;
   }
+
+  // Show loading state
+  showNotification('Setting up MySQL slave...', 'info');
+  const setupBtn = document.querySelector('button[onclick="setupSlave()"]');
+  if (setupBtn) {
+    setupBtn.disabled = true;
+    setupBtn.dataset.originalText = setupBtn.innerHTML;
+    setupBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Setting up...';
+  }
+  const slaveStatusEl = document.getElementById('slaveStatus');
+  if (slaveStatusEl) {
+    slaveStatusEl.innerHTML = '<div class="flex items-center"><i class="fas fa-spinner fa-spin mr-2"></i>Setting up slave...</div>';
+  }
   
   fetch('/api/mysql/replication/setup-slave', {
     method: 'POST',
@@ -1129,7 +1200,14 @@ function setupSlave() {
   })
   .catch(error => {
     console.error('Error setting up slave:', error);
-    alert('Error setting up slave: ' + error.message);
+    showNotification('Error setting up slave: ' + error.message, 'error');
+  })
+  .finally(() => {
+    if (setupBtn) {
+      setupBtn.disabled = false;
+      setupBtn.innerHTML = setupBtn.dataset.originalText || 'Setup Slave';
+      delete setupBtn.dataset.originalText;
+    }
   });
 }
 

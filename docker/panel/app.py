@@ -4780,6 +4780,67 @@ done
         logger.error(f'Error resetting MySQL slave: {str(e)}')
         return jsonify({'success': False, 'error': str(e)})
 
+@app.route('/api/mysql/replication/skip-error', methods=['POST'])
+@login_required
+def skip_mysql_replication_error():
+    """Skip current MySQL replication error by advancing one transaction.
+    Intended for errors like 1062 (duplicate entry).
+    Steps: STOP SLAVE; SET GLOBAL sql_slave_skip_counter = 1; START SLAVE; verify.
+    """
+    try:
+        connection = create_mysql_connection()
+        if not connection:
+            return jsonify({'success': False, 'error': 'Failed to connect to MySQL'})
+        
+        # Perform skip sequence
+        cur = connection.cursor()
+        try:
+            try:
+                cur.execute("STOP SLAVE")
+            except Exception as e_stop:
+                # If already stopped, continue
+                if "already has been stopped" not in str(e_stop):
+                    logger.warning(f"STOP SLAVE returned: {e_stop}")
+            
+            # Advance one transaction
+            cur.execute("SET GLOBAL sql_slave_skip_counter = 1")
+            
+            # Restart slave
+            cur.execute("START SLAVE")
+        finally:
+            cur.close()
+            connection.close()
+        
+        # Small delay to let slave apply
+        time.sleep(2)
+        
+        # Verify status
+        conn2 = create_mysql_connection()
+        status = None
+        last_error = None
+        if conn2:
+            try:
+                c2 = conn2.cursor(dictionary=True)
+                c2.execute("SHOW SLAVE STATUS")
+                status = c2.fetchone()
+                c2.close()
+            finally:
+                conn2.close()
+        if status:
+            io = str(status.get('Slave_IO_Running') or status.get('slave_io_running') or '')
+            sql = str(status.get('Slave_SQL_Running') or status.get('slave_sql_running') or '')
+            last_error = status.get('Last_Error') or status.get('Last_SQL_Error') or status.get('Last_IO_Error')
+            is_running = (io == 'Yes' and sql == 'Yes')
+            if not is_running:
+                logger.warning(f"Skip error attempted, but slave not running: IO={io}, SQL={sql}, error={last_error}")
+                return jsonify({'success': False, 'error': 'Slave still not running after skip', 'last_error': last_error, 'status': status})
+        
+        logger.info('Replication error skipped and slave running (if configured)')
+        return jsonify({'success': True, 'message': 'Replication error skipped. Slave restarted.', 'status': status})
+    except Exception as e:
+        logger.error(f'Error skipping replication error: {str(e)}')
+        return jsonify({'success': False, 'error': str(e)})
+
 @app.route('/api/mysql/replication/disable-master', methods=['POST'])
 @login_required
 def disable_mysql_master():
