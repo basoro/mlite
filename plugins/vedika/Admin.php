@@ -3528,27 +3528,25 @@ class Admin extends AdminModule
                       }
                  }';
       $msg= $this->Request($request);
-      //echo $msg['metadata']['message']."";
-
-        $request ='{
-                        "metadata": {
-                            "method":"idrg_grouper_reedit"
-                        },
-                        "data": {
-                            "nomor_sep":"'.$nomor_sep.'"
-                        }
-                   }';
-        $msg= $this->Request($request);
-        
-        $request ='{
-                        "metadata": {
-                            "method":"inacbg_grouper_reedit"
-                        },
-                        "data": {
-                            "nomor_sep":"'.$nomor_sep.'"
-                        }
-                   }';
-        $msg= $this->Request($request);
+      $request ='{
+                      "metadata": {
+                          "method":"idrg_grouper_reedit"
+                      },
+                      "data": {
+                          "nomor_sep":"'.$nomor_sep.'"
+                      }
+                  }';
+      $msg= $this->Request($request);
+      
+      $request ='{
+                      "metadata": {
+                          "method":"inacbg_grouper_reedit"
+                      },
+                      "data": {
+                          "nomor_sep":"'.$nomor_sep.'"
+                      }
+                  }';
+      $msg= $this->Request($request);
 
   }
 
@@ -3857,37 +3855,13 @@ class Admin extends AdminModule
           }
       }
   }
-    
-
-  private function GroupingStage12__($nomor_sep,$coder_nik){
-      $request ='{
-                      "metadata": {
-                          "method":"grouper",
-                          "stage":"1"
-                      },
-                      "data": {
-                          "nomor_sep":"'.$nomor_sep.'"
-                      }
-                 }';
-      $msg= $this->Request($request);
-      if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
-          //Hapus2("inacbg_grouping_stage12", "no_sep='".$nomor_sep."'");
-          /*
-          $cbg                = validangka($msg['response']['cbg']['tariff']);
-          $sub_acute          = validangka($msg['response']['sub_acute']['tariff']);
-          $chronic            = validangka($msg['response']['chronic']['tariff']);
-          $add_payment_amt    = validangka($msg['response']['add_payment_amt']);
-          */
-          //InsertData2("inacbg_grouping_stage12","'".$nomor_sep."','".$msg['response']['cbg']['code']."','".$msg['response']['cbg']['description']."','".($cbg+$sub_acute+$chronic+$add_payment_amt)."'");
-          $this->FinalisasiKlaim($nomor_sep,$coder_nik);
-      }
-  }
 
   private function GroupingStage12($nomor_sep,$coder_nik){
       $request ='{
                       "metadata": {
                           "method":"grouper",
-                          "stage":"1"
+                          "stage":"1", 
+                          "grouper": "inacbg"
                       },
                       "data": {
                           "nomor_sep":"'.$nomor_sep.'"
@@ -3910,7 +3884,8 @@ class Admin extends AdminModule
           $request2 ='{
             "metadata": {
                 "method":"grouper",
-                "stage":"2"
+                "stage":"2", 
+                "grouper": "inacbg"
             },
             "data": {
                 "nomor_sep":"'.$nomor_sep.'",
@@ -3928,6 +3903,15 @@ class Admin extends AdminModule
   }
 
   private function FinalisasiKlaim($nomor_sep,$coder_nik){
+      $request ='{
+                      "metadata": {
+                          "method":"inacbg_grouper_final"
+                      },
+                      "data": {
+                          "nomor_sep":"'.$nomor_sep.'"
+                      }
+                  }';
+      $msg= $this->Request($request);    
       $request ='{
                       "metadata": {
                           "method":"claim_final"
