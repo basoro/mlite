@@ -3699,10 +3699,6 @@ class Admin extends AdminModule
       echo "Data : ".$request;
       $msg= $this->Request($request);
       // if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
-      $this->db('mlite_query_logs')->save([
-          'sql_text' => $request,
-          'bindings' => json_encode($msg)
-      ]);
       if($msg['metadata']['message']=="Ok"){
           //echo 'Sukses';
           //Hapus2("inacbg_data_terkirim2", "no_sep='".$nomor_sep."'");
