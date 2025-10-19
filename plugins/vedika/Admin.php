@@ -3174,6 +3174,8 @@ class Admin extends AdminModule
     $discharge_status  = $this->validTeks(trim($_POST['discharge_status']));
     $diagnosa          = $this->validTeks(trim($_POST['diagnosa']));
     $procedure         = $this->validTeks(trim($_POST['procedure']));
+    $diagnosainacbg    = $this->validTeks(trim($_POST['diagnosa']));
+    $procedureinacbg   = $this->validTeks(trim($_POST['procedure']));
     $prosedur_non_bedah = $this->validTeks(trim($_POST['prosedur_non_bedah']));
     $prosedur_bedah    = $this->validTeks(trim($_POST['prosedur_bedah']));
     $konsultasi        = $this->validTeks(trim($_POST['konsultasi']));
@@ -3252,11 +3254,11 @@ class Admin extends AdminModule
     }
 
 
-    $this->BuatKlaimBaru2($nokartu,$nosep,$no_rkm_medis,$nm_pasien,$tgl_lahir." 00:00:00", $gender,$norawat);
+    $this->BuatKlaimBaru2($nokartu,$nosep,$no_rkm_medis,$nm_pasien,$tgl_lahir, $gender,$norawat);
     $this->EditUlangKlaim($nosep);
     $this->UpdateDataKlaim2($nosep,$nokartu,$tgl_registrasi,$keluar,$cara_masuk,$jnsrawat,$kelas_rawat,$adl_sub_acute,
         $adl_chronic,$icu_indikator,$icu_los,$ventilator_hour,$use_ind,$start_dttm,$stop_dttm,$upgrade_class_ind,$upgrade_class_class,
-        $upgrade_class_los,$upgrade_class_payor,$add_payment_pct,$birth_weight,$discharge_status,$diagnosa,$procedure,
+        $upgrade_class_los,$upgrade_class_payor,$add_payment_pct,$birth_weight,$discharge_status,$diagnosa,$procedure,$diagnosainacbg,$procedureinacbg,
         $tarif_poli_eks,$nama_dokter,$this->settings->get('vedika.eklaim_kelasrs'),$this->settings->get('vedika.eklaim_payor_id'),$this->settings->get('vedika.eklaim_payor_cd'),$this->settings->get('vedika.eklaim_cob_cd'),$this->core->getPegawaiInfo('no_ktp', $this->core->getUserInfo('username', null, true)),
         $prosedur_non_bedah,$prosedur_bedah,$konsultasi,$tenaga_ahli,$keperawatan,$penunjang,
         $radiologi,$laboratorium,$pelayanan_darah,$rehabilitasi,$kamar,$rawat_intensif,$obat,
@@ -3527,11 +3529,32 @@ class Admin extends AdminModule
                  }';
       $msg= $this->Request($request);
       //echo $msg['metadata']['message']."";
+
+        $request ='{
+                        "metadata": {
+                            "method":"idrg_grouper_reedit"
+                        },
+                        "data": {
+                            "nomor_sep":"'.$nomor_sep.'"
+                        }
+                   }';
+        $msg= $this->Request($request);
+        
+        $request ='{
+                        "metadata": {
+                            "method":"inacbg_grouper_reedit"
+                        },
+                        "data": {
+                            "nomor_sep":"'.$nomor_sep.'"
+                        }
+                   }';
+        $msg= $this->Request($request);
+
   }
 
   private function UpdateDataKlaim2($nomor_sep,$nomor_kartu,$tgl_masuk,$tgl_pulang,$cara_masuk,$jenis_rawat,$kelas_rawat,$adl_sub_acute,
                           $adl_chronic,$icu_indikator,$icu_los,$ventilator_hour,$use_ind,$start_dttm,$stop_dttm,$upgrade_class_ind,$upgrade_class_class,
-                          $upgrade_class_los,$upgrade_class_payor,$add_payment_pct,$birth_weight,$discharge_status,$diagnosa,$procedure,
+                          $upgrade_class_los,$upgrade_class_payor,$add_payment_pct,$birth_weight,$discharge_status,$diagnosa,$procedure,$diagnosainacbg,$procedureinacbg,
                           $tarif_poli_eks,$nama_dokter,$kode_tarif,$payor_id,$payor_cd,$cob_cd,$coder_nik,
                           $prosedur_non_bedah,$prosedur_bedah,$konsultasi,$tenaga_ahli,$keperawatan,$penunjang,
                           $radiologi,$laboratorium,$pelayanan_darah,$rehabilitasi,$kamar,$rawat_intensif,$obat,
@@ -3572,10 +3595,6 @@ class Admin extends AdminModule
                           "sistole": '.intval($sistole).',
                           "diastole": '.intval($diastole).',
                           "discharge_status": "'.$discharge_status.'",
-                          "diagnosa": "'.$diagnosa.'",
-                          "procedure": "'.$procedure.'",
-                          "diagnosa_inagrouper": "'.$diagnosa.'",
-                          "procedure_inagrouper": "'.$procedure.'",
                           "tarif_rs": {
                               "prosedur_non_bedah": "'.$prosedur_non_bedah.'",
                               "prosedur_bedah": "'.$prosedur_bedah.'",
@@ -3607,7 +3626,7 @@ class Admin extends AdminModule
                            "nomor_kartu_t": "'.$nomor_kartu_t.'",
                            "episodes": "'.$episodes.'",
                            "covid19_cc_ind": "'.$covid19_cc_ind.'",
-                           "covid19_rs_darurat_ind": "'.$sewa_acovid19_rs_darurat_indlat.'",
+                           "covid19_rs_darurat_ind": "'.$covid19_rs_darurat_ind.'",
                            "covid19_co_insidense_ind": "'.$covid19_co_insidense_ind.'",
                            "covid19_penunjang_pengurang": {
                               "lab_asam_laktat" : "0",
@@ -3679,15 +3698,170 @@ class Admin extends AdminModule
                  }';
       echo "Data : ".$request;
       $msg= $this->Request($request);
-      if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
+      // if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
+      $this->db('mlite_query_logs')->save([
+          'sql_text' => $request,
+          'bindings' => json_encode($msg)
+      ]);
+      if($msg['metadata']['message']=="Ok"){
           //echo 'Sukses';
           //Hapus2("inacbg_data_terkirim2", "no_sep='".$nomor_sep."'");
           //InsertData2("inacbg_data_terkirim2","'".$nomor_sep."','".$coder_nik."'");
-          $this->GroupingStage12($nomor_sep,$coder_nik);
+          $this->SetDiagnosaDRG($nomor_sep, $diagnosa);
+          $this->SetProsedurDRG($nomor_sep, $procedure);
+          if($this->GroupingDRG($nomor_sep)=="Ok"){
+              $this->InacBGToDRG($nomor_sep,$diagnosainacbg,$procedureinacbg);
+              $this->GroupingStage12($nomor_sep,$coder_nik);
+          }
       } else {
         echo json_encode($msg);
       }
   }
+
+  private function SetDiagnosaDRG($nomorsep,$diagnosa){	
+      if($diagnosa!=""){
+          $request ='{
+                          "metadata": {
+                              "method": "idrg_diagnosa_set",
+                              "nomor_sep": "'.$nomorsep.'"
+                          },
+                          "data": {
+                              "diagnosa": "#"
+                          }
+                      }';
+          $msg= $this->Request($request);
+          $request ='{
+                          "metadata": {
+                              "method": "idrg_diagnosa_set",
+                              "nomor_sep": "'.$nomorsep.'"
+                          },
+                          "data": {
+                              "diagnosa": "'.$diagnosa.'"
+                          }
+                      }';
+          $msg= $this->Request($request);
+          echo "\n<br>Respon Set Diagnosa DRG : ".$msg['metadata']['message'];
+      }
+  }
+  
+  private function SetProsedurDRG($nomorsep,$prosedur){	
+      if($prosedur!=""){
+          $request ='{
+                          "metadata": {
+                              "method": "idrg_procedure_set",
+                              "nomor_sep": "'.$nomorsep.'"
+                          },
+                          "data": {
+                              "procedure": "#"
+                          }
+                      }';
+          $msg= $this->Request($request);
+          $request ='{
+                          "metadata": {
+                              "method": "idrg_procedure_set",
+                              "nomor_sep": "'.$nomorsep.'"
+                          },
+                          "data": {
+                              "procedure": "'.$prosedur.'"
+                          }
+                      }';
+          $msg= $this->Request($request);
+          echo "\n<br>Respon Set Prosedur DRG : ".$msg['metadata']['message'];
+      }
+  }
+
+    private function GroupingDRG($nomor_sep){	
+      $request ='{
+                      "metadata": {
+                          "method":"grouper",
+                          "stage":"1",
+                          "grouper":"idrg"
+                      },
+                      "data": {
+                          "nomor_sep":"'.$nomor_sep.'"
+                      }
+                  }';
+      $msg= $this->Request($request);
+      echo "\n<br>Respon Grouping DRG : ".$msg['metadata']['message'];
+      $pesan="Gagal";
+      if($msg['metadata']['message']=="Ok"){
+          $pesan=$msg['metadata']['message'];
+          $request ='{
+                          "metadata": {
+                              "method":"idrg_grouper_final"
+                          },
+                          "data": {
+                              "nomor_sep":"'.$nomor_sep.'"
+                          }
+                      }';
+          $msg= $this->Request($request);
+          echo "\n<br>Respon Final DRG : ".$msg['metadata']['message'];
+      }
+      return $pesan;
+  }
+
+  private function InacBGToDRG($nomor_sep,$diagnosainacbg,$procedureinacbg){	
+      $request ='{
+                  "metadata": {
+                      "method": "idrg_to_inacbg_import"
+                  },
+                  "data": {
+                      "nomor_sep": "'.$nomor_sep.'"
+                  }
+              }';
+      $msg= $this->Request($request);
+      echo "\n<br>Respon Import DRG To CBG : ".$msg['metadata']['message'];
+      if($msg['metadata']['message']=="Ok"){
+          if($diagnosainacbg!=""){
+              $request ='{
+                              "metadata": {
+                                  "method": "inacbg_diagnosa_set",
+                                  "nomor_sep": "'.$nomor_sep.'"
+                              },
+                              "data": {
+                                  "diagnosa": "#"
+                              }
+                          }';
+              $msg= $this->Request($request);
+              $request ='{
+                              "metadata": {
+                                  "method": "inacbg_diagnosa_set",
+                                  "nomor_sep": "'.$nomor_sep.'"
+                              },
+                              "data": {
+                                  "diagnosa": "'.$diagnosainacbg.'"
+                              }
+                          }';
+              $msg= $this->Request($request);
+              echo "\n<br>Respon Set Diagnosa CBG : ".$msg['metadata']['message'];
+          }
+              
+          if($procedureinacbg!=""){
+              $request ='{
+                              "metadata": {
+                                  "method": "inacbg_procedure_set",
+                                  "nomor_sep": "'.$nomor_sep.'"
+                              },
+                              "data": {
+                                  "procedure": "#"
+                              }
+                          }';
+              $msg= $this->Request($request);
+              $request ='{
+                              "metadata": {
+                                  "method": "inacbg_procedure_set",
+                                  "nomor_sep": "'.$nomor_sep.'"
+                              },
+                              "data": {
+                                  "procedure": "'.$procedureinacbg.'"
+                              }
+                          }';
+              $msg= $this->Request($request);
+              echo "\n<br>Respon set Procedure INACBG : ".$msg['metadata']['message'];
+          }
+      }
+  }
+    
 
   private function GroupingStage12__($nomor_sep,$coder_nik){
       $request ='{
