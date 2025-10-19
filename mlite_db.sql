@@ -1551,6 +1551,16 @@ CREATE TABLE `mlite_duitku` (
   CONSTRAINT `mlite_duitku_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE `mlite_eklaim_logs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nomor_sep` varchar(30) NOT NULL,
+  `request_data` longtext,
+  `response_data` longtext,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `username` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
 CREATE TABLE `mlite_geolocation_presensi` (
   `id` int NOT NULL,
   `tanggal` date DEFAULT NULL,

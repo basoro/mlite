@@ -1,0 +1,165 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="btn-group pull-right" style="margin-top:-8px;">
+          <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-calendar"></i><span class="hidden-xs"> Pilihan dan Pemilahan</span>
+          </span>
+          <ul class="dropdown-menu dropdown-menu-right">
+            <form class="" action="{$logs.filterUrl}" method="">
+              <li style="padding-left:5px;padding-right:5px;">
+                <input type="text" id="start_date" class="form-control tanggal" name="start_date" required value="{$logs.start_date}">
+              </li>
+              <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                <input type="text" id="end_date" class="form-control tanggal" name="end_date" required value="{$logs.end_date}">
+              </li>
+              <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                <input type="submit" name="submit" class="btn btn-primary btn-block" value="Submit">
+                <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+              </li>
+            </form>
+          </ul>
+        </div>
+        <h3 class="panel-title">Logs e-Klaim</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row clearfix">
+          <div class="col col-md-6">
+            <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {$logs.totalRecords}</h3>
+          </div>
+          <div class="col col-md-6">
+            <form action="{$logs.searchUrl}" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+              <div class="input-group">
+                <input type="text" name="s" minlength="3" class="form-control" placeholder="Search" required>
+                <input type="hidden" name="start_date" value="{$logs.start_date}">
+                <input type="hidden" name="end_date" value="{$logs.end_date}">
+                <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="table-responsive no-margin">
+          <table class="table table-striped no-margin">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Nomor SEP</th>
+                <th>Pengguna</th>
+                <th>Nama Lengkap</th>
+                <th>Request</th>
+                <th>Response</th>
+              </tr>
+            </thead>
+            <tbody>
+              {if: !empty($logs.list)}
+              {loop: $logs.list}
+              <tr>
+                <td>{$value.created_at}</td>
+                <td>{$value.nomor_sep}</td>
+                <td>{$value.username}</td>
+                <td>{$value.fullname}</td>
+                <td>
+                  <button class="btn btn-xs btn-info btn-view-json" data-type="request" data-id="{$value.id}" data-sep="{$value.nomor_sep}" data-toggle="modal" data-target="#jsonModal">
+                    <i class="fa fa-eye"></i> Lihat Request
+                  </button>
+                  <div class="hidden"><script type="application/json" id="req-json-{$value.id}">{$value.request_data}</script></div>
+                </td>
+                <td>
+                  <button class="btn btn-xs btn-primary btn-view-json" data-type="response" data-id="{$value.id}" data-sep="{$value.nomor_sep}" data-toggle="modal" data-target="#jsonModal">
+                    <i class="fa fa-eye"></i> Lihat Response
+                  </button>
+                  <div class="hidden"><script type="application/json" id="res-json-{$value.id}">{$value.response_data}</script></div>
+                </td>
+              </tr>
+              {/loop}
+              {else}
+              <tr>
+                <td colspan="6" class="text-center">Tidak ada data untuk periode ini.</td>
+              </tr>
+              {/if}
+            </tbody>
+          </table>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            {$logs.pagination}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JSON Modal -->
+<div class="modal fade" id="jsonModal" tabindex="-1" role="dialog" aria-labelledby="jsonModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="jsonModalLabel">Detail</h4>
+      </div>
+      <div class="modal-body">
+        <pre id="jsonModalContent" style="white-space: pre-wrap; word-wrap: break-word; max-height: 70vh; overflow:auto;"></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function tryParseJSON(raw){
+    try {
+      return JSON.parse(raw);
+    } catch(e){
+      return null;
+    }
+  }
+  function prettyJSON(raw){
+    var obj = tryParseJSON(raw);
+    if (obj !== null) {
+      return JSON.stringify(obj, null, 2);
+    }
+    // If not JSON, return the raw content
+    return raw;
+  }
+  // jQuery handler
+  if (window.jQuery) {
+    jQuery(function($){
+      $(document).on('click', '.btn-view-json', function(){
+        var id = $(this).data('id');
+        var type = $(this).data('type');
+        var sep = $(this).data('sep');
+        var selector = (type === 'request' ? '#req-json-' : '#res-json-') + id;
+        var raw = $(selector).text();
+        var pretty = prettyJSON(raw);
+        $('#jsonModalLabel').text((type === 'request' ? 'Detail Request' : 'Detail Response') + ' - SEP ' + sep);
+        $('#jsonModalContent').text(pretty);
+      });
+    });
+  } else {
+    // Vanilla JS fallback
+    document.addEventListener('click', function(e){
+      var target = e.target.closest('.btn-view-json');
+      if (!target) return;
+      var id = target.getAttribute('data-id');
+      var type = target.getAttribute('data-type');
+      var sep = target.getAttribute('data-sep');
+      var selector = (type === 'request' ? 'req-json-' : 'res-json-') + id;
+      var scriptEl = document.getElementById(selector);
+      var raw = scriptEl ? scriptEl.textContent : '';
+      var pretty = prettyJSON(raw);
+      var label = document.getElementById('jsonModalLabel');
+      var content = document.getElementById('jsonModalContent');
+      if (label) label.textContent = (type === 'request' ? 'Detail Request' : 'Detail Response') + ' - SEP ' + sep;
+      if (content) content.textContent = pretty;
+    }, false);
+  }
+})();
+</script>

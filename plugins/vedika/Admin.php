@@ -34,6 +34,7 @@ class Admin extends AdminModule
       'Perbaikan' => 'perbaikan',
       'Mapping Inacbgs' => 'mappinginacbgs',
       'Bridging Eklaim' => 'bridgingeklaim',
+      'Logs e-Klaim' => 'logseklaim',
       'User Vedika' => 'uservedika',
       'Pengaturan' => 'settings',
     ];
@@ -164,6 +165,7 @@ class Admin extends AdminModule
       ['name' => 'Perbaikan', 'url' => url([ADMIN, 'vedika', 'perbaikan']), 'icon' => 'code', 'desc' => 'Index Perbaikan Vedika'],
       ['name' => 'Mapping Inacbgs', 'url' => url([ADMIN, 'vedika', 'mappinginacbgs']), 'icon' => 'code', 'desc' => 'Pengaturan Mapping Inacbgs'],
       ['name' => 'Bridging Eklaim', 'url' => url([ADMIN, 'vedika', 'bridgingeklaim']), 'icon' => 'code', 'desc' => 'Bridging Eklaim'],
+      ['name' => 'Logs e-Klaim', 'url' => url([ADMIN, 'vedika', 'logseklaim']), 'icon' => 'code', 'desc' => 'Logs e-Klaim'],
       ['name' => 'User Vedika', 'url' => url([ADMIN, 'vedika', 'users']), 'icon' => 'code', 'desc' => 'User Vedika'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'vedika', 'settings']), 'icon' => 'code', 'desc' => 'Pengaturan Vedika'],
     ];
@@ -3696,6 +3698,13 @@ class Admin extends AdminModule
                  }';
       echo "Data : ".$request;
       $msg= $this->Request($request);
+      $this->db('mlite_eklaim_logs')->save([
+          'nomor_sep' => $nomor_sep,
+          'request_data' => $request,
+          'response_data' => json_encode($msg), 
+          'created_at' => date('Y-m-d H:i:s'),
+          'username' => $this->core->getUserInfo('username')
+      ]);
       // if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
       if($msg['metadata']['message']=="Ok"){
           //echo 'Sukses';
@@ -3734,7 +3743,13 @@ class Admin extends AdminModule
                           }
                       }';
           $msg= $this->Request($request);
-          echo "\n<br>Respon Set Diagnosa DRG : ".$msg['metadata']['message'];
+          $this->db('mlite_eklaim_logs')->save([
+              'nomor_sep' => $nomorsep,
+              'request_data' => $request,
+              'response_data' => json_encode($msg), 
+              'created_at' => date('Y-m-d H:i:s'),
+              'username' => $this->core->getUserInfo('username')
+          ]);
       }
   }
   
@@ -3760,7 +3775,13 @@ class Admin extends AdminModule
                           }
                       }';
           $msg= $this->Request($request);
-          echo "\n<br>Respon Set Prosedur DRG : ".$msg['metadata']['message'];
+          $this->db('mlite_eklaim_logs')->save([
+              'nomor_sep' => $nomorsep,
+              'request_data' => $request,
+              'response_data' => json_encode($msg), 
+              'created_at' => date('Y-m-d H:i:s'),
+              'username' => $this->core->getUserInfo('username')
+          ]);
       }
   }
 
@@ -3776,6 +3797,13 @@ class Admin extends AdminModule
                       }
                   }';
       $msg= $this->Request($request);
+      $this->db('mlite_eklaim_logs')->save([
+          'nomor_sep' => $nomor_sep,
+          'request_data' => $request,
+          'response_data' => json_encode($msg), 
+          'created_at' => date('Y-m-d H:i:s'),
+          'username' => $this->core->getUserInfo('username')
+      ]);
       echo "\n<br>Respon Grouping DRG : ".$msg['metadata']['message'];
       $pesan="Gagal";
       if($msg['metadata']['message']=="Ok"){
@@ -3789,6 +3817,13 @@ class Admin extends AdminModule
                           }
                       }';
           $msg= $this->Request($request);
+          $this->db('mlite_eklaim_logs')->save([
+              'nomor_sep' => $nomor_sep,
+              'request_data' => $request,
+              'response_data' => json_encode($msg), 
+              'created_at' => date('Y-m-d H:i:s'),
+              'username' => $this->core->getUserInfo('username')
+          ]);
           echo "\n<br>Respon Final DRG : ".$msg['metadata']['message'];
       }
       return $pesan;
@@ -3804,6 +3839,13 @@ class Admin extends AdminModule
                   }
               }';
       $msg= $this->Request($request);
+      $this->db('mlite_eklaim_logs')->save([
+          'nomor_sep' => $nomor_sep,
+          'request_data' => $request,
+          'response_data' => json_encode($msg), 
+          'created_at' => date('Y-m-d H:i:s'),
+          'username' => $this->core->getUserInfo('username')
+      ]);
       echo "\n<br>Respon Import DRG To CBG : ".$msg['metadata']['message'];
       if($msg['metadata']['message']=="Ok"){
           if($diagnosainacbg!=""){
@@ -3827,6 +3869,13 @@ class Admin extends AdminModule
                               }
                           }';
               $msg= $this->Request($request);
+              $this->db('mlite_eklaim_logs')->save([
+                  'nomor_sep' => $nomor_sep,
+                  'request_data' => $request,
+                  'response_data' => json_encode($msg), 
+                  'created_at' => date('Y-m-d H:i:s'),
+                  'username' => $this->core->getUserInfo('username')
+              ]);
               echo "\n<br>Respon Set Diagnosa CBG : ".$msg['metadata']['message'];
           }
               
@@ -3851,6 +3900,13 @@ class Admin extends AdminModule
                               }
                           }';
               $msg= $this->Request($request);
+              $this->db('mlite_eklaim_logs')->save([
+                  'nomor_sep' => $nomor_sep,
+                  'request_data' => $request,
+                  'response_data' => json_encode($msg), 
+                  'created_at' => date('Y-m-d H:i:s'),
+                  'username' => $this->core->getUserInfo('username')
+              ]);
               echo "\n<br>Respon set Procedure INACBG : ".$msg['metadata']['message'];
           }
       }
@@ -3868,6 +3924,14 @@ class Admin extends AdminModule
                       }
                  }';
       $msg= $this->Request($request);
+      $this->db('mlite_eklaim_logs')->save([
+          'nomor_sep' => $nomor_sep,
+          'request_data' => $request,
+          'response_data' => json_encode($msg), 
+          'created_at' => date('Y-m-d H:i:s'),
+          'username' => $this->core->getUserInfo('username')
+      ]);
+      echo "\n<br>Respon Grouping DRG : ".$msg['metadata']['message'];
       if($msg['metadata']['message']=="Ok"){
         $topup = $msg['special_cmg_option']?$msg['special_cmg_option']:'';
         if($topup!=''){
@@ -3893,6 +3957,13 @@ class Admin extends AdminModule
             }
           }';
           $msg2= $this->Request($request2);
+          $this->db('mlite_eklaim_logs')->save([
+              'nomor_sep' => $nomor_sep,
+              'request_data' => $request2,
+              'response_data' => json_encode($msg2), 
+              'created_at' => date('Y-m-d H:i:s'),
+              'username' => $this->core->getUserInfo('username')
+          ]);
           if($msg2 && isset($msg2['metadata']['message']) && $msg2['metadata']['message']=="Ok"){
             $this->FinalisasiKlaim($nomor_sep,$coder_nik);
           }
@@ -3912,6 +3983,13 @@ class Admin extends AdminModule
                       }
                   }';
       $msg= $this->Request($request);    
+      $this->db('mlite_eklaim_logs')->save([
+          'nomor_sep' => $nomor_sep,
+          'request_data' => $request,
+          'response_data' => json_encode($msg), 
+          'created_at' => date('Y-m-d H:i:s'),
+          'username' => $this->core->getUserInfo('username')
+      ]);
       $request ='{
                       "metadata": {
                           "method":"claim_final"
@@ -3922,6 +4000,13 @@ class Admin extends AdminModule
                       }
                  }';
       $msg= $this->Request($request);
+      $this->db('mlite_eklaim_logs')->save([
+          'nomor_sep' => $nomor_sep,
+          'request_data' => $request,
+          'response_data' => json_encode($msg), 
+          'created_at' => date('Y-m-d H:i:s'),
+          'username' => $this->core->getUserInfo('username')
+      ]);
       if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
           //KirimKlaimIndividualKeDC($nomor_sep);
       }
@@ -3937,6 +4022,13 @@ class Admin extends AdminModule
                       }
                  }';
       $msg= $this->Request($request);
+      $this->db('mlite_eklaim_logs')->save([
+          'nomor_sep' => $nomor_sep,
+          'request_data' => $request,
+          'response_data' => json_encode($msg), 
+          'created_at' => date('Y-m-d H:i:s'),
+          'username' => $this->core->getUserInfo('username')
+      ]);
       echo ($msg && isset($msg['metadata']['message'])) ? $msg['metadata']['message'] : 'Error';
   }
 
@@ -3982,6 +4074,81 @@ class Admin extends AdminModule
     // MODULE SCRIPTS
     $this->core->addCSS(url([ADMIN, 'vedika', 'css']));
     $this->core->addJS(url([ADMIN, 'vedika', 'javascript']), 'footer');
+  }
+
+  public function getLogseklaim($page = 1)
+  {
+    $this->_addHeaderFiles();
+
+    $start = isset($_GET['start_date']) && $_GET['start_date'] ? $_GET['start_date'] : date('Y-m-d');
+    $end = isset($_GET['end_date']) && $_GET['end_date'] ? $_GET['end_date'] : date('Y-m-d');
+    $phrase = isset($_GET['s']) ? trim($_GET['s']) : '';
+
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : (int)$page;
+    $limit = 10;
+
+    $countQuery = $this->db('mlite_eklaim_logs')
+      ->leftJoin('mlite_users', 'mlite_users.username = mlite_eklaim_logs.username')
+      ->where('mlite_eklaim_logs.created_at', '>=', $start.' 00:00:00')
+      ->where('mlite_eklaim_logs.created_at', '<=', $end.' 23:59:59');
+
+    if ($phrase !== '') {
+      $like = '%'.$phrase.'%';
+      $countQuery = $countQuery
+        ->like('mlite_eklaim_logs.nomor_sep', $like)
+        ->orLike('mlite_eklaim_logs.username', $like)
+        ->orLike('mlite_users.fullname', $like);
+    }
+
+    $totalRecords = $countQuery->select(['count' => 'COUNT(*)'])->oneArray();
+    $total = isset($totalRecords['count']) ? (int)$totalRecords['count'] : 0;
+
+    $pagination = new \Systems\Lib\Pagination($page, $total, $limit, url([ADMIN, 'vedika', 'logseklaim', '%d?start_date='.$start.'&end_date='.$end.'&s='.urlencode($phrase)]));
+    $offset = $pagination->offset();
+
+    $query = $this->db('mlite_eklaim_logs')
+      ->leftJoin('mlite_users', 'mlite_users.username = mlite_eklaim_logs.username')
+      ->where('mlite_eklaim_logs.created_at', '>=', $start.' 00:00:00')
+      ->where('mlite_eklaim_logs.created_at', '<=', $end.' 23:59:59');
+
+    if ($phrase !== '') {
+      $like = '%'.$phrase.'%';
+      $query = $query
+        ->like('mlite_eklaim_logs.nomor_sep', $like)
+        ->orLike('mlite_eklaim_logs.username', $like)
+        ->orLike('mlite_users.fullname', $like);
+    }
+
+    $rows = $query->select([
+      'id' => 'mlite_eklaim_logs.id',
+      'nomor_sep' => 'mlite_eklaim_logs.nomor_sep',
+      'created_at' => 'mlite_eklaim_logs.created_at',
+      'username' => 'mlite_eklaim_logs.username',
+      'fullname' => 'mlite_users.fullname',
+      'request_data' => 'mlite_eklaim_logs.request_data',
+      'response_data' => 'mlite_eklaim_logs.response_data',
+    ])
+    ->desc('mlite_eklaim_logs.created_at')
+    ->limit($limit)
+    ->offset($offset)
+    ->toArray();
+
+    foreach ($rows as &$row) {
+      $row['request_short'] = substr((string)$row['request_data'], 0, 120);
+      $row['response_short'] = substr((string)$row['response_data'], 0, 120);
+    }
+
+    $assign = [
+      'list' => $rows,
+      'totalRecords' => $total,
+      'pagination' => $pagination->nav('pagination', '5'),
+      'start_date' => $start,
+      'end_date' => $end,
+      'searchUrl' => url([ADMIN, 'vedika', 'logseklaim']),
+      'filterUrl' => url([ADMIN, 'vedika', 'logseklaim']),
+    ];
+
+    return $this->draw('logs.eklaim.html', ['logs' => $assign]);
   }
 
 }
