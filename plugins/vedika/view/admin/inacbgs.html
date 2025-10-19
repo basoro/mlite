@@ -825,7 +825,9 @@
           <th>Diagnosa</th>
           <th>Prosedur</th>
           <th>Kode CBG</th>
-          <th>Deskripsi</th>
+          <th>Deskripsi CBG</th>
+          <th>Kode iDRG</th>
+          <th>Deskripsi iDRG</th>
           <th>Tarif Klaim</th>
           <th>Tarif RS</th>
         </tr>
@@ -838,9 +840,11 @@
           <td>{if: isset($get_claim_data.response.data.nama_dokter)}{$get_claim_data.response.data.nama_dokter}{/if}</td>
           <td>{if: isset($get_claim_data.response.data.diagnosa)}{$get_claim_data.response.data.diagnosa}{/if}</td>
           <td>{if: isset($get_claim_data.response.data.procedure)}{$get_claim_data.response.data.procedure}{/if}</td>
-          <td>{if: isset($get_claim_data.response.data.grouper.response.cbg.code)}{$get_claim_data.response.data.grouper.response.cbg.code}{/if}</td>
-          <td>{if: isset($get_claim_data.response.data.grouper.response.cbg.description)}{$get_claim_data.response.data.grouper.response.cbg.description}{/if}</td>
-          <td>{if: isset($get_claim_data.response.data.grouper.response.cbg.tariff)}{$get_claim_data.response.data.grouper.response.cbg.tariff}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.grouper.response_inacbg.cbg.code)}{$get_claim_data.response.data.grouper.response_inacbg.cbg.code}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.grouper.response_inacbg.cbg.description)}{$get_claim_data.response.data.grouper.response_inacbg.cbg.description}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.grouper.response_idrg.drg_code)}{$get_claim_data.response.data.grouper.response_idrg.drg_code}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.grouper.response_idrg.drg_description)}{$get_claim_data.response.data.grouper.response_idrg.drg_description}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.grouper.response_inacbg.tariff)}{$get_claim_data.response.data.grouper.response_inacbg.tariff}{/if}</td>
           <td>{if: isset($get_claim_data.response.data.tarif_rs)}{?=(isset($get_claim_data.response.data.tarif_rs.prosedur_non_bedah) ? $get_claim_data.response.data.tarif_rs.prosedur_non_bedah : 0) + (isset($get_claim_data.response.data.tarif_rs.prosedur_bedah) ? $get_claim_data.response.data.tarif_rs.prosedur_bedah : 0) + (isset($get_claim_data.response.data.tarif_rs.konsultasi) ? $get_claim_data.response.data.tarif_rs.konsultasi : 0) + (isset($get_claim_data.response.data.tarif_rs.tenaga_ahli) ? $get_claim_data.response.data.tarif_rs.tenaga_ahli : 0) + (isset($get_claim_data.response.data.tarif_rs.keperawatan) ? $get_claim_data.response.data.tarif_rs.keperawatan : 0) + (isset($get_claim_data.response.data.tarif_rs.penunjang) ? $get_claim_data.response.data.tarif_rs.penunjang : 0) + (isset($get_claim_data.response.data.tarif_rs.radiologi) ? $get_claim_data.response.data.tarif_rs.radiologi : 0) + (isset($get_claim_data.response.data.tarif_rs.laboratorium) ? $get_claim_data.response.data.tarif_rs.laboratorium : 0) + (isset($get_claim_data.response.data.tarif_rs.pelayanan_darah) ? $get_claim_data.response.data.tarif_rs.pelayanan_darah : 0) + (isset($get_claim_data.response.data.tarif_rs.rehabilitasi) ? $get_claim_data.response.data.tarif_rs.rehabilitasi : 0) + (isset($get_claim_data.response.data.tarif_rs.kamar) ? $get_claim_data.response.data.tarif_rs.kamar : 0) + (isset($get_claim_data.response.data.tarif_rs.rawat_intensif) ? $get_claim_data.response.data.tarif_rs.rawat_intensif : 0) + (isset($get_claim_data.response.data.tarif_rs.obat) ? $get_claim_data.response.data.tarif_rs.obat : 0) + (isset($get_claim_data.response.data.tarif_rs.obat_kronis) ? $get_claim_data.response.data.tarif_rs.obat_kronis : 0) + (isset($get_claim_data.response.data.tarif_rs.obat_kemoterapi) ? $get_claim_data.response.data.tarif_rs.obat_kemoterapi : 0) + (isset($get_claim_data.response.data.tarif_rs.alkes) ? $get_claim_data.response.data.tarif_rs.alkes : 0) + (isset($get_claim_data.response.data.tarif_rs.bmhp) ? $get_claim_data.response.data.tarif_rs.bmhp : 0) + (isset($get_claim_data.response.data.tarif_rs.sewa_alat) ? $get_claim_data.response.data.tarif_rs.sewa_alat : 0)?}{else}0{/if}</td>
         </tr>
       </tbody>
