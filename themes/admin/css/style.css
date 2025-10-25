@@ -614,6 +614,9 @@ footer a, footer a:hover {
 .selectator_options .selectator_option.active .selectator_option_subtitle {
     color: rgba(255, 255, 255, 0.6);
 }
+.selectator_options .selectator_option:hover .selectator_option_subtitle {
+    color: rgba(182, 0, 0, 0.6);
+}
 @keyframes selectator_spinner {
     0% {
         transform: rotate(0deg);

@@ -96,6 +96,10 @@
                             <a href="#" class="btn btn-danger btn-xs bridging_inacbgs" data-no_rawat="{?=convertNorawat($value.no_rawat)?}">
                               <i class="fa fa-refresh"></i> Grouping Inacbgs
                             </a>
+                            <!-- <br>
+                            <a href="#" class="btn btn-primary btn-xs bridging_idrg" data-no_rawat="{?=convertNorawat($value.no_rawat)?}">
+                              <i class="fa fa-refresh"></i> Grouping iDRG <span class="badge badge-danger">New</span>
+                            </a> -->
                             <br><br><br>
                             <div class="">
                               {loop: $value.pegawai as $data}
@@ -206,8 +210,30 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="inacbgsModal" tabindex="-1" role="dialog">
+<div class="modal fade" id="diagnosaModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="prosedurModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="inacbgsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="idrgModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             ...
         </div>
@@ -238,5 +264,39 @@
         modalContent.load(loadURL);
     }).modal();
     return false;
+  });
+</script>
+<script type="text/javascript">
+  $("#display").on("click",".bridging_idrg", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $(this).attr("data-no_rawat");
+    var loadURL =  baseURL + '/vedika/bridgingidrg/' + no_rawat + '?t=' + mlite.token;
+
+    var modal = $('#idrgModal');
+    var modalContent = $('#idrgModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
+<style>
+  /* Pastikan statusModal berada di atas inacbgsModal */
+  #statusModal { z-index: 1060; }
+  #inacbgsModal { z-index: 1050; }
+  /* Backdrop tambahan saat multiple modal */
+  .modal-backdrop.modal-stack { z-index: 1055; }
+</style>
+<script>
+  // Stacking otomatis untuk multiple Bootstrap modals
+  $(document).on('show.bs.modal', '.modal', function () {
+    var zIndex = 1040 + (10 * $('.modal:visible').length);
+    $(this).css('z-index', zIndex);
+    setTimeout(function() {
+      $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+    }, 0);
   });
 </script>

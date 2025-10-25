@@ -2422,7 +2422,31 @@ class Admin extends AdminModule
       $output = '';
       if(count($rows)){
         foreach ($rows as $row) {
-          $output .= '<li class="list-group-item link-class">'.$row["kd_penyakit"].': '.$row["nm_penyakit"].'</li>';
+          $code = $row["kd_penyakit"];
+          $name = $row["nm_penyakit"];
+          $valid = isset($row["validcode"]) ? (int)$row["validcode"] : 0;
+          $accpdx = isset($row["accpdx"]) ? strtoupper(trim((string)$row["accpdx"])) : '';
+          $accTextValue = ($accpdx !== '') ? $accpdx : 'N';
+          $invalidBadge = ($valid === 0) ? '<span class="label label-danger" style="margin-right:8px;">Tidak Valid</span>' : '';
+          $accBadge = ($accpdx === 'Y')
+            ? '<span class="label label-success" style="margin-right:8px;">ACCPDX</span>'
+            : (($accpdx === 'N') ? '<span class="label label-warning" style="margin-right:8px;">Bukan PDX</span>' : '');
+          $asterisk = isset($row["asterisk"]) ? (int)$row["asterisk"] : 0;
+          $im = isset($row["im"]) ? (int)$row["im"] : 0;
+          $asteriskBadge = ($asterisk === 1) ? '<span class="label label-info" style="margin-right:8px;">Asterisk (*)</span>' : '';
+          $imBadge = ($im === 1) ? '<span class="label label-default" style="margin-right:8px;">IM</span>' : '';
+          $output .= '<li class="list-group-item link-class" '
+                   . 'data-code="'.htmlspecialchars($code, ENT_QUOTES).'" '
+                   . 'data-name="'.htmlspecialchars($name, ENT_QUOTES).'" '
+                   . 'data-validcode="'.$valid.'" '
+                   . 'data-accpdx="'.$accTextValue.'" '
+                   . 'data-display-code="'.htmlspecialchars($code, ENT_QUOTES).'" '
+                   . 'data-display-name="'.htmlspecialchars($name, ENT_QUOTES).'" '
+                   . 'data-asterisk="'.$asterisk.'" '
+                   . 'data-im="'.$im.'">'
+                   . '<div class="selectator_option_title">'.htmlspecialchars($code, ENT_QUOTES).'<span style="margin-top:4px;float:right;">' . $invalidBadge . $accBadge . $asteriskBadge . $imBadge . '</span></div>'
+                   . '<div class="selectator_option_subtitle">' . htmlspecialchars($name, ENT_QUOTES) . '</div>'
+                   . '</li>';
         }
       } else {
         $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
@@ -2451,7 +2475,19 @@ class Admin extends AdminModule
       $output = '';
       if(count($rows)){
         foreach ($rows as $row) {
-          $output .= '<li class="list-group-item link-class">'.$row["kode"].': '.$row["deskripsi_panjang"].'</li>';
+          $code = $row["kode"];
+          $name = $row["deskripsi_panjang"];
+          $valid = isset($row["validcode"]) ? (int)$row["validcode"] : 1;
+          $invalidBadge = ($valid === 0) ? '<span class="label label-danger" style="margin-right:8px;">Tidak Valid</span>' : '';
+          $output .= '<li class="list-group-item link-class" '
+                   . 'data-code="'.htmlspecialchars($code, ENT_QUOTES).'" '
+                   . 'data-name="'.htmlspecialchars($name, ENT_QUOTES).'" '
+                   . 'data-validcode="'.$valid.'" '
+                   . 'data-display-code="'.htmlspecialchars($code, ENT_QUOTES).'" '
+                   . 'data-display-name="'.htmlspecialchars($name, ENT_QUOTES).'">'
+                   . '<div class="selectator_option_title">'.htmlspecialchars($code, ENT_QUOTES).'<span style="margin-top:4px;float:right;">' . $invalidBadge . '</span></div>'
+                   . '<div class="selectator_option_subtitle">' . htmlspecialchars($name, ENT_QUOTES) . '</div>'
+                   . '</li>';
         }
       } else {
         $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
@@ -2908,6 +2944,7 @@ class Admin extends AdminModule
     if($reg_periksa['status_lanjut'] == 'Ralan') {
       $total_biaya_kamar = $reg_periksa['biaya_reg'];
     }
+    $subtotal_biaya_kamar = '0';
     if($reg_periksa['status_lanjut'] == 'Ranap') {
       $__get_kamar_inap = $this->db('kamar_inap')->where('no_rawat', revertNoRawat($no_rawat))->limit(1)->desc('tgl_keluar')->toArray();
       foreach ($__get_kamar_inap as $row) {
@@ -3149,71 +3186,71 @@ class Admin extends AdminModule
   {
     $_POST['jk'] = $this->core->getPasienInfo('jk', $_POST['no_rkm_medis']);;
     $_POST['tgl_lahir'] = $this->core->getPasienInfo('tgl_lahir', $_POST['no_rkm_medis']);;
-    $no_rkm_medis      = $this->validTeks(trim($_POST['no_rkm_medis']));
-    $norawat           = $this->validTeks(trim($_POST['no_rawat']));
-    $tgl_registrasi    = $this->validTeks(trim($_POST['tgl_registrasi']));
-    $nosep             = $this->validTeks(trim($_POST['nosep']));
-    $nokartu           = $this->validTeks(trim($_POST['nokartu']));
-    $nm_pasien         = $this->validTeks(trim($_POST['nm_pasien']));
-    $keluar            = $this->validTeks(trim($_POST['keluar']));
-    $cara_masuk        = $this->validTeks(trim($_POST['cara_masuk']));
-    $kelas_rawat       = $this->validTeks(trim($_POST['kelas_rawat']));
-    $adl_sub_acute     = $this->validTeks(trim($_POST['adl_sub_acute']));
-    $adl_chronic       = $this->validTeks(trim($_POST['adl_chronic']));
-    $icu_indikator     = $this->validTeks(trim($_POST['icu_indikator']));
-    $icu_los           = $this->validTeks(trim($_POST['icu_los']));
-    $ventilator_hour   = $this->validTeks(trim($_POST['ventilator_hour']));
-    $use_ind           = $this->validTeks(trim($_POST['use_ind']));
-    $start_dttm        = $this->validTeks(trim($_POST['start_dttm']));
-    $stop_dttm         = $this->validTeks(trim($_POST['stop_dttm']));
-    $ventilator_hour   = $this->validTeks(trim($_POST['ventilator_hour']));
-    $upgrade_class_ind = $this->validTeks(trim($_POST['upgrade_class_ind']));
-    $upgrade_class_class = $this->validTeks(trim($_POST['upgrade_class_class']));
-    $upgrade_class_los = $this->validTeks(trim($_POST['upgrade_class_los']));
-    $upgrade_class_payor = $this->validTeks(trim($_POST['upgrade_class_payor']));
-    $add_payment_pct   = $this->validTeks(trim($_POST['add_payment_pct']));
-    $birth_weight      = $this->validTeks(trim($_POST['birth_weight']));
-    $discharge_status  = $this->validTeks(trim($_POST['discharge_status']));
-    $diagnosa          = $this->validTeks(trim($_POST['diagnosa']));
-    $procedure         = $this->validTeks(trim($_POST['procedure']));
-    $diagnosainacbg    = $this->validTeks(trim($_POST['diagnosa']));
-    $procedureinacbg   = $this->validTeks(trim($_POST['procedure']));
-    $prosedur_non_bedah = $this->validTeks(trim($_POST['prosedur_non_bedah']));
-    $prosedur_bedah    = $this->validTeks(trim($_POST['prosedur_bedah']));
-    $konsultasi        = $this->validTeks(trim($_POST['konsultasi']));
-    $tenaga_ahli       = $this->validTeks(trim($_POST['tenaga_ahli']));
-    $keperawatan       = $this->validTeks(trim($_POST['keperawatan']));
-    $penunjang         = $this->validTeks(trim($_POST['penunjang']));
-    $radiologi         = $this->validTeks(trim($_POST['radiologi']));
-    $laboratorium      = $this->validTeks(trim($_POST['laboratorium']));
-    $pelayanan_darah   = $this->validTeks(trim($_POST['pelayanan_darah']));
-    $rehabilitasi      = $this->validTeks(trim($_POST['rehabilitasi']));
-    $kamar             = $this->validTeks(trim($_POST['kamar']));
-    $rawat_intensif    = $this->validTeks(trim($_POST['rawat_intensif']));
-    $obat              = $this->validTeks(trim($_POST['obat']));
-    $obat_kronis       = $this->validTeks(trim($_POST['obat_kronis']));
-    $obat_kemoterapi   = $this->validTeks(trim($_POST['obat_kemoterapi']));
-    $alkes             = $this->validTeks(trim($_POST['alkes']));
-    $bmhp              = $this->validTeks(trim($_POST['bmhp']));
-    $sewa_alat         = $this->validTeks(trim($_POST['sewa_alat']));
-    $pemulasaraan_jenazah = $this->validTeks(trim($_POST['pemulasaraan_jenazah']));
-    $kantong_jenazah   = $this->validTeks(trim($_POST['kantong_jenazah']));
-    $peti_jenazah      = $this->validTeks(trim($_POST['peti_jenazah']));
-    $plastik_erat      = $this->validTeks(trim($_POST['plastik_erat']));
-    $desinfektan_jenazah = $this->validTeks(trim($_POST['desinfektan_jenazah']));
-    $mobil_jenazah     = $this->validTeks(trim($_POST['mobil_jenazah']));
-    $desinfektan_mobil_jenazah = $this->validTeks(trim($_POST['desinfektan_mobil_jenazah']));
-    $covid19_status_cd = $this->validTeks(trim($_POST['covid19_status_cd']));
-    $nomor_kartu_t     = $this->validTeks(trim($_POST['nomor_kartu_t']));
-    $episodes          = $this->validTeks(trim($_POST['episodes']));
-    $covid19_cc_ind    = $this->validTeks(trim($_POST['covid19_cc_ind']));
-    $covid19_rs_darurat_ind = $this->validTeks(trim($_POST['covid19_rs_darurat_ind']));
-    $covid19_co_insidense_ind = $this->validTeks(trim($_POST['covid19_co_insidense_ind']));
-    $terapi_konvalesen = $this->validTeks(trim($_POST['terapi_konvalesen']));
-    $akses_naat        = $this->validTeks(trim($_POST['akses_naat']));
-    $isoman_ind        = $this->validTeks(trim($_POST['isoman_ind']));
-    $sistole = $this->validTeks(trim($_POST['sistole']));
-    $diastole = $this->validTeks(trim($_POST['diastole']));
+    $no_rkm_medis      = $this->validTeks(trim($_POST['no_rkm_medis'] ?? ''));
+    $norawat           = $this->validTeks(trim($_POST['no_rawat'] ?? ''));
+    $tgl_registrasi    = $this->validTeks(trim($_POST['tgl_registrasi'] ?? ''));
+    $nosep             = $this->validTeks(trim($_POST['nosep'] ?? ''));
+    $nokartu           = $this->validTeks(trim($_POST['nokartu'] ?? ''));
+    $nm_pasien         = $this->validTeks(trim($_POST['nm_pasien'] ?? ''));
+    $keluar            = $this->validTeks(trim($_POST['keluar'] ?? ''));
+    $cara_masuk        = $this->validTeks(trim($_POST['cara_masuk'] ?? ''));
+    $kelas_rawat       = $this->validTeks(trim($_POST['kelas_rawat'] ?? ''));
+    $adl_sub_acute     = $this->validTeks(trim($_POST['adl_sub_acute'] ?? ''));
+    $adl_chronic       = $this->validTeks(trim($_POST['adl_chronic'] ?? ''));
+    $icu_indikator     = $this->validTeks(trim($_POST['icu_indikator'] ?? ''));
+    $icu_los           = $this->validTeks(trim($_POST['icu_los'] ?? ''));
+    $ventilator_hour   = $this->validTeks(trim($_POST['ventilator_hour'] ?? ''));
+    $use_ind           = $this->validTeks(trim($_POST['use_ind'] ?? ''));
+    $start_dttm        = $this->validTeks(trim($_POST['start_dttm'] ?? ''));
+    $stop_dttm         = $this->validTeks(trim($_POST['stop_dttm'] ?? ''));
+    $ventilator_hour   = $this->validTeks(trim($_POST['ventilator_hour'] ?? ''));
+    $upgrade_class_ind = $this->validTeks(trim($_POST['upgrade_class_ind'] ?? ''));
+    $upgrade_class_class = $this->validTeks(trim($_POST['upgrade_class_class'] ?? ''));
+    $upgrade_class_los = $this->validTeks(trim($_POST['upgrade_class_los'] ?? ''));
+    $upgrade_class_payor = $this->validTeks(trim($_POST['upgrade_class_payor'] ?? ''));
+    $add_payment_pct   = $this->validTeks(trim($_POST['add_payment_pct'] ?? ''));
+    $birth_weight      = $this->validTeks(trim($_POST['birth_weight'] ?? ''));
+    $discharge_status  = $this->validTeks(trim($_POST['discharge_status'] ?? ''));
+    $diagnosa          = $this->validTeks(trim($_POST['diagnosa'] ?? ''));
+    $procedure         = $this->validTeks(trim($_POST['procedure'] ?? ''));
+    $diagnosainacbg    = $this->validTeks(trim($_POST['diagnosa'] ?? ''));
+    $procedureinacbg   = $this->validTeks(trim($_POST['procedure'] ?? ''));
+    $prosedur_non_bedah = $this->validTeks(trim($_POST['prosedur_non_bedah'] ?? ''));
+    $prosedur_bedah    = $this->validTeks(trim($_POST['prosedur_bedah'] ?? ''));
+    $konsultasi        = $this->validTeks(trim($_POST['konsultasi'] ?? ''));
+    $tenaga_ahli       = $this->validTeks(trim($_POST['tenaga_ahli'] ?? ''));
+    $keperawatan       = $this->validTeks(trim($_POST['keperawatan'] ?? ''));
+    $penunjang         = $this->validTeks(trim($_POST['penunjang'] ?? ''));
+    $radiologi         = $this->validTeks(trim($_POST['radiologi'] ?? ''));
+    $laboratorium      = $this->validTeks(trim($_POST['laboratorium'] ?? ''));
+    $pelayanan_darah   = $this->validTeks(trim($_POST['pelayanan_darah'] ?? ''));
+    $rehabilitasi      = $this->validTeks(trim($_POST['rehabilitasi'] ?? ''));
+    $kamar             = $this->validTeks(trim($_POST['kamar'] ?? ''));
+    $rawat_intensif    = $this->validTeks(trim($_POST['rawat_intensif'] ?? ''));
+    $obat              = $this->validTeks(trim($_POST['obat'] ?? ''));
+    $obat_kronis       = $this->validTeks(trim($_POST['obat_kronis'] ?? ''));
+    $obat_kemoterapi   = $this->validTeks(trim($_POST['obat_kemoterapi'] ?? ''));
+    $alkes             = $this->validTeks(trim($_POST['alkes'] ?? ''));
+    $bmhp              = $this->validTeks(trim($_POST['bmhp'] ?? ''));
+    $sewa_alat         = $this->validTeks(trim($_POST['sewa_alat'] ?? ''));
+    $pemulasaraan_jenazah = $this->validTeks(trim($_POST['pemulasaraan_jenazah'] ?? ''));
+    $kantong_jenazah   = $this->validTeks(trim($_POST['kantong_jenazah'] ?? ''));
+    $peti_jenazah      = $this->validTeks(trim($_POST['peti_jenazah'] ?? ''));
+    $plastik_erat      = $this->validTeks(trim($_POST['plastik_erat'] ?? ''));
+    $desinfektan_jenazah = $this->validTeks(trim($_POST['desinfektan_jenazah'] ?? ''));
+    $mobil_jenazah     = $this->validTeks(trim($_POST['mobil_jenazah'] ?? ''));
+    $desinfektan_mobil_jenazah = $this->validTeks(trim($_POST['desinfektan_mobil_jenazah'] ?? ''));
+    $covid19_status_cd = $this->validTeks(trim($_POST['covid19_status_cd'] ?? ''));
+    $nomor_kartu_t     = $this->validTeks(trim($_POST['nomor_kartu_t'] ?? ''));
+    $episodes          = $this->validTeks(trim($_POST['episodes'] ?? ''));
+    $covid19_cc_ind    = $this->validTeks(trim($_POST['covid19_cc_ind'] ?? ''));
+    $covid19_rs_darurat_ind = $this->validTeks(trim($_POST['covid19_rs_darurat_ind'] ?? ''));
+    $covid19_co_insidense_ind = $this->validTeks(trim($_POST['covid19_co_insidense_ind'] ?? ''));
+    $terapi_konvalesen = $this->validTeks(trim($_POST['terapi_konvalesen'] ?? ''));
+    $akses_naat        = $this->validTeks(trim($_POST['akses_naat'] ?? ''));
+    $isoman_ind        = $this->validTeks(trim($_POST['isoman_ind'] ?? ''));
+    $sistole = $this->validTeks(trim($_POST['sistole'] ?? ''));
+     $diastole = $this->validTeks(trim($_POST['diastole'] ?? ''));
     $dializer_single_use = $this->validTeks(trim($_POST['dializer_single_use']));
     $kantong_darah     = $this->validTeks(trim($_POST['kantong_darah']));
     $usia_kehamilan     = $this->validTeks(trim($_POST['usia_kehamilan']));
@@ -3225,27 +3262,28 @@ class Admin extends AdminModule
     $use_manual     = $this->validTeks(trim($_POST['use_manual']));
     $use_forcep     = $this->validTeks(trim($_POST['use_forcep']));
     $use_vacuum     = $this->validTeks(trim($_POST['use_vacuum']));
-    $appearance_1     = $this->validTeks(trim($_POST['appearance_1']));
-    $pulse_1     = $this->validTeks(trim($_POST['pulse_1']));
-    $grimace_1     = $this->validTeks(trim($_POST['grimace_1']));
-    $activity_1     = $this->validTeks(trim($_POST['activity_1']));
-    $respiration_1     = $this->validTeks(trim($_POST['respiration_1']));
-    $appearance_5     = $this->validTeks(trim($_POST['appearance_5']));
-    $pulse_5     = $this->validTeks(trim($_POST['pulse_5']));
-    $grimace_5     = $this->validTeks(trim($_POST['grimace_5']));
-    $activity_5     = $this->validTeks(trim($_POST['activity_5']));
-    $respiration_5     = $this->validTeks(trim($_POST['respiration_5']));
-    $tarif_poli_eks    = $this->validTeks(trim($_POST['tarif_poli_eks']));
-    $nama_dokter       = $this->validTeks(trim($_POST['nama_dokter']));
-    $jk                = $this->validTeks(trim($_POST['jk']));
-    $tgl_lahir         = $this->validTeks(trim($_POST['tgl_lahir']));
+    $appearance_1     = $this->validTeks(trim(isset_or($_POST['appearance_1'],'')));
+    $pulse_1     = $this->validTeks(trim(isset_or($_POST['pulse_1'],'')));
+    $grimace_1     = $this->validTeks(trim(isset_or($_POST['grimace_1'],'')));
+    $activity_1     = $this->validTeks(trim(isset_or($_POST['activity_1'],'')));
+    $respiration_1     = $this->validTeks(trim(isset_or($_POST['respiration_1'],'')));
+    $appearance_5     = $this->validTeks(trim(isset_or($_POST['appearance_5'],'')));
+    $pulse_5     = $this->validTeks(trim(isset_or($_POST['pulse_5'],'')));
+    $grimace_5     = $this->validTeks(trim(isset_or($_POST['grimace_5'],'')));
+    $activity_5     = $this->validTeks(trim(isset_or($_POST['activity_5'],'')));
+    $respiration_5     = $this->validTeks(trim(isset_or($_POST['respiration_5'],'')));
+    $tarif_poli_eks    = $this->validTeks(trim(isset_or($_POST['tarif_poli_eks'],'')));
+    $nama_dokter       = $this->validTeks(trim(isset_or($_POST['nama_dokter'],'')));
+    $jk                = $this->validTeks(trim(isset_or($_POST['jk'],'')));
+    $tgl_lahir         = $this->validTeks(trim(isset_or($_POST['tgl_lahir'],'')));
 
-    $jnsrawat="2";
-    if($_POST['kd_poli'] == "IGDK"){
-        $jnsrawat="3";
+    $jnsrawat = "2";
+    $kd_poli = $_POST['kd_poli'] ?? '';
+    if ($kd_poli === "IGDK") {
+        $jnsrawat = "3";
     }
-    if($this->getRegPeriksaInfo('status_lanjut', $_POST['no_rawat']) == "Ranap"){
-        $jnsrawat="1";
+    if ($this->getRegPeriksaInfo('status_lanjut', $norawat) == "Ranap") {
+        $jnsrawat = "1";
     }
 
     $gender = "";
@@ -3270,6 +3308,14 @@ class Admin extends AdminModule
         $terapi_konvalesen,$akses_naat,$isoman_ind,$sistole,$diastole,$dializer_single_use,$kantong_darah,$usia_kehamilan,$onset_kontraksi,$delivery_method,$delivery_dttm,$letak_janin,$kondisi,$use_manual,$use_forcep,$use_vacuum,
         $appearance_1,$pulse_1,$grimace_1,$activity_1,$respiration_1,$appearance_5,$pulse_5,$grimace_5,$activity_5,$respiration_5);
 
+    exit();
+  }
+
+  public function getBridgingIdrg___($no_rawat)
+  {
+    echo $this->draw('idrg.html', [
+      'patientId' => $no_rawat
+    ]);
     exit();
   }
 
@@ -3933,7 +3979,7 @@ class Admin extends AdminModule
       ]);
       echo "\n<br>Respon Grouping DRG : ".$msg['metadata']['message'];
       if($msg['metadata']['message']=="Ok"){
-        $topup = $msg['special_cmg_option']?$msg['special_cmg_option']:'';
+        $topup = isset_or($msg['special_cmg_option'],'');
         if($topup!=''){
           $temp_grouper="";
           $i = 0;

@@ -11,12 +11,49 @@
   .nowrap th, td {
     white-space: nowrap;
   }
+  /* Loader overlay untuk proses bridging INACBGS */
+  .loader-bridging {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.85);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .loader-bridging .wrap {
+    margin-top: 50px;
+    text-align: center;
+  }
+  .loader-bridging .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 10px auto;
+  }
+  .loader-bridging .text {
+    font-weight: 600;
+    color: #333;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 </style>
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
     <h4 class="modal-title">Bridging Inacbgs</h4>
 </div>
 <div class="modal-body" id="bridginginacbgs">
+  <div class="loader-bridging">
+    <div class="wrap">
+      <div class="spinner"></div>
+      <div class="text" style="font-size:16px;">Sabar brow.....!!</div><div class="text"> Sedang mengirim data klaim ke Server INACBG's...</div>
+    </div>
+  </div>
   <div style="margin-top:20px;">
     <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
     <div class="row">
@@ -206,14 +243,28 @@
         </div>
         <div class="col col-md-3">
           <div class="form-group">
-            <label for="poli">Diagnosa</label>
-            <input type="text" id="diagnosa" name="diagnosa" class="form-control" value="{$penyakit}">
-          </div>
+              <label for="poli">Diagnosa</label>
+              <div class="input-group">
+                <input type="text" id="diagnosa" name="diagnosa" class="form-control" value="{$penyakit}">
+                <span class="input-group-btn">
+                  <a href="{?=url([ADMIN,'vedika','ubahdiagnosa',$reg_periksa.status_lanjut,convertNorawat($reg_periksa.no_rawat)])?}" class="btn btn-default btn-sm" data-toggle="modal" data-target="#diagnosaModal" title="Ubah Diagnosa" style="padding: 9px;">
+                    <i class="fa fa-clipboard"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Prosedur</label>
-            <input type="text" id="procedure" name="procedure" class="form-control" value="{$prosedur}">
+            <div class="input-group">
+              <input type="text" id="procedure" name="procedure" class="form-control" value="{$prosedur}">
+              <span class="input-group-btn">
+                <a href="{?=url([ADMIN,'vedika','ubahprosedur',$reg_periksa.status_lanjut,convertNorawat($reg_periksa.no_rawat)])?}" class="btn btn-default btn-sm" data-toggle="modal" data-target="#prosedurModal" title="Ubah Prosedur" style="padding: 9px;">
+                  <i class="fa fa-clipboard"></i>
+                </a>
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -889,6 +940,7 @@
     var nosep = $('input:text[name=nosep]').val();
     var nokartu = $('input:text[name=nokartu]').val();
     var keluar = $('input:text[name=keluar]').val();
+    var cara_masuk = $('select[name=cara_masuk]').val();
     var kelas_rawat = $('select[name=kelas_rawat]').val();
     var nm_pasien = $('input:text[name=nm_pasien]').val();
     var nama_dokter = $('select[name=nama_dokter]').val();
@@ -896,7 +948,11 @@
     var procedure = $('input:text[name=procedure]').val();
     var adl_sub_acute = $('select[name=adl_sub_acute]').val();
     var adl_chronic = $('select[name=adl_chronic]').val();
-    var icu_indikator = $('select[name=icu_indikator]').val();
+    var icu_indikator = $('input:text[name=icu_indikator]').val();
+    var use_ind = $('input:text[name=use_ind]').val();
+    var ventilator_hour = $('input:text[name=ventilator_hour]').val();
+    var start_dttm = $('input:text[name=start_dttm]').val();
+    var stop_dttm = $('input:text[name=stop_dttm]').val();
     var sistole = $('input:text[name=sistole]').val();
     var diastole = $('input:text[name=diastole]').val();
     var dializer_single_use = $('select[name=dializer_single_use]').val();
@@ -907,6 +963,24 @@
     var add_payment_pct = $('input:text[name=add_payment_pct]').val();
     var birth_weight = $('input:text[name=birth_weight]').val();
     var discharge_status = $('select[name=discharge_status]').val();
+    var pemulasaraan_jenazah = $('select[name=pemulasaraan_jenazah]').val();
+    var kantong_jenazah = $('select[name=kantong_jenazah]').val();
+    var peti_jenazah = $('select[name=peti_jenazah]').val();
+    var plastik_erat = $('select[name=plastik_erat]').val();
+    var desinfektan_jenazah = $('select[name=desinfektan_jenazah]').val();
+    var covid19_status_cd = $('select[name=covid19_status_cd]').val();
+    var nomor_kartu_t = $('select[name=nomor_kartu_t]').val();
+    var episodes = $('input:text[name=episodes]').val();
+    var kantong_darah = $('input:text[name=kantong_darah]').val();
+    var usia_kehamilan = $('input:text[name=usia_kehamilan]').val();
+    var onset_kontraksi = $('select[name=onset_kontraksi]').val();
+    var delivery_method = $('select[name=delivery_method]').val();
+    var delivery_dttm = $('input:text[name=delivery_dttm]').val();
+    var letak_janin = $('select[name=letak_janin]').val();
+    var kondisi = $('select[name=kondisi]').val();
+    var use_manual = $('select[name=use_manual]').val();
+    var use_forcep = $('select[name=use_forcep]').val();
+    var use_vacuum = $('select[name=use_vacuum]').val();
     var prosedur_bedah = $('input:text[name=prosedur_bedah]').val();
     var prosedur_non_bedah = $('input:text[name=prosedur_non_bedah]').val();
     var konsultasi = $('input:text[name=konsultasi]').val();
@@ -932,6 +1006,8 @@
     bootbox.confirm("Apakah Anda yakin ingin mengirim data ini?", function(result){
       // ketika ditekan tombol ok
       if (result){
+        // tampilkan loader sebelum mengirim
+        $('.loader-bridging').show();
         // mengirimkan perintah penghapusan
         $.post(url, {
           no_rkm_medis: no_rkm_medis,
@@ -940,6 +1016,7 @@
           nosep: nosep,
           nokartu: nokartu,
           keluar: keluar,
+          cara_masuk: cara_masuk,
           kelas_rawat: kelas_rawat,
           nm_pasien: nm_pasien,
           nama_dokter: nama_dokter,
@@ -948,6 +1025,10 @@
           adl_sub_acute: adl_sub_acute,
           adl_chronic: adl_chronic,
           icu_indikator: icu_indikator,
+          use_ind: use_ind,
+          ventilator_hour: ventilator_hour,
+          start_dttm: start_dttm,
+          stop_dttm: stop_dttm,
           sistole: sistole,
           diastole: diastole,
           dializer_single_use: dializer_single_use, 
@@ -958,6 +1039,24 @@
           add_payment_pct: add_payment_pct,
           birth_weight: birth_weight,
           discharge_status: discharge_status,
+          pemulasaraan_jenazah: pemulasaraan_jenazah,
+          kantong_jenazah: kantong_jenazah,
+          peti_jenazah: peti_jenazah,
+          plastik_erat: plastik_erat,
+          desinfektan_jenazah: desinfektan_jenazah,
+          covid19_status_cd: covid19_status_cd,
+          nomor_kartu_t: nomor_kartu_t,
+          episodes: episodes,
+          kantong_darah: kantong_darah,
+          usia_kehamilan: usia_kehamilan,
+          delivery_method: delivery_method,
+          onset_kontraksi: onset_kontraksi,
+          delivery_dttm: delivery_dttm,
+          letak_janin: letak_janin,
+          kondisi: kondisi,  
+          use_manual: use_manual,
+          use_forcep: use_forcep,
+          use_vacuum: use_vacuum,
           prosedur_bedah: prosedur_bedah,
           prosedur_non_bedah: prosedur_non_bedah,
           konsultasi: konsultasi,
@@ -980,7 +1079,12 @@
         } ,function(data) {
           console.log(data);
           alert('Data klaim nomor SEP ' + nosep + ' telah disimpan!!');
+          // tutup loader setelah alert
+          $('.loader-bridging').hide();
           //$('#inacbgsModal').modal('toggle');
+        }).fail(function(){
+          // jika gagal, pastikan loader ditutup agar tidak menggantung
+          $('.loader-bridging').hide();
         });
       }
     });
