@@ -773,7 +773,6 @@ switch ($version) {
     case '5.1.0':
         $return = '5.2.0'; 
     case '5.2.0':
-
           $this->core->db()->pdo()->exec("CREATE TABLE  `catatan_adime_gizi`  (
             `no_rawat` varchar(17) NOT NULL,
             `tanggal` datetime NOT NULL,
