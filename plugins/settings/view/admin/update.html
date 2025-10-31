@@ -63,3 +63,57 @@
         </div>
     </div>
 </div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.35); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#fff; padding:20px 30px; border-radius:6px; text-align:center; box-shadow:0 2px 12px rgba(0,0,0,0.2)">
+    <div class="loader" style="margin:0 auto 12px;"></div>
+    <div style="font-weight:bold;">Memproses pembaruan...</div>
+    <div style="font-size:12px; color:#666; margin-top:6px;">Jangan menutup halaman ini</div>
+  </div>
+</div>
+
+<style>
+.loader {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #337ab7; /* Bootstrap primary color */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+
+<script>
+(function() {
+  function showLoading() {
+    var overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+      overlay.style.display = 'flex';
+    }
+  }
+
+  function handleFormSubmit(form) {
+    var btn = form.querySelector('input[type="submit"]');
+    if (btn) {
+      btn.setAttribute('data-original-text', btn.value);
+      btn.value = 'Memproses...';
+      btn.disabled = true;
+    }
+    showLoading();
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var forms = document.querySelectorAll('form');
+    Array.prototype.forEach.call(forms, function(form) {
+      form.addEventListener('submit', function(e) {
+        handleFormSubmit(form);
+      });
+    });
+  });
+})();
+</script>

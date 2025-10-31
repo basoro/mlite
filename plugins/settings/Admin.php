@@ -246,22 +246,25 @@ class Admin extends AdminModule
         $settings = $this->settings('settings');
 
         if (isset($_POST['check'])) {
-            $url = "https://api.github.com/repos/basoro/mlite/releases/latest";
-            $opts = [
-                'http' => [
-                    'method' => 'GET',
-                    'header' => [
-                            'User-Agent: PHP'
-                    ]
-                ]
-            ];
-            $json = file_get_contents($url, false, stream_context_create($opts));
+            $url  = "https://api.github.com/repos/basoro/mlite/releases/latest";
+
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'mlite');
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Accept: application/vnd.github+json'
+            ]);
+
+            $json = curl_exec($ch);
+            $err  = curl_error($ch);
+            curl_close($ch);
+
             $obj = json_decode($json, true);
-    
+
             $this->settings('settings', 'update_check', time());
 
-            if (!is_array($obj)) {
-                $this->tpl->set('error', $obj);
+            if ($err || !is_array($obj)) {
+                $this->tpl->set('error', $json);
             } else {
                 $this->settings('settings', 'update_version', $obj['tag_name']);
                 $this->settings('settings', 'update_changelog', $obj['body']);
@@ -272,8 +275,36 @@ class Admin extends AdminModule
                 $this->tpl->set('error', "ZipArchive is required to update mLITE.");
             }
 
+            $version = $this->settings->get('settings.update_version');
+            $zipFile = BASE_DIR . '/tmp/latest.zip';
+
             if (!isset($_GET['manual'])) {
-                $this->download('https://github.com/basoro/mlite/archive/refs/tags/'.$this->settings->get('settings.update_version').'.zip', BASE_DIR.'/tmp/latest.zip');
+
+                $url = "https://github.com/basoro/mlite/archive/refs/tags/{$version}.zip";
+
+                $ch = curl_init($url);
+                $fp = fopen($zipFile, 'w+');
+
+                curl_setopt_array($ch, [
+                    CURLOPT_FILE            => $fp,
+                    CURLOPT_FOLLOWLOCATION  => true,
+                    CURLOPT_FAILONERROR     => true,
+                    CURLOPT_USERAGENT       => 'mlite-updater',
+                    CURLOPT_TIMEOUT         => 60,
+                ]);
+
+                $ok  = curl_exec($ch);
+                $err = curl_error($ch);
+
+                curl_close($ch);
+                fclose($fp);
+
+                if (!$ok || $err) {
+                    $this->tpl->set('error', "Download gagal: $err");
+                    @unlink($zipFile);
+                    return $this->draw('update.html');
+                }
+
             } else {
                 $package = glob(BASE_DIR.'/mlite-*.zip');
                 if (!empty($package)) {

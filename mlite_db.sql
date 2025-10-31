@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS `mlite_520`;
+-- CREATE DATABASE IF NOT EXISTS `mlite_520`;
 
-USE `mlite_520`;
+-- USE `mlite_520`;
 
 SET sql_mode = '';
 
