@@ -1,0 +1,93 @@
+<div class="body">
+  <div id="content" class="content">    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Daftar Kode INACBG</h3>
+      </div>
+      <div class="panel-body">
+        <table id="inacbgcodesTable" class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>Kode</th>
+              <th>Kode 2</th>
+              <th>Deskripsi</th>
+              <th>Sistem</th>
+              <th>Valid</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+        <h4 class="modal-title">Detail INACBG Code</h4>
+      </div>
+      <div class="modal-body" id="detailContent">
+        <!-- Content loaded via AJAX -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var table = $('#inacbgcodesTable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+      url: baseURL + '/vedika/inacbgcodesdata?t=' + mlite.token,
+      type: 'GET'
+    },
+    columns: [
+      { data: 'code' },
+      { data: 'code2' },
+      { data: 'description' },
+      { data: 'system' },
+      { data: 'validcode' },
+      { data: 'aksi', orderable: false }
+    ],
+    pageLength: 10,
+    lengthMenu: [10, 25, 50, 100],
+    language: {
+      search: "Cari:",
+      lengthMenu: "Tampilkan _MENU_ data per halaman",
+      info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+      paginate: {
+        first: "Pertama",
+        last: "Terakhir",
+        next: "Selanjutnya",
+        previous: "Sebelumnya"
+      }
+    }
+  });
+});
+
+function showDetail(id) {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  $.get(baseURL + '/vedika/inacbgcodesdetail/' + id + '?t=' + mlite.token, function(data) {
+    var content = '<table class="table table-bordered">';
+    content += '<tr><td><strong>Kode</strong></td><td>' + (data.code || '') + '</td></tr>';
+    content += '<tr><td><strong>Kode 2</strong></td><td>' + (data.code2 || '') + '</td></tr>';
+    content += '<tr><td><strong>Deskripsi</strong></td><td>' + (data.description || '') + '</td></tr>';
+    content += '<tr><td><strong>Sistem</strong></td><td>' + (data.system || '') + '</td></tr>';
+    content += '<tr><td><strong>Valid</strong></td><td>' + ((data.validcode ? 'Yes' : 'No')) + '</td></tr>';
+    content += '</table>';
+    
+    $('#detailContent').html(content);
+    $('#detailModal').modal('show');
+  });
+}
+</script>

@@ -99,44 +99,36 @@
   });
 </script>
 <script>
-  $('#icd9').keyup(function(){
-       var query = $(this).val();
-       if(query != '')
-       {
-            $.ajax({
-                 url: "{?=url([ADMIN, 'vedika', 'icd9'])?}",
-                 method:"POST",
-                 data:{query:query},
-                 success:function(data)
-                 {
-                      $('#icd9List').fadeIn();
-                      $('#icd9List').html(data);
-                      // Tandai item invalid/valid berdasarkan data-validcode
-                      $('#icd9List li[data-validcode="0"]').addClass('invalid-procedure');
-                      $('#icd9List li[data-validcode]:not([data-validcode="0"])').addClass('valid-procedure');
-                 }
-            });
-       }
-       $('#icd9List').fadeIn();
+  $('#icd9').keyup(function () {
+    var query = $(this).val();
+    if (query != '') {
+      $.ajax({
+        url: "{?=url([ADMIN, 'vedika', 'icd9'])?}",
+        method: "POST",
+        data: { query: query },
+        success: function (data) {
+          $('#icd9List').fadeIn();
+          $('#icd9List').html(data);
+        }
+      });
+    }
+    $('#icd9List').fadeIn();
   });
-  $('#icd9List').on('click', 'li', function(){
-       var validAttr = $(this).attr('data-validcode');
-       var validcode = (typeof validAttr !== 'undefined' && validAttr !== null) ? parseInt(validAttr, 10) : 1;
-       var codeVal = $(this).attr('data-display-code') || $(this).attr('data-code') || $(this).text().split(': ')[0];
-       if (validcode === 0) {
-         var msg = "Kode Prosedur Tidak Valid!\nKode " + (codeVal || '') + " tidak dapat dipilih karena status validcode = 0";
-         if (typeof bootbox !== 'undefined' && typeof bootbox.alert === 'function') {
-           bootbox.alert(msg);
-         } else {
-           alert(msg);
-         }
-         $(this).addClass('invalid-procedure');
-         return;
-       }
-       var nameVal = $(this).attr('data-display-name') || $(this).attr('data-name') || $(this).text().split(': ')[1];
-       $('#icd9').val(nameVal);
-       $('#kode_icd9').text(codeVal);
-       $('#icd9List').fadeOut();
+
+  $('#icd9List').on('click', 'li', function () {
+    var codeVal =
+      $(this).attr('data-display-code') ||
+      $(this).attr('data-code') ||
+      $(this).text().split(': ')[0];
+
+    var nameVal =
+      $(this).attr('data-display-name') ||
+      $(this).attr('data-name') ||
+      $(this).text().split(': ')[1];
+
+    $('#icd9').val(nameVal);
+    $('#kode_icd9').text(codeVal);
+    $('#icd9List').fadeOut();
   });
 </script>
 <script type="text/javascript">

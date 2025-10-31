@@ -111,7 +111,15 @@
     </div>
   </div>
 </div>
-
+<script>
+  $( function() {
+    $('.tanggal').datetimepicker({
+      defaultDate: '{?=date('Y-m-d')?}',
+      format: 'YYYY-MM-DD',
+      locale: 'id'
+    });
+  } );
+</script>
 <script>
 (function(){
   function tryParseJSON(raw){

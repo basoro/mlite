@@ -1,0 +1,3511 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Bridging iDRG</h4>
+</div>
+<div class="modal-body" id="idrgContainer">
+
+    <div id="idrgSection" class="row" style="display: none; margin-top:20px;">
+        <div class="col-md-12">
+            <div class="row">
+                <!-- Diagnosa Section - Kiri -->
+                <div class="col-md-6">
+                    <div class="section-container">
+                            <h4 class="section-title">
+                            <i class="fa fa-stethoscope" style="margin-right:8px;"></i>
+                            Diagnosa (ICD-10-IM)
+                            <span id="diagnosisValidationStatus" class="validation-status" style="display: none; margin-left:8px;">
+                                <i class="fa fa-exclamation-triangle" style="color:#f0ad4e;"></i>
+                                <small style="color:#f0ad4e;">Minimal 1 record</small>
+                            </span>
+                            </h4>
+                        
+                        <div class="search-row">
+                            <label class="search-label">Diagnosa:</label>
+                            <div class="search-input">
+                                <select class="form-control" id="diagnosisSelect" style="width: 100%;">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table" id="diagnosisTable">
+                                <thead>
+                                    <tr>
+                                        <th width="20%">Jenis</th>
+                                        <th width="25%">Kode</th>
+                                        <th width="45%">Deskripsi</th>
+                                        <th width="10%">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="diagnosisTableBody">
+                                    <tr>
+                                        <td colspan="4" class="empty-table">
+                                            <i class="fa fa-clipboard-list"></i>
+                                            <p>Belum ada diagnosa yang dipilih</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prosedur Section - Kanan -->
+                <div class="col-md-6">
+                    <div class="section-container">
+                            <h4 class="section-title">
+                            <i class="fa fa-procedures" style="margin-right:8px;"></i>
+                            Prosedur (ICD-9CM-IM)
+                            <span id="procedureValidationStatus" class="validation-status" style="display: none; margin-left:8px;">
+                                <i class="fa fa-check-circle" style="color:#5cb85c;"></i>
+                                <small style="color:#5cb85c;">0 record(s)</small>
+                            </span>
+                            </h4>
+                        
+                        <div class="search-row">
+                            <label class="search-label">Prosedur:</label>
+                            <div class="search-input">
+                                <select class="form-control" id="procedureSelect" style="width: 100%;">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table" id="procedureTable">
+                                <thead>
+                                    <tr>
+                                        <th width="20%">Jenis</th>
+                                        <th width="20%">Kode</th>
+                                        <th width="40%">Deskripsi</th>
+                                        <th width="10%">Qty</th>
+                                        <th width="10%">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="procedureTableBody">
+                                    <tr>
+                                        <td colspan="5" class="empty-table">
+                                            <i class="fa fa-tools"></i>
+                                            <p>Belum ada prosedur yang dipilih</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                    <div class="col-md-12" style="text-align:right;">
+                    <button class="btn btn-primary" id="grouperBtn">
+                        <i class="fa fa-cogs"></i>
+                        Grouping iDRG
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hasil Grouping IDRG -->
+    <div id="groupingResults" style="display: none; margin-top:20px;">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h5 class="panel-title">Hasil Grouping iDRG</h5>
+            </div>
+            <div class="panel-body">
+                <!-- Tabel hasil sesuai lampiran -->
+                <div class="table-responsive">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td style="font-weight:bold;width:150px;">Info</td>
+                                <td id="groupingInfo" colspan="2">-</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Jenis Rawat</td>
+                                <td id="groupingJenisRawat" colspan="2">-</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">MDC</td>
+                                <td id="groupingMDC">-</td>
+                                <td id="groupingMDCNumber" style="text-align:right;">-</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">DRG</td>
+                                <td id="groupingDRG">-</td>
+                                <td id="groupingDRGCode" style="text-align:right;">-</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Cost Weight ** )</td>
+                                <td id="groupingCostWeight" colspan="2">-</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">NBR ** )	</td>
+                                <td id="groupingNBR" colspan="2">-</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Status</td>
+                                <td id="groupingStatus" colspan="2">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Status Indicator untuk grouping sebelumnya -->
+                <div id="groupingStatusIndicator" style="display: none; margin-top:15px;"></div>
+                
+                <!-- Error Message untuk diagnosa/procedure tidak benar -->
+                <div id="groupingErrorSection" style="display: none; margin-top:15px;">
+                    <div class="alert alert-warning">
+                        <i class="fa fa-exclamation-triangle" style="margin-right:8px;"></i>
+                        <strong>Perhatian:</strong> MDC dan DRG menunjukkan bahwa variabel diagnosa atau procedure tidak benar. Silakan periksa kembali data yang dimasukkan.
+                    </div>
+                </div>
+                
+                <!-- Final iDRG Button -->
+                <div style="text-align:right; margin-top:15px;">
+                    <!-- Final iDRG Button (hanya tampil jika MDC=31 dan DRG dimulai dengan 31) -->
+                    <div id="finalDrgSection" style="display: none; display:inline-block;">
+                        <button class="btn btn-success" id="finalDrgBtn">
+                            <i class="fa fa-check-circle"></i>
+                            Final iDRG
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="inacbgSection" class="row" style="display: none; margin-top:20px;">
+        <div class="col-md-12">
+            <div class="panel panel-info">
+            <div class="panel-heading">
+                <h5 class="panel-title" style="margin:0;">
+                    <i class="fa fa-hospital" style="margin-right:8px;"></i>
+                    INACBG Coding
+                </h5>
+            </div>
+            <div class="panel-body">
+                    <div class="row">
+                        <!-- INACBG Diagnosa Section -->
+                        <div class="col-md-6">
+                            <div class="section-container">
+                                <h6 class="section-title">
+                                    <i class="fa fa-stethoscope" style="margin-right:8px;"></i>
+                                    Diagnosa INACBG (ICD-10CM)
+                                </h6>
+                                
+                                <div class="search-row">
+                                    <label class="search-label">Diagnosa:</label>
+                                    <div class="search-input">
+                                        <select class="form-control" id="inacbgDiagnosisSelect" style="width: 100%;">
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th width="20%">Jenis</th>
+                                                <th width="25%">Kode</th>
+                                                <th width="45%">Deskripsi</th>
+                                                <th width="10%">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="inacbgDiagnosisTableBody">
+                                            <tr>
+                                                <td colspan="4" class="empty-table">
+                                                    <i class="fa fa-clipboard-list"></i>
+                                                    <p>Belum ada diagnosa yang dipilih</p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- INACBG Prosedur Section -->
+                        <div class="col-md-6">
+                            <div class="section-container">
+                                <h6 class="section-title">
+                                    <i class="fa fa-procedures" style="margin-right:8px;"></i>
+                                    Prosedur INACBG (ICD-9CM)
+                                </h6>
+                                
+                                <div class="search-row">
+                                    <label class="search-label">Prosedur:</label>
+                                    <div class="search-input">
+                                        <select class="form-control" id="inacbgProcedureSelect" style="width: 100%;">
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th width="25%">Jenis</th>
+                                                <th width="25%">Kode</th>
+                                                <th width="45%">Deskripsi</th>
+                                                <th width="5%">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="inacbgProcedureTableBody">
+                                            <tr>
+                                                <td colspan="4" class="empty-table">
+                                                    <i class="fa fa-clipboard-list"></i>
+                                                    <p>Belum ada prosedur yang dipilih</p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- INACBG Action Buttons -->
+                    <div class="row" style="margin-top:15px;">
+                        <div class="col-md-12" style="text-align:center;">
+                            <button class="btn btn-warning" id="importCodingBtn" style="margin-right:8px;">
+                                <i class="fa fa-download" style="margin-right:4px;"></i>
+                                Import Coding
+                            </button>
+                            <button class="btn btn-success" id="inacbgGrouperBtn" style="margin-right:8px;">
+                                <i class="fa fa-hospital-o" style="margin-right:4px;"></i>
+                                Grouping INACBG
+                            </button>
+                            <button class="btn btn-success" id="inacbgFinalBtn" style="display: none;">
+                                <i class="fa fa-check-circle" style="margin-right:4px;"></i>
+                                Final INACBG
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hasil Grouping INACBG -->
+    <div id="inacbgGroupingResults" style="display: none; margin-top:20px;">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h5 class="panel-title">Hasil Grouping INACBG</h5>
+            </div>
+            <div class="panel-body">
+                <!-- Tabel hasil sesuai lampiran -->
+                <div class="table-responsive">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td style="font-weight:bold;width:150px;">Info</td>
+                                <td id="inacbgGroupingInfo" colspan="3">-</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Jenis Rawat</td>
+                                <td id="inacbgGroupingJenisRawat" colspan="3">-</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Group</td>
+                                <td id="inacbgGroupingGroupDesc">-</td>
+                                <td id="inacbgGroupingGroupCode" style="text-align:right;">-</td>
+                                <td id="inacbgGroupingGroupAmount" style="text-align:right;">-</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Sub Acute</td>
+                                <td id="inacbgGroupingSubAcute">-</td>
+                                <td style="text-align:right;">-</td>
+                                <td id="inacbgGroupingSubAcuteAmount" style="text-align:right;">Rp 0</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Chronic</td>
+                                <td id="inacbgGroupingChronic">-</td>
+                                <td style="text-align:right;">-</td>
+                                <td id="inacbgGroupingChronicAmount" style="text-align:right;">Rp 0</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Special Procedure</td>
+                                <td>
+                                    <select id="inacbgSpecialProcedure" class="form-control" style="width:200px;">
+                                        <option value="">None</option>
+                                    </select>
+                                </td>
+                                <td style="text-align:right;">-</td>
+                                <td id="inacbgSpecialProcedureAmount" style="text-align:right;">Rp 0</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Special Prosthesis</td>
+                                <td>
+                                    <select id="inacbgSpecialProsthesis" class="form-control" style="width:200px;">
+                                        <option value="">None</option>
+                                    </select>
+                                </td>
+                                <td style="text-align:right;">-</td>
+                                <td id="inacbgSpecialProsthesisAmount" style="text-align:right;">Rp 0</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Special Investigation</td>
+                                <td>
+                                    <select id="inacbgSpecialInvestigation" class="form-control" style="width:200px;">
+                                        <option value="">None</option>
+                                    </select>
+                                </td>
+                                <td style="text-align:right;">-</td>
+                                <td id="inacbgSpecialInvestigationAmount" style="text-align:right;">Rp 0</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Special Drug</td>
+                                <td>
+                                    <select id="inacbgSpecialDrug" class="form-control" style="width:200px;">
+                                        <option value="">None</option>
+                                    </select>
+                                </td>
+                                <td style="text-align:right;">-</td>
+                                <td id="inacbgSpecialDrugAmount" style="text-align:right;">Rp 0</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Penggunaan Dializer</td>
+                                <td style="text-align:right;"><span style="float: left;"><input type="radio" class="" value="" checked> Multiple Use (reuse) <input type="radio" class="" value=""> Single Use</span></td>
+                                <td style="text-align:right;">85%</td>
+                                <td id="inacbgDializerAmount" style="font-weight:bold;">-</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Transfusi Darah </td>
+                                <td style="text-align:right;"><span style="float: left;">Jumlah kantong darah: <input type="number" class="" value="0" style="width: 40px;"> kantong</span></td>
+                                <td style="text-align:right;" colspan="2">-</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Total Klaim</td>
+                                <td id="inacbgTotalKlaim" style="font-weight:bold;text-align:right;" colspan="3">-</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Status</td>
+                                <td id="inacbgGroupingStatus" colspan="3">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Final INACBG Button -->
+                <div style="text-align:right; margin-top:15px;">
+                    <!-- Final INACBG Button -->
+                    <div id="inacbgFinalDrgSection" style="display: none;">
+                        <button class="btn btn-info" id="inacbgFinalDrgBtn">
+                            <i class="fa fa-check-circle"></i>
+                            Final INACBG
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="inacbgFinalButtonsSection" class="panel panel-success" style="display: none; margin-top:15px;">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-warning" id="inacbgReeditBtn">
+                        <i class="fa fa-edit"></i>Edit Ulang INACBG
+                    </button>
+                    <button type="button" class="btn btn-success pull-right" id="finalClaimBtn">
+                        <i class="fa fa-check-double"></i>Final Klaim
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <div id="statusKlaimSection" class="panel panel-success" style="display: none; margin-top:15px;">
+        <div class="panel-heading">
+            <h6 class="panel-title" style="margin:0;">
+                <i class="fa fa-check-circle" style="margin-right:8px;"></i>Status Klaim
+            </h6>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="bg-success" style="margin-bottom:15px;">
+                        <h6 class="alert-heading" style="margin:0 0 10px 0;">
+                            <i class="fa fa-check-circle" style="margin-right:8px;"></i>Klaim Berhasil Difinalisasi
+                        </h6>
+                        <p style="margin:0; color:#777;">Klaim telah berhasil diproses dan siap untuk dikirim ke BPJS Kesehatan.</p>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-primary" id="cetakKlaimBtn" style="margin-right:8px;">
+                        <i class="fa fa-print" style="margin-right:8px;"></i>Cetak Klaim
+                    </button>
+                    <button type="button" class="btn btn-success" id="kirimKlaimOnlineBtn" style="margin-right:8px;">
+                        <i class="fa fa-paper-plane" style="margin-right:8px;"></i>Kirim Klaim Online
+                    </button>
+                    <button type="button" class="btn btn-warning pull-right" id="editUlangKlaimBtn">
+                        <i class="fa fa-edit" style="margin-right:8px;"></i>Edit Ulang Klaim
+                    </button>                    
+                </div> 
+            </div>
+        </div>
+    </div> 
+       
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script>
+    // Inisialisasi umum Selectator dihapus untuk mencegah konflik.
+    // Diagnosis Selectator akan diinisialisasi saat modal dibuka.
+</script>
+<script>
+    var baseURL = mlite.url + '/' + mlite.admin;
+    $('#idrgSection').show();
+    $('#procedureValidationStatus').show();
+    // Tampilkan hasil grouping saat tombol Grouping iDRG diklik
+    $('#grouperBtn').on('click', function() {
+        processIDRG();
+    });
+
+    // Handle import coding button
+    $('#importCodingBtn').on('click', function() {
+        console.log('Import Coding Button Clicked');
+        performImportCoding();
+    });
+    
+    // Handle INACBG grouping button
+    $('#inacbgGrouperBtn').on('click', function() {
+        processINACBG();
+    });
+
+    function processIDRG() {
+        // Validasi: Pastikan minimal ada 1 diagnosa
+        const diagnosisCount = $('#diagnosisTableBody tr:not(:has(.empty-table))').length;
+        
+        if (diagnosisCount === 0) {
+            hideProcessingMessage();
+            showErrorMessage('Proses grouping tidak dapat dilakukan. Minimal harus ada 1 record diagnosa pada grid Diagnosa (ICD-10-IM).');
+            return;
+        }
+        
+        console.log('Validasi diagnosa berhasil:', diagnosisCount, 'diagnosa ditemukan');
+        
+        // Show processing message
+        showProcessingMessage('Sedang memproses Grouping IDRG...');
+        
+        // Get nomor SEP from form
+        const nomorSep = $('#nosep').val();
+        
+        console.log('Nomor SEP yang diambil:', nomorSep);
+        
+        if (!nomorSep) {
+            hideProcessingMessage();
+            showErrorMessage('Nomor SEP tidak ditemukan');
+            return;
+        }
+        
+        // Step 0: Save data to local database first
+        console.log('Step 0: Saving data to local database...');
+        setClaimDataForGrouping(nomorSep);
+    }
+
+    function setClaimDataForGrouping(nomorSep) {
+
+        const diagnosisData = [];
+
+        $('#diagnosisTableBody tr:not(:has(.empty-table))').each(function (i) {
+            const row = $(this);
+
+            const dataId = row.attr('data-id');
+            const order = i + 1;  // ✅ urut berdasar filtered rows
+            const type = order === 1 ? 'primary' : 'secondary';
+
+            const code = row.find('td:nth-child(2) .code-badge').text();
+            const description = row.find('td:nth-child(3)').text();
+
+            diagnosisData.push({
+                icd_code_id: dataId,
+                diagnosis_order: order,
+                diagnosis_type: type,
+                icd_code: code,
+                icd_description: description,
+                validcode: parseInt(row.attr('data-validcode')) || 1,
+                accpdx: row.attr('data-accpdx') || 'Y',
+                asterisk: parseInt(row.attr('data-asterisk')) || 0,
+                im: 0
+            });
+        });
+
+        
+        // Collect procedure data with improved selectors
+        const procedureData = [];
+
+        $('#procedureTableBody tr:not(:has(.empty-table))').each(function (i) {
+            const row = $(this);
+
+            const dataId = row.attr('data-id');
+            const order = i + 1;     // ✅ urut berdasarkan filtered rows
+            const type = order === 1 ? 'primary' : 'secondary';
+
+            const code = row.find('td:nth-child(2) .code-badge').text();
+            const description = row.find('td:nth-child(3)').text();
+            const quantity = row.find('td:nth-child(4) input').val() || 1;
+
+            procedureData.push({
+                icd_code_id: dataId,
+                procedure_order: order,
+                procedure_type: type,
+                icd_code: code,
+                icd_description: description,
+                quantity: parseInt(quantity),
+                validcode: parseInt(row.attr('data-validcode')) || 1,
+                accpdx: row.attr('data-accpdx') || 'Y',
+                asterisk: parseInt(row.attr('data-asterisk')) || 0,
+                im: 0
+            });
+        });
+        
+        
+        var diagnosa = diagnosisData
+            .map(d => d.icd_code)
+            .join('#');
+        
+        var prosedur = procedureData
+            .map(p => p.quantity > 1 ? `${p.icd_code}+${p.quantity}` : p.icd_code)
+            .join('#');
+        
+        console.log('Collected diagnosis data:', diagnosisData.length + ' items. (' + diagnosa + ')');
+        console.log('Collected procedure data:', procedureData.length + ' items. (' + prosedur + ')');
+
+        console.log('Step 1: Setting claim data...');
+        
+        var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
+        var no_rawat = $('input:text[name=no_rawat]').val();
+        var tgl_registrasi = $('input:text[name=tgl_registrasi]').val();
+        var nosep = $('input:text[name=nosep]').val();
+        var nokartu = $('input:text[name=nokartu]').val();
+        var keluar = $('input:text[name=keluar]').val();
+        var cara_masuk = $('select[name=cara_masuk]').val();
+        var kelas_rawat = $('select[name=kelas_rawat]').val();
+        var nm_pasien = $('input:text[name=nm_pasien]').val();
+        var nama_dokter = $('select[name=nama_dokter]').val();
+        var adl_sub_acute = $('select[name=adl_sub_acute]').val();
+        var adl_chronic = $('select[name=adl_chronic]').val();
+        var icu_indikator = $('input:text[name=icu_indikator]').val();
+        var use_ind = $('input:text[name=use_ind]').val();
+        var ventilator_hour = $('input:text[name=ventilator_hour]').val();
+        var start_dttm = $('input:text[name=start_dttm]').val();
+        var stop_dttm = $('input:text[name=stop_dttm]').val();
+        var sistole = $('input:text[name=sistole]').val();
+        var diastole = $('input:text[name=diastole]').val();
+        var dializer_single_use = $('select[name=dializer_single_use]').val();
+        var icu_los = $('input:text[name=icu_los]').val();
+        var upgrade_class_ind = $('select[name=upgrade_class_ind]').val();
+        var upgrade_class_class = $('select[name=upgrade_class_class]').val();
+        var upgrade_class_los = $('input:text[name=upgrade_class_los]').val();
+        var add_payment_pct = $('input:text[name=add_payment_pct]').val();
+        var birth_weight = $('input:text[name=birth_weight]').val();
+        var discharge_status = $('select[name=discharge_status]').val();
+        var pemulasaraan_jenazah = $('select[name=pemulasaraan_jenazah]').val();
+        var kantong_jenazah = $('select[name=kantong_jenazah]').val();
+        var peti_jenazah = $('select[name=peti_jenazah]').val();
+        var plastik_erat = $('select[name=plastik_erat]').val();
+        var desinfektan_jenazah = $('select[name=desinfektan_jenazah]').val();
+        var covid19_status_cd = $('select[name=covid19_status_cd]').val();
+        var nomor_kartu_t = $('select[name=nomor_kartu_t]').val();
+        var episodes = $('input:text[name=episodes]').val();
+        var kantong_darah = $('input:text[name=kantong_darah]').val();
+        var usia_kehamilan = $('input:text[name=usia_kehamilan]').val();
+        var onset_kontraksi = $('select[name=onset_kontraksi]').val();
+        var delivery_method = $('select[name=delivery_method]').val();
+        var delivery_dttm = $('input:text[name=delivery_dttm]').val();
+        var letak_janin = $('select[name=letak_janin]').val();
+        var kondisi = $('select[name=kondisi]').val();
+        var use_manual = $('select[name=use_manual]').val();
+        var use_forcep = $('select[name=use_forcep]').val();
+        var use_vacuum = $('select[name=use_vacuum]').val();
+        var prosedur_bedah = $('input:text[name=prosedur_bedah]').val();
+        var prosedur_non_bedah = $('input:text[name=prosedur_non_bedah]').val();
+        var konsultasi = $('input:text[name=konsultasi]').val();
+        var tenaga_ahli = $('input:text[name=tenaga_ahli]').val();
+        var keperawatan = $('input:text[name=keperawatan]').val();
+        var penunjang = $('input:text[name=penunjang]').val();
+        var radiologi = $('input:text[name=radiologi]').val();
+        var laboratorium = $('input:text[name=laboratorium]').val();
+        var pelayanan_darah = $('input:text[name=pelayanan_darah]').val();
+        var rehabilitasi = $('input:text[name=rehabilitasi]').val();
+        var kamar = $('input:text[name=kamar]').val();
+        var rawat_intensif = $('input:text[name=rawat_intensif]').val();
+        var obat = $('input:text[name=obat]').val();
+        var obat_kronis = $('input:text[name=obat_kronis]').val();
+        var obat_kemoterapi = $('input:text[name=obat_kemoterapi]').val();
+        var alkes = $('input:text[name=alkes]').val();
+        var bmhp = $('input:text[name=bmhp]').val();
+        var sewa_alat = $('input:text[name=sewa_alat]').val();
+        var tarif_poli_eks = $('input:text[name=tarif_poli_eks]').val();
+                
+        $.post(baseURL + '/vedika/kiriminacbgs?t=' + mlite.token, {
+          no_rkm_medis: no_rkm_medis,
+          no_rawat: no_rawat,
+          tgl_registrasi: tgl_registrasi,
+          nosep: nosep,
+          nokartu: nokartu,
+          keluar: keluar,
+          cara_masuk: cara_masuk,
+          kelas_rawat: kelas_rawat,
+          nm_pasien: nm_pasien,
+          nama_dokter: nama_dokter,
+          diagnosa: diagnosa,
+          procedure: prosedur,
+          adl_sub_acute: adl_sub_acute,
+          adl_chronic: adl_chronic,
+          icu_indikator: icu_indikator,
+          use_ind: use_ind,
+          ventilator_hour: ventilator_hour,
+          start_dttm: start_dttm,
+          stop_dttm: stop_dttm,
+          sistole: sistole,
+          diastole: diastole,
+          dializer_single_use: dializer_single_use, 
+          icu_los: icu_los,
+          upgrade_class_ind: upgrade_class_ind,
+          upgrade_class_class: upgrade_class_class,
+          upgrade_class_los: upgrade_class_los,
+          add_payment_pct: add_payment_pct,
+          birth_weight: birth_weight,
+          discharge_status: discharge_status,
+          pemulasaraan_jenazah: pemulasaraan_jenazah,
+          kantong_jenazah: kantong_jenazah,
+          peti_jenazah: peti_jenazah,
+          plastik_erat: plastik_erat,
+          desinfektan_jenazah: desinfektan_jenazah,
+          covid19_status_cd: covid19_status_cd,
+          nomor_kartu_t: nomor_kartu_t,
+          episodes: episodes,
+          kantong_darah: kantong_darah,
+          usia_kehamilan: usia_kehamilan,
+          delivery_method: delivery_method,
+          onset_kontraksi: onset_kontraksi,
+          delivery_dttm: delivery_dttm,
+          letak_janin: letak_janin,
+          kondisi: kondisi,  
+          use_manual: use_manual,
+          use_forcep: use_forcep,
+          use_vacuum: use_vacuum,
+          prosedur_bedah: prosedur_bedah,
+          prosedur_non_bedah: prosedur_non_bedah,
+          konsultasi: konsultasi,
+          tenaga_ahli: tenaga_ahli,
+          keperawatan: keperawatan,
+          penunjang: penunjang,
+          radiologi: radiologi,
+          laboratorium: laboratorium,
+          pelayanan_darah: pelayanan_darah,
+          rehabilitasi: rehabilitasi,
+          kamar: kamar,
+          rawat_intensif: rawat_intensif,
+          obat: obat,
+          obat_kronis: obat_kronis,
+          obat_kemoterapi: obat_kemoterapi,
+          alkes: alkes,
+          bmhp: bmhp,
+          sewa_alat: sewa_alat,
+          tarif_poli_eks: tarif_poli_eks
+        } ,function(data) {
+          var data = JSON.parse(data);
+          console.log(data);
+        //   alert('Data klaim nomor SEP ' + nosep + ' telah disimpan!!');
+          // tutup loader setelah alert
+          if(data.metadata.message=="Ok"){
+            alert('Data klaim nomor SEP ' + nosep + ' telah disimpan!!');
+          }   
+          displayIdrgGroupingResults(data.response_idrg);
+          $('.loader-bridging').hide();
+          //$('#inacbgsModal').modal('toggle');
+        }).fail(function(){
+          // jika gagal, pastikan loader ditutup agar tidak menggantung
+          $('.loader-bridging').hide();
+        });
+
+    }
+
+    function displayIdrgGroupingResults(responseData, date = null) {
+        if (!responseData) {
+            console.error('Invalid responseData:', responseData);
+            $('#groupingErrorSection').text('Data grouping tidak valid').show();
+            return;
+        }
+
+        const res = responseData;
+        console.log(res.mdc_number);
+
+        // Tampilkan section hasil
+        $('#groupingResults, #groupingErrorSection, #finalDrgSection').show();
+
+        // Info versi (disarankan ambil dari responseData.meta)
+        $('#groupingInfo').text(`INACBG @ ${date || new Date().toLocaleString('id-ID')} - ${res.script_version} / ${res.logic_version}`);
+
+        // Tentukan jenis rawat
+        const tglMasuk = $('#tgl_registrasi').val();
+        const tglPulang = $('#keluar').val();
+        let jenisRawat = '1';
+        if (tglMasuk === tglPulang) jenisRawat = '2';
+
+        let jenisRawatText = '';
+        if (jenisRawat === '1') {
+            if (tglMasuk && tglPulang && new Date(tglPulang) >= new Date(tglMasuk)) {
+                const los = calculateLOSFromDates(tglMasuk, tglPulang);
+                jenisRawatText = `Rawat Inap (${los} Hari)`;
+            } else {
+                jenisRawatText = 'Rawat Inap';
+            }
+        } else if (jenisRawat === '2') {
+            jenisRawatText = 'Rawat Jalan';
+        } else {
+            jenisRawatText = 'Tidak Diketahui';
+        }
+
+        $('#groupingJenisRawat').text(jenisRawatText);
+        $('#groupingStatus').text('normal');
+
+        // Isi hasil grouping
+        const mdcDescription = res.mdc_description || 'N/A';
+        const mdcNumber = res.mdc_number || 'N/A';
+        const drgDescription = res.drg_description || 'N/A';
+        const drgCode = res.drg_code || 'N/A';
+        const costWeight = res.cost_weight || 'N/A';
+        const nbr = res.nbr || 'N/A';
+        const status = res.status || 'N/A';
+
+        const costWeightElement = $('#groupingCostWeight');
+        const nbrElement = $('#groupingNBR');
+        const statusElement = $('#groupingStatus');
+
+        const mdcElement = $('#groupingMDC');
+        const drgElement = $('#groupingDRG');
+        const mdcNumberElement = $('#groupingMDCNumber');
+        const drgCodeElement = $('#groupingDRGCode');
+        costWeightElement.text(costWeight);
+        nbrElement.text(nbr);
+        statusElement.text(status);
+        
+        // Reset labels untuk iDRG
+        $('#groupingMDCLabel').text('MDC Description:');
+        $('#groupingDRGLabel').text('DRG Description:');
+        $('#groupingMDCNumberLabel').text('MDC Number:');
+        $('#groupingDRGCodeLabel').text('DRG Code:');
+
+        mdcElement.text(mdcDescription);
+        drgElement.text(drgDescription);
+        mdcNumberElement.text(mdcNumber);
+        drgCodeElement.text(drgCode);
+        
+        // Deteksi error menggunakan helper function
+        const isError = isGroupingError(mdcDescription, drgDescription, mdcNumber, drgCode);
+        
+        // Apply error styling
+        applyErrorStyling(mdcElement, drgElement, mdcNumberElement, drgCodeElement, isError);
+        
+        // Tentukan section yang akan ditampilkan berdasarkan validitas hasil
+        const invalidMdcCode = '36';
+        const isValidResult = mdcNumber !== invalidMdcCode && drgCode;
+        const showErrorSection = !isValidResult;
+        const showFinalDrgButton = isValidResult;
+        
+        // Show/hide sections menggunakan helper function
+        toggleGroupingSections(showErrorSection, showFinalDrgButton);
+        
+        
+        // Scroll to results
+        $('html, body').animate({
+            scrollTop: $('#groupingResults').offset().top - 100
+        }, 500);        
+    }
+
+    function processINACBG() {
+        // Validasi: Pastikan minimal ada 1 diagnosa
+        const diagnosisCount = $('#diagnosisTableBody tr').not('.empty-table').length;
+        if (diagnosisCount === 0) {
+            hideProcessingMessage();
+            showErrorMessage('Proses grouping INACBG tidak dapat dilakukan. Minimal harus ada 1 record diagnosa pada grid Diagnosa (ICD-10-IM).');
+            return;
+        }
+        
+        console.log('Validasi diagnosa berhasil:', diagnosisCount, 'diagnosa ditemukan');
+        
+        // Show processing message
+        showProcessingMessage('Sedang memproses Grouping INACBG...');
+        
+        // Get nomor SEP from form
+        const nomorSep = $('#nosep').val();
+        
+        console.log('Nomor SEP yang diambil:', nomorSep);
+        
+        if (!nomorSep) {
+            hideProcessingMessage();
+            showErrorMessage('Nomor SEP tidak ditemukan');
+            return;
+        }
+        
+        // Step 0: Save data to local database first
+        console.log('Step 0: Saving data to local database...');
+        setInacbgDiagnosaForGrouping(nomorSep);
+    }
+
+    function setInacbgDiagnosaForGrouping(nomorSep) {
+        console.log('Step 1: Setting INACBG diagnosa...');
+        
+        // Collect diagnosis data from INACBG table
+        const diagnosisData = [];
+        $('#inacbgDiagnosisTableBody tr').each(function() {
+            const row = $(this);
+            if (!row.hasClass('empty-table')) {
+                const icdCode = row.find('.code-badge').text().trim();
+                
+                if (icdCode && icdCode !== '-') {
+                    diagnosisData.push({
+                        code: icdCode
+                    });
+                }
+            }
+        });
+        
+        // Format diagnosa string (ICD10#ICD10#ICD10)
+        const diagnosaString = diagnosisData.map(d => d.code).join('#');
+        
+        console.log('INACBG Diagnosa string:', diagnosaString);
+        
+        if (!diagnosaString) {
+            hideProcessingMessage();
+            showErrorMessage('Tidak ada diagnosa yang ditemukan');
+            return;
+        }
+        
+        $.post(baseURL + '/vedika/inacbgdiagnosa?t=' + mlite.token, {
+          nomor_sep: nomorSep, 
+          diagnosa: diagnosaString
+        } ,function(data) {
+          console.log('Raw response diagnosa INACBG:', data);
+          var data = JSON.parse(data);
+          console.log(data);
+          // tutup loader setelah alert
+          if(data.metadata.message=="Ok"){
+            console.log('Set INACBG Diagnosa berhasil, melanjutkan ke Step 2...');
+            setInacbgProcedureForGrouping(nomorSep);
+          }   
+          $('.loader-bridging').hide();
+        }).fail(function(){
+          $('.loader-bridging').hide();
+        });
+
+    }
+
+    function setInacbgProcedureForGrouping(nomorSep) {
+        console.log('Step 2: Setting INACBG procedure...');
+        
+        // Collect procedure data from INACBG table
+        const procedureData = [];
+        $('#inacbgProcedureTableBody tr').each(function() {
+            const row = $(this);
+            if (!row.hasClass('empty-table')) {
+                const icdCode = row.find('.code-badge').text().trim();
+                
+                if (icdCode && icdCode !== '-') {
+                    procedureData.push({
+                        code: icdCode
+                    });
+                }
+            }
+        });
+        
+        console.log('INACBG Procedure data collected:', procedureData.length, 'procedures found');
+        
+        // Format procedure string (ICD9#ICD9#ICD9) - INACBG tidak menggunakan multiplier
+        let procedureString = '';
+        if (procedureData.length === 0) {
+            // Jika tidak ada prosedur, kirim "#" sesuai format E-Klaim
+            procedureString = '#';
+            console.log('Tidak ada prosedur ditemukan, kirim procedure "#"');
+        } else {
+            procedureString = procedureData.map(p => p.code).join('#');
+            console.log('INACBG Procedure string:', procedureString);
+        }
+        
+        $.post(baseURL + '/vedika/inacbgprosedur?t=' + mlite.token, {
+          nomor_sep: nomorSep, 
+          prosedur: procedureString
+        } ,function(data) {
+            console.log('Raw response prosedur INACBG:', data);
+          var data = JSON.parse(data);
+          console.log(data);
+          // tutup loader setelah alert
+          if(data.metadata.message=="Ok"){
+            console.log('Set INACBG Prosedur berhasil, melanjutkan ke Step 3...');
+            performInacbgGrouping(nomorSep);
+          }   
+          $('.loader-bridging').hide();
+        }).fail(function(){
+          $('.loader-bridging').hide();
+        });
+
+    }
+    
+    function performInacbgGrouping(nomorSep) {
+        console.log('Step 3: Performing INACBG grouping...');
+        
+        // Prepare request data
+        const requestData = {
+            action: 'grouper',
+            nomor_sep: nomorSep,
+            stage: '1',
+            grouper: 'inacbg'
+        };
+        
+        console.log('INACBG Grouping request data:', requestData);
+        
+        $.post(baseURL + '/vedika/groupingstage1?t=' + mlite.token, {
+          nomor_sep: nomorSep
+        } ,function(data) {
+            console.log('Raw response INACBG Grouping:', data);
+          var data = JSON.parse(data);
+          console.log(data);
+          // tutup loader setelah alert
+          if(data.metadata.message=="Ok"){
+            console.log('INACBG Grouping berhasil, melanjutkan ke Step 4...');
+           displayInacbgGroupingResults(data);
+          }   
+          $('.loader-bridging').hide();
+        }).fail(function(){
+          $('.loader-bridging').hide();
+        });
+
+    }
+
+    function performImportCoding() {
+        const nomorSep = $('#nosep').val();
+        
+        if (!nomorSep) {
+            showErrorMessage('Nomor SEP tidak ditemukan!');
+            return;
+        }
+        
+        showProcessingMessage('Sedang mengimport coding dari IDRG ke INACBG...');
+        $('#importCodingBtn').prop('disabled', true);
+
+        $.ajax({
+            url: baseURL + '/vedika/inacbgtodrg?t=' + mlite.token,
+            type: "POST",
+            dataType: "json",   // ✅ pastikan parsing otomatis
+            data: { nosep: nomorSep },
+            success: function(data) {
+                console.log("Response:", data);
+
+                if (data?.metadata?.message === "Ok") {
+
+                    alert('Import iDRG to INACBG ' + nomorSep + ' telah disimpan!!');
+                    hideProcessingMessage();
+                    $('#importCodingBtn').prop('disabled', false);
+
+                    // ✅ Populate diagnosa
+                    const diagnosa = data?.data?.diagnosa?.expanded;
+                    console.log('Ini Diagnosa:', diagnosa);
+                    if (Array.isArray(diagnosa) && diagnosa.length > 0) {
+                        populateInacbgDiagnosis(diagnosa);
+                    }
+
+                    // ✅ Populate procedure
+                    const procedure = data?.data?.procedure?.expanded;
+                    if (Array.isArray(procedure) && procedure.length > 0) {
+                        populateInacbgProcedure(procedure);
+                    }
+
+                    // ✅ Delete info
+                    let deleteInfo = '';
+                    if (data.delete_info) {
+                        const deletedLogs = data.delete_info.deleted_log_count || 0;
+                        const deletedDiagnosis = data.delete_info.deleted_diagnosis_count || 0;
+                        const deletedProcedure = data.delete_info.deleted_procedure_count || 0;
+                        
+                        if (deletedLogs > 0) {
+                            deleteInfo = ` Data lama telah dihapus: ${deletedLogs} log, ${deletedDiagnosis} diagnosa, ${deletedProcedure} prosedur.`;
+                        }
+                    }
+
+                    showSuccessMessage(
+                        'Import coding berhasil! Data diagnosa dan prosedur telah dimuat ke grid INACBG.' + deleteInfo
+                    );
+                }
+
+                $('.loader-bridging').hide();
+            },
+            error: function() {
+                $('.loader-bridging').hide();
+                $('#importCodingBtn').prop('disabled', false);
+                showErrorMessage("Gagal menyimpan data!");
+            }
+        });
+    }
+
+    function populateInacbgDiagnosis(diagnosisData) {
+        const tableBody = $('#inacbgDiagnosisTableBody');
+        
+        // Clear existing data
+        tableBody.empty();
+        
+        // Extract codes for validation
+        const codes = diagnosisData.map(d => d.code);
+
+        console.log('Codes:', codes);
+        
+        // Check codes in database
+        $.ajax({
+            url: baseURL + '/vedika/checkinacbgcodes?t=' + mlite.token,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ codes: codes }),
+            dataType: 'json',
+            success: function(response) {
+                console.log('Response Populate:', response);
+                if (response.success) {
+                    // Add diagnosis data with validation
+                    diagnosisData.forEach(function(diagnosis, index) {
+                        const isValid = response.data[diagnosis.code] || false;
+                        addDiagnosisToTable({
+                            id: `inacbg_diag_${index}`,
+                            code: diagnosis.code,
+                            display: diagnosis.display,
+                            isValid: isValid
+                        }, 'inacbgDiagnosisTableBody', true);
+                    });
+                    
+                    // Add empty row if no data
+                    if (diagnosisData.length === 0) {
+                        tableBody.append(`
+                            <tr class="empty-table">
+                                <td colspan="4" style="text-align:center;color:#777;">
+                                    <i class="fa fa-info-circle" style="margin-right:4px;"></i>
+                                    Belum ada diagnosa INACBG
+                                </td>
+                            </tr>
+                        `);
+                    }
+                } else {
+                    console.error('Error checking INACBG codes:', response.error);
+                    // Fallback: add data without validation
+                    diagnosisData.forEach(function(diagnosis, index) {
+                        addDiagnosisToTable({
+                            id: `inacbg_diag_${index}`,
+                            code: diagnosis.code,
+                            display: diagnosis.display,
+                            isValid: true // Assume valid if check fails
+                        }, 'inacbgDiagnosisTableBody', true);
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error checking INACBG codes:', error);
+                // Fallback: add data without validation
+                diagnosisData.forEach(function(diagnosis, index) {
+                    addDiagnosisToTable({
+                        id: `inacbg_diag_${index}`,
+                        code: diagnosis.code,
+                        display: diagnosis.display,
+                        isValid: true // Assume valid if check fails
+                    }, 'inacbgDiagnosisTableBody', true);
+                });
+            }
+        });
+    }
+    
+    function populateInacbgProcedure(procedureData) {
+        const tableBody = $('#inacbgProcedureTableBody');
+        
+        // Clear existing data
+        tableBody.empty();
+        
+        // Extract codes for validation
+        const codes = procedureData.map(p => p.code);
+        
+        // Check codes in database
+        $.ajax({
+            url: baseURL + '/vedika/checkinacbgcodes?t=' + mlite.token,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ codes: codes }),
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Add procedure data with validation
+                    procedureData.forEach(function(procedure, index) {
+                        const isValid = response.data[procedure.code] || false;
+                        addProcedureToTable({
+                            id: `inacbg_proc_${index}`,
+                            code: procedure.code,
+                            display: procedure.display,
+                            isValid: isValid
+                        }, 'inacbgProcedureTableBody', true);
+                    });
+                    
+                    // Add empty row if no data
+                    if (procedureData.length === 0) {
+                        tableBody.append(`
+                            <tr class="empty-table">
+                                <td colspan=\"4\" style=\"text-align:center;color:#777;\">
+                                    <i class="fa fa-info-circle" style="margin-right:4px;"></i>
+                                    Belum ada prosedur INACBG
+                                </td>
+                            </tr>
+                        `);
+                    }
+                } else {
+                    console.error('Error checking INACBG codes:', response.error);
+                    // Fallback: add data without validation
+                    procedureData.forEach(function(procedure, index) {
+                        addProcedureToTable({
+                            id: `inacbg_proc_${index}`,
+                            code: procedure.code,
+                            display: procedure.display,
+                            isValid: true // Assume valid if check fails
+                        }, 'inacbgProcedureTableBody', true);
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error checking INACBG codes:', error);
+                // Fallback: add data without validation
+                procedureData.forEach(function(procedure, index) {
+                    addProcedureToTable({
+                        id: `inacbg_proc_${index}`,
+                        code: procedure.code,
+                        display: procedure.display,
+                        isValid: true // Assume valid if check fails
+                    }, 'inacbgProcedureTableBody', true);
+                });
+            }
+        });
+    }
+
+    function formatCurrency(amount) {
+        if (!amount || amount === '0') return 'Rp 0';
+        const numAmount = parseInt(amount);
+        return 'Rp ' + numAmount.toLocaleString('id-ID');
+    }
+
+    function displayInacbgGroupingResults(data) {
+        // Show the results section
+        $('#inacbgGroupingResults').show();
+
+        console.log('Display INACBG Grouping Results:', data);
+        
+        // Populate basic information untuk INACBG
+        const currentDate = new Date().toLocaleString('id-ID');
+        var eklaim_kelasrs = '{?=$this->core->settings->get('vedika.eklaim_kelasrs')?}';
+
+        var kelas = eklaim_kelasrs.charAt(0);        // → 'A'
+        var jenis = eklaim_kelasrs.charAt(1) === 'P' ? 'PEMERINTAH' : 'SWASTA';
+
+        $('#inacbgGroupingInfo').text(
+            `INACBG @ ${currentDate} •• Kelas ${kelas} •• Tarif : TARIF RS KELAS ${kelas} ${jenis}`
+        );
+
+        // $('#inacbgGroupingInfo').text(`INACBG @ ${currentDate} •• Kelas ${eklaim_kelasrs} •• Tarif : TARIF RS KELAS ${eklaim_kelasrs} PEMERINTAH`);
+        // $('#inacbgGroupingInfo').text(`INACBG @ ${date || new Date().toLocaleString('id-ID')} - ${data.response_inacbg?.inacbg_version} / ${res.logic_version}`);
+
+        
+        // Set jenis rawat berdasarkan data form
+        const tglMasuk = $('#tanggalMasuk').val();
+        const tglPulang = $('#tanggalPulang').val();
+        const jenisRawat = '{$reg_periksa.jnspelayanan}';
+        
+        let jenisRawatText = '';
+        if (jenisRawat === '1') {
+            // Rawat Inap - hitung LOS
+            if (tglMasuk && tglPulang) {
+                const los = calculateLOSFromDates(tglMasuk, tglPulang);
+                jenisRawatText = `Rawat Inap Kelas 3 (${los} Hari)`;
+            } else {
+                jenisRawatText = 'Rawat Inap Kelas 3';
+            }
+        } else if (jenisRawat === '2') {
+            jenisRawatText = 'Rawat Jalan';
+        } else {
+            jenisRawatText = 'Tidak Diketahui';
+        }
+        
+        $('#inacbgGroupingJenisRawat').text(jenisRawatText);
+        $('#inacbgGroupingStatus').text('normal');
+        
+        // Populate Group information dari response_inacbg
+        const cbgDescription = data.response_inacbg?.cbg?.description || data.cbg?.description || 'N/A';
+        const cbgCode = data.response_inacbg?.cbg?.code || data.cbg?.code || 'N/A';
+        const baseTariff = data.response_inacbg?.base_tariff || data.response_inacbg?.tariff || data.cbg?.base_tariff || data.tariff || '0';
+        
+        $('#inacbgGroupingGroupDesc').text(cbgDescription);
+        $('#inacbgGroupingGroupCode').text(cbgCode);
+        $('#inacbgGroupingGroupAmount').text(formatCurrency(baseTariff));
+        
+        // Set default values untuk Sub Acute dan Chronic
+        $('#inacbgGroupingSubAcute').text('-');
+        $('#inacbgGroupingChronic').text('-');
+        
+        // Populate Special CMG Options
+        const specialOptions = data.special_cmg_option || [];
+        populateSpecialOptions(specialOptions);
+        
+        // Set Total Klaim
+        $('#inacbgTotalKlaim').text(formatCurrency(baseTariff));
+        
+        // Store base tariff and special options for reset functionality
+        $('#inacbgGroupingResults').data('baseTariff', baseTariff);
+        $('#inacbgGroupingResults').data('specialOptions', specialOptions);
+        
+        
+        // Show Final INACBG button
+        $('#inacbgFinalDrgSection').show();
+        
+        // Scroll to results
+        $('html, body').animate({
+            scrollTop: $('#inacbgGroupingResults').offset().top - 100
+        }, 500);
+    }
+    
+    function populateSpecialOptions(specialOptions) {
+        
+        // Clear existing options and add "None" option to each dropdown
+        $('#inacbgSpecialProcedure').html('<option value="">None</option>');
+        $('#inacbgSpecialProsthesis').html('<option value="">None</option>');
+        $('#inacbgSpecialInvestigation').html('<option value="">None</option>');
+        $('#inacbgSpecialDrug').html('<option value="">None</option>');
+        
+        // Group options by type
+        if (specialOptions && Array.isArray(specialOptions)) {
+            specialOptions.forEach(option => {
+                const optionHtml = `<option value="${option.code}">${option.description}</option>`;
+                
+                switch(option.type) {
+                    case 'Special Procedure':
+                        $('#inacbgSpecialProcedure').append(optionHtml);
+                        break;
+                    case 'Special Prosthesis':
+                        $('#inacbgSpecialProsthesis').append(optionHtml);
+                        break;
+                    case 'Special Investigation':
+                        $('#inacbgSpecialInvestigation').append(optionHtml);
+                        break;
+                    case 'Special Drug':
+                        $('#inacbgSpecialDrug').append(optionHtml);
+                        break;
+                }
+            });
+        }
+    }
+
+
+    // Helper function untuk mendeteksi error grouping
+    function isGroupingError(mdcDescription, drgDescription, mdcNumber, drgCode) {
+        // Deteksi error untuk MDC description yang lebih luas
+        const mdcErrorKeywords = ['ungroupable', 'unrelated', 'invalid', 'error', 'not valid'];
+        const isMdcError = mdcErrorKeywords.some(keyword => 
+            mdcDescription.toLowerCase().includes(keyword.toLowerCase())
+        );
+        
+        // Deteksi error untuk DRG description yang lebih luas
+        const drgErrorKeywords = ['not valid', 'unrelated', 'ungroupable', 'invalid', 'error'];
+        const isDrgError = drgErrorKeywords.some(keyword => 
+            drgDescription.toLowerCase().includes(keyword.toLowerCase())
+        );
+        
+    // Cek kondisi khusus untuk MDC 36 (invalid) dan selain itu valid
+    const invalidMdcCode = '36';
+    const isValidResult = mdcNumber !== invalidMdcCode && drgCode;
+        
+    // Return true jika ada error dan bukan kondisi valid (MDC bukan 36)
+    return (isMdcError || isDrgError) && !isValidResult;
+    }
+    
+    // Helper function untuk apply error styling
+    function applyErrorStyling(mdcElement, drgElement, mdcNumberElement, drgCodeElement, isError) {
+        if (isError) {
+            mdcElement.css({'color':'#d9534f','font-weight':'bold'});
+            drgElement.css({'color':'#d9534f','font-weight':'bold'});
+            mdcNumberElement.css({'color':'#d9534f'});
+            drgCodeElement.css({'color':'#d9534f'});
+        } else {
+            mdcElement.css({'color':'','font-weight':'normal'});
+            drgElement.css({'color':'','font-weight':'normal'});
+            mdcNumberElement.css({'color':''});
+            drgCodeElement.css({'color':''});
+        }
+    }
+    
+    // Helper function untuk show/hide sections
+    function toggleGroupingSections(showErrorSection, showFinalDrgButton) {
+        if (showFinalDrgButton) {
+            $('#finalDrgSection').show();
+            $('#groupingErrorSection').hide();
+        } else if (showErrorSection) {
+            $('#finalDrgSection').hide();
+            $('#groupingErrorSection').show();
+        } else {
+            $('#finalDrgSection').hide();
+            $('#groupingErrorSection').hide();
+        }
+    }
+
+    function calculateLOSFromDates(tglMasuk, tglPulang) {
+        if (!tglMasuk || !tglPulang) return 0;
+        
+        const masuk = new Date(tglMasuk);
+        const pulang = new Date(tglPulang);
+        
+        // Hitung selisih dalam milidetik
+        const diffTime = Math.abs(pulang - masuk);
+        
+        // Konversi ke hari
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        return diffDays;
+    }
+
+    function formatDateTime(dateTimeString) {
+        if (!dateTimeString) return '';
+        
+        // Convert datetime-local format (YYYY-MM-DDTHH:MM) to standard format (YYYY-MM-DD HH:MM:SS)
+        const date = new Date(dateTimeString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+
+    function parseCurrencyValue(value) {
+        if (!value || value === '') return 0;
+        // Remove all non-digit characters
+        const cleanValue = value.toString().replace(/[^\d]/g, '');
+        return parseInt(cleanValue) || 0;
+    }
+    
+    function calculateTotalCost() {
+        const costs = [
+            parseCurrencyValue($('#prosedurNonBedah').val()),
+            parseCurrencyValue($('#tenagaAhli').val()),
+            parseCurrencyValue($('#radiologi').val()),
+            parseCurrencyValue($('#rehabilitasi').val()),
+            parseCurrencyValue($('#obat').val()),
+            parseCurrencyValue($('#alkes').val()),
+            parseCurrencyValue($('#prosedurBedah').val()),
+            parseCurrencyValue($('#keperawatan').val()),
+            parseCurrencyValue($('#laboratorium').val()),
+            parseCurrencyValue($('#kamarAkomodasi').val()),
+            parseCurrencyValue($('#obatKronis').val()),
+            parseCurrencyValue($('#bmhp').val()),
+            parseCurrencyValue($('#konsultasi').val()),
+            parseCurrencyValue($('#penunjang').val()),
+            parseCurrencyValue($('#pelayananDarah').val()),
+            parseCurrencyValue($('#rawatIntensif').val()),
+            parseCurrencyValue($('#obatKemoterapi').val()),
+            parseCurrencyValue($('#sewaAlat').val())
+        ];
+        
+        const total = costs.reduce((sum, cost) => sum + cost, 0);
+        // Format total dengan titik sebagai separator ribuan (format Indonesia)
+        $('#totalTarif').text(`Rp ${total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`);
+    }
+
+    // Format input biaya dengan separator ribuan (format Indonesia)
+    function formatCurrencyInput(input) {
+        let value = input.value.replace(/[^\d]/g, '');
+        if (value === '') {
+            input.value = '';
+            return;
+        }
+        const numValue = parseInt(value);
+        // Format dengan titik sebagai separator ribuan (format Indonesia)
+        input.value = numValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Event listener untuk input biaya
+    $(document).on('input', '.cost-input', function() {
+        formatCurrencyInput(this);
+        calculateTotalCost();
+    });
+
+    // Event listener untuk blur (ketika input kehilangan fokus)
+    $(document).on('blur', '.cost-input', function() {
+        if (this.value === '') {
+            this.value = '0';
+            calculateTotalCost();
+        }
+    });
+
+    // Tampilkan hasil final DRG saat tombol Finalize DRG diklik
+    $('#finalDrgBtn').on('click', function() {
+        var nosep = $('input:text[name=nosep]').val();  
+        $.post(baseURL + '/vedika/finalidrg?t=' + mlite.token, {
+          nosep: nosep
+        } ,function(data) {
+          var data = JSON.parse(data);
+          console.log(data);
+          // tutup loader setelah alert
+          if(data.metadata.message=="Ok"){
+            alert('Final iDRG nomor SEP ' + nosep + ' telah disimpan!!');
+            $('#inacbgSection').show();
+            changeGroupingButtonToEdit();
+            $('#finalDrgSection').hide();
+            $('#groupingStatusIndicator').show();
+            const statusIndicator = $('#groupingStatusIndicator');
+            statusIndicator
+                .removeClass('alert-warning alert-danger')
+                .addClass('bg-success')
+                .html(`
+                <i class="fa fa-check-circle" style="margin-right:8px;padding: 10px;"></i>
+                <strong>Final iDRG:</strong> Berhasil diproses pada ${new Date().toLocaleString('id-ID')}
+            `);
+          }   
+          $('.loader-bridging').hide();
+          //$('#inacbgsModal').modal('toggle');
+        }).fail(function(){
+          // jika gagal, pastikan loader ditutup agar tidak menggantung
+          $('.loader-bridging').hide();
+        });
+    });
+    $('#inacbgGrouperBtn').on('click', function() {
+        $('#inacbgGroupingResults').show();
+        $('#inacbgFinalDrgSection').show();
+    });
+    $('#inacbgFinalDrgBtn').on('click', function() {
+        // $('#inacbgFinalButtonsSection').show();
+        performFinalInacbg();
+    });
+    // $('#finalClaimBtn').on('click', function() {
+    //     $('#statusKlaimSection').show();
+    // });
+
+    // Special CMG dropdown change handlers
+    $(document).on('change', '#inacbgSpecialProcedure, #inacbgSpecialProsthesis, #inacbgSpecialInvestigation, #inacbgSpecialDrug', function() {
+        console.log('Special CMG selected:', $(this).val());
+        // Call API grouper stage 2 to update code and tariff based on selected special CMG
+        performInacbgStage2();
+    });
+
+
+    function performInacbgStage2() {
+        // Get nomor SEP
+        const nomorSep = $('#nosep').val();
+        if (!nomorSep) {
+            return;
+        }
+        
+        // Collect selected special CMG codes
+        const selectedCodes = [];
+        
+        // Get selected values from each dropdown
+        const specialProcedure = $('#inacbgSpecialProcedure').val();
+        const specialProsthesis = $('#inacbgSpecialProsthesis').val();
+        const specialInvestigation = $('#inacbgSpecialInvestigation').val();
+        const specialDrug = $('#inacbgSpecialDrug').val();
+        
+        // Add non-empty values to array
+        if (specialProcedure) selectedCodes.push(specialProcedure);
+        if (specialProsthesis) selectedCodes.push(specialProsthesis);
+        if (specialInvestigation) selectedCodes.push(specialInvestigation);
+        if (specialDrug) selectedCodes.push(specialDrug);
+        
+        console.log('Selected special CMG codes:', selectedCodes);
+        
+        // If no special CMG selected, reset to base tariff
+        if (selectedCodes.length === 0) {
+            resetToBaseTariff();
+            return;
+        }
+        
+        // Show processing message
+        showProcessingMessage('Sedang memproses INACBG Stage 2...');
+        
+        $.post(baseURL + '/vedika/performinacbgstage2?t=' + mlite.token, {
+          nomor_sep: nomorSep, 
+          special_cmg: selectedCodes.join('#')
+        } ,function(data) {
+          var data = JSON.parse(data);
+          console.log(data);
+          // tutup loader setelah alert
+          if(data.metadata.message=="Ok"){
+                hideProcessingMessage();
+                
+                console.log('INACBG Stage 2 response:', data);
+                
+                updateInacbgTariff(data);
+          }   
+          $('.loader-bridging').hide();
+          //$('#inacbgsModal').modal('toggle');
+        }).fail(function(){
+          hideProcessingMessage();
+          showErrorMessage('Error INACBG Stage 2: ' + error);
+          // jika gagal, pastikan loader ditutup agar tidak menggantung
+          $('.loader-bridging').hide();
+        });
+
+    }
+    
+    function updateInacbgTariff(data) {
+        console.log('Updating INACBG tariff with data:', data);
+        
+        // Handle different response structures
+        let responseInacbg = null;
+        
+        // Check if data has response_inacbg directly
+        if (data.response_inacbg) {
+            responseInacbg = data.response_inacbg;
+        } 
+        // Check if data is the response_inacbg object itself
+        else if (data.cbg || data.base_tariff || data.tariff) {
+            responseInacbg = data;
+        }
+        
+        if (responseInacbg) {
+            // Update CBG code and description
+            if (responseInacbg.cbg) {
+                $('#inacbgGroupingGroupCode').text(responseInacbg.cbg.code || '-');
+                $('#inacbgGroupingGroupDesc').text(responseInacbg.cbg.description || '-');
+                console.log('Updated CBG code:', responseInacbg.cbg.code);
+                console.log('Updated CBG description:', responseInacbg.cbg.description);
+            }
+            
+            // Update base tariff and total claim
+            const newTariff = responseInacbg.tariff || responseInacbg.base_tariff || '0';
+            $('#inacbgGroupingGroupAmount').text(formatCurrency(newTariff));
+            $('#inacbgTotalKlaim').text(formatCurrency(newTariff));
+            console.log('Updated tariff:', newTariff);
+            
+            // Update special CMG amounts based on dropdown selections
+            updateSpecialCmgAmounts(responseInacbg);
+            
+            console.log('INACBG tariff updated successfully');
+        } else {
+            console.error('No valid INACBG data found in response:', data);
+        }
+    }
+    
+    function updateSpecialCmgAmounts(responseInacbg) {
+        console.log('Updating special CMG amounts based on API response');
+        
+        // Reset all special amounts to 0
+        $('#inacbgSpecialProcedureAmount').text('Rp 0');
+        $('#inacbgSpecialProsthesisAmount').text('Rp 0');
+        $('#inacbgSpecialInvestigationAmount').text('Rp 0');
+        $('#inacbgSpecialDrugAmount').text('Rp 0');
+        
+        // Update amounts based on special_cmg data from API response
+        const specialCmg = responseInacbg.special_cmg || [];
+        
+        console.log('Special CMG from API response:', specialCmg);
+        
+        // Update amounts based on special CMG from API response
+        specialCmg.forEach(item => {
+            const amount = formatCurrency(item.tariff || '0');
+            
+            switch(item.type) {
+                case 'Special Procedure':
+                    $('#inacbgSpecialProcedureAmount').text(amount);
+                    console.log('Updated Special Procedure amount from API:', amount);
+                    break;
+                case 'Special Prosthesis':
+                    $('#inacbgSpecialProsthesisAmount').text(amount);
+                    console.log('Updated Special Prosthesis amount from API:', amount);
+                    break;
+                case 'Special Investigation':
+                    $('#inacbgSpecialInvestigationAmount').text(amount);
+                    console.log('Updated Special Investigation amount from API:', amount);
+                    break;
+                case 'Special Drug':
+                    $('#inacbgSpecialDrugAmount').text(amount);
+                    console.log('Updated Special Drug amount from API:', amount);
+                    break;
+            }
+        });
+        
+        // Calculate and update total claim
+        calculateTotalClaim();
+    }
+    
+    function calculateTotalClaim() {
+        // Get base tariff
+        const baseTariffText = $('#inacbgGroupingGroupAmount').text();
+        const baseTariff = parseInt(baseTariffText.replace(/[^\d]/g, '')) || 0;
+        
+        // Get special CMG amounts
+        const procedureAmount = parseInt($('#inacbgSpecialProcedureAmount').text().replace(/[^\d]/g, '')) || 0;
+        const prosthesisAmount = parseInt($('#inacbgSpecialProsthesisAmount').text().replace(/[^\d]/g, '')) || 0;
+        const investigationAmount = parseInt($('#inacbgSpecialInvestigationAmount').text().replace(/[^\d]/g, '')) || 0;
+        const drugAmount = parseInt($('#inacbgSpecialDrugAmount').text().replace(/[^\d]/g, '')) || 0;
+        
+        // Calculate total
+        const totalAmount = baseTariff + procedureAmount + prosthesisAmount + investigationAmount + drugAmount;
+        
+        // Update total claim
+        $('#inacbgTotalKlaim').text(formatCurrency(totalAmount.toString()));
+        
+        console.log('Total claim calculated:', {
+            baseTariff,
+            procedureAmount,
+            prosthesisAmount,
+            investigationAmount,
+            drugAmount,
+            totalAmount
+        });
+    }
+    
+    function resetToBaseTariff() {
+        // Reset all special amounts to 0
+        $('#inacbgSpecialProcedureAmount').text('Rp 0');
+        $('#inacbgSpecialProsthesisAmount').text('Rp 0');
+        $('#inacbgSpecialInvestigationAmount').text('Rp 0');
+        $('#inacbgSpecialDrugAmount').text('Rp 0');
+        
+        // Get base tariff from stored data
+        const baseTariff = $('#inacbgGroupingResults').data('baseTariff');
+        if (baseTariff) {
+            $('#inacbgGroupingGroupAmount').text(formatCurrency(baseTariff));
+            $('#inacbgTotalKlaim').text(formatCurrency(baseTariff));
+        }
+        
+        // Recalculate total claim
+        calculateTotalClaim();
+    }
+
+
+    function updateValidationStatus() {
+        const diagnosisCount = $('#diagnosisTableBody tr:not(:has(.empty-table))').length;
+        const procedureCount = $('#procedureTableBody tr:not(:has(.empty-table))').length;
+        
+        // Update diagnosis validation status
+        const diagnosisStatus = $('#diagnosisValidationStatus');
+        if (diagnosisCount < 1) {
+            diagnosisStatus.show().removeClass('valid');
+            diagnosisStatus.find('i').removeClass('fa-check-circle').addClass('fa-exclamation-triangle').css('color','#f0ad4e');
+        diagnosisStatus.find('small').text('Minimal 1 record').css('color','#f0ad4e');
+        } else {
+            diagnosisStatus.show().addClass('valid');
+            diagnosisStatus.find('i').removeClass('fa-exclamation-triangle').addClass('fa-check-circle').css('color','#5cb85c');
+        diagnosisStatus.find('small').text(`${diagnosisCount} record(s)`).css('color','#5cb85c');
+        }
+        
+        // Update procedure validation status
+        const procedureStatus = $('#procedureValidationStatus');
+            procedureStatus.show().addClass('valid');
+            procedureStatus.find('i').removeClass('fa-exclamation-triangle').addClass('fa-check-circle').css('color','#5cb85c');
+        procedureStatus.find('small').text(`${procedureCount} record(s)`).css('color','#5cb85c');
+    }
+
+    $(document).ready(function() {
+
+        var noSep = $('#nosep').val();
+        
+        var msg = JSON.parse('{$msg}');
+
+        if (msg && msg.metadata && msg.metadata.message) {
+            showSuccessMessage(msg.metadata.message);
+        }
+
+        updateValidationStatus();
+        loadSavedDiagnosisData(noSep);
+        loadSavedProcedureData(noSep);   
+
+        $.ajax({
+            url: baseURL + '/vedika/mliteeklaimlogs?nosep=' + noSep + '&t=' + mlite.token,
+            method: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                // console.log(JSON.parse(response));
+
+                if (response.success && Array.isArray(response.data)) {
+                    const idrgGrouper = response.data.find(function(item) {
+                        try {
+                            const req = JSON.parse(item.request_data);
+                            return (
+                                req.metadata &&
+                                req.metadata.method === 'grouper' &&
+                                req.metadata.grouper === 'idrg'
+                            );
+                        } catch (e) {
+                            console.error("Gagal parse request_data:", e);
+                            return false;
+                        }
+                    });
+
+                    if (idrgGrouper) {
+                        console.log("✅ IDRG Grouper:", idrgGrouper);
+                        let parsedResponse = null;
+                        let data_idrg_grouper_final_created = idrgGrouper.created_at || new Date().toLocaleString('id-ID');
+
+                        try {
+                            parsedResponse = JSON.parse(idrgGrouper.response_data);
+                        } catch (e) {
+                            console.error("Gagal parse response_data:", e);
+                        }
+
+                        if (parsedResponse && parsedResponse.metadata && parsedResponse.metadata.code === 200) {
+                            // Data iDRG final yang valid
+                            const data_idrg_grouper_final = parsedResponse.response_idrg;
+
+                            console.log("✅ IDRG Grouper Final:", data_idrg_grouper_final);
+
+                            displayIdrgGroupingResults(data_idrg_grouper_final, data_idrg_grouper_final_created);
+
+                            changeGroupingButtonToEdit();
+                            // $('#finalDrgSection').hide();
+                            $('#groupingStatusIndicator').show();
+
+                            const statusIndicator = $('#groupingStatusIndicator');
+                            statusIndicator
+                                .removeClass('alert-warning alert-danger')
+                                .addClass('bg-success')
+                                .html(`
+                                    <i class="fa fa-check-circle" style="margin-right:8px;padding: 10px;"></i>
+                                    <strong>Final iDRG:</strong> Telah diproses pada ${data_idrg_grouper_final_created}
+                                `);
+
+
+                            loadSavedInacbgDiagnosisData(noSep);
+                            loadSavedInacbgProcedureData(noSep);
+                            $('#inacbgSection').show();
+
+                        } else {
+                            console.warn("⚠️ Response iDRG tidak valid atau code != 200:", parsedResponse);
+                        }
+                    } else {
+                        console.warn("⚠️ Tidak ditemukan data grouper IDRG di response.");
+                    }
+
+                    const idrgGrouperFinal = response.data.find(function(item) {
+                        try {
+                            const req = JSON.parse(item.request_data);
+                            return (
+                                req.metadata &&
+                                req.metadata.method === 'idrg_grouper_final'
+                            );
+                        } catch (e) {
+                            console.error("Gagal parse request_data:", e);
+                            return false;
+                        }
+                    });
+
+                    console.log("✅ IDRG Grouper Final:", idrgGrouperFinal);
+
+                    if (idrgGrouperFinal) {
+
+                        try {
+                            parsedResponse = JSON.parse(idrgGrouperFinal.response_data);
+                        } catch (e) {
+                            console.error("Gagal parse response_data:", e);
+                        }
+
+                        if (parsedResponse && parsedResponse.metadata && parsedResponse.metadata.code === 200) {
+                            console.log("✅ IDRG Grouper Final:", idrgGrouperFinal);
+                            $('#finalDrgSection').hide();
+                        }
+                    }
+
+                    const inacbgGrouper = response.data.find(function(item) {
+                        try {
+                            const req = JSON.parse(item.request_data);
+                            return (
+                                req.metadata &&
+                                req.metadata.method === 'grouper' &&
+                                req.metadata.grouper === 'inacbg'
+                            );
+                        } catch (e) {
+                            console.error("Gagal parse request_data:", e);
+                            return false;
+                        }
+                    });
+
+                    if (inacbgGrouper) {
+                        console.log("✅ INACBG Grouper:", inacbgGrouper);
+                        let parsedResponse = null;
+                        let data_inacbg_grouper_final_created = inacbgGrouper.created_at || new Date().toLocaleString('id-ID');
+
+                        try {
+                            parsedResponse = JSON.parse(inacbgGrouper.response_data);
+                        } catch (e) {
+                            console.error("Gagal parse response_data:", e);
+                        }
+
+                        if (parsedResponse && parsedResponse.metadata && parsedResponse.metadata.code === 200) {
+                            // Data INACBG final yang valid
+                            const data_inacbg_grouper_final = parsedResponse.response_inacbg;
+
+                            console.log("✅ INACBG Grouper Final:", data_inacbg_grouper_final);
+
+                            displayInacbgGroupingResults(data_inacbg_grouper_final);
+
+                            const specialOptions = parsedResponse.special_cmg_option || [];
+                            populateSpecialOptions(specialOptions);
+
+
+                        } else {
+                            console.warn("⚠️ Response INACBG tidak valid atau code != 200:", parsedResponse);
+                        }
+                    } else {
+                        console.warn("⚠️ Tidak ditemukan data grouper INACBG di response.");
+                    }
+
+                    const inacbgGrouperFinal = response.data.find(function(item) {
+                        try {
+                            const req = JSON.parse(item.request_data);
+                            return (
+                                req.metadata &&
+                                req.metadata.method === 'inacbg_grouper_final'
+                            );
+                        } catch (e) {
+                            console.error("Gagal parse request_data:", e);
+                            return false;
+                        }
+                    });
+
+                    if (inacbgGrouperFinal) {
+
+                        try {
+                            parsedResponse = JSON.parse(inacbgGrouperFinal.response_data);
+                        } catch (e) {
+                            console.error("Gagal parse response_data:", e);
+                        }
+
+                        if (parsedResponse && parsedResponse.metadata && parsedResponse.metadata.code === 200) {
+                            console.log("✅ INACBG Grouper Final:", inacbgGrouperFinal);
+                            setInacbgGroupingReadOnly();
+                            $('#inacbgFinalDrgSection').hide();
+                            showInacbgFinalButtons();
+                            $('#inacbgGroupingStatus').html('<span class="badge bg-success">Final</span>');
+                        }
+                    }
+
+                    const claimFinal = response.data.find(function(item) {
+                        try {
+                            const req = JSON.parse(item.request_data);
+                            return (
+                                req.metadata &&
+                                req.metadata.method === 'claim_final'
+                            );
+                        } catch (e) {
+                            console.error("Gagal parse request_data:", e);
+                            return false;
+                        }
+                    });
+
+                    if (claimFinal) {
+
+                        try {
+                            parsedResponse = JSON.parse(claimFinal.response_data);
+                        } catch (e) {
+                            console.error("Gagal parse response_data:", e);
+                        }
+
+                        if (parsedResponse && parsedResponse.metadata && parsedResponse.metadata.code === 200) {
+                            console.log("✅ Claim Final:", claimFinal);
+                            showStatusKlaimLayout();
+                        }
+                    }                    
+
+                }
+
+            },
+            error: function(xhr, status, error) {
+                console.error('Error :', error);
+            }
+        });
+        console.log('{$noRawat}');
+    });
+        
+    // Initialize diagnosis Selectator (deferred until modal is shown)
+    (function(){
+        var strip_tags = function(str) { return (str + '').replace(/<\/?[^>]+(>|$)/g, '') };
+        var truncate_string = function(str, chars) { return $.trim(str).length <= chars ? str : $.trim(str.substr(0, chars)) + '…'; };
+ 
+        var initDiagnosisSelectator = function(selector){
+            var $select = $(selector);
+            if ($select.data('selectator')) { return; }
+            var lastResults = [];
+            
+            $select.selectator({
+                labels: { search: 'ICD - 10' },
+                delay: 300,
+                minSearchLength: 2,
+                valueField: 'value',
+                textField: 'text',
+                load: function (search, callback) {
+                    if (!search || search.length < 2) { callback([]); return; }
+                    $.ajax({
+                        url: baseURL + '/vedika/searchidrgcodes?t=' + mlite.token,
+                        dataType: 'json',
+                        data: { search: search, system: 'ICD_10_2010_IM', limit: 20, page: 1 },
+                        success: function (data) {
+                            if (!data.success) { callback([]); return; }
+                            lastResults = data.data || [];
+                            var options = lastResults.map(function(item){
+                                return {
+                                    value: item.code,
+                                    text: item.code + ' - ' + item.description,
+                                    code: item.code,
+                                    code2: item.code2,
+                                    description: item.description,
+                                    system: item.system,
+                                    validcode: item.validcode,
+                                    accpdx: item.accpdx,
+                                    asterisk: item.asterisk,
+                                    im: item.im,
+                                    subtitle: ''
+                                };
+                            });
+                            callback(options);
+                        },
+                        error: function(){ callback([]); }
+                    });
+                },
+                render: {
+                    option: function (_item, escape) {
+                        var invalidBadge = _item.validcode === 0 ? '<span class="label label-danger" style="margin-right:8px;">Tidak Valid</span>' : '';
+                        var accpdxBadge = _item.accpdx === 'Y' ? '<span class="label label-success" style="margin-right:8px;">ACCPDX</span>' :
+                                        _item.accpdx === 'N' ? '<span class="label label-warning" style="margin-right:8px;">Bukan PDX</span>' : '';
+                        var asteriskBadge = _item.asterisk === 1 ? '<span class="label label-info" style="margin-right:8px;">Asterisk (*)</span>' : '';
+                        var imBadge = _item.im === 1 ? '<span class="label label-default" style="margin-right:8px;">IM</span>' : '';
+                        
+                        return `
+                            <div class="selectator_option_title">${escape(_item.code || '')}
+                                <span style="margin-top:4px;float:right;">
+                                    ${invalidBadge}${accpdxBadge}${asteriskBadge}${imBadge}
+                                </span>
+                            </div>
+                            <div class="selectator_option_subtitle">${escape(_item.description || '')}</div>
+                        `;
+                    }
+                }
+            });
+
+            // Event handler per select berbeda
+            $select.off('change.idrg').on('change.idrg', function(){
+                var val = $(this).val();
+                var data = lastResults.find(it => String(it.code) === String(val));
+                if (!data) return;
+
+                // Validasi sesuai kebutuhan selector
+                if (data.validcode === 0) {
+                    showInvalidCodeNotification(data, selector, 'validcode');
+                    $(this).val(''); return;
+                }
+
+                const existingRows = $('#diagnosisTableBody tr:not(.empty-table)').length;
+                if (data.accpdx === 'N' && existingRows === 0) {
+                    showInvalidCodeNotification(data, selector, 'accpdx');
+                    $(this).val(''); return;
+                }
+
+                if (data.asterisk === 1 && existingRows === 0) {
+                    showInvalidCodeNotification(data, selector, 'asterisk');
+                    $(this).val(''); return;
+                }
+
+                var inacbg = (selector === '#inacbgDiagnosisSelect');
+                var tableId = inacbg ? 'inacbgDiagnosisTableBody' : 'diagnosisTableBody';
+                addDiagnosisToTable(data, tableId, inacbg);
+
+                $(this).val('');
+                updateValidationStatus();
+            });
+        };
+
+        var modal = $('#moduleModal');
+
+        if (modal.length) {
+            // Saat modal sudah terbuka (visible langsung)
+            if (modal.hasClass('in')) {
+                initDiagnosisSelectator('#diagnosisSelect');
+                initDiagnosisSelectator('#inacbgDiagnosisSelect');
+            } else {
+                // Saat modal belum terbuka
+                modal.one('shown.bs.modal', function() {
+                    initDiagnosisSelectator('#diagnosisSelect');
+                    initDiagnosisSelectator('#inacbgDiagnosisSelect');
+                });
+            }
+        } else {
+            // Jika tidak ada modal, inisiasi langsung
+            $(function(){
+                initDiagnosisSelectator('#diagnosisSelect');
+                initDiagnosisSelectator('#inacbgDiagnosisSelect');
+            });
+        }
+
+    })();
+
+    // Initialize procedure Selectator
+    (function(){
+        var initProcedureSelectator = function(selector){
+            var $select = $(selector);
+            if ($select.data('selectator')) return;
+
+            var lastResults = [];
+
+            $select.selectator({
+                labels: { search: 'Cari Prosedur' },
+                delay: 300,
+                minSearchLength: 2,
+                valueField: 'value',
+                textField: 'text',
+                load: function (search, callback) {
+                    if (!search || search.length < 2) { callback([]); return; }
+
+                    $.ajax({
+                        url: baseURL + '/vedika/searchidrgcodes?t=' + mlite.token,
+                        dataType: 'json',
+                        data: { search: search, system: 'ICD_9CM_2010_IM', limit: 20, page: 1 },
+                        success: function (data) {
+                            if (!data.success) { callback([]); return; }
+
+                            lastResults = data.data || [];
+                            var options = lastResults.map(function(item){
+                                return {
+                                    value: item.code,
+                                    text: item.code + ' - ' + item.description,
+                                    code: item.code,
+                                    code2: item.code2,
+                                    description: item.description,
+                                    system: item.system,
+                                    validcode: item.validcode,
+                                    accpdx: item.accpdx,
+                                    asterisk: item.asterisk,
+                                    im: item.im,
+                                    subtitle: ''
+                                };
+                            });
+                            callback(options);
+                        },
+                        error: function(){ callback([]); }
+                    });
+                },
+                render: {
+                    option: function (_item, escape) {
+                        var invalidBadge = _item.validcode === 0 ? '<span class="label label-danger" style="margin-right:8px;">Tidak Valid</span>' : '';
+                        var accpdxBadge = _item.accpdx === 'Y'
+                            ? '<span class="label label-success" style="margin-right:8px;">ACCPDX</span>'
+                            : (_item.accpdx === 'N' ? '<span class="label label-warning" style="margin-right:8px;">Bukan PDX</span>' : '');
+                        var asteriskBadge = _item.asterisk === 1 ? '<span class="label label-info" style="margin-right:8px;">Asterisk (*)</span>' : '';
+                        var imBadge = _item.im === 1 ? '<span class="label label-default" style="margin-right:8px;">IM</span>' : '';
+
+                        return `
+                            <div class="selectator_option_title">${escape(_item.code || '')}
+                                <span style="margin-top:4px;float:right;">
+                                    ${invalidBadge}${accpdxBadge}${asteriskBadge}${imBadge}
+                                </span>
+                            </div>
+                            <div class="selectator_option_subtitle">${escape(_item.description || '')}</div>
+                        `;
+                    }
+                }
+            });
+
+            // Handle change
+            $select.off('change.procedure').on('change.procedure', function(){
+                var val = $(this).val();
+                var data = lastResults.find(it => String(it.code) === String(val));
+                if (!data) return;
+
+                // Validasi
+                if (data.validcode === 0) {
+                    showInvalidCodeNotification(data, selector, 'validcode');
+                    $(this).val(''); return;
+                }
+
+                const existingRows = $('#procedureTableBody tr:not(.empty-table)').length;
+                if (data.accpdx === 'N' && existingRows === 0) {
+                    showInvalidCodeNotification(data, selector, 'accpdx');
+                    $(this).val(''); return;
+                }
+
+                if (data.asterisk === 1 && existingRows === 0) {
+                    showInvalidCodeNotification(data, selector, 'asterisk');
+                    $(this).val(''); return;
+                }
+
+                // ⬇️ deteksi apakah ini table INACBG
+                var isInacbg = (selector === '#inacbgProcedureSelect');
+                var tableId = isInacbg ? 'inacbgProcedureTableBody' : 'procedureTableBody';
+
+                // ⬇️ panggil fungsi dengan parameter yang benar
+                addProcedureToTable(data, tableId, isInacbg);
+                $(this).val('');
+                updateValidationStatus();
+            });
+        };
+
+        // Jalankan sesuai konteks modal
+        var modal = $('#moduleModal');
+        if (modal.length) {
+            if (modal.hasClass('in')) {
+                initProcedureSelectator('#procedureSelect');
+                initProcedureSelectator('#inacbgProcedureSelect');
+            } else {
+                modal.one('shown.bs.modal', function() {
+                    initProcedureSelectator('#procedureSelect');
+                    initProcedureSelectator('#inacbgProcedureSelect');
+                });
+            }
+        } else {
+            $(function(){
+                initProcedureSelectator('#procedureSelect');
+                initProcedureSelectator('#inacbgProcedureSelect');
+            });
+        }
+    })();
+
+    function showSuccessMessage(message) {
+        const notification = `
+            <div class="alert alert-success alert-dismissible" style="position: absolute; top: 20px; right: 20px; z-index: 10000;">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <i class="fa fa-check-circle" style="margin-right:8px;"></i>
+                ${message}
+            </div>
+        `;
+        $('#idrgContainer').append(notification);
+        
+        setTimeout(function() {
+            $('.alert-success').fadeOut(300, function() {
+                $(this).remove();
+            });
+        }, 3000);
+    }
+    
+    function showProcessingMessage(message) {
+        const notification = `
+            <div class="alert alert-info alert-dismissible" style="position: absolute; top: 20px; right: 20px; z-index: 10000;">
+                <i class="fa fa-spinner fa-spin" style="margin-right:8px;"></i>
+                ${message}
+            </div>
+        `;
+        $('#idrgContainer').append(notification);
+        
+        setTimeout(function() {
+            $('.alert-info').fadeOut(300, function() {
+                $(this).remove();
+            });
+        }, 3000);
+    }
+    
+    function hideProcessingMessage() {
+        $('.alert-info').fadeOut(300, function() {
+            $(this).remove();
+        });
+    }
+    
+    function showErrorMessage(message) {
+        const $notification = $(`
+            <div class="alert alert-danger alert-dismissible" style="position: absolute; top: 20px; right: 20px; z-index: 10000; box-shadow: 0 6px 16px rgba(0,0,0,0.15);">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <i class="fa fa-exclamation-circle" style="margin-right:8px;"></i>
+                ${message}
+            </div>
+        `);
+        $notification.hide();
+        $('#idrgContainer').append($notification);
+        $notification.fadeIn(150);
+        
+        // Auto dismiss after 5s
+        setTimeout(function() {
+            $notification.fadeOut(300, function() {
+                $(this).remove();
+            });
+        }, 5000);
+    }
+
+    function showInvalidCodeNotification(data, type, reason) {
+            // Clear any existing notifications
+            $('.invalid-code-notification').remove();
+            
+            var typeText = type === 'diagnosa' ? 'Diagnosa' : 'Prosedur';
+            var title, message;
+            
+            if (reason === 'validcode') {
+                title = `Kode ${typeText} Tidak Valid!`;
+                message = `Kode <strong>${data.code}</strong> tidak dapat dipilih karena status validcode = 0`;
+                        } else if (reason === 'accpdx') {
+                title = `Kode ${typeText} Tidak Bisa Jadi Diagnosa Primer!`;
+                message = `Kode <strong>${data.code}</strong> tidak dapat dipilih karena status ACCPDX = N (bukan diagnosa primer)`;
+            } else if (reason === 'asterisk') {
+                title = `Kode ${typeText} Asterisk Tidak Bisa Jadi Diagnosa Primer!`;
+                message = `Kode <strong>${data.code}</strong> tidak dapat dipilih karena merupakan kode asterisk (*)`;
+            } else {
+                title = `Kode ${typeText} Tidak Valid!`;
+                message = `Kode <strong>${data.code}</strong> tidak dapat dipilih`;
+            }
+            
+            var $notification = $(`
+                <div class="alert alert-danger invalid-code-notification" style="position: absolute; top: 20px; right: 20px; z-index: 10000; box-shadow: 0 6px 16px rgba(0,0,0,0.15);">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div style="display:inline-block;">
+                    <i class="fa fa-exclamation-triangle" style="margin-right:8px;"></i>
+                    <div style="display:inline-block; vertical-align:middle;">
+                        <strong>${title}</strong><br>
+                        <small>${message}</small>
+                    </div>
+                </div>
+                </div>
+            `);
+        
+        $notification.hide();
+        $('#idrgContainer').append($notification);
+        $notification.fadeIn(150);
+        
+        // Auto remove after 5 seconds
+        setTimeout(function() {
+            $notification.fadeOut(300, function() {
+                $(this).remove();
+            });
+        }, 5000);
+    }
+
+    function loadSavedDiagnosisData(noSep) {
+        $.ajax({
+            url: baseURL + '/vedika/mliteeklaimlogs?nosep=' + noSep + '&t=' + mlite.token,
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                // console.log("Raw response iDRG:", response);
+
+                if (response.success && Array.isArray(response.data)) {
+                    
+                    // cari entry response_data dengan method = idrg_diagnosa_set
+                    const found = response.data.find(item => {
+                        try {
+                            const res = JSON.parse(item.request_data);
+                            return res?.metadata?.method === "idrg_diagnosa_set";
+                        } catch (e) {
+                            // console.error("Gagal parse request_data:", e);
+                            return false;
+                        }
+                    });
+
+                    if (!found) {
+                        // console.log("Tidak ditemukan method idrg_diagnosa_set");
+                        return;
+                    }
+
+                    const parsed = JSON.parse(found.response_data);
+                    const expanded = parsed?.data?.expanded ?? [];
+
+                    console.log("expanded idrg diagnosis:", expanded);
+
+                    // Clear existing table
+                    $('#diagnosisTableBody').empty();
+
+                    expanded.forEach(diagnosis => {
+                        const data = {
+                            code: diagnosis.code || "",
+                            display: diagnosis.display || "",
+                            validcode: diagnosis.validcode || "",
+                            accpdx: diagnosis.no || "",
+                            asterisk: "",
+                            im: "",
+                        };
+
+                        addDiagnosisToTable(data);
+                    });
+
+                    updateValidationStatus();
+                    // console.log("Loaded saved diagnosis data:", expanded);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading saved diagnosis data:', error);
+                // Update validation status even on error
+                updateValidationStatus();
+            }
+        });
+    }
+    
+    function loadSavedProcedureData(noSep) {
+        $.ajax({
+            url: baseURL + '/vedika/mliteeklaimlogs?nosep=' + noSep + '&t=' + mlite.token,
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                // console.log("Raw response procedure:", response);
+
+                // VALIDASI data
+                if (!response || !Array.isArray(response.data)) {
+                    console.warn("Response data tidak valid");
+                    return;
+                }
+
+                // CARI item yang memiliki method = idrg_procedure_set
+                const found = response.data.find(item => {
+                    try {
+                        const parsed = JSON.parse(item.request_data);
+                        return parsed?.metadata?.method === "idrg_procedure_set";
+                    } catch (e) {
+                        console.error("Gagal parse request_data:", e);
+                        return false;
+                    }
+                });
+
+                // console.log("found:", found);
+
+                if (!found) {
+                    console.warn("Data idrg_procedure_set tidak ditemukan");
+                    return;
+                }
+
+                // Ambil response_data
+                let parsedResponse = {};
+                try {
+                    parsedResponse = JSON.parse(found.response_data);
+                } catch (e) {
+                    console.error("Gagal parse response_data:", e);
+                    return;
+                }
+
+                const expanded = parsedResponse?.data?.expanded ?? [];
+
+                // console.log("expanded:", expanded);
+
+                // Clear table
+                $("#procedureTableBody").empty();
+
+                expanded.forEach(procedure => {
+                    const data = {
+                        code: procedure.code || "",
+                        display: procedure.display || "",
+                        validcode: procedure.validcode || "",
+                        accpdx: procedure.no || "",
+                    };
+
+                    addProcedureToTable(data);
+                });
+
+                updateValidationStatus();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading saved procedure data:', error);
+                // Update validation status even on error
+                updateValidationStatus();
+            }
+        });
+    }
+
+    function loadSavedInacbgDiagnosisData(noSep) {
+        $.ajax({
+            url: baseURL + '/vedika/mliteeklaimlogs?nosep=' + noSep + '&t=' + mlite.token,
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                console.log("Raw response inacbg:", response);
+
+                if (response.success && Array.isArray(response.data)) {
+                    
+                    // cari entry request_data dengan method = inacbg_diagnosa_set
+                    const found = response.data.find(item => {
+                        try {
+                            const res = JSON.parse(item.request_data);
+                            return res?.metadata?.method === "idrg_to_inacbg_import";
+                        } catch (e) {
+                            console.error("Gagal parse request_data:", e);
+                            return false;
+                        }
+                    });
+
+                    if (!found) {
+                        console.log("Tidak ditemukan method idrg_to_inacbg_import");
+                        return;
+                    }
+
+                    const parsed = JSON.parse(found.response_data);
+                    const expandedDiagnosa = parsed?.data?.diagnosa?.expanded ?? [];
+
+                    console.log("expanded inacbgs:", expandedDiagnosa);
+
+                    // Clear existing table
+                    $('#inacbgDiagnosisTableBody').empty();
+
+                    expandedDiagnosa.forEach(diagnosis => {
+                        const data = {
+                            code: diagnosis.code || "",
+                            display: diagnosis.display || "",
+                            validcode: diagnosis.validcode || "",
+                            accpdx: diagnosis.no || "",
+                            asterisk: "",
+                            im: "",
+                        };
+
+                        addDiagnosisToTable(data, 'inacbgDiagnosisTableBody', true);
+                    });
+
+                    updateValidationStatus();
+                    console.log("Loaded saved diagnosis data:", expandedDiagnosa);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading saved diagnosis data:', error);
+                // Update validation status even on error
+                updateValidationStatus();
+            }
+        });
+    }
+    
+    function loadSavedInacbgProcedureData(noSep) {
+        $.ajax({
+            url: baseURL + '/vedika/mliteeklaimlogs?nosep=' + noSep + '&t=' + mlite.token,
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                console.log("Raw response procedure inacbg:", response);
+
+                // VALIDASI data
+                if (!response || !Array.isArray(response.data)) {
+                    console.warn("Response data tidak valid");
+                    return;
+                }
+
+                // CARI item yang memiliki method = inacbg_procedure_set
+                const found = response.data.find(item => {
+                    try {
+                        const parsed = JSON.parse(item.request_data);
+                        return parsed?.metadata?.method === "idrg_to_inacbg_import";
+                    } catch (e) {
+                        console.error("Gagal parse request_data:", e);
+                        return false;
+                    }
+                });
+
+                console.log("found:", found);
+
+                if (!found) {
+                    console.warn("Data idrg_to_inacbg_import tidak ditemukan");
+                    return;
+                }
+
+                const parsed = JSON.parse(found.response_data);
+                const expandedProcedure = parsed?.data?.procedure?.expanded ?? [];
+
+                console.log("expanded inacbgs:", expandedProcedure);
+
+                // Clear table
+                $("#inacbgProcedureTableBody").empty();
+
+                expandedProcedure.forEach(procedure => {
+                    const data = {
+                        code: procedure.code || "",
+                        display: procedure.display || "",
+                        validcode: procedure.validcode || "",
+                        accpdx: procedure.no || "",
+                    };
+
+                    addProcedureToTable(data, 'inacbgProcedureTableBody', true);
+                });
+
+                updateValidationStatus();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading saved procedure data:', error);
+                // Update validation status even on error
+                updateValidationStatus();
+            }
+        });
+    }
+
+    // Generic function untuk menambah diagnosa ke tabel
+    function addDiagnosisToTable(data, tableId = 'diagnosisTableBody', isInacbg = false) {
+        var tbody = $(`#${tableId}`);
+        console.log('Adding diagnosis to table:', data);
+        // Remove empty message if exists
+        tbody.find('.empty-table').closest('tr').remove();
+        
+        var rowCount = tbody.find('tr').length + 1;
+        var jenis = rowCount === 1 ? 'Primary' : 'Secondary';
+        
+        var newRow;
+        if (isInacbg) {
+            // Format untuk INACBG dengan styling yang sama dengan IDRG
+            const uniqueId = data.code || `inacbg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            const isValid = data.isValid !== false; // Default to true if not specified
+            const codeDisplay = data.code || ""; // Selalu tampilkan kode tanpa "(IM tidak berlaku)"
+            const descriptionDisplay = isValid ? data.display || "" : `${data.display || ""} <span style="color:#d9534f;">(IM tidak berlaku)</span>`;
+            
+            newRow = `
+                <tr data-id="${uniqueId}" data-accpdx="${data.accpdx || 'Y'}" data-asterisk="${data.asterisk || 0}" data-validcode="${data.validcode || 1}">
+                    <td><span class="label ${rowCount === 1 ? 'label-primary' : 'label-default'}">${rowCount === 1 ? 'Primary' : 'Secondary'}</span></td>
+                    <td><span class="code-badge">${codeDisplay}</span></td>
+                    <td>${descriptionDisplay}</td>
+                    <td>
+                        ${rowCount > 1 ? `<button class="" style="margin-right:8px;" onclick="makePrimaryInacbg('${uniqueId}', '${tableId}')" title="Jadikan Primary">
+                            <i class="fa fa-arrow-up"></i>
+                        </button>` : ''}
+                        <button class="btn-remove" onclick="removeTableRow(this, '${tableId}')">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        } else {
+            // Format untuk IDRG
+            const uniqueId = data.code || `idrg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            newRow = `
+                <tr data-id="${uniqueId}" data-accpdx="${data.accpdx || 'Y'}" data-asterisk="${data.asterisk || 0}" data-validcode="${data.validcode || 1}">
+                    <td><span class="label ${rowCount === 1 ? 'label-primary' : 'label-default'}">${jenis}</span></td>
+                    <td><span class="code-badge">${data.code || ""}</span></td>
+                    <td>${data.display || data.description || ""}</td>
+                    <td>
+                            ${rowCount > 1 && data.accpdx !== 'N' && data.asterisk !== 1 ? `<button class="" style="margin-right:8px;" onclick="makePrimary('${uniqueId}')" title="Jadikan Primary">
+                                <i class="fa fa-arrow-up"></i>
+                            </button>` : ''}
+                        <button class="btn-remove" onclick="removeDiagnosis('${data.code || ""}')">
+                            <i class="fa fa-trash"></i> 
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }
+        
+        tbody.append(newRow);
+    }
+
+    // Generic function untuk menambah prosedur ke tabel
+    function addProcedureToTable(data, tableId = 'procedureTableBody', isInacbg = false) {
+        var tbody = $(`#${tableId}`);
+        
+        // Remove empty message if exists
+        tbody.find('.empty-table').closest('tr').remove();
+        
+        var rowCount = tbody.find('tr').length + 1;
+        var jenis = rowCount === 1 ? 'Primary' : 'Secondary';
+        
+        var newRow;
+        if (isInacbg) {
+            // Format untuk INACBG tanpa quantity
+            const uniqueId = data.code || `inacbg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            const isValid = data.isValid !== false; // Default to true if not specified
+            const codeDisplay = data.code || ""; // Selalu tampilkan kode tanpa "(IM tidak berlaku)"
+            const descriptionDisplay = isValid ? data.display || "" : `${data.display || ""} <span style="color:#d9534f;">(IM tidak berlaku)</span>`;
+            
+            newRow = `
+                <tr data-id="${uniqueId}" data-accpdx="${data.accpdx || 'Y'}" data-asterisk="${data.asterisk || 0}" data-validcode="${data.validcode || 1}">
+                    <td><span class="label ${rowCount === 1 ? 'label-primary' : 'label-default'}">${rowCount === 1 ? 'Primary' : 'Secondary'}</span></td>
+                    <td><span class="code-badge">${codeDisplay}</span></td>
+                    <td>${descriptionDisplay}</td>
+                    <td>
+                            ${rowCount > 1 ? `<button class="" style="margin-right:8px;" onclick="makePrimaryInacbgProcedure('${uniqueId}', '${tableId}')" title="Jadikan Primary">
+                                <i class="fa fa-arrow-up"></i>
+                            </button>` : ''}
+                        <button class="btn-remove" onclick="removeTableRow(this, '${tableId}')">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        } else {
+            // Format untuk IDRG
+            newRow = `
+                <tr data-id="${data.code}" data-accpdx="${data.accpdx || 'Y'}" data-asterisk="${data.asterisk || 0}" data-validcode="${data.validcode || 1}">
+                    <td><span class="label ${rowCount === 1 ? 'label-primary' : 'label-default'}">${jenis}</span></td>
+                    <td><span class="code-badge">${data.code || ""}</span></td>
+                    <td>${data.display || data.description || ""}</td>
+                    <td>
+                        <input type="number" class="quantity-input" value="1" min="1" max="99">
+                    </td>
+                    <td>
+                            ${rowCount > 1 && data.accpdx !== 'N' && data.asterisk !== 1 ? `<button class="" style="margin-right:8px;" onclick="makePrimaryProcedure('${data.code || ""}')" title="Jadikan Primary">
+                                <i class="fa fa-arrow-up"></i>
+                            </button>` : ''}
+                        <button class="btn-remove" onclick="removeProcedure('${data.code || ""}')">
+                            <i class="fa fa-trash"></i> 
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }
+        
+        tbody.append(newRow);
+    }
+
+    function removeDiagnosis(id) {
+        var tbody = $('#diagnosisTableBody');
+        var targetRow = $('tr[data-id="' + id + '"]');
+        
+        // Check if this is a primary diagnosis being removed
+        var isPrimary = targetRow.find('td:nth-child(1) .label').text().trim() === 'Primary';
+        
+        // Remove the target row
+        targetRow.remove();
+        
+        // If primary diagnosis was removed, check for secondary diagnoses that can't become primary
+        if (isPrimary) {
+            checkAndRemoveInvalidSecondaryDiagnoses();
+        }
+        
+        renumberDiagnosisTable();
+        updateValidationStatus();
+    }
+    
+    // Generic function untuk menghapus row dari tabel
+    function removeTableRow(button, tableId) {
+        $(button).closest('tr').remove();
+        
+        // Show empty message if no rows left
+        const tableBody = $(`#${tableId}`);
+        if (tableBody.find('tr').length === 0) {
+            const colspan = tableId.includes('Procedure') ? 5 : 4;
+            const emptyMessage = tableId.includes('Procedure') ? 'Belum ada prosedur yang dipilih' : 'Belum ada diagnosa yang dipilih';
+            
+            tableBody.append(`
+                <tr>
+                    <td colspan="${colspan}" class="empty-table">
+                        <i class="fa fa-clipboard-list"></i>
+                        <p>${emptyMessage}</p>
+                    </td>
+                </tr>
+            `);
+        }
+    }
+    
+    function checkAndRemoveInvalidSecondaryDiagnoses() {
+        var tbody = $('#diagnosisTableBody');
+        var rows = tbody.find('tr:not(.empty-table)');
+        var removedDiagnoses = [];
+        
+        // Check if there are any remaining diagnoses
+        if (rows.length === 0) {
+            return;
+        }
+        
+        // Check if the first diagnosis can become primary
+        var firstRow = rows.first();
+        var firstAccpdx = firstRow.attr('data-accpdx');
+        var firstAsterisk = firstRow.attr('data-asterisk');
+        
+        // If the first diagnosis can become primary, no need to remove anything
+        if (firstAccpdx === 'Y' && firstAsterisk === '0') {
+            return;
+        }
+        
+        // If the first diagnosis can't become primary, remove all diagnoses that can't become primary
+        rows.each(function() {
+            var row = $(this);
+            var accpdx = row.attr('data-accpdx');
+            var asterisk = row.attr('data-asterisk');
+            var code = row.find('td:nth-child(2) .code-badge').text();
+            var description = row.find('td:nth-child(3)').text();
+            
+            // Check if this diagnosis can't become primary
+            if (accpdx === 'N' || asterisk === '1') {
+                removedDiagnoses.push({
+                    code: code,
+                    description: description,
+                    reason: accpdx === 'N' ? 'accpdx=N' : 'asterisk=1'
+                });
+                row.remove();
+            }
+        });
+        
+        // Show notification if any diagnoses were removed
+        if (removedDiagnoses.length > 0) {
+            var message = 'Diagnosa berikut dihapus karena tidak dapat dijadikan primary diagnosis:\n\n';
+            removedDiagnoses.forEach(function(diagnosis) {
+                message += `• ${diagnosis.code} - ${diagnosis.description} (${diagnosis.reason})\n`;
+            });
+            message += '\nDiagnosa dengan accpdx=N atau asterisk=1 tidak dapat menjadi primary diagnosis.';
+            
+            showError(message);
+        }
+    }
+        
+    function makePrimary(id) {
+        var tbody = $('#diagnosisTableBody');
+        var targetRow = $('tr[data-id="' + id + '"]');
+        
+        if (targetRow.length > 0) {
+            // Check if the diagnosis has accpdx=N or asterisk=1 (not allowed for primary)
+            var accpdx = targetRow.attr('data-accpdx');
+            var asterisk = targetRow.attr('data-asterisk');
+            
+            if (accpdx === 'N') {
+                showError('Diagnosa dengan accpdx=N tidak dapat dijadikan primary diagnosis');
+                return;
+            }
+            
+            if (asterisk === '1') {
+                showError('Diagnosa dengan asterisk=1 (kode asterisk) tidak dapat dijadikan primary diagnosis');
+                return;
+            }
+            
+            // Move the target row to the top
+            tbody.prepend(targetRow);
+            
+            // Renumber all rows
+            renumberDiagnosisTable();
+            
+            // Show success message
+            showSuccessMessage('Diagnosa berhasil dijadikan primary!');
+        }
+    }
+    
+    function makePrimaryProcedure(id) {
+        var tbody = $('#procedureTableBody');
+        var targetRow = $('tr[data-id="' + id + '"]');
+        
+        if (targetRow.length > 0) {
+            // Check if the procedure has accpdx=N or asterisk=1 (not allowed for primary)
+            var accpdx = targetRow.attr('data-accpdx');
+            var asterisk = targetRow.attr('data-asterisk');
+            
+            if (accpdx === 'N') {
+                showError('Prosedur dengan accpdx=N tidak dapat dijadikan primary procedure');
+                return;
+            }
+            
+            if (asterisk === '1') {
+                showError('Prosedur dengan asterisk=1 (kode asterisk) tidak dapat dijadikan primary procedure');
+                return;
+            }
+            
+            // Move the target row to the top
+            tbody.prepend(targetRow);
+            
+            // Renumber all rows
+            renumberProcedureTable();
+            
+            // Show success message
+            showSuccessMessage('Prosedur berhasil dijadikan primary!');
+        }
+    }
+
+    // Fungsi untuk membuat diagnosa INACBG menjadi primary
+    function makePrimaryInacbg(id, tableId) {
+        const tbody = $(`#${tableId}`);
+        const targetRow = tbody.find(`tr[data-id="${id}"]`);
+        
+        if (targetRow.length > 0) {
+            // Move target row to top
+            targetRow.prependTo(tbody);
+            
+            // Update badge labels
+            tbody.find('tr').each(function(index) {
+                const badge = $(this).find('.label');
+                const jenis = index === 0 ? 'Primary' : 'Secondary';
+                const badgeClass = index === 0 ? 'label-primary' : 'label-default';
+                badge.removeClass('label-primary label-default').addClass(badgeClass).text(jenis);
+                
+                // Update primary button visibility
+                const primaryBtn = $(this).find('button[onclick*="makePrimaryInacbg"]');
+                if (index === 0) {
+                    primaryBtn.hide();
+                } else {
+                    primaryBtn.show();
+                }
+            });
+        }
+    }
+    
+    // Fungsi untuk membuat prosedur INACBG menjadi primary    
+    function makePrimaryInacbgProcedure(id, tableId) {
+        const tbody = $(`#${tableId}`);
+        const targetRow = tbody.find(`tr[data-id="${id}"]`);
+        
+        if (targetRow.length > 0) {
+            // Move target row to top
+            targetRow.prependTo(tbody);
+            
+            // Update badge labels
+            tbody.find('tr').each(function(index) {
+                const badge = $(this).find('.label');
+                const jenis = index === 0 ? 'Primary' : 'Secondary';
+                const badgeClass = index === 0 ? 'label-primary' : 'label-default';
+                badge.removeClass('label-primary label-default').addClass(badgeClass).text(jenis);
+                
+                // Update primary button visibility
+                const primaryBtn = $(this).find('button[onclick*="makePrimaryInacbgProcedure"]');
+                if (index === 0) {
+                    primaryBtn.hide();
+                } else {
+                    primaryBtn.show();
+                }
+            });
+        }
+    }
+
+    function removeProcedure(id) {
+        var tbody = $('#procedureTableBody');
+        var targetRow = $('tr[data-id="' + id + '"]');
+        
+        // Check if this is a primary procedure being removed
+        var isPrimary = targetRow.find('td:nth-child(1) .label').text().trim() === 'Primary';
+        
+        // Remove the target row
+        targetRow.remove();
+        
+        // If primary procedure was removed, check for secondary procedures that can't become primary
+        if (isPrimary) {
+            checkAndRemoveInvalidSecondaryProcedures();
+        }
+        
+        renumberProcedureTable();
+        updateValidationStatus();
+    }
+    
+    function checkAndRemoveInvalidSecondaryProcedures() {
+        var tbody = $('#procedureTableBody');
+        var rows = tbody.find('tr:not(.empty-table)');
+        var removedProcedures = [];
+        
+        // Check if there are any remaining procedures
+        if (rows.length === 0) {
+            return;
+        }
+        
+        // Check if the first procedure can become primary
+        var firstRow = rows.first();
+        var firstAccpdx = firstRow.attr('data-accpdx');
+        var firstAsterisk = firstRow.attr('data-asterisk');
+        
+        // If the first procedure can become primary, no need to remove anything
+        if (firstAccpdx === 'Y' && firstAsterisk === '0') {
+            return;
+        }
+        
+        // If the first procedure can't become primary, remove all procedures that can't become primary
+        rows.each(function() {
+            var row = $(this);
+            var accpdx = row.attr('data-accpdx');
+            var asterisk = row.attr('data-asterisk');
+            var code = row.find('td:nth-child(2) .code-badge').text();
+            var description = row.find('td:nth-child(3)').text();
+            
+            // Check if this procedure can't become primary
+            if (accpdx === 'N' || asterisk === '1') {
+                removedProcedures.push({
+                    code: code,
+                    description: description,
+                    reason: accpdx === 'N' ? 'accpdx=N' : 'asterisk=1'
+                });
+                row.remove();
+            }
+        });
+        
+        // Show notification if any procedures were removed
+        if (removedProcedures.length > 0) {
+            var message = 'Prosedur berikut dihapus karena tidak dapat dijadikan primary procedure:\n\n';
+            removedProcedures.forEach(function(procedure) {
+                message += `• ${procedure.code} - ${procedure.description} (${procedure.reason})\n`;
+            });
+            message += '\nProsedur dengan accpdx=N atau asterisk=1 tidak dapat menjadi primary procedure.';
+            
+            showError(message);
+        }
+    }
+
+    function renumberDiagnosisTable() {
+        var tbody = $('#diagnosisTableBody');
+        var rows = tbody.find('tr');
+        
+        if (rows.length === 0) {
+            tbody.html(`
+                <tr>
+                    <td colspan="4" class="empty-table">
+                        <i class="fa fa-clipboard-list"></i>
+                        <p>Belum ada diagnosa yang dipilih</p>
+                    </td>
+                </tr>
+            `);
+            return;
+        }
+        
+        rows.each(function(index) {
+            var row = $(this);
+            var rowNumber = index + 1;
+            
+            // Update jenis (Primary/Secondary)
+            var jenisCell = row.find('td:nth-child(1)');
+            var jenis = rowNumber === 1 ? 'Primary' : 'Secondary';
+            var badgeClass = rowNumber === 1 ? 'label-primary' : 'label-default';
+            
+            jenisCell.html(`<span class="label ${badgeClass}">${jenis}</span>`);
+                
+                // Update action buttons
+                var actionCell = row.find('td:nth-child(4)');
+                var dataId = row.attr('data-id');
+                
+                if (rowNumber === 1) {
+                    // Primary diagnosis - only remove button
+                    actionCell.html(`
+                        <button class="btn-remove" onclick="removeDiagnosis('${dataId}')">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    `);
+                } else {
+                    // Secondary diagnosis - check if accpdx=N or asterisk=1
+                    var accpdx = row.attr('data-accpdx');
+                    var asterisk = row.attr('data-asterisk');
+                    var makePrimaryButton = '';
+                    
+                    if (accpdx !== 'N' && asterisk !== '1') {
+                        makePrimaryButton = `
+                        <button class="" style="margin-right:8px;" onclick="makePrimary('${dataId}')" title="Jadikan Primary">
+                            <i class="fa fa-arrow-up"></i>
+                        </button>
+                        `;
+                    }
+                    
+                    actionCell.html(`
+                        ${makePrimaryButton}
+                        <button class="btn-remove" onclick="removeDiagnosis('${dataId}')">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    `);
+                }
+        });
+    }
+
+    function renumberProcedureTable() {
+        var tbody = $('#procedureTableBody');
+        var rows = tbody.find('tr');
+        
+        if (rows.length === 0) {
+            tbody.html(`
+                <tr>
+                    <td colspan="5" class="empty-table">
+                        <i class="fa fa-tools"></i>
+                        <p>Belum ada prosedur yang dipilih</p>
+                    </td>
+                </tr>
+            `);
+            return;
+        }
+        
+        rows.each(function(index) {
+            var row = $(this);
+            var rowNumber = index + 1;
+            
+            // Update jenis (Primary/Secondary)
+            var jenisCell = row.find('td:nth-child(1)');
+            var jenis = rowNumber === 1 ? 'Primary' : 'Secondary';
+            var badgeClass = rowNumber === 1 ? 'label-primary' : 'label-default';
+            
+            jenisCell.html(`<span class="label ${badgeClass}">${jenis}</span>`);
+                
+            // Update action buttons
+            var actionCell = row.find('td:nth-child(5)');
+            var dataId = row.attr('data-id');
+            
+            if (rowNumber === 1) {
+                // Primary procedure - only remove button
+                actionCell.html(`
+                    <button class="btn-remove" onclick="removeProcedure('${dataId}')">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                `);
+            } else {
+                // Secondary procedure - check if accpdx=N or asterisk=1
+                var accpdx = row.attr('data-accpdx');
+                var asterisk = row.attr('data-asterisk');
+                var makePrimaryButton = '';
+                
+                if (accpdx !== 'N' && asterisk !== '1') {
+                    makePrimaryButton = `
+                    <button class="" style="margin-right:4px;" onclick="makePrimaryProcedure('${dataId}')" title="Jadikan Primary">
+                        <i class="fa fa-arrow-up"></i>
+                    </button>
+                    `;
+                }
+                
+                actionCell.html(`
+                    ${makePrimaryButton}
+                    <button class="btn-remove" onclick="removeProcedure('${dataId}')">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                `);
+            }
+        });
+    }    
+
+    function changeGroupingButtonToEdit() {
+        const grouperBtn = $('#grouperBtn');
+        grouperBtn.html('<i class="fa fa-edit" style="margin-right:4px;"></i>Edit Ulang iDRG');
+        grouperBtn.removeClass('btn-primary').addClass('btn-warning');
+        grouperBtn.off('click').on('click', function() {
+            // Call re-edit API first
+            performIdrgReedit();
+        });
+    }
+    
+    function performIdrgReedit() {
+        const nomorSep = $('#nosep').val();
+        if (!nomorSep) {
+            showErrorMessage('Nomor SEP tidak ditemukan!');
+            return;
+        }
+        
+        showProcessingMessage('Sedang melakukan re-edit iDRG...');
+        $('#grouperBtn').prop('disabled', true);
+        
+        $.ajax({
+            url: baseURL + '/vedika/idrggrouperreedit?t=' + mlite.token,
+            method: 'POST',
+            data: { nomor_sep: nomorSep },
+            success: function(response) {
+                hideProcessingMessage();
+                $('#grouperBtn').prop('disabled', false);
+                
+                showSuccessMessage('Re-edit iDRG berhasil! Form sekarang dapat diedit.');
+                
+                // Re-enable form for editing
+                // enableFormForEditing();
+                
+                // Change button back to Grouping
+                const grouperBtn = $('#grouperBtn');
+                grouperBtn.html('<i class="fa fa-cogs" style="margin-right:4px;"></i>Grouping');
+                grouperBtn.removeClass('btn-warning').addClass('btn-primary');
+                grouperBtn.off('click').on('click', processIDRG);
+                
+                // Hide INACBG section
+                $('#inacbgSection').hide();
+                
+                // Hide grouping results
+                $('#groupingResults').hide();
+                
+                // Hide final iDRG section
+                $('#finalDrgSection').hide();
+
+                $('#inacbgGroupingResults').hide();
+                    
+            },
+            error: function(xhr, status, error) {
+                hideProcessingMessage();
+                $('#grouperBtn').prop('disabled', false);
+                showErrorMessage('Error saat melakukan re-edit iDRG: ' + error);
+            }
+        });
+
+    }
+
+    function performFinalInacbg() {
+        // Get nomor SEP
+        const nomorSep = $('#nosep').val();
+        if (!nomorSep) {
+            alert('Nomor SEP tidak ditemukan');
+            return;
+        }
+        
+        // Show confirmation dialog
+        if (!confirm('Apakah Anda yakin ingin melakukan Final INACBG? Tindakan ini akan mengunci hasil grouping.')) {
+            return;
+        }
+        
+        // Show processing message
+        showProcessingMessage('Sedang memproses Final INACBG...');
+                
+        $.ajax({
+            url: baseURL + '/vedika/performfinalinacbg?t=' + mlite.token,
+            method: 'POST',
+            data: { nomor_sep: nomorSep },
+            success: function(response) {
+                    showSuccessMessage('Final INACBG berhasil dilakukan!');
+                    setInacbgGroupingReadOnly();
+                    $('#inacbgFinalDrgSection').hide();
+                    showInacbgFinalButtons();
+                    $('#inacbgGroupingStatus').html('<span class="badge bg-success">Final</span>');
+                    $('html, body').animate({
+                        scrollTop: $('#inacbgGroupingResults').offset().top - 100
+                    }, 500);
+            },
+            error: function(xhr, status, error) {
+                hideProcessingMessage();
+                $('#grouperBtn').prop('disabled', false);
+                showErrorMessage('Error saat melakukan re-edit iDRG: ' + error);
+            }
+        });
+
+    }
+    
+    function setInacbgGroupingReadOnly() {
+        // Disable all dropdowns in INACBG grouping results
+        $('#inacbgSpecialProcedure').prop('disabled', true).addClass('bg-light');
+        $('#inacbgSpecialProsthesis').prop('disabled', true).addClass('bg-light');
+        $('#inacbgSpecialInvestigation').prop('disabled', true).addClass('bg-light');
+        $('#inacbgSpecialDrug').prop('disabled', true).addClass('bg-light');
+        
+        // Add visual indicator that the section is read-only
+        $('#inacbgGroupingResults .card-header').addClass('bg-success').removeClass('bg-info');
+        $('#inacbgGroupingResults .card-title').html('<i class="fas fa-lock me-2"></i>Hasil Grouping INACBG (Final)');
+        
+        // Add read-only indicator
+        if (!$('#inacbgReadOnlyIndicator').length) {
+            $('#inacbgGroupingResults .card-body').prepend(
+                '<div id="inacbgReadOnlyIndicator" class="alert alert-info mb-3">' +
+                '<i class="fas fa-info-circle me-2"></i>' +
+                'Hasil grouping telah difinalisasi dan tidak dapat diubah lagi.' +
+                '</div>'
+            );
+        }
+    }
+    
+    function showInacbgFinalButtons() {
+        // Create buttons section if it doesn't exist
+        if (!$('#inacbgFinalButtonsSection').length) {
+            const buttonsHtml = `
+                <div id="inacbgFinalButtonsSection" class="card mt-3">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button type="button" class="btn btn-warning" id="inacbgReeditBtn">
+                                    <i class="fas fa-edit"></i>Edit Ulang INACBG
+                                </button>
+                                <button type="button" class="btn btn-success pull-right" id="finalClaimBtn">
+                                    <i class="fas fa-check-double"></i>Final Klaim
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Insert after INACBG grouping results
+            $('#inacbgGroupingResults').after(buttonsHtml);
+            
+            // Bind click events
+            // $('#inacbgReeditBtn').on('click', performInacbgReedit);
+            // $('#finalClaimBtn').on('click', performFinalClaim);
+        } else {
+            // Show existing buttons section
+            $('#inacbgFinalButtonsSection').show();
+        }
+    }
+
+    // Delegated handlers (jalankan saat script load)
+    $(document).on('click', '#inacbgReeditBtn', function (e) {
+        e.preventDefault();
+        console.log('inacbgReeditBtn clicked');
+        performInacbgReedit();
+    });
+
+    $(document).on('click', '#finalClaimBtn', function (e) {
+        e.preventDefault();
+        console.log('finalClaimBtn clicked');
+        performFinalClaim();
+    });
+
+    $(document).on('click', '#cetakKlaimBtn', function (e) {
+        e.preventDefault();
+        console.log('cetakKlaimBtn clicked');
+        performCetakKlaim();
+    });
+
+    $(document).on('click', '#kirimKlaimOnlineBtn', function (e) {
+        e.preventDefault();
+        console.log('kirimKlaimOnlineBtn clicked');
+        performKirimKlaimOnline();
+    });
+
+    $(document).on('click', '#editUlangKlaimBtn', function (e) {
+        e.preventDefault();
+        console.log('editUlangKlaimBtn clicked');
+        performEditUlangKlaim();
+    });
+
+    function performInacbgReedit() {
+        const nomorSep = $('#nosep').val();
+        alert(nomorSep);
+        if (!nomorSep) {
+            alert('Nomor SEP tidak ditemukan');
+            return;
+        }
+        
+        if (!confirm('Apakah Anda yakin ingin melakukan Edit Ulang INACBG? Ini akan membuka kembali form untuk diedit.')) {
+            return;
+        }
+        
+        showProcessingMessage('Sedang memproses Edit Ulang INACBG...');
+        
+        $.ajax({
+            url: baseURL + '/vedika/performinacbgreedit?t=' + mlite.token,
+            method: 'POST',
+            data: { nomor_sep: nomorSep },
+            success: function(response) {
+                    showSuccessMessage('Edit Ulang INACBG berhasil dilakukan!');
+                    setInacbgGroupingEditable();
+                    $('#inacbgFinalButtonsSection').hide();
+                    $('#inacbgFinalDrgSection').show();
+                    $('#inacbgGroupingStatus').html('<span class="badge bg-warning">Dapat Diedit</span>');
+            },
+            error: function(xhr, status, error) {
+                hideProcessingMessage();
+                $('#inacbgReeditBtn').prop('disabled', false);
+                showErrorMessage('Error saat melakukan re-edit iDRG: ' + error);
+            }
+        });
+
+    }
+    
+    function performFinalClaim() {
+        const nomorSep = $('#nosep').val();
+        if (!nomorSep) {
+            alert('Nomor SEP tidak ditemukan');
+            return;
+        }
+        
+        if (!confirm('Apakah Anda yakin ingin melakukan Final Klaim? Ini akan menyelesaikan seluruh proses klaim.')) {
+            return;
+        }
+        
+        showProcessingMessage('Sedang memproses Final Klaim...');
+                
+        $.ajax({
+            url: baseURL + '/vedika/performfinalclaim?t=' + mlite.token,
+            method: 'POST',
+            data: { nomor_sep: nomorSep },
+            success: function(response) {
+                    showSuccessMessage('Final Klaim berhasil dilakukan!');
+                    setEntireFormReadOnly();
+                    showStatusKlaimLayout();
+                    $('#inacbgGroupingStatus').html('<span class="badge bg-success">Final Klaim</span>');
+                    $('#inacbgFinalButtonsSection').hide();
+                    $('#inacbgReeditBtn').prop('disabled', false);
+                    $('#finalClaimBtn').prop('disabled', false);
+            },
+            error: function(xhr, status, error) {
+                hideProcessingMessage();
+                $('#finalClaimBtn').prop('disabled', false);
+                showErrorMessage('Error saat melakukan final klaim: ' + error);
+            }
+        });
+
+    }
+
+    function setInacbgGroupingEditable() {
+        // Re-enable all dropdowns in INACBG grouping results
+        $('#inacbgSpecialProcedure').prop('disabled', false).removeClass('bg-light');
+        $('#inacbgSpecialProsthesis').prop('disabled', false).removeClass('bg-light');
+        $('#inacbgSpecialInvestigation').prop('disabled', false).removeClass('bg-light');
+        $('#inacbgSpecialDrug').prop('disabled', false).removeClass('bg-light');
+        
+        // Remove visual indicator that the section is read-only
+        $('#inacbgGroupingResults .card-header').removeClass('bg-success').addClass('bg-info');
+        $('#inacbgGroupingResults .card-title').html('<i class="fa fa-calculator me-2"></i>Hasil Grouping INACBG');
+        
+        // Remove read-only indicator
+        $('#inacbgReadOnlyIndicator').remove();
+    }
+    
+    function setEntireFormReadOnly() {
+        // Disable all form inputs
+        $('#jaminanSelect').prop('disabled', true);
+        $('input[name="jenisRawat"]').prop('disabled', true);
+        $('#kelasRawatSelect').prop('disabled', true);
+        $('#dpjpInput').prop('readonly', true);
+        $('#noPeserta').prop('readonly', true);
+        $('#noSEP').prop('readonly', true);
+        $('#tanggalMasuk').prop('readonly', true);
+        $('#tanggalPulang').prop('readonly', true);
+        
+        // Disable all buttons
+        $('#grouperBtn').prop('disabled', true);
+        $('#finalDrgBtn').prop('disabled', true);
+        $('#reeditBtn').prop('disabled', true);
+        $('#inacbgGrouperBtn').prop('disabled', true);
+        $('#inacbgFinalDrgBtn').prop('disabled', true);
+        $('#inacbgReeditBtn').prop('disabled', true);
+        $('#finalClaimBtn').prop('disabled', true);
+        
+        // Add visual indicator
+        $('.card-header').addClass('bg-secondary').removeClass('bg-primary bg-info bg-success');
+        $('.card-title').prepend('<i class="fas fa-lock me-2"></i>');
+    }
+
+
+    function showStatusKlaimLayout() {
+        // Create Status Klaim layout if it doesn't exist
+        if (!$('#statusKlaimSection').length) {
+            const statusKlaimHtml = `
+                <div id="statusKlaimSection" class="card mt-3">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="card-title mb-0">
+                            <i class="fas fa-check-circle me-2"></i>Status Klaim
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="bg-success mb-3">
+                                    <h6 class="alert-heading">
+                                        <i class="fas fa-check-circle me-2"></i>Klaim Berhasil Difinalisasi
+                                    </h6>
+                                    <p class="mb-0">Klaim telah berhasil diproses dan siap untuk dikirim ke BPJS Kesehatan.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <button type="button" class="btn btn-outline-primary" id="cetakKlaimBtn">
+                                    <i class="fas fa-print me-2"></i>Cetak Klaim
+                                </button>
+                                <button type="button" class="btn btn-outline-success" id="kirimKlaimOnlineBtn">
+                                    <i class="fas fa-paper-plane me-2"></i>Kirim Klaim Online
+                                </button>
+                                <button type="button" class="btn btn-outline-warning pull-right" id="editUlangKlaimBtn">
+                                    <i class="fas fa-edit me-2"></i>Edit Ulang Klaim
+                                </button>                                
+                            </div>                                    
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Insert after INACBG grouping results
+            $('#inacbgGroupingResults').after(statusKlaimHtml);
+            
+            // Populate status data
+            populateStatusKlaimData();
+            
+            // Bind click events
+            
+        } else {
+            // Show existing status klaim section
+            $('#statusKlaimSection').show();
+        }
+    }
+
+    function populateStatusKlaimData() {
+        // Populate basic data
+        $('#statusKlaimSep').text($('#nosep').val());
+        $('#statusKlaimDate').text(new Date().toLocaleDateString('id-ID'));
+        $('#statusKlaimCoder').text('11111');
+        
+        // Count diagnosis and procedure from INACBG tables
+        const diagnosisCount = $('#inacbgDiagnosisTableBody tr:not(.empty-table)').length;
+        const procedureCount = $('#inacbgProcedureTableBody tr:not(.empty-table)').length;
+        
+        $('#statusKlaimDiagnosis').text(diagnosisCount);
+        $('#statusKlaimProcedure').text(procedureCount);
+        
+        // Get total claim amount
+        const totalKlaim = $('#inacbgTotalKlaim').text();
+        $('#statusKlaimTotal').text(totalKlaim || 'Rp 0');
+    }
+    
+    function performCetakKlaim() {
+        const nomorSep = $('#nosep').val();
+        if (!nomorSep) {
+            alert('Nomor SEP tidak ditemukan');
+            return;
+        }
+        
+        showProcessingMessage('Sedang mempersiapkan dokumen untuk dicetak...');
+        
+        // Simulate print process
+        setTimeout(function() {
+            hideProcessingMessage();
+            showSuccessMessage('Dokumen klaim siap untuk dicetak!');
+            
+            // In real implementation, this would open print dialog or download PDF
+            console.log('Printing claim for SEP:', nomorSep);
+            
+            // For demo purposes, show alert
+            alert('Fitur cetak klaim akan membuka dokumen PDF untuk dicetak.\n\nNomor SEP: ' + nomorSep);
+            
+        }, 2000);
+    }
+    
+    function performKirimKlaimOnline() {
+        const nomorSep = $('#nosep').val();
+        if (!nomorSep) {
+            alert('Nomor SEP tidak ditemukan');
+            return;
+        }
+        
+        if (!confirm('Apakah Anda yakin ingin mengirim klaim online ke BPJS Kesehatan?')) {
+            return;
+        }
+        
+        showProcessingMessage('Sedang mengirim klaim online...');
+        
+        $.ajax({
+            url: baseURL + '/vedika/performkirimklaimonline?t=' + mlite.token,
+            method: 'POST',
+            data: { nomor_sep: nomorSep },
+            success: function(response) {
+                    showSuccessMessage('Klaim berhasil dikirim online ke BPJS Kesehatan!');
+                    $('#statusKlaimSection .alert-success .alert-heading').html(
+                        '<i class="fas fa-paper-plane me-2"></i>Klaim Berhasil Dikirim Online'
+                    );
+                    $('#statusKlaimSection .alert-success p').text(
+                        'Klaim telah berhasil dikirim ke BPJS Kesehatan dan sedang dalam proses verifikasi.'
+                    );
+                    $('#kirimKlaimOnlineBtn').prop('disabled', true).text('Sudah Dikirim');
+            },
+            error: function(xhr, status, error) {
+                hideProcessingMessage();
+                $('#finalClaimBtn').prop('disabled', false);
+                showErrorMessage('Error saat melakukan final klaim: ' + error);
+            }
+        });
+
+    }
+    
+    function performEditUlangKlaim() {
+        const nomorSep = $('#nosep').val();
+        if (!nomorSep) {
+            alert('Nomor SEP tidak ditemukan');
+            return;
+        }
+        
+        if (!confirm('Apakah Anda yakin ingin melakukan Edit Ulang Klaim? Ini akan membuka kembali form untuk diedit.')) {
+            return;
+        }
+        
+        showProcessingMessage('Sedang memproses Edit Ulang Klaim...');
+        
+        $.ajax({
+            url: baseURL + '/vedika/performeditulangklaim?t=' + mlite.token,
+            method: 'POST',
+            data: { nomor_sep: nomorSep },
+            success: function(response) {
+                    showSuccessMessage('Edit Ulang Klaim berhasil! Form sekarang dapat diedit.');
+                    setEntireFormEditable();
+                    $('#statusKlaimSection').hide();
+                    $('#inacbgFinalDrgSection').show();
+                    $('#inacbgGroupingStatus').html('<span class="badge bg-warning">Dapat Diedit</span>');
+            },
+            error: function(xhr, status, error) {
+                hideProcessingMessage();
+                $('#finalClaimBtn').prop('disabled', false);
+                showErrorMessage('Error saat melakukan final klaim: ' + error);
+            }
+        });
+
+    }
+    
+    function setEntireFormEditable() {
+        // Re-enable all form inputs
+        $('#jaminanSelect').prop('disabled', false);
+        $('input[name="jenisRawat"]').prop('disabled', false);
+        $('#kelasRawatSelect').prop('disabled', false);
+        $('#dpjpInput').prop('readonly', false);
+        $('#noPeserta').prop('readonly', false);
+        $('#noSEP').prop('readonly', false);
+        $('#tanggalMasuk').prop('readonly', false);
+        $('#tanggalPulang').prop('readonly', false);
+        
+        // Re-enable all buttons
+        $('#grouperBtn').prop('disabled', false);
+        $('#finalDrgBtn').prop('disabled', false);
+        $('#reeditBtn').prop('disabled', false);
+        $('#inacbgGrouperBtn').prop('disabled', false);
+        $('#inacbgFinalDrgBtn').prop('disabled', false);
+        
+        // Re-enable INACBG grouping section
+        setInacbgGroupingEditable();
+        
+    }
+    
+
+</script>

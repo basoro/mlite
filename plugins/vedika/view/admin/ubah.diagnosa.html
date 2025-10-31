@@ -101,45 +101,37 @@
   }
 </style>
 <script>
-  $('#icd10').keyup(function(){
-       var query = $(this).val();
-       if(query != '')
-       {
-            $.ajax({
-                 url: "{?=url([ADMIN, 'vedika', 'icd10'])?}",
-                 method:"POST",
-                 data:{query:query},
-                 success:function(data)
-                 {
-                      $('#icd10List').fadeIn();
-                      $('#icd10List').html(data);
-                      // Tandai item invalid dan valid agar terlihat jelas
-                      $('#icd10List li[data-validcode="0"]').addClass('invalid-diagnosis');
-                      $('#icd10List li[data-validcode]:not([data-validcode="0"])').addClass('valid-diagnosis');
-                 }
-            });
-       }
-       $('#icd10List').fadeIn();
+  $('#icd10').keyup(function () {
+    var query = $(this).val();
+    if (query != '') {
+      $.ajax({
+        url: "{?=url([ADMIN, 'vedika', 'icd10'])?}",
+        method: "POST",
+        data: { query: query },
+        success: function (data) {
+          $('#icd10List').fadeIn();
+          $('#icd10List').html(data);
+        }
+      });
+    }
+    $('#icd10List').fadeIn();
   });
-  $('#icd10List').on('click', 'li', function(){
-       var validAttr = $(this).attr('data-validcode');
-       var validcode = (typeof validAttr !== 'undefined' && validAttr !== null) ? parseInt(validAttr, 10) : 1;
-       var codeVal = $(this).attr('data-display-code') || $(this).attr('data-code') || $(this).find('.selectator_option_title').clone().children().remove().end().text().trim();
-       if (validcode === 0) {
-           var msg = "Kode Diagnosa Tidak Valid!\nKode " + (codeVal || '') + " tidak dapat dipilih karena status validcode = 0";
-           if (typeof bootbox !== 'undefined' && typeof bootbox.alert === 'function') {
-               bootbox.alert(msg);
-           } else {
-               alert(msg);
-           }
-           $(this).addClass('invalid-diagnosis');
-           return;
-       }
-       var code = codeVal;
-       var name = $(this).attr('data-display-name') || $(this).attr('data-name') || $(this).find('.selectator_option_subtitle').text().trim();
-       $('#icd10').val(name);
-       $('#kode_icd10').text(code);
-       $('#icd10List').fadeOut();
+
+  $('#icd10List').on('click', 'li', function () {
+    var codeVal =
+      $(this).attr('data-display-code') ||
+      $(this).attr('data-code') ||
+      $(this).find('.selectator_option_title').clone().children().remove().end().text().trim();
+
+    var code = codeVal;
+    var name =
+      $(this).attr('data-display-name') ||
+      $(this).attr('data-name') ||
+      $(this).find('.selectator_option_subtitle').text().trim();
+
+    $('#icd10').val(name);
+    $('#kode_icd10').text(code);
+    $('#icd10List').fadeOut();
   });
 </script>
 <script type="text/javascript">

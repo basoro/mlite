@@ -858,9 +858,14 @@
       <button class="btn btn-danger hapusbridging">
           Hapus
       </button>
-      <button class="pull-right btn btn-primary kirimdatacenter">
-          Kirim ke DC
-      </button>
+      <span class="pull-right">
+        <button class="btn btn-success" id="groupingidrg">
+            Grouping iDRG
+        </button>
+        <button class="btn btn-primary kirimdatacenter">
+            Kirim ke DC
+        </button>
+      </span>
     </div>
     </div>
   </div>
@@ -1075,7 +1080,8 @@
           alkes: alkes,
           bmhp: bmhp,
           sewa_alat: sewa_alat,
-          tarif_poli_eks: tarif_poli_eks
+          tarif_poli_eks: tarif_poli_eks, 
+          lengkao: 'ya'
         } ,function(data) {
           console.log(data);
           alert('Data klaim nomor SEP ' + nosep + ' telah disimpan!!');
@@ -1090,7 +1096,23 @@
     });
   });
 </script>
+<script type="text/javascript">
+  $("#bridginginacbgs").on("click", "#groupingidrg", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $('input:text[name=no_rawat]').val();
+    var loadURL =  baseURL + '/vedika/bridgingidrg/' + no_rawat.replaceAll('/','') + '?t=' + mlite.token;
 
+    var modal = $('#moduleModal');
+    var modalContent = $('#moduleModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
 <script type="text/javascript">
   $("#bridginginacbgs").on("click", ".kirimdatacenter", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
