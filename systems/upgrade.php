@@ -20,34 +20,49 @@ function rrmdir($dir)
 switch ($version) {
     case '4.0.0':
         $return = '4.0.1';
+        break;
     case '4.0.1':
         $return = '4.0.2';
+        break;
     case '4.0.2':
         $return = '4.0.3';
+        break;
     case '4.0.3':
         $return = '4.0.4';
+        break;
     case '4.0.4':
         $return = '4.0.5';
+        break;
     case '4.0.5':
         $return = '4.0.6';
+        break;
     case '4.0.6':
         $return = '4.0.7';
+        break;
    case '4.0.7':
         $return = '4.0.8';
+        break;
     case '4.0.8':
         $return = '4.0.9';
+        break;
     case '4.0.9':
         $return = '4.1.0';
+        break;
     case '4.1.0':
         $return = '4.1.1';
+        break;
     case '4.1.1':
         $return = '4.1.2';
+        break;
     case '4.1.2':
         $return = '4.1.3'; 
+        break;
     case '4.1.3':
         $return = '4.1.4'; 
+        break;
     case '4.1.4':
         $return = '4.1.5';        
+        break;
     case '4.1.5':
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'websocket', 'tidak')");
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'websocket_proxy', '')");
@@ -56,6 +71,7 @@ switch ($version) {
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'username_frista', '')");
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'password_frista', '')");
         $return = '4.1.6';        
+        break;
     case '4.1.6':
         $this->core->db()->pdo()->exec("ALTER TABLE `mlite_settings` CHANGE `module` `module` VARCHAR(100) NOT NULL");
         $this->core->db()->pdo()->exec("ALTER TABLE `mlite_settings` CHANGE `field` `field` VARCHAR(100) NOT NULL");
@@ -126,6 +142,7 @@ switch ($version) {
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");        
         $return = '4.1.7';
+        break;
     case '4.1.7':
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'billing_obat', 'false')");
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'instansi_induk', '')");
@@ -757,6 +774,7 @@ switch ($version) {
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
         $return = '4.1.8'; 
+        break;
     case '4.1.8':
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'prefix_surat', 'RS')");
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'keterangan_etiket', '')");
@@ -768,10 +786,13 @@ switch ($version) {
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
         $return = '5.0.0'; 
+        break;
     case '5.0.0':
         $return = '5.1.0'; 
+        break;
     case '5.1.0':
         $return = '5.2.0'; 
+        break;
     case '5.2.0':
           $this->core->db()->pdo()->exec("CREATE TABLE  `catatan_adime_gizi`  (
             `no_rawat` varchar(17) NOT NULL,
@@ -1698,5 +1719,11 @@ switch ($version) {
           $this->core->db()->pdo()->exec("ALTER TABLE `penilaian_ulang_nyeri` ADD CONSTRAINT `penilaian_ulang_nyeri_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE;");
       
         $return = '5.3.0'; 
+        break; 
     }
+
+    if (!isset($return) || !$return) {
+        $return = '5.3.0';
+    }
+
 return $return;
