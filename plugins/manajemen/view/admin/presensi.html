@@ -13,6 +13,41 @@
 </ul>
 <br>
 <div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-calendar"></i> Form Filter Periode Tanggal</h3>
+            </div>
+            <div class="panel-body">
+                <form id="filterForm" class="form-inline" style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+                    <div class="form-group" style="min-width:240px;">
+                        <label for="start_date" class="control-label" style="display:block;">Tanggal Mulai</label>
+                        <div class="input-group" style="width:100%;">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input type="text" id="start_date" name="start_date" class="form-control datepicker" placeholder="yyyy-mm-dd" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group" style="min-width:240px;">
+                        <label for="end_date" class="control-label" style="display:block;">Tanggal Akhir</label>
+                        <div class="input-group" style="width:100%;">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input type="text" id="end_date" name="end_date" class="form-control datepicker" placeholder="yyyy-mm-dd" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group" style="display:flex; gap:8px;">
+                        <button type="submit" id="filterBtn" class="btn btn-primary">
+                            <i class="fa fa-filter"></i> Filter
+                        </button>
+                        <button type="button" id="resetBtn" class="btn btn-default">
+                            <i class="fa fa-refresh"></i> Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
     <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
               <div class="panel-body bg-danger">
@@ -114,59 +149,223 @@
 </div>
 
 <script type="text/javascript">
-  $(document).ready(function() {
-      var defaultColors = [
-          "rgba(131, 58, 163, 0.5)", "rgba(201, 216, 88, 0.5)", "rgba(5, 183, 196, 0.5)", "rgba(139, 20, 229, 0.5)", "rgba(85, 150, 219, 0.5)", "rgba(46, 151, 155, 0.5)", "rgba(169, 99, 226, 0.5)", "rgba(90, 27, 209, 0.5)", "rgba(123, 160, 3, 0.5)", "rgba(161, 95, 226, 0.5)", "rgba(201, 59, 214, 0.5)", "rgba(9, 102, 104, 0.5)", "rgba(81, 118, 186, 0.5)", "rgba(220, 63, 252, 0.5)", "rgba(252, 63, 82, 0.5)", "rgba(97, 249, 176, 0.5)", "rgba(232, 30, 154, 0.5)", "rgba(239, 7, 231, 0.5)", "rgba(107, 239, 211, 0.5)", "rgba(168, 10, 23, 0.5)", "rgba(221, 90, 99, 0.5)", "rgba(35, 102, 237, 0.5)", "rgba(15, 226, 216, 0.5)", "rgba(63, 122, 211, 0.5)", "rgba(226, 88, 86, 0.5)", "rgba(232, 98, 85, 0.5)", "rgba(168, 6, 226, 0.5)"
-      ];
-      var charts = [];
-      $('[data-chart]').each(function() {
-          var name = $(this).attr('id') || false;
+    function loadDatePickerAssets() {
+        return new Promise(function(resolve, reject) {
+            // Load CSS hanya sekali
+            if (window.jQuery && !$('link[href*="bootstrap-datepicker"]').length) {
+                $('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">').appendTo('head');
+            }
+            // Load JS
+            if (window.jQuery && !$.fn.datepicker) {
+                $.getScript('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js', function() {
+                    $.getScript('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.id.min.js', function() {
+                        initializeDatePicker();
+                        resolve();
+                    });
+                }).fail(reject);
+            } else if (window.jQuery) {
+                initializeDatePicker();
+                resolve();
+            } else {
+                // Tidak ada jQuery, fallback akan di-handle kemudian
+                resolve();
+            }
+        });
+    }
 
-          if(name === false)
-              return;
+    function initializeDatePicker() {
+        if (!window.jQuery) return;
+        // Inisialisasi datepicker
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true,
+            orientation: 'bottom auto',
+            language: 'id',
+            todayBtn: 'linked',
+            clearBtn: true
+        });
+        // Tanggal default: awal bulan hingga hari ini
+        var today = new Date();
+        var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        $('#start_date').datepicker('setDate', firstDayOfMonth);
+        $('#end_date').datepicker('setDate', today);
+        // Validasi rentang tanggal
+        $('#start_date').on('changeDate', function(e) {
+            var startDate = e.date;
+            var endDate = $('#end_date').datepicker('getDate');
+            if (endDate && startDate > endDate) {
+                $('#end_date').datepicker('setDate', startDate);
+            }
+            $('#end_date').datepicker('setStartDate', startDate);
+        });
+        $('#end_date').on('changeDate', function(e) {
+            var endDate = e.date;
+            var startDate = $('#start_date').datepicker('getDate');
+            if (startDate && endDate < startDate) {
+                $('#start_date').datepicker('setDate', endDate);
+            }
+            $('#start_date').datepicker('setEndDate', endDate);
+        });
+    }
 
-          var type = $(this).data('chart');
-          var labels = $(this).data('labels');
-          var data = $(this).data('datasets');
+    function initializeFormHandlers() {
+        if (!window.jQuery) return;
+        // Submit filter
+        $('#filterForm').on('submit', function(e) {
+            e.preventDefault();
+            var startDate = $('#start_date').val();
+            var endDate = $('#end_date').val();
+            if (!startDate || !endDate) {
+                alert('Mohon lengkapi tanggal mulai dan tanggal akhir');
+                return;
+            }
+            if (startDate > endDate) {
+                alert('Tanggal mulai tidak boleh lebih besar dari tanggal akhir');
+                return;
+            }
+            $('#filterBtn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Memfilter...');
+            $('#resetBtn').prop('disabled', true);
+            var url = new URL(window.location.href);
+            url.searchParams.set('start_date', startDate);
+            url.searchParams.set('end_date', endDate);
+            window.location.href = url.toString();
+        });
+        // Reset filter
+        $('#resetBtn').on('click', function() {
+            $('#resetBtn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Mereset...');
+            $('#filterBtn').prop('disabled', true);
+            var today = new Date();
+            var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            if ($.fn.datepicker) {
+                $('#start_date').datepicker('setDate', firstDayOfMonth);
+                $('#end_date').datepicker('setDate', today);
+            } else {
+                $('#start_date').val('');
+                $('#end_date').val('');
+            }
+            var url = new URL(window.location.href);
+            url.searchParams.delete('start_date');
+            url.searchParams.delete('end_date');
+            window.location.href = url.toString();
+        });
+        // Terapkan parameter URL bila ada
+        var params = new URLSearchParams(window.location.search);
+        var s = params.get('start_date');
+        var e = params.get('end_date');
+        if (s && $.fn.datepicker) {
+            $('#start_date').datepicker('setDate', new Date(s));
+        } else if (s) {
+            $('#start_date').val(s);
+        }
+        if (e && $.fn.datepicker) {
+            $('#end_date').datepicker('setDate', new Date(e));
+        } else if (e) {
+            $('#end_date').val(e);
+        }
+    }
 
-          var options = {};
-          if(type == 'bar')
-          {
-              options = Object.assign(options, {scales: {
-                      yAxes: [{
-                          ticks: {
-                              beginAtZero:true
-                          }
-                      }]
-                  }});
-          }
+    function initializeVanillaHandlers() {
+        var form = document.getElementById('filterForm');
+        if (!form) return;
+        var startInput = document.getElementById('start_date');
+        var endInput = document.getElementById('end_date');
+        // Fallback jadikan input bertipe date
+        [startInput, endInput].forEach(function(input){ if (input) input.setAttribute('type','date'); });
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var s = startInput.value;
+            var t = endInput.value;
+            if (!s || !t) { alert('Mohon lengkapi tanggal mulai dan tanggal akhir'); return; }
+            if (s > t) { alert('Tanggal mulai tidak boleh lebih besar dari tanggal akhir'); return; }
+            var url = new URL(window.location.href);
+            url.searchParams.set('start_date', s);
+            url.searchParams.set('end_date', t);
+            window.location.href = url.toString();
+        });
+        var resetBtn = document.getElementById('resetBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                var today = new Date();
+                var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                startInput.value = firstDayOfMonth.toISOString().slice(0,10);
+                endInput.value = today.toISOString().slice(0,10);
+                var url = new URL(window.location.href);
+                url.searchParams.delete('start_date');
+                url.searchParams.delete('end_date');
+                window.location.href = url.toString();
+            });
+        }
+        // Terapkan parameter URL bila ada
+        var params = new URLSearchParams(window.location.search);
+        var s = params.get('start_date');
+        var e = params.get('end_date');
+        if (s) startInput.value = s;
+        if (e) endInput.value = e;
+    }
 
-          var backgroundColor = function() {
-              if(type == 'pie')
-                  return defaultColors;
-              else
-                  return 'rgba(248, 190, 18, 0.2)';
-          }
-          var datasets = [];
-          data = eval(data);
-          data.forEach(function(e) {
-              datasets.push(Object.assign({
-                  label: '',
-                  data: [],
-                  borderWidth: 1,
-                  backgroundColor: backgroundColor()
-              }, e))
-          });
+    function initCharts() {
+        var defaultColors = [
+            "rgba(131, 58, 163, 0.5)", "rgba(201, 216, 88, 0.5)", "rgba(5, 183, 196, 0.5)", "rgba(139, 20, 229, 0.5)", "rgba(85, 150, 219, 0.5)", "rgba(46, 151, 155, 0.5)", "rgba(169, 99, 226, 0.5)", "rgba(90, 27, 209, 0.5)", "rgba(123, 160, 3, 0.5)", "rgba(161, 95, 226, 0.5)", "rgba(201, 59, 214, 0.5)", "rgba(9, 102, 104, 0.5)", "rgba(81, 118, 186, 0.5)", "rgba(220, 63, 252, 0.5)", "rgba(252, 63, 82, 0.5)", "rgba(97, 249, 176, 0.5)", "rgba(232, 30, 154, 0.5)", "rgba(239, 7, 231, 0.5)", "rgba(107, 239, 211, 0.5)", "rgba(168, 10, 23, 0.5)", "rgba(221, 90, 99, 0.5)", "rgba(35, 102, 237, 0.5)", "rgba(15, 226, 216, 0.5)", "rgba(63, 122, 211, 0.5)", "rgba(226, 88, 86, 0.5)", "rgba(232, 98, 85, 0.5)", "rgba(168, 6, 226, 0.5)"
+        ];
+        var elements = document.querySelectorAll('[data-chart]');
+        elements.forEach(function(el) {
+            var name = el.getAttribute('id') || false;
+            if (name === false || !window.Chart) return;
+            var type = el.getAttribute('data-chart');
+            var labels = el.getAttribute('data-labels');
+            var data = el.getAttribute('data-datasets');
+            var options = {};
+            if (type === 'bar') {
+                options = Object.assign(options, {scales: { yAxes: [{ ticks: { beginAtZero: true } }] }});
+            }
+            var backgroundColor = function() {
+                if (type === 'pie') return defaultColors; else return 'rgba(248, 190, 18, 0.2)';
+            };
+            var datasets = [];
+            try { data = eval(data); } catch (e) { data = []; }
+            try { labels = eval(labels); } catch (e) { labels = (labels || '').split(','); }
+            data.forEach(function(e) {
+                datasets.push(Object.assign({
+                    label: '',
+                    data: [],
+                    borderWidth: 1,
+                    backgroundColor: backgroundColor()
+                }, e));
+            });
+            var ctx = document.getElementById(name);
+            new Chart(ctx, { type: type, data: { labels: labels, datasets: datasets }, options: options });
+        });
+    }
 
-          var ctx = document.getElementById(name);
-          var myChart = new Chart(ctx, {
-              type: type,
-              data: {
-                  labels: labels,
-                  datasets: datasets
-              },
-              options: options
-          });
-      });
-  });
+    (function() {
+        function start() {
+            // Tooltips jika tersedia
+            if (window.jQuery && $.fn && $.fn.tooltip) {
+                $('[data-toggle="tooltip"]').tooltip();
+            }
+            // Muat datepicker lalu handler form
+            loadDatePickerAssets().then(function() {
+                initializeFormHandlers();
+            }).catch(function(error) {
+                console.error('Failed to load datepicker assets:', error);
+                document.querySelectorAll('.datepicker').forEach(function(input){ input.setAttribute('type','date'); });
+                initializeVanillaHandlers();
+            });
+            // Inisialisasi chart tanpa bergantung jQuery
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initCharts);
+            } else {
+                initCharts();
+            }
+        }
+        if (!window.jQuery) {
+            var s = document.createElement('script');
+            s.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
+            s.onload = start;
+            document.head.appendChild(s);
+        } else {
+            start();
+        }
+    })();
 </script>

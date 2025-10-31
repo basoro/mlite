@@ -13,6 +13,41 @@
 </ul>
 <br>
 <div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-calendar"></i> Form Filter Periode Tanggal</h3>
+            </div>
+            <div class="panel-body">
+                <form id="filterForm" class="form-inline" style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+                    <div class="form-group" style="min-width:240px;">
+                        <label for="start_date" class="control-label" style="display:block;">Tanggal Mulai</label>
+                        <div class="input-group" style="width:100%;">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input type="text" id="start_date" name="start_date" class="form-control datepicker" placeholder="yyyy-mm-dd" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group" style="min-width:240px;">
+                        <label for="end_date" class="control-label" style="display:block;">Tanggal Akhir</label>
+                        <div class="input-group" style="width:100%;">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input type="text" id="end_date" name="end_date" class="form-control datepicker" placeholder="yyyy-mm-dd" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group" style="display:flex; gap:8px;">
+                        <button type="submit" id="filterBtn" class="btn btn-primary">
+                            <i class="fa fa-filter"></i> Filter
+                        </button>
+                        <button type="button" id="resetBtn" class="btn btn-default">
+                            <i class="fa fa-refresh"></i> Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
     <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
               <div class="panel-body bg-danger">
@@ -97,46 +132,187 @@
 </div>
 
 <script type="text/javascript">
-    $(function () {
-        //bar chart
+    document.addEventListener('DOMContentLoaded', function () {
+        function safeParse(jsonStr, fallback) {
+            try { return JSON.parse(jsonStr); } catch (e) { return fallback || []; }
+        }
         var ctx = document.getElementById("farmasi-chartcanvas");
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: [{?= '"' . implode('","', $stats.farmasiChart.labels) . '"' ?}],
-                datasets: [{
+        if (ctx && window.Chart) {
+            var labels = safeParse('{?= json_encode($stats.farmasiChart.labels) ?}', []);
+            var rawValues = safeParse('{?= json_encode($stats.farmasiChart.visits) ?}', []);
+            var values = Array.isArray(rawValues) ? rawValues.map(function(v){ return parseFloat(v) || 0; }) : [];
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
                         label: "Stok Obat",
                         borderColor: "#2E8B57",
                         borderWidth: "2",
                         backgroundColor: "rgba(46, 139, 87, 0.2)",
                         pointHighlightStroke: "#2E8B57",
                         pointRadius: 0,
-                        data: [{?= implode(',', $stats.farmasiChart.visits) ?}],
-                    }
-                ]
-            },
-            options: {
-                legend: {
-                    display: false
-                },
-                responsive: true,
-                tooltips: {
-                    mode: 'index',
-                    intersect: false
-                },
-                hover: {
-                    mode: 'nearest',
-                    intersect: true
-                },
-                maintainAspectRatio: false,
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
+                        data: values
                     }]
+                },
+                options: {
+                    legend: { display: false },
+                    responsive: true,
+                    tooltips: { mode: 'index', intersect: false },
+                    hover: { mode: 'nearest', intersect: true },
+                    maintainAspectRatio: false,
+                    scales: {
+                        yAxes: [{ ticks: { beginAtZero: true } }]
+                    }
                 }
+            });
+        }
+    });
+
+    function loadDatePickerAssets() {
+        return new Promise(function(resolve, reject) {
+            if (!$('link[href*=\"bootstrap-datepicker\"]').length) {
+                $('<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css\">').appendTo('head');
+            }
+            if (!$.fn.datepicker) {
+                $.getScript('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js', function() {
+                    $.getScript('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.id.min.js', function() {
+                        initializeDatePicker();
+                        resolve();
+                    });
+                }).fail(reject);
+            } else {
+                initializeDatePicker();
+                resolve();
             }
         });
-    });
+    }
+
+    function initializeDatePicker() {
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true,
+            orientation: 'bottom auto',
+            language: 'id',
+            todayBtn: 'linked',
+            clearBtn: true
+        });
+        var today = new Date();
+        var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        $('#start_date').datepicker('setDate', firstDayOfMonth);
+        $('#end_date').datepicker('setDate', today);
+        $('#start_date').on('changeDate', function(e) {
+            var startDate = e.date;
+            var endDate = $('#end_date').datepicker('getDate');
+            if (endDate && startDate > endDate) {
+                $('#end_date').datepicker('setDate', startDate);
+            }
+            $('#end_date').datepicker('setStartDate', startDate);
+        });
+        $('#end_date').on('changeDate', function(e) {
+            var endDate = e.date;
+            var startDate = $('#start_date').datepicker('getDate');
+            if (startDate && endDate < startDate) {
+                $('#start_date').datepicker('setDate', endDate);
+            }
+            $('#start_date').datepicker('setEndDate', endDate);
+        });
+    }
+
+    function initializeFormHandlers() {
+        $('#filterForm').on('submit', function(e) {
+            e.preventDefault();
+            var startDate = $('#start_date').val();
+            var endDate = $('#end_date').val();
+            if (!startDate || !endDate) { alert('Mohon lengkapi tanggal mulai dan tanggal akhir'); return; }
+            if (startDate > endDate) { alert('Tanggal mulai tidak boleh lebih besar dari tanggal akhir'); return; }
+            var originalBtnText = $('#filterBtn').html();
+            $('#filterBtn').html('<i class=\"fa fa-spinner fa-spin\"></i> Memuat...').prop('disabled', true);
+            $('.row').slice(1, 3).find('.panel-body').css('opacity', '0.5');
+            var url = new URL(window.location.href);
+            url.searchParams.set('start_date', startDate);
+            url.searchParams.set('end_date', endDate);
+            setTimeout(function() { window.location.href = url.toString(); }, 500);
+        });
+        $('#resetBtn').on('click', function() {
+            var today = new Date();
+            var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            $('#start_date').datepicker('setDate', firstDayOfMonth);
+            $('#end_date').datepicker('setDate', today);
+            var url = new URL(window.location.href);
+            url.searchParams.delete('start_date');
+            url.searchParams.delete('end_date');
+            window.location.href = url.toString();
+        });
+        var urlParams = new URLSearchParams(window.location.search);
+        var startDateParam = urlParams.get('start_date');
+        var endDateParam = urlParams.get('end_date');
+        if (startDateParam) { $('#start_date').datepicker('setDate', new Date(startDateParam)); }
+        if (endDateParam) { $('#end_date').datepicker('setDate', new Date(endDateParam)); }
+    }
+
+    function initializeVanillaHandlers() {
+        var form = document.getElementById('filterForm');
+        var startInput = document.getElementById('start_date');
+        var endInput = document.getElementById('end_date');
+        var filterBtn = document.getElementById('filterBtn');
+        var resetBtn = document.getElementById('resetBtn');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                var startDate = startInput.value;
+                var endDate = endInput.value;
+                if (!startDate || !endDate) { alert('Mohon lengkapi tanggal mulai dan tanggal akhir'); return; }
+                if (startDate > endDate) { alert('Tanggal mulai tidak boleh lebih besar dari tanggal akhir'); return; }
+                filterBtn.innerHTML = '<i class=\"fa fa-spinner fa-spin\"></i> Memuat...';
+                filterBtn.disabled = true;
+                var url = new URL(window.location.href);
+                url.searchParams.set('start_date', startDate);
+                url.searchParams.set('end_date', endDate);
+                setTimeout(function(){ window.location.href = url.toString(); }, 500);
+            });
+        }
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                var today = new Date();
+                var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                startInput.value = firstDayOfMonth.toISOString().slice(0,10);
+                endInput.value = today.toISOString().slice(0,10);
+                var url = new URL(window.location.href);
+                url.searchParams.delete('start_date');
+                url.searchParams.delete('end_date');
+                window.location.href = url.toString();
+            });
+        }
+        var params = new URLSearchParams(window.location.search);
+        var s = params.get('start_date');
+        var e = params.get('end_date');
+        if (s) startInput.value = s;
+        if (e) endInput.value = e;
+    }
+
+    (function() {
+        function start() {
+            if (window.jQuery && $.fn && $.fn.tooltip) {
+                $('[data-toggle=\"tooltip\"]').tooltip();
+            }
+            loadDatePickerAssets().then(function() {
+                initializeFormHandlers();
+            }).catch(function(error) {
+                console.error('Failed to load datepicker assets:', error);
+                var inputs = document.querySelectorAll('.datepicker');
+                inputs.forEach(function(input){ input.setAttribute('type','date'); });
+                initializeVanillaHandlers();
+            });
+        }
+        if (!window.jQuery) {
+            var s = document.createElement('script');
+            s.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
+            s.onload = start;
+            document.head.appendChild(s);
+        } else {
+            $(start);
+        }
+    })();
 </script>
