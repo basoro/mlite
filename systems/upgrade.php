@@ -773,7 +773,6 @@ switch ($version) {
     case '5.1.0':
         $return = '5.2.0'; 
     case '5.2.0':
-          $this->core->db()->pdo()->exec("SET FOREIGN_KEY_CHECKS=0;");
 
           $this->core->db()->pdo()->exec("CREATE TABLE  `catatan_adime_gizi`  (
             `no_rawat` varchar(17) NOT NULL,
@@ -1698,8 +1697,6 @@ switch ($version) {
           $this->core->db()->pdo()->exec("ALTER TABLE `penilaian_ulang_nyeri` ADD CONSTRAINT `penilaian_ulang_nyeri_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
           $this->core->db()->pdo()->exec("ALTER TABLE `penilaian_ulang_nyeri` ADD CONSTRAINT `penilaian_ulang_nyeri_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE;");
-
-          $this->core->db()->pdo()->exec("SET FOREIGN_KEY_CHECKS=1;");
       
         $return = '5.3.0'; 
     }
