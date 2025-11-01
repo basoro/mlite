@@ -777,7 +777,7 @@
         const drgCode = res.drg_code || 'N/A';
         const costWeight = res.cost_weight || 'N/A';
         const nbr = res.nbr || 'N/A';
-        const status = res.status || 'N/A';
+        const status = res.status || 'normal';
 
         const costWeightElement = $('#groupingCostWeight');
         const nbrElement = $('#groupingNBR');
@@ -1994,25 +1994,29 @@
                 var data = lastResults.find(it => String(it.code) === String(val));
                 if (!data) return;
 
-                // Validasi sesuai kebutuhan selector
-                if (data.validcode === 0) {
-                    showInvalidCodeNotification(data, selector, 'validcode');
-                    $(this).val(''); return;
-                }
-
-                const existingRows = $('#diagnosisTableBody tr:not(.empty-table)').length;
-                if (data.accpdx === 'N' && existingRows === 0) {
-                    showInvalidCodeNotification(data, selector, 'accpdx');
-                    $(this).val(''); return;
-                }
-
-                if (data.asterisk === 1 && existingRows === 0) {
-                    showInvalidCodeNotification(data, selector, 'asterisk');
-                    $(this).val(''); return;
-                }
-
                 var inacbg = (selector === '#inacbgDiagnosisSelect');
                 var tableId = inacbg ? 'inacbgDiagnosisTableBody' : 'diagnosisTableBody';
+                var skipValidation = (tableId === 'inacbgDiagnosisTableBody');
+
+                if (!skipValidation) {
+                    // Validasi sesuai kebutuhan selector
+                    if (data.validcode === 0) {
+                        showInvalidCodeNotification(data, selector, 'validcode');
+                        $(this).val(''); return;
+                    }
+
+                    const existingRows = $('#diagnosisTableBody tr:not(.empty-table)').length;
+                    if (data.accpdx === 'N' && existingRows === 0) {
+                        showInvalidCodeNotification(data, selector, 'accpdx');
+                        $(this).val(''); return;
+                    }
+
+                    if (data.asterisk === 1 && existingRows === 0) {
+                        showInvalidCodeNotification(data, selector, 'asterisk');
+                        $(this).val(''); return;
+                    }
+                }
+                console.log(data);
                 addDiagnosisToTable(data, tableId, inacbg);
 
                 $(this).val('');
@@ -2533,7 +2537,7 @@
             const uniqueId = data.code || `inacbg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
             const isValid = data.isValid !== false; // Default to true if not specified
             const codeDisplay = data.code || ""; // Selalu tampilkan kode tanpa "(IM tidak berlaku)"
-            const descriptionDisplay = isValid ? data.display || "" : `${data.display || ""} <span style="color:#d9534f;">(IM tidak berlaku)</span>`;
+            const descriptionDisplay = isValid ? data.display || data.description || "" : `${data.display || ""} <span style="color:#d9534f;">(IM tidak berlaku)</span>`;
             
             newRow = `
                 <tr data-id="${uniqueId}" data-accpdx="${data.accpdx || 'Y'}" data-asterisk="${data.asterisk || 0}" data-validcode="${data.validcode || 1}">
@@ -2589,7 +2593,7 @@
             const uniqueId = data.code || `inacbg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
             const isValid = data.isValid !== false; // Default to true if not specified
             const codeDisplay = data.code || ""; // Selalu tampilkan kode tanpa "(IM tidak berlaku)"
-            const descriptionDisplay = isValid ? data.display || "" : `${data.display || ""} <span style="color:#d9534f;">(IM tidak berlaku)</span>`;
+            const descriptionDisplay = isValid ? data.display || data.description || "" : `${data.display || ""} <span style="color:#d9534f;">(IM tidak berlaku)</span>`;
             
             newRow = `
                 <tr data-id="${uniqueId}" data-accpdx="${data.accpdx || 'Y'}" data-asterisk="${data.asterisk || 0}" data-validcode="${data.validcode || 1}">
