@@ -1754,6 +1754,146 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function postAiinterpretasi()
+    {
+        // Validate token
+        if (!isset($_POST['token']) || $_POST['token'] !== $_SESSION['token']) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid token'
+            ]);
+            exit();
+        }
+
+        // Validate image data
+        if (!isset($_POST['imageData']) || empty($_POST['imageData'])) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Image data is required'
+            ]);
+            exit();
+        }
+
+        $imageData = $_POST['imageData'];
+
+        // Remove data URL prefix if present
+        if (strpos($imageData, 'data:image/png;base64,') === 0) {
+            $imageData = substr($imageData, 22);
+        }
+
+        try {
+            // OpenAI API configuration dari settings (orthanc.ai_*)
+            $apiKey = $this->settings->get('orthanc.ai_api_key');
+            $apiUrl = $this->settings->get('orthanc.ai_api_url');
+            if (empty($apiUrl)) {
+                $apiUrl = 'https://api.openai.com/v1/chat/completions';
+            }
+            if (empty($apiKey)) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'OpenAI API Key belum dikonfigurasi'
+                ]);
+                exit();
+            }
+
+            // Prepare the request payload
+            $payload = [
+                'model' => 'gpt-4o',
+                'messages' => [
+                    [
+                        'role' => 'user',
+                        'content' => [
+                            [
+                                'type' => 'text',
+                                'text' => 'Anda adalah asisten radiologi. Analisis gambar radiografi yang dilampirkan dan lakukan hal berikut:
+
+1) Identifikasi jenis pemeriksaan/region utama (mis. toraks, abdomen, pelvis, ekstremitas: humerus/antebrachii/femur/tibia-fibula/tangan/kaki, tulang belakang: servikal/torakal/lumbal, kepala/kranium, dll) serta proyeksi (PA/AP/lateral/oblique/dll) bila relevan.
+2) Gunakan hasil identifikasi untuk membuat judul: "## ✅ Interpretasi Radiografi {{REGION}} ({{PROYEKSI}})". Jika proyeksi tidak relevan atau tidak dapat ditentukan, hilangkan bagian "({{PROYEKSI}})".
+3) Susun bagian-bagian temuan secara DINAMIS sesuai jenis gambar yang teridentifikasi. Contoh pedoman:
+   - Toraks: Paru-paru; Jantung & Mediastinum; Pleura; Skeletal/Tulang.
+   - Abdomen: Usus & pola gas; Organ padat yang tampak (hati, limpa); Soft tissue; Skeletal yang tampak (pelvis/vertebra).
+   - Ekstremitas/tulang: Tulang; Sendi; Alignment; Soft tissue; Temuan khusus (fraktur, dislokasi, lesi).
+   - Tulang belakang: Alignment; Korpus & diskus; Proses spinosus/faset; Kanal; Soft tissue paravertebral.
+   - Kepala/kranium: Tulang kranium/wajah; Sinus; Soft tissue; Temuan khusus.
+4) Tulis "## 🔎 Kesimpulan Sementara" yang merangkum temuan kunci.
+5) Tulis "## 📌 Saran" berisi rekomendasi pemeriksaan lanjutan atau korelasi klinis.
+
+Instruksi format:
+- Bahasa Indonesia formal, gunakan Markdown.
+- Ganti {{REGION}} dan {{PROYEKSI}} dengan hasil identifikasi; jangan tampilkan placeholder.
+- Sertakan hanya bagian yang relevan untuk gambar; jangan tampilkan bagian yang tidak relevan.
+- Gunakan poin-poin singkat dan jelas; jika suatu temuan tidak tampak, nyatakan tegas: "Tidak tampak ...".
+- Hindari diagnosis pasti; sarankan korelasi klinis dan pertimbangan pemeriksaan penunjang.'
+                            ],
+                            [
+                                'type' => 'image_url',
+                                'image_url' => [
+                                    'url' => 'data:image/png;base64,' . $imageData
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                'max_tokens' => 1200
+            ];
+
+            // Make API request to OpenAI
+            $ch = curl_init($apiUrl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $apiKey
+            ]);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($ch);
+            $curlErrno = curl_errno($ch);
+            curl_close($ch);
+
+            if ($curlErrno !== 0) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Connection failed: ' . $curlError
+                ]);
+                exit();
+            }
+
+            if ($httpCode === 200) {
+                $result = json_decode($response, true);
+                $interpretation = $result['choices'][0]['message']['content'] ?? 'Tidak ada interpretasi yang dihasilkan';
+
+                echo json_encode([
+                    'success' => true,
+                    'interpretation' => $interpretation
+                ]);
+            } else {
+                $errorMessage = 'API Error: HTTP ' . $httpCode;
+                if ($response) {
+                    $errorData = json_decode($response, true);
+                    $errorMessage .= ' - ' . ($errorData['error']['message'] ?? 'Unknown error');
+                }
+
+                echo json_encode([
+                    'success' => false,
+                    'message' => $errorMessage
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+
+        exit();
+    }
+
     private function _addHeaderFiles()
     {
         // CSS
