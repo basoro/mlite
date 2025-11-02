@@ -239,8 +239,8 @@
                                 </td>
                                 <td class="study-actions">
                                     <div class="btn-group btn-group-sm">
-                                        <a onclick="window.open('{$baseUrl}/viewer?study={$study.ID}&t={?=$_SESSION['token']?}', '_blank', 'toolbar=no,menubar=no,scrollbars=yes,resizable=yes,width=1200,height=800')" 
-                                           class="btn btn-primary" title="View DICOM" style="cursor:pointer">
+                                        <a onclick="openFullWindow('{$baseUrl}/viewer?study={$study.ID}&t={?=$_SESSION['token']?}')" 
+                                          class="btn btn-primary" title="View DICOM" style="cursor:pointer">
                                             <i class="fa fa-eye"></i>
                                         </a>
                                         <a href="{$baseUrl}/series?study={$study.ID}&t={?=$_SESSION['token']?}" 
@@ -1279,4 +1279,17 @@ function deleteStudy(studyId, patientName, patientId) {
     });
 }
 
+</script>
+<script>
+function openFullWindow(url) {
+    const win = window.open(
+        url,
+        '_blank',
+        'toolbar=no,menubar=no,scrollbars=yes,resizable=yes'
+    );
+    if (win) {
+        win.moveTo(0,0);
+        win.resizeTo(screen.width, screen.height);
+    }
+}
 </script>

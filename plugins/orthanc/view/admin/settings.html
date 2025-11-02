@@ -20,12 +20,26 @@
                         <input type="password" name="orthanc[password]" class="form-control" value="{$orthanc.password}" />
                     </div>
                     <div class="form-group">
+                        <label>OpenAI API Key</label>
+                        <input type="password" id="openai_api_key" name="orthanc[ai_api_key]" class="form-control" value="{$orthanc.ai_api_key}" placeholder="sk-..." />
+                        <small class="help-block">Masukkan API key OpenAI (disimpan aman di server).</small>
+                    </div>
+                    <div class="form-group">
+                        <label>OpenAI API URL</label>
+                        <input type="text" id="openai_api_url" name="orthanc[ai_api_url]" class="form-control" value="{$orthanc.ai_api_url}" placeholder="https://api.openai.com/v1/chat/completions" />
+                        <small class="help-block">Ganti jika menggunakan proxy/OpenAI-compatible endpoint.</small>
+                    </div>                    
+                    <div class="form-group">
                         <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                         <button type="button" id="test-connection" class="btn btn-info" style="margin-left: 10px;">
                             <i class="fa fa-plug"></i> Test Koneksi
                         </button>
+                        <button type="button" id="test-openai" class="btn btn-info">
+                            <i class="fa fa-plug"></i> Test Koneksi OpenAI
+                        </button>
                     </div>
                     <div id="connection-result" style="margin-top: 15px;"></div>
+                    <div id="openai-result" style="margin-top: 15px;"></div>
                 </div>
             </div>
         </div>
@@ -83,6 +97,77 @@ $(document).ready(function() {
             },
             complete: function() {
                 $('#test-connection').prop('disabled', false).html('<i class="fa fa-plug"></i> Test Koneksi');
+            }
+        });
+    });
+
+    // Test Koneksi OpenAI
+    $('#test-openai').click(function() {
+        var apiKey = ($('#openai_api_key').val() || '').trim();
+        var apiUrl = ($('#openai_api_url').val() || 'https://api.openai.com/v1/chat/completions').trim();
+        
+        if (!apiKey) {
+            $('#openai-result').html('<div class="alert alert-warning"><i class="fa fa-warning"></i> Silakan isi API Key terlebih dahulu.</div>');
+            return;
+        }
+
+        if (!/^https?:\/\//i.test(apiUrl)) {
+            $('#openai-result').html('<div class="alert alert-warning"><i class="fa fa-warning"></i> URL API tidak valid. Gunakan URL yang diawali dengan http:// atau https://</div>');
+            return;
+        }
+        
+        $('#test-openai').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Testing...');
+        $('#openai-result').html('<div class="alert alert-info"><i class="fa fa-spinner fa-spin"></i> Menguji koneksi OpenAI...</div>');
+        
+        var baseURL = mlite.url + '/' + mlite.admin;
+        var url = baseURL + '/orthanc/testopenai?t=' + mlite.token;
+
+        var provider = apiUrl.indexOf('openai.com') !== -1 ? 'openai' : 'custom';
+        
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: {
+                api_key: apiKey,
+                api_url: apiUrl,
+                provider: provider
+            },
+            dataType: 'JSON',
+            timeout: 15000,
+            success: function(response) {
+                if (response.success) {
+                    var html = '<div class="alert alert-success">';
+                    html += '<i class="fa fa-check-circle"></i> <strong>Koneksi OpenAI Berhasil!</strong><br>';
+                    html += 'Model: ' + (response.model || '-') + '<br>';
+                    if (response.endpoint) {
+                        html += 'Endpoint: ' + response.endpoint + '<br>';
+                    }
+                    html += 'Latency: ' + (response.latency || '-') + ' ms';
+                    html += '</div>';
+                    $('#openai-result').html(html);
+                } else {
+                    var html = '<div class="alert alert-danger">';
+                    html += '<i class="fa fa-times-circle"></i> <strong>Koneksi OpenAI Gagal!</strong><br>';
+                    html += 'Error: ' + response.message + '<br>';
+                    if (response.troubleshooting) {
+                        html += '<small><strong>Troubleshooting:</strong> ' + response.troubleshooting + '</small>';
+                    }
+                    html += '</div>';
+                    $('#openai-result').html(html);
+                }
+            },
+            error: function(xhr, status, error) {
+                var errText = error || 'Tidak diketahui';
+                if (xhr && xhr.responseText) {
+                    try {
+                        var snippet = xhr.responseText.substring(0, 200);
+                        errText += ' (' + snippet + (xhr.responseText.length > 200 ? '...' : '') + ')';
+                    } catch (e) {}
+                }
+                $('#openai-result').html('<div class="alert alert-danger"><i class="fa fa-times-circle"></i> <strong>Error:</strong> ' + errText + '</div>');
+            },
+            complete: function() {
+                $('#test-openai').prop('disabled', false).html('<i class="fa fa-plug"></i> Test Koneksi OpenAI');
             }
         });
     });

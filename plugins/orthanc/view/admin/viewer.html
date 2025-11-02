@@ -6,11 +6,109 @@
     <title>DICOM-Viewer</title>
     <link rel="stylesheet" type="text/css" href="{?=url()?}/assets/css/font-awesome.css">
     <link rel="stylesheet" type="text/css" href="{$baseUrl}/css/admin/styles.css?v=2">
+    <!-- Bootstrap 3 CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
     <script>
         var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}", admin:"{?=ADMIN?}"};
     </script>
+    <style>
+    /* AI Interpretasi Button */
+    #InterpretasiAiBtn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        margin-left: 8px;
+    }
+
+    #InterpretasiAiBtn:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        transform: translateY(-1px);
+    }
+
+    #InterpretasiAiBtn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Modal AI Interpretasi */
+    #aiInterpretasiModal .modal-dialog {
+        margin-top: 10%;
+    }
+
+    #aiInterpretasiModal .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    #aiInterpretasiModal .modal-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px 10px 0 0;
+        border-bottom: none;
+    }
+
+    #aiInterpretasiModal .modal-header .close {
+        color: white;
+        opacity: 0.8;
+    }
+
+    #aiInterpretasiModal .modal-header .close:hover {
+        opacity: 1;
+    }
+
+    #aiInterpretasiLoading {
+        color: #667eea;
+    }
+
+    #aiInterpretasiResult {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 15px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+    }
+
+    /* Animation for loading */
+    @keyframes pulse {
+        0% { opacity: 0.6; }
+        50% { opacity: 1; }
+        100% { opacity: 0.6; }
+    }
+
+    #aiInterpretasiLoading .fa-spinner {
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+        /* Bootstrap 3 Modal compatibility */
+        .modal.fade { opacity: 1; }
+        .modal.fade .modal-dialog { transform: translate(0, -25%); transition: transform 0.3s ease-out; }
+        .modal.fade.in .modal-dialog { transform: translate(0, 0); }
+        .modal-backdrop.fade { opacity: 0.5; }
+        .modal-backdrop.fade.in { opacity: 0.5; }
+        .modal { text-align: center; padding: 0 !important; }
+        .modal:before { content: ''; display: inline-block; height: 100%; vertical-align: middle; margin-right: -4px; }
+        .modal-dialog { display: inline-block; text-align: left; vertical-align: middle; }
+        .modal.show { display: block; opacity: 1; }
+        .modal.show .modal-dialog { transform: translate(0, 0); }
+
+        /* Core modal structure (Bootstrap 3 essentials) */
+        .modal { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 1050; overflow: hidden; -webkit-overflow-scrolling: touch; }
+        .modal-dialog { position: relative; width: auto; margin: 10px; }
+        .modal-content { position: relative; background-color: #fff; border: 1px solid #999; border: 1px solid rgba(0,0,0,.2); border-radius: 6px; box-shadow: 0 3px 9px rgba(0,0,0,.5); background-clip: padding-box; outline: 0; }
+        .modal-header { padding: 15px; border-bottom: 1px solid #e5e5e5; }
+        .modal-body { position: relative; padding: 15px; }
+        .modal-footer { padding: 15px; text-align: right; border-top: 1px solid #e5e5e5; }
+        .modal-backdrop { position: fixed; top:0; right:0; bottom:0; left:0; z-index: 1040; background-color: #000; }
+        .modal-backdrop.fade { opacity: .5; }
+        .close { float: right; font-size: 21px; font-weight: 700; line-height: 1; color: #000; text-shadow: 0 1px 0 #fff; opacity: .2; }
+        .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; opacity: .5; }
+    </style>
 </head>
-<body>
+<body id="dicomViewer">
     <div class="app-container">
         <div class="main-content">
             <div class="sidebar">
@@ -119,6 +217,9 @@
                         <button class="btn btn-secondary" id="captureBtn">
                             <i class="fa fa-camera"></i> Capture Screenshot
                         </button>
+                        <button class="btn btn-secondary" id="InterpretasiAiBtn">
+                            <i class="fa fa-camera"></i> AI Interpretasi
+                        </button>
                     </div>
                 </div>
                 
@@ -156,6 +257,7 @@
 
     <!-- Scripts -->
     <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="{$baseUrl}/js/admin/diacom/hammer.js"></script>
     <script src="{$baseUrl}/js/admin/diacom/dicomParser.min.js"></script>
     <script src="{$baseUrl}/js/admin/diacom/cornerstone.js"></script>

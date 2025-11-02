@@ -168,6 +168,8 @@ function setupEventListeners() {
     
     // Screenshot button
     document.getElementById('captureBtn').addEventListener('click', captureScreenshot);
+
+    document.getElementById('InterpretasiAiBtn').addEventListener('click', interpretasiAi);
     
     // Mouse wheel for frame navigation
     element.addEventListener('wheel', handleMouseWheel);
@@ -293,6 +295,23 @@ async function handleFileUpload(event) {
     } catch (error) {
         console.error('Error loading files:', error);
         updateStatus('Error loading DICOM files');
+    }
+}
+
+function onImageRendered(event) {
+    try {
+        const target = event.target || element;
+        const viewport = cornerstone.getViewport(target);
+        const bottomLeft = document.getElementById('bottomleft');
+        if (bottomLeft && viewport && viewport.voi) {
+            bottomLeft.textContent = `WW/WC: ${Math.round(viewport.voi.windowWidth)} / ${Math.round(viewport.voi.windowCenter)}`;
+        }
+        // Keep UI in sync when image is rendered
+        if (typeof updateFrameInfo === 'function') {
+            updateFrameInfo();
+        }
+    } catch (err) {
+        console.warn('onImageRendered error:', err.message || err);
     }
 }
 
@@ -1014,15 +1033,151 @@ function captureScreenshot() {
     }
 }
 
-function onImageRendered(event) {
-    const viewport = cornerstone.getViewport(element);
-    
-    // Update viewport information
-    document.getElementById('bottomright1').textContent = 
-        `WW/WC: ${Math.round(viewport.voi.windowWidth)} / ${Math.round(viewport.voi.windowCenter)}`;
-    
-    document.getElementById('bottomright2').textContent = 
-        `Zoom: ${viewport.scale.toFixed(2)}x`;
+// Interpretasi AI button click event handler
+function interpretasiAi() {
+    if (!loaded) {
+        updateStatus('No image loaded to interpret');
+        alert('Tidak ada gambar yang dimuat.');
+        return;
+    }
+
+    // Ensure modal exists
+    let modal = document.getElementById('aiInterpretasiModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'aiInterpretasiModal';
+        modal.className = 'modal fade';
+        modal.setAttribute('tabindex', '-1');
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-hidden', 'true');
+        modal.innerHTML = `
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">AI Interpretasi Radiologi</h4>
+              </div>
+              <div class="modal-body">
+                <div id="aiInterpretasiLoading" class="text-center" style="padding: 20px;">
+                  <i class="fa fa-spinner fa-spin fa-3x" aria-hidden="true"></i>
+                  <div style="margin-top:10px;">Memproses interpretasi...</div>
+                </div>
+                <div id="aiInterpretasiResult" style="white-space: pre-wrap; display:none;"></div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+              </div>
+            </div>
+          </div>`;
+        document.body.appendChild(modal);
+        console.log("Modal exists now?", document.getElementById('aiInterpretasiModal'));
+    }
+
+    // Show modal using Bootstrap's modal method if available; otherwise fallback
+    if (typeof $ !== 'undefined' && $.fn && $.fn.modal) {
+        $(modal).modal('show');
+    } else {
+        modal.style.display = 'block';
+        // Bootstrap 3 uses 'in' for visible state; keep 'show' for our CSS
+        modal.classList.add('in');
+        modal.classList.add('show');
+        document.body.classList.add('modal-open');
+        // Add backdrop (Bootstrap 3 compatible)
+        const backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop fade in';
+        backdrop.id = 'aiInterpretasiBackdrop';
+        document.body.appendChild(backdrop);
+    }
+
+    // Add event listener for modal close button
+    const closeBtn = modal.querySelector('[data-dismiss="modal"]');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function() {
+            if (typeof $ !== 'undefined' && $.fn && $.fn.modal) {
+                $(modal).modal('hide');
+            } else {
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+                modal.classList.remove('in');
+                document.body.classList.remove('modal-open');
+                const backdrop = document.getElementById('aiInterpretasiBackdrop');
+                if (backdrop) backdrop.remove();
+            }
+        });
+    }
+
+    const btn = document.getElementById('InterpretasiAiBtn');
+    if (btn) {
+        btn.disabled = true;
+        btn.classList.add('disabled');
+    }
+
+    const loadingEl = document.getElementById('aiInterpretasiLoading');
+    const resultEl = document.getElementById('aiInterpretasiResult');
+    if (loadingEl) loadingEl.style.display = 'block';
+    if (resultEl) { resultEl.style.display = 'none'; resultEl.textContent = ''; }
+
+    try {
+        const canvas = element.querySelector('canvas');
+        if (!canvas) throw new Error('Canvas not found');
+        const dataURL = canvas.toDataURL('image/png');
+
+        const baseURL = mlite.url + '/' + mlite.admin;
+        const url = baseURL + '/orthanc/aiinterpretasi?t=' + mlite.token;
+
+        const body = new URLSearchParams();
+        body.append('token', mlite.token);
+        body.append('imageData', dataURL);
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body.toString()
+        })
+        .then(async (resp) => {
+            let payload;
+            try {
+                payload = await resp.json();
+            } catch (e) {
+                payload = { success: false, message: 'Gagal membaca respons' };
+            }
+
+            if (payload && payload.success) {
+                const text = payload.interpretation || 'Tidak ada interpretasi yang dihasilkan';
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (resultEl) { resultEl.style.display = 'block'; resultEl.textContent = text; }
+                updateStatus('Interpretasi AI berhasil');
+            } else {
+                const msg = (payload && payload.message) ? payload.message : ('HTTP Error ' + resp.status);
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (resultEl) { resultEl.style.display = 'block'; resultEl.textContent = 'Terjadi kesalahan: ' + msg; }
+                updateStatus('Interpretasi AI gagal: ' + msg);
+            }
+        })
+        .catch((error) => {
+            console.error('Error interpretasi AI:', error);
+            if (loadingEl) loadingEl.style.display = 'none';
+            if (resultEl) { resultEl.style.display = 'block'; resultEl.textContent = 'Kesalahan: ' + error.message; }
+            updateStatus('Kesalahan interpretasi AI');
+        })
+        .finally(() => {
+            const btn = document.getElementById('InterpretasiAiBtn');
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('disabled');
+            }
+        });
+    } catch (error) {
+        console.error('Error interpretasi AI:', error);
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (resultEl) { resultEl.style.display = 'block'; resultEl.textContent = 'Kesalahan: ' + error.message; }
+        updateStatus('Kesalahan interpretasi AI');
+        const btn2 = document.getElementById('InterpretasiAiBtn');
+        if (btn2) {
+            btn2.disabled = false;
+            btn2.classList.remove('disabled');
+        }
+    }
 }
 
 function updateStatus(message) {
