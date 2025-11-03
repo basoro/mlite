@@ -1438,6 +1438,13 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get('logged_in'):
+            # For API endpoints, return JSON instead of HTML login redirect
+            try:
+                is_api = request.path.startswith('/api/')
+            except Exception:
+                is_api = False
+            if is_api:
+                return jsonify({'success': False, 'error': 'Unauthorized'}), 401
             next_url = request.path if request.method == 'GET' else None
             return redirect(url_for('login', next=next_url))
         return f(*args, **kwargs)
@@ -5496,17 +5503,31 @@ def _parse_time(ts_str):
         return None
 
 def read_modsec_audit_lines(max_lines: int = 5000):
+    """Read ModSecurity audit lines with validation and container fallback.
+    Returns a list of raw JSON lines. If both methods fail, returns [].
+    """
     # Try local mounted file first
     try:
         if os.path.isfile(MODSEC_AUDIT_PATH):
-            with open(MODSEC_AUDIT_PATH, 'r', encoding='utf-8', errors='ignore') as f:
-                lines = f.readlines()[-max_lines:]
-                return [ln.rstrip('\n') for ln in lines]
+            if not os.access(MODSEC_AUDIT_PATH, os.R_OK):
+                logger.error(f"ModSec audit file not readable: {MODSEC_AUDIT_PATH}")
+            else:
+                try:
+                    size = os.path.getsize(MODSEC_AUDIT_PATH)
+                except Exception:
+                    size = None
+                logger.info(f"Reading local ModSec audit: path={MODSEC_AUDIT_PATH} size={size}")
+                with open(MODSEC_AUDIT_PATH, 'r', encoding='utf-8', errors='ignore') as f:
+                    lines = f.readlines()[-max_lines:]
+                    return [ln.rstrip('\n') for ln in lines]
+        else:
+            logger.warning(f"ModSec audit file not found locally: {MODSEC_AUDIT_PATH}")
     except Exception as e:
         logger.warning(f"ModSec audit local read failed: {e}")
     # Fallback to docker exec into nginx container
     try:
         cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"tail -n {max_lines} {shlex.quote(MODSEC_AUDIT_PATH)} 2>/dev/null || true"]
+        logger.info(f"Reading ModSec audit via docker exec: container={NGINX_CONTAINER_NAME} path={MODSEC_AUDIT_PATH}")
         res = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
         if res.returncode != 0:
             logger.warning(f"docker exec returned code {res.returncode}: {res.stderr}")
@@ -5741,67 +5762,71 @@ def modsecurity_dashboard_page():
 @login_required
 def api_modsec_logs_by_domain(domain):
     """Get ModSecurity logs filtered by domain with date range support"""
-    if not is_valid_site_name(domain):
-        return jsonify({'success': False, 'error': 'Invalid domain name'}), 400
-    
-    # Get date range parameters
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
-    
-    # Convert date strings to datetime objects
-    since = None
-    until = None
-    
-    if start_date:
-        try:
-            since = datetime.fromisoformat(start_date).replace(tzinfo=timezone.utc)
-        except ValueError:
-            return jsonify({'success': False, 'error': 'Invalid start_date format'}), 400
-    
-    if end_date:
-        try:
-            # Add one day to include the entire end date
-            until = datetime.fromisoformat(end_date).replace(tzinfo=timezone.utc) + timedelta(days=1)
-        except ValueError:
-            return jsonify({'success': False, 'error': 'Invalid end_date format'}), 400
-    
-    # Get events with domain filtering
-    events = get_modsec_events_by_domain(domain, since=since, until=until)
-    
-    # Format logs for frontend
-    logs = []
-    for event in events:
-        # Get the most relevant rule ID and message
-        rule_ids = event.get('rule_ids', [])
-        rule_id = rule_ids[0] if rule_ids else None
-        
-        # Extract message from event or use default
-        message = 'ModSecurity rule triggered'
-        if event.get('severity'):
-            message = f"{event['severity']} severity rule triggered"
-        
-        logs.append({
-            'time': event.get('bucket', 'unknown'),
-            'ip': event.get('src_ip', 'unknown'),
-            'method': event.get('method', 'unknown'),
-            'uri': event.get('uri', 'unknown'),
-            'rule_id': rule_id,
-            'severity': event.get('severity', 'unknown'),
-            'action': 'blocked' if event.get('status') and str(event.get('status')).startswith('4') else 'detected',
-            'message': message,
-            'domain': event.get('domain', domain)
+    try:
+        if not is_valid_site_name(domain):
+            return jsonify({'success': False, 'error': 'Invalid domain name'}), 400
+
+        # Get date range parameters
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+
+        # Convert date strings to datetime objects
+        since = None
+        until = None
+
+        if start_date:
+            try:
+                since = datetime.fromisoformat(start_date).replace(tzinfo=timezone.utc)
+            except ValueError:
+                return jsonify({'success': False, 'error': 'Invalid start_date format'}), 400
+
+        if end_date:
+            try:
+                # Add one day to include the entire end date
+                until = datetime.fromisoformat(end_date).replace(tzinfo=timezone.utc) + timedelta(days=1)
+            except ValueError:
+                return jsonify({'success': False, 'error': 'Invalid end_date format'}), 400
+
+        # Get events with domain filtering
+        events = get_modsec_events_by_domain(domain, since=since, until=until)
+
+        # Format logs for frontend
+        logs = []
+        for event in events:
+            # Get the most relevant rule ID and message
+            rule_ids = event.get('rule_ids', [])
+            rule_id = rule_ids[0] if rule_ids else None
+
+            # Extract message from event or use default
+            message = 'ModSecurity rule triggered'
+            if event.get('severity'):
+                message = f"{event['severity']} severity rule triggered"
+
+            logs.append({
+                'time': event.get('bucket', 'unknown'),
+                'ip': event.get('src_ip', 'unknown'),
+                'method': event.get('method', 'unknown'),
+                'uri': event.get('uri', 'unknown'),
+                'rule_id': rule_id,
+                'severity': event.get('severity', 'unknown'),
+                'action': 'blocked' if event.get('status') and str(event.get('status')).startswith('4') else 'detected',
+                'message': message,
+                'domain': event.get('domain', domain)
+            })
+
+        return jsonify({
+            'success': True,
+            'domain': domain,
+            'logs': logs,
+            'count': len(logs),
+            'date_range': {
+                'start_date': start_date,
+                'end_date': end_date
+            }
         })
-    
-    return jsonify({
-        'success': True,
-        'domain': domain,
-        'logs': logs,
-        'count': len(logs),
-        'date_range': {
-            'start_date': start_date,
-            'end_date': end_date
-        }
-    })
+    except Exception as e:
+        logger.exception("Error in api_modsec_logs_by_domain")
+        return jsonify({'success': False, 'error': 'Failed to fetch ModSecurity logs', 'details': str(e)}), 500
 
 @app.route('/api/block-ip', methods=['POST'])
 @login_required
@@ -5949,6 +5974,12 @@ def api_blocked_ips():
 
 def get_modsec_events_by_domain(domain, limit=1000, since=None, until=None):
     """Get ModSecurity events filtered by specific domain"""
+    # Validate domain input to avoid NoneType errors
+    if not isinstance(domain, str) or not domain.strip():
+        logger.warning(f"get_modsec_events_by_domain called with invalid domain: {domain!r}")
+        return []
+    target_domain = domain.strip().lower()
+
     lines = read_modsec_audit_lines(max_lines=max(1000, limit * 10))
     events = []
     
@@ -5962,10 +5993,11 @@ def get_modsec_events_by_domain(domain, limit=1000, since=None, until=None):
             continue
         
         ev = _parse_modsec_event(obj)
+        if not isinstance(ev, dict):
+            continue
         
-        # Filter by domain - case insensitive comparison
-        event_domain = ev.get('domain', '').lower()
-        target_domain = domain.lower()
+        # Filter by domain - case insensitive comparison with null-safety
+        event_domain = (ev.get('domain') or '').lower()
         
         # Check if this event belongs to the target domain
         if not event_domain or target_domain not in event_domain:
