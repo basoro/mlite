@@ -5496,12 +5496,23 @@ def _parse_time(ts_str):
         return None
 
 def read_modsec_audit_lines(max_lines: int = 5000):
+    # Try local mounted file first
+    try:
+        if os.path.isfile(MODSEC_AUDIT_PATH):
+            with open(MODSEC_AUDIT_PATH, 'r', encoding='utf-8', errors='ignore') as f:
+                lines = f.readlines()[-max_lines:]
+                return [ln.rstrip('\n') for ln in lines]
+    except Exception as e:
+        logger.warning(f"ModSec audit local read failed: {e}")
+    # Fallback to docker exec into nginx container
     try:
         cmd = ['docker', 'exec', NGINX_CONTAINER_NAME, 'sh', '-c', f"tail -n {max_lines} {shlex.quote(MODSEC_AUDIT_PATH)} 2>/dev/null || true"]
         res = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+        if res.returncode != 0:
+            logger.warning(f"docker exec returned code {res.returncode}: {res.stderr}")
         return (res.stdout or '').splitlines()
     except Exception as e:
-        logger.error(f"Error reading ModSecurity audit log: {e}")
+        logger.error(f"Error reading ModSecurity audit log via docker exec: {e}")
         return []
 
 def _parse_modsec_event(obj: dict) -> dict:

@@ -86,6 +86,7 @@ services:
       - ../:/workspace
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx:/workspace/docker/nginx
+      - ./logs/modsecurity:/var/log/modsecurity:ro
       - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - .env
@@ -194,6 +195,7 @@ services:
       - ./nginx/blocked_ips.conf:/etc/nginx/blocked_ips.conf
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
+      - ./logs/modsecurity:/var/log/modsecurity
     depends_on:
       - php56
       - php70
