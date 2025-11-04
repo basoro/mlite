@@ -12,6 +12,8 @@ return [
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('orthanc', 'server', 'http://localhost:8042')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('orthanc', 'username', 'orthanc')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('orthanc', 'password', 'orthanc')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('orthanc', 'ai_api_key', '*******')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('orthanc', 'ai_api_url', 'https://api.openai.com/v1/chat/completions')");
     },
     'uninstall'     =>  function() use($core)
     {

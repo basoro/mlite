@@ -29,6 +29,8 @@ class Admin extends AdminModule
       $orthanc['server'] = $this->settings->get('orthanc.server');
       $orthanc['username'] = $this->settings->get('orthanc.username');
       $orthanc['password'] = $this->settings->get('orthanc.password');
+      $orthanc['ai_api_key'] = $this->settings->get('orthanc.ai_api_key');
+      $orthanc['ai_api_url'] = $this->settings->get('orthanc.ai_api_url');
       return $this->draw('settings.html', ['orthanc' => $orthanc]);
     }
 
