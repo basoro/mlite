@@ -520,12 +520,18 @@
               <i class="fas fa-exclamation-triangle text-blue-600 dark:text-blue-400 mr-2"></i>
               Error Logs
             </h2>
-            <button onclick="loadErrorLogs()" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm">
-              Refresh
-            </button>
+            <div class="flex items-center gap-2">
+              <input id="errorLogsFilter" type="text" placeholder="Filter..." class="px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600" oninput="filterLogs('errorLogs','errorLogsFilter')" />
+              <button onclick="copyLog('errorLogs')" class="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 transition text-sm"><i class="fas fa-copy mr-1"></i>Copy</button>
+              <button onclick="toggleLineNumbers('errorLogs')" class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition text-sm"><i class="fas fa-list-ol mr-1"></i>Lines</button>
+              <button onclick="toggleExpand('errorLogs')" class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition text-sm"><i class="fas fa-expand mr-1"></i>Expand</button>
+              <button onclick="loadErrorLogs()" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm">
+                Refresh
+              </button>
+            </div>
           </div>
           <div class="p-4">
-            <pre id="errorLogs" class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-3 rounded text-xs overflow-auto max-h-64"></pre>
+            <pre class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-3 rounded text-xs overflow-auto max-h-64"><code id="errorLogs" class="language-none"></code></pre>
           </div>
         </div>
         
@@ -535,12 +541,18 @@
               <i class="fas fa-sync text-blue-600 dark:text-blue-400 mr-2"></i>
               Replication Logs
             </h2>
-            <button onclick="loadReplicationLogs()" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm">
-              Refresh
-            </button>
+            <div class="flex items-center gap-2">
+              <input id="replicationLogsFilter" type="text" placeholder="Filter..." class="px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600" oninput="filterLogs('replicationLogs','replicationLogsFilter')" />
+              <button onclick="copyLog('replicationLogs')" class="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 transition text-sm"><i class="fas fa-copy mr-1"></i>Copy</button>
+              <button onclick="toggleLineNumbers('replicationLogs')" class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition text-sm"><i class="fas fa-list-ol mr-1"></i>Lines</button>
+              <button onclick="toggleExpand('replicationLogs')" class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition text-sm"><i class="fas fa-expand mr-1"></i>Expand</button>
+              <button onclick="loadReplicationLogs()" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm">
+                Refresh
+              </button>
+            </div>
           </div>
           <div class="p-4">
-            <pre id="replicationLogs" class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-3 rounded text-xs overflow-auto max-h-64"></pre>
+            <pre class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-3 rounded text-xs overflow-auto max-h-64"><code id="replicationLogs" class="language-none"></code></pre>
           </div>
         </div>
         
@@ -550,7 +562,11 @@
               <i class="fas fa-tachometer-alt text-blue-600 dark:text-blue-400 mr-2"></i>
               Slow Query Logs
             </h2>
-            <div class="flex gap-2">
+            <div class="flex gap-2 items-center">
+              <input id="slowLogsFilter" type="text" placeholder="Filter..." class="px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600" oninput="filterLogs('slowLogs','slowLogsFilter')" />
+              <button onclick="copyLog('slowLogs')" class="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 transition text-sm"><i class="fas fa-copy mr-1"></i>Copy</button>
+              <button onclick="toggleLineNumbers('slowLogs')" class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition text-sm"><i class="fas fa-list-ol mr-1"></i>Lines</button>
+              <button onclick="toggleExpand('slowLogs')" class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition text-sm"><i class="fas fa-expand mr-1"></i>Expand</button>
               <button onclick="analyzeSlowLogs()" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm">
                 Analyze
               </button>
@@ -560,7 +576,7 @@
             </div>
           </div>
           <div class="p-4">
-            <pre id="slowLogs" class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-3 rounded text-xs overflow-auto max-h-64"></pre>
+            <pre class="bg-gray-50 dark:bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-auto max-h-64"><code id="slowLogs" class="language-none"></code></pre>
           </div>
         </div>
       </div>
@@ -612,6 +628,12 @@
     </div>
   </div>  
 </div>
+
+<!-- Include Prism for syntax highlight -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-tomorrow.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/plugins/line-numbers/prism-line-numbers.css" />
+<script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs/plugins/line-numbers/prism-line-numbers.js"></script>
 
 <!-- Include JavaScript -->
 <script src="{{ url_for('static', filename='mysql.js') }}"></script>

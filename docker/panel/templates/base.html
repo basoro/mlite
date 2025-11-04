@@ -136,6 +136,15 @@
           <button id="theme-toggle" class="ml-2 px-3 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800" title="Toggle theme" aria-label="Toggle theme">
             <span id="theme-icon">☀️</span>
           </button>
+          <!-- Actions restart panel -->
+          <div class="flex items-center">
+            <button id="panel-restart-btn" class="px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" title="Restart Panel" onclick="restartPanel('restart')">
+              <i class="fa fa-rotate-right"></i>
+            </button>
+            <button id="panel-recreate-btn" class="px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" title="Recreate Panel" onclick="restartPanel('recreate')">
+              <i class="fa fa-sync"></i>
+            </button>
+          </div>
           <!-- Actions logout -->
           <button class="text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="logout()">
             <i class="fa fa-right-from-bracket mr-2"></i>
@@ -302,6 +311,33 @@
     }
     function logout() {
       window.location.href = '/logout';
+    }
+
+    async function restartPanel(mode = 'restart') {
+      try {
+        const btn = mode === 'recreate' ? document.getElementById('panel-recreate-btn') : document.getElementById('panel-restart-btn');
+        if (!btn) return;
+        const confirmMsg = mode === 'recreate' ? 'Recreate Panel akan memulai ulang container dengan force recreate. Lanjutkan?' : 'Restart Panel akan memulai ulang container panel. Lanjutkan?';
+        if (!confirm(confirmMsg)) return;
+        btn.disabled = true;
+        const original = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        const res = await fetch('/api/restart-panel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode }) });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message || (mode === 'recreate' ? 'Panel recreate initiated' : 'Panel restart initiated'), 'success');
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          showToast(data.error || 'Gagal menjalankan perintah panel', 'error');
+          btn.disabled = false;
+          btn.innerHTML = original;
+        }
+      } catch (e) {
+        console.error(e);
+        showToast('Terjadi kesalahan saat menghubungi server', 'error');
+        const btn = mode === 'recreate' ? document.getElementById('panel-recreate-btn') : document.getElementById('panel-restart-btn');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa fa-rotate-right"></i>'; }
+      }
     }
 
     function formatFileSize(bytes) {

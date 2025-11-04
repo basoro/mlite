@@ -82,13 +82,16 @@
           {% if site.type == 'php' %}
           <i class="fas fa-code mr-2"></i>
           <span>Type: PHP-FPM</span>
+          {% elif site.type == 'static' %}
+          <i class="fas fa-database mr-2"></i>
+          <span>Type: Static Files</span>
           {% else %}
           <i class="fas fa-exchange-alt mr-2"></i>
           <span>Type: Nginx Proxy</span>
           {% endif %}
         </div>
         <div class="flex items-center text-gray-600 dark:text-gray-400 mb-2">
-          {% if site.type == 'php' %}
+          {% if site.type == 'php' or site.type == 'static' %}
           <i class="fas fa-folder mr-2"></i>
           <span>Root: {{ site.root or '/var/www/public' }}</span>
           {% else %}

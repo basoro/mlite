@@ -197,6 +197,176 @@ function getMySQLInfo() {
     });
 }
 
+function openStartLog(containerName) {
+  try {
+    const button = (typeof event !== 'undefined' && event) ? event.target.closest('button') : null;
+    const originalContent = button ? button.innerHTML : '';
+    if (!containerName) {
+      throw new Error('Invalid container name');
+    }
+
+    // Try to use SSE modal if available
+    const modal = document.getElementById('startLogModal');
+    const content = document.getElementById('startLogContent');
+    const useSSE = !!(modal && content && typeof EventSource !== 'undefined');
+
+    if (button) {
+      button.disabled = true;
+      button.dataset.originalContent = originalContent;
+      button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Starting...';
+    }
+
+    if (useSSE) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      content.textContent = '';
+      window.startShouldReload = false;
+      if (window.startSource) {
+        try { window.startSource.close(); } catch (_) {}
+      }
+      window.startSource = new EventSource(`/api/container/start-log/${encodeURIComponent(containerName)}`);
+      window.startSource.onmessage = (e) => {
+        content.textContent += (e.data || '') + "\n";
+        content.scrollTop = content.scrollHeight;
+      };
+      window.startSource.addEventListener('done', (e) => {
+        const status = (e.data || '').toLowerCase();
+        content.textContent += `\n[Start ${status}]\n`;
+        content.scrollTop = content.scrollHeight;
+        window.startShouldReload = status === 'success';
+        try { window.startSource.close(); } catch (_) {}
+        if (button) {
+          button.disabled = false;
+          button.innerHTML = button.dataset.originalContent || originalContent || button.innerHTML;
+          delete button.dataset.originalContent;
+        }
+      });
+      window.startSource.onerror = () => {
+        content.textContent += "\n[Error streaming logs]\n";
+        content.scrollTop = content.scrollHeight;
+        window.startShouldReload = false;
+        try { window.startSource.close(); } catch (_) {}
+        if (button) {
+          button.disabled = false;
+          button.innerHTML = button.dataset.originalContent || originalContent || button.innerHTML;
+          delete button.dataset.originalContent;
+        }
+      };
+    } else {
+      // Fallback: POST start
+      const url = `/api/container/${encodeURIComponent(containerName)}/start`;
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(async (response) => {
+        const text = await response.text();
+        let data = null;
+        try { data = text ? JSON.parse(text) : null; } catch (_) {}
+        if (!response.ok) {
+          const msg = (data && (data.error || data.message)) ? (data.error || data.message) : 'Failed to start container';
+          throw new Error(msg);
+        }
+        return data;
+      })
+      .then((data) => {
+        const msg = (data && (data.message || (data.success ? 'Container started successfully' : ''))) || 'Container started';
+        showNotification(msg, 'success');
+        setTimeout(() => { window.location.reload(); }, 600);
+      })
+      .catch((error) => {
+        console.error('Error starting container:', error);
+        showNotification(error.message || 'Error starting container', 'error');
+        alert(`Error: ${error.message}`);
+      })
+      .finally(() => {
+        if (button) {
+          button.disabled = false;
+          button.innerHTML = button.dataset.originalContent || originalContent || button.innerHTML;
+          delete button.dataset.originalContent;
+        }
+      });
+    }
+  } catch (e) {
+    console.error('openStartLog error:', e);
+    showNotification(e.message || 'Unexpected error', 'error');
+  }
+}
+
+function closeStartLog() {
+  try {
+    const modal = document.getElementById('startLogModal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+    if (window.startSource) { try { window.startSource.close(); } catch (_) {} window.startSource = null; }
+    if (window.startShouldReload) { window.location.reload(); }
+  } catch (e) {
+    console.error('closeStartLog error:', e);
+  }
+}
+
+function controlMySQLContainer(containerName, action) {
+  try {
+    const button = (typeof event !== 'undefined' && event) ? event.target.closest('button') : null;
+    const originalContent = button ? button.innerHTML : '';
+
+    if (!containerName || !action) {
+      throw new Error('Invalid parameters');
+    }
+    if (!['stop', 'restart'].includes(action)) {
+      throw new Error('Unsupported action');
+    }
+
+    if (button) {
+      button.disabled = true;
+      button.dataset.originalContent = originalContent;
+      button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>' + (action === 'stop' ? 'Stopping...' : 'Restarting...');
+    }
+
+    const url = `/api/container/${encodeURIComponent(containerName)}/${encodeURIComponent(action)}`;
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(async (response) => {
+      const text = await response.text();
+      let data = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch (e) {
+        // Non-JSON response
+      }
+      if (!response.ok) {
+        const msg = (data && (data.error || data.message)) ? (data.error || data.message) : `Failed to ${action} container`;
+        throw new Error(msg);
+      }
+      return data;
+    })
+    .then((data) => {
+      const msg = (data && (data.message || (data.success ? `Container ${action}ed successfully` : ''))) || `Container ${action}ed`;
+      showNotification(msg, 'success');
+      setTimeout(() => { window.location.reload(); }, 600);
+    })
+    .catch((error) => {
+      console.error(`Error ${action} container:`, error);
+      showNotification(error.message || `Error ${action} container`, 'error');
+      alert(`Error: ${error.message}`);
+    })
+    .finally(() => {
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = button.dataset.originalContent || originalContent || button.innerHTML;
+        delete button.dataset.originalContent;
+      }
+    });
+  } catch (e) {
+    console.error('controlMySQLContainer error:', e);
+    showNotification(e.message || 'Unexpected error', 'error');
+  }
+}
+
 // Database functions
 function loadDatabases() {
   fetch('/api/mysql/databases')
@@ -1323,32 +1493,88 @@ function resetSlave() {
 }
 
 // Log functions
+function setCodeBlockText(id, text) {
+  const el = document.getElementById(id);
+  el.textContent = text || '';
+  if (window.Prism && el.closest('pre')) {
+    // Language none; still run Prism to format line numbers
+    Prism.highlightElement(el);
+  }
+}
+
+function filterLogs(codeId, filterInputId) {
+  const filter = document.getElementById(filterInputId)?.value || '';
+  const original = (filterLogs._cache?.[codeId]) ?? document.getElementById(codeId)?.textContent ?? '';
+  if (!filterLogs._cache) filterLogs._cache = {};
+  if (!(codeId in filterLogs._cache)) filterLogs._cache[codeId] = original;
+  if (!filter) {
+    setCodeBlockText(codeId, filterLogs._cache[codeId]);
+    return;
+  }
+  const lines = filterLogs._cache[codeId].split('\n');
+  const filtered = lines.filter(l => l.toLowerCase().includes(filter.toLowerCase())).join('\n');
+  setCodeBlockText(codeId, filtered);
+}
+
+function copyLog(codeId) {
+  const text = document.getElementById(codeId)?.textContent || '';
+  navigator.clipboard.writeText(text).then(() => {
+    showNotification('Logs copied to clipboard', 'success');
+  }).catch(() => {
+    alert('Failed to copy logs');
+  });
+}
+
+function toggleLineNumbers(codeId) {
+  const code = document.getElementById(codeId);
+  if (!code) return;
+  const pre = code.closest('pre');
+  if (!pre) return;
+  // Ensure Prism CSS selector applies
+  if (!pre.classList.contains('language-none')) pre.classList.add('language-none');
+  const enabled = pre.classList.toggle('line-numbers');
+  if (enabled && window.Prism) {
+    Prism.highlightElement(code);
+  } else {
+    // Remove generated line number rows so they don't linger
+    const rows = pre.querySelector('.line-numbers-rows');
+    if (rows) rows.remove();
+  }
+}
+
+function toggleExpand(codeId) {
+  const code = document.getElementById(codeId);
+  if (!code) return;
+  const pre = code.closest('pre');
+  if (!pre) return;
+  const computed = window.getComputedStyle(pre);
+  if (computed.maxHeight !== 'none') {
+    pre.style.maxHeight = 'none';
+  } else {
+    pre.style.maxHeight = '16rem'; // ~max-h-64
+  }
+}
+
 function loadErrorLogs() {
   fetch('/api/mysql/error-logs')
     .then(async (response) => {
       const text = await response.text();
       let data;
-      try {
-        data = text ? JSON.parse(text) : null;
-      } catch (e) {
-        throw new Error('Invalid JSON response');
-      }
-      if (!response.ok) {
-        const errMsg = (data && (data.error || data.message)) ? (data.error || data.message) : 'Failed to load error logs';
-        throw new Error(errMsg);
-      }
+      try { data = text ? JSON.parse(text) : null; } catch { throw new Error('Invalid JSON response'); }
+      if (!response.ok) { throw new Error((data && (data.error || data.message)) || 'Failed to load error logs'); }
       return data;
     })
     .then(data => {
       if (data && (data.success || data.logs)) {
-        document.getElementById('errorLogs').textContent = data.logs || 'No error logs available';
+        setCodeBlockText('errorLogs', data.logs || 'No error logs available');
+        filterLogs._cache && delete filterLogs._cache['errorLogs'];
       } else {
         throw new Error(data?.error || 'Failed to load error logs');
       }
     })
     .catch(error => {
       console.error('Error loading error logs:', error);
-      document.getElementById('errorLogs').textContent = `Error: ${error.message}`;
+      setCodeBlockText('errorLogs', `Error: ${error.message}`);
     });
 }
 
@@ -1357,27 +1583,21 @@ function loadReplicationLogs() {
     .then(async (response) => {
       const text = await response.text();
       let data;
-      try {
-        data = text ? JSON.parse(text) : null;
-      } catch (e) {
-        throw new Error('Invalid JSON response');
-      }
-      if (!response.ok) {
-        const errMsg = (data && (data.error || data.message)) ? (data.error || data.message) : 'Failed to load replication logs';
-        throw new Error(errMsg);
-      }
+      try { data = text ? JSON.parse(text) : null; } catch { throw new Error('Invalid JSON response'); }
+      if (!response.ok) { throw new Error((data && (data.error || data.message)) || 'Failed to load replication logs'); }
       return data;
     })
     .then(data => {
       if (data && (data.success || data.logs)) {
-        document.getElementById('replicationLogs').textContent = data.logs || 'No replication logs available';
+        setCodeBlockText('replicationLogs', data.logs || 'No replication logs available');
+        filterLogs._cache && delete filterLogs._cache['replicationLogs'];
       } else {
         throw new Error(data?.error || 'Failed to load replication logs');
       }
     })
     .catch(error => {
       console.error('Error loading replication logs:', error);
-      document.getElementById('replicationLogs').textContent = `Error: ${error.message}`;
+      setCodeBlockText('replicationLogs', `Error: ${error.message}`);
     });
 }
 
@@ -1386,27 +1606,21 @@ function loadSlowLogs() {
     .then(async (response) => {
       const text = await response.text();
       let data;
-      try {
-        data = text ? JSON.parse(text) : null;
-      } catch (e) {
-        throw new Error('Invalid JSON response');
-      }
-      if (!response.ok) {
-        const errMsg = (data && (data.error || data.message)) ? (data.error || data.message) : 'Failed to load slow logs';
-        throw new Error(errMsg);
-      }
+      try { data = text ? JSON.parse(text) : null; } catch { throw new Error('Invalid JSON response'); }
+      if (!response.ok) { throw new Error((data && (data.error || data.message)) || 'Failed to load slow logs'); }
       return data;
     })
     .then(data => {
       if (data && (data.success || data.logs)) {
-        document.getElementById('slowLogs').textContent = data.logs || 'No slow query logs available';
+        setCodeBlockText('slowLogs', data.logs || 'No slow query logs available');
+        filterLogs._cache && delete filterLogs._cache['slowLogs'];
       } else {
         throw new Error(data?.error || 'Failed to load slow logs');
       }
     })
     .catch(error => {
       console.error('Error loading slow logs:', error);
-      document.getElementById('slowLogs').textContent = `Error: ${error.message}`;
+      setCodeBlockText('slowLogs', `Error: ${error.message}`);
     });
 }
 

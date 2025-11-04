@@ -116,8 +116,14 @@ def _exec_mysql(sql: str, db: str = None, expect_output: bool = True, dictionary
     - When dictionary=True, keep column names in first line and return list of dicts.
     - When dictionary=False, skip column names and return list of lists.
     """
-    user = db_config.get('user', 'root')
-    pwd = db_config.get('password', '')
+    # Prefer latest credentials from mysql_config.json if available
+    try:
+        cfg = load_mysql_config()
+        user = cfg.get('user', db_config.get('user', 'root'))
+        pwd = cfg.get('password', db_config.get('password', ''))
+    except Exception:
+        user = db_config.get('user', 'root')
+        pwd = db_config.get('password', '')
     skip_cols = not dictionary
     cli_args = _build_mysql_cli_args(user, pwd, database=db, batch=True, skip_column_names=skip_cols)
     cmd = ['docker', 'exec', MYSQL_CONTAINER_NAME] + cli_args + ['-e', sql]
@@ -4006,11 +4012,19 @@ def set_root_password():
         connection = create_mysql_connection()
         cursor = connection.cursor()
         
-        # Set new password for root user
+        # Set new password for root user (localhost and %)
         if new_password:
             cursor.execute("ALTER USER 'root'@'localhost' IDENTIFIED BY %s", (new_password,))
+            try:
+                cursor.execute("ALTER USER IF EXISTS 'root'@'%' IDENTIFIED BY %s", (new_password,))
+            except Exception as e:
+                logger.warning(f"Failed to update password for root@%: {e}")
         else:
             cursor.execute("ALTER USER 'root'@'localhost' IDENTIFIED BY ''")
+            try:
+                cursor.execute("ALTER USER IF EXISTS 'root'@'%' IDENTIFIED BY ''")
+            except Exception as e:
+                logger.warning(f"Failed to update empty password for root@%: {e}")
         
         connection.commit()
         cursor.close()
@@ -4073,8 +4087,9 @@ def get_mysql_users():
         connection = create_mysql_connection()
         cursor = connection.cursor(dictionary=True)
         
-        # Get all users
-        cursor.execute("SELECT User, Host FROM mysql.user WHERE User != '' ORDER BY User, Host")
+        # Get all users (excluding system and root accounts)
+        logger.info('Filtering out system MySQL users from display: root, mysql, mysql.sys, mysql.session, mysql.infoschema')
+        cursor.execute("SELECT User, Host FROM mysql.user WHERE User != '' AND User NOT IN ('root','mysql','mysql.sys','mysql.session','mysql.infoschema') ORDER BY User, Host")
         users = cursor.fetchall()
         
         # Get privileges for each user
@@ -5024,12 +5039,10 @@ def get_mysql_error_logs():
         if not log_found:
             logs_content = "No MySQL error logs found in common locations."
         
-        # Format logs for HTML display
-        formatted_logs = logs_content.replace('\n', '<br>').replace(' ', '&nbsp;')
-        
+        # Return plain text logs (no HTML formatting)
         return jsonify({
             'success': True,
-            'logs': formatted_logs
+            'logs': logs_content
         })
         
     except Exception as e:
@@ -5103,12 +5116,10 @@ def get_mysql_replication_logs():
         if not logs_content.strip():
             logs_content = "No replication information available."
         
-        # Format logs for HTML display
-        formatted_logs = logs_content.replace('\n', '<br>').replace(' ', '&nbsp;')
-        
+        # Return plain text logs
         return jsonify({
             'success': True,
-            'logs': formatted_logs
+            'logs': logs_content
         })
         
     except Exception as e:
@@ -5148,12 +5159,10 @@ def get_mysql_general_logs():
             logs_content += "general_log = 1\n"
             logs_content += "general_log_file = /var/log/mysql/general.log"
         
-        # Format logs for HTML display
-        formatted_logs = logs_content.replace('\n', '<br>').replace(' ', '&nbsp;')
-        
+        # Return plain text logs
         return jsonify({
             'success': True,
-            'logs': formatted_logs
+            'logs': logs_content
         })
         
     except Exception as e:
@@ -5194,12 +5203,10 @@ def get_mysql_slow_logs():
             logs_content += "slow_query_log_file = /var/log/mysql/mysql-slow.log\n"
             logs_content += "long_query_time = 2"
         
-        # Format logs for HTML display
-        formatted_logs = logs_content.replace('\n', '<br>').replace(' ', '&nbsp;')
-        
+        # Return plain text logs
         return jsonify({
             'success': True,
-            'logs': formatted_logs
+            'logs': logs_content
         })
         
     except Exception as e:
@@ -5289,12 +5296,10 @@ def analyze_mysql_slow_logs():
         if not analysis_content.strip():
             analysis_content = "No slow query analysis data available."
         
-        # Format analysis for HTML display
-        formatted_analysis = analysis_content.replace('\n', '<br>').replace(' ', '&nbsp;')
-        
+        # Return plain text analysis
         return jsonify({
             'success': True,
-            'analysis': formatted_analysis
+            'analysis': analysis_content
         })
         
     except Exception as e:
@@ -5970,6 +5975,30 @@ def api_blocked_ips():
         
     except Exception as e:
         logger.error(f"Error getting blocked IPs: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/restart-panel', methods=['POST'])
+@login_required
+def api_restart_panel():
+    """Restart or recreate the panel container via Docker Compose"""
+    try:
+        data = request.get_json(silent=True) or {}
+        mode = str(data.get('mode') or 'restart').lower()
+        compose_file = '/workspace/docker/docker-compose.yml'
+
+        if mode == 'recreate':
+            cmd = ['docker', 'compose', '-f', compose_file, 'up', '-d', '--no-deps', '--force-recreate', 'panel']
+            action = 'recreate'
+        else:
+            cmd = ['docker', 'compose', '-f', compose_file, 'restart', 'panel']
+            action = 'restart'
+
+        # Start asynchronously to avoid killing the current request mid-flight
+        subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        logger.info(f"Initiated panel {action} via docker compose")
+        return jsonify({'success': True, 'message': f'Panel {action} initiated'})
+    except Exception as e:
+        logger.exception(f"Error initiating panel restart: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 def get_modsec_events_by_domain(domain, limit=1000, since=None, until=None):
