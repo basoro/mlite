@@ -328,13 +328,37 @@ class Admin extends AdminModule
             // Unzip latest update
             $zip = new \ZipArchive;
             $zip->open(BASE_DIR.'/tmp/latest.zip');
-            $zip->extractTo(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version'));
+            // Extract to base tmp/update
+            $zip->extractTo(BASE_DIR.'/tmp/update');
 
-            // Copy files
-            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/systems', BASE_DIR.'/systems');
-            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/plugins', BASE_DIR.'/plugins');
-            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/assets', BASE_DIR.'/assets');
-            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/themes', BASE_DIR.'/themes');
+            // Detect extracted update root folder
+            $updateBase = BASE_DIR.'/tmp/update';
+            $extractedRoot = null;
+            $tag = $this->settings->get('settings.update_version');
+            if (!empty($tag) && is_dir($updateBase.'/mlite-'.$tag)) {
+                $extractedRoot = $updateBase.'/mlite-'.$tag;
+            } else {
+                $dirs = glob($updateBase.'/mlite-*', GLOB_ONLYDIR);
+                if (!empty($dirs)) {
+                    $extractedRoot = $dirs[0];
+                }
+            }
+            // Fallback: direct extraction without wrapper
+            if (!$extractedRoot && is_dir($updateBase.'/systems')) {
+                $extractedRoot = $updateBase;
+            }
+            if (!$extractedRoot) {
+                $this->tpl->set('error', "Update extraction failed: 'mlite-*' folder not found.");
+                $zip->close();
+                @unlink(BASE_DIR.'/tmp/latest.zip');
+                return $this->draw('update.html');
+            }
+
+            // Copy files using detected root
+            $this->rcopy($extractedRoot.'/systems', BASE_DIR.'/systems');
+            $this->rcopy($extractedRoot.'/plugins', BASE_DIR.'/plugins');
+            $this->rcopy($extractedRoot.'/assets', BASE_DIR.'/assets');
+            $this->rcopy($extractedRoot.'/themes', BASE_DIR.'/themes');
 
             // Restore defines
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');
@@ -342,12 +366,16 @@ class Admin extends AdminModule
 
             // Run upgrade script
             $version = $settings['version'];
-            $new_version = include(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/systems/upgrade.php');
+            $upgradeFile = $extractedRoot.'/systems/upgrade.php';
+            $new_version = $version;
+            if (is_file($upgradeFile)) {
+                $new_version = include($upgradeFile);
+            }
 
             // Close archive and delete all unnecessary files
             $zip->close();
             unlink(BASE_DIR.'/tmp/latest.zip');
-            rrmdir(BASE_DIR.'/tmp/update');
+            $this->rrmdir(BASE_DIR.'/tmp/update');
 
             $this->settings('settings', 'version', $new_version);
             $this->settings('settings', 'update_version', 0);
@@ -474,7 +502,15 @@ class Admin extends AdminModule
             mkdir($dest, $permissions, true);
         }
 
+        // Guard: source must be an existing directory before iterating
+        if (!is_dir($source)) {
+            return false;
+        }
+
         $dir = dir($source);
+        if ($dir === false) {
+            return false;
+        }
         while (false !== $entry = $dir->read()) {
             if ($entry == '.' || $entry == '..') {
                 continue;
@@ -485,6 +521,32 @@ class Admin extends AdminModule
 
         $dir->close();
         return true;
+    }
+
+    private function rrmdir($dir)
+    {
+        if (!file_exists($dir)) {
+            return;
+        }
+        if (is_file($dir) || is_link($dir)) {
+            @unlink($dir);
+            return;
+        }
+        $items = scandir($dir);
+        if ($items === false) {
+            @rmdir($dir);
+            return;
+        }
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') continue;
+            $path = $dir . DIRECTORY_SEPARATOR . $item;
+            if (is_dir($path) && !is_link($path)) {
+                $this->rrmdir($path);
+            } else {
+                @unlink($path);
+            }
+        }
+        @rmdir($dir);
     }
 
     private function _verifyLicense()
