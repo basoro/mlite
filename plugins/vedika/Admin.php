@@ -3321,8 +3321,9 @@ class Admin extends AdminModule
     exit();
   }
 
-  public function getBridgingIdrg($no_rawat)
+  public function getBridgingIdrg($nosep, $no_rawat)
   {
+
     $reg_periksa = $this->db('reg_periksa')
       ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
       ->join('bridging_sep', 'bridging_sep.no_rawat=reg_periksa.no_rawat')
@@ -3335,7 +3336,7 @@ class Admin extends AdminModule
                       },
                       "data":{
                           "nomor_kartu":"'.$reg_periksa['no_peserta'].'",
-                          "nomor_sep":"'.$reg_periksa['no_sep'].'",
+                          "nomor_sep":"'.$nosep.'",
                           "nomor_rm":"'.$reg_periksa['no_rkm_medis'].'",
                           "nama_pasien":"'.$reg_periksa['nm_pasien'].'",
                           "tgl_lahir":"'.$reg_periksa['tgl_lahir'].'",
@@ -3344,6 +3345,14 @@ class Admin extends AdminModule
                   }';
     $msg= $this->Request($request);
     // echo json_encode($reg_periksa);
+    $this->db('mlite_eklaim_logs')->save([
+        'nomor_sep' => $nosep,
+        'method' => "new_claim", 
+        'request_data' => $request,
+        'response_data' => json_encode($msg), 
+        'created_at' => date('Y-m-d H:i:s'),
+        'username' => $this->core->getUserInfo('username')
+    ]);
     echo $this->draw('idrg.html', [
       'reg_periksa' => $reg_periksa,
       'noRawat' => revertNoRawat($no_rawat), 

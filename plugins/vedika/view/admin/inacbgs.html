@@ -1100,8 +1100,9 @@
   $("#bridginginacbgs").on("click", "#groupingidrg", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
+    var nosep = $('input:text[name=nosep]').val();
     var no_rawat = $('input:text[name=no_rawat]').val();
-    var loadURL =  baseURL + '/vedika/bridgingidrg/' + no_rawat.replaceAll('/','') + '?t=' + mlite.token;
+    var loadURL =  baseURL + '/vedika/bridgingidrg/' + nosep + '/' + no_rawat.replaceAll('/','') + '?t=' + mlite.token;
 
     var modal = $('#moduleModal');
     var modalContent = $('#moduleModal .modal-content');
