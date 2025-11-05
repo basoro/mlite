@@ -961,13 +961,12 @@ class Admin extends AdminModule
       ->where('prioritas', '1')
       ->oneArray();
     $_prosedure_pasien = $this->db('prosedur_pasien')->select(['deskripsi_pendek' => 'icd9.deskripsi_pendek', 'kode' => 'icd9.kode'])->join('icd9', 'icd9.kode = prosedur_pasien.kode')->where('prosedur_pasien.no_rawat', $no_rawat)->where('prosedur_pasien.status', 'Ralan')->where('prosedur_pasien.prioritas', '1')->oneArray();
-    $prosedure_pasien = $_prosedure_pasien['deskripsi_pendek'];
-    $kode_prosedure_pasien = $_prosedure_pasien['kode'];
-    if (strpos($kode_prosedure_pasien, '.') !== false) {
-      $kode_prosedure_pasien = $kode_prosedure_pasien;
-    } else {
-      $kode_prosedure_pasien = substr_replace($kode_prosedure_pasien, '.', 2, 0);
-    }
+$prosedure_pasien = $_prosedure_pasien['deskripsi_pendek'] ?? '';
+$kode_prosedure_pasien = $_prosedure_pasien['kode'] ?? '';
+// Harden: avoid deprecated calls with null and only mutate when safe
+if ($kode_prosedure_pasien !== '' && strpos($kode_prosedure_pasien, '.') === false && strlen($kode_prosedure_pasien) >= 2) {
+  $kode_prosedure_pasien = substr_replace($kode_prosedure_pasien, '.', 2, 0);
+}
 
     $mlite_billing = $this->db('mlite_billing')->where('no_rawat', $no_rawat)->oneArray();
 
@@ -1008,7 +1007,12 @@ class Admin extends AdminModule
     // $cek_ihs = $this->core->getPasienInfo('nip',$no_rkm_medis);
     // $ihs_patient = $cek_ihs;
     // if ($ihs_patient == '' || $ihs_patient == '-') {
-    $ihs_patient = json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id;
+    $ihs_patient = '';
+    $__patientResp = $this->getPatient($no_ktp_pasien);
+    $__patientJson = json_decode($__patientResp);
+    if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+      $ihs_patient = $__patientJson->entry[0]->resource->id;
+    }
     // $this->db('pasien')->where('no_rkm_medis',$no_rkm_medis)->update('nip',$ihs_patient);
     // }
 
@@ -1326,8 +1330,17 @@ class Admin extends AdminModule
     $no = 1;
     $cek_detail = $this->db('detail_pemberian_obat')->where('no_rawat', $no_rawat)->toArray();
     $praktisi_apoteker = $this->db('mlite_satu_sehat_mapping_praktisi')->select('practitioner_id', 'kd_dokter')->where('jenis_praktisi', 'Apoteker')->toArray();
-    $id_praktisi_apoteker = $praktisi_apoteker[array_rand($praktisi_apoteker)];
-    $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apoteker['kd_dokter']);
+// Guard against empty practitioner list
+if (!is_array($praktisi_apoteker) || empty($praktisi_apoteker)) {
+  // Fallback: attempt to use prescribing doctor as pharmacist context
+  $id_praktisi_apoteker = [
+    'practitioner_id' => $no_ktp_dokter['practitioner_id'] ?? ($no_ktp_dokter['practitioner_id'] ?? ''),
+    'kd_dokter' => $kd_dokter
+  ];
+} else {
+  $id_praktisi_apoteker = $praktisi_apoteker[array_rand($praktisi_apoteker)];
+}
+$nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apoteker['kd_dokter'] ?? $kd_dokter);
     foreach ($cek_detail as $value) {
       $cek_obat = $this->db('mlite_satu_sehat_mapping_obat')->where('kode_brng', $value['kode_brng'])->oneArray();
       $cek_aturan_pakai = $this->db('aturan_pakai')->where('no_rawat', $no_rawat)->where('kode_brng', $value['kode_brng'])->where('jam', $value['jam'])->oneArray();
@@ -1653,10 +1666,12 @@ class Admin extends AdminModule
     $id_diagnostic_report_lab = NULL;
     $id_careplan = NULL;
 
-    $entry = json_decode($response)->entry;
+    $decodedResponse = json_decode($response);
+    $entry = (is_object($decodedResponse) && isset($decodedResponse->entry) && is_array($decodedResponse->entry)) ? $decodedResponse->entry : [];
     $index = '';
-    foreach ($entry as $key => $value) {
-      $resourceType = $value->response->resourceType;
+    foreach ((array)$entry as $key => $value) {
+      $resourceType = (isset($value->response) && isset($value->response->resourceType)) ? $value->response->resourceType : null;
+      if ($resourceType === null) { continue; }
       $index = $index . ' { ' . $key . '. ' . $resourceType . ' } ';
       if ($resourceType == 'Encounter') {
         $id_encounter = $value->response->resourceID;
@@ -1780,14 +1795,8 @@ class Admin extends AdminModule
       return json_decode($response);
     } else {
       echo $this->draw('encounter.html', ['pesan' => $pesan, 'response' => $response]);
-      print_r($json_bundle);
       exit();
     }
-    // echo $response;
-
-    // DEBUG ******
-    // print_r($response);
-    // $response = json_decode($json_bundle);
   }
 
   public function getCondition($no_rawat)
