@@ -23,18 +23,23 @@
 </style>
 <div class="panel panel-default">
     <div class="panel-heading">
-        <div class="btn-group pull-right" style="margin-top:-8px;margin-right: 40px;">
+        <div class="btn-group pull-right" style="margin-top:-8px;">
             <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode</span>
+              <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Tanggal</span>
             </span>
             <ul class="dropdown-menu dropdown-menu-right">
                 <form action="">
                     <li style="padding-left:5px;padding-right:5px;">
-                        <input type="text" id="periode" class="form-control periode" name="periode" required>
+                        <label style="font-size:12px;margin-bottom:2px;">Tanggal Awal</label>
+                        <input type="text" id="tanggal_awal" class="form-control tanggal" name="tanggal_awal" required>
+                    </li>
+                    <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                        <label style="font-size:12px;margin-bottom:2px;">Tanggal Akhir</label>
+                        <input type="text" id="tanggal_akhir" class="form-control tanggal" name="tanggal_akhir" required>
                     </li>
                     <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
                         <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
-                        <input type="submit" class="btn btn-primary btn-block value="Cari">
+                        <input type="submit" class="btn btn-primary btn-block" value="Cari">
                     </li>        
                 </form>
             </ul>
@@ -117,34 +122,38 @@
     $(document).ready(function(){
         // console.log($('.display').length);
         const urlParams = new URLSearchParams(window.location.search);
-        const periode = urlParams.get('periode'); // name will be "John"
+        const tanggal_awal = urlParams.get('tanggal_awal') || '';
+        const tanggal_akhir = urlParams.get('tanggal_akhir') || '';
+        // Prefill inputs when available
+        if (tanggal_awal) $('#tanggal_awal').val(tanggal_awal);
+        if (tanggal_akhir) $('#tanggal_akhir').val(tanggal_akhir);
         var baseURL = mlite.url + '/' + mlite.admin;
-        var urlapi = baseURL + '/satu_sehat/responseapi?t=' + mlite.token + '&periode=' + encodeURIComponent(periode);
+        var urlapi = baseURL + '/satu_sehat/responseapi?t=' + mlite.token + '&tanggal_awal=' + encodeURIComponent(tanggal_awal) + '&tanggal_akhir=' + encodeURIComponent(tanggal_akhir);
         table = $('.display').DataTable({
-        processing: true,
-        serverSide: true,
-        stateSave: true,
-        scrollX: true,
-        scrollCollapse: true,
-        fixedColumns: {
-            left: 4
-        },
-        ajax: {
-            url: urlapi,
-            type: 'POST', 
-            dataSrc: function(json) {
-                console.log(">> Response from backend:", json);
-                return json.data; // pastikan ini sesuai struktur JSON kamu
+            processing: true,
+            serverSide: true,
+            stateSave: true,
+            scrollX: true,
+            scrollCollapse: true,
+            fixedColumns: {
+                left: 4
             },
-            error: function(xhr, error, thrown) {
-                console.error('DataTables AJAX error:', error, thrown, xhr.responseText);
-            }            
-        },
-        "language": { "search": "", "searchPlaceholder": "Search..." },
-        "fixedColumns": {
-            "left": 4
-        },
-        columns: [
+            ajax: {
+                url: urlapi,
+                type: 'POST', 
+                dataSrc: function(json) {
+                    console.log(">> Response from backend:", json);
+                    return json.data; // pastikan ini sesuai struktur JSON kamu
+                },
+                error: function(xhr, error, thrown) {
+                    console.error('DataTables AJAX error:', error, thrown, xhr.responseText);
+                }            
+            },
+            "language": { "search": "", "searchPlaceholder": "Search..." },
+            "fixedColumns": {
+                "left": 4
+            },
+            columns: [
             { data: 'tgl_registrasi' },
             { data: 'no_rawat' },
             { data: 'no_rkm_medis',
@@ -538,7 +547,7 @@
 </script>
 <script type="text/javascript">
     $(function () {
-        $('.periode').datetimepicker({
+        $('.tanggal').datetimepicker({
           defaultDate: '{?=date('Y-m-d')?}',
           format: 'YYYY-MM-DD',
           locale: 'id'

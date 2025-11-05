@@ -5051,13 +5051,20 @@ class Admin extends AdminModule
   public function postResponseApi()
   {
     $this->_addHeaderFiles();
-    $periode = date('Y-m-d');
-    if (isset($_GET['periode']) && $_GET['periode'] != '') {
-        $periode = $_GET['periode'];
-    }
+    // Ambil rentang tanggal dari query string
+    $start_date = isset($_GET['tanggal_awal']) && $_GET['tanggal_awal'] !== '' ? $_GET['tanggal_awal'] : date('Y-m-d');
+    $end_date   = isset($_GET['tanggal_akhir']) && $_GET['tanggal_akhir'] !== '' ? $_GET['tanggal_akhir'] : $start_date;
 
-    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $periode)) {
-        $periode = date('Y-m-d'); // fallback
+    // Validasi format YYYY-MM-DD
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $start_date)) {
+      $start_date = date('Y-m-d');
+    }
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $end_date)) {
+      $end_date = $start_date;
+    }
+    // Pastikan urutan start <= end
+    if ($start_date > $end_date) {
+      $tmp = $start_date; $start_date = $end_date; $end_date = $tmp;
     }
 
     $start  = intval($_POST['start'] ?? 0);
@@ -5066,7 +5073,8 @@ class Admin extends AdminModule
 
     $data_response = [];
     $query = $this->db('reg_periksa')
-      ->where('reg_periksa.tgl_registrasi', $periode)
+      ->where('reg_periksa.tgl_registrasi', '>=', $start_date)
+      ->where('reg_periksa.tgl_registrasi', '<=', $end_date)
       ->where('stts', '!=', 'Batal')
       ->where('status_lanjut', 'Ralan')
       ->limit($length)
@@ -5074,7 +5082,8 @@ class Admin extends AdminModule
       ->toArray();
 
     $total = $this->db('reg_periksa')->select('no_rawat')
-      ->where('reg_periksa.tgl_registrasi', $periode)
+      ->where('reg_periksa.tgl_registrasi', '>=', $start_date)
+      ->where('reg_periksa.tgl_registrasi', '<=', $end_date)
       ->where('stts', '!=', 'Batal')
       ->where('status_lanjut', 'Ralan')
       ->count();
@@ -5090,7 +5099,7 @@ class Admin extends AdminModule
       $row['nm_poli'] = $this->core->getPoliklinikInfo('nm_poli', $row['kd_poli']);
 
       $praktisi_id = $this->db('mlite_satu_sehat_mapping_praktisi')->where('kd_dokter', $row['kd_dokter'])->oneArray();
-      $row['praktisi_id'] = $praktisi_id['practitioner_id'];
+      $row['praktisi_id'] = (is_array($praktisi_id) && isset($praktisi_id['practitioner_id'])) ? $praktisi_id['practitioner_id'] : '';
 
       $mlite_billing = $this->db('mlite_billing')->where('no_rawat', $row['no_rawat'])->oneArray();
       $row['tgl_pulang'] = isset_or($mlite_billing['tgl_billing'], '');
