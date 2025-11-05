@@ -328,7 +328,7 @@ class Admin extends AdminModule
             // Unzip latest update
             $zip = new \ZipArchive;
             $zip->open(BASE_DIR.'/tmp/latest.zip');
-            $zip->extractTo(BASE_DIR.'/tmp/update');
+            $zip->extractTo(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version'));
 
             // Copy files
             $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/systems', BASE_DIR.'/systems');

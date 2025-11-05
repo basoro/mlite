@@ -794,7 +794,7 @@ switch ($version) {
         $return = '5.2.0'; 
         break;
     case '5.2.0':
-        $this->core->db()->pdo()->exec("CREATE TABLE `catatan_adime_gizi` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `catatan_adime_gizi` (
           `no_rawat` varchar(17) NOT NULL,
           `tanggal` datetime NOT NULL,
           `asesmen` varchar(1000) DEFAULT NULL,
@@ -1002,7 +1002,7 @@ switch ($version) {
           PRIMARY KEY (`id`) USING BTREE
         ) ENGINE = InnoDB DEFAULT CHARSET=latin1;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE `mlite_rujukan_internal_poli` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_rujukan_internal_poli` (
           `no_rawat` varchar(17) NOT NULL,
           `kd_dokter` varchar(20) NOT NULL,
           `kd_poli` varchar(5) DEFAULT NULL,
@@ -1016,7 +1016,7 @@ switch ($version) {
           CONSTRAINT `mlite_rujukan_internal_poli_ibfk_3` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE `mlite_satu_sehat_mapping_lab` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_mapping_lab` (
           `id_template` int NOT NULL,
           `kd_jenis_prw` varchar(15) DEFAULT NULL,
           `code` varchar(15) DEFAULT NULL,
@@ -1029,7 +1029,7 @@ switch ($version) {
           CONSTRAINT `mlite_satu_sehat_mapping_lab_ibfk_1` FOREIGN KEY (`id_template`) REFERENCES `template_laboratorium` (`id_template`) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE `mlite_satu_sehat_mapping_obat` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_mapping_obat` (
           `kode_brng` varchar(15) NOT NULL DEFAULT '',
           `kode_kfa` varchar(50) DEFAULT NULL,
           `nama_kfa` varchar(100) DEFAULT NULL,
@@ -1052,7 +1052,7 @@ switch ($version) {
 
         $this->core->db()->pdo()->exec("ALTER TABLE `mlite_satu_sehat_mapping_praktisi` ADD COLUMN `jenis_praktisi` varchar(20) NOT NULL AFTER `kd_dokter`;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE `mlite_satu_sehat_mapping_rad` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_mapping_rad` (
           `kd_jenis_prw` varchar(15) NOT NULL,
           `code` varchar(15) DEFAULT NULL,
           `system` varchar(100) NOT NULL,
@@ -1108,7 +1108,7 @@ switch ($version) {
 
         $this->core->db()->pdo()->exec("ALTER TABLE `mlite_satu_sehat_response` ADD COLUMN `id_careplan` varchar(50) NULL DEFAULT NULL AFTER `id_lab_mb_diagnostic`;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE `mlite_triase_igd` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_triase_igd` (
           `id_triase` bigint NOT NULL AUTO_INCREMENT,
           `no_rawat` varchar(17) NOT NULL,
           `no_rkm_medis` varchar(15) NOT NULL,
@@ -1137,7 +1137,7 @@ switch ($version) {
           CONSTRAINT `fk_triase_reg_periksa` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE `mutasibarang` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mutasibarang` (
           `kode_brng` varchar(15) NOT NULL,
           `jml` double NOT NULL,
           `harga` double NOT NULL,
@@ -1158,7 +1158,7 @@ switch ($version) {
           CONSTRAINT `mutasibarang_ibfk_3` FOREIGN KEY (`kd_bangsalke`) REFERENCES `bangsal` (`kd_bangsal`) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE `penilaian_awal_keperawatan_igd` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `penilaian_awal_keperawatan_igd` (
           `no_rawat` varchar(17) NOT NULL,
           `tanggal` datetime NOT NULL,
           `informasi` enum('Autoanamnesis','Alloanamnesis') NOT NULL,
@@ -1234,7 +1234,7 @@ switch ($version) {
           CONSTRAINT `penilaian_awal_keperawatan_igd_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE `penilaian_awal_keperawatan_ralan` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `penilaian_awal_keperawatan_ralan` (
           `no_rawat` varchar(17) NOT NULL,
           `tanggal` datetime NOT NULL,
           `informasi` enum('Autoanamnesis','Alloanamnesis') NOT NULL,
@@ -1298,7 +1298,7 @@ switch ($version) {
           CONSTRAINT `penilaian_awal_keperawatan_ralan_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE `penilaian_awal_keperawatan_ranap` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `penilaian_awal_keperawatan_ranap` (
           `no_rawat` varchar(17) NOT NULL,
           `tanggal` datetime NOT NULL,
           `informasi` enum('Autoanamnesis','Alloanamnesis') NOT NULL,
@@ -1502,7 +1502,7 @@ switch ($version) {
           CONSTRAINT `penilaian_awal_keperawatan_ranap_ibfk_4` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE `penilaian_medis_igd` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `penilaian_medis_igd` (
           `no_rawat` varchar(17) NOT NULL,
           `tanggal` datetime NOT NULL,
           `kd_dokter` varchar(20) NOT NULL,
@@ -1545,7 +1545,7 @@ switch ($version) {
           CONSTRAINT `penilaian_medis_igd_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE `penilaian_medis_ralan` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `penilaian_medis_ralan` (
           `no_rawat` varchar(17) NOT NULL,
           `tanggal` datetime NOT NULL,
           `kd_dokter` varchar(20) NOT NULL,
@@ -1587,7 +1587,7 @@ switch ($version) {
           CONSTRAINT `penilaian_medis_ralan_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE `penilaian_medis_ranap` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `penilaian_medis_ranap` (
           `no_rawat` varchar(17) NOT NULL,
           `tanggal` datetime NOT NULL,
           `kd_dokter` varchar(20) NOT NULL,
@@ -1634,7 +1634,7 @@ switch ($version) {
           CONSTRAINT `penilaian_medis_ranap_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE `penilaian_ulang_nyeri` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `penilaian_ulang_nyeri` (
           `no_rawat` varchar(17) NOT NULL,
           `tanggal` datetime NOT NULL,
           `nyeri` enum('Tidak Ada Nyeri','Nyeri Akut','Nyeri Kronis') NOT NULL,
