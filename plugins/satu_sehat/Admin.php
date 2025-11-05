@@ -1264,6 +1264,8 @@ if ($kode_prosedure_pasien !== '' && strpos($kode_prosedure_pasien, '.') === fal
 
     $medicationforrequest_json = '';
     $medicationrequest_json = '';
+    // map of MedicationRequest UUIDs by drug code for later linking
+    $medicationrequest_ids = [];
     $no = 1;
     $cek_resep = $this->db('resep_dokter')->join('resep_obat', 'resep_obat.no_resep = resep_dokter.no_resep')->where('no_rawat', $no_rawat)->where('status', 'ralan')->toArray();
     foreach ($cek_resep as $value) {
@@ -1320,6 +1322,10 @@ if ($kode_prosedure_pasien !== '' && strpos($kode_prosedure_pasien, '.') === fal
           $no . $this->ran_char()
         );
         $medicationrequest_json .= $medicationrequest->toJson();
+        // store MR id by drug code for linking in dispense section
+        if (!empty($value['kode_brng'])) {
+          $medicationrequest_ids[$value['kode_brng']] = $uuid_medicationrequest;
+        }
 
         $no++;
       }
@@ -1372,6 +1378,8 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         $medicationfordispense_json .= $medication_for_dispense->toJson();
 
         $time_prepared_handed = $this->convertTimeSatset($value['tgl_perawatan'] . ' ' . $value['jam']) . $zonawaktu;
+        // find matching MedicationRequest id by drug code; fallback to new UUID
+        $mr_uuid_for_dispense = $medicationrequest_ids[$value['kode_brng']] ?? $this->gen_uuid();
         $medication_dispense = new MedicationDispense(
           $uuid_medication_dispense,
           $this->organizationid,
@@ -1384,7 +1392,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
           $id_praktisi_apoteker['practitioner_id'],
           $nama_praktisi_apoteker,
           $mlite_satu_sehat_lokasi['id_lokasi_satusehat'],
-          $uuid_medicationrequest,
+          $mr_uuid_for_dispense,
           $time_prepared_handed,
           $time_prepared_handed,
           $cek_aturan_pakai['aturan'],
