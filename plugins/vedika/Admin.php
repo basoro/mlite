@@ -3680,7 +3680,7 @@ class Admin extends AdminModule
 
           $query = $this->db('berkas_digital_perawatan')->save(['no_rawat' => $bridging_sep['no_rawat'], 'kode' => $this->settings->get('vedika.individual'), 'lokasi_file' => 'pages/upload/' . $no_rawat . '_' . $imgTime . '.jpg']);
           if($query) {
-            $simpan_status = $this->core->mysql('mlite_vedika')
+            $simpan_status = $this->db('mlite_vedika')
               ->where('nosep', $nosep)
               ->save([
                 'tanggal' => date('Y-m-d'),
@@ -4998,6 +4998,49 @@ class Admin extends AdminModule
     exit();
   }
 
+  public function getImportIdrCodes()
+  {
+    $fileName = 'https://basoro.id/downloads/mlite_idr_codes.csv';
+    echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file mlite_idr_codes.csv'."<br>";
+
+    $csvData = file_get_contents($fileName);
+    if($csvData) {
+      echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
+    } else {
+      echo '['.date('d-m-Y H:i:s').'][error] File '.$fileName.' tidak ditemukan'."<br>";
+      exit();
+    }
+
+    $lines = explode(PHP_EOL, $csvData);
+    $array = array();
+    foreach ($lines as $line) {
+        $array[] = str_getcsv($line);
+    }
+
+    foreach ($array as $data){   
+      $id = $data[0];
+      $code = $data[1];
+      $code2 = $data[2];
+      $description = $data[3];
+      $system = $data[4];
+      $validcode = $data[5];
+      $accpdx = $data[6];
+      $asterisk = $data[7];
+      $im = $data[8];
+      $value_query[] = "('".$id."','".$code."','".$code2."','".str_replace("'","\'",$description)."','".$system."','".$validcode."','".$accpdx."','".$asterisk."','".$im."')";
+    }
+    $str = implode(",", $value_query);
+    echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
+    $result = $this->core->db()->pdo()->exec("INSERT INTO mlite_idr_codes (id, code, code2, description, `system`, `validcode`, `accpdx`, `asterisk`, `im`) VALUES $str ON DUPLICATE KEY UPDATE id=VALUES(id)");
+    if($result) {
+      echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
+    } else {
+      echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
+      exit();
+    }    
+    exit();
+  }
+
   public function getIdrCodesDetail($id)
   {
     $data = $this->db('mlite_idr_codes')->where('id', $id)->oneArray();
@@ -5074,6 +5117,46 @@ class Admin extends AdminModule
       'recordsFiltered' => $recordsFiltered,
       'data' => $data
     ]);
+    exit();
+  }
+
+  public function getImportInacbgCodes()
+  {
+    $fileName = 'https://basoro.id/downloads/mlite_inacbg_codes.csv';
+    echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file mlite_inacbg_codes.csv'."<br>";
+
+    $csvData = file_get_contents($fileName);
+    if($csvData) {
+      echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
+    } else {
+      echo '['.date('d-m-Y H:i:s').'][error] File '.$fileName.' tidak ditemukan'."<br>";
+      exit();
+    }
+
+    $lines = explode(PHP_EOL, $csvData);
+    $array = array();
+    foreach ($lines as $line) {
+        $array[] = str_getcsv($line);
+    }
+
+    foreach ($array as $data){   
+      $id = $data[0];
+      $code = $data[1];
+      $code2 = $data[2];
+      $description = $data[3];
+      $system = $data[4];
+      $validcode = $data[5];
+      $value_query[] = "('".$id."','".$code."','".$code2."','".str_replace("'","\'",$description)."','".$system."','".$validcode."')";
+    }
+    $str = implode(",", $value_query);
+    echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
+    $result = $this->core->db()->pdo()->exec("INSERT INTO mlite_inacbg_codes (id, code, code2, description, `system`, `validcode`) VALUES $str ON DUPLICATE KEY UPDATE id=VALUES(id)");
+    if($result) {
+      echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
+    } else {
+      echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
+      exit();
+    }        
     exit();
   }
 
