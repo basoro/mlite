@@ -323,7 +323,10 @@ class Admin extends AdminModule
     $sep_data = $this->db('mlite_apotek_online_sep_data')
       ->where('no_rawat', $this->revertNorawat($no_rawat))
       ->oneArray();
-    
+    if(!$sep_data) {
+      $sep_data = $this->db('bridging_sep')->where('no_rawat', $this->revertNorawat($no_rawat))->oneArray();
+    }
+
     // Ambil data obat yang diberikan dengan mapping obat apotek online (non-racikan dan racikan)
     $no_rawat_reverted = $this->revertNorawat($no_rawat);
     $obat_data = $this->db()->pdo()->prepare("
