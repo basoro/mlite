@@ -8,6 +8,7 @@ PHP_CONTAINER = mlite_php
 ORTHANC_CONTAINER = mlite_orthanc
 NGINX_CONTAINER = mlite_nginx
 FLASK_APP_CONTAINER = mlite_panel
+PHPMYADMIN_CONTAINER = phpmyadmin
 
 DB_NAME = mlite_db
 DB_USER = mlite
@@ -26,7 +27,7 @@ YELLOW = \033[1;33m
 BLUE = \033[0;34m
 NC = \033[0m
 
-.PHONY: build up down restart logs logs-follow ps status php mysql orthanc nginx panel db-backup db-restore clean help orthanc-test orthanc-upload-dummy orthanc-status nginx-status nginx-reload nginx-logs
+.PHONY: build up down restart logs logs-follow ps status php mysql orthanc nginx panel phpmyadmin db-backup db-restore clean help orthanc-test orthanc-upload-dummy orthanc-status nginx-status nginx-reload nginx-logs
 
 ## Build all services
 build:
@@ -79,6 +80,9 @@ nginx:
 
 panel:
 	@docker compose -f $(COMPOSE_FILE) exec panel /bin/bash
+
+phpmyadmin:
+	@docker compose -f $(COMPOSE_FILE) exec $(PHPMYADMIN_CONTAINER) /bin/bash
 
 ## Nginx Manager Commands
 nginx-logs:
@@ -162,6 +166,7 @@ help:
 	@echo "  make logs                - Show logs"
 	@echo "  make logs-follow         - Follow logs"
 	@echo "  make php/mysql/nginx/... - Access containers"
+	@echo "  make phpmyadmin          - Access phpMyAdmin container"
 	@echo "  make db-backup           - Backup database"
 	@echo "  make db-restore FILE=x   - Restore from backup"
 	@echo "  make orthanc-test        - Test Orthanc connection"

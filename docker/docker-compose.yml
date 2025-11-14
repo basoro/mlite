@@ -227,6 +227,18 @@ services:
     networks:
       - app-network
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - "888:80"
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
   orthanc:
     build:
       context: .
