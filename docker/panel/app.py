@@ -6001,6 +6001,298 @@ def api_restart_panel():
         logger.exception(f"Error initiating panel restart: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/cron')
+@login_required
+def cron_page():
+    return render_template('cron.html')
+
+def _read_cron_file() -> str:
+    try:
+        res = subprocess.run(['docker','exec',NGINX_CONTAINER_NAME,'sh','-lc','cat /etc/cron.d/mlite'],capture_output=True,text=True,timeout=10)
+        if res.returncode == 0:
+            return res.stdout
+    except Exception:
+        pass
+    return ''
+
+def _parse_cron_settings(cron_text: str) -> dict:
+    data = {'certbot_enabled': False,'certbot_time': '02:00','mysql_enabled': False,'mysql_time': '03:00','mysql_user': db_config.get('user','root'),'mysql_password': db_config.get('password',''),'mysql_database': db_config.get('database','mlite_db'),'web_enabled': False,'web_time': '03:10'}
+    for line in (cron_text or '').splitlines():
+        s = line.strip()
+        if not s or s.startswith('#'):
+            continue
+        parts = s.split()
+        if len(parts) < 7:
+            continue
+        mm = parts[0]
+        hh = parts[1]
+        cmd = ' '.join(parts[6:])
+        if 'certbot renew' in cmd:
+            data['certbot_enabled'] = True
+            data['certbot_time'] = f"{hh.zfill(2)}:{mm.zfill(2)}"
+        elif 'mysqldump' in cmd:
+            data['mysql_enabled'] = True
+            data['mysql_time'] = f"{hh.zfill(2)}:{mm.zfill(2)}"
+            try:
+                for token in cmd.split():
+                    if token.startswith('-u') and len(token) > 2:
+                        data['mysql_user'] = token[2:]
+                    if token.startswith('-p') and len(token) > 2:
+                        data['mysql_password'] = token[2:]
+                toks = cmd.strip().split()
+                for i, tk in enumerate(toks):
+                    if tk.startswith('-p') or tk.startswith('-u'):
+                        continue
+                db_tok = toks[-3] if len(toks) >= 3 else ''
+                if db_tok and not db_tok.startswith('-'):
+                    data['mysql_database'] = db_tok
+            except Exception:
+                pass
+        elif 'tar ' in cmd and '/backups/web/' in cmd:
+            data['web_enabled'] = True
+            data['web_time'] = f"{hh.zfill(2)}:{mm.zfill(2)}"
+    return data
+
+def _build_cron(settings: dict) -> str:
+    shell = 'SHELL=/bin/sh\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n'
+    lines = [shell]
+    def to_fields(t):
+        hh, mm = (t or '00:00').split(':')
+        return f"{int(mm)} {int(hh)} * * *"
+    if settings.get('certbot_enabled'):
+        t = settings.get('certbot_time','02:00')
+        lines.append(f"{to_fields(t)} root certbot renew --quiet && nginx -s reload")
+    if settings.get('mysql_enabled'):
+        t = settings.get('mysql_time','03:00')
+        u = settings.get('mysql_user', db_config.get('user','root'))
+        p = settings.get('mysql_password', db_config.get('password',''))
+        d = settings.get('mysql_database', db_config.get('database','mlite_db'))
+        pass_arg = f" -p{p}" if p else ""
+        lines.append(f"{to_fields(t)} root mkdir -p /backups/mysql && mysqldump -h mysql -P 3306 -u{u}{pass_arg} {d} > /backups/mysql/mysql_$(date +%Y%m%d_%H%M%S).sql")
+    if settings.get('web_enabled'):
+        t = settings.get('web_time','03:10')
+        lines.append(f"{to_fields(t)} root mkdir -p /backups/web && tar --exclude=./docker/backups -czf /backups/web/web_$(date +%Y%m%d_%H%M%S).tar.gz -C /var/www/public .")
+    return '\n'.join(lines) + '\n'
+
+def _write_cron(cron_text: str) -> tuple[bool,str]:
+    try:
+        cmd = f"mkdir -p /backups/cron && cat > /etc/cron.d/mlite <<'EOF'\n{cron_text}\nEOF && chmod 0644 /etc/cron.d/mlite"
+        res = subprocess.run(['docker','exec','-i',NGINX_CONTAINER_NAME,'sh','-lc',cmd],capture_output=True,text=True,timeout=15)
+        if res.returncode == 0:
+            return True, 'ok'
+        return False, res.stderr or res.stdout
+    except Exception as e:
+        return False, str(e)
+
+def get_cron_jobs_path():
+    base = os.environ.get('HOST_PROJECT_DIR') or '/workspace'
+    p = os.path.join(base, 'docker', 'cron', 'jobs.json')
+    try:
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+    except Exception:
+        pass
+    return p
+
+def load_cron_jobs() -> list:
+    try:
+        p = get_cron_jobs_path()
+        if os.path.exists(p):
+            with open(p, 'r') as f:
+                return json.load(f) or []
+    except Exception:
+        pass
+    return []
+
+def save_cron_jobs(jobs: list) -> bool:
+    try:
+        with open(get_cron_jobs_path(), 'w') as f:
+            json.dump(jobs or [], f)
+        return True
+    except Exception:
+        return False
+
+def _job_to_cron(job: dict) -> str:
+    user = (job.get('user') or 'root').strip() or 'root'
+    script = (job.get('script') or '').strip()
+    jid = job.get('id') or 'job'
+    log_path = f"/backups/cron/{jid}.log"
+    schedule = job.get('schedule', {})
+    t = (schedule.get('time') or '00:00')
+    hh, mm = (t.split(':') + ['00'])[:2]
+    kind = (schedule.get('type') or 'daily')
+    if kind == 'daily':
+        fields = f"{int(mm)} {int(hh)} * * *"
+    elif kind == 'every_minutes':
+        n = max(1, int(schedule.get('every', 5)))
+        fields = f"*/{n} * * * *"
+    elif kind == 'every_hours':
+        n = max(1, int(schedule.get('every', 1)))
+        fields = f"0 */{n} * * *"
+    else:
+        fields = f"{int(mm)} {int(hh)} * * *"
+    return f"{fields} {user} bash -lc '{script}' >> {log_path} 2>&1"
+
+def _build_full_cron(settings: dict, jobs: list) -> str:
+    base = _build_cron(settings)
+    extra = []
+    for j in jobs:
+        if j.get('enabled'):
+            extra.append(_job_to_cron(j))
+    return base + ("\n".join(extra) + ("\n" if extra else ""))
+
+def _job_log_host_path(jid: str) -> str:
+    base = os.environ.get('HOST_PROJECT_DIR') or '/workspace'
+    p = os.path.join(base, 'docker', 'backups', 'cron', f"{jid}.log")
+    try:
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+    except Exception:
+        pass
+    return p
+
+@app.route('/api/cron/jobs', methods=['GET'])
+@login_required
+def api_cron_jobs_list():
+    jobs = load_cron_jobs()
+    enriched = []
+    for j in jobs:
+        jid = j.get('id')
+        lp = _job_log_host_path(jid)
+        last = None
+        try:
+            if os.path.exists(lp):
+                last = datetime.fromtimestamp(os.path.getmtime(lp)).isoformat()
+        except Exception:
+            last = None
+        enriched.append({**j, 'last_exec': last})
+    return jsonify({'success': True, 'jobs': enriched})
+
+@app.route('/api/cron/jobs', methods=['POST'])
+@login_required
+def api_cron_jobs_add():
+    data = request.get_json(silent=True) or {}
+    job = {
+        'id': data.get('id') or str(int(datetime.now().timestamp()*1000)),
+        'name': data.get('name') or 'Task',
+        'enabled': bool(data.get('enabled', True)),
+        'user': data.get('user') or 'root',
+        'task_type': data.get('task_type') or 'shell',
+        'script': data.get('script') or '',
+        'schedule': data.get('schedule') or {'type':'daily','time':'01:00'}
+    }
+    jobs = load_cron_jobs()
+    jobs.append(job)
+    save_cron_jobs(jobs)
+    settings = _parse_cron_settings(_read_cron_file())
+    text = _build_full_cron(settings, jobs)
+    ok, err = _write_cron(text)
+    if not ok:
+        return jsonify({'success': False, 'error': err}), 500
+    return jsonify({'success': True, 'job': job})
+
+@app.route('/api/cron/jobs/<jid>', methods=['PUT'])
+@login_required
+def api_cron_jobs_update(jid):
+    data = request.get_json(silent=True) or {}
+    jobs = load_cron_jobs()
+    found = False
+    for i, j in enumerate(jobs):
+        if str(j.get('id')) == str(jid):
+            jobs[i] = {**j, **data, 'id': j['id']}
+            found = True
+            break
+    if not found:
+        return jsonify({'success': False, 'error': 'Job not found'}), 404
+    save_cron_jobs(jobs)
+    settings = _parse_cron_settings(_read_cron_file())
+    text = _build_full_cron(settings, jobs)
+    ok, err = _write_cron(text)
+    if not ok:
+        return jsonify({'success': False, 'error': err}), 500
+    return jsonify({'success': True})
+
+@app.route('/api/cron/jobs/<jid>', methods=['DELETE'])
+@login_required
+def api_cron_jobs_delete(jid):
+    jobs = [j for j in load_cron_jobs() if str(j.get('id')) != str(jid)]
+    save_cron_jobs(jobs)
+    settings = _parse_cron_settings(_read_cron_file())
+    text = _build_full_cron(settings, jobs)
+    ok, err = _write_cron(text)
+    if not ok:
+        return jsonify({'success': False, 'error': err}), 500
+    return jsonify({'success': True})
+
+@app.route('/api/cron/jobs/<jid>/execute', methods=['POST'])
+@login_required
+def api_cron_jobs_execute(jid):
+    jobs = load_cron_jobs()
+    job = next((j for j in jobs if str(j.get('id')) == str(jid)), None)
+    if not job:
+        return jsonify({'success': False, 'error': 'Job not found'}), 404
+    lp = _job_log_host_path(jid)
+    raw_script = (job.get('script') or '').strip()
+    if not raw_script:
+        return jsonify({'success': False, 'error': 'Empty script'}), 400
+    script = raw_script.replace("'","'\\''")
+    setup = "mkdir -p /backups/cron /backups/mysql /backups/web"
+    cmd = f"{setup} && sh -lc '{script}' >> /backups/cron/{jid}.log 2>&1"
+    res = subprocess.run(['docker','exec',NGINX_CONTAINER_NAME,'sh','-lc',cmd],capture_output=True,text=True,timeout=120)
+    if res.returncode != 0:
+        return jsonify({'success': False, 'error': (res.stderr or res.stdout or 'command failed'), 'cmd': cmd}), 500
+    try:
+        # touch host log to update mtime if needed
+        with open(lp, 'a') as f:
+            f.write('')
+    except Exception:
+        pass
+    return jsonify({'success': True})
+
+@app.route('/api/cron/jobs/<jid>/log', methods=['GET'])
+@login_required
+def api_cron_jobs_log(jid):
+    try:
+        lp = _job_log_host_path(jid)
+        content = ''
+        if os.path.exists(lp):
+            with open(lp, 'r') as f:
+                content = f.read()
+        else:
+            # try read in container
+            res = subprocess.run(['docker','exec',NGINX_CONTAINER_NAME,'sh','-lc',f'cat /backups/cron/{jid}.log || true'],capture_output=True,text=True,timeout=10)
+            content = res.stdout
+        return jsonify({'success': True, 'log': content})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/cron/settings', methods=['GET'])
+@login_required
+def api_cron_get():
+    cur = _read_cron_file()
+    data = _parse_cron_settings(cur)
+    return jsonify({'success': True, 'settings': data})
+
+@app.route('/api/cron/settings', methods=['POST'])
+@login_required
+def api_cron_set():
+    payload = request.get_json(silent=True) or {}
+    cur = _parse_cron_settings(_read_cron_file())
+    cur.update({
+        'certbot_enabled': bool(payload.get('certbot_enabled', cur.get('certbot_enabled'))),
+        'certbot_time': payload.get('certbot_time', cur.get('certbot_time')),
+        'mysql_enabled': bool(payload.get('mysql_enabled', cur.get('mysql_enabled'))),
+        'mysql_time': payload.get('mysql_time', cur.get('mysql_time')),
+        'mysql_user': payload.get('mysql_user', cur.get('mysql_user')),
+        'mysql_password': payload.get('mysql_password', cur.get('mysql_password')),
+        'mysql_database': payload.get('mysql_database', cur.get('mysql_database')),
+        'web_enabled': bool(payload.get('web_enabled', cur.get('web_enabled'))),
+        'web_time': payload.get('web_time', cur.get('web_time'))
+    })
+    text = _build_cron(cur)
+    ok, err = _write_cron(text)
+    if not ok:
+        return jsonify({'success': False, 'error': err}), 500
+    return jsonify({'success': True, 'settings': cur})
+
 def get_modsec_events_by_domain(domain, limit=1000, since=None, until=None):
     """Get ModSecurity events filtered by specific domain"""
     # Validate domain input to avoid NoneType errors

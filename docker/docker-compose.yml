@@ -196,6 +196,7 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
       - ./logs/modsecurity:/var/log/modsecurity
+      - ./backups:/backups
     depends_on:
       - php56
       - php70
@@ -229,6 +230,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    container_name: mlite_phpmyadmin
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3306

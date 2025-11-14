@@ -8,7 +8,7 @@ PHP_CONTAINER = mlite_php
 ORTHANC_CONTAINER = mlite_orthanc
 NGINX_CONTAINER = mlite_nginx
 FLASK_APP_CONTAINER = mlite_panel
-PHPMYADMIN_CONTAINER = phpmyadmin
+PHPMYADMIN_CONTAINER = mlite_phpmyadmin
 
 DB_NAME = mlite_db
 DB_USER = mlite

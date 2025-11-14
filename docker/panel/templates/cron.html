@@ -1,0 +1,382 @@
+{% extends 'base.html' %}
+{% block title %}Cron Scheduler{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold">Cron Scheduler</h1>
+    <div class="flex items-center gap-2">
+      <button id="saveBasic" class="px-3 py-2 rounded bg-blue-600 text-white">Simpan Pengaturan Dasar</button>
+      <button id="addTask" class="px-3 py-2 rounded bg-green-600 text-white">Add Task</button>
+    </div>
+  </div>
+  <div id="status" class="text-sm"></div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="p-4 border rounded">
+      <div class="font-medium mb-2">Autorenew Certbot</div>
+      <label class="inline-flex items-center gap-2">
+        <input type="checkbox" id="certbot_enabled" class="h-4 w-4">
+        <span>Aktif</span>
+      </label>
+      <div class="mt-3">
+        <label class="text-sm">Waktu (HH:MM)</label>
+        <input type="text" id="certbot_time" class="mt-1 w-full px-3 py-2 border rounded" placeholder="02:00">
+      </div>
+    </div>
+    <div class="p-4 border rounded">
+      <div class="font-medium mb-2">Backup Website</div>
+      <label class="inline-flex items-center gap-2">
+        <input type="checkbox" id="web_enabled" class="h-4 w-4">
+        <span>Aktif</span>
+      </label>
+      <div class="mt-3">
+        <label class="text-sm">Waktu (HH:MM)</label>
+        <input type="text" id="web_time" class="mt-1 w-full px-3 py-2 border rounded" placeholder="03:10">
+      </div>
+    </div>
+    <div class="p-4 border rounded md:col-span-2">
+      <div class="font-medium mb-2">Backup MySQL</div>
+      <label class="inline-flex items-center gap-2">
+        <input type="checkbox" id="mysql_enabled" class="h-4 w-4">
+        <span>Aktif</span>
+      </label>
+      <div class="mt-3 grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div>
+          <label class="text-sm">Waktu</label>
+          <input type="text" id="mysql_time" class="mt-1 w-full px-3 py-2 border rounded" placeholder="03:00">
+        </div>
+        <div>
+          <label class="text-sm">Database</label>
+          <input type="text" id="mysql_database" class="mt-1 w-full px-3 py-2 border rounded" placeholder="mlite_db">
+        </div>
+        <div>
+          <label class="text-sm">User</label>
+          <input type="text" id="mysql_user" class="mt-1 w-full px-3 py-2 border rounded" placeholder="root">
+        </div>
+        <div>
+          <label class="text-sm">Password</label>
+          <input type="password" id="mysql_password" class="mt-1 w-full px-3 py-2 border rounded" placeholder="">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-medium">Tasks</div>
+      <input id="search" placeholder="Cari task" class="px-3 py-2 border rounded w-64" />
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="border-b">
+            <th class="text-left py-2 px-2">Name</th>
+            <th class="text-left py-2 px-2">Status</th>
+            <th class="text-left py-2 px-2">Schedule</th>
+            <th class="text-left py-2 px-2">Last execute</th>
+            <th class="text-left py-2 px-2">Operate</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="modal" class="fixed inset-0 bg-black/40 hidden items-center justify-center">
+    <div class="bg-white dark:bg-gray-900 p-4 rounded w-full max-w-xl">
+      <div class="font-medium mb-3">Add Task</div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-sm">Task name</label>
+          <input id="m_name" class="mt-1 w-full px-3 py-2 border rounded" />
+        </div>
+        <div>
+          <label class="text-sm">Execute user</label>
+          <input id="m_user" class="mt-1 w-full px-3 py-2 border rounded" value="root" />
+        </div>
+        <div>
+          <label class="text-sm">Task type</label>
+          <select id="m_task_type" class="mt-1 w-full px-3 py-2 border rounded">
+            <option value="shell">Shell Script</option>
+            <option value="backup_site">Backup Site</option>
+            <option value="backup_db">Backup Database</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-sm">Execute cycle</label>
+          <select id="m_type" class="mt-1 w-full px-3 py-2 border rounded">
+            <option value="daily">Daily</option>
+            <option value="every_minutes">Every N minutes</option>
+            <option value="every_hours">Every N hours</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-sm">Time / Every</label>
+          <input id="m_time" class="mt-1 w-full px-3 py-2 border rounded" placeholder="HH:MM or N" />
+        </div>
+        <div class="col-span-2" id="m_backup_site_opts" style="display:none">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-sm">Scope</label>
+              <select id="m_site_scope" class="mt-1 w-full px-3 py-2 border rounded">
+                <option value="all">All Sites</option>
+                <option value="single">Single Site</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm">Site</label>
+              <select id="m_site_select" class="mt-1 w-full px-3 py-2 border rounded"></select>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-2" id="m_backup_db_opts" style="display:none">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-sm">Scope</label>
+              <select id="m_db_scope" class="mt-1 w-full px-3 py-2 border rounded">
+                <option value="all">All Databases</option>
+                <option value="single">Single Database</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm">Database</label>
+              <select id="m_db_select" class="mt-1 w-full px-3 py-2 border rounded"></select>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-2">
+          <label class="text-sm">Script content</label>
+          <textarea id="m_script" class="mt-1 w-full px-3 py-2 border rounded" rows="6" placeholder="bash script..."></textarea>
+        </div>
+      </div>
+      <div class="mt-4 flex justify-end gap-2">
+        <button id="m_cancel" class="px-3 py-2 rounded border">Cancel</button>
+        <button id="m_confirm" class="px-3 py-2 rounded bg-blue-600 text-white">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let allJobs = []
+let sitesList = []
+let dbList = []
+const statusEl = document.getElementById('status');
+
+async function loadBasic(){
+  const r = await fetch('/api/cron/settings');
+  const j = await r.json();
+  if(!j.success) return;
+  const s = j.settings;
+  certbot_enabled.checked = !!s.certbot_enabled;
+  certbot_time.value = s.certbot_time || '02:00';
+  mysql_enabled.checked = !!s.mysql_enabled;
+  mysql_time.value = s.mysql_time || '03:00';
+  mysql_user.value = s.mysql_user || '';
+  mysql_password.value = s.mysql_password || '';
+  mysql_database.value = s.mysql_database || '';
+  web_enabled.checked = !!s.web_enabled;
+  web_time.value = s.web_time || '03:10';
+}
+
+async function saveBasic(){
+  const payload = {
+    certbot_enabled: certbot_enabled.checked,
+    certbot_time: certbot_time.value.trim(),
+    mysql_enabled: mysql_enabled.checked,
+    mysql_time: mysql_time.value.trim(),
+    mysql_user: mysql_user.value.trim(),
+    mysql_password: mysql_password.value.trim(),
+    mysql_database: mysql_database.value.trim(),
+    web_enabled: web_enabled.checked,
+    web_time: web_time.value.trim()
+  };
+  try{
+    const r = await fetch('/api/cron/settings',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(payload)});
+    const j = await r.json();
+    statusEl.textContent = j.success ? 'Tersimpan' : (j.error || 'Gagal menyimpan');
+  } catch(e){
+    statusEl.textContent = 'Gagal menyimpan';
+  }
+}
+
+function renderRows(){
+  const q = (search.value||'').toLowerCase();
+  rows.innerHTML = '';
+  for(const j of allJobs){
+    if(q && !(j.name||'').toLowerCase().includes(q)) continue;
+    const tr = document.createElement('tr');
+    tr.className = 'border-b';
+    const schedule = (()=>{
+      const t = j.schedule||{}; const tp=t.type||'daily';
+      if(tp==='daily') return `Daily ${t.time||''}`;
+      if(tp==='every_minutes') return `Every ${t.every||t.time||''} minutes`;
+      if(tp==='every_hours') return `Every ${t.every||t.time||''} hours`;
+      return 'Unknown';
+    })();
+    tr.innerHTML = `
+      <td class='py-2 px-2'>${j.name||''}</td>
+      <td class='py-2 px-2'>${j.enabled? 'Running' : 'Stopped'}</td>
+      <td class='py-2 px-2'>${schedule}</td>
+      <td class='py-2 px-2 text-xs'>${j.last_exec||'-'}</td>
+      <td class='py-2 px-2 text-blue-600'>
+        <button class='mr-2' onclick='execJob("${j.id}")'>Execute</button>
+        <button class='mr-2' onclick='editJob("${j.id}")'>Edit</button>
+        <button class='mr-2' onclick='showLog("${j.id}")'>Log</button>
+        <button class='text-red-600' onclick='delJob("${j.id}")'>Delete</button>
+      </td>`;
+    rows.appendChild(tr);
+  }
+}
+
+async function loadJobs(){
+  const r = await fetch('/api/cron/jobs');
+  const j = await r.json();
+  if(j.success){ allJobs = j.jobs||[]; renderRows(); }
+}
+
+function openModal(){ modal.classList.remove('hidden'); modal.classList.add('flex'); }
+function closeModal(){ modal.classList.add('hidden'); modal.classList.remove('flex'); m_name.value=''; m_user.value='root'; m_type.value='daily'; m_time.value=''; m_script.value=''; modal.dataset.edit=''; }
+
+addTask.addEventListener('click', async ()=>{ applyTaskTypeVisibility(); await loadSites(); await loadDatabases(); openModal(); });
+m_cancel.addEventListener('click', closeModal);
+
+m_confirm.addEventListener('click', async ()=>{
+  const tp = m_type.value;
+  const opts = collectModalOptions();
+  const scriptAuto = genScriptFromModal(opts);
+  const payload = {
+    name: m_name.value.trim(),
+    user: m_user.value.trim()||'root',
+    task_type: m_task_type.value,
+    script: m_script.value.trim() || scriptAuto,
+    enabled: true,
+    schedule: tp==='daily'? {type:'daily', time:m_time.value.trim()||'00:00'} : (tp==='every_minutes'? {type:'every_minutes', every:parseInt(m_time.value)||5} : {type:'every_hours', every:parseInt(m_time.value)||1}),
+    options: opts
+  };
+  const idEdit = modal.dataset.edit;
+  let r;
+  if(idEdit){ r = await fetch('/api/cron/jobs/'+idEdit,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }
+  else { r = await fetch('/api/cron/jobs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }
+  const j = await r.json();
+  statusEl.textContent = j.success? 'Task tersimpan' : (j.error||'Gagal menyimpan task');
+  closeModal();
+  await loadJobs();
+});
+
+async function execJob(id){
+  const r = await fetch('/api/cron/jobs/'+id+'/execute',{method:'POST'});
+  const j = await r.json();
+  statusEl.textContent = j.success? 'Executed' : (j.error||'Failed');
+  await loadJobs();
+}
+async function editJob(id){
+  const j = allJobs.find(x=>x.id==id); if(!j) return;
+  m_name.value = j.name||''; m_user.value=j.user||'root';
+  const tp = j.schedule?.type||'daily'; m_type.value=tp;
+  m_time.value = tp==='daily'? (j.schedule?.time||'00:00') : (j.schedule?.every||'');
+  m_script.value = j.script||'';
+  m_task_type.value = j.task_type||'shell';
+  applyTaskTypeVisibility();
+  const o = j.options||{}; m_site_scope.value = o.site_scope||'all'; m_db_scope.value = o.db_scope||'all';
+  if(o.site){ m_site_select.value = o.site; }
+  if(o.database){ m_db_select.value = o.database; }
+  modal.dataset.edit = id;
+  openModal();
+}
+async function delJob(id){
+  if(!confirm('Delete task?')) return;
+  const r = await fetch('/api/cron/jobs/'+id,{method:'DELETE'});
+  const j = await r.json();
+  statusEl.textContent = j.success? 'Deleted' : (j.error||'Failed');
+  await loadJobs();
+}
+async function showLog(id){
+  const r = await fetch('/api/cron/jobs/'+id+'/log');
+  const j = await r.json();
+  alert((j.log||'').slice(-4000));
+}
+
+function applyTaskTypeVisibility(){
+  const t = m_task_type.value;
+  const showSite = (t==='backup_site');
+  const showDb = (t==='backup_db');
+  document.getElementById('m_backup_site_opts').style.display = showSite? 'block' : 'none';
+  document.getElementById('m_backup_db_opts').style.display = showDb? 'block' : 'none';
+}
+
+function collectModalOptions(){
+  const t = m_task_type.value;
+  const obj = {};
+  if(t==='backup_site'){
+    obj.site_scope = m_site_scope.value;
+    obj.site = m_site_select.value;
+  }
+  if(t==='backup_db'){
+    obj.db_scope = m_db_scope.value;
+    obj.database = m_db_select.value;
+  }
+  return obj;
+}
+
+function genScriptFromModal(o){
+  const t = m_task_type.value;
+  if(t==='backup_site'){
+    if((o.site_scope||'all')==='all'){
+      return 'mkdir -p /backups/web && tar --exclude=/backups -czf /backups/web/web_$(date +%Y%m%d_%H%M%S).tar.gz -C /var/www/public .';
+    } else {
+      const d = (o.site||'').trim();
+      return `mkdir -p /backups/web; DOMAIN="${d}"; CONF="/etc/nginx/conf.d/${d}.conf"; [ ! -f "$CONF" ] && CONF="/etc/nginx/conf.d/${d}.conf.disabled"; ROOT=$(awk '/\\sroot\\s/{print $2}' "$CONF" | tr -d ';' | tail -n1); [ -z "$ROOT" ] && ROOT="/var/www/public"; tar -czf "/backups/web/${d}_$(date +%Y%m%d_%H%M%S).tar.gz" -C "$ROOT" .`;
+    }
+  }
+  if(t==='backup_db'){
+    const u = (document.getElementById('mysql_user').value||'root');
+    const p = (document.getElementById('mysql_password').value||'');
+    const passArg = p ? ` -p"${p}"` : '';
+    if((o.db_scope||'all')==='all'){
+      return `mkdir -p /backups/mysql && mysqldump -h mysql -P 3306 -u"${u}"${passArg} --all-databases > /backups/mysql/all_$(date +%Y%m%d_%H%M%S).sql`;
+    } else {
+      const db = (o.database||'mlite_db');
+      return `mkdir -p /backups/mysql && mysqldump -h mysql -P 3306 -u"${u}"${passArg} "${db}" > "/backups/mysql/${db}_$(date +%Y%m%d_%H%M%S).sql"`;
+    }
+  }
+  return '';
+}
+
+m_task_type.addEventListener('change', async ()=>{
+  applyTaskTypeVisibility();
+  if(m_task_type.value==='backup_site'){
+    await loadSites();
+  }
+  if(m_task_type.value==='backup_db'){
+    await loadDatabases();
+  }
+});
+
+async function loadSites(){
+  try{
+    const r = await fetch('/api/sites');
+    const j = await r.json();
+    const arr = (j.sites||j||[]);
+    sitesList = arr.map(x=>x.domain||x.site_name||x.name).filter(Boolean);
+    m_site_select.innerHTML = sitesList.map(s=>`<option value="${s}">${s}</option>`).join('');
+  } catch(e){ m_site_select.innerHTML = ''; }
+}
+async function loadDatabases(){
+  try{
+    const r = await fetch('/api/mysql/databases');
+    const j = await r.json();
+    const arr = Array.isArray(j) ? j : (j.databases||[]);
+    dbList = arr.map(x=> (typeof x==='string'? x : (x.Database||x.name)) ).filter(Boolean);
+    m_db_select.innerHTML = dbList.map(s=>`<option value="${s}">${s}</option>`).join('');
+  } catch(e){ m_db_select.innerHTML = ''; }
+}
+
+const saveBasicBtn = document.getElementById('saveBasic');
+const searchInput = document.getElementById('search');
+saveBasicBtn.addEventListener('click', saveBasic);
+searchInput.addEventListener('input', renderRows);
+loadBasic();
+loadJobs();
+</script>
+{% endblock %}
