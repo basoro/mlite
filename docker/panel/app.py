@@ -6038,16 +6038,18 @@ def _parse_cron_settings(cron_text: str) -> dict:
             try:
                 for token in cmd.split():
                     if token.startswith('-u') and len(token) > 2:
-                        data['mysql_user'] = token[2:]
+                        data['mysql_user'] = token[2:].strip().strip('"').strip("'")
                     if token.startswith('-p') and len(token) > 2:
-                        data['mysql_password'] = token[2:]
-                toks = cmd.strip().split()
-                for i, tk in enumerate(toks):
-                    if tk.startswith('-p') or tk.startswith('-u'):
-                        continue
-                db_tok = toks[-3] if len(toks) >= 3 else ''
-                if db_tok and not db_tok.startswith('-'):
-                    data['mysql_database'] = db_tok
+                        data['mysql_password'] = token[2:].strip().strip('"').strip("'")
+                import re
+                if '--all-databases' in cmd:
+                    data['mysql_database'] = ''
+                else:
+                    m = re.search(r"mysqldump[^\n>]*?\s([A-Za-z0-9_\-]+)\s*(?:>|$)", cmd)
+                    if m:
+                        db_tok = m.group(1)
+                        if db_tok and not db_tok.startswith('-'):
+                            data['mysql_database'] = db_tok
             except Exception:
                 pass
         elif 'tar ' in cmd and '/backups/web/' in cmd:
@@ -6063,17 +6065,17 @@ def _build_cron(settings: dict) -> str:
         return f"{int(mm)} {int(hh)} * * *"
     if settings.get('certbot_enabled'):
         t = settings.get('certbot_time','02:00')
-        lines.append(f"{to_fields(t)} root certbot renew --quiet && nginx -s reload")
+        lines.append(f"{to_fields(t)} root certbot renew --quiet && nginx -s reload # mlite:certbot")
     if settings.get('mysql_enabled'):
         t = settings.get('mysql_time','03:00')
         u = settings.get('mysql_user', db_config.get('user','root'))
         p = settings.get('mysql_password', db_config.get('password',''))
         d = settings.get('mysql_database', db_config.get('database','mlite_db'))
         pass_arg = f" -p{p}" if p else ""
-        lines.append(f"{to_fields(t)} root mkdir -p /backups/mysql && mysqldump -h mysql -P 3306 -u{u}{pass_arg} {d} > /backups/mysql/mysql_$(date +%Y%m%d_%H%M%S).sql")
+        lines.append(f"{to_fields(t)} root mkdir -p /backups/mysql && mysqldump -h mysql -P 3306 -u{u}{pass_arg} {d} > /backups/mysql/mysql_$(date +%Y%m%d_%H%M%S).sql # mlite:mysql")
     if settings.get('web_enabled'):
         t = settings.get('web_time','03:10')
-        lines.append(f"{to_fields(t)} root mkdir -p /backups/web && tar --exclude=./docker/backups -czf /backups/web/web_$(date +%Y%m%d_%H%M%S).tar.gz -C /var/www/public .")
+        lines.append(f"{to_fields(t)} root mkdir -p /backups/web && tar --exclude=./docker/backups -czf /backups/web/web_$(date +%Y%m%d_%H%M%S).tar.gz -C /var/www/public . # mlite:web")
     return '\n'.join(lines) + '\n'
 
 def _write_cron(cron_text: str) -> tuple[bool,str]:

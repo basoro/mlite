@@ -9,7 +9,6 @@
       <button id="addTask" class="px-3 py-2 rounded bg-green-600 text-white">Add Task</button>
     </div>
   </div>
-  <div id="status" class="text-sm"></div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div class="p-4 border rounded">
@@ -71,6 +70,7 @@
         <thead>
           <tr class="border-b">
             <th class="text-left py-2 px-2">Name</th>
+            <th class="text-left py-2 px-2">Type</th>
             <th class="text-left py-2 px-2">Status</th>
             <th class="text-left py-2 px-2">Schedule</th>
             <th class="text-left py-2 px-2">Last execute</th>
@@ -161,7 +161,6 @@
 let allJobs = []
 let sitesList = []
 let dbList = []
-const statusEl = document.getElementById('status');
 
 async function loadBasic(){
   const r = await fetch('/api/cron/settings');
@@ -194,9 +193,9 @@ async function saveBasic(){
   try{
     const r = await fetch('/api/cron/settings',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(payload)});
     const j = await r.json();
-    statusEl.textContent = j.success ? 'Tersimpan' : (j.error || 'Gagal menyimpan');
+    alert(j.success ? 'Tersimpan' : (j.error || 'Gagal menyimpan'));
   } catch(e){
-    statusEl.textContent = 'Gagal menyimpan';
+    alert('Gagal menyimpan');
   }
 }
 
@@ -207,6 +206,7 @@ function renderRows(){
     if(q && !(j.name||'').toLowerCase().includes(q)) continue;
     const tr = document.createElement('tr');
     tr.className = 'border-b';
+    const typeLabel = (()=>{ const t=j.task_type||'shell'; return t==='backup_site'?'Site':(t==='backup_db'?'Database':'Shell Script'); })();
     const schedule = (()=>{
       const t = j.schedule||{}; const tp=t.type||'daily';
       if(tp==='daily') return `Daily ${t.time||''}`;
@@ -216,6 +216,7 @@ function renderRows(){
     })();
     tr.innerHTML = `
       <td class='py-2 px-2'>${j.name||''}</td>
+      <td class='py-2 px-2'>${typeLabel}</td>
       <td class='py-2 px-2'>${j.enabled? 'Running' : 'Stopped'}</td>
       <td class='py-2 px-2'>${schedule}</td>
       <td class='py-2 px-2 text-xs'>${j.last_exec||'-'}</td>
@@ -259,15 +260,21 @@ m_confirm.addEventListener('click', async ()=>{
   if(idEdit){ r = await fetch('/api/cron/jobs/'+idEdit,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }
   else { r = await fetch('/api/cron/jobs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }
   const j = await r.json();
-  statusEl.textContent = j.success? 'Task tersimpan' : (j.error||'Gagal menyimpan task');
+  alert(j.success? 'Task tersimpan' : (j.error||'Gagal menyimpan task'));
   closeModal();
   await loadJobs();
 });
 
 async function execJob(id){
-  const r = await fetch('/api/cron/jobs/'+id+'/execute',{method:'POST'});
-  const j = await r.json();
-  statusEl.textContent = j.success? 'Executed' : (j.error||'Failed');
+  try{
+    const r = await fetch('/api/cron/jobs/'+id+'/execute',{method:'POST', credentials:'same-origin'});
+    let j = null;
+    try { j = await r.json(); } catch(e) {}
+    const msg = (j && typeof j.success !== 'undefined') ? (j.success ? 'Executed' : (j.error||'Failed')) : (r.ok ? 'Executed' : 'Failed');
+    alert(msg);
+  } catch(e){
+    alert('Failed');
+  }
   await loadJobs();
 }
 async function editJob(id){
@@ -288,7 +295,7 @@ async function delJob(id){
   if(!confirm('Delete task?')) return;
   const r = await fetch('/api/cron/jobs/'+id,{method:'DELETE'});
   const j = await r.json();
-  statusEl.textContent = j.success? 'Deleted' : (j.error||'Failed');
+  alert(j.success? 'Deleted' : (j.error||'Failed'));
   await loadJobs();
 }
 async function showLog(id){
@@ -326,7 +333,7 @@ function genScriptFromModal(o){
       return 'mkdir -p /backups/web && tar --exclude=/backups -czf /backups/web/web_$(date +%Y%m%d_%H%M%S).tar.gz -C /var/www/public .';
     } else {
       const d = (o.site||'').trim();
-      return `mkdir -p /backups/web; DOMAIN="${d}"; CONF="/etc/nginx/conf.d/${d}.conf"; [ ! -f "$CONF" ] && CONF="/etc/nginx/conf.d/${d}.conf.disabled"; ROOT=$(awk '/\\sroot\\s/{print $2}' "$CONF" | tr -d ';' | tail -n1); [ -z "$ROOT" ] && ROOT="/var/www/public"; tar -czf "/backups/web/${d}_$(date +%Y%m%d_%H%M%S).tar.gz" -C "$ROOT" .`;
+      return `mkdir -p /backups/web; DOMAIN="${d}"; CONF="/etc/nginx/conf.d/${d}.conf"; [ ! -f "$CONF" ] && CONF="/etc/nginx/conf.d/${d}.conf.disabled"; ROOT=$(awk '/^\s*root\s/{print $2}' "$CONF" | tr -d ';' | grep -v '/var/www/certbot' | head -n1); [ -z "$ROOT" ] && ROOT="/var/www/public/docker/www/${d}"; tar -czf "/backups/web/${d}_$(date +%Y%m%d_%H%M%S).tar.gz" -C "$ROOT" .`;
     }
   }
   if(t==='backup_db'){
