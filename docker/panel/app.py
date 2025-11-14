@@ -2044,9 +2044,10 @@ def categorize_services(containers):
         'Web Services': [],
         'Database & Services': []
     }
+    php_services = {'php56','php70','php71','php72','php73','php74','php80','php81','php82','php83'}
     for container in containers:
         service_name = container['service']
-        if service_name.startswith('php'):
+        if service_name in php_services:
             categories['PHP Containers'].append(container)
         elif service_name in ['nginx', 'panel']:
             categories['Web Services'].append(container)
@@ -2246,9 +2247,10 @@ def categorize_services(containers):
         'Web Services': [],
         'Database & Services': []
     }
+    php_services = {'php56','php70','php71','php72','php73','php74','php80','php81','php82','php83'}
     for container in containers:
         service_name = container['service']
-        if service_name.startswith('php'):
+        if service_name in php_services:
             categories['PHP Containers'].append(container)
         elif service_name in ['nginx', 'panel']:
             categories['Web Services'].append(container)
