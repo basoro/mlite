@@ -2559,13 +2559,11 @@ class Admin extends AdminModule
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->oneArray();
     $pemeriksaan = $this->db('pemeriksaan_ralan')->where('no_rawat', $reg_periksa['no_rawat'])->limit(1)->desc('tgl_perawatan')->desc('jam_rawat')->toArray();
-    $reg_periksa['sistole'] = strtok($pemeriksaan[0]['tensi'], '/');
-    $reg_periksa['diastole'] = substr($pemeriksaan[0]['tensi'], strpos($pemeriksaan[0]['tensi'], '/') + 1);
     if($reg_periksa['status_lanjut'] == 'Ranap') {
       $pemeriksaan = $this->db('pemeriksaan_ranap')->where('no_rawat', $reg_periksa['no_rawat'])->limit(1)->desc('tgl_perawatan')->desc('jam_rawat')->toArray();
-      $reg_periksa['sistole'] = strtok($pemeriksaan[0]['tensi'], '/');
-      $reg_periksa['diastole'] = substr($pemeriksaan[0]['tensi'], strpos($pemeriksaan[0]['tensi'], '/') + 1);
     }
+    $reg_periksa['sistole'] = strtok($pemeriksaan[0]['tensi'], '/');
+    $reg_periksa['diastole'] = substr($pemeriksaan[0]['tensi'], strpos($pemeriksaan[0]['tensi'], '/') + 1);
     $reg_periksa['no_sep'] = $this->_getSEPInfo('no_sep', revertNoRawat($no_rawat));
     $reg_periksa['kelas_rawat'] = $this->_getSEPInfo('klsrawat', revertNoRawat($no_rawat));
     $reg_periksa['stts_pulang'] = '';
@@ -2691,22 +2689,22 @@ class Admin extends AdminModule
     /* Prosedur bedah ranap */
     $biaya_bedah_dr_ranap = $this->db('rawat_inap_dr')
       ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
-      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_dr.kd_jenis_prw')
-      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_prosedur_bedah'))
+      ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_dr.kd_jenis_prw')
+      ->where('jns_perawatan_inap.kd_kategori', $this->settings->get('vedika.inacbgs_prosedur_bedah'))
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->toArray();
 
     $biaya_bedah_pr_ranap = $this->db('rawat_inap_pr')
       ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
-      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_pr.kd_jenis_prw')
-      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_prosedur_bedah'))
+      ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_pr.kd_jenis_prw')
+      ->where('jns_perawatan_inap.kd_kategori', $this->settings->get('vedika.inacbgs_prosedur_bedah'))
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->toArray();
 
     $biaya_bedah_drpr_ranap = $this->db('rawat_inap_drpr')
       ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
-      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_drpr.kd_jenis_prw')
-      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_prosedur_bedah'))
+      ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_drpr.kd_jenis_prw')
+      ->where('jns_perawatan_inap.kd_kategori', $this->settings->get('vedika.inacbgs_prosedur_bedah'))
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->toArray();
     /* End prosedur bedah ranap */
@@ -3159,7 +3157,10 @@ class Admin extends AdminModule
        $adl[] = $i;
     }
     //echo json_encode($adl, true);
-
+    $hide_input_data = false;
+    if ($get_claim_data && $get_claim_data['response']['data']['grouper']['response_idrg']['status_cd'] == 'final') {
+      $hide_input_data = true;
+    }
     echo $this->draw('inacbgs.html', [
       'reg_periksa' => $reg_periksa,
       'biaya_non_bedah' => $total_biaya_non_bedah,
@@ -3185,7 +3186,8 @@ class Admin extends AdminModule
       'get_claim_data' => $get_claim_data,
       'penyakit' => $penyakit,
       'prosedur' => $prosedur,
-      'adl' => $adl
+      'adl' => $adl,
+      'hide_input_data' => $hide_input_data
     ]);
     exit();
   }
@@ -3321,7 +3323,7 @@ class Admin extends AdminModule
     exit();
   }
 
-  public function getBridgingIdrg($nosep, $no_rawat)
+  public function getBridgingIdrg($nosep, $no_rawat,$is_final='0')
   {
 
     $reg_periksa = $this->db('reg_periksa')
@@ -3356,7 +3358,8 @@ class Admin extends AdminModule
     echo $this->draw('idrg.html', [
       'reg_periksa' => $reg_periksa,
       'noRawat' => revertNoRawat($no_rawat), 
-      'msg' => json_encode($msg)
+      'msg' => json_encode($msg),
+      'is_final' => $is_final
     ]);
     exit();
   }

@@ -3,7 +3,6 @@
     <h4 class="modal-title">Bridging iDRG</h4>
 </div>
 <div class="modal-body" id="idrgContainer">
-
     <div id="idrgSection" class="row" style="display: none; margin-top:20px;">
         <div class="col-md-12">
             <div class="row">
@@ -20,6 +19,7 @@
                             </h4>
                         
                         <div class="search-row">
+                            <input type="hidden" id="hide_input_data" value="{$is_final}">
                             <label class="search-label">Diagnosa:</label>
                             <div class="search-input">
                                 <select class="form-control" id="diagnosisSelect" style="width: 100%;">
@@ -512,7 +512,7 @@
     }
 
     function setClaimDataForGrouping(nomorSep) {
-
+        showProcessingMessage('Sedang menyiapkan data klaim untuk disimpan ke database lokal...');
         const diagnosisData = [];
 
         $('#diagnosisTableBody tr:not(:has(.empty-table))').each(function (i) {
@@ -580,7 +580,7 @@
         console.log('Collected procedure data:', procedureData.length + ' items. (' + prosedur + ')');
 
         console.log('Step 1: Setting claim data...');
-        
+        showIdrgLoader('Sedang menyimpan data klaim ke database lokal...');
         var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
         var no_rawat = $('input:text[name=no_rawat]').val();
         var tgl_registrasi = $('input:text[name=tgl_registrasi]').val();
@@ -719,6 +719,7 @@
         //   alert('Data klaim nomor SEP ' + nosep + ' telah disimpan!!');
           // tutup loader setelah alert
           if(data.metadata.message=="Ok"){
+            hideIdrgLoader();
             alert('Data klaim nomor SEP ' + nosep + ' telah disimpan!!');
           }   
           displayIdrgGroupingResults(data.response_idrg);
@@ -726,6 +727,7 @@
           //$('#inacbgsModal').modal('toggle');
         }).fail(function(){
           // jika gagal, pastikan loader ditutup agar tidak menggantung
+          hideIdrgLoader();
           $('.loader-bridging').hide();
         });
 
@@ -1446,6 +1448,7 @@
 
     // Tampilkan hasil final DRG saat tombol Finalize DRG diklik
     $('#finalDrgBtn').on('click', function() {
+        showProcessingMessage('Proses final iDRG sedang berlangsung...');
         var nosep = $('input:text[name=nosep]').val();  
         $.post(baseURL + '/vedika/finalidrg?t=' + mlite.token, {
           nosep: nosep
@@ -1454,7 +1457,14 @@
           console.log(data);
           // tutup loader setelah alert
           if(data.metadata.message=="Ok"){
-            alert('Final iDRG nomor SEP ' + nosep + ' telah disimpan!!');
+            const editButtons = document.querySelectorAll('#diagnosisTableBody button');
+            const procedureButtons = document.querySelectorAll('#procedureTableBody button');
+            const procedureInputs = document.querySelectorAll('#procedureTableBody input');
+            editButtons.forEach(button => button.disabled = true);
+            procedureButtons.forEach(button => button.disabled = true);
+            procedureInputs.forEach(input => input.disabled = true);
+            hideProcessingMessage();
+            showSuccessMessage('Final iDRG nomor SEP ' + nosep + ' telah disimpan!!');
             $('#inacbgSection').show();
             changeGroupingButtonToEdit();
             $('#finalDrgSection').hide();
@@ -1749,8 +1759,7 @@
                         } catch (e) {
                             console.error("Gagal parse response_data:", e);
                         }
-
-                        if (parsedResponse && parsedResponse.metadata && parsedResponse.metadata.code === 200) {
+                        if (parsedResponse && parsedResponse.metadata && parsedResponse.metadata.code === 200 && (!parsedResponse.response_idrg.drg_description.includes('Error') || parsedResponse.response_idrg.mdc_description.includes('Ungroupable')) && ($('#hide_input_data').val() == '1' || parsedResponse.response_idrg.status_cd == 'normal')) {
                             // Data iDRG final yang valid
                             const data_idrg_grouper_final = parsedResponse.response_idrg;
 
@@ -1758,23 +1767,32 @@
 
                             displayIdrgGroupingResults(data_idrg_grouper_final, data_idrg_grouper_final_created);
 
-                            changeGroupingButtonToEdit();
                             // $('#finalDrgSection').hide();
                             $('#groupingStatusIndicator').show();
-
+                            
                             const statusIndicator = $('#groupingStatusIndicator');
-                            statusIndicator
-                                .removeClass('alert-warning alert-danger')
-                                .addClass('bg-success')
-                                .html(`
-                                    <i class="fa fa-check-circle" style="margin-right:8px;padding: 10px;"></i>
-                                    <strong>Final iDRG:</strong> Telah diproses pada ${data_idrg_grouper_final_created}
-                                `);
+                            if($('#hide_input_data').val() == '1'){
+                                changeGroupingButtonToEdit();
+                                const editButtons = document.querySelectorAll('#diagnosisTableBody button');
+                                const procedureButtons = document.querySelectorAll('#procedureTableBody button');
+                                const procedureInputs = document.querySelectorAll('#procedureTableBody input');
+                                editButtons.forEach(button => button.disabled = true);
+                                procedureButtons.forEach(button => button.disabled = true);
+                                procedureInputs.forEach(input => input.disabled = true);
+                                // $('#finalDrgSection').hide();
+                                statusIndicator
+                                    .removeClass('alert-warning alert-danger')
+                                    .addClass('bg-success')
+                                    .html(`
+                                        <i class="fa fa-check-circle" style="margin-right:8px;padding: 10px;"></i>
+                                        <strong>Final iDRG:</strong> Telah diproses pada ${data_idrg_grouper_final_created}
+                                    `);
+                                    loadSavedInacbgDiagnosisData(noSep);
+                                    loadSavedInacbgProcedureData(noSep);
+                                    $('#inacbgSection').show();
+                            }
 
 
-                            loadSavedInacbgDiagnosisData(noSep);
-                            loadSavedInacbgProcedureData(noSep);
-                            $('#inacbgSection').show();
 
                         } else {
                             console.warn("⚠️ Response iDRG tidak valid atau code != 200:", parsedResponse);
@@ -1808,7 +1826,7 @@
 
                         if (parsedResponse && parsedResponse.metadata && parsedResponse.metadata.code === 200) {
                             console.log("✅ IDRG Grouper Final:", idrgGrouperFinal);
-                            $('#finalDrgSection').hide();
+                            $('#finalDrgSection').show();
                         }
                     }
 
@@ -2006,12 +2024,14 @@
                     }
 
                     const existingRows = $('#diagnosisTableBody tr:not(.empty-table)').length;
-                    if (data.accpdx === 'N' && existingRows === 0) {
+                    const diagnosisCount = $('#diagnosisTableBody tr:not(:has(.empty-table))').length;
+                    
+                    if (data.accpdx === 'N' && (existingRows === 0 || diagnosisCount === 0)) {
                         showInvalidCodeNotification(data, selector, 'accpdx');
                         $(this).val(''); return;
                     }
 
-                    if (data.asterisk === 1 && existingRows === 0) {
+                    if (data.asterisk === 1 && existingRows === 0 && diagnosisCount === 0) {
                         showInvalidCodeNotification(data, selector, 'asterisk');
                         $(this).val(''); return;
                     }
@@ -3053,12 +3073,18 @@
         
         showProcessingMessage('Sedang melakukan re-edit iDRG...');
         $('#grouperBtn').prop('disabled', true);
-        
+        showProcessingMessage('Sedang melakukan re-edit iDRG...');
         $.ajax({
             url: baseURL + '/vedika/idrggrouperreedit?t=' + mlite.token,
             method: 'POST',
             data: { nomor_sep: nomorSep },
             success: function(response) {
+                const editButtons = document.querySelectorAll('#diagnosisTableBody button');
+                const procedureButtons = document.querySelectorAll('#procedureTableBody button');
+                const procedureInputs = document.querySelectorAll('#procedureTableBody input');
+                editButtons.forEach(button => button.disabled = false);
+                procedureButtons.forEach(button => button.disabled = false);
+                procedureInputs.forEach(input => input.disabled = false);
                 hideProcessingMessage();
                 $('#grouperBtn').prop('disabled', false);
                 
@@ -3509,6 +3535,42 @@
         // Re-enable INACBG grouping section
         setInacbgGroupingEditable();
         
+    }
+    function showIdrgLoader(message) {
+    // Build or reveal the dedicated overlay
+        let overlay = document.getElementById('idrgLoaderOverlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'idrgLoaderOverlay';
+            overlay.style.cssText = `
+                position:fixed;
+                top:0;
+                left:0;
+                width:100%;
+                height:100%;
+                background:rgba(255,255,255,.75);
+                z-index:9999;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+            `;
+            overlay.innerHTML = `
+                <div style="text-align:center;">
+                    <i class="fa fa-spinner fa-spin fa-2x" style="color:#007bff;"></i>
+                    <p style="margin:8px 0 0;font-size:14px;color:#333;">${message || 'Loading...'}</p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        } else {
+            // Update text if already exists
+            overlay.querySelector('p').textContent = message || 'Loading...';
+            overlay.style.display = 'flex';
+        }
+    }
+
+    function hideIdrgLoader() {
+        const overlay = document.getElementById('idrgLoaderOverlay');
+        if (overlay) overlay.style.display = 'none';
     }
     
 
