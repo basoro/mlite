@@ -5588,11 +5588,44 @@ def _parse_modsec_event(obj: dict) -> dict:
                 severity = sev
     except Exception:
         pass
+    # Additional fallback: parse from "intervention.log" text
+    try:
+        interv = obj.get('intervention', {}) or {}
+        logtxt = interv.get('log') or ''
+        if isinstance(logtxt, str) and logtxt:
+            import re
+            m_id = re.search(r'id\s*"?(\d{3,7})"?', logtxt, re.IGNORECASE)
+            if m_id:
+                rid = m_id.group(1)
+                if rid and rid not in rule_ids:
+                    rule_ids.append(rid)
+            m_sev = re.search(r'severity\s*"?([A-Z]+)"?', logtxt, re.IGNORECASE)
+            if m_sev and not severity:
+                severity = m_sev.group(1)
+    except Exception:
+        pass
     ts = tx.get('time_stamp') or obj.get('timestamp')
     ip = tx.get('client_ip') or obj.get('client_ip')
     method = req.get('method') or obj.get('method')
     uri = req.get('uri') or obj.get('uri')
     status = resp.get('status') or obj.get('status')
+    # Map disruptive flag to status text if available
+    try:
+        interv = obj.get('intervention', {}) or {}
+        if isinstance(interv.get('disruptive'), bool):
+            status = ('Blocked' if interv.get('disruptive') else 'Detected')
+    except Exception:
+        pass
+    try:
+        if (not severity) and rule_ids:
+            sev_map = get_crs_severity_map()
+            for rid in rule_ids:
+                s = sev_map.get(str(rid))
+                if s:
+                    severity = s
+                    break
+    except Exception:
+        pass
     # Extract domain from absolute URI or Host header
     domain = None
     try:
@@ -5679,6 +5712,40 @@ def get_modsec_events(limit=1000, since=None, until=None, ip=None, rule_id=None)
     events = [e for e in events if in_range(e)]
     events = events[-limit:] if limit and len(events) > limit else events
     return events
+
+_crs_severity_cache = {'loaded': False, 'map': {}, 'ts': 0}
+
+def get_crs_severity_map() -> dict:
+    try:
+        import time, re
+        now = time.time()
+        if _crs_severity_cache['loaded'] and (now - _crs_severity_cache['ts'] < 600):
+            return _crs_severity_cache['map']
+        res = subprocess.run(
+            ['docker','exec',NGINX_CONTAINER_NAME,'sh','-lc','grep -R "id:\|severity:" -n /etc/nginx/modsec/owasp-crs/rules/*.conf || true'],
+            capture_output=True, text=True, timeout=10
+        )
+        lines = (res.stdout or '').splitlines()
+        m = {}
+        current_id = None
+        for ln in lines:
+            ln = ln.strip()
+            idm = re.search(r'id:\s*(\d{3,8})', ln, re.IGNORECASE)
+            if idm:
+                current_id = idm.group(1)
+            sev = None
+            sm = re.search(r'severity:\s*"?([A-Za-z]+)"?', ln, re.IGNORECASE)
+            if sm:
+                sev = sm.group(1).upper()
+            if current_id and sev:
+                m[current_id] = sev
+                current_id = None
+        _crs_severity_cache['map'] = m
+        _crs_severity_cache['loaded'] = True
+        _crs_severity_cache['ts'] = now
+        return m
+    except Exception:
+        return _crs_severity_cache.get('map') or {}
 
 def aggregate_modsec_stats(events):
     series = {}
