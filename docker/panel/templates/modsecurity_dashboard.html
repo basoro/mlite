@@ -95,6 +95,36 @@
       </table>
     </div>
   </div>
+
+  <!-- Exclusions Manager -->
+  <div class="bg-white shadow rounded p-4 mt-6">
+    <h2 class="text-lg font-semibold mb-3">Manage Rule Exclusions</h2>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+      <div>
+        <label class="text-sm text-gray-600">Rule ID</label>
+        <input id="ex-rule" type="text" class="w-full border rounded px-2 py-1" placeholder="942100" />
+      </div>
+      <div>
+        <label class="text-sm text-gray-600">Scope</label>
+        <select id="ex-scope" class="w-full border rounded px-2 py-1">
+          <option value="global">Global</option>
+          <option value="domain">Per Domain</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-sm text-gray-600">Domain</label>
+        <input id="ex-domain" type="text" class="w-full border rounded px-2 py-1" placeholder="example.com" />
+      </div>
+      <div class="flex gap-2">
+        <button id="ex-add" class="px-3 py-2 bg-green-600 text-white rounded">Add</button>
+        <button id="ex-del" class="px-3 py-2 bg-red-600 text-white rounded">Remove</button>
+      </div>
+    </div>
+    <div class="mt-4">
+      <h3 class="text-sm font-medium">Global Exclusions</h3>
+      <ul id="ex-list" class="mt-2 space-y-1 text-sm"></ul>
+    </div>
+  </div>
 </div>
 {% endblock %}
 {% block script %}
@@ -275,13 +305,14 @@ function renderEvents(res){
       const tr = document.createElement('tr');
       tr.className = 'hover:bg-gray-50';
       const domain = ev.domain || ev.host || (function(){ try{ const u = new URL(ev.uri||'', window.location.origin); return u.host || ''; }catch(_){ return ''; }})();
+      const rulesHtml = (ev.rule_ids||[]).map(id=>`<button class='text-blue-600 underline' onclick='document.getElementById("ex-rule").value="${id}"'>${id}</button>`).join(', ');
       tr.innerHTML = `
         <td class='px-3 py-2'>${fmtTime(ev)}</td>
         <td class='px-3 py-2'>${ev.src_ip||'-'}</td>
         <td class='px-3 py-2 whitespace-nowrap w-40'>${domain || '-'}</td>
         <td class='px-3 py-2'>${ev.method||'-'}</td>
         <td class='px-3 py-2 break-all w-64'>${ev.uri||'-'}</td>
-        <td class='px-3 py-2'>${(ev.rule_ids||[]).join(', ')}</td>
+        <td class='px-3 py-2'>${rulesHtml}</td>
         <td class='px-3 py-2'>${ev.status||'-'}</td>
         <td class='px-3 py-2'>${ev.severity||'-'}</td>`;
       tbody.appendChild(tr);
@@ -323,5 +354,54 @@ document.getElementById('apply-filters').addEventListener('click', loadAll);
 document.getElementById('range-select').addEventListener('change', loadAll);
 setInterval(loadAll, 30000);
 document.addEventListener('DOMContentLoaded', loadAll);
+
+// Exclusions
+async function fetchExclusions(){
+  try{
+    const res = await fetch(`${base}/api/modsecurity/exclusions`, { credentials: 'same-origin' });
+    const j = await res.json();
+    const list = document.getElementById('ex-list');
+    list.innerHTML = '';
+    (j.exclusions||[]).forEach(id=>{
+      const li = document.createElement('li');
+      li.className = 'flex justify-between';
+      li.innerHTML = `<span>${id}</span><button class='text-red-600' onclick='removeExclusion("${id}")'>Remove</button>`;
+      list.appendChild(li);
+    });
+  }catch(e){ console.error('fetchExclusions failed', e); }
+}
+async function addExclusion(){
+  const id = document.getElementById('ex-rule').value.trim();
+  const scope = document.getElementById('ex-scope').value;
+  const domain = document.getElementById('ex-domain').value.trim();
+  if(!id){ alert('Rule ID required'); return; }
+  try{
+    const res = await fetch(`${base}/api/modsecurity/exclude-rule`,{
+      method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ rule_id:id, scope, domain })
+    });
+    const j = await res.json();
+    alert(j.success? 'Added' : (j.error||'Failed'));
+  }catch(e){ alert('Failed'); }
+  fetchExclusions();
+}
+async function removeExclusion(id){
+  try{
+    const res = await fetch(`${base}/api/modsecurity/exclude-rule`,{
+      method:'DELETE', credentials:'same-origin', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ rule_id:id, scope:'global' })
+    });
+    const j = await res.json();
+    alert(j.success? 'Removed' : (j.error||'Failed'));
+  }catch(e){ alert('Failed'); }
+  fetchExclusions();
+}
+document.getElementById('ex-add').addEventListener('click', addExclusion);
+document.getElementById('ex-del').addEventListener('click', async ()=>{
+  const id = document.getElementById('ex-rule').value.trim();
+  if(!id){ alert('Rule ID required'); return; }
+  await removeExclusion(id);
+});
+document.addEventListener('DOMContentLoaded', fetchExclusions);
 </script>
 {% endblock %}

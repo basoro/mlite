@@ -5567,10 +5567,23 @@ def _parse_modsec_event(obj: dict) -> dict:
     try:
         for m in msgs:
             det = m.get('details', {})
-            rid = det.get('rule_id') or det.get('id')
+            rid = det.get('rule_id') or det.get('id') or det.get('ruleId')
             if rid:
                 rule_ids.append(str(rid))
-            sev = det.get('severity') or m.get('severity')
+            else:
+                # Fallback: try parse from message text patterns like id "942100"
+                try:
+                    msgtxt = ''
+                    if isinstance(m, dict):
+                        msgtxt = m.get('message') or m.get('msg') or ''
+                    if isinstance(msgtxt, str) and msgtxt:
+                        import re
+                        m1 = re.search(r'id\s*"?(\d{3,7})"?', msgtxt, re.IGNORECASE)
+                        if m1:
+                            rule_ids.append(m1.group(1))
+                except Exception:
+                    pass
+            sev = det.get('severity') or m.get('severity') or det.get('severity_str')
             if sev and not severity:
                 severity = sev
     except Exception:
@@ -5756,6 +5769,114 @@ def api_modsec_attacks():
     rule_id = request.args.get('rule_id')
     events = get_modsec_events(limit=limit, since=since, until=until, ip=ip, rule_id=rule_id)
     return jsonify({'success': True, 'events': events, 'count': len(events)})
+
+# === ModSecurity exclusions management ===
+def ensure_modsec_exclusions_include() -> bool:
+    try:
+        inc_line = 'Include /etc/nginx/modsec/exclusions.conf'
+        subprocess.run(['docker','exec',NGINX_CONTAINER_NAME,'sh','-lc','touch /etc/nginx/modsec/exclusions.conf'],capture_output=True, text=True)
+        chk = subprocess.run(['docker','exec',NGINX_CONTAINER_NAME,'sh','-lc',f"grep -qF '{inc_line}' /etc/nginx/modsec/main.conf || echo MISSING"],capture_output=True, text=True)
+        if 'MISSING' in (chk.stdout or ''):
+            subprocess.run(['docker','exec',NGINX_CONTAINER_NAME,'sh','-lc',f"echo '{inc_line}' >> /etc/nginx/modsec/main.conf"],capture_output=True, text=True)
+        return True
+    except Exception:
+        return False
+
+def reload_nginx_quiet() -> bool:
+    try:
+        t = subprocess.run(['docker','exec',NGINX_CONTAINER_NAME,'nginx','-t'],capture_output=True,text=True)
+        if t.returncode != 0:
+            return False
+        r = subprocess.run(['docker','exec',NGINX_CONTAINER_NAME,'nginx','-s','reload'],capture_output=True,text=True)
+        return r.returncode == 0
+    except Exception:
+        return False
+
+@app.route('/api/modsecurity/exclusions', methods=['GET'])
+@login_required
+def api_modsec_exclusions():
+    try:
+        ensure_modsec_exclusions_include()
+        res = subprocess.run(['docker','exec',NGINX_CONTAINER_NAME,'sh','-lc','cat /etc/nginx/modsec/exclusions.conf || true'],capture_output=True,text=True)
+        lines = (res.stdout or '').splitlines()
+        ids = []
+        for ln in lines:
+            ln = ln.strip()
+            if ln.lower().startswith('secruleremovebyid'):
+                parts = ln.split()
+                if len(parts)>=2:
+                    ids.append(parts[1])
+        return jsonify({'success': True, 'exclusions': ids, 'raw': lines})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/modsecurity/exclude-rule', methods=['POST','DELETE'])
+@login_required
+def api_modsec_exclude_rule():
+    try:
+        data = request.get_json(silent=True) or {}
+        rule_id = str(data.get('rule_id') or '').strip()
+        scope = str(data.get('scope') or 'global').strip().lower()
+        domain = str(data.get('domain') or '').strip()
+        if not rule_id.isdigit():
+            return jsonify({'success': False, 'error': 'Invalid rule_id'}), 400
+        if request.method == 'POST':
+            if scope == 'global':
+                ensure_modsec_exclusions_include()
+                cmd = f"grep -q 'SecRuleRemoveById {rule_id}' /etc/nginx/modsec/exclusions.conf || echo 'SecRuleRemoveById {rule_id}' >> /etc/nginx/modsec/exclusions.conf"
+                subprocess.run(['docker','exec',NGINX_CONTAINER_NAME,'sh','-lc',cmd],capture_output=True,text=True)
+                ok = reload_nginx_quiet()
+                return jsonify({'success': ok})
+            elif scope == 'domain' and domain:
+                conf_disabled = os.path.join(NGINX_CONF_DIR, f"{domain}.conf.disabled")
+                conf_enabled = os.path.join(NGINX_CONF_DIR, f"{domain}.conf")
+                target_path = conf_enabled if os.path.exists(conf_enabled) else conf_disabled
+                if not os.path.exists(target_path):
+                    return jsonify({'success': False, 'error': 'Domain config not found'}), 404
+                with open(target_path,'r') as f:
+                    content = f.read()
+                if f"SecRuleRemoveById {rule_id}" in content or f"modsecurity_rules 'SecRuleRemoveById {rule_id}'" in content:
+                    ok = reload_nginx_quiet()
+                    return jsonify({'success': ok})
+                new_lines = []
+                inserted = False
+                for line in content.splitlines():
+                    new_lines.append(line)
+                    if (not inserted) and line.strip().startswith('server') and '{' in line:
+                        new_lines.append(f"    modsecurity_rules 'SecRuleRemoveById {rule_id}'")
+                        inserted = True
+                if not inserted:
+                    new_lines.insert(0, f"modsecurity_rules 'SecRuleRemoveById {rule_id}'")
+                with open(target_path,'w') as f:
+                    f.write('\n'.join(new_lines))
+                ok = reload_nginx_quiet()
+                return jsonify({'success': ok})
+            else:
+                return jsonify({'success': False, 'error': 'Invalid scope/domain'}), 400
+        else:
+            if scope == 'global':
+                ensure_modsec_exclusions_include()
+                cmd = f"sed -i '/SecRuleRemoveById {rule_id}/d' /etc/nginx/modsec/exclusions.conf || true"
+                subprocess.run(['docker','exec',NGINX_CONTAINER_NAME,'sh','-lc',cmd],capture_output=True,text=True)
+                ok = reload_nginx_quiet()
+                return jsonify({'success': ok})
+            elif scope == 'domain' and domain:
+                conf_disabled = os.path.join(NGINX_CONF_DIR, f"{domain}.conf.disabled")
+                conf_enabled = os.path.join(NGINX_CONF_DIR, f"{domain}.conf")
+                target_path = conf_enabled if os.path.exists(conf_enabled) else conf_disabled
+                if not os.path.exists(target_path):
+                    return jsonify({'success': False, 'error': 'Domain config not found'}), 404
+                with open(target_path,'r') as f:
+                    content = f.read()
+                content = content.replace(f"modsecurity_rules 'SecRuleRemoveById {rule_id}'\n", '').replace(f"modsecurity_rules 'SecRuleRemoveById {rule_id}'", '')
+                with open(target_path,'w') as f:
+                    f.write(content)
+                ok = reload_nginx_quiet()
+                return jsonify({'success': ok})
+            else:
+                return jsonify({'success': False, 'error': 'Invalid scope/domain'}), 400
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/modsecurity/top-rules')
 @login_required
