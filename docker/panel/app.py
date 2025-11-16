@@ -3778,7 +3778,7 @@ def list_databases():
         # Get list of databases
         cursor.execute('SHOW DATABASES')
         databases = cursor.fetchall()
-        # Get size of each database
+        # Get size and tables count of each database
         db_list = []
         for row in databases:
             # Support both list-of-lists and list-of-tuples
@@ -3800,9 +3800,23 @@ def list_databases():
                     size_val = size_row[0] if size_row else None
                 else:
                     size_val = size_row
+                # Tables count
+                cursor.execute(f"""
+                    SELECT COUNT(*)
+                    FROM information_schema.tables
+                    WHERE table_schema = '{db_name}';
+                """)
+                cnt_row = cursor.fetchone()
+                if isinstance(cnt_row, dict):
+                    tables_cnt = list(cnt_row.values())[0] if cnt_row else 0
+                elif isinstance(cnt_row, (list, tuple)):
+                    tables_cnt = cnt_row[0] if cnt_row else 0
+                else:
+                    tables_cnt = cnt_row or 0
                 db_list.append({
                     'name': db_name,
-                    'size': float(size_val) if size_val is not None else 0
+                    'size': float(size_val) if size_val is not None else 0,
+                    'tables': int(tables_cnt) if isinstance(tables_cnt, (int, float)) else int(tables_cnt or 0)
                 })
         cursor.close()
         connection.close()
