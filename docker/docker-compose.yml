@@ -196,6 +196,7 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
       - ./logs/modsecurity:/var/log/modsecurity
+      - ./backups:/backups
     depends_on:
       - php56
       - php70
@@ -224,6 +225,19 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
       - ../mlite_db.sql:/docker-entrypoint-initdb.d/00-mlite_db.sql
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: mlite_phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - "888:80"
+    depends_on:
+      - mysql
     networks:
       - app-network
 

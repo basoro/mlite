@@ -23,10 +23,27 @@ RUN apt-get update && apt-get install -y \
     automake \
     autoconf \
     certbot \
+    cron \
+    mariadb-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Prepare ACME webroot
 RUN mkdir -p /var/www/certbot/.well-known/acme-challenge
+
+# Configure cron tasks for certbot renew and backups
+RUN mkdir -p /backups/mysql /backups/web && \
+    cat > /etc/cron.d/mlite <<'EOF'
+# mLITE scheduled tasks
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# Certbot renew daily at 02:00
+0 2 * * * root certbot renew --quiet && nginx -s reload
+# MySQL backup daily at 03:00
+0 3 * * * root mysqldump -h mysql -P 3306 -umlite -pmlite123 mlite_db > /backups/mysql/mysql_$(date +\%Y\%m\%d_\%H\%M\%S).sql
+# Website backup daily at 03:10
+10 3 * * * root tar --exclude=./docker/backups -czf /backups/web/web_$(date +\%Y\%m\%d_\%H\%M\%S).tar.gz -C /var/www/public .
+EOF
+RUN chmod 0644 /etc/cron.d/mlite
 
 # Build and install libmodsecurity (ModSecurity v3)
 RUN set -eux; \
@@ -84,4 +101,4 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Expose ports (already mapped via docker-compose)
 EXPOSE 80 8080
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["sh", "-lc", "/usr/sbin/cron && exec nginx -g 'daemon off;'"]
