@@ -220,6 +220,7 @@ services:
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: true
       MYSQL_DATABASE: mlite
+      MYSQL_ROOT_HOST: localhost
     ports:
       - "3308:3306"
     volumes:
