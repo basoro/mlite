@@ -117,9 +117,12 @@
       <p class="text-gray-600 dark:text-gray-400 mt-1">Manage MySQL databases, tables, users, and queries</p>
     </div>
     <div class="flex items-center gap-3">
-      <a href="http://localhost:888" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-2">
-        <i class="fas fa-table"></i>
-        phpMyAdmin
+      <a id="phpmyadminLink"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-2">
+          <i class="fas fa-table"></i>
+          phpMyAdmin
       </a>
       <button onclick="refreshAllData()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-2">
         <i class="fas fa-sync-alt"></i>
@@ -653,5 +656,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Set default tab
   switchTab('databases');
 });
+</script>
+<script>
+document.getElementById('phpmyadminLink').href =
+    window.location.protocol + "//" + window.location.hostname + ":888";
 </script>
 {% endblock %}
