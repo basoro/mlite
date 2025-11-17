@@ -96,7 +96,7 @@
       </div>
     </div>
     <div class="col col-md-3">
-      <div class="form-group">
+      <div class="form-group" id="nama_dokter">
         <label for="poli">Dokter</label>
         <select class="form-control" name="nama_dokter">
           {if: $reg_periksa.status_lanjut == 'Ralan'}
@@ -849,15 +849,16 @@
     </div>
     <div class="row">
     <div class="col col-md-12" style="margin: 20px 0;">
-      <button class="btn btn-success simpanbridging">
+      <input type="hidden" name="hide_input_data" id="hide_input_data" value="{$hide_input_data}">
+      <!-- <button class="btn btn-success simpanbridging">
           Simpan
-      </button>
+      </button> -->
       <!-- <button class="btn btn-info editbridging">
           Edit
       </button> -->
-      <button class="btn btn-danger hapusbridging">
+      <!-- <button class="btn btn-danger hapusbridging">
           Hapus
-      </button>
+      </button> -->
       <span class="pull-right">
         <button class="btn btn-success" id="groupingidrg">
             Grouping iDRG
@@ -1097,12 +1098,24 @@
   });
 </script>
 <script type="text/javascript">
+  if ($('#hide_input_data').val() == '1') {
+    const inputs = document.querySelectorAll('#covid input');
+    const biaya = document.querySelectorAll('#biaya input');
+    const tambahan = document.querySelectorAll('#tambahan input');
+    const kelahiran = document.querySelectorAll('#kelahiran input');
+    const umum = document.querySelectorAll('#umum input');
+    inputs.forEach(input => input.disabled = true);
+    biaya.forEach(input => input.disabled = true);
+    tambahan.forEach(input => input.disabled = true);
+    kelahiran.forEach(input => input.disabled = true);
+    umum.forEach(input => input.disabled = true);
+  }
   $("#bridginginacbgs").on("click", "#groupingidrg", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var nosep = $('input:text[name=nosep]').val();
     var no_rawat = $('input:text[name=no_rawat]').val();
-    var loadURL =  baseURL + '/vedika/bridgingidrg/' + nosep + '/' + no_rawat.replaceAll('/','') + '?t=' + mlite.token;
+    var loadURL =  baseURL + '/vedika/bridgingidrg/' + nosep + '/' + no_rawat.replaceAll('/','') + '/' + $('#hide_input_data').val() + '?t=' + mlite.token;
 
     var modal = $('#moduleModal');
     var modalContent = $('#moduleModal .modal-content');
