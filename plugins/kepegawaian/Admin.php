@@ -209,8 +209,24 @@ class Admin extends AdminModule
             }
 
             if (!$id) {    // new
+                if (isset($_POST['nik']) && $_POST['nik'] !== '') {
+                    $existsNik = $this->db('pegawai')->where('nik', $_POST['nik'])->oneArray();
+                    if (!empty($existsNik)) {
+                        $this->notify('failure', 'NIP sudah ada');
+                        redirect($location, $_POST);
+                    }
+                }
+
                 $query = $this->db('pegawai')->save($_POST);
             } else {        // edit
+                if (isset($_POST['nik']) && $_POST['nik'] !== '') {
+                    $existsNik = $this->db('pegawai')->where('nik', $_POST['nik'])->where('id', '!=', $id)->oneArray();
+                    if (!empty($existsNik)) {
+                        $this->notify('failure', 'NIK sudah ada');
+                        redirect($location, $_POST);
+                    }
+                }
+
                 $query = $this->db('pegawai')->where('id', $id)->save($_POST);
             }
 
