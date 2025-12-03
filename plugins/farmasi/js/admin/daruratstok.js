@@ -5,14 +5,29 @@ jQuery(function($) {
     daruratstokTable = $('#daruratstok_table').DataTable({
         "processing": true,
         "serverSide": true,
+        "ordering": false,
         "ajax": {
             "url": "{?=url([ADMIN, 'farmasi', 'daruratstokdata'])?}",
             "type": "POST",
+            "dataSrc": function(json){
+                try {
+                    if (json && Array.isArray(json.data)) return json.data;
+                    if (json && Array.isArray(json.rows)) return json.rows;
+                    if (json && Array.isArray(json.aaData)) return json.aaData;
+                    if (Array.isArray(json)) return json;
+                    console.error('Unexpected DataTables response shape:', json);
+                    return [];
+                } catch(e) {
+                    console.error('dataSrc parse error:', e);
+                    return [];
+                }
+            },
             "data": function(d) {
                 d.search_field_databarang = $('#search_field_databarang').val();
                 d.search_text_databarang = $('#search_text_databarang').val();
             }
         },
+        "deferRender": true,
         "columns": [
             { 
                 "data": null,
@@ -100,9 +115,9 @@ jQuery(function($) {
         ],
         "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
         "language": {
-            "url": "{?=url('assets/jscripts/dataTables-id.json'))?}"
+            "url": "{?=url('assets/jscripts/dataTables-id.json')?}"
         },
-        "order": [[3, "asc"]], // Order by stok ascending (habis/kritis dulu)
+        // Ordering handled on server without DataTables default ORDER param
         "scrollX": true,
         "pageLength": 25,
         "rowCallback": function(row, data) {
@@ -111,9 +126,9 @@ jQuery(function($) {
             
             // Highlight rows based on stock status
             if (stok == 0) {
-                $(row).addClass('danger'); // Red background for empty stock
+                $(row).addClass('bg-danger text-primary font-weight-bold'); // Red background for empty stock
             } else if (stok < stokMinimal) {
-                $(row).addClass('warning'); // Yellow background for critical stock
+                $(row).addClass('bg-warning text-primary font-weight-bold'); // Yellow background for critical stock
             }
         }
     });

@@ -692,65 +692,87 @@ class Admin extends AdminModule
 
     public function postDaruratStokData()
     {
-        $draw = $_POST['draw'];
-        $row1 = $_POST['start'];
-        $rowperpage = $_POST['length']; // Rows display per page
-        $columnIndex = $_POST['order'][0]['column']; // Column index
-        $columnName = $_POST['columns'][$columnIndex]['data']; // Column name
-        $columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
-        $searchValue = $_POST['search']['value']; // Search value
+        $draw           = $_POST['draw'] ?? 1;
+        $row1           = $_POST['start'] ?? 0;
+        $rowperpage     = $_POST['length'] ?? 10;
+        $columnIndex    = $_POST['order'][0]['column'] ?? 0;
+        $columnName     = $_POST['columns'][$columnIndex]['data'] ?? 'kode_brng';
+        $columnSortOrder= $_POST['order'][0]['dir'] ?? 'asc';
+        $search_text    = $_POST['search_text_databarang'] ?? '';
+        $search_field   = $_POST['search_field_databarang'] ?? '';
 
-        ## Custom Field value
-        $search_field_databarang= $_POST['search_field_databarang'];
-        $search_text_databarang = $_POST['search_text_databarang'];
+        // Validasi: mencegah SQL Injection via column name
+        $allowedColumns = [
+            'kode_brng','nama_brng','stokminimal','kode_satbesar',
+            'kode_sat','dasar','h_beli','isi','kapasitas','expire'
+        ];
 
-        $searchQuery = " ";
-        if($search_text_databarang != ''){
-            $searchQuery .= " and (".$search_field_databarang." like '%".$search_text_databarang."%' ) ";
+        if (!in_array($columnName, $allowedColumns)) {
+            $columnName = 'kode_brng';
         }
 
-        ## Total number of records without filtering
-        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from databarang");
-        $sel->execute();
-        $records = $sel->fetch();
-        $totalRecords = $records['allcount'];
+        // Build search query
+        $searchQuery = "";
+        $params = [];
 
-        ## Total number of records with filtering
-        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from databarang WHERE 1 ".$searchQuery);
-        $sel->execute();
-        $records = $sel->fetch();
-        $totalRecordwithFilter = $records['allcount'];
-
-        ## Fetch records
-        $sel = $this->db()->pdo()->prepare("select * from databarang WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row1.",".$rowperpage);
-        $sel->execute();
-        $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
-
-        $data = array();
-        foreach($result as $row) {
-            $stok = $this->db('gudangbarang')->select(['stok' => 'SUM(stok)'])->where('kode_brng', $row['kode_brng'])->toArray();
-            $data[] = array(
-                'kode_brng'=>$row['kode_brng'],
-                'nama_brng'=>$row['nama_brng'],
-                'stok'=>$stok[0]['stok'],
-                'stokminimal'=>$row['stokminimal'],
-                'kode_satbesar'=>$row['kode_satbesar'],
-                'kode_sat'=>$row['kode_sat'],
-                'dasar'=>$row['dasar'],
-                'h_beli'=>$row['h_beli'],
-                'isi'=>$row['isi'],
-                'kapasitas'=>$row['kapasitas'],
-                'expire'=>$row['expire']
-            );
+        if ($search_text !== '' && in_array($search_field, $allowedColumns)) {
+            $searchQuery = " AND $search_field LIKE :search_text ";
+            $params[':search_text'] = "%$search_text%";
         }
 
-        ## Response
-        $response = array(
+        // -------------------------
+        // Hitung total records
+        // -------------------------
+        $sqlTotal = "SELECT COUNT(*) AS allcount FROM databarang";
+        $stmt = $this->db()->pdo()->prepare($sqlTotal);
+        $stmt->execute();
+        $totalRecords = $stmt->fetch()['allcount'];
+
+        // -------------------------
+        // Hitung total filtered
+        // -------------------------
+        $sqlFiltered = "SELECT COUNT(*) AS allcount FROM databarang WHERE 1 $searchQuery";
+        $stmt = $this->db()->pdo()->prepare($sqlFiltered);
+        $stmt->execute($params);
+        $totalRecordwithFilter = $stmt->fetch()['allcount'];
+
+        // -------------------------
+        // Ambil data JOIN stok gudang (1 kali query saja)
+        // -------------------------
+        $sqlData = "
+            SELECT d.kode_brng, d.nama_brng, d.stokminimal, d.kode_satbesar,
+                  d.kode_sat, d.dasar, d.h_beli, d.isi, d.kapasitas, d.expire,
+                  COALESCE(SUM(g.stok), 0) AS stok
+            FROM databarang d
+            LEFT JOIN gudangbarang g ON g.kode_brng = d.kode_brng
+            WHERE 1 $searchQuery
+            GROUP BY d.kode_brng
+            ORDER BY $columnName $columnSortOrder
+            LIMIT :start, :length
+        ";
+
+        $stmt = $this->db()->pdo()->prepare($sqlData);
+
+        // bind parameter
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+
+        $stmt->bindValue(":start", intval($row1), \PDO::PARAM_INT);
+        $stmt->bindValue(":length", intval($rowperpage), \PDO::PARAM_INT);
+
+        $stmt->execute();
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        // -------------------------
+        // Response JSON
+        // -------------------------
+        $response = [
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordwithFilter,
-            "aaData" => $data
-        );
+            "aaData" => $result
+        ];
 
         echo json_encode($response);
         exit();
