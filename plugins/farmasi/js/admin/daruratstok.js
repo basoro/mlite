@@ -113,6 +113,8 @@ jQuery(function($) {
             },
             { "data": "expire" }
         ],
+        'lengthChange': false,
+        'searching': false,
         "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
         "language": {
             "url": "{?=url('assets/jscripts/dataTables-id.json')?}"
