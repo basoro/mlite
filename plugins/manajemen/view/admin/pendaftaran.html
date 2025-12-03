@@ -366,12 +366,20 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function(){
+        console.log('Manajemen/Pendaftaran DOM ready');
+        console.log('Chart available:', !!window.Chart);
         var ctx = document.getElementById("line-chart");
+        console.log('Canvas #line-chart exists:', !!ctx);
+        var labelsBaru = ["{?= implode('","', $stats.poliChartBaru.labels) ?}"];
+        var dataBaru = ["{?= implode('","', $stats.poliChartBaru.visits) ?}"];
+        console.log('Baru labels:', labelsBaru);
+        console.log('Baru data:', dataBaru);
         if (ctx && window.Chart) {
+            try {
             var myChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ["{?= implode('\",\"', $stats.poliChartBaru.labels) ?}"],
+                    labels: labelsBaru,
                     datasets: [{
                             label: "Pasien",
                             borderColor: "#34316E",
@@ -379,7 +387,7 @@
                             backgroundColor: "rgba(30, 30, 45, 0.2)",
                             pointHighlightStroke: "#1e1e2d",
                             pointRadius: 0,
-                            data: ["{?= implode('\",\"', $stats.poliChartBaru.visits) ?}"],
+                            data: dataBaru,
                         }
                     ]
                 },
@@ -399,13 +407,23 @@
                     maintainAspectRatio: false
                 }
             });
+            console.log('Chart Baru rendered:', !!myChart);
+            } catch(e) { console.error('Chart Baru error:', e); }
+        } else {
+            console.warn('Chart or canvas missing for Chart Baru');
         }
         var ctx2 = document.getElementById("line-chartcanvas");
+        console.log('Canvas #line-chartcanvas exists:', !!ctx2);
+        var labelsBatal = ["{?= implode('","', $stats.poliChart.labels) ?}"];
+        var dataBatal = ["{?= implode('","', $stats.poliChart.visits) ?}"];
+        console.log('Batal labels:', labelsBatal);
+        console.log('Batal data:', dataBatal);
         if (ctx2 && window.Chart) {
+            try {
             var myChart2 = new Chart(ctx2, {
                 type: 'bar',
                 data: {
-                    labels: ["{?= implode('\",\"', $stats.poliChart.labels) ?}"],
+                    labels: labelsBatal,
                     datasets: [{
                             label: "Pasien",
                             borderColor: "#34316E",
@@ -413,7 +431,7 @@
                             backgroundColor: "rgba(30, 30, 45, 0.2)",
                             pointHighlightStroke: "#1e1e2d",
                             pointRadius: 0,
-                            data: ["{?= implode('\",\"', $stats.poliChart.visits) ?}"],
+                            data: dataBatal,
                         }
                     ]
                 },
@@ -433,6 +451,10 @@
                     maintainAspectRatio: false
                 }
             });
+            console.log('Chart Batal rendered:', !!myChart2);
+            } catch(e) { console.error('Chart Batal error:', e); }
+        } else {
+            console.warn('Chart or canvas missing for Chart Batal');
         }
     });
 </script>

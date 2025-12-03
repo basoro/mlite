@@ -18,7 +18,7 @@ class Admin extends AdminModule
     public function getManage()
     {
       $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-      $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+      $this->core->addJS(url('assets/jscripts/Chart.bundle.min.js'));
       $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
       $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
       $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
@@ -1359,7 +1359,7 @@ class Admin extends AdminModule
     public function getPendaftaran()
     {
         $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+        $this->core->addJS(url('assets/jscripts/Chart.bundle.min.js'));
 
         $settings = htmlspecialchars_array($this->settings('manajemen'));
 
@@ -1427,7 +1427,7 @@ class Admin extends AdminModule
     public function getRawatJalan()
     {
         $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+        $this->core->addJS(url('assets/jscripts/Chart.bundle.min.js'));
 
         $settings = htmlspecialchars_array($this->settings('manajemen'));
 
@@ -1490,7 +1490,7 @@ class Admin extends AdminModule
     public function getRawatInap()
     {
         $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+        $this->core->addJS(url('assets/jscripts/Chart.bundle.min.js'));
 
         $settings = htmlspecialchars_array($this->settings('manajemen'));
 
@@ -1563,7 +1563,7 @@ class Admin extends AdminModule
     public function getDokter()
     {
         $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+        $this->core->addJS(url('assets/jscripts/Chart.bundle.min.js'));
 
         $settings = htmlspecialchars_array($this->settings('manajemen'));
 
@@ -1600,7 +1600,7 @@ class Admin extends AdminModule
     public function getLaboratorium()
     {
         $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+        $this->core->addJS(url('assets/jscripts/Chart.bundle.min.js'));
 
         $settings = htmlspecialchars_array($this->settings('manajemen'));
 
@@ -1667,7 +1667,7 @@ class Admin extends AdminModule
     public function getRadiologi()
     {
         $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+        $this->core->addJS(url('assets/jscripts/Chart.bundle.min.js'));
 
         $settings = htmlspecialchars_array($this->settings('manajemen'));
 
@@ -1933,7 +1933,7 @@ class Admin extends AdminModule
     public function getPresensi()
     {
       $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-      $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+      $this->core->addJS(url('assets/jscripts/Chart.bundle.min.js'));
       $settings = htmlspecialchars_array($this->settings('manajemen'));
 
       // Baca dan validasi parameter tanggal
