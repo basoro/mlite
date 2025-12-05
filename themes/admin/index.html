@@ -412,6 +412,9 @@
                 <li class="menu-icon"><a href="{?=url([ADMIN, 'dokter_ranap', 'manage'])?}"{if: !$mlite.dokter_ranap_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-hotel {if: $mlite.dokter_ranap_access}text-info{else}text-muted{/if}"></i> Dokter Ranap</a></li>
                 {/if}
               {else}
+                {if: $mlite.module_oral_diagnostic}
+                <li class="menu-icon"><a href="{?=url([ADMIN, 'oral_diagnostic', 'manage'])?}"{if: !$mlite.oral_diagnostic_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-asterisk {if: $mlite.oral_diagnostic_access}text-warning{else}text-muted{/if}"></i> Oral Diag</a></li>
+                {/if}
                 {if: $mlite.module_igd}
                 <li class="menu-icon"><a href="{?=url([ADMIN, 'igd', 'manage'])?}"{if: !$mlite.igd_access} class="btn disabled"{/if} style="border-radius: 5px !important;"><i class="fa fa-ambulance {if: $mlite.igd_access}text-danger{else}text-muted{/if}"></i> IGD</a></li>
                 {/if}

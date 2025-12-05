@@ -1,0 +1,29 @@
+<br><br><br>
+<h3>Data Pasien Oral Diagnostic</h3>
+<table class="table" style="margin-top:2cm;" width="100%">
+    <thead>
+        <tr>
+        <th>Tanggal</th>
+        <th>No. Rawat</th>
+        <th>No. Reg</th>
+        <th>Nama Pasien</th>
+        <th>No. RM</th>
+        <th>Dokter</th>
+        <th>Penjamin</th>
+        </tr>
+    </thead>
+    <tbody>
+        {loop: $cetak}
+        <tr>
+        <td>{$value.temp3}</td>
+        <td>{$value.temp2}</td>
+        <td>{$value.temp1}</td>
+        <td>{?=$this->core->getPasienInfo('nm_pasien', $value.temp6)?}</td>
+        <td>{$value.temp6}</td>
+        <td>{?=$this->core->getDokterInfo('nm_dokter', $value.temp5)?}</td>
+        <td>{?=$this->core->getPenjabInfo('png_jawab', $value.temp15)?}</td>
+        </tr>
+        {/loop}
+    </tbody>
+</table>
+    

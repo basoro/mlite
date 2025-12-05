@@ -1,0 +1,209 @@
+<style>
+  body {
+    margin: 0 60px 40px 80px;
+    font-size: 16px;
+    font-family: georgia;
+  }
+  input, textarea {
+    font-size: 16px;
+    font-family: georgia;
+  }
+  @media print {
+    font-size: 14px;
+    font-family: georgia;
+  }
+  @media print {
+    #saveButton, #printPageButton {
+      display: none;
+    }
+    textarea {
+      border: none;
+      resize: none;
+    }
+  }
+</style>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
+<script>
+  function Cetak()
+  {
+      window.print();
+  }  
+  function Simpan()
+  {
+    var url = "{?=url([ADMIN,'oral_diagnostic','simpansuratsehat'])?}";
+    var no_rawat = "{$no_rawat}";
+    var nomor_surat = $("#nomor_surat").val();
+    var no_rkm_medis = "{$pasien.no_rkm_medis}";
+    var nm_pasien = "{$pasien.nm_pasien}";
+    var tgl_lahir = "{$pasien.tgl_lahir}";
+    var umur = "{?=hitungUmur($pasien.tgl_lahir)?}";
+    var jk = "{$pasien.jk}";
+    var alamat = "{$pasien.alamat}, {$pasien.nm_kel}, {$pasien.nm_kec}, {$pasien.nm_kab}, {$pasien.nm_prop}";
+    var tanggal = $("#tanggal").val();
+    var berat_badan = $("#berat_badan").val();
+    var tinggi_badan =$("#tinggi_badan").val();
+    var tensi = $("#tensi").val();
+    var gol_darah = $("#gol_darah").val();
+    var riwayat_penyakit = $("#riwayat_penyakit").val();
+    var keperluan = $("#keperluan").val();
+    var dokter = "{$nm_dokter}";
+    var petugas = "{?=$this->core->getUserInfo('username', $_SESSION['mlite_user'])?}";
+
+    $.post(
+      url, 
+      {
+        nomor_surat: nomor_surat, 
+        no_rawat: no_rawat, 
+        no_rkm_medis: no_rkm_medis, 
+        nm_pasien: nm_pasien, 
+        tgl_lahir: tgl_lahir, 
+        umur: umur, 
+        jk: jk, 
+        alamat: alamat, 
+        tanggal: tanggal, 
+        berat_badan: berat_badan, 
+        tinggi_badan: tinggi_badan, 
+        tensi: tensi, 
+        gol_darah: gol_darah, 
+        riwayat_penyakit: riwayat_penyakit, 
+        keperluan: keperluan, 
+        dokter: dokter, 
+        petugas: petugas
+      },
+      function(data) {
+        data = JSON.parse(data);
+        console.log(data);
+        if(data.status == 'success') {
+          alert('Sukses');
+        }
+        if(data.status == 'error') {
+          alert(data.msg);
+        }
+      }
+    );
+  }  
+  function auto_grow(element) {
+    element.style.height = "5px";
+    element.style.height = (element.scrollHeight) + "px";
+  }  
+</script>
+<div style="width:960px;">
+  <table>
+    <thead>
+      <tr>
+        <th>
+          <img src="{?=url()?}/{$settings.logo}" height="100px" style="margin-right: 20px;" alt="">
+        </th>
+        <th colspan="2" width="100%">
+            <p><span style="font-size: 28px;">{$settings.nama_instansi}</span><br>
+            <span style="font-size: 18px;">Alamat: {$settings.alamat} - {$settings.kota} - {$settings.propinsi}</span><br>
+            <span style="font-size: 18px;">Telepon: {$settings.nomor_telepon} - Email: {$settings.email}</span></p>
+        </th>
+      </tr>
+      <tr>
+        <th colspan="3">
+          <hr style="border-bottom: 2px solid #000;padding-top:3px;">
+        </th>
+      </tr>
+    </thead>
+  </table>
+  <center>
+    <h2 style="margin-bottom:0px !important;border-bottom: 2px solid #000;width:400px;">SURAT KETERANGAN SEHAT</h2>
+    Nomor: <input type="text" class="form-control" id="nomor_surat" name="" value="{?=isset_or($surat.nomor_surat)?}" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"><br><br>
+  </center>
+  <br><br>
+  <table>
+    <tbody>
+      <tr>
+        <td colspan="3" width="100%">
+          Yang bertanda tangan di bawah ini Dokter {$settings.nama_instansi}, Menerangkan bahwa;<br><br>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <table>
+    <tbody>
+      <tr>
+        <td width="200">Nama</td>
+        <td> : </td>
+        <td>{$pasien.nm_pasien}</td>
+      </tr>
+      <tr>
+        <td width="200">Tanggal Lahir / Umur</td>
+        <td> : </td>
+        <td>{$pasien.tgl_lahir} / {?=hitungUmur($pasien.tgl_lahir)?}</td>
+      </tr>
+      <tr>
+        <td width="200">Jenis Kelamin</td>
+        <td> : </td>
+        <td>{if: $pasien.jk}Laki-Laki{else}Perempuan{/if}</td>
+      </tr>
+      <tr>
+        <td width="200">Alamat</td>
+        <td> : </td>
+        <td>{$pasien.alamat}, {$pasien.nm_kel}, {$pasien.nm_kec}, {$pasien.nm_kab}, {$pasien.nm_prop}</td>
+      </tr>
+      <tr>
+        <td colspan="3"><br>Hasil pemeriksaan fisik kami pada tanggal <input type="date" class="form-control" name="tanggal" id="tanggal" value="{?=isset_or($surat.tanggal)?}" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"> adalah sebagai berikut:</td>
+      </tr>
+      <tr>
+        <td width="200">Berat Badan</td>
+        <td> : </td>
+        <td><input type="text" class="form-control" name="berat_badan" id="berat_badan" value="{?=isset_or($surat.berat_badan)?}" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"> Kg</td>
+      </tr>
+      <tr>
+        <td width="200">Tinggi Badan</td>
+        <td> : </td>
+        <td><input type="text" class="form-control" name="tinggi_badan" id="tinggi_badan" value="{?=isset_or($surat.tinggi_badan)?}" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"> cm</td>
+      </tr>
+      <tr>
+        <td width="200">Tekanan Darah</td>
+        <td> : </td>
+        <td><input type="text" class="form-control" name="tensi" id="tensi" value="{?=isset_or($surat.tensi)?}" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"> mmHg</td>
+      </tr>
+      <tr>
+        <td width="200">Golongan Darah</td>
+        <td> : </td>
+        <td><input type="text" class="form-control" name="gol_darah" id="gol_darah" value="{?=isset_or($surat.gol_darah)?}" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"></td>
+      </tr>
+      <tr>
+        <td width="200" style="vertical-align: top;">Riwayat Penyakit</td>
+        <td style="vertical-align: top;"> : </td>
+        <td>
+          <textarea name="riwayat_penyakit" id="riwayat_penyakit" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)">{?=isset_or($surat.riwayat_penyakit)?}</textarea>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <br>
+          Surat Keterangan Sehat ini dipergunakan sebagai <input type="text" class="form-control" name="keperluan" id="keperluan" value="{?=isset_or($surat.keperluan)?}" style="width: 400px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;">
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3"><br>Demikianlah surat keterangan ini dibuat dengan sebenarnya untuk digunakan sebagaimana mestinya.</td>
+      </tr>
+    </tbody>
+  </table>
+  <br><br>
+  <table>
+      <tr>
+        <td colspan="2" width="700">
+        </td>
+        <td width="180"><br><br>
+          {$settings.kota}, {?=date('Y-m-d')?}<br><br>
+          <div id="qrcode_dokter" style="margin-top:10px;width:80px;"></div><br>
+          {$nm_dokter}
+        </td>
+      </tr>
+  </table>
+</div>
+<script>
+  	jQuery('#qrcode_dokter').qrcode({
+  		text	: "Dokter: {$nm_dokter}, SIP: {$sip_dokter}"
+  	});
+</script>
+<br><br>
+<button id="saveButton" onclick="Simpan()">&#9635; Simpan</button> <button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>

@@ -53,6 +53,8 @@ class Admin extends Main
 
         $this->assign['pasien_access'] = ($access == 'all') || in_array('pasien', explode(',', $access)) ? true : false;
         $this->assign['module_pasien'] = $this->db('mlite_modules')->where('dir', 'pasien')->oneArray();
+        $this->assign['oral_diagnostic_access'] = ($access == 'all') || in_array('oral_diagnostic', explode(',', $access)) ? true : false;
+        $this->assign['module_oral_diagnostic'] = $this->db('mlite_modules')->where('dir', 'oral_diagnostic')->oneArray();
         $this->assign['igd_access'] = ($access == 'all') || in_array('igd', explode(',', $access)) ? true : false;
         $this->assign['module_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
         $this->assign['rawat_jalan_access'] = ($access == 'all') || in_array('rawat_jalan', explode(',', $access)) ? true : false;

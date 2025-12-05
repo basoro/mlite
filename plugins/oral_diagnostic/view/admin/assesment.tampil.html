@@ -1,0 +1,107 @@
+<table class="table" width="100%">
+  <thead>
+    <tr>
+      <th>Nomor Rawat</th>
+      <th>Tanggal</th>
+      <th>Informasi</th>
+      <th>Keluhan Utama</th>
+      <th>Vital Signs</th>
+      <th>Status Psiko</th>
+      <th>Nyeri</th>
+      <th>Petugas</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+    {if: $penilaian_awal_keperawatan_ralan}
+    <tr>
+      <td>{$penilaian_awal_keperawatan_ralan.no_rawat}</td>
+      <td>{$penilaian_awal_keperawatan_ralan.tanggal}</td>
+      <td>{$penilaian_awal_keperawatan_ralan.informasi}</td>
+      <td>{$penilaian_awal_keperawatan_ralan.keluhan_utama}</td>
+      <td>
+        TD: {$penilaian_awal_keperawatan_ralan.td}<br>
+        Nadi: {$penilaian_awal_keperawatan_ralan.nadi}<br>
+        RR: {$penilaian_awal_keperawatan_ralan.rr}<br>
+        Suhu: {$penilaian_awal_keperawatan_ralan.suhu}<br>
+        GCS: {$penilaian_awal_keperawatan_ralan.gcs}
+      </td>
+      <td>{$penilaian_awal_keperawatan_ralan.status_psiko}</td>
+      <td>
+        {$penilaian_awal_keperawatan_ralan.nyeri}<br>
+        Skala: {$penilaian_awal_keperawatan_ralan.skala_nyeri}
+      </td>
+      <td>{$penilaian_awal_keperawatan_ralan.nm_petugas}</td>
+      <td>
+        <button type="button" class="btn btn-warning btn-xs edit_assessment" 
+          data-no_rawat="{$penilaian_awal_keperawatan_ralan.no_rawat}"
+          data-tanggal="{$penilaian_awal_keperawatan_ralan.tanggal}"
+          data-informasi="{$penilaian_awal_keperawatan_ralan.informasi}"
+          data-td="{$penilaian_awal_keperawatan_ralan.td}"
+          data-nadi="{$penilaian_awal_keperawatan_ralan.nadi}"
+          data-rr="{$penilaian_awal_keperawatan_ralan.rr}"
+          data-suhu="{$penilaian_awal_keperawatan_ralan.suhu}"
+          data-gcs="{$penilaian_awal_keperawatan_ralan.gcs}"
+          data-bb="{$penilaian_awal_keperawatan_ralan.bb}"
+          data-tb="{$penilaian_awal_keperawatan_ralan.tb}"
+          data-bmi="{$penilaian_awal_keperawatan_ralan.bmi}"
+          data-keluhan_utama="{$penilaian_awal_keperawatan_ralan.keluhan_utama}"
+          data-rpd="{$penilaian_awal_keperawatan_ralan.rpd}"
+          data-rpk="{$penilaian_awal_keperawatan_ralan.rpk}"
+          data-rpo="{$penilaian_awal_keperawatan_ralan.rpo}"
+          data-alergi="{$penilaian_awal_keperawatan_ralan.alergi}"
+          data-alat_bantu="{$penilaian_awal_keperawatan_ralan.alat_bantu}"
+          data-ket_bantu="{$penilaian_awal_keperawatan_ralan.ket_bantu}"
+          data-prothesa="{$penilaian_awal_keperawatan_ralan.prothesa}"
+          data-ket_pro="{$penilaian_awal_keperawatan_ralan.ket_pro}"
+          data-adl="{$penilaian_awal_keperawatan_ralan.adl}"
+          data-status_psiko="{$penilaian_awal_keperawatan_ralan.status_psiko}"
+          data-ket_psiko="{$penilaian_awal_keperawatan_ralan.ket_psiko}"
+          data-hub_keluarga="{$penilaian_awal_keperawatan_ralan.hub_keluarga}"
+          data-tinggal_dengan="{$penilaian_awal_keperawatan_ralan.tinggal_dengan}"
+          data-ket_tinggal="{$penilaian_awal_keperawatan_ralan.ket_tinggal}"
+          data-ekonomi="{$penilaian_awal_keperawatan_ralan.ekonomi}"
+          data-budaya="{$penilaian_awal_keperawatan_ralan.budaya}"
+          data-ket_budaya="{$penilaian_awal_keperawatan_ralan.ket_budaya}"
+          data-edukasi="{$penilaian_awal_keperawatan_ralan.edukasi}"
+          data-ket_edukasi="{$penilaian_awal_keperawatan_ralan.ket_edukasi}"
+          data-berjalan_a="{$penilaian_awal_keperawatan_ralan.berjalan_a}"
+          data-berjalan_b="{$penilaian_awal_keperawatan_ralan.berjalan_b}"
+          data-berjalan_c="{$penilaian_awal_keperawatan_ralan.berjalan_c}"
+          data-hasil="{$penilaian_awal_keperawatan_ralan.hasil}"
+          data-lapor="{$penilaian_awal_keperawatan_ralan.lapor}"
+          data-ket_lapor="{$penilaian_awal_keperawatan_ralan.ket_lapor}"
+          data-sg1="{$penilaian_awal_keperawatan_ralan.sg1}"
+          data-nilai1="{$penilaian_awal_keperawatan_ralan.nilai1}"
+          data-sg2="{$penilaian_awal_keperawatan_ralan.sg2}"
+          data-nilai2="{$penilaian_awal_keperawatan_ralan.nilai2}"
+          data-total_hasil="{$penilaian_awal_keperawatan_ralan.total_hasil}"
+          data-nyeri="{$penilaian_awal_keperawatan_ralan.nyeri}"
+          data-provokes="{$penilaian_awal_keperawatan_ralan.provokes}"
+          data-ket_provokes="{$penilaian_awal_keperawatan_ralan.ket_provokes}"
+          data-quality="{$penilaian_awal_keperawatan_ralan.quality}"
+          data-ket_quality="{$penilaian_awal_keperawatan_ralan.ket_quality}"
+          data-lokasi="{$penilaian_awal_keperawatan_ralan.lokasi}"
+          data-menyebar="{$penilaian_awal_keperawatan_ralan.menyebar}"
+          data-skala_nyeri="{$penilaian_awal_keperawatan_ralan.skala_nyeri}"
+          data-durasi="{$penilaian_awal_keperawatan_ralan.durasi}"
+          data-nyeri_hilang="{$penilaian_awal_keperawatan_ralan.nyeri_hilang}"
+          data-ket_nyeri="{$penilaian_awal_keperawatan_ralan.ket_nyeri}"
+          data-pada_dokter="{$penilaian_awal_keperawatan_ralan.pada_dokter}"
+          data-ket_dokter="{$penilaian_awal_keperawatan_ralan.ket_dokter}"
+          data-rencana="{$penilaian_awal_keperawatan_ralan.rencana}"
+          data-nip="{$penilaian_awal_keperawatan_ralan.nip}">
+          <i class="fa fa-edit"></i> Edit
+        </button>
+        <button type="button" class="btn btn-danger btn-xs hapus_assessment" data-no_rawat="{$penilaian_awal_keperawatan_ralan.no_rawat}">
+          <i class="fa fa-trash"></i> Hapus
+        </button>
+      </td>
+    </tr>
+    {else}
+    <tr>
+      <td colspan="9">Tidak ada data</td>
+    </tr>
+    {/if}
+  </tbody>
+</table>
