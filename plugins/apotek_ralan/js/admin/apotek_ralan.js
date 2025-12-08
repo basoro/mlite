@@ -258,8 +258,12 @@ $('input:text[name=racikan]').on('input',function(e){
   if(racikan!="") {
       $.post(url, {racikan: racikan} ,function(data) {
       // tampilkan data yang sudah di perbaharui
+      console.log(data);
         $("#racikan").html(data).show();
+        $("#layanan").hide();
         $("#obat").hide();
+        $("#radiologi").hide();
+        $("#laboratorium").hide();
       });
   }
 
@@ -294,7 +298,7 @@ $('.databarang_ajax').selectator({
   load: function (search, callback) {
     if (search.length < this.minSearchLength) return callback();
     $.ajax({
-      url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+      url: '{?=url()?}/{?=ADMIN?}/apotek_ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
       type: 'GET',
       dataType: 'json',
       success: function(data) {
@@ -469,6 +473,88 @@ $("#rincian").on("click",".hapus_resep_dokter", function(event){
         no_rawat: no_rawat,
         kd_jenis_prw: kd_jenis_prw
       } ,function(data) {
+        var url = baseURL + '/apotek_ralan/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat,
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian rawat jalan telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".hapus_obat", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/apotek_ralan/hapusobat?t=' + mlite.token;
+  var kode_brng = $(this).attr("data-kode_brng");
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_perawatan = $(this).attr("data-tgl_peresepan");
+  var jam = $(this).attr("data-jam_peresepan");
+  var jml = $(this).attr("data-jml");
+
+  console.log(kode_brng + ' ' + no_rawat + ' ' + tgl_perawatan + ' ' + jam);
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        kode_brng: kode_brng,
+        no_rawat: no_rawat,
+        tgl_perawatan: tgl_perawatan,
+        jam: jam, 
+        jml: jml
+      } ,function(data) {
+        console.log(data);
+        var url = baseURL + '/apotek_ralan/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat,
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian rawat jalan telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".hapus_obat_racikan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/apotek_ralan/hapusobatracikan?t=' + mlite.token;
+  var kode_brng = $(this).attr("data-kode_brng");
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_perawatan = $(this).attr("data-tgl_peresepan");
+  var jam = $(this).attr("data-jam_peresepan");
+  var jml = $(this).attr("data-jml");
+
+  console.log(kode_brng + ' ' + no_rawat + ' ' + tgl_perawatan + ' ' + jam);
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        kode_brng: kode_brng,
+        no_rawat: no_rawat,
+        tgl_perawatan: tgl_perawatan,
+        jam: jam, 
+        jml: jml
+      } ,function(data) {
+        console.log(data);
         var url = baseURL + '/apotek_ralan/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
         }, function(data) {

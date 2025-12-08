@@ -19,7 +19,7 @@
         <td>{$value.aturan_pakai} <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="{$value.kode_brng}" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="nonracikan"><i class="fa fa-print"></i></button></td>
         <td>Rp. <span class="pull-right">{?= number_format(($value.ralan * $value.jml),2,',','.')?}</span></td>
         <td colspan="2">
-          <!--<button type="button" class="btn btn-danger btn-xs hapus_resep_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>-->
+          <button type="button" class="btn btn-danger btn-xs hapus_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-kode_brng="{$value.kode_brng}" data-jml="{$value.jml}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
         </td>
       </tr>
       {/loop}
@@ -53,7 +53,7 @@
         <td>{$value.aturan_pakai} <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="{$value.kd_racik}" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="racikan"><i class="fa fa-print"></i></button></td>
         <td></td>
         <td colspan="2">
-          <!--<button type="button" class="btn btn-danger btn-xs hapus_resep_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>-->
+          <button type="button" class="btn btn-danger btn-xs hapus_obat_racikan" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-jml="{$value.jml_dr}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>
         </td>
       </tr>
         {loop: $value.detail_pemberian_obat as $data}

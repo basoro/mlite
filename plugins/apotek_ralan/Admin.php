@@ -356,6 +356,101 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postHapusObat()
+    {
+
+      $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
+
+      $this->db('gudangbarang')
+        ->where('kode_brng', $_POST['kode_brng'])
+        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->update([
+          'stok' => $get_gudangbarang['stok'] + $_POST['jml']
+        ]);
+
+      $this->db('riwayat_barang_medis')
+        ->save([
+          'kode_brng' => $_POST['kode_brng'],
+          'stok_awal' => $get_gudangbarang['stok'],
+          'masuk' => $_POST['jml'],
+          'keluar' => '0',
+          'stok_akhir' => $get_gudangbarang['stok'] + $_POST['jml'],
+          'posisi' => 'Retur Pasien',
+          'tanggal' => $_POST['tgl_perawatan'],
+          'jam' => $_POST['jam'],
+          'petugas' => $this->core->getUserInfo('fullname', null, true),
+          'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+          'status' => 'Simpan',
+          'no_batch' => $get_gudangbarang['no_batch'],
+          'no_faktur' => $get_gudangbarang['no_faktur'],
+          'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
+        ]);
+
+      $this->db('detail_pemberian_obat')
+      ->where('kode_brng', $_POST['kode_brng'])
+      ->where('no_rawat', $_POST['no_rawat'])
+      ->where('tgl_perawatan', $_POST['tgl_perawatan'])
+      ->where('jam', $_POST['jam'])
+      ->delete();
+
+      exit();
+    }    
+
+    public function postHapusObatRacikan()
+    {
+
+      $data = $this->db('detail_pemberian_obat')
+      ->where('no_rawat', $_POST['no_rawat'])
+      ->where('tgl_perawatan', $_POST['tgl_perawatan'])
+      ->where('jam', $_POST['jam'])
+      ->toArray();
+      foreach($data as $item) {
+
+        $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $item['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
+
+        $this->db('gudangbarang')
+        ->where('kode_brng', $item['kode_brng'])
+        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->update([
+          'stok' => $get_gudangbarang['stok'] + $item['jml']
+        ]);
+
+        $this->db('riwayat_barang_medis')
+          ->save([
+            'kode_brng' => $item['kode_brng'],
+            'stok_awal' => $get_gudangbarang['stok'],
+            'masuk' => $item['jml'],
+            'keluar' => '0',
+            'stok_akhir' => $get_gudangbarang['stok'] + $item['jml'],
+            'posisi' => 'Retur Pasien',
+            'tanggal' => $_POST['tgl_perawatan'],
+            'jam' => $_POST['jam'],
+            'petugas' => $this->core->getUserInfo('fullname', null, true),
+            'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+            'status' => 'Simpan',
+            'no_batch' => $get_gudangbarang['no_batch'],
+            'no_faktur' => $get_gudangbarang['no_faktur'],
+            'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
+          ]);
+
+        $this->db('obat_racikan')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->where('tgl_perawatan', $_POST['tgl_perawatan'])
+        ->where('jam', $_POST['jam'])
+        ->delete();
+
+        $this->db('detail_pemberian_obat')
+        ->where('kode_brng', $item['kode_brng'])
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->where('tgl_perawatan', $_POST['tgl_perawatan'])
+        ->where('jam', $_POST['jam'])
+        ->delete();
+
+      }
+
+      exit();
+    }    
+
     public function anyRincian()
     {
 
@@ -476,7 +571,7 @@ class Admin extends AdminModule
         switch($show){
         	default:
           break;
-          case "databarang":
+        case "databarang":
           $rows = $this->db('databarang')
             ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
             ->where('status', '1')
@@ -486,6 +581,7 @@ class Admin extends AdminModule
             ->limit(10)
             ->toArray();
 
+          $array = [];
           foreach ($rows as $row) {
             $array[] = array(
                 'kode_brng' => $row['kode_brng'],
