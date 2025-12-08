@@ -41,7 +41,10 @@ $("#form").on("click","#no_rawat", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/igd/maxid?t=' + mlite.token;
+  var tgl_registrasi = $('#tgl_registrasi').val();
+  
   $.post(url, {
+    tgl_registrasi: tgl_registrasi
   } ,function(data) {
     $("#no_rawat").val(data);
   });
@@ -51,10 +54,12 @@ $("#form").on("click","#no_reg", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/igd/maxantrian?t=' + mlite.token;
+  var tgl_registrasi = $('#tgl_registrasi').val();
   var kd_poli = $('select[name=kd_poli]').val();
 
   $.post(url, {
-    kd_poli: kd_poli
+    kd_poli: kd_poli,
+    tgl_registrasi: tgl_registrasi
   } ,function(data) {
     $("#no_reg").val(data);
   });
