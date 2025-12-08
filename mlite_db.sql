@@ -4851,7 +4851,7 @@ CREATE TABLE `riwayat_barang_medis` (
   `posisi` enum('Pemberian Obat','Pengadaan','Penerimaan','Piutang','Retur Beli','Retur Jual','Retur Piutang','Mutasi','Opname','Resep Pulang','Retur Pasien','Stok Pasien Ranap','Pengambilan Medis','Penjualan','Stok Keluar','Hibah') DEFAULT NULL,
   `tanggal` date DEFAULT NULL,
   `jam` time DEFAULT NULL,
-  `petugas` varchar(20) DEFAULT NULL,
+  `petugas` varchar(100) DEFAULT NULL,
   `kd_bangsal` char(5) DEFAULT NULL,
   `status` enum('Simpan','Hapus') DEFAULT NULL,
   `no_batch` varchar(20) NOT NULL,

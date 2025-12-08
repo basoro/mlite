@@ -8,6 +8,15 @@ class Admin extends AdminModule
 {
     public $assign;
 
+    public function init()
+    {
+        \Systems\Lib\Event::add('rawat_jalan.surat_menu', function ($row) {
+            echo '<li><a href="'.url([ADMIN, 'surat', 'suratrujukan', convertNorawat($row['no_rawat'])]).'" target="_blank">Surat Rujukan</a></li>';
+            echo '<li><a href="'.url([ADMIN, 'surat', 'suratsehat', convertNorawat($row['no_rawat'])]).'" target="_blank">Surat Keterangan Sehat</a></li>';
+            echo '<li><a href="'.url([ADMIN, 'surat', 'suratsakit', convertNorawat($row['no_rawat'])]).'" target="_blank">Surat Keterangan Sakit</a></li>';
+        });
+    }
+
     public function navigation()
     {
         return [
