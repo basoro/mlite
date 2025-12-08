@@ -841,19 +841,30 @@ class Admin extends AdminModule
 
     public function postMaxid()
     {
-      $max_id = $this->db('reg_periksa')->select(['no_rawat' => 'ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0)'])->where('tgl_registrasi', date('Y-m-d'))->oneArray();
+      if(isset($_POST['tgl_registrasi'])) {
+        $tgl_registrasi = $_POST['tgl_registrasi'];
+      } else {
+        $tgl_registrasi = date('Y-m-d');
+      }
+      $max_id = $this->db('reg_periksa')->select(['no_rawat' => 'ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0)'])->where('tgl_registrasi', $tgl_registrasi)->oneArray();
       if(empty($max_id['no_rawat'])) {
         $max_id['no_rawat'] = '000000';
       }
       $_next_no_rawat = sprintf('%06s', ($max_id['no_rawat'] + 1));
-      $next_no_rawat = date('Y/m/d').'/'.$_next_no_rawat;
+      $next_no_rawat = date('Y/m/d', strtotime($tgl_registrasi)).'/'.$_next_no_rawat;
       echo $next_no_rawat;
       exit();
     }
 
     public function postMaxAntrian()
     {
-      $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $this->oral_diagnostic)->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
+      if(isset($_POST['tgl_registrasi'])) {
+        $tgl_registrasi = $_POST['tgl_registrasi'];
+      } else {
+        $tgl_registrasi = date('Y-m-d');
+      }
+
+      $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $this->oral_diagnostic)->where('tgl_registrasi', $tgl_registrasi)->desc('no_reg')->limit(1)->oneArray();
       if(empty($max_id['no_reg'])) {
         $max_id['no_reg'] = '000';
       }
