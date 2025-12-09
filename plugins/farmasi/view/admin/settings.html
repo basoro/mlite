@@ -40,9 +40,17 @@
                     </div>
                     <div class="form-group">
                       <label>Keterangan Etiket</label>
-                      <input type="text" class="form-control" name="farmasi[keterangan_etiket]" value="{$settings.farmasi.keterangan_etiket}">
-                  </div>
-                  <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                      <input type="text" class="form-control" name="farmasi[keterangan_etiket]" value="{?=isset_or($settings.farmasi.keterangan_etiket, '')?}">
+                    </div>
+                    <div class="form-group">
+                      <label>Embalase</label>
+                      <input type="text" class="form-control" name="farmasi[embalase]" value="{?=isset_or($settings.farmasi.embalase, '')?}">
+                    </div>
+                    <div class="form-group">
+                      <label>Tuslah</label>
+                      <input type="text" class="form-control" name="farmasi[tuslah]" value="{?=isset_or($settings.farmasi.tuslah, '')?}">
+                    </div>
+                    <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>
             </div>
         </div>

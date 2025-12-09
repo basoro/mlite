@@ -499,12 +499,16 @@ class Admin extends AdminModule
 
       $detail_pemberian_obat = [];
       $jumlah_total_obat = 0;
+      $jumlah_total_embalase = 0;
+      $jumlah_total_tuslah = 0;
       $no_obat = 1;
       foreach ($rows_pemberian_obat as $row) {
         $row['nomor'] = $no_obat++;
         $databarang = $this->db('databarang')->where('kode_brng', $row['kode_brng'])->oneArray();
         $row['nama_brng'] = $databarang['nama_brng'];
         $jumlah_total_obat += floatval($row['total']);
+        $jumlah_total_embalase += floatval($row['embalase']);
+        $jumlah_total_tuslah += floatval($row['tuslah']);
         $detail_pemberian_obat[] = $row;
       }
 
@@ -570,6 +574,8 @@ class Admin extends AdminModule
         'tindakan' => $tindakan,
         'jumlah_total' => $jumlah_total,
         'jumlah_total_obat' => $jumlah_total_obat,
+        'jumlah_total_embalase' => $jumlah_total_embalase,
+        'jumlah_total_tuslah' => $jumlah_total_tuslah,
         'bangsal' => $bangsal,
         'jumlah_total_bangsal' => $jumlah_total_bangsal,
         'detail_pemberian_obat' => $detail_pemberian_obat,

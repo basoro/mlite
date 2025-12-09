@@ -164,8 +164,8 @@ class Admin extends AdminModule
             'h_beli' => $get_databarang['h_beli'],
             'biaya_obat' => $_POST['biaya'],
             'jml' => $_POST['jml'],
-            'embalase' => '0',
-            'tuslah' => '0',
+            'embalase' => $this->settings->get('farmasi.embalase'),
+            'tuslah' => $this->settings->get('farmasi.tuslah'),
             'total' => $_POST['biaya'] * $_POST['jml'],
             'status' => 'Ranap',
             'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
@@ -240,8 +240,8 @@ class Admin extends AdminModule
               'h_beli' => $kapasitas['h_beli'],
               'biaya_obat' => $kapasitas['dasar'],
               'jml' => $jml,
-              'embalase' => '0',
-              'tuslah' => '0',
+              'embalase' => $this->settings->get('farmasi.embalase'),
+              'tuslah' => $this->settings->get('farmasi.tuslah'),
               'total' => $kapasitas['dasar'] * $jml,
               'status' => 'Ranap',
               'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
@@ -321,8 +321,8 @@ class Admin extends AdminModule
               'h_beli' => $get_databarang['h_beli'],
               'biaya_obat' => $get_databarang['dasar'],
               'jml' => $item['jml'],
-              'embalase' => '0',
-              'tuslah' => '0',
+              'embalase' => $this->settings->get('farmasi.embalase'),
+              'tuslah' => $this->settings->get('farmasi.tuslah'),
               'total' => $get_databarang['dasar'] * $item['jml'],
               'status' => 'Ranap',
               'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
@@ -394,6 +394,8 @@ class Admin extends AdminModule
         ->select('resep_obat.jam')
         ->select('resep_obat.tgl_peresepan')
         ->select('resep_obat.jam_peresepan')
+        ->select('resep_obat.tgl_penyerahan')
+        ->select('resep_obat.jam_penyerahan')
         ->select('resep_obat.status')
         ->select('dokter.nm_dokter')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
