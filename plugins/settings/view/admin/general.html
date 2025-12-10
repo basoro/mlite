@@ -308,7 +308,18 @@
                              <label class="radio-inline">
                                 <input type="radio" name="keamanan" value="tidak" {if: $settings.keamanan == 'tidak'}checked{/if} /> Tidak
                              </label>
+                     </div>
+                    <div class="form-group">
+                         <label>Aktifkan Kadaluarsa Password (30 hari)</label>
+                         <div class="radio">
+                             <label class="radio-inline">
+                                <input type="radio" name="password_expire" value="ya" {if: $settings.password_expire == 'ya'}checked{/if} /> Ya
+                             </label>
+                             <label class="radio-inline">
+                                <input type="radio" name="password_expire" value="tidak" {if: $settings.password_expire == 'tidak'}checked{/if} /> Tidak
+                             </label>
                          </div>
+                    </div>
                     </div>
                    <div class="form-group">
                        <label>Aktifkan Log Query</label>

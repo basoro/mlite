@@ -1749,6 +1749,19 @@ CREATE TABLE `mlite_jurnal` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+CREATE TABLE `mlite_kasir_shift` (
+  `id_shift` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` VARCHAR(64) NOT NULL,
+  `waktu_buka` DATETIME NOT NULL,
+  `waktu_tutup` DATETIME NULL,
+  `kas_awal` DECIMAL(14,2) DEFAULT 0,
+  `kas_akhir` DECIMAL(14,2) DEFAULT 0,
+  `total_transaksi` DECIMAL(14,2) DEFAULT 0,
+  `selisih` DECIMAL(14,2) DEFAULT 0,
+  `keterangan` VARCHAR(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
 CREATE TABLE `mlite_login_attempts` (
   `ip` text,
   `attempts` int NOT NULL,
@@ -2678,12 +2691,6 @@ CREATE TABLE `mlite_satu_sehat_response` (
   CONSTRAINT `mlite_satu_sehat_response_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-
-CREATE TABLE `mlite_set_nomor_surat` (
-  `nomor_surat` varchar(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
 CREATE TABLE `mlite_settings` (
   `id` int NOT NULL AUTO_INCREMENT,
   `module` varchar(100) NOT NULL,
@@ -2725,8 +2732,8 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("31","settings","admin_mode","complex"),
 ("32","settings","input_kasir","tidak"),
 ("33","settings","editor","wysiwyg"),
-("34","settings","version","5.3.0"),
-("35","settings","update_check","1761911460"),
+("34","settings","version","5.4.0"),
+("35","settings","update_check",""),
 ("36","settings","update_changelog",""),
 ("37","settings","update_version","0"),
 ("38","settings","license",""),
@@ -2851,7 +2858,9 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("157","settings","billing_obat",false),
 ("158","settings","prefix_surat","RS"),
 ("159","farmasi","keterangan_etiket",""),
-("160","pcare","consumerUserKeyAntrol","");
+("160","pcare","consumerUserKeyAntrol",""),
+("161","settings","set_nomor_surat","000"),
+("162","settings","password_expire","tidak");
 
 
 CREATE TABLE `mlite_subrekening` (
@@ -3126,6 +3135,9 @@ CREATE TABLE `mlite_users` (
   `fullname` text,
   `description` text,
   `password` text,
+  `password_changed_at` datetime DEFAULT NULL,
+  `otp_code` varchar(10) DEFAULT NULL,
+  `otp_expires` datetime DEFAULT NULL,
   `avatar` text,
   `email` text,
   `role` varchar(100) NOT NULL DEFAULT 'user',
@@ -3133,8 +3145,8 @@ CREATE TABLE `mlite_users` (
   `access` varchar(500) NOT NULL DEFAULT 'dashboard',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
-INSERT INTO `mlite_users` VALUES ("1","admin","Administrator","Admin ganteng baik hati, suka menabung dan tidak sombong.","$2y$10$pgRnDiukCbiYVqsamMM3ROWViSRqbyCCL33N8.ykBKZx0dlplXe9i","avatar6422cb573b50c.png","info@mlite.id","admin","","all"),
-("2","DR001","dr. Ataaka Muhammad","-","$2y$10$kuf2BxvViduBpUTn.6Nxsug3AskH/PGvXTSlfCfJqK8Ayb9a0.vqC","avatar643a104444515.png","info@mlite.id","admin","","all");
+INSERT INTO `mlite_users` VALUES ("1","admin","Administrator","Admin ganteng baik hati, suka menabung dan tidak sombong.","$2y$10$pgRnDiukCbiYVqsamMM3ROWViSRqbyCCL33N8.ykBKZx0dlplXe9i",NULL,NULL,NULL,"avatar6422cb573b50c.png","info@mlite.id","admin","","all"),
+("2","DR001","dr. Ataaka Muhammad","-","$2y$10$kuf2BxvViduBpUTn.6Nxsug3AskH/PGvXTSlfCfJqK8Ayb9a0.vqC",NULL,NULL,NULL,"avatar643a104444515.png","info@mlite.id","admin","","all");
 
 
 CREATE TABLE `mlite_users_vedika` (

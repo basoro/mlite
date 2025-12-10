@@ -14,6 +14,11 @@
                         <label>Password Baru</label>
                         <input type="text" name="pass_baru" id="pass_baru" class="form-control" value=""/>
                     </div>
+                    <div class="form-group" style="display:{?= isset($_SESSION['mlite_force_change']) && $_SESSION['mlite_force_change'] ? 'block' : 'none' ?}">
+                        <label>OTP WhatsApp</label>
+                        <input type="text" name="otp_code" id="otp_code" class="form-control" value="" placeholder="Masukkan kode OTP"/>
+                        <small class="text-muted">Masukkan kode OTP yang dikirim ke WhatsApp Anda.</small>
+                    </div>
                     <div class="form-group">
                         <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                   </div>

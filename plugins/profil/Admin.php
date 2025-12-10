@@ -499,12 +499,24 @@ class Admin extends AdminModule
             unset($_POST['save']);
 
             if ($row_user && password_verify(trim($_POST['pass_lama']), $row_user['password'])) {
+                // If forced change, require valid OTP
+                if (!empty($_SESSION['mlite_force_change'])) {
+                    $otp = isset_or($_POST['otp_code'], '');
+                    if (empty($otp) || empty($row_user['otp_code']) || empty($row_user['otp_expires']) || ($otp !== $row_user['otp_code']) || (time() > strtotime($row_user['otp_expires']))) {
+                        $this->notify('failure', 'OTP tidak valid atau kedaluwarsa');
+                        redirect($location, $_POST);
+                    }
+                }
                 $password = password_hash($_POST['pass_baru'], PASSWORD_BCRYPT);
-                $query = $this->db('mlite_users')->where('id', $this->core->getUserInfo('id'))->save(['password' => $password]);
+                $saveData = ['password' => $password, 'password_changed_at' => date('Y-m-d H:i:s'), 'otp_code' => null, 'otp_expires' => null];
+                $query = $this->db('mlite_users')->where('id', $this->core->getUserInfo('id'))->save($saveData);
             }
 
             if ($query) {
                 $this->notify('success', 'Simpan sukses');
+                if (!empty($_SESSION['mlite_force_change'])) {
+                    unset($_SESSION['mlite_force_change']);
+                }
             } else {
                 $this->notify('failure', 'Kata kunci lama salah');
             }

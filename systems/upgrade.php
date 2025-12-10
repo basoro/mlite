@@ -1657,10 +1657,33 @@ switch ($version) {
     
         $return = '5.3.0'; 
         break; 
+
+    case '5.3.0':
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'set_nomor_surat', '000')");
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'password_expire', 'tidak')");
+
+        $this->core->db()->pdo()->exec("ALTER TABLE `mlite_users` ADD COLUMN `password_changed_at` DATETIME NULL AFTER `password`");
+        $this->core->db()->pdo()->exec("ALTER TABLE `mlite_users` ADD COLUMN `otp_code` VARCHAR(10) NULL AFTER `password_changed_at`");
+        $this->core->db()->pdo()->exec("ALTER TABLE `mlite_users` ADD COLUMN `otp_expires` DATETIME NULL AFTER `otp_code`");
+
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_kasir_shift` (
+          `id_shift` INT AUTO_INCREMENT PRIMARY KEY,
+          `user_id` VARCHAR(64) NOT NULL,
+          `waktu_buka` DATETIME NOT NULL,
+          `waktu_tutup` DATETIME NULL,
+          `kas_awal` DECIMAL(14,2) DEFAULT 0,
+          `kas_akhir` DECIMAL(14,2) DEFAULT 0,
+          `total_transaksi` DECIMAL(14,2) DEFAULT 0,
+          `selisih` DECIMAL(14,2) DEFAULT 0,
+          `keterangan` VARCHAR(255) DEFAULT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+        $return = '5.4.0'; 
+        break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '5.3.0';
+        $return = '5.4.0';
     }
 
 return $return;

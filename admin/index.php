@@ -45,11 +45,14 @@ if ($core->loginCheck()) {
     $core->module->finishLoop();
 } else {
     if (isset($_POST['login'])) {
-        if ($core->login($_POST['username'], $_POST['password'], isset($_POST['remember_me']))) {
+    if ($core->login($_POST['username'], $_POST['password'], isset($_POST['remember_me']))) {
             $arrayURL = parseURL();
             if ($arrayURL && count($arrayURL) > 1) {
                 $url = array_merge([ADMIN], $arrayURL);
                 redirect(url($url));
+            }
+            if (!empty($_SESSION['mlite_force_change'])) {
+                redirect(url([ADMIN, 'profil', 'ganti_pass']));
             }
             if(MULTI_APP) {
                 if(!empty(MULTI_APP_REDIRECT)) {
