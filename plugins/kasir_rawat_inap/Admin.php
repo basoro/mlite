@@ -209,11 +209,11 @@ class Admin extends AdminModule
         $awal = isset($_GET['awal']) ? $_GET['awal'] : date('Y-m-d').' 00:00:00';
         $akhir = isset($_GET['akhir']) ? $_GET['akhir'] : date('Y-m-d').' 23:59:59';
         $pdo = $this->db()->pdo();
-        $stmt = $pdo->prepare("SELECT b.id_user, COALESCE(p.nama, u.fullname) AS nama_kasir, COUNT(*) transaksi, IFNULL(SUM(b.jumlah_harus_bayar),0) total, MIN(CONCAT(b.tgl_billing,' ',b.jam_billing)) mulai, MAX(CONCAT(b.tgl_billing,' ',b.jam_billing)) selesai FROM mlite_billing b LEFT JOIN mlite_users u ON u.id=b.id_user LEFT JOIN pegawai p ON p.nik=u.username WHERE b.kd_billing LIKE 'RI%' AND CONCAT(b.tgl_billing,' ',b.jam_billing) BETWEEN ? AND ? GROUP BY b.id_user, nama_kasir");
+        $stmt = $pdo->prepare("SELECT b.id_user, COALESCE(p.nama, u.fullname) AS nama_kasir, COUNT(*) transaksi, IFNULL(SUM(b.jumlah_harus_bayar),0) total, MIN(CONCAT(b.tgl_billing,' ',b.jam_billing)) mulai, MAX(CONCAT(b.tgl_billing,' ',b.jam_billing)) selesai FROM mlite_billing b INNER JOIN ( SELECT no_rawat, MAX(CONCAT(tgl_billing,' ',jam_billing)) AS max_waktu FROM mlite_billing WHERE kd_billing LIKE 'RI%' AND CONCAT(tgl_billing,' ',jam_billing) BETWEEN ? AND ? GROUP BY no_rawat ) latest ON latest.no_rawat=b.no_rawat AND CONCAT(b.tgl_billing,' ',b.jam_billing)=latest.max_waktu LEFT JOIN mlite_users u ON u.id=b.id_user LEFT JOIN pegawai p ON p.nik=u.username WHERE b.kd_billing LIKE 'RI%' GROUP BY b.id_user, nama_kasir");
         $stmt->execute([$awal, $akhir]);
         $rows = $stmt->fetchAll();
 
-        $detailStmt = $pdo->prepare("SELECT b.id_user, COALESCE(p.nama, u.fullname) AS nama_kasir, b.kd_billing, b.no_rawat, b.jumlah_harus_bayar, CONCAT(b.tgl_billing,' ',b.jam_billing) AS waktu, b.keterangan FROM mlite_billing b LEFT JOIN mlite_users u ON u.id=b.id_user LEFT JOIN pegawai p ON p.nik=u.username WHERE b.kd_billing LIKE 'RI%' AND CONCAT(b.tgl_billing,' ',b.jam_billing) BETWEEN ? AND ? ORDER BY waktu ASC");
+        $detailStmt = $pdo->prepare("SELECT b.id_user, COALESCE(p.nama, u.fullname) AS nama_kasir, b.kd_billing, b.no_rawat, b.jumlah_harus_bayar, CONCAT(b.tgl_billing,' ',b.jam_billing) AS waktu, b.keterangan FROM mlite_billing b INNER JOIN ( SELECT no_rawat, MAX(CONCAT(tgl_billing,' ',jam_billing)) AS max_waktu FROM mlite_billing WHERE kd_billing LIKE 'RI%' AND CONCAT(tgl_billing,' ',jam_billing) BETWEEN ? AND ? GROUP BY no_rawat ) latest ON latest.no_rawat=b.no_rawat AND CONCAT(b.tgl_billing,' ',b.jam_billing)=latest.max_waktu LEFT JOIN mlite_users u ON u.id=b.id_user LEFT JOIN pegawai p ON p.nik=u.username WHERE b.kd_billing LIKE 'RI%' ORDER BY waktu ASC");
         $detailStmt->execute([$awal, $akhir]);
         $details = $detailStmt->fetchAll();
 
@@ -227,7 +227,7 @@ class Admin extends AdminModule
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="laporan_kasir_inap.csv"');
         $pdo = $this->db()->pdo();
-        $stmt = $pdo->prepare("SELECT b.id_user, COALESCE(p.nama, u.fullname) AS nama_kasir, b.kd_billing, b.jumlah_harus_bayar, CONCAT(b.tgl_billing,' ',b.jam_billing) waktu FROM mlite_billing b LEFT JOIN mlite_users u ON u.id=b.id_user LEFT JOIN pegawai p ON p.nik=u.username WHERE b.kd_billing LIKE 'RI%' AND CONCAT(b.tgl_billing,' ',b.jam_billing) BETWEEN ? AND ? ORDER BY waktu ASC");
+        $stmt = $pdo->prepare("SELECT b.id_user, COALESCE(p.nama, u.fullname) AS nama_kasir, b.kd_billing, b.jumlah_harus_bayar, CONCAT(b.tgl_billing,' ',b.jam_billing) waktu FROM mlite_billing b INNER JOIN ( SELECT no_rawat, MAX(CONCAT(tgl_billing,' ',jam_billing)) AS max_waktu FROM mlite_billing WHERE kd_billing LIKE 'RI%' AND CONCAT(tgl_billing,' ',jam_billing) BETWEEN ? AND ? GROUP BY no_rawat ) latest ON latest.no_rawat=b.no_rawat AND CONCAT(b.tgl_billing,' ',b.jam_billing)=latest.max_waktu LEFT JOIN mlite_users u ON u.id=b.id_user LEFT JOIN pegawai p ON p.nik=u.username WHERE b.kd_billing LIKE 'RI%' ORDER BY waktu ASC");
         $stmt->execute([$awal, $akhir]);
         echo "id_user,nama_kasir,kd_billing,jumlah_harus_bayar,waktu\n";
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {

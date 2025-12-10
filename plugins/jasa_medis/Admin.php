@@ -61,10 +61,12 @@ class Admin extends AdminModule
                 
                 $row2['detail'] = $this->db('rawat_jl_dr')
                     ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_jl_dr.kd_jenis_prw')
-                    ->select(['rawat_jl_dr.kd_jenis_prw', 'nm_perawatan', 'rawat_jl_dr.tarif_tindakandr'])
+                    ->join("(SELECT no_rawat, MAX(CONCAT(tgl_billing,' ', jam_billing)) AS max_waktu FROM mlite_billing GROUP BY no_rawat) latest", 'latest.no_rawat=rawat_jl_dr.no_rawat')
+                    ->join('mlite_billing', "mlite_billing.no_rawat=rawat_jl_dr.no_rawat AND CONCAT(mlite_billing.tgl_billing,' ',mlite_billing.jam_billing)=latest.max_waktu")
+                    ->select(['rawat_jl_dr.no_rawat', 'rawat_jl_dr.kd_jenis_prw', 'nm_perawatan', 'rawat_jl_dr.tarif_tindakandr'])
+                    ->select(['waktu_billing' => "CONCAT(mlite_billing.tgl_billing,' ',mlite_billing.jam_billing)"])
                     ->where('tgl_perawatan', $row2['tgl_perawatan'])
                     ->where('kd_dokter', $row['kd_dokter'])
-                    // ->where('stts_bayar', 'Sudah')
                     ->toArray();
                 $row2['subtotal'] = 0;
                 foreach($row2['detail'] as $row3) {
@@ -123,10 +125,12 @@ class Admin extends AdminModule
                 
                 $row2['detail'] = $this->db('rawat_jl_pr')
                     ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_jl_pr.kd_jenis_prw')
-                    ->select(['rawat_jl_pr.kd_jenis_prw', 'nm_perawatan', 'rawat_jl_pr.tarif_tindakanpr'])
+                    ->join("(SELECT no_rawat, MAX(CONCAT(tgl_billing,' ', jam_billing)) AS max_waktu FROM mlite_billing GROUP BY no_rawat) latest", 'latest.no_rawat=rawat_jl_pr.no_rawat')
+                    ->join('mlite_billing', "mlite_billing.no_rawat=rawat_jl_pr.no_rawat AND CONCAT(mlite_billing.tgl_billing,' ',mlite_billing.jam_billing)=latest.max_waktu")
+                    ->select(['rawat_jl_pr.no_rawat', 'rawat_jl_pr.kd_jenis_prw', 'nm_perawatan', 'rawat_jl_pr.tarif_tindakanpr'])
+                    ->select(['waktu_billing' => "CONCAT(mlite_billing.tgl_billing,' ',mlite_billing.jam_billing)"])
                     ->where('tgl_perawatan', $row2['tgl_perawatan'])
                     ->where('nip', $row['nip'])
-                    // ->where('stts_bayar', 'Sudah')
                     ->toArray();
                 $row2['subtotal'] = 0;
                 foreach($row2['detail'] as $row3) {
@@ -190,10 +194,12 @@ class Admin extends AdminModule
                     
                     $row2['detail'] = $this->db('rawat_jl_dr')
                         ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_jl_dr.kd_jenis_prw')
-                        ->select(['rawat_jl_dr.kd_jenis_prw', 'nm_perawatan', 'rawat_jl_dr.tarif_tindakandr'])
+                        ->join("(SELECT no_rawat, MAX(CONCAT(tgl_billing,' ', jam_billing)) AS max_waktu FROM mlite_billing GROUP BY no_rawat) latest", 'latest.no_rawat=rawat_jl_dr.no_rawat')
+                        ->join('mlite_billing', "mlite_billing.no_rawat=rawat_jl_dr.no_rawat AND CONCAT(mlite_billing.tgl_billing,' ',mlite_billing.jam_billing)=latest.max_waktu")
+                        ->select(['rawat_jl_dr.no_rawat', 'rawat_jl_dr.kd_jenis_prw', 'nm_perawatan', 'rawat_jl_dr.tarif_tindakandr'])
+                        ->select(['waktu_billing' => "CONCAT(mlite_billing.tgl_billing,' ',mlite_billing.jam_billing)"])
                         ->where('tgl_perawatan', $row2['tgl_perawatan'])
                         ->where('kd_dokter', $row['kd_dokter'])
-                        // ->where('stts_bayar', 'Sudah')
                         ->toArray();
                     $row2['subtotal'] = 0;
                     foreach($row2['detail'] as $row3) {
@@ -243,10 +249,12 @@ class Admin extends AdminModule
                     
                     $row2['detail'] = $this->db('rawat_jl_pr')
                         ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_jl_pr.kd_jenis_prw')
-                        ->select(['rawat_jl_pr.kd_jenis_prw', 'nm_perawatan', 'rawat_jl_pr.tarif_tindakanpr'])
+                        ->join("(SELECT no_rawat, MAX(CONCAT(tgl_billing,' ', jam_billing)) AS max_waktu FROM mlite_billing GROUP BY no_rawat) latest", 'latest.no_rawat=rawat_jl_pr.no_rawat')
+                        ->join('mlite_billing', "mlite_billing.no_rawat=rawat_jl_pr.no_rawat AND CONCAT(mlite_billing.tgl_billing,' ',mlite_billing.jam_billing)=latest.max_waktu")
+                        ->select(['rawat_jl_pr.no_rawat', 'rawat_jl_pr.kd_jenis_prw', 'nm_perawatan', 'rawat_jl_pr.tarif_tindakanpr'])
+                        ->select(['waktu_billing' => "CONCAT(mlite_billing.tgl_billing,' ',mlite_billing.jam_billing)"])
                         ->where('tgl_perawatan', $row2['tgl_perawatan'])
                         ->where('nip', $row['nip'])
-                        // ->where('stts_bayar', 'Sudah')
                         ->toArray();
                     $row2['subtotal'] = 0;
                     foreach($row2['detail'] as $row3) {
