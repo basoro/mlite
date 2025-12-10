@@ -18,7 +18,7 @@
           <label>&nbsp;</label>
           <div>
             <button type="submit" class="btn btn-primary">Terapkan</button>
-            <a class="btn btn-default" href="{?= url([ADMIN,'kasir_rawat_inap','reportexport']) ?}?awal={$awal}&akhir={$akhir}">Export CSV</a>
+            <a class="btn btn-default" href="{?= url([ADMIN,'kasir_rawat_inap','reportexport']) ?}&awal={$awal}&akhir={$akhir}">Export CSV</a>
             <button type="button" class="btn btn-warning" onclick="printContent('laporan')">Cetak</button>
           </div>
         </div>
