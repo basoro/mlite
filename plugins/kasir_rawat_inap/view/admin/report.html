@@ -1,0 +1,110 @@
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <h3 class="panel-title">Laporan Kasir Rawat Inap</h3>
+  </div>
+  <div class="panel-body">
+    <form method="get" action="{?= url([ADMIN,'kasir_rawat_inap','report']) ?}">
+      <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+      <div class="row">
+        <div class="col-md-4">
+          <label>Mulai</label>
+          <input type="text" class="form-control tanggal_jam" name="awal" value="{$awal}">
+        </div>
+        <div class="col-md-4">
+          <label>Selesai</label>
+          <input type="text" class="form-control tanggal_jam" name="akhir" value="{$akhir}">
+        </div>
+        <div class="col-md-4">
+          <label>&nbsp;</label>
+          <div>
+            <button type="submit" class="btn btn-primary">Terapkan</button>
+            <a class="btn btn-default" href="{?= url([ADMIN,'kasir_rawat_inap','reportexport']) ?}?awal={$awal}&akhir={$akhir}">Export CSV</a>
+            <button type="button" class="btn btn-warning" onclick="printContent('laporan')">Cetak</button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <hr>
+    <div id="laporan">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID Kasir</th>
+          <th>Nama Kasir</th>
+          <th>Transaksi</th>
+          <th>Total</th>
+          <th>Mulai</th>
+          <th>Selesai</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <hr>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Kode Faktur</th>
+          <th>No. Rawat</th>
+          <th>Kasir</th>
+          <th>Total Bayar</th>
+          <th>Waktu</th>
+          <th>Keterangan</th>
+        </tr>
+      </thead>
+      <tbody id="details"></tbody>
+    </table>
+    </div>
+    <script>
+      (function(){
+        var data = {?= json_encode($rows) ?};
+        var tbody = document.getElementById('rows');
+        if (Array.isArray(data)) {
+          data.forEach(function(r){
+            var tr = document.createElement('tr');
+            var total = Number(r.total || 0);
+            tr.innerHTML = '<td>'+ (r.id_user || '') +'</td>'+
+                           '<td>'+ (r.nama_kasir || '') +'</td>'+
+                           '<td>'+ (r.transaksi || 0) +'</td>'+
+                           '<td>'+ total.toLocaleString('id-ID',{minimumFractionDigits:2, maximumFractionDigits:2}) +'</td>'+
+                           '<td>'+ (r.mulai || '') +'</td>'+
+                           '<td>'+ (r.selesai || '') +'</td>';
+            tbody.appendChild(tr);
+          });
+        }
+        var details = {?= json_encode($details ?? []) ?};
+        var dtbody = document.getElementById('details');
+        if (Array.isArray(details)) {
+          details.forEach(function(d){
+            var tr = document.createElement('tr');
+            var bayar = Number(d.jumlah_harus_bayar || 0);
+            tr.innerHTML = '<td>'+ (d.kd_billing || '') +'</td>'+
+                           '<td>'+ (d.no_rawat || '') +'</td>'+
+                           '<td>'+ (d.nama_kasir || '') +'</td>'+
+                           '<td>'+ bayar.toLocaleString('id-ID',{minimumFractionDigits:2, maximumFractionDigits:2}) +'</td>'+
+                           '<td>'+ (d.waktu || '') +'</td>'+
+                           '<td>'+ (d.keterangan || '') +'</td>';
+            dtbody.appendChild(tr);
+          });
+        }
+      })();
+
+      function printContent(el){
+        var restore = document.body.innerHTML;
+        var content = document.getElementById(el).innerHTML;
+        document.body.innerHTML = content;
+        window.print();
+        document.body.innerHTML = restore;
+      }
+    </script>
+    <script type="text/javascript">
+      $(function () {
+          $('.tanggal_jam').datetimepicker({
+            defaultDate: '{?=date('Y-m-d H:i:s')?}',
+            format: 'YYYY-MM-DD HH:mm:ss',
+            locale: 'id'
+          });
+      });
+    </script>
+  </div>
+</div>
