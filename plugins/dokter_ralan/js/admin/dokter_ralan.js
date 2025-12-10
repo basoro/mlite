@@ -10,6 +10,20 @@ $('#daftar_racikan').hide();
 $("#info_tambahan").hide();
 $("#form_kontrol").hide();
 
+// Inisialisasi jam_rawat saat halaman dibuka
+$(function(){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var $jr = $('input:text[name=jam_rawat]').last();
+  if ($jr.length) {
+    $jr.focus();
+    if (!$jr.val()) {
+      $.post(baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token, {}, function(data){
+        $jr.val(data);
+      });
+    }
+  }
+});
+
 $("#display").on("click",".riwayat_perawatan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
@@ -783,7 +797,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var kode_provider   = $('input:text[name=kode_provider]').val();
   var kode_provider2   = $('input:text[name=kode_provider2]').val();
   var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
-  var jam_rawat       = $('input:text[name=jam_rawat]').val();
+  var jam_rawat       = $('input:text[name=jam_rawat]').last().val();
   var biaya           = $('input:text[name=biaya]').val();
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var kat             = $('input:hidden[name=kat]').val();
@@ -851,6 +865,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $.post(baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token, {
     } ,function(data) {
       $("#form_rincian #rincian_jam_reg").val(data);
+      $('input:text[name=jam_rawat]').last().val(data).focus();
     });
     $('input:hidden[name=kat]').val("");
     $('input:text[name=biaya]').val("");
