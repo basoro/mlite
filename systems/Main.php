@@ -330,7 +330,7 @@ abstract class Main
     public function getPegawaiInfo($field, $nik)
     {
         $row = $this->db('pegawai')->where('nik', $nik)->oneArray();
-        return $row[$field];
+        return isset_or($row[$field], '');
     }
 
     public function getPasienInfo($field, $no_rkm_medis)
