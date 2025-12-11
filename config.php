@@ -16,7 +16,7 @@ define('WEBAPPS_PATH', BASE_DIR . '/uploads');
 
 // Multi APP
 define('MULTI_APP', false);
-define('MULTI_APP_REDIRECT', 'dokter_ulun');
+define('MULTI_APP_REDIRECT', '');
 
 // Admin cat name
 define('ADMIN', 'admin');
