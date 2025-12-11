@@ -1144,7 +1144,7 @@ class Site extends SiteModule
         $cntr   = 0;
 
         $key = $this->settings->get('api.berkasdigital_key');
-        $token = trim(isset($_POST['token'])?$_POST['token']:null);
+        $token = trim(isset($_POST['token']) ? (string)$_POST['token'] : '');
 
         if($token == $key) {
 
@@ -1165,7 +1165,7 @@ class Site extends SiteModule
           }
 
         } else {
-          echo 'Error';
+          echo json_encode(['status' => 'Error', 'msg' => 'Invalid token']);
         }
 
         exit();
