@@ -503,10 +503,13 @@ class Admin extends AdminModule
       foreach($reg_periksa as $row) {
         $no_rawat_array[] = $row['no_rawat'];
       }
-      $berkas_digital_perawatan = $this->db('berkas_digital_perawatan')
-        ->join('master_berkas_digital', 'master_berkas_digital.kode = berkas_digital_perawatan.kode')
-        ->in('no_rawat', $no_rawat_array)
-        ->toArray();
+      $berkas_digital_perawatan = [];
+      if (!empty($no_rawat_array)) {
+        $berkas_digital_perawatan = $this->db('berkas_digital_perawatan')
+          ->join('master_berkas_digital', 'master_berkas_digital.kode = berkas_digital_perawatan.kode')
+          ->in('no_rawat', $no_rawat_array)
+          ->toArray();
+      }
       if($no_rawat) {
         $berkas_digital_perawatan = $this->db('berkas_digital_perawatan')
         ->join('master_berkas_digital', 'master_berkas_digital.kode = berkas_digital_perawatan.kode')
@@ -526,7 +529,7 @@ class Admin extends AdminModule
         $filePath = $_FILES['file']['tmp_name'];
 
         curl_setopt_array($curl, array(
-          CURLOPT_URL => str_replace('webapps','',WEBAPPS_URL).'api/berkasdigital',
+          CURLOPT_URL => substr(rtrim(WEBAPPS_URL, '/'), 0, strrpos(rtrim(WEBAPPS_URL, '/'), '/')).'/api/berkasdigital',
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_ENCODING => '',
           CURLOPT_MAXREDIRS => 10,

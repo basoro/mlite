@@ -1225,10 +1225,14 @@ class Admin extends AdminModule
       if(MULTI_APP) {
 
         $curl = curl_init();
-        $filePath = $_FILES['file']['tmp_name'];
+        $filePath = isset($_FILES['file']['tmp_name']) ? $_FILES['file']['tmp_name'] : '';
+        if (empty($filePath) || !file_exists($filePath)) {
+          echo 'Gagal menambahkan gambar: berkas tidak ditemukan';
+          exit();
+        }
 
         curl_setopt_array($curl, array(
-          CURLOPT_URL => str_replace('webapps','',WEBAPPS_URL).'api/berkasdigital',
+          CURLOPT_URL => substr(rtrim(WEBAPPS_URL, '/'), 0, strrpos(rtrim(WEBAPPS_URL, '/'), '/')).'/api/berkasdigital',
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_ENCODING => '',
           CURLOPT_MAXREDIRS => 10,
@@ -1243,8 +1247,8 @@ class Admin extends AdminModule
         $response = curl_exec($curl);
 
         curl_close($curl);
-        $json = json_decode($response, true);
-        if($json['status'] == 'Success') {
+        $json = is_string($response) ? json_decode($response, true) : null;
+        if(is_array($json) && isset($json['status']) && $json['status'] == 'Success' && isset($json['msg'])) {
           echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$json['msg'].'" width="150" />';
         } else {
           echo 'Gagal menambahkan gambar';
