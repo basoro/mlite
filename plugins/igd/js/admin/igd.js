@@ -672,6 +672,23 @@ $("#form_soap").on("click", "#selesai_soap", function(event){
   $("#assesment").hide();
 });
 
+
+$("#form_soap").on("click","#odontogram", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var id_pasien = $('input:text[name=no_rkm_medis]').val();
+  var loadURL =  baseURL + '/igd/odontogram/' + id_pasien + '?t=' + mlite.token;
+
+  var modal = $('#odontogramModal');
+  var modalContent = $('#odontogramModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      modalContent.load(loadURL);
+  }).modal();
+  return false;
+});
+
 // Handler untuk tombol assessment - menggunakan modal seperti rawat_jalan
 $("#form_soap").on("click",".assesment", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;

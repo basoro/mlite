@@ -11,12 +11,12 @@
   	padding-right: 0px;
   }
   .gigi_posterior{
-      background: url("{?=url()?}/plugins/rawat_jalan/images/posterior.png");
+      background: url("{?=url()?}/plugins/igd/images/posterior.png");
       background-repeat: no-repeat;
       background-size: 100% 100%;
   }
   .gigi_anterior{
-      background: url("{?=url()?}/plugins/rawat_jalan/images/anterior.png");
+      background: url("{?=url()?}/plugins/igd/images/anterior.png");
       background-repeat: no-repeat;
       background-size: 100% 100%;
   }
@@ -276,7 +276,7 @@
                 <option value="Erupsi">Erupsi</option>
                 <option value="Tanggal">Tanggal</option>
                 <option value="Karies">Karies</option>
-                <option value="Sisak Akar">Sisa Akar</option>
+                <option value="Sisa Akar">Sisa Akar</option>
                 <option value="Tumpat">Tumpatan</option>
                 <option value="Goyang">Goyang</option>
               </select>
@@ -427,14 +427,14 @@ $(document).ready(function(){
     var gg_xx = $('select[name=gg_xx]').val();
     var kondisi = $('select[name=kondisi]').val();
     var catatan = $('textarea[name=catatan]').val();
-    var url = baseURL + '/rawat_jalan/odontogramsave/?t=' + mlite.token;
+    var url = baseURL + '/igd/odontogramsave/?t=' + mlite.token;
     $.post(url,{
       no_rkm_medis:id_pasien,
       pemeriksaan:gg_xx,
       kondisi:kondisi,
       catatan: catatan
     } ,function(data) {
-      $('.tampildata').load(baseURL + '/rawat_jalan/odontogramtampil/' + id_pasien + '?t=' + mlite.token);
+      $('.tampildata').load(baseURL + '/igd/odontogramtampil/' + id_pasien + '?t=' + mlite.token);
     });
   });
   $(".delete").click(function(){
@@ -444,7 +444,7 @@ $(document).ready(function(){
     var kondisi  = $(this).attr("data-kondisi");
     var catatan  = $(this).attr("data-catatan");
     var tgl_input  = $(this).attr("data-tgl_input");
-    var url = baseURL + '/rawat_jalan/odontogramdelete/?t=' + mlite.token;
+    var url = baseURL + '/igd/odontogramdelete/?t=' + mlite.token;
     $.post(url,{
       no_rkm_medis:id_pasien,
       pemeriksaan:gg_xx,
@@ -452,7 +452,7 @@ $(document).ready(function(){
       catatan: catatan,
       tgl_input: tgl_input
     } ,function(data) {
-      $('.tampildata').load(baseURL + '/rawat_jalan/odontogramtampil/' + id_pasien + '?t=' + mlite.token);
+      $('.tampildata').load(baseURL + '/igd/odontogramtampil/' + id_pasien + '?t=' + mlite.token);
     });
   });
   $(".simpanohis").click(function(){
@@ -470,7 +470,7 @@ $(document).ready(function(){
     var c_36 = $('input:text[name=c_36]').val();
     var c_31 = $('input:text[name=c_31]').val();
     var c_46 = $('input:text[name=c_46]').val();
-    var url = baseURL + '/rawat_jalan/ohissave/?t=' + mlite.token;
+    var url = baseURL + '/igd/ohissave/?t=' + mlite.token;
     $.post(url,{
       no_rkm_medis:id_pasien,
       d_16:d_16,
@@ -486,19 +486,19 @@ $(document).ready(function(){
       c_31:c_31,
       c_46:c_46
     } ,function(data) {
-      $('.tampildataohis').load(baseURL + '/rawat_jalan/ohistampil/' + id_pasien + '?t=' + mlite.token);
+      $('.tampildataohis').load(baseURL + '/igd/ohistampil/' + id_pasien + '?t=' + mlite.token);
     });
   });  
   $(".deleteohis").click(function(){
     var baseURL = mlite.url + '/' + mlite.admin;
     var id_pasien = $('input:text[name=no_rkm_medis]').val();
     var tgl_input  = $(this).attr("data-tgl_input");
-    var url = baseURL + '/rawat_jalan/ohisdelete/?t=' + mlite.token;
+    var url = baseURL + '/igd/ohisdelete/?t=' + mlite.token;
     $.post(url,{
       no_rkm_medis:id_pasien,
       tgl_input: tgl_input
     } ,function(data) {
-      $('.tampildataohis').load(baseURL + '/rawat_jalan/ohistampil/' + id_pasien + '?t=' + mlite.token);
+      $('.tampildataohis').load(baseURL + '/igd/ohistampil/' + id_pasien + '?t=' + mlite.token);
     });
   });  
 });
