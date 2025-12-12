@@ -531,7 +531,7 @@
         const id = button.data('id');
         const tipe = button.data('tipe');
         const ttv = "/"+button.data('ttv') || "";
-        let url = baseURL+"/satu_sehat/"+tipe+"/"+id+ttv+"?t="+mlite.token
+        let url = baseURL+"/satu_sehat/"+tipe+"/"+id+"/"+ttv+"?t="+mlite.token
         if(tipe == 'encounterbundle'){
             // Untuk encounterbundle, tidak ada ttv
             url = baseURL+"/satu_sehat/"+tipe+"/"+id+"?t="+mlite.token

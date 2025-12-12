@@ -2209,12 +2209,19 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     if ($ttv == 'kesadaran') {
       $ttv_hl7_code = 'exam';
       $ttv_hl7_display = 'Exam';
-      $ttv_unitsofmeasure_value = 'Alert';
-      if ($pemeriksaan['kesadaran'] == 'Somnolence') {
-        $ttv_unitsofmeasure_value = 'Voice';
+      $val = isset($pemeriksaan['kesadaran']) ? trim((string)$pemeriksaan['kesadaran']) : '';
+      if ($val === '') {
+        $response = json_encode(['error'=>'Data tidak lengkap untuk Observation','missing'=>['kesadaran'=>'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if ($render) { echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]); } else { echo $response; }
+        exit();
       }
-      if ($pemeriksaan['kesadaran'] == 'Sopor') {
+      $ttv_unitsofmeasure_value = $val;
+      if ($val === 'Somnolence') {
+        $ttv_unitsofmeasure_value = 'Voice';
+      } elseif ($val === 'Sopor') {
         $ttv_unitsofmeasure_value = 'Pain';
+      } elseif ($val === 'Compos Mentis') {
+        $ttv_unitsofmeasure_value = 'Alert';
       }
     }
 
@@ -2640,7 +2647,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     redirect(url([ADMIN, 'satu_sehat', 'departemen']));
   }
 
-  public function getProcedure($no_rawat)
+  public function getProcedure($no_rawat, $render = true)
   {
 
     $zonawaktu = '+07:00';
@@ -2672,12 +2679,36 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       ->where('prioritas', '1')
       ->oneArray();
 
+    if (!is_array($prosedur_pasien) || !isset($prosedur_pasien['kode']) || !isset($prosedur_pasien['deskripsi_panjang'])) {
+      $resp = json_encode(['error' => 'Data tidak lengkap untuk Procedure', 'missing' => ['prosedur_pasien.kode' => 'missing', 'prosedur_pasien.deskripsi_panjang' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+      if ($render) {
+        echo $this->draw('procedure.html', ['pesan' => 'Gagal mengirim procedure platform Satu Sehat!!', 'response' => $resp]);
+      } else {
+        echo $resp;
+      }
+      exit();
+    }
+
     $kode_icd9 = $prosedur_pasien['kode'];
     $deskripsi_icd9 = $prosedur_pasien['deskripsi_panjang'];
 
     $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
 
-    $id_pasien = json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id;
+    $__patientResp = $this->getPatient($no_ktp_pasien);
+    $__patientJson = json_decode($__patientResp);
+    $id_pasien = '';
+    if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+      $id_pasien = $__patientJson->entry[0]->resource->id;
+    }
+    if ($id_pasien === '') {
+      $resp = json_encode(['error' => 'Data tidak lengkap untuk Procedure', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+      if ($render) {
+        echo $this->draw('procedure.html', ['pesan' => 'Gagal mengirim procedure platform Satu Sehat!!', 'response' => $resp]);
+      } else {
+        echo $resp;
+      }
+      exit();
+    }
     $id_encounter = $mlite_satu_sehat_response['id_encounter'];
     $tgl_pulang = $mlite_billing['tgl_billing'];
     $jam_pulang = $mlite_billing['jam_billing'];
@@ -2762,12 +2793,16 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
     curl_close($curl);
     // echo $response;
-
-    echo $this->draw('procedure.html', ['pesan' => $pesan, 'response' => $response]);
+    if ($render) {
+      echo $this->draw('procedure.html', ['pesan' => $pesan, 'response' => $response]);
+    } else {
+      $data = json_decode($response);
+      echo $data ? json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : $response;
+    }
     exit();
   }
 
-  public function getDietGizi($no_rawat)
+  public function getDietGizi($no_rawat, $render = true)
   {
 
     $zonawaktu = '+07:00';
@@ -2798,7 +2833,21 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
     $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
 
-    $id_pasien = json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id;
+    $__patientResp = $this->getPatient($no_ktp_pasien);
+    $__patientJson = json_decode($__patientResp);
+    $id_pasien = '';
+    if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+      $id_pasien = $__patientJson->entry[0]->resource->id;
+    }
+    if ($id_pasien === '') {
+      $resp = json_encode(['error' => 'Data tidak lengkap untuk Diet Gizi', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+      if ($render) {
+        echo $this->draw('dietgizi.html', ['pesan' => 'Gagal mengirim diet gizi platform Satu Sehat!!', 'response' => $resp]);
+      } else {
+        echo $resp;
+      }
+      exit();
+    }
     $id_encounter = $mlite_satu_sehat_response['id_encounter'];
 
     $date = date('Y-m-d');
@@ -2915,12 +2964,15 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     curl_close($curl);
     // echo $response;
     // echo '<pre>' . $data . '</pre>';
-
-    echo $this->draw('dietgizi.html', ['pesan' => $pesan, 'response' => $response]);
+    if ($render) {
+      echo $this->draw('dietgizi.html', ['pesan' => $pesan, 'response' => $response]);
+    } else {
+      echo $response;
+    }
     exit();
   }
 
-  public function getVaksin($no_rawat)
+  public function getVaksin($no_rawat, $render = true)
   {
 
     $zonawaktu = '+07:00';
@@ -2938,7 +2990,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     $row['medications'] = $this->db('resep_obat')
       ->join('resep_dokter', 'resep_dokter.no_resep = resep_obat.no_resep')
       ->join('mlite_satu_sehat_mapping_obat', 'mlite_satu_sehat_mapping_obat.kode_brng = resep_dokter.kode_brng')
-      ->where('mlite_satu_sehat_mapping_obat.tipe', 'vaksin')
+      ->where('mlite_satu_sehat_mapping_obat.type', 'vaksin')
       ->where('no_rawat', $no_rawat)
       ->toArray();
 
@@ -2953,11 +3005,26 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       ->select('practitioner_id')
       ->where('kd_dokter', $kd_dokter)
       ->oneArray();
-    $id_pasien     = json_decode($this->getPatient($no_ktp_pasien))
-      ->entry[0]->resource->id;
 
     $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
 
+    $__patientResp = $this->getPatient($no_ktp_pasien);
+    $__patientJson = json_decode($__patientResp);
+    $id_pasien = '';
+    if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+      $id_pasien = $__patientJson->entry[0]->resource->id;
+    }
+    if ($id_pasien === '') {
+      $resp = json_encode(['error' => 'Data tidak lengkap untuk Vaksin', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+      if ($render) {
+        echo $this->draw('vaksin.html', ['pesan' => 'Gagal mengirim vaksin platform Satu Sehat!!', 'response' => $resp]);
+      } else {
+        echo $resp;
+      }
+      exit();
+    }
+    $id_encounter = $mlite_satu_sehat_response['id_encounter'];
+    
     foreach ($row['medications'] as $i => $obat) {
       $medReqId = $this->gen_uuid();
       $medId = $obat['no_resep'] . '' . $obat['kode_brng'];
@@ -3002,7 +3069,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
             "reference": "Patient/' . $id_pasien . '"
         },
         "encounter": {
-            "reference": "Encounter/' . $mlite_satu_sehat_response['id_encounter'] . '"
+            "reference": "Encounter/' . $id_encounter . '"
         },
         "occurrenceDateTime": "' . $obat['tgl_perawatan'] . 'T' . $obat['jam'] . '' . $zonawaktu . '",
         "expirationDate": "' . $databarang['expire'] . '",
@@ -3097,12 +3164,15 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
     }
 
-
-    echo $this->draw('vaksin.html', ['pesan' => $pesan, 'response' => $response]);
+    if ($render) { 
+      echo $this->draw('vaksin.html', ['pesan' => $pesan, 'response' => $response]);
+    } else {
+      echo $response;
+    }
     exit();
   }
 
-  public function getClinicalImpression($no_rawat)
+  public function getClinicalImpression($no_rawat, $render = true)
   {
 
     $zonawaktu = '+07:00';
@@ -3118,28 +3188,44 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
     $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->where('no_rawat', $no_rawat)->oneArray();
 
-    $keluhan = $pemeriksaan_ralan['keluhan'];
-    $pemeriksaan = $pemeriksaan_ralan['pemeriksaan'];
-    $penilaian = $pemeriksaan_ralan['penilaian'];
+    $keluhan = isset_or($pemeriksaan_ralan['keluhan'], '');
+    $pemeriksaan = isset_or($pemeriksaan_ralan['pemeriksaan'], '');
+    $penilaian = isset_or($pemeriksaan_ralan['penilaian'], '');
     $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
     $no_ktp_pasien = $this->core->getPasienInfo('no_ktp', $no_rkm_medis);
     $nama_pasien = $this->core->getPasienInfo('nm_pasien', $no_rkm_medis);
     $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat);
-    $tgl_perawatan = $pemeriksaan_ralan['tgl_perawatan'];
-    $jam_rawat = $pemeriksaan_ralan['jam_rawat'];
+    $tgl_perawatan = isset_or($pemeriksaan_ralan['tgl_perawatan'], date('Y-m-d'));
+    $jam_rawat = isset_or($pemeriksaan_ralan['jam_rawat'], date('H:i:s'));
     $id_dokter = $this->db('mlite_satu_sehat_mapping_praktisi')->select('practitioner_id')->where('kd_dokter', $kd_dokter)->oneArray();
     $nama_dokter = $this->db('dokter')->where('kd_dokter', $kd_dokter)->oneArray();
-    $id_condition = $mlite_satu_sehat_response['id_condition'];
+    $id_condition = isset_or($mlite_satu_sehat_response['id_condition'], '');
     $diagnosa_pasien = $this->db('diagnosa_pasien')
       ->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')
       ->where('no_rawat', $no_rawat)
       ->where('prioritas', '1')
       ->oneArray();
 
-    $kd_penyakit = $diagnosa_pasien['kd_penyakit'];
-    $nm_penyakit = $diagnosa_pasien['nm_penyakit'];
+    $kd_penyakit = isset_or($diagnosa_pasien['kd_penyakit'], '');
+    $nm_penyakit = isset_or($diagnosa_pasien['nm_penyakit'], '');
 
-    $id_pasien = json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id;
+
+    $__patientResp = $this->getPatient($no_ktp_pasien);
+    $__patientJson = json_decode($__patientResp);
+    $id_pasien = '';
+    if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+      $id_pasien = $__patientJson->entry[0]->resource->id;
+    }
+    if ($id_pasien === '') {
+      $resp = json_encode(['error' => 'Data tidak lengkap untuk Clinical Impression', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+      if ($render) {
+        echo $this->draw('clinical.impression.html', ['pesan' => 'Gagal mengirim clinical impression platform Satu Sehat!!', 'response' => $resp]);
+      } else {
+        echo $resp;
+      }
+      exit();
+    }    
+
     $id_encounter = $mlite_satu_sehat_response['id_encounter'];
 
     $data = '{
@@ -3228,11 +3314,15 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     curl_close($curl);
     // echo '<pre>' . $data . '</pre>';
 
-    echo $this->draw('clinical.impression.html', ['pesan' => $pesan, 'response' => $response]);
+    if ($render) {
+      echo $this->draw('clinical.impression.html', ['pesan' => $pesan, 'response' => $response]);
+    } else {
+      echo $response;
+    }
     exit();
   }
 
-  public function getMedication(string $no_rawat = '', string $tipe = 'request')
+  public function getMedication(string $no_rawat = '', string $tipe = 'request', $render = true)
   {
     // Zona waktu
     $zonawaktu = match ($this->settings->get('satu_sehat.zonawaktu')) {
@@ -3264,8 +3354,16 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         ->select('practitioner_id')
         ->where('kd_dokter', $kd_dokter)
         ->oneArray();
-      $id_pasien     = json_decode($this->getPatient($no_ktp_pasien))
-        ->entry[0]->resource->id;
+      $__patientResp = $this->getPatient($no_ktp_pasien);
+      $__patientJson = json_decode($__patientResp);
+      $id_pasien = '';
+      if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+        $id_pasien = $__patientJson->entry[0]->resource->id;
+      }
+      if ($id_pasien === '') {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Medication', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
 
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
 
@@ -3434,8 +3532,16 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         ->select('practitioner_id')
         ->where('kd_dokter', $kd_dokter)
         ->oneArray();
-      $id_pasien     = json_decode($this->getPatient($no_ktp_pasien))
-        ->entry[0]->resource->id;
+      $__patientResp = $this->getPatient($no_ktp_pasien);
+      $__patientJson = json_decode($__patientResp);
+      $id_pasien = '';
+      if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+        $id_pasien = $__patientJson->entry[0]->resource->id;
+      }
+      if ($id_pasien === '') {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Medication', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
 
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
       $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $this->core->getSettings('satu_sehat', 'farmasi'))->oneArray();
@@ -3673,14 +3779,18 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       curl_close($curl);
     }
 
-    echo $this->draw('medication.html', [
-      'pesan' => isset_or($pesan, ''),
-      'response' => isset_or($response, '')
-    ]);
+    if($render) {
+      echo $this->draw('medication.html', [
+        'pesan' => isset_or($pesan, ''),
+        'response' => isset_or($response, '')
+      ]);
+    } else {
+      echo $response;
+    }
     exit();
   }
 
-  public function getLaboratory($no_rawat = '', $tipe = '')
+  public function getLaboratory(string $no_rawat = '', string $tipe = 'request', $render = true)
   {
 
     $zonawaktu = '+07:00';
@@ -3705,10 +3815,18 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $row['permintaan_lab'] = $this->db('permintaan_lab')
         ->where('no_rawat', $no_rawat)
         ->oneArray();
+      if (!is_array($row['permintaan_lab']) || !isset($row['permintaan_lab']['noorder'])) {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Laboratory request', 'missing' => ['permintaan_lab.noorder' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
       $row['permintaan_pemeriksaan_lab'] = $this->db('permintaan_pemeriksaan_lab')
         ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw = permintaan_pemeriksaan_lab.kd_jenis_prw')
         ->where('noorder', $row['permintaan_lab']['noorder'])
         ->oneArray();
+      if (!is_array($row['permintaan_pemeriksaan_lab']) || !isset($row['permintaan_pemeriksaan_lab']['kd_jenis_prw'])) {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Laboratory request', 'missing' => ['permintaan_pemeriksaan_lab.kd_jenis_prw' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
       $mapping_lab = $this->db('mlite_satu_sehat_mapping_lab')->where('kd_jenis_prw', $row['permintaan_pemeriksaan_lab']['kd_jenis_prw'])->oneArray();
 
       // Data pasien dan dokter
@@ -3721,8 +3839,17 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         ->select('practitioner_id')
         ->where('kd_dokter', $kd_dokter)
         ->oneArray();
-      $id_pasien     = json_decode($this->getPatient($no_ktp_pasien))
-        ->entry[0]->resource->id;
+
+      $__patientResp = $this->getPatient($no_ktp_pasien);
+      $__patientJson = json_decode($__patientResp);
+      $id_pasien = '';
+      if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+        $id_pasien = $__patientJson->entry[0]->resource->id;
+      }
+      if ($id_pasien === '') {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Laboratory request', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
 
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
       $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $this->core->getSettings('satu_sehat', 'laboratorium'))->oneArray();
@@ -3823,10 +3950,18 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $row['permintaan_lab'] = $this->db('permintaan_lab')
         ->where('no_rawat', $no_rawat)
         ->oneArray();
+      if (!is_array($row['permintaan_lab']) || !isset($row['permintaan_lab']['noorder'])) {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Laboratory specimen', 'missing' => ['permintaan_lab.noorder' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
       $row['permintaan_pemeriksaan_lab'] = $this->db('permintaan_pemeriksaan_lab')
         ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw = permintaan_pemeriksaan_lab.kd_jenis_prw')
         ->where('noorder', $row['permintaan_lab']['noorder'])
         ->oneArray();
+      if (!is_array($row['permintaan_pemeriksaan_lab']) || !isset($row['permintaan_pemeriksaan_lab']['kd_jenis_prw'])) {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Laboratory specimen', 'missing' => ['permintaan_pemeriksaan_lab.kd_jenis_prw' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
       $mapping_lab = $this->db('mlite_satu_sehat_mapping_lab')->where('kd_jenis_prw', $row['permintaan_pemeriksaan_lab']['kd_jenis_prw'])->oneArray();
 
       // Data pasien dan dokter
@@ -3839,9 +3974,19 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         ->select('practitioner_id')
         ->where('kd_dokter', $kd_dokter)
         ->oneArray();
-      $id_pasien     = json_decode($this->getPatient($no_ktp_pasien))
-        ->entry[0]->resource->id;
 
+      $__patientResp = $this->getPatient($no_ktp_pasien);
+      $__patientJson = json_decode($__patientResp);
+      $id_pasien = '';
+      if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+        $id_pasien = $__patientJson->entry[0]->resource->id;
+      }
+      if ($id_pasien === '') {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Laboratory specimen', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
+
+        
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
       $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $this->core->getSettings('satu_sehat', 'laboratorium'))->oneArray();
 
@@ -3932,8 +4077,18 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         ->select('practitioner_id')
         ->where('kd_dokter', $kd_dokter)
         ->oneArray();
-      $id_pasien     = json_decode($this->getPatient($no_ktp_pasien))
-        ->entry[0]->resource->id;
+
+      $__patientResp = $this->getPatient($no_ktp_pasien);
+      $__patientJson = json_decode($__patientResp);
+      $id_pasien = '';
+      if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+        $id_pasien = $__patientJson->entry[0]->resource->id;
+      }
+      if ($id_pasien === '') {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Laboratory observation', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
+
 
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
       $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $this->core->getSettings('satu_sehat', 'laboratorium'))->oneArray();
@@ -4052,8 +4207,19 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         ->select('practitioner_id')
         ->where('kd_dokter', $kd_dokter)
         ->oneArray();
-      $id_pasien     = json_decode($this->getPatient($no_ktp_pasien))
-        ->entry[0]->resource->id;
+
+        
+      $__patientResp = $this->getPatient($no_ktp_pasien);
+      $__patientJson = json_decode($__patientResp);
+      $id_pasien = '';
+      if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+        $id_pasien = $__patientJson->entry[0]->resource->id;
+      }
+      if ($id_pasien === '') {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Laboratory diagnostic report', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
+
 
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
       $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $this->core->getSettings('satu_sehat', 'laboratorium'))->oneArray();
@@ -4165,11 +4331,15 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
     };
 
-    echo $this->draw('laboratory.html', ['pesan' => $pesan, 'response' => $response]);
+    if($render) {
+      echo $this->draw('laboratory.html', ['pesan' => $pesan, 'response' => $response]);
+    } else {
+      echo $response;
+    }
     exit();
   }
   
-  public function getRadiology($no_rawat = '', $tipe = '')
+  public function getRadiology($no_rawat = '', $tipe = '', $render = true)  
   {
 
     $zonawaktu = '+07:00';
@@ -4192,10 +4362,18 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $row['permintaan_radiologi'] = $this->db('permintaan_radiologi')
         ->where('no_rawat', $no_rawat)
         ->oneArray();
+      if (!is_array($row['permintaan_radiologi']) || !isset($row['permintaan_radiologi']['noorder'])) {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Radiology request', 'missing' => ['permintaan_radiologi.noorder' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
       $row['permintaan_pemeriksaan_radiologi'] = $this->db('permintaan_pemeriksaan_radiologi')
         ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw = permintaan_pemeriksaan_radiologi.kd_jenis_prw')
         ->where('noorder', $row['permintaan_radiologi']['noorder'])
         ->oneArray();
+      if (!is_array($row['permintaan_pemeriksaan_radiologi']) || !isset($row['permintaan_pemeriksaan_radiologi']['kd_jenis_prw'])) {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Radiology request', 'missing' => ['permintaan_pemeriksaan_radiologi.kd_jenis_prw' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
       $mapping_radiologi = $this->db('mlite_satu_sehat_mapping_rad')->where('kd_jenis_prw', $row['permintaan_pemeriksaan_radiologi']['kd_jenis_prw'])->oneArray();
 
       // Data pasien dan dokter
@@ -4208,8 +4386,17 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         ->select('practitioner_id')
         ->where('kd_dokter', $kd_dokter)
         ->oneArray();
-      $id_pasien     = json_decode($this->getPatient($no_ktp_pasien))
-        ->entry[0]->resource->id;
+
+      $__patientResp = $this->getPatient($no_ktp_pasien);
+      $__patientJson = json_decode($__patientResp);
+      $id_pasien = '';
+      if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+        $id_pasien = $__patientJson->entry[0]->resource->id;
+      }
+      if ($id_pasien === '') {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Radiology request', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }        
 
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
       $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $this->core->getSettings('satu_sehat', 'radiologi'))->oneArray();
@@ -4310,10 +4497,18 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $row['permintaan_radiologi'] = $this->db('permintaan_radiologi')
         ->where('no_rawat', $no_rawat)
         ->oneArray();
+      if (!is_array($row['permintaan_radiologi']) || !isset($row['permintaan_radiologi']['noorder'])) {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Radiology specimen', 'missing' => ['permintaan_radiologi.noorder' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
       $row['permintaan_pemeriksaan_radiologi'] = $this->db('permintaan_pemeriksaan_radiologi')
         ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw = permintaan_pemeriksaan_radiologi.kd_jenis_prw')
         ->where('noorder', $row['permintaan_radiologi']['noorder'])
         ->oneArray();
+      if (!is_array($row['permintaan_pemeriksaan_radiologi']) || !isset($row['permintaan_pemeriksaan_radiologi']['kd_jenis_prw'])) {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Radiology specimen', 'missing' => ['permintaan_pemeriksaan_radiologi.kd_jenis_prw' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
       $mapping_radiologi = $this->db('mlite_satu_sehat_mapping_rad')->where('kd_jenis_prw', $row['permintaan_pemeriksaan_radiologi']['kd_jenis_prw'])->oneArray();
 
       // Data pasien dan dokter
@@ -4326,8 +4521,18 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         ->select('practitioner_id')
         ->where('kd_dokter', $kd_dokter)
         ->oneArray();
-      $id_pasien     = json_decode($this->getPatient($no_ktp_pasien))
-        ->entry[0]->resource->id;
+
+      $__patientResp = $this->getPatient($no_ktp_pasien);
+      $__patientJson = json_decode($__patientResp);
+      $id_pasien = '';
+      if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+        $id_pasien = $__patientJson->entry[0]->resource->id;
+      }
+      if ($id_pasien === '') {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Radiology specimen', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }        
+
 
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
       $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $this->core->getSettings('satu_sehat', 'radiologi'))->oneArray();
@@ -4402,10 +4607,18 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $row['permintaan_radiologi'] = $this->db('permintaan_radiologi')
         ->where('no_rawat', $no_rawat)
         ->oneArray();
+      if (!is_array($row['permintaan_radiologi']) || !isset($row['permintaan_radiologi']['noorder'])) {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Radiology result', 'missing' => ['permintaan_radiologi.noorder' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
       $row['permintaan_pemeriksaan_radiologi'] = $this->db('permintaan_pemeriksaan_radiologi')
         ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw = permintaan_pemeriksaan_radiologi.kd_jenis_prw')
         ->where('noorder', $row['permintaan_radiologi']['noorder'])
         ->oneArray();
+      if (!is_array($row['permintaan_pemeriksaan_radiologi']) || !isset($row['permintaan_pemeriksaan_radiologi']['kd_jenis_prw'])) {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Radiology result', 'missing' => ['permintaan_pemeriksaan_radiologi.kd_jenis_prw' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
       $mapping_radiologi = $this->db('mlite_satu_sehat_mapping_rad')->where('kd_jenis_prw', $row['permintaan_pemeriksaan_radiologi']['kd_jenis_prw'])->oneArray();
 
       $hasil_radiologi = $this->db('hasil_radiologi')
@@ -4422,8 +4635,17 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         ->select('practitioner_id')
         ->where('kd_dokter', $kd_dokter)
         ->oneArray();
-      $id_pasien     = json_decode($this->getPatient($no_ktp_pasien))
-        ->entry[0]->resource->id;
+
+      $__patientResp = $this->getPatient($no_ktp_pasien);
+      $__patientJson = json_decode($__patientResp);
+      $id_pasien = '';
+      if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+        $id_pasien = $__patientJson->entry[0]->resource->id;
+      }
+      if ($id_pasien === '') {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Radiology observation', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }        
 
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
       $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $this->core->getSettings('satu_sehat', 'radiologi'))->oneArray();
@@ -4515,10 +4737,18 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $row['permintaan_radiologi'] = $this->db('permintaan_radiologi')
         ->where('no_rawat', $no_rawat)
         ->oneArray();
+      if (!is_array($row['permintaan_radiologi']) || !isset($row['permintaan_radiologi']['noorder'])) {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Radiology result', 'missing' => ['permintaan_radiologi.noorder' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
       $row['permintaan_pemeriksaan_radiologi'] = $this->db('permintaan_pemeriksaan_radiologi')
         ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw = permintaan_pemeriksaan_radiologi.kd_jenis_prw')
         ->where('noorder', $row['permintaan_radiologi']['noorder'])
         ->oneArray();
+      if (!is_array($row['permintaan_pemeriksaan_radiologi']) || !isset($row['permintaan_pemeriksaan_radiologi']['kd_jenis_prw'])) {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Radiology result', 'missing' => ['permintaan_pemeriksaan_radiologi.kd_jenis_prw' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
       $mapping_radiologi = $this->db('mlite_satu_sehat_mapping_rad')->where('kd_jenis_prw', $row['permintaan_pemeriksaan_radiologi']['kd_jenis_prw'])->oneArray();
 
       $hasil_radiologi = $this->db('hasil_radiologi')
@@ -4535,8 +4765,17 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         ->select('practitioner_id')
         ->where('kd_dokter', $kd_dokter)
         ->oneArray();
-      $id_pasien     = json_decode($this->getPatient($no_ktp_pasien))
-        ->entry[0]->resource->id;
+
+      $__patientResp = $this->getPatient($no_ktp_pasien);
+      $__patientJson = json_decode($__patientResp);
+      $id_pasien = '';
+      if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+        $id_pasien = $__patientJson->entry[0]->resource->id;
+      }
+      if ($id_pasien === '') {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Radilogy diagnostic report', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }        
 
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
       $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $this->core->getSettings('satu_sehat', 'radiologi'))->oneArray();
@@ -4637,12 +4876,15 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       curl_close($curl);
 
     };
-
-    echo $this->draw('radiology.html', ['pesan' => $pesan, 'response' => $response]);
+    if($render) {
+      echo $this->draw('radiology.html', ['pesan' => $pesan, 'response' => $response]);
+    } else {
+      echo $response;
+    }
     exit();
   }
 
-  public function getCarePlan($no_rawat)
+  public function getCarePlan($no_rawat, $render = true)
   {
 
     $zonawaktu = '+07:00';
@@ -4655,10 +4897,135 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
 
     $no_rawat = revertNoRawat($no_rawat);
-    $pesan = '';
-    $response = '';
+    $kd_poli = $this->core->getRegPeriksaInfo('kd_poli', $no_rawat);
+    $nm_poli = $this->core->getPoliklinikInfo('nm_poli', $kd_poli);
+    $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat);
+    $no_ktp_dokter = $this->core->getPegawaiInfo('no_ktp', $kd_dokter);
+    $nama_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
+    $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
+    $no_ktp_pasien = $this->core->getPasienInfo('no_ktp', $no_rkm_medis);
+    $nama_pasien = $this->core->getPasienInfo('nm_pasien', $no_rkm_medis);
+    $status_lanjut = $this->core->getRegPeriksaInfo('status_lanjut', $no_rawat);
+    $tgl_registrasi = $this->core->getRegPeriksaInfo('tgl_registrasi', $no_rawat);
+    $jam_reg = $this->core->getRegPeriksaInfo('jam_reg', $no_rawat);
+    $mlite_billing = $this->db('mlite_billing')->where('no_rawat', $no_rawat)->oneArray();
+    $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->where('no_rawat', $no_rawat)->oneArray();
 
-    echo $this->draw('careplan.html', ['pesan' => $pesan, 'response' => $response]);
+    $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
+
+    $kunjungan = 'Kunjungan';
+    if ($status_lanjut == 'Ranap') {
+      $kunjungan = 'Perawatan';
+    }
+
+    $__patientResp = $this->getPatient($no_ktp_pasien);
+    $__patientJson = json_decode($__patientResp);
+    $ihs_patient = '';
+    if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+      $ihs_patient = $__patientJson->entry[0]->resource->id;
+    }
+
+    $rtl = $pemeriksaan_ralan['rtl'] ?? null;
+    $encounter_id = $mlite_satu_sehat_response['id_encounter'] ?? null;
+
+    if ($ihs_patient === '' || !$rtl || !$encounter_id) {
+      $error = [
+        'error' => 'Data tidak lengkap untuk CarePlan',
+        'missing' => [
+          'patient_id' => $ihs_patient === '' ? 'missing' : 'ok',
+          'rtl' => !$rtl ? 'missing' : 'ok',
+          'id_encounter' => !$encounter_id ? 'missing' : 'ok'
+        ]
+      ];
+      $response = json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+      if ($render) {
+        echo $this->draw('careplan.html', ['pesan' => 'Gagal mengirim careplan platform Satu Sehat!!', 'response' => $response]);
+      } else {
+        echo $response;
+      }
+      exit();
+    }
+
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $this->fhirurl . '/CarePlan',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => '{
+        "resourceType" : "CarePlan", 
+        "identifier" : {
+            "system" : "http://sys-ids.kemkes.go.id/careplan/"' . $this->settings->get('satu_sehat.idsatu_sehat') . '", 
+            "value" : "' . $no_rawat . '"
+        }, 
+        "title" : "Instruksi Medik dan Keperawatan Pasien", 
+        "status" : "active", 
+        "category" : [
+            {
+                "coding" : [
+                    {
+                        "system" : "http://snomed.info/sct", 
+                        "code" : "736271009", 
+                        "display" : "Outpatient care plan""
+                    }
+                ]"
+            }
+        ], 
+        "intent" : "plan", 
+        "description" : "' . $pemeriksaan_ralan['rtl'] . '", 
+        "subject" : {
+            "reference" : "Patient/' . $ihs_patient . '", 
+            "display" : "' . $nama_pasien . '"
+        }, 
+        "encounter" : {
+            "reference": "Encounter/' . $encounter_id . '",
+            "display": "' . $kunjungan . ' ' . $nama_pasien . ' dari tanggal ' . $tgl_registrasi . '"
+        }, 
+        "created" : "' . $pemeriksaan_ralan['tgl_perawatan'] . 'T' . $pemeriksaan_ralan['jam_rawat'] . $zonawaktu . '"
+        "author" : {
+            "reference" : "Practitioner/' . $kd_dokter . '", 
+            "display" : "' . $nama_dokter . '"
+        }
+      }',
+    ));
+
+    $response = curl_exec($curl);
+
+    $decoded = json_decode($response);
+    $id_careplan = (is_object($decoded) && isset($decoded->id)) ? $decoded->id : null;
+    $pesan = 'Gagal mengirim careplan platform Satu Sehat!!';
+    if ($id_careplan) {
+      $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
+      if ($mlite_satu_sehat_response) {
+        $this->db('mlite_satu_sehat_response')
+          ->where('no_rawat', $no_rawat)
+          ->save([
+            'no_rawat' => $no_rawat,
+            'id_careplan' => $id_careplan
+          ]);
+      } else {
+        $this->db('mlite_satu_sehat_response')
+          ->save([
+            'no_rawat' => $no_rawat,
+            'id_careplan' => $id_careplan
+          ]);
+      }
+      $pesan = 'Sukses mengirim careplan platform Satu Sehat!!';
+    }
+
+    curl_close($curl);
+
+    if ($render) {
+      echo $this->draw('careplan.html', ['pesan' => $pesan, 'response' => $response]);
+    } else {
+      echo $response;
+    }
     exit();
   }
 
@@ -5377,9 +5744,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
       $row['diagnostic_report_lab_mb'] = $row['permintaan_lab'];
 
-      $row['care_plan'] = $this->db('rawat_jl_dr')
-        ->where('no_rawat', $row['no_rawat'])
-        ->oneArray();
+      $row['care_plan'] = $row['pemeriksaan']['rtl'];
 
       $row['id_encounter'] = isset_or($mlite_satu_sehat_response['id_encounter'], '');
       $row['id_condition'] = isset_or($mlite_satu_sehat_response['id_condition'], '');
