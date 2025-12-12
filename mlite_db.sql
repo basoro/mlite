@@ -2860,7 +2860,9 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("159","farmasi","keterangan_etiket",""),
 ("160","pcare","consumerUserKeyAntrol",""),
 ("161","settings","set_nomor_surat","000"),
-("162","settings","password_expire","tidak");
+("162","settings","password_expire","tidak"),
+("163","settings","embalase","0"),
+("164","settings","tuslah","0");
 
 
 CREATE TABLE `mlite_subrekening` (

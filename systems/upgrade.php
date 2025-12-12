@@ -1661,6 +1661,9 @@ switch ($version) {
     case '5.3.0':
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'set_nomor_surat', '000')");
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'password_expire', 'tidak')");
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'embalase', '0')");
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'tuslah', '0')");
+
 
         $this->core->db()->pdo()->exec("ALTER TABLE `mlite_users` ADD COLUMN `password_changed_at` DATETIME NULL AFTER `password`");
         $this->core->db()->pdo()->exec("ALTER TABLE `mlite_users` ADD COLUMN `otp_code` VARCHAR(10) NULL AFTER `password_changed_at`");

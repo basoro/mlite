@@ -22,7 +22,7 @@
           Dokter perujuk: {$value.nm_dokter}
         </td>
         <td colspan="2">
-          <button type="button" class="btn btn-danger btn-xs hapus_laboratorium {if: $_SESSION['mlite_user'] != '1'}disabled{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+          <button type="button" class="btn btn-danger btn-xs {if: $this->core->getUserInfo('role') != 'admin'}disabled{else}hapus_laboratorium{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
           <button type="button" name="button" class="btn btn-primary btn-xs cetak_hasil" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}"><i class="fa fa-print"></i><span class="hidden-xs"> Cetak Hasil</span></button>
         </td>
       </tr>
