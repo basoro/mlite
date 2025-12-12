@@ -39,7 +39,7 @@ class Admin extends AdminModule
 
   public function getObatByCode($code)
   {
-    if (!json_decode($this->getToken())->access_token) {
+    if ($this->getAccessToken() === '') {
       return ['error' => 'Gagal mendapatkan access token'];
     }
 
@@ -52,7 +52,7 @@ class Admin extends AdminModule
       CURLOPT_URL => $baseUrl . '/kfa-v2/products?identifier=kfa&code=' . urlencode($code),
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_HTTPHEADER => [
-        'Authorization: Bearer ' . json_decode($this->getToken())->access_token,
+        'Authorization: Bearer ' . $this->getAccessToken(),
         'Accept: application/json'
       ]
     ]);
@@ -124,6 +124,16 @@ class Admin extends AdminModule
     // exit();
   }
 
+  private function getAccessToken(): string
+  {
+    $raw = $this->getToken();
+    $obj = json_decode($raw);
+    if (is_object($obj) && isset($obj->access_token) && is_string($obj->access_token)) {
+      return $obj->access_token;
+    }
+    return '';
+  }
+
   public function getPractitioner($nik_dokter)
   {
 
@@ -137,7 +147,7 @@ class Admin extends AdminModule
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
       CURLOPT_CUSTOMREQUEST => 'GET'
     ));
 
@@ -163,7 +173,7 @@ class Admin extends AdminModule
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
       CURLOPT_CUSTOMREQUEST => 'GET'
     ));
 
@@ -195,7 +205,7 @@ class Admin extends AdminModule
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
       CURLOPT_CUSTOMREQUEST => 'GET',
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
     ));
 
     $response = curl_exec($curl);
@@ -218,7 +228,7 @@ class Admin extends AdminModule
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
       CURLOPT_CUSTOMREQUEST => 'GET'
     ));
 
@@ -251,7 +261,7 @@ class Admin extends AdminModule
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
       CURLOPT_CUSTOMREQUEST => 'GET',
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
     ));
 
     $response = curl_exec($curl);
@@ -279,7 +289,7 @@ class Admin extends AdminModule
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
       CURLOPT_CUSTOMREQUEST => 'POST',
       CURLOPT_POSTFIELDS => '{
         "resourceType": "Organization",
@@ -384,7 +394,7 @@ class Admin extends AdminModule
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
       CURLOPT_CUSTOMREQUEST => 'GET',
     ));
 
@@ -410,7 +420,7 @@ class Admin extends AdminModule
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
       CURLOPT_CUSTOMREQUEST => 'GET',
     ));
 
@@ -436,7 +446,7 @@ class Admin extends AdminModule
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
       CURLOPT_CUSTOMREQUEST => 'PUT',
       CURLOPT_POSTFIELDS => '{
         "resourceType": "Organization",
@@ -545,7 +555,7 @@ class Admin extends AdminModule
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
       CURLOPT_CUSTOMREQUEST => 'POST',
       CURLOPT_POSTFIELDS => '{
         "resourceType": "Location",
@@ -648,7 +658,7 @@ class Admin extends AdminModule
         CURLOPT_TIMEOUT => 0,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
         CURLOPT_CUSTOMREQUEST => 'GET',
       ));
 
@@ -676,7 +686,7 @@ class Admin extends AdminModule
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
       CURLOPT_CUSTOMREQUEST => 'GET',
     ));
 
@@ -702,7 +712,7 @@ class Admin extends AdminModule
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
       CURLOPT_CUSTOMREQUEST => 'PUT',
       CURLOPT_POSTFIELDS => '{
         "resourceType": "Location",
@@ -922,7 +932,7 @@ class Admin extends AdminModule
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
       CURLOPT_CUSTOMREQUEST => 'POST',
       CURLOPT_POSTFIELDS => $json,
     ));
@@ -2047,7 +2057,13 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '8867-4';
       $ttv_loinc_display = 'Heart rate';
-      $ttv_unitsofmeasure_value = $pemeriksaan['nadi'];
+      $val = isset($pemeriksaan['nadi']) ? trim((string)$pemeriksaan['nadi']) : '';
+      if ($val === '') {
+        $response = json_encode(['error'=>'Data tidak lengkap untuk Observation','missing'=>['nadi'=>'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if ($render) { echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]); } else { echo $response; }
+        exit();
+      }
+      $ttv_unitsofmeasure_value = $val;
       $ttv_unitsofmeasure_unit = 'beats/minute';
       $ttv_unitsofmeasure_code = '/min';
     }
@@ -2057,7 +2073,13 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '9279-1';
       $ttv_loinc_display = 'Respiratory rate';
-      $ttv_unitsofmeasure_value = $pemeriksaan['respirasi'];
+      $val = isset($pemeriksaan['respirasi']) ? trim((string)$pemeriksaan['respirasi']) : '';
+      if ($val === '') {
+        $response = json_encode(['error'=>'Data tidak lengkap untuk Observation','missing'=>['respirasi'=>'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if ($render) { echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]); } else { echo $response; }
+        exit();
+      }
+      $ttv_unitsofmeasure_value = $val;
       $ttv_unitsofmeasure_unit = 'breaths/minute';
       $ttv_unitsofmeasure_code = '/min';
     }
@@ -2067,7 +2089,13 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '8310-5';
       $ttv_loinc_display = 'Body temperature';
-      $ttv_unitsofmeasure_value = $pemeriksaan['suhu_tubuh'];
+      $val = isset($pemeriksaan['suhu_tubuh']) ? trim((string)$pemeriksaan['suhu_tubuh']) : '';
+      if ($val === '') {
+        $response = json_encode(['error'=>'Data tidak lengkap untuk Observation','missing'=>['suhu_tubuh'=>'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if ($render) { echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]); } else { echo $response; }
+        exit();
+      }
+      $ttv_unitsofmeasure_value = $val;
       $ttv_unitsofmeasure_unit = 'degree Celsius';
       $ttv_unitsofmeasure_code = 'Cel';
     }
@@ -2077,7 +2105,13 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '59408-5';
       $ttv_loinc_display = 'Oxygen saturation';
-      $ttv_unitsofmeasure_value = $pemeriksaan['spo2'];
+      $val = isset($pemeriksaan['spo2']) ? trim((string)$pemeriksaan['spo2']) : '';
+      if ($val === '') {
+        $response = json_encode(['error'=>'Data tidak lengkap untuk Observation','missing'=>['spo2'=>'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if ($render) { echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]); } else { echo $response; }
+        exit();
+      }
+      $ttv_unitsofmeasure_value = $val;
       $ttv_unitsofmeasure_unit = 'percent saturation';
       $ttv_unitsofmeasure_code = '%';
     }
@@ -2087,7 +2121,13 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '9269-2';
       $ttv_loinc_display = 'Glasgow coma score total';
-      $ttv_unitsofmeasure_value = $pemeriksaan['gcs'];
+      $val = isset($pemeriksaan['gcs']) ? trim((string)$pemeriksaan['gcs']) : '';
+      if ($val === '') {
+        $response = json_encode(['error'=>'Data tidak lengkap untuk Observation','missing'=>['gcs'=>'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if ($render) { echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]); } else { echo $response; }
+        exit();
+      }
+      $ttv_unitsofmeasure_value = $val;
       $ttv_unitsofmeasure_code = '{score}';
     }
 
@@ -2096,7 +2136,13 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '8302-2';
       $ttv_loinc_display = 'Body height';
-      $ttv_unitsofmeasure_value = $pemeriksaan['tinggi'];
+      $val = isset($pemeriksaan['tinggi']) ? trim((string)$pemeriksaan['tinggi']) : '';
+      if ($val === '') {
+        $response = json_encode(['error'=>'Data tidak lengkap untuk Observation','missing'=>['tinggi'=>'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if ($render) { echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]); } else { echo $response; }
+        exit();
+      }
+      $ttv_unitsofmeasure_value = $val;
       $ttv_unitsofmeasure_unit = 'centimeter';
       $ttv_unitsofmeasure_code = 'cm';
     }
@@ -2106,7 +2152,13 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '29463-7';
       $ttv_loinc_display = 'Body weight';
-      $ttv_unitsofmeasure_value = $pemeriksaan['berat'];
+      $val = isset($pemeriksaan['berat']) ? trim((string)$pemeriksaan['berat']) : '';
+      if ($val === '') {
+        $response = json_encode(['error'=>'Data tidak lengkap untuk Observation','missing'=>['berat'=>'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if ($render) { echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]); } else { echo $response; }
+        exit();
+      }
+      $ttv_unitsofmeasure_value = $val;
       $ttv_unitsofmeasure_unit = 'kilogram';
       $ttv_unitsofmeasure_code = 'kg';
     }
@@ -2116,7 +2168,13 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '8280-0';
       $ttv_loinc_display = 'Waist Circumference at umbilicus by Tape measure';
-      $ttv_unitsofmeasure_value = $pemeriksaan['berat'];
+      $val = isset($pemeriksaan['berat']) ? trim((string)$pemeriksaan['berat']) : '';
+      if ($val === '') {
+        $response = json_encode(['error'=>'Data tidak lengkap untuk Observation','missing'=>['berat'=>'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if ($render) { echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]); } else { echo $response; }
+        exit();
+      }
+      $ttv_unitsofmeasure_value = $val;
       $ttv_unitsofmeasure_unit = 'centimeter';
       $ttv_unitsofmeasure_code = 'cm';
     }
@@ -2126,8 +2184,24 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '35094-2';
       $ttv_loinc_display = 'Blood pressure panel';
-      $sistole = strtok($pemeriksaan['tensi'], '/');
-      $diastole = substr($pemeriksaan['tensi'], strpos($pemeriksaan['tensi'], '/') + 1);
+      $bp = isset($pemeriksaan['tensi']) ? trim((string)$pemeriksaan['tensi']) : '';
+      if ($bp === '' || strpos($bp, '/') === false) {
+        $error = [
+          'error' => 'Data tidak lengkap untuk Observation',
+          'missing' => [
+            'tensi' => 'missing'
+          ]
+        ];
+        $response = json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if ($render) {
+          echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]);
+        } else {
+          echo $response;
+        }
+        exit();
+      }
+      $sistole = strtok($bp, '/');
+      $diastole = substr($bp, strpos($bp, '/') + 1);
       $ttv_unitsofmeasure_unit = 'mmHg';
       $ttv_unitsofmeasure_code = 'mm[Hg]';
     }
@@ -2173,7 +2247,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         CURLOPT_TIMEOUT => 0,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => '{
           "resourceType": "Observation",
@@ -2226,7 +2300,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         CURLOPT_TIMEOUT => 0,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => '{
           "resourceType": "Observation",
@@ -2313,7 +2387,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         CURLOPT_TIMEOUT => 0,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => '{
           "resourceType": "Observation",
@@ -2505,7 +2579,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
           CURLOPT_TIMEOUT => 0,
           CURLOPT_FOLLOWLOCATION => true,
           CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+          CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
           CURLOPT_CUSTOMREQUEST => 'GET',
         ));
 
@@ -2623,7 +2697,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
       CURLOPT_CUSTOMREQUEST => 'POST',
       CURLOPT_POSTFIELDS => '{
         "resourceType": "Procedure", 
@@ -2810,7 +2884,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
       CURLOPT_CUSTOMREQUEST => 'POST',
       CURLOPT_POSTFIELDS => $data
     ));
@@ -2999,7 +3073,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         CURLOPT_TIMEOUT => 0,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => $data,
       ));
@@ -3123,7 +3197,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
       CURLOPT_CUSTOMREQUEST => 'POST',
       CURLOPT_POSTFIELDS => $data,
     ));
@@ -3318,7 +3392,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
           CURLOPT_TIMEOUT => 0,
           CURLOPT_FOLLOWLOCATION => true,
           CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+          CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
           CURLOPT_CUSTOMREQUEST => 'POST',
           CURLOPT_POSTFIELDS => $data,
         ));
@@ -3578,7 +3652,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         CURLOPT_TIMEOUT => 0,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => $data,
       ));
@@ -3723,7 +3797,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         CURLOPT_TIMEOUT => 0,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => $laboratory,
       ));
@@ -4819,7 +4893,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     $parsed = parse_url($url);
     $baseUrl = $parsed['scheme'] . '://' . $parsed['host'];
 
-    if (!json_decode($this->getToken())->access_token) {
+    if ($this->getAccessToken() === '') {
       return ['error' => 'Gagal mendapatkan access token'];
     }
 
@@ -4828,7 +4902,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       CURLOPT_URL => $baseUrl . '/kfa-v2/products/all?page=1&size=5&product_type=farmasi&keyword=' . urlencode($keyword),
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_HTTPHEADER => [
-        'Authorization: Bearer ' . json_decode($this->getToken())->access_token,
+        'Authorization: Bearer ' . $this->getAccessToken(),
         'Accept: application/json'
       ]
     ]);
@@ -4846,7 +4920,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     $parsed = parse_url($url);
     $baseUrl = $parsed['scheme'] . '://' . $parsed['host'];
 
-    if (!json_decode($this->getToken())->access_token) {
+    if ($this->getAccessToken() === '') {
       return ['error' => 'Gagal mendapatkan access token'];
     }
 
@@ -4855,7 +4929,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       CURLOPT_URL => $baseUrl . '/kfa-v2/products?identifier=kfa&code=' . urlencode($keyword),
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_HTTPHEADER => [
-        'Authorization: Bearer ' . json_decode($this->getToken())->access_token,
+        'Authorization: Bearer ' . $this->getAccessToken(),
         'Accept: application/json'
       ]
     ]);
@@ -5686,7 +5760,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
   public function getTes() {
 
     $accessionNumber = "PR202510050001"; // Accession Number yang dikirim di DICOM
-    $token = json_decode($this->getToken())->access_token;
+    $token = $this->getAccessToken();
 
     $ch = curl_init("https://api-satusehat.kemkes.go.id/fhir-r4/v1/ServiceRequest?identifier=$accessionNumber");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
