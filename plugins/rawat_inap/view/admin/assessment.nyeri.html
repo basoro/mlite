@@ -226,7 +226,7 @@ $(document).off('click', '#saveAssessmentNyeri').on('click', '#saveAssessmentNye
   var formData = {
     no_rawat: $('input[name="no_rawat_assessmentNyeri"]').val(),
     nip: '{?=$this->core->getUserInfo("username", $_SESSION["mlite_user"])?}',
-    tanggal: $('input[name="tanggal"]').val(),
+    tanggal: $('#tanggal').val(),
     nyeri: $('select[name="nyeri"]').val(),
     provokes: $('select[name="provokes"]').val(),
     ket_provokes: $('input[name="ket_provokes"]').val(),
@@ -242,10 +242,12 @@ $(document).off('click', '#saveAssessmentNyeri').on('click', '#saveAssessmentNye
     original_tanggal: $('#original_tanggal').val(),
     t: '{?=$_SESSION["token"]?}'
   };
-  
+
   $.post(baseURL + '/rawat_inap/assessmentnyeri/?t=' + mlite.token, formData, function(data) {
+    console.log(data);
     try {
       var response = typeof data === 'string' ? JSON.parse(data) : data;
+      console.log(response);
       
       if(response.status === 'success') {
         alert(response.message);
