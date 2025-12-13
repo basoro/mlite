@@ -490,7 +490,7 @@ class Site extends SiteModule
 
         <body>
 
-        <h3>Proses tanggal ' . $tanggal . '</h3>
+        <h3>Proses no_rawat ' . $no_rawat . '</h3>
 
         <div id="log"></div>
 
