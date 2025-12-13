@@ -159,7 +159,7 @@
             { data: 'no_rkm_medis',
             render:function(data, type, row) {
                 if(row.id_encounter == '' && row.diagnosa_pasien != '' && row.tgl_pulang != ''){
-                    return `${data} <br><a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="encounterbundle" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-plus"></i></a>`;
+                    return `${data} <br><a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="encounterbundle" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-plus"></i></a> <a href="" class="btn btn-xs btn-danger" data-id="${row.no_rawat_converted}" data-tipe="forwardnorawat" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-send"></i></a>`;
                 }else if(row.id_encounter == '' && row.tgl_pulang == ''){
                     return `${data} <br><span class="badge badge-error">Belum Closing</span>`; 
                 }else if(row.id_encounter == '' && row.tgl_pulang == '' && row.diagnosa_pasien == ''){
@@ -531,10 +531,14 @@
         const id = button.data('id');
         const tipe = button.data('tipe');
         const ttv = "/"+button.data('ttv') || "";
-        let url = baseURL+"/satu_sehat/"+tipe+"/"+id+"/"+ttv+"?t="+mlite.token
+        let url = baseURL+"/satu_sehat/"+tipe+"/"+id+ttv+"?t="+mlite.token
         if(tipe == 'encounterbundle'){
             // Untuk encounterbundle, tidak ada ttv
             url = baseURL+"/satu_sehat/"+tipe+"/"+id+"?t="+mlite.token
+            
+        }
+        if(tipe == 'forwardnorawat'){
+            url = mlite.url+"/satu-sehat/forward-norawat/"+id
             
         }
         console.log(url);

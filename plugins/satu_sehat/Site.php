@@ -616,7 +616,6 @@ class Site extends SiteModule
                     const mtTxt = await call("' . $medBase . '" + nrUrl + "/" + mt);
                     const mtJson = toJsonOrString(mtTxt);
                     medRes[mt] = mtJson;
-                    console.log("' . $medBase . '" + nrUrl + "/" + mt);
                     container.insertAdjacentHTML(
                         "beforeend",
                         "<div>Medication (" + mt + "):<pre>" + (typeof mtJson === "string" ? mtJson : JSON.stringify(mtJson, null, 2)) + "</pre></div>"
@@ -630,7 +629,6 @@ class Site extends SiteModule
                     const ltTxt = await call("' . $labBase . '" + nrUrl + "/" + lt);
                     const ltJson = toJsonOrString(ltTxt);
                     labRes[lt] = ltJson;
-                    console.log("' . $labBase . '" + nrUrl + "/" + lt);
                     container.insertAdjacentHTML(
                         "beforeend",
                         "<div>Laboratory (" + lt + "):<pre>" + (typeof ltJson === "string" ? ltJson : JSON.stringify(ltJson, null, 2)) + "</pre></div>"
