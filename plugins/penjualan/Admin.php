@@ -320,6 +320,18 @@ class Admin extends AdminModule
 
     }
 
+    public function postDelete($id = '')
+    {
+      if ($id === '') {
+        redirect(url([ADMIN, 'penjualan', 'index']));
+      }
+      $this->db('mlite_penjualan_detail')->where('id_penjualan', $id)->delete();
+      $this->db('mlite_penjualan_billing')->where('id_penjualan', $id)->delete();
+      $ok = $this->db('mlite_penjualan')->where('id', $id)->delete();
+      $this->notify($ok ? 'success' : 'failure', $ok ? 'Data penjualan telah dihapus' : 'Data penjualan gagal dihapus');
+      redirect(url([ADMIN, 'penjualan', 'index']));
+    }
+
     public function anyFaktur()
     {
       $settings = $this->settings('settings');

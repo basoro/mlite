@@ -21,7 +21,13 @@
               <td>{$value.alamat_pembeli}</td>
               <td>{$value.nomor_telepon}</td>
               <td>{$value.total}</td>
-              <td><a href="{?=url([ADMIN,'penjualan','order', $value.id])?}"><div class="btn btn-xs btn-info"><i class="fa fa-edit"></i></div></a></td>
+              <td>
+                <a href="{?=url([ADMIN,'penjualan','order', $value.id])?}" class="btn btn-xs btn-info"><i class="fa fa-edit"></i></a>
+                <form method="post" action="{?=url([ADMIN,'penjualan','delete', $value.id])?}" style="display:inline">
+                  <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                  <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Hapus data ini?')"><i class="fa fa-trash"></i></button>
+                </form>
+              </td>
             </tr>
             {/loop}
             {else}
