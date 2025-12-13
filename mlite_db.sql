@@ -2481,7 +2481,7 @@ CREATE TABLE `mlite_penjualan_billing` (
 CREATE TABLE `mlite_penjualan_detail` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_penjualan` int NOT NULL,
-  `id_barang` int NOT NULL,
+  `id_barang` varchar(100) NOT NULL,
   `nama_barang` varchar(100) NOT NULL,
   `harga` int NOT NULL,
   `jumlah` int NOT NULL,
