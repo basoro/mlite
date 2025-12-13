@@ -4909,13 +4909,21 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     $tgl_registrasi = $this->core->getRegPeriksaInfo('tgl_registrasi', $no_rawat);
     $jam_reg = $this->core->getRegPeriksaInfo('jam_reg', $no_rawat);
     $mlite_billing = $this->db('mlite_billing')->where('no_rawat', $no_rawat)->oneArray();
-    $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->where('no_rawat', $no_rawat)->oneArray();
+    $pemeriksaan = $this->db('pemeriksaan_ralan')->where('no_rawat', $no_rawat)->oneArray();
+    
+    $rtl = $pemeriksaan['rtl'] ?? null;
 
     $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
 
     $kunjungan = 'Kunjungan';
     if ($status_lanjut == 'Ranap') {
       $kunjungan = 'Perawatan';
+      $row['pemeriksaan'] = $this->db('pemeriksaan_ranap')
+        ->where('no_rawat', $no_rawat)
+        ->limit(1)
+        ->desc('tgl_perawatan')
+        ->oneArray();
+      $rtl = $pemeriksaan['rtl'] ?? null;
     }
 
     $__patientResp = $this->getPatient($no_ktp_pasien);
@@ -4925,7 +4933,6 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $ihs_patient = $__patientJson->entry[0]->resource->id;
     }
 
-    $rtl = $pemeriksaan_ralan['rtl'] ?? null;
     $encounter_id = $mlite_satu_sehat_response['id_encounter'] ?? null;
 
     if ($ihs_patient === '' || !$rtl || !$encounter_id) {
@@ -4978,7 +4985,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
             }
         ], 
         "intent" : "plan", 
-        "description" : "' . $pemeriksaan_ralan['rtl'] . '", 
+        "description" : "' . $rtl . '", 
         "subject" : {
             "reference" : "Patient/' . $ihs_patient . '", 
             "display" : "' . $nama_pasien . '"
@@ -4987,7 +4994,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
             "reference": "Encounter/' . $encounter_id . '",
             "display": "' . $kunjungan . ' ' . $nama_pasien . ' dari tanggal ' . $tgl_registrasi . '"
         }, 
-        "created" : "' . $pemeriksaan_ralan['tgl_perawatan'] . 'T' . $pemeriksaan_ralan['jam_rawat'] . $zonawaktu . '"
+        "created" : "' . $pemeriksaan['tgl_perawatan'] . 'T' . $pemeriksaan['jam_rawat'] . $zonawaktu . '"
         "author" : {
             "reference" : "Practitioner/' . $kd_dokter . '", 
             "display" : "' . $nama_dokter . '"
@@ -5744,7 +5751,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
       $row['diagnostic_report_lab_mb'] = $row['permintaan_lab'];
 
-      $row['care_plan'] = $row['pemeriksaan']['rtl'];
+      $row['care_plan'] = isset_or($row['pemeriksaan']['rtl'], '');
 
       $row['id_encounter'] = isset_or($mlite_satu_sehat_response['id_encounter'], '');
       $row['id_condition'] = isset_or($mlite_satu_sehat_response['id_condition'], '');
