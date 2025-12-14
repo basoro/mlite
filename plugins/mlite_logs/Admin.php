@@ -60,13 +60,14 @@ class Admin extends AdminModule
 
         $data = [];
         foreach ($result as $row) {
+            $nama = $this->core->getPegawaiInfo('nama', $row['username']);
             $data[] = [
                 'id'=>$row['id'],
 'sql_text'=>$row['sql_text'],
 'bindings'=>$row['bindings'],
 'created_at'=>$row['created_at'],
 'error_message'=>$row['error_message'],
-'username'=>$this->core->getUserInfo('fullname', null, $row['username'])
+'username'=>isset_or($nama, 'Tidak Diketahui')
 
             ];
         }
