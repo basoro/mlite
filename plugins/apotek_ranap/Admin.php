@@ -406,7 +406,12 @@ class Admin extends AdminModule
       $resep = [];
       $jumlah_total_resep = 0;
       foreach ($rows as $row) {
-        $row['resep_dokter'] = $this->db('resep_dokter')->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
+        $bangsal = $this->settings->get('farmasi.deporanap');
+        $row['resep_dokter'] = $this->db('resep_dokter')
+          ->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')
+          ->leftJoin('gudangbarang', 'gudangbarang.kode_brng=resep_dokter.kode_brng AND gudangbarang.kd_bangsal = "'.$bangsal.'"')
+          ->where('no_resep', $row['no_resep'])
+          ->toArray();
         foreach ($row['resep_dokter'] as $value) {
           // Ensure 'jml' and 'dasar' keys exist with default values
           $jml_value = isset($value['jml']) ? floatval($value['jml']) : 0;
@@ -437,7 +442,12 @@ class Admin extends AdminModule
       $resep_racikan = [];
       $jumlah_total_resep_racikan = 0;
       foreach ($rows_racikan as $row) {
-        $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
+        $bangsal = $this->settings->get('farmasi.deporanap');
+        $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')
+          ->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')
+          ->leftJoin('gudangbarang', 'gudangbarang.kode_brng=resep_dokter_racikan_detail.kode_brng AND gudangbarang.kd_bangsal = "'.$bangsal.'"')
+          ->where('no_resep', $row['no_resep'])
+          ->toArray();
         foreach ($row['resep_dokter_racikan_detail'] as $value) {
           $value['ranap'] = $value['jml'] * $value['dasar'];
           $jumlah_total_resep_racikan += floatval($value['ranap']);

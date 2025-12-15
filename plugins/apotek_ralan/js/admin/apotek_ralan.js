@@ -425,6 +425,30 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
   var jenis_racikan = $(this).attr("data-racikan");
   var penyerahan = $(this).attr("data-penyerahan");
 
+  var $tbody = $(this).closest('tbody.resep-group');
+  var $rows = $tbody.find('tr.item-row');
+  var valid = true;
+  var msg = "";
+
+  $rows.each(function() {
+      var stok = parseFloat($(this).attr('data-stok'));
+      var jml = parseFloat($(this).attr('data-jml'));
+      var nama = $(this).attr('data-nama_brng');
+
+      if (isNaN(stok)) stok = 0;
+      if (isNaN(jml)) jml = 0;
+
+      if (stok < jml) {
+          valid = false;
+          msg += "Stok " + nama + " tidak mencukupi (Stok: " + stok + ", Jml: " + jml + ")\n";
+      }
+  });
+
+  if (!valid) {
+      alert(msg);
+      return false;
+  }
+
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menvalidasi/menyerahkan data resep ini?", function(result){
     // ketika ditekan tombol ok

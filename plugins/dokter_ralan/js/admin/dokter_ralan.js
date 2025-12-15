@@ -641,8 +641,8 @@ $("#obat").on("click", ".pilih_obat", function(event){
   var kode_brng = $(this).attr("data-kode_brng");
   var nama_brng = $(this).attr("data-nama_brng");
   var biaya = $(this).attr("data-dasar");
-  var stok = $(this).attr("data-stok");
-  var stokminimal = $(this).attr("data-stokminimal");
+  var stok = parseFloat($(this).attr("data-stok"));
+  var stokminimal = parseFloat($(this).attr("data-stokminimal"));
   var kat = $(this).attr("data-kat");
 
   if(stok < stokminimal) {
@@ -697,7 +697,7 @@ $("#obat_racikan").on("click", ".pilih_obat_racikan", function(event){
   var kode_brng = $(this).attr("data-kode_brng");
   var nama_brng = $(this).attr("data-nama_brng");
   var biaya = $(this).attr("data-dasar");
-  var stok = $(this).attr("data-stok");
+  var stok = parseFloat($(this).attr("data-stok"));
 
   if(stok < 1) {
     alert('Stok obat ' + nama_brng + ' tidak mencukupi.');
