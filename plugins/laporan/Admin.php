@@ -13,7 +13,9 @@ class Admin extends AdminModule
             'Kelola' => 'manage',
             'Laporan TB' => 'laporantb',
             'Laporan SEP BPJS' => 'laporansep',
-            'Laporan Antrian Online' => 'laporanantrian'
+            'Laporan Antrian Online' => 'laporanantrian',
+            '10 Besar Penyakit Ralan' => 'laporanpenyakitralan',
+            '10 Besar Penyakit Ranap' => 'laporanpenyakitranap'
         ];
     }
 
@@ -22,7 +24,9 @@ class Admin extends AdminModule
         $sub_modules = [
             ['name' => 'Laporan TB', 'url' => url([ADMIN, 'laporan', 'laporantb']), 'icon' => 'fa fa-file-text-o', 'desc' => 'Laporan data tuberkulosis'],
             ['name' => 'Laporan SEP BPJS', 'url' => url([ADMIN, 'laporan', 'laporansep']), 'icon' => 'fa fa-file-text-o', 'desc' => 'Laporan SEP BPJS'],
-            ['name' => 'Laporan Antrian Online', 'url' => url([ADMIN, 'laporan', 'laporanantrian']), 'icon' => 'fa fa-file-text-o', 'desc' => 'Laporan antrian online']
+            ['name' => 'Laporan Antrian Online', 'url' => url([ADMIN, 'laporan', 'laporanantrian']), 'icon' => 'fa fa-file-text-o', 'desc' => 'Laporan antrian online'],
+            ['name' => '10 Besar Penyakit Ralan', 'url' => url([ADMIN, 'laporan', 'laporanpenyakitralan']), 'icon' => 'fa fa-bar-chart', 'desc' => 'Laporan 10 besar penyakit rawat jalan'],
+            ['name' => '10 Besar Penyakit Ranap', 'url' => url([ADMIN, 'laporan', 'laporanpenyakitranap']), 'icon' => 'fa fa-bar-chart', 'desc' => 'Laporan 10 besar penyakit rawat inap']
         ];
 
         return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
@@ -118,6 +122,66 @@ class Admin extends AdminModule
             ->toArray();
 
         return $this->draw('laporan_antrian.html', ['laporan' => $query, 'tgl_awal' => $tgl_awal, 'tgl_akhir' => $tgl_akhir]);
+    }
+
+    public function anyLaporanPenyakitRalan()
+    {
+        $this->_addHeaderFiles();
+        $tgl_awal = isset_or($_POST['tgl_awal'], date('Y-m-01'));
+        $tgl_akhir = isset_or($_POST['tgl_akhir'], date('Y-m-d'));
+
+        $query = $this->db('diagnosa_pasien')
+            ->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')
+            ->join('reg_periksa', 'reg_periksa.no_rawat = diagnosa_pasien.no_rawat')
+            ->select([
+                'diagnosa_pasien.kd_penyakit',
+                'penyakit.nm_penyakit',
+                'count(diagnosa_pasien.kd_penyakit) as jumlah'
+            ])
+            ->where('reg_periksa.status_lanjut', 'Ralan')
+            ->where('reg_periksa.tgl_registrasi', '>=', $tgl_awal)
+            ->where('reg_periksa.tgl_registrasi', '<=', $tgl_akhir)
+            ->group('diagnosa_pasien.kd_penyakit')
+            ->desc('jumlah')
+            ->limit(10)
+            ->toArray();
+
+        // Handle Excel export
+        if (isset($_POST['export']) && $_POST['export'] == 'excel') {
+            return $this->exportPenyakitToExcel($query, 'Laporan_10_Besar_Penyakit_Ralan_' . $tgl_awal . '_' . $tgl_akhir);
+        }
+
+        return $this->draw('laporan_penyakit_ralan.html', ['laporan' => $query, 'tgl_awal' => $tgl_awal, 'tgl_akhir' => $tgl_akhir]);
+    }
+
+    public function anyLaporanPenyakitRanap()
+    {
+        $this->_addHeaderFiles();
+        $tgl_awal = isset_or($_POST['tgl_awal'], date('Y-m-01'));
+        $tgl_akhir = isset_or($_POST['tgl_akhir'], date('Y-m-d'));
+
+        $query = $this->db('diagnosa_pasien')
+            ->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')
+            ->join('reg_periksa', 'reg_periksa.no_rawat = diagnosa_pasien.no_rawat')
+            ->select([
+                'diagnosa_pasien.kd_penyakit',
+                'penyakit.nm_penyakit',
+                'count(diagnosa_pasien.kd_penyakit) as jumlah'
+            ])
+            ->where('reg_periksa.status_lanjut', 'Ranap')
+            ->where('reg_periksa.tgl_registrasi', '>=', $tgl_awal)
+            ->where('reg_periksa.tgl_registrasi', '<=', $tgl_akhir)
+            ->group('diagnosa_pasien.kd_penyakit')
+            ->desc('jumlah')
+            ->limit(10)
+            ->toArray();
+
+        // Handle Excel export
+        if (isset($_POST['export']) && $_POST['export'] == 'excel') {
+            return $this->exportPenyakitToExcel($query, 'Laporan_10_Besar_Penyakit_Ranap_' . $tgl_awal . '_' . $tgl_akhir);
+        }
+
+        return $this->draw('laporan_penyakit_ranap.html', ['laporan' => $query, 'tgl_awal' => $tgl_awal, 'tgl_akhir' => $tgl_akhir]);
     }
 
     public function getCetakPdfSemua()
@@ -262,6 +326,70 @@ class Admin extends AdminModule
         ]);
     }
 
+    public function getCetakPdfPenyakitRalan()
+    {
+        $tgl_awal = isset_or($_GET['tgl_awal'], date('Y-m-01'));
+        $tgl_akhir = isset_or($_GET['tgl_akhir'], date('Y-m-d'));
+
+        $query = $this->db('diagnosa_pasien')
+            ->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')
+            ->join('reg_periksa', 'reg_periksa.no_rawat = diagnosa_pasien.no_rawat')
+            ->select([
+                'diagnosa_pasien.kd_penyakit',
+                'penyakit.nm_penyakit',
+                'count(diagnosa_pasien.kd_penyakit) as jumlah'
+            ])
+            ->where('reg_periksa.status_lanjut', 'Ralan')
+            ->where('reg_periksa.tgl_registrasi', '>=', $tgl_awal)
+            ->where('reg_periksa.tgl_registrasi', '<=', $tgl_akhir)
+            ->group('diagnosa_pasien.kd_penyakit')
+            ->desc('jumlah')
+            ->limit(10)
+            ->toArray();
+
+        $settings = $this->settings('settings');
+        
+        echo $this->draw('cetak_pdf_penyakit_ralan.html', [
+            'laporan' => $query,
+            'tgl_awal' => $tgl_awal,
+            'tgl_akhir' => $tgl_akhir,
+            'settings' => $settings
+        ]);
+        exit();
+    }
+
+    public function getCetakPdfPenyakitRanap()
+    {
+        $tgl_awal = isset_or($_GET['tgl_awal'], date('Y-m-01'));
+        $tgl_akhir = isset_or($_GET['tgl_akhir'], date('Y-m-d'));
+
+        $query = $this->db('diagnosa_pasien')
+            ->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')
+            ->join('reg_periksa', 'reg_periksa.no_rawat = diagnosa_pasien.no_rawat')
+            ->select([
+                'diagnosa_pasien.kd_penyakit',
+                'penyakit.nm_penyakit',
+                'count(diagnosa_pasien.kd_penyakit) as jumlah'
+            ])
+            ->where('reg_periksa.status_lanjut', 'Ranap')
+            ->where('reg_periksa.tgl_registrasi', '>=', $tgl_awal)
+            ->where('reg_periksa.tgl_registrasi', '<=', $tgl_akhir)
+            ->group('diagnosa_pasien.kd_penyakit')
+            ->desc('jumlah')
+            ->limit(10)
+            ->toArray();
+
+        $settings = $this->settings('settings');
+        
+        echo $this->draw('cetak_pdf_penyakit_ranap.html', [
+            'laporan' => $query,
+            'tgl_awal' => $tgl_awal,
+            'tgl_akhir' => $tgl_akhir,
+            'settings' => $settings
+        ]);
+        exit();
+    }
+
     private function exportToExcel($data, $filename)
     {
         // Set headers for Excel download
@@ -351,6 +479,43 @@ class Admin extends AdminModule
                 $row['poli'],
                 $row['diagnosa'],
                 $jnsPelayanan
+            ];
+            
+            $output .= implode("\t", $dataRow) . "\n";
+        }
+        
+        echo $output;
+        exit;
+    }
+
+    private function exportPenyakitToExcel($data, $filename)
+    {
+        // Set headers for Excel download
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        
+        // Create Excel content using simple CSV format that Excel can read
+        $output = "\xEF\xBB\xBF"; // UTF-8 BOM
+        
+        // Header row
+        $headers = [
+            'No',
+            'Kode Penyakit',
+            'Nama Penyakit',
+            'Jumlah'
+        ];
+        
+        $output .= implode("\t", $headers) . "\n";
+        
+        // Data rows
+        $no = 1;
+        foreach ($data as $row) {
+            $dataRow = [
+                $no++,
+                $row['kd_penyakit'],
+                $row['nm_penyakit'],
+                $row['jumlah']
             ];
             
             $output .= implode("\t", $dataRow) . "\n";

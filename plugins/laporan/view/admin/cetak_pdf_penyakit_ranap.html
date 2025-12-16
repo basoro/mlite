@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Laporan 10 Besar Penyakit Rawat Inap</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h2 {
+            margin: 0;
+        }
+        .header p {
+            margin: 5px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            border: 1px solid #000;
+            padding: 5px;
+        }
+        table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>{$settings.nama_instansi}</h2>
+        <p>{$settings.alamat} - {$settings.kota}</p>
+        <h3>Laporan 10 Besar Penyakit Rawat Inap</h3>
+        <p>Periode: {$tgl_awal} s/d {$tgl_akhir}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th width="5%">No</th>
+                <th width="15%">Kode Penyakit</th>
+                <th>Nama Penyakit</th>
+                <th width="15%">Jumlah Kasus</th>
+            </tr>
+        </thead>
+        <tbody>
+            {loop: $laporan}
+            <tr>
+                <td align="center">{?=$key+1?}</td>
+                <td>{$value.kd_penyakit}</td>
+                <td>{$value.nm_penyakit}</td>
+                <td align="center">{$value.jumlah}</td>
+            </tr>
+            {/loop}
+        </tbody>
+    </table>
+
+    <script>
+        window.print();
+    </script>
+</body>
+</html>
