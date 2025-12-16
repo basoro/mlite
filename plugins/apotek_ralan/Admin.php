@@ -431,8 +431,8 @@ class Admin extends AdminModule
       $tgl_rawat = date('Y-m-d');
       $jam_rawat = date('H:i:s');
       
-      $embalase = $this->settings->get('farmasi.embalase');
-      $tuslah = $this->settings->get('farmasi.tuslah');
+      $embalase = isset($_POST['embalase']) ? $_POST['embalase'] : $this->settings->get('farmasi.embalase');
+      $tuslah = isset($_POST['tuslah']) ? $_POST['tuslah'] : $this->settings->get('farmasi.tuslah');
       
       $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $kode_brng)->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
       $get_databarang = $this->db('databarang')->where('kode_brng', $kode_brng)->oneArray();
@@ -520,7 +520,9 @@ class Admin extends AdminModule
             'jml' => $jml,
             'kandungan' => $kandungan,
             'kapasitas' => $kapasitas,
-            'ralan' => isset($get_databarang['dasar']) ? $get_databarang['dasar'] : 0
+            'ralan' => isset($get_databarang['dasar']) ? $get_databarang['dasar'] : 0,
+            'embalase' => $embalase,
+            'tuslah' => $tuslah
           ]);
           exit();
 
@@ -587,7 +589,9 @@ class Admin extends AdminModule
             'nama_brng' => $get_databarang['nama_brng'] ?? 'Nama Obat Tidak Ditemukan',
             'jml' => $jml,
             'aturan_pakai' => $aturan_pakai,
-            'ralan' => isset($get_databarang['dasar']) ? (($get_databarang['dasar'] * $jml) + $embalase + $tuslah) : 0
+            'ralan' => isset($get_databarang['dasar']) ? (($get_databarang['dasar'] * $jml) + $embalase + $tuslah) : 0,
+            'embalase' => $embalase,
+            'tuslah' => $tuslah
           ]);
           exit();
       }
@@ -794,7 +798,7 @@ class Admin extends AdminModule
         $detail_pemberian_obat[] = $row;
       }
 
-      $query2 = $this->db()->pdo()->prepare("SELECT * FROM obat_racikan WHERE no_rawat = '{$_POST['no_rawat']}' AND jam NOT IN (SELECT resep_obat.jam FROM resep_obat WHERE resep_obat.no_rawat = '{$_POST['no_rawat']}' AND resep_obat.tgl_perawatan = tgl_perawatan AND status = 'ralan')");
+      $query2 = $this->db()->pdo()->prepare("SELECT obat_racikan.* FROM obat_racikan WHERE obat_racikan.no_rawat = '{$_POST['no_rawat']}' AND obat_racikan.jam NOT IN (SELECT resep_obat.jam FROM resep_obat WHERE resep_obat.no_rawat = '{$_POST['no_rawat']}' AND resep_obat.tgl_perawatan = obat_racikan.tgl_perawatan)");
       $query2->execute();
       $rows_pemberian_obat2 = $query2->fetchAll();
 

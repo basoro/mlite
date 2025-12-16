@@ -127,6 +127,8 @@ class Admin extends AdminModule
     {
 
       if($_POST['kat'] == 'obat') {
+        $embalase = isset($_POST['embalase']) ? $_POST['embalase'] : 0;
+        $tuslah = isset($_POST['tuslah']) ? $_POST['tuslah'] : 0;
         $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kd_jenis_prw'])->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))->oneArray();
         $get_databarang = $this->db('databarang')->where('kode_brng', $_POST['kd_jenis_prw'])->oneArray();
 
@@ -164,9 +166,9 @@ class Admin extends AdminModule
             'h_beli' => $get_databarang['h_beli'],
             'biaya_obat' => $_POST['biaya'],
             'jml' => $_POST['jml'],
-            'embalase' => $this->settings->get('farmasi.embalase'),
-            'tuslah' => $this->settings->get('farmasi.tuslah'),
-            'total' => $_POST['biaya'] * $_POST['jml'],
+            'embalase' => $embalase,
+            'tuslah' => $tuslah,
+            'total' => ($_POST['biaya'] * $_POST['jml']) + $embalase + $tuslah,
             'status' => 'Ranap',
             'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
             'no_batch' => $get_gudangbarang['no_batch'],
@@ -393,8 +395,8 @@ class Admin extends AdminModule
       $tgl_rawat = date('Y-m-d');
       $jam_rawat = date('H:i:s');
       
-      $embalase = $this->settings->get('farmasi.embalase');
-      $tuslah = $this->settings->get('farmasi.tuslah');
+      $embalase = isset($_POST['embalase']) ? $_POST['embalase'] : $this->settings->get('farmasi.embalase');
+      $tuslah = isset($_POST['tuslah']) ? $_POST['tuslah'] : $this->settings->get('farmasi.tuslah');
       
       $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $kode_brng)->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))->oneArray();
       $get_databarang = $this->db('databarang')->where('kode_brng', $kode_brng)->oneArray();
@@ -482,7 +484,9 @@ class Admin extends AdminModule
             'jml' => $jml,
             'kandungan' => $kandungan,
             'kapasitas' => $kapasitas,
-            'ralan' => isset($get_databarang['dasar']) ? $get_databarang['dasar'] : 0
+            'ralan' => isset($get_databarang['dasar']) ? $get_databarang['dasar'] : 0,
+            'embalase' => $embalase,
+            'tuslah' => $tuslah
           ]);
           exit();
       } else {
@@ -533,7 +537,7 @@ class Admin extends AdminModule
             'jml' => $_POST['jml'],
             'embalase' => $this->settings->get('farmasi.embalase'),
             'tuslah' => $this->settings->get('farmasi.tuslah'),
-            'total' => ($get_databarang['dasar'] * $_POST['jml']) + $this->settings->get('farmasi.embalase') + $this->settings->get('farmasi.tuslah'),
+            'total' => ($get_databarang['dasar'] * $_POST['jml']) + $embalase + $tuslah,
             'status' => 'Ranap',
             'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
             'no_batch' => $get_gudangbarang['no_batch'],
@@ -551,7 +555,9 @@ class Admin extends AdminModule
 
         $get_databarang['jml'] = $_POST['jml'];
         $get_databarang['aturan_pakai'] = $_POST['aturan_pakai'];
-        $get_databarang['ralan'] = ($get_databarang['dasar'] * $_POST['jml']) + $this->settings->get('farmasi.embalase') + $this->settings->get('farmasi.tuslah');
+        $get_databarang['ralan'] = ($get_databarang['dasar'] * $_POST['jml']) + $embalase + $tuslah;
+        $get_databarang['embalase'] = $embalase;
+        $get_databarang['tuslah'] = $tuslah;
         echo json_encode($get_databarang);
       }
       exit();
@@ -821,7 +827,7 @@ class Admin extends AdminModule
         $detail_pemberian_obat[] = $row;
       }
 
-      $query2 = $this->db()->pdo()->prepare("SELECT * FROM obat_racikan WHERE no_rawat = '{$_POST['no_rawat']}' AND jam NOT IN (SELECT resep_obat.jam FROM resep_obat WHERE resep_obat.no_rawat = '{$_POST['no_rawat']}' AND resep_obat.tgl_perawatan = tgl_perawatan AND status = 'ranap')");
+      $query2 = $this->db()->pdo()->prepare("SELECT obat_racikan.* FROM obat_racikan WHERE obat_racikan.no_rawat = '{$_POST['no_rawat']}' AND obat_racikan.jam NOT IN (SELECT resep_obat.jam FROM resep_obat WHERE resep_obat.no_rawat = '{$_POST['no_rawat']}' AND resep_obat.tgl_perawatan = obat_racikan.tgl_perawatan)");
       $query2->execute();
       $rows_pemberian_obat2 = $query2->fetchAll();
 
@@ -891,7 +897,9 @@ class Admin extends AdminModule
           foreach ($rows as $row) {
             $array[] = array(
                 'kode_brng' => $row['kode_brng'],
-                'nama_brng'  => $row['nama_brng']
+                'nama_brng'  => $row['nama_brng'],
+                'stok'  => $row['stok'],
+                'ralan'  => $row['ralan']
             );
           }
           echo json_encode($array, true);
@@ -1077,7 +1085,7 @@ class Admin extends AdminModule
       if($tipe == 'racikan') {
         $rows_pemberian_obat = $this->db('obat_racikan')
           ->join('reg_periksa', 'reg_periksa.no_rawat=obat_racikan.no_rawat')
-          ->join('kamar_inap', 'kamar_inap.no_rawat=detail_pemberian_obat.no_rawat')
+          ->join('kamar_inap', 'kamar_inap.no_rawat=obat_racikan.no_rawat')
           ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
           ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')  
           ->where('obat_racikan.no_rawat', revertNoRawat($no_rawat))

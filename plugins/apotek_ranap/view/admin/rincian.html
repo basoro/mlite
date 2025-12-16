@@ -213,7 +213,20 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
+          <label for="cari_barang">Cari Obat/Alkes</label>
           <input type="text" class="form-control" name="cari_barang" id="cari_barang" placeholder="Ketik nama obat/alkes...">
+        </div>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="embalase_item">Embalase</label>
+              <input type="number" class="form-control" name="embalase_item" id="embalase_item" value="{?= $this->core->settings->get('farmasi.embalase')?}">
+            </div>
+            <div class="col-md-6">
+              <label for="tuslah_item">Tuslah</label>
+              <input type="number" class="form-control" name="tuslah_item" id="tuslah_item" value="{?= $this->core->settings->get('farmasi.tuslah')?}">
+            </div>
+          </div>
         </div>
         <div class="table-responsive">
           <table class="table table-striped table-bordered" id="tabel_cari_barang">

@@ -814,6 +814,9 @@ $(document).on("keyup", "#cari_barang", function(){
 $(document).on("click", ".pilih_barang_modal", function(){
     var kode_brng = $(this).attr("data-kode_brng");
     var nama_brng = $(this).attr("data-nama_brng");
+    var embalase_item = $("#embalase_item").val();
+    var tuslah_item = $("#tuslah_item").val();
+
     console.log(kode_brng + ' - ' + currentNoRawat);
     
     $("#modal_gudangbarang").modal("hide");
@@ -836,7 +839,9 @@ $(document).on("click", ".pilih_barang_modal", function(){
                         kandungan: kandungan,
                         tipe: 'racikan',
                         no_racik: currentNoRacik,
-                        jml_dr: currentJmlDr
+                        jml_dr: currentJmlDr,
+                        embalase: embalase_item,
+                        tuslah: tuslah_item
                     }, function(data) {
                         console.log(data);
                         $('#modal_gudangbarang').remove();
@@ -855,8 +860,8 @@ $(document).on("click", ".pilih_barang_modal", function(){
                             '<td>' + result.nama_brng + '</td>' +
                             '<td><input type="number" class="form-control input-sm kandungan_obat" data-kode_brng="' + result.kode_brng + '" value="' + result.kandungan + '" style="width: 100px;"></td>' +
                             '<td><span class="jml_obat_display">' + result.jml + '</span></td>' +
-                            '<td><input type="text" class="form-control input-sm embalase" data-kode_brng="' + result.kode_brng + '" value="{?= $this->core->settings->get("farmasi.embalase")?}" style="width: 80px;"></td>' +
-                            '<td><input type="text" class="form-control input-sm tuslah" data-kode_brng="' + result.kode_brng + '" value="{?= $this->core->settings->get("farmasi.tuslah")?}" style="width: 80px;"></td>' +
+                            '<td><input type="text" class="form-control input-sm embalase" data-kode_brng="' + result.kode_brng + '" value="' + result.embalase + '" style="width: 80px;"></td>' +
+                            '<td><input type="text" class="form-control input-sm tuslah" data-kode_brng="' + result.kode_brng + '" value="' + result.tuslah + '" style="width: 80px;"></td>' +
                             '<td>Rp. <span class="pull-right total_harga_display">' + formattedRalan + '</span></td>' +
                             '</tr>';
                             
@@ -894,7 +899,9 @@ $(document).on("click", ".pilih_barang_modal", function(){
                                     kode_brng: kode_brng,
                                     jml: jml,
                                     aturan_pakai: aturan_pakai,
-                                    tipe: 'nonracikan'
+                                    tipe: 'nonracikan',
+                                    embalase: embalase_item,
+                                    tuslah: tuslah_item
                                 }, function(data) {
                                     console.log(data);
                                     // hapus modal sebelumnya jika ada
@@ -916,8 +923,8 @@ $(document).on("click", ".pilih_barang_modal", function(){
                                         '<td>' + result.nama_brng + '</td>' +
                                         '<td><input type="number" class="form-control input-sm jumlah_obat" data-kode_brng="' + result.kode_brng + '" value="' + result.jml + '" style="width: 50px;"></td>' +
                                         '<td>' + result.aturan_pakai + ' <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="' + result.kode_brng + '" data-no_rawat="' + currentNoRawat + '" data-tgl_peresepan="' + currentTglPeresepan + '" data-jam_peresepan="' + currentJamPeresepan + '" data-tipe="nonracikan"><i class="fa fa-print"></i></button> <button type="button" class="btn btn-danger btn-xs hapus_obat" data-kode_brng="' + result.kode_brng + '" data-no_rawat="' + currentNoRawat + '" data-tgl_peresepan="' + currentTglPeresepan + '" data-jam_peresepan="' + currentJamPeresepan + '" data-jml="' + result.jml + '"><i class="fa fa-trash"></i></button></td>' +
-                                        '<td><input type="text" class="form-control input-sm embalase" data-kode_brng="' + result.kode_brng + '" value="{?= $this->core->settings->get("farmasi.embalase")?}" style="width: 80px;"></td>' +
-                                        '<td><input type="text" class="form-control input-sm tuslah" data-kode_brng="' + result.kode_brng + '" value="{?= $this->core->settings->get("farmasi.tuslah")?}" style="width: 80px;"></td>' +
+                                        '<td><input type="text" class="form-control input-sm embalase" data-kode_brng="' + result.kode_brng + '" value="' + result.embalase + '" style="width: 80px;"></td>' +
+                                        '<td><input type="text" class="form-control input-sm tuslah" data-kode_brng="' + result.kode_brng + '" value="' + result.tuslah + '" style="width: 80px;"></td>' +
                                         '<td>Rp. <span class="pull-right">' + formattedRalan + '</span></td>' +
                                         '</tr>';
                                         
