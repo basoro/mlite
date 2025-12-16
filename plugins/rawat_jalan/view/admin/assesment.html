@@ -8,19 +8,19 @@
     <input type="hidden" name="no_rawat" value="{$reg_periksa.no_rawat}" />
     
     <!-- Informasi Dasar -->
-    <div class="col-md-6">
+    <div class="col-md-4">
       <div class="form-group">
           <label>Nomor Rawat</label>
           <input type="text" name="no_rawat_assessment" class="form-control" placeholder="Nomor Rawat" required value="{$reg_periksa.no_rawat}" readonly />
       </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
       <div class="form-group">
           <label>Tanggal</label>
           <input type="datetime-local" name="tanggal" class="form-control" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.tanggal}{else}{?=date('Y-m-d\TH:i')?}{/if}" required />
       </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
       <div class="form-group">
           <label>Informasi</label>
           <select name="informasi" class="form-control" required>
@@ -89,28 +89,28 @@
           <textarea name="keluhan_utama" class="form-control" rows="3" placeholder="Keluhan utama pasien">{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.keluhan_utama}{/if}</textarea>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="form-group">
           <label>Riwayat Penyakit Dahulu</label>
           <textarea name="rpd" class="form-control" rows="2" placeholder="RPD">{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.rpd}{/if}</textarea>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="form-group">
           <label>Riwayat Penyakit Keluarga</label>
           <textarea name="rpk" class="form-control" rows="2" placeholder="RPK" required>{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.rpk}{/if}</textarea>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="form-group">
           <label>Riwayat Pengobatan</label>
           <textarea name="rpo" class="form-control" rows="2" placeholder="RPO" required>{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.rpo}{/if}</textarea>
       </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-3">
       <div class="form-group">
           <label>Alergi</label>
-          <input type="text" name="alergi" class="form-control" placeholder="Alergi" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.alergi}{/if}" />
+          <textarea name="alergi" class="form-control" rows="2" placeholder="Alergi">{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.alergi}{/if}</textarea>          
       </div>
     </div>
     
@@ -430,13 +430,13 @@
           </select>
       </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
       <div class="form-group">
           <label>Durasi</label>
           <input type="text" name="durasi" class="form-control" placeholder="Durasi nyeri" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.durasi}{/if}" required />
       </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
       <div class="form-group">
           <label>Nyeri Hilang</label>
           <select name="nyeri_hilang" class="form-control" required>
@@ -446,7 +446,7 @@
           </select>
       </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
       <div class="form-group">
           <label>Keterangan Nyeri</label>
           <input type="text" name="ket_nyeri" class="form-control" placeholder="Keterangan" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.ket_nyeri}{/if}" required />
@@ -473,7 +473,11 @@
     <div class="col-md-6">
       <div class="form-group">
           <label>NIP Petugas</label>
-          <input type="text" name="nip" class="form-control" placeholder="NIP Petugas" value="{if: $penilaian_awal_keperawatan_ralan}{$penilaian_awal_keperawatan_ralan.nip}{else}{?=$this->core->getUserInfo('username')?}{/if}" required />
+          <select name="nip" class="form-control" required>
+              {loop: $petugas_list}
+              <option value="{$value.nip}" {if: $penilaian_awal_keperawatan_ralan && $penilaian_awal_keperawatan_ralan.nip == $value.nip}selected{/if}>{$value.nip} - {$value.nama}</option>
+              {/loop}
+          </select>
       </div>
     </div>
     <div class="col-md-12">
@@ -544,7 +548,7 @@ $(document).ready(function(){
       'ket_nyeri': modalContext.find('input[name=ket_nyeri]').val(),
       'ket_dokter': modalContext.find('input[name=ket_dokter]').val(),
       'rencana': modalContext.find('textarea[name=rencana]').val(),
-      'nip': modalContext.find('input[name=nip]').val()
+      'nip': modalContext.find('select[name=nip]').val()
     };
     
     // Debug: Log semua field required
@@ -588,7 +592,7 @@ $(document).ready(function(){
       rpd: modalContext.find('textarea[name=rpd]').val().trim(),
       rpk: modalContext.find('textarea[name=rpk]').val().trim(),
       rpo: modalContext.find('textarea[name=rpo]').val().trim(),
-      alergi: modalContext.find('input[name=alergi]').val().trim(),
+      alergi: modalContext.find('textarea[name=alergi]').val().trim(),
       alat_bantu: modalContext.find('select[name=alat_bantu]').val(),
       ket_bantu: modalContext.find('input[name=ket_bantu]').val().trim(),
       prothesa: modalContext.find('select[name=prothesa]').val(),
@@ -629,7 +633,7 @@ $(document).ready(function(){
       pada_dokter: modalContext.find('select[name=pada_dokter]').val(),
       ket_dokter: modalContext.find('input[name=ket_dokter]').val().trim(),
       rencana: modalContext.find('textarea[name=rencana]').val().trim(),
-      nip: modalContext.find('input[name=nip]').val().trim()
+      nip: modalContext.find('select[name=nip]').val()
     };
 
     console.log('Sending form data:', formData);

@@ -636,15 +636,6 @@ class Admin extends AdminModule
 
       $kode_brng_count = count($_POST['kode_brng']);
       for ($i = 0; $i < $kode_brng_count; $i++) {
-        /*$cek_stok = $this->db('gudangbarang')
-          ->join('databarang', 'databarang.kode_brng=gudangbarang.kode_brng')
-          ->where('gudangbarang.kode_brng', $_POST['kode_brng'][$i]['value'])
-          ->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))
-          ->oneArray();*/
-
-        //if($cek_stok['stok'] < $cek_stok['stokminimal']) {
-        //  echo "Error";
-        //} else {
           $this->db('resep_dokter')
             ->save([
               'no_resep' => $no_resep,
@@ -652,8 +643,6 @@ class Admin extends AdminModule
               'jml' => $_POST['jml'][$i]['value'],
               'aturan_pakai' => $_POST['aturan_pakai'][$i]['value']
             ]);
-        //}
-
       }
 
       exit();

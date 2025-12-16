@@ -426,7 +426,7 @@ class Admin extends AdminModule
       $return = $this->db('resep_dokter')
         ->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')
         ->join('gudangbarang', 'gudangbarang.kode_brng=resep_dokter.kode_brng')
-        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->where('kd_bangsal', $this->settings->get('farmasi.igd'))
         ->where('no_resep', $_POST['no_resep'])
         ->toArray();
       echo $this->draw('copyresep.display.html', ['copy_resep' => $return]);
@@ -457,15 +457,6 @@ class Admin extends AdminModule
 
       $kode_brng_count = count($_POST['kode_brng']);
       for ($i = 0; $i < $kode_brng_count; $i++) {
-        /*$cek_stok = $this->db('gudangbarang')
-          ->join('databarang', 'databarang.kode_brng=gudangbarang.kode_brng')
-          ->where('gudangbarang.kode_brng', $_POST['kode_brng'][$i]['value'])
-          ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
-          ->oneArray();*/
-
-        //if($cek_stok['stok'] < $cek_stok['stokminimal']) {
-        //  echo "Error";
-        //} else {
           $this->db('resep_dokter')
             ->save([
               'no_resep' => $no_resep,
@@ -473,8 +464,6 @@ class Admin extends AdminModule
               'jml' => $_POST['jml'][$i]['value'],
               'aturan_pakai' => $_POST['aturan_pakai'][$i]['value']
             ]);
-        //}
-
       }
 
       exit();
@@ -964,7 +953,7 @@ class Admin extends AdminModule
       $obat = $this->db('databarang')
         ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
         ->where('status', '1')
-        ->where('gudangbarang.kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->where('gudangbarang.kd_bangsal', $this->settings->get('farmasi.igd'))
         ->like('databarang.nama_brng', '%'.$_POST['obat'].'%')
         ->limit(10)
         ->toArray();
@@ -977,7 +966,7 @@ class Admin extends AdminModule
       $obat = $this->db('databarang')
         ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
         ->where('status', '1')
-        ->where('gudangbarang.kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->where('gudangbarang.kd_bangsal', $this->settings->get('farmasi.igd'))
         ->like('databarang.nama_brng', '%'.$_POST['obat'].'%')
         ->limit(10)
         ->toArray();
@@ -1088,7 +1077,7 @@ class Admin extends AdminModule
             ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
             ->where('status', '1')
             ->where('stok', '>', '1')
-            ->where('gudangbarang.kd_bangsal', $this->settings->get('farmasi.deporalan'))
+            ->where('gudangbarang.kd_bangsal', $this->settings->get('farmasi.igd'))
             ->like('databarang.nama_brng', '%'.$_GET['nama_brng'].'%')
             ->limit(10)
             ->toArray();

@@ -1671,7 +1671,7 @@ switch ($version) {
           `keterangan` VARCHAR(255) DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE `detail_obat_racikan` (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `detail_obat_racikan` (
           `tgl_perawatan` date NOT NULL,
           `jam` time NOT NULL,
           `no_rawat` varchar(17) NOT NULL,

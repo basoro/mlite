@@ -2016,13 +2016,14 @@ class Admin extends AdminModule
         }
         
         $data_assessment['penilaian_awal_keperawatan_ralan'] = $existing_assessment;
-        
+        $data_petugas = $this->db('petugas')->select('nip, nama')->where('status', '1')->toArray();
         echo $this->draw('assesment.html', [
             'reg_periksa' => $this->db('reg_periksa')->where('no_rawat', $no_rawat_reverted)->oneArray(),
             'penilaian_awal_keperawatan_ralan' => $penilaian_awal_keperawatan_ralan,
             'pasien' => $this->db('pasien')->where('no_rawat', $no_rawat_reverted)->join('reg_periksa','pasien.no_rkm_medis=reg_periksa.no_rkm_medis')->oneArray(),
             'petugas' => $existing_assessment ? $this->db('petugas')->where('no_rawat', $no_rawat_reverted)->join('penilaian_awal_keperawatan_ralan','petugas.nip=penilaian_awal_keperawatan_ralan.nip')->oneArray() : [],
-            'data_assessment' => $data_assessment
+            'data_assessment' => $data_assessment, 
+            'petugas_list' => $data_petugas 
         ]);
         exit();
     }
