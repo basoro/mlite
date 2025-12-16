@@ -538,6 +538,18 @@ CREATE TABLE `departemen` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 INSERT INTO `departemen` VALUES ("-","-");
 
+CREATE TABLE `detail_obat_racikan` (
+  `tgl_perawatan` date NOT NULL,
+  `jam` time NOT NULL,
+  `no_rawat` varchar(17) NOT NULL,
+  `no_racik` varchar(2) NOT NULL,
+  `kode_brng` varchar(15) NOT NULL,
+  PRIMARY KEY (`tgl_perawatan`,`jam`,`no_rawat`,`no_racik`,`kode_brng`),
+  KEY `no_rawat` (`no_rawat`),
+  KEY `kode_brng` (`kode_brng`),
+  CONSTRAINT `detail_obat_racikan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
+  CONSTRAINT `detail_obat_racikan_ibfk_2` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `detail_pemberian_obat` (
   `tgl_perawatan` date NOT NULL DEFAULT '0000-00-00',

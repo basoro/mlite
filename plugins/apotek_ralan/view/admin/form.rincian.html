@@ -93,15 +93,27 @@
               </div>
             </div>
           </div>
-          <div class="form-group" id="aturan_pakai">
-            <label class="col-md-3 control-label">Aturan Pakai</label>
-            <div class="col-sm-6">
-              <input type="text" class="form-control" name="aturan_pakai" id="aturan_pakai" value="">
-              <ul class="list-group" id="aturan_pakaiList" style="z-index:1000;position:absolute;width:100%;"></ul>
+          <div id="aturan_pakai">
+            <div class="form-group">
+              <label for="" class="col-md-3 control-label">Embalase</label>
+              <div class="col-sm-4">
+                <input type="text" name="embalase" class="form-control" value="{?= $this->core->settings->get('farmasi.embalase')?}">
+              </div>
+              <label for="" class="col-sm-1 control-label">Tuslah</label>
+              <div class="col-sm-4">
+                <input type="text" name="tuslah" class="form-control" value="{?= $this->core->settings->get('farmasi.tuslah')?}">
+              </div>
             </div>
-            <label for="" class="col-sm-1 control-label">Jml</label>
-            <div class="col-sm-2">
-              <input type="text" name="jml" id="jml" class="form-control" value="10">
+            <div class="form-group">
+              <label class="col-md-3 control-label">Aturan Pakai</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" name="aturan_pakai" id="aturan_pakai" value="">
+                <ul class="list-group" id="aturan_pakaiList" style="z-index:1000;position:absolute;width:100%;"></ul>
+              </div>
+              <label for="" class="col-sm-1 control-label">Jml</label>
+              <div class="col-sm-2">
+                <input type="text" name="jml" id="jml" class="form-control" value="10">
+              </div>
             </div>
           </div>
           <div class="m-t-xl">
