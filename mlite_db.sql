@@ -2729,11 +2729,11 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("16","settings","pj_laboratorium","DR001"),
 ("17","settings","radiologi","-"),
 ("18","settings","pj_radiologi","DR001"),
-("19","settings","dokter_ralan_per_dokter",false),
-("20","settings","cekstatusbayar",false),
-("21","settings","ceklimit",false),
-("22","settings","responsivevoice",false),
-("23","settings","notif_presensi",true),
+("19","settings","dokter_ralan_per_dokter",'false'),
+("20","settings","cekstatusbayar",'false'),
+("21","settings","ceklimit",'false'),
+("22","settings","responsivevoice",'false'),
+("23","settings","notif_presensi",'true'),
 ("24","settings","BpjsApiUrl","https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev/"),
 ("25","settings","BpjsConsID","-"),
 ("26","settings","BpjsSecretKey","-"),
@@ -2867,14 +2867,15 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("154","settings","password_fp",""),
 ("155","settings","username_frista",""),
 ("156","settings","password_frista",""),
-("157","settings","billing_obat",false),
+("157","settings","billing_obat","false"),
 ("158","settings","prefix_surat","RS"),
 ("159","farmasi","keterangan_etiket",""),
 ("160","pcare","consumerUserKeyAntrol",""),
 ("161","settings","set_nomor_surat","000"),
 ("162","settings","password_expire","tidak"),
 ("163","settings","embalase","0"),
-("164","settings","tuslah","0");
+("164","settings","tuslah","0"),
+("165","settings","log_query","tidak");
 
 
 CREATE TABLE `mlite_subrekening` (

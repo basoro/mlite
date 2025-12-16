@@ -1659,16 +1659,6 @@ switch ($version) {
         break; 
 
     case '5.3.0':
-        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'set_nomor_surat', '000')");
-        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'password_expire', 'tidak')");
-        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'embalase', '0')");
-        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'tuslah', '0')");
-
-
-        $this->core->db()->pdo()->exec("ALTER TABLE `mlite_users` ADD COLUMN `password_changed_at` DATETIME NULL AFTER `password`");
-        $this->core->db()->pdo()->exec("ALTER TABLE `mlite_users` ADD COLUMN `otp_code` VARCHAR(10) NULL AFTER `password_changed_at`");
-        $this->core->db()->pdo()->exec("ALTER TABLE `mlite_users` ADD COLUMN `otp_expires` DATETIME NULL AFTER `otp_code`");
-
         $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_kasir_shift` (
           `id_shift` INT AUTO_INCREMENT PRIMARY KEY,
           `user_id` VARCHAR(64) NOT NULL,
@@ -1693,6 +1683,16 @@ switch ($version) {
           CONSTRAINT `detail_obat_racikan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
           CONSTRAINT `detail_obat_racikan_ibfk_2` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+              
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'set_nomor_surat', '000')");
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'password_expire', 'tidak')");
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'embalase', '0')");
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'tuslah', '0')");
+
+        $this->core->db()->pdo()->exec("ALTER TABLE `mlite_users` ADD COLUMN `password_changed_at` DATETIME NULL AFTER `password`");
+        $this->core->db()->pdo()->exec("ALTER TABLE `mlite_users` ADD COLUMN `otp_code` VARCHAR(10) NULL AFTER `password_changed_at`");
+        $this->core->db()->pdo()->exec("ALTER TABLE `mlite_users` ADD COLUMN `otp_expires` DATETIME NULL AFTER `otp_code`");
+        $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'log_query', 'tidak')");
 
         $return = '5.4.0'; 
         break;
