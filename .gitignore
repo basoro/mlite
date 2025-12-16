@@ -46,6 +46,7 @@ docker/orthanc/dummy-dicom/*
 docker/.trae
 docker/nginx/conf.d/*
 docker/dns/dnsmasq.log
+docker/www/*
 
 # .env
 logs/
@@ -56,3 +57,4 @@ backups
 themes/atilamedika
 .vercel
 api/
+docker/.env
