@@ -326,7 +326,7 @@ $("#obat").on("click", ".pilih_obat", function(event){
 // ketika inputbox pencarian diisi
 $('input:text[name=racikan]').on('input',function(e){
   var baseURL = mlite.url + '/' + mlite.admin;
-  var url    = baseURL + '/apotek_ralan/racikan?t=' + mlite.token;
+  var url    = baseURL + '/apotek_ranap/racikan?t=' + mlite.token;
   var racikan = $('input:text[name=racikan]').val();
 
   if(racikan!="") {
@@ -405,6 +405,10 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var keterangan      = $('textarea[name=keterangan]').val();
   var kode_brng       = JSON.stringify($('select[name=kode_brng]').serializeArray());
   var kandungan       = JSON.stringify($('input:text[name=kandungan]').serializeArray());
+  var embalase        = $('input:text[name=embalase]').val();
+  var tuslah          = $('input:text[name=tuslah]').val();
+
+  console.log(kode_brng);
 
   var url = baseURL + '/apotek_ranap/savedetail?t=' + mlite.token;
   $.post(url, {no_rawat : no_rawat,
@@ -420,9 +424,12 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   nama_racik     : nama_racik,
   keterangan     : keterangan,
   kode_brng      : kode_brng,
-  kandungan      : kandungan 
+  kandungan      : kandungan, 
+  embalase       : embalase,
+  tuslah         : tuslah
   }, function(data) {
     // tampilkan data
+    console.log(data);
     $("#display").hide();
     var url = baseURL + '/apotek_ranap/rincian?t=' + mlite.token;
     $.post(url, {no_rawat : no_rawat,
@@ -815,17 +822,18 @@ $("#rincian").on("click", ".hapus_obat", function(event){
   });
 });
 
+// ketika tombol hapus ditekan
 $("#rincian").on("click",".hapus_obat_racikan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/apotek_ranap/hapusobatracikan?t=' + mlite.token;
-  var kode_brng = $(this).attr("data-kode_brng");
   var no_rawat = $(this).attr("data-no_rawat");
   var tgl_perawatan = $(this).attr("data-tgl_peresepan");
   var jam = $(this).attr("data-jam_peresepan");
+  var no_racik = $(this).attr("data-no_racik");
   var jml = $(this).attr("data-jml");
 
-  console.log(kode_brng + ' ' + no_rawat + ' ' + tgl_perawatan + ' ' + jam);
+  console.log(no_rawat + ' ' + tgl_perawatan + ' ' + jam + ' ' + no_racik);
 
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
@@ -833,10 +841,10 @@ $("#rincian").on("click",".hapus_obat_racikan", function(event){
     if (result){
       // mengirimkan perintah penghapusan
       $.post(url, {
-        kode_brng: kode_brng,
         no_rawat: no_rawat,
         tgl_perawatan: tgl_perawatan,
-        jam: jam, 
+        jam: jam,
+        no_racik: no_racik,
         jml: jml
       } ,function(data) {
         console.log(data);

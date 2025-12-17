@@ -56,14 +56,15 @@
         <td>{if: isset($value.aturan_pakai)}{$value.aturan_pakai}{else}-{/if} <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="{if: isset($value.kd_racik)}{$value.kd_racik}{else}{/if}" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{if: isset($value.tgl_perawatan)}{$value.tgl_perawatan}{else}{/if}" data-jam_peresepan="{if: isset($value.jam)}{$value.jam}{else}{/if}" data-tipe="racikan"><i class="fa fa-print"></i></button></td>
         <td></td>
         <td colspan="2">
-          <!--<button type="button" class="btn btn-danger btn-xs hapus_resep_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>-->
+          <button type="button" class="btn btn-danger btn-xs hapus_obat_racikan" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-jml="{$value.jml_dr}" data-no_racik="{$value.no_racik}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Racikan</span></button>
         </td>
       </tr>
         {loop: $value.detail_pemberian_obat as $data}
         <tr>
-          <td>{$data.nama_brng}</td>
-          <td colspan="2">{$data.jml}</td>
-          <td>Rp. <span class="pull-right">{?= number_format(($data.biaya_obat),2,',','.')?}</span></td>
+          <td style="padding-left: 20px;">- {$data.nama_brng}</td>
+          <td>{$data.jml}</td>
+          <td></td>
+          <td>Rp. <span class="pull-right">{?= number_format(($data.total),2,',','.')?}</span></td>
           <td></td>
         </tr>
         {/loop}
