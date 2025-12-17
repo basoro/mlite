@@ -7,6 +7,11 @@
   "RegisteredUsers": {
     "orthanc": "orthanc"
   },
+  "DicomAet": "ORTHANC",
+  "DicomPort": 4242,  
+  "DicomModalities": {
+    "DCMROUTER": [ "DCMROUTER", "172.18.0.8", 11112 ]
+  },  
   "DicomWeb": {
     "Enable": true,
     "Root": "/dicom-web/",

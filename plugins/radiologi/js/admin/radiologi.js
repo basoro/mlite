@@ -644,6 +644,44 @@ $("#rincian").on("click",".validasi_permintaan_radiologi", function(event){
     }
   });
 });
+$("#rincian").on("click",".validasi_hasil_radiologi", function(event){
+  event.preventDefault();
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url = baseURL + '/radiologi/validasihasilradiologi?t=' + mlite.token;
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_permintaan = $(this).attr("data-tgl_permintaan");
+  var jam_permintaan = $(this).attr("data-jam_permintaan");
+  var noorder = $(this).attr("data-noorder");
+  var status  = $('input:text[name=status]').val();
+
+  //console.log(no_rawat + ' - ' + noorder + ' - ' + tgl_permintaan + ' - ' + jam_permintaan);
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menvalidasi data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        no_rawat: no_rawat,
+        tgl_permintaan: tgl_permintaan,
+        jam_permintaan: jam_permintaan,
+        noorder: noorder,
+        status: status
+      } ,function(data) {
+        // console.log(data);
+        var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat, status: status
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Validasi permintaan laboratorium telah selesai!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
 $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
 
 // ketika tombol hapus ditekan

@@ -834,6 +834,13 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postValidasiHasilRadiologi()
+    {
+      $this->db('permintaan_radiologi')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->save(['tgl_hasil' => date('Y-m-d'), 'jam_hasil' => date('H:i:s')]);
+      exit();
+    }
+
+
     public function anyLayananRadiologi()
     {
       $layanan = $this->db('jns_perawatan_radiologi')
@@ -917,6 +924,10 @@ class Admin extends AdminModule
           'jam' => $_POST['jam_periksa'],
           'hasil' => $_POST['hasil']
         ]);
+
+      if($result) {
+        $this->db('permintaan_radiologi')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->save(['tgl_hasil' => date('Y-m-d'), 'jam_hasil' => date('H:i:s')]);
+      }        
       exit();
     }
     public function postUploadHasil()

@@ -90,6 +90,7 @@
                             <th style="white-space: nowrap;">ID Specimen Radiologi</th>
                             <th style="white-space: nowrap;">ID Observation Radiologi</th>
                             <th style="white-space: nowrap;">ID Diagnostic Report Radiologi</th>
+                            <th style="white-space: nowrap;">Image Study</th>
                             <th style="white-space: nowrap;">ID Service Request Lab PK</th>
                             <!-- <th style="white-space: nowrap;">ID Service Request Lab PA</th>
                             <th style="white-space: nowrap;">ID Service Request Lab MB</th> -->
@@ -395,6 +396,15 @@
                 }else if(row.id_rad_diagnostic == '' && (row.diagnostic_report_radiologi == '0000-00-00' || row.diagnostic_report_radiologi == '')){
                     return `<span class="badge badge-error">Diagnostic Report Radiologi Kosong</span>`; 
                 }else{return `${data}`}
+            }
+            },
+            { data: 'id_rad_request', 
+            render:function(data, type, row) {
+                if(row.id_rad_request == '' && row.service_request_radiologi != ''){
+                    return `<span class="badge badge-error">Service Request Radiologi Belum Dikonfirmasi</span>`; 
+                }else if(row.id_rad_request == '' && row.service_request_radiologi == ''){
+                    return `<span class="badge badge-error">Service Request Radiologi Kosong</span>`; 
+                }else{return `<a href="" class="badge badge-success" data-id="${row.no_rawat_converted}" data-tipe="radiology" data-ttv="image" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn">Post Image Study</a>`}
             }
             },
             { data: 'id_lab_pk_request', 

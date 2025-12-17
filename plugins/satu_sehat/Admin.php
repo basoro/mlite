@@ -4405,7 +4405,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         "resourceType": "ServiceRequest",
         "identifier": [
           {
-            "system": "http://sys-ids.kemkes.go.id/servicerequest/' . $this->organizationid . '",
+            "system": "http://sys-ids.kemkes.go.id/acsn/' . $this->organizationid . '",
             "value": "' . $row['permintaan_radiologi']['noorder'] . '"
           }
         ],
@@ -4875,13 +4875,90 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
       curl_close($curl);
 
-    };
+    }
+    if($tipe == 'image') {
+
+      $row['permintaan_radiologi'] = $this->db('permintaan_radiologi')
+        ->where('no_rawat', $no_rawat)
+        ->oneArray();
+      if (!is_array($row['permintaan_radiologi']) || !isset($row['permintaan_radiologi']['noorder'])) {
+        echo '<pre>' . json_encode(['error' => 'Data tidak lengkap untuk Radiology request', 'missing' => ['permintaan_radiologi.noorder' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . '</pre>';
+        exit();
+      }
+      $noorder = $row['permintaan_radiologi']['noorder'];
+      
+      $accessionNumber = $this->getStudiIdByNoOrder($noorder);
+      if (!$accessionNumber) {
+        echo '<pre>' . json_encode(['error' => 'Tidak ada data image studi untuk accession number ' . $noorder, 'missing' => ['permintaan_radiologi.noorder' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . '</pre>';
+        exit();
+      }
+
+      $orthanc_server = $this->settings->get('orthanc.server');
+      // $orthanc_server = 'http://172.18.0.7:8042';
+      $orthanc_user = $this->settings->get('orthanc.username');
+      $orthanc_password = $this->settings->get('orthanc.password');
+
+      $curl = curl_init();
+
+      curl_setopt_array($curl, [
+          CURLOPT_URL => $orthanc_server . '/modalities/DCMROUTER/store',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_TIMEOUT => 30,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+
+          // Orthanc REST API butuh BASIC AUTH
+          CURLOPT_USERPWD => $orthanc_user . ':' . $orthanc_password,
+
+          // UUID instance Orthanc (plain text, BUKAN JSON)
+          CURLOPT_POSTFIELDS => $accessionNumber,
+
+          CURLOPT_HTTPHEADER => [
+              'Content-Type: text/plain'
+          ],
+      ]);
+
+      $response = curl_exec($curl);
+
+      curl_close($curl);
+    }
     if($render) {
       echo $this->draw('radiology.html', ['pesan' => $pesan, 'response' => $response]);
     } else {
       echo $response;
     }
     exit();
+  }
+
+  public function getStudiIdByNoOrder($noorder)
+  {
+
+    $orthanc_server = $this->settings->get('orthanc.server');
+    // $orthanc_server = 'http://172.18.0.7:8042';
+    $orthanc_user = $this->settings->get('orthanc.username');
+    $orthanc_password = $this->settings->get('orthanc.password');
+
+    $ch = curl_init($orthanc_server . '/tools/find');
+
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_USERPWD => $orthanc_user . ':' . $orthanc_password,
+        CURLOPT_POST => true,
+        CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
+        CURLOPT_POSTFIELDS => json_encode([
+            "Level" => "Study",
+            "Query" => [
+                "AccessionNumber" => $noorder
+            ]
+        ])
+    ]);
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    $studyIds = json_decode($response, true);
+    // print_r($studyIds);
+    return $studyIds[0] ?? '';
   }
 
   public function getCarePlan($no_rawat, $render = true)
@@ -6015,140 +6092,6 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $response = curl_exec($ch);
       curl_close($ch);
       return $response;
-  }
-
-  public function getStudyByAccessionNumber($accessionNumber) {
-
-      $data = [
-          "Level" => "Study",
-          "Query" => [
-              "AccessionNumber" => $accessionNumber
-          ]
-      ];
-
-      $ch = curl_init("http://mlite_orthanc:8042/tools/find");
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_USERPWD, "orthanc:orthanc");
-      curl_setopt($ch, CURLOPT_POST, true);
-      curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-      curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-
-      $response = curl_exec($ch);
-      curl_close($ch);
-
-      $results = json_decode($response, true);
-      echo $results[0];
-      
-      
-      $ch = curl_init("http://mlite_orthanc:8042/studies/$results[0]");
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_USERPWD, "orthanc:orthanc");
-      curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-
-      $response = curl_exec($ch);
-      curl_close($ch);
-
-      $results = json_decode($response, true);
-      // echo "<pre>".json_encode($results, JSON_PRETTY_PRINT)."</pre>";
-      
-      // Ambil metadata study
-      $studyInstanceUID = $results['MainDicomTags']['StudyInstanceUID'];
-      $patientId = $results['PatientMainDicomTags']['PatientID'];
-      $seriesList = $results['Series'];
-
-      echo "👤 Pasien: {$results['PatientMainDicomTags']['PatientName']}\n";
-            
-      // ==================
-      // Upload semua instance ke Binary
-      // ==================
-      $binaryRefs = [];
-
-      foreach ($seriesList as $series) {
-          $seriesId = $series;
-
-          $ch = curl_init("http://mlite_orthanc:8042/series/$seriesId");
-          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-          curl_setopt($ch, CURLOPT_USERPWD, "orthanc:orthanc");
-          curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-
-          $response = curl_exec($ch);
-          curl_close($ch);
-
-          $seriesDetail = json_decode($response, true);
-
-          $seriesInstanceUID = $seriesDetail['MainDicomTags']['SeriesInstanceUID'];
-          $instanceList = $seriesDetail['Instances'];
-
-          // foreach ($instanceList as $instanceId) {
-          //     echo "📤 Upload instance $instanceId ke SATUSEHAT...\n";
-
-          //     $ch = curl_init("http://mlite_orthanc:8042/instances/$instanceId/file");
-          //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-          //     curl_setopt($ch, CURLOPT_USERPWD, "orthanc:orthanc");
-          //     curl_setopt($ch, CURLOPT_TIMEOUT, 300);
-
-          //     $response = curl_exec($ch);
-          //     curl_close($ch);
-
-          //     $base64 = base64_encode($response);
-
-          //     $binaryData = [
-          //         "resourceType" => "Binary",
-          //         "contentType" => "application/dicom",
-          //         "data" => $base64
-          //     ];
-
-          //     $resp = $this->postFHIR("https://api-satusehat.kemkes.go.id/fhir-r4/v1/Binary", json_decode($this->getToken())->access_token, $binaryData);
-
-          //     echo json_encode($resp, JSON_PRETTY_PRINT) . "\n";
-              
-          //     $binaryResp = json_decode($resp, true);
-            
-          //     if (!isset($binaryResp['id'])) {
-          //         echo "⚠️ Gagal upload instance $instanceId\n";
-          //         continue;
-          //     }
-
-          //     $binaryRefs[] = [
-          //         "uid" => $seriesDetail['MainDicomTags']['SOPInstanceUID'] ?? uniqid(),
-          //         "title" => "DICOM Image",
-          //         "content" => [
-          //             "reference" => "Binary/" . $binaryResp['id']
-          //         ]
-          //     ];
-
-          //     echo "✅ Binary ID: {$binaryResp['id']}\n";
-          // }
-
-          // $seriesData[] = [
-          //     "uid" => $seriesInstanceUID,
-          //     "instance" => $binaryRefs
-          // ];
-      }      
-
-      exit();
-  }
-
-  public function getTes() {
-
-    $accessionNumber = "PR202510050001"; // Accession Number yang dikirim di DICOM
-    $token = $this->getAccessToken();
-
-    $ch = curl_init("https://api-satusehat.kemkes.go.id/fhir-r4/v1/ServiceRequest?identifier=$accessionNumber");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        "Authorization: Bearer $token",
-        "Accept: application/fhir+json"
-    ]);
-
-    $response = curl_exec($ch);
-    curl_close($ch);
-
-    $data = json_decode($response, true);
-    // print_r($data);
-    echo json_encode($data, JSON_PRETTY_PRINT);
-
-    exit();
   }
 
   private function _addHeaderFiles()

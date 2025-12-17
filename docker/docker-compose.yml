@@ -273,7 +273,7 @@ services:
       - WEBHOOK_URL=https://api-satusehat.kemkes.go.id
       - WEBHOOK_USER=
       - WEBHOOK_PASSWORD=
-      - URL=https://api-satusehat-stg.dto.kemkes.go.id
+      - URL=https://api-satusehat.kemkes.go.id
     networks:
       - app-network  
 
