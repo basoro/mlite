@@ -602,13 +602,11 @@ $("#rincian").on("click",".hapus_obat_racikan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/apotek_ralan/hapusobatracikan?t=' + mlite.token;
-  var kode_brng = $(this).attr("data-kode_brng");
   var no_rawat = $(this).attr("data-no_rawat");
   var tgl_perawatan = $(this).attr("data-tgl_peresepan");
   var jam = $(this).attr("data-jam_peresepan");
+  var no_racik = $(this).attr("data-no_racik"); // Add this to HTML
   var jml = $(this).attr("data-jml");
-
-  console.log(kode_brng + ' ' + no_rawat + ' ' + tgl_perawatan + ' ' + jam);
 
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
@@ -616,10 +614,10 @@ $("#rincian").on("click",".hapus_obat_racikan", function(event){
     if (result){
       // mengirimkan perintah penghapusan
       $.post(url, {
-        kode_brng: kode_brng,
         no_rawat: no_rawat,
         tgl_perawatan: tgl_perawatan,
-        jam: jam, 
+        jam: jam,
+        no_racik: no_racik,
         jml: jml
       } ,function(data) {
         console.log(data);

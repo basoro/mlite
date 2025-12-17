@@ -53,14 +53,15 @@
         <td>{$value.aturan_pakai} <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="{$value.kd_racik}" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="racikan"><i class="fa fa-print"></i></button></td>
         <td></td>
         <td colspan="2">
-          <button type="button" class="btn btn-danger btn-xs hapus_obat_racikan" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-jml="{$value.jml_dr}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>
+          <button type="button" class="btn btn-danger btn-xs hapus_obat_racikan" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-jml="{$value.jml_dr}" data-no_racik="{$value.no_racik}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>
         </td>
       </tr>
         {loop: $value.detail_pemberian_obat as $data}
         <tr>
-          <td>{$data.nama_brng}</td>
-          <td colspan="2">{$data.jml}</td>
-          <td>Rp. <span class="pull-right">{?= number_format(($data.biaya_obat),2,',','.')?}</span></td>
+          <td style="padding-left: 20px;">- {$data.nama_brng}</td>
+          <td>{$data.jml}</td>
+          <td></td>
+          <td>Rp. <span class="pull-right">{?= number_format(($data.total),2,',','.')?}</span></td>
           <td></td>
         </tr>
         {/loop}
