@@ -64,6 +64,18 @@ class Site extends SiteModule
         if ($ttv === null && isset($_GET['ttv'])) {
             $ttv = $_GET['ttv'];
         }
+
+        // Manual fix for router issue consuming slashes
+        if ($ttv === null && strpos($no_rawat, '/') !== false) {
+             $parts = explode('/', $no_rawat);
+             $last = end($parts);
+             if (in_array($last, ["tensi", "nadi", "respirasi", "suhu", "spo2", "gcs", "kesadaran", "berat", "tinggi", "perut"])) {
+                 $ttv = $last;
+                 array_pop($parts);
+                 $no_rawat = implode('/', $parts);
+             }
+        }
+
         if ($no_rawat === null || $ttv === null) {
             echo json_encode(['error' => 'parameter kosong', 'no_rawat' => $no_rawat, 'ttv' => $ttv]);
             exit();
@@ -137,6 +149,18 @@ class Site extends SiteModule
         if ($tipe === null && isset($_GET['tipe'])) {
             $tipe = $_GET['tipe'];
         }
+
+        // Manual fix for router issue consuming slashes
+        if ($tipe === null && strpos($no_rawat, '/') !== false) {
+             $parts = explode('/', $no_rawat);
+             $last = end($parts);
+             if (in_array($last, ['request', 'dispense', 'statement'])) {
+                 $tipe = $last;
+                 array_pop($parts);
+                 $no_rawat = implode('/', $parts);
+             }
+        }
+
         if ($no_rawat === null) {
             echo json_encode(['error' => 'no_rawat kosong']);
             exit();
@@ -171,6 +195,18 @@ class Site extends SiteModule
         if ($tipe === null && isset($_GET['tipe'])) {
             $tipe = $_GET['tipe'];
         }
+
+        // Manual fix for router issue consuming slashes
+        if ($tipe === null && strpos($no_rawat, '/') !== false) {
+             $parts = explode('/', $no_rawat);
+             $last = end($parts);
+             if (in_array($last, ['request', 'specimen', 'observation', 'diagnostic'])) {
+                 $tipe = $last;
+                 array_pop($parts);
+                 $no_rawat = implode('/', $parts);
+             }
+        }
+
         if ($no_rawat === null) {
             echo json_encode(['error' => 'no_rawat kosong']);
             exit();
@@ -191,6 +227,18 @@ class Site extends SiteModule
         if ($tipe === null && isset($_GET['tipe'])) {
             $tipe = $_GET['tipe'];
         }
+        
+        // Manual fix for router issue consuming slashes
+        if ($tipe === null && strpos($no_rawat, '/') !== false) {
+             $parts = explode('/', $no_rawat);
+             $last = end($parts);
+             if (in_array($last, ['request', 'specimen', 'observation', 'diagnostic', 'image'])) {
+                 $tipe = $last;
+                 array_pop($parts);
+                 $no_rawat = implode('/', $parts);
+             }
+        }
+
         if ($no_rawat === null) {
             echo json_encode(['error' => 'no_rawat kosong']);
             exit();
@@ -401,7 +449,7 @@ class Site extends SiteModule
                 }
 
                 // Radiology (request/result)
-                const radTypes = ["request", "specimen", "observation", "diagnostic"];
+                const radTypes = ["request", "specimen", "observation", "diagnostic", "image"];
                 const radRes = {};
                 for (const rt of radTypes) {
                     const rtTxt = await call("' . $radBase . '" + nrUrl + "/" + rt);
@@ -636,7 +684,7 @@ class Site extends SiteModule
                 }
 
                 // Radiology (request/result)
-                const radTypes = ["request", "specimen", "observation", "diagnostic"];
+                const radTypes = ["request", "specimen", "observation", "diagnostic", "image"];
                 const radRes = {};
                 for (const rt of radTypes) {
                     const rtTxt = await call("' . $radBase . '" + nrUrl + "/" + rt);
