@@ -72,7 +72,7 @@
               <th colspan="2">Aksi</th>
             </tr>
           </thead>
-          {if: isset($resep) && !empty($resep.0.resep_dokter)}
+          {if: isset($resep)}
           <tbody>
             {loop: $resep}
             <tr>
