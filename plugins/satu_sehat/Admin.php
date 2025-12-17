@@ -4911,8 +4911,8 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         exit();
       }
 
-      // $orthanc_server = $this->settings->get('orthanc.server');
-      $orthanc_server = 'http://172.18.0.7:8042';
+      $orthanc_server = $this->settings->get('orthanc.server');
+      // $orthanc_server = 'http://172.18.0.7:8042';
       $orthanc_user = $this->settings->get('orthanc.username');
       $orthanc_password = $this->settings->get('orthanc.password');
 
@@ -4951,8 +4951,8 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
   public function getStudiIdByNoOrder($noorder)
   {
 
-    // $orthanc_server = $this->settings->get('orthanc.server');
-    $orthanc_server = 'http://172.18.0.7:8042';
+    $orthanc_server = $this->settings->get('orthanc.server');
+    // $orthanc_server = 'http://172.18.0.7:8042';
     $orthanc_user = $this->settings->get('orthanc.username');
     $orthanc_password = $this->settings->get('orthanc.password');
 
