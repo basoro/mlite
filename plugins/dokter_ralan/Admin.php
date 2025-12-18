@@ -630,6 +630,10 @@ class Admin extends AdminModule
         ->group('resep_obat.no_rawat')
         ->group('resep_obat.kd_dokter')
         ->toArray();
+      // Filter only records that do not have racikan
+      $rows = array_filter($rows, function($row) {
+        return $this->db('resep_dokter_racikan')->where('no_resep', $row['no_resep'])->count() == 0;
+      });
       $resep = [];
       $jumlah_total_resep = 0;
       foreach ($rows as $row) {
@@ -644,21 +648,20 @@ class Admin extends AdminModule
 
       $rows_racikan = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
+        ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('resep_obat.status', 'ralan')
-        ->group('resep_obat.no_resep')
-        ->group('resep_obat.no_rawat')
-        ->group('resep_obat.kd_dokter')
         ->toArray();
-      // Filter only records that have racikan
-      $rows_racikan = array_filter($rows_racikan, function($row) {
-        return $this->db('resep_dokter_racikan')->where('no_resep', $row['no_resep'])->count() > 0;
-      });
+
       $resep_racikan = [];
       $jumlah_total_resep_racikan = 0;
       foreach ($rows_racikan as $row) {
         $row['nomor'] = $i++;
-        $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
+        $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')
+          ->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')
+          ->where('no_resep', $row['no_resep'])
+          ->where('no_racik', $row['no_racik'])
+          ->toArray();
         foreach ($row['resep_dokter_racikan_detail'] as $value) {
           $value['ralan'] = $value['jml'] * $value['dasar'];
           $jumlah_total_resep_racikan += floatval($value['ralan']);
@@ -782,6 +785,12 @@ class Admin extends AdminModule
         ->group('resep_obat.no_rawat')
         ->group('resep_obat.kd_dokter')
         ->toArray();
+
+      // Filter only records that do not have racikan
+      $rows = array_filter($rows, function($row) {
+        return $this->db('resep_dokter_racikan')->where('no_resep', $row['no_resep'])->count() == 0;
+      });
+
       $resep = [];
       $jumlah_total_resep = 0;
       foreach ($rows as $row) {
@@ -796,21 +805,20 @@ class Admin extends AdminModule
 
       $rows_racikan = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
+        ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('resep_obat.status', 'ralan')
-        ->group('resep_obat.no_resep')
-        ->group('resep_obat.no_rawat')
-        ->group('resep_obat.kd_dokter')
         ->toArray();
-      // Filter only records that have racikan
-      $rows_racikan = array_filter($rows_racikan, function($row) {
-        return $this->db('resep_dokter_racikan')->where('no_resep', $row['no_resep'])->count() > 0;
-      });
+
       $resep_racikan = [];
       $jumlah_total_resep_racikan = 0;
       foreach ($rows_racikan as $row) {
         $row['nomor'] = $i++;
-        $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
+        $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')
+          ->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')
+          ->where('no_resep', $row['no_resep'])
+          ->where('no_racik', $row['no_racik'])
+          ->toArray();
         foreach ($row['resep_dokter_racikan_detail'] as $value) {
           $value['ralan'] = $value['jml'] * $value['dasar'];
           $jumlah_total_resep_racikan += floatval($value['ralan']);
@@ -1344,6 +1352,12 @@ class Admin extends AdminModule
         ->group('resep_obat.no_rawat')
         ->group('resep_obat.kd_dokter')
         ->toArray();
+
+      // Filter only records that do not have racikan
+      $rows = array_filter($rows, function($row) {
+        return $this->db('resep_dokter_racikan')->where('no_resep', $row['no_resep'])->count() == 0;
+      });
+
       $resep = [];
       $jumlah_total_resep = 0;
       foreach ($rows as $row) {
@@ -1357,37 +1371,27 @@ class Admin extends AdminModule
       }
 
       // Get resep_racikan records that have racikan data
-      $racikan_nos = $this->db('resep_dokter_racikan')->select('no_resep')->toArray();
-      $racikan_nos = array_column($racikan_nos, 'no_resep');
-      
+      $rows_racikan = $this->db('resep_obat')
+        ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
+        ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
+        ->where('no_rawat', $no_rawat)
+        ->where('resep_obat.status', 'ralan')
+        ->toArray();
+
       $resep_racikan = [];
       $jumlah_total_resep_racikan = 0;
-      
-      // Only process racikan if there are actual racikan records
-      if (!empty($racikan_nos)) {
-        // Use raw SQL query since whereIn() is not available in QueryWrapper
-        $racikan_nos_str = "'" . implode("','", $racikan_nos) . "'";
-        $query_racikan = $this->db()->pdo()->prepare("
-          SELECT resep_obat.*, dokter.nm_dokter 
-          FROM resep_obat 
-          JOIN dokter ON dokter.kd_dokter = resep_obat.kd_dokter 
-          WHERE resep_obat.no_rawat = ? 
-          AND resep_obat.status = 'ralan' 
-          AND resep_obat.no_resep IN ($racikan_nos_str)
-          GROUP BY resep_obat.no_resep, resep_obat.no_rawat, resep_obat.kd_dokter
-        ");
-        $query_racikan->execute([$no_rawat]);
-        $rows_racikan = $query_racikan->fetchAll(\PDO::FETCH_ASSOC);
-          
-        foreach ($rows_racikan as $row) {
-          $row['nomor'] = $i++;
-          $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
-          foreach ($row['resep_dokter_racikan_detail'] as $value) {
-            $value['ralan'] = $value['jml'] * $value['dasar'];
-            $jumlah_total_resep_racikan += floatval($value['ralan']);
-          }
-          $resep_racikan[] = $row;
+      foreach ($rows_racikan as $row) {
+        $row['nomor'] = $i++;
+        $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')
+            ->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')
+            ->where('no_resep', $row['no_resep'])
+            ->where('no_racik', $row['no_racik'])
+            ->toArray();
+        foreach ($row['resep_dokter_racikan_detail'] as $value) {
+          $value['ralan'] = $value['jml'] * $value['dasar'];
+          $jumlah_total_resep_racikan += floatval($value['ralan']);
         }
+        $resep_racikan[] = $row;
       }
 
       $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();

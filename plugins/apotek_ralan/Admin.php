@@ -736,6 +736,8 @@ class Admin extends AdminModule
 
     public function anyRincian()
     {
+      $racikan_nos = $this->db('resep_dokter_racikan')->select('no_resep')->toArray();
+      $racikan_nos = array_column($racikan_nos, 'no_resep');
 
       $rows = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
@@ -743,6 +745,12 @@ class Admin extends AdminModule
         ->where('resep_obat.status', 'ralan')
         ->group('resep_obat.no_resep')
         ->toArray();
+
+      // Filter out racikan from non-racikan list
+      $rows = array_filter($rows, function($row) use ($racikan_nos) {
+          return !in_array($row['no_resep'], $racikan_nos);
+      });
+
       $resep = [];
       $jumlah_total_resep = 0;
       foreach ($rows as $row) {
@@ -768,6 +776,14 @@ class Admin extends AdminModule
       }
 
       $rows_racikan = $this->db('resep_obat')
+        ->select('resep_obat.*')
+        ->select('dokter.nm_dokter')
+        ->select('resep_dokter_racikan.no_racik')
+        ->select('resep_dokter_racikan.nama_racik')
+        ->select('resep_dokter_racikan.kd_racik')
+        ->select('resep_dokter_racikan.jml_dr')
+        ->select('resep_dokter_racikan.aturan_pakai')
+        ->select('resep_dokter_racikan.keterangan')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])

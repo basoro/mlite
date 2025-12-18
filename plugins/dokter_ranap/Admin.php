@@ -690,6 +690,9 @@ class Admin extends AdminModule
         }
       }
 
+      $resep_racikan_nos = $this->db('resep_dokter_racikan')->select('no_resep')->toArray();
+      $resep_racikan_nos = array_column($resep_racikan_nos, 'no_resep');
+
       $rows = $this->db('resep_obat')
         ->select('resep_obat.no_resep')
         ->select('resep_obat.no_rawat')
@@ -709,6 +712,12 @@ class Admin extends AdminModule
         ->group('resep_obat.status')
         ->group('dokter.nm_dokter')
         ->toArray();
+
+      // Filter out racikan from non-racikan list
+      $rows = array_filter($rows, function($row) use ($resep_racikan_nos) {
+          return !in_array($row['no_resep'], $resep_racikan_nos);
+      });
+
       $resep = [];
       $jumlah_total_resep = 0;
       foreach ($rows as $row) {
