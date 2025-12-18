@@ -193,6 +193,20 @@
                   <li>{$data.nama_brng} - {$data.jml} - {$data.aturan_pakai}</li>
                 {/loop}
                 </ul>
+                {if: !empty($value.resep_racikan)}
+                <br>
+                <ul>
+                {loop: $value.resep_racikan as $racikan}
+                  <li>{$racikan.nama_racik} ({$racikan.jml_dr}) - {$racikan.aturan_pakai}
+                    <ul>
+                      {loop: $racikan.detail as $detail}
+                        <li>- {$detail.nama_brng} ({$detail.jml})</li>
+                      {/loop}
+                    </ul>
+                  </li>
+                {/loop}
+                </ul>
+                {/if}
               </td>
               <td colspan="2">
                 <button type="button" class="btn btn-danger btn-xs copy_resep" data-no_resep="{$value.no_resep}"><i class="fa fa-clone"></i><span class="hidden-xs"> Copy</span></button>

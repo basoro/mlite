@@ -1016,15 +1016,41 @@ $("#rincian").on("click","#simpan_copy_resep", function(event){
   var jam_rawat       = $('input:text[name=jam_reg]').val();
   var kode_brng       = JSON.stringify($('input:hidden[name=kode_brng_copyresep]').serializeArray());
   var jml       = JSON.stringify($('input:text[name=jml_copyresep]').serializeArray());
-  var aturan_pakai       = JSON.stringify($('input:hidden[name=aturan_copyresep]').serializeArray());
+  var aturan_pakai       = JSON.stringify($('input:text[name=aturan_copyresep]').serializeArray());
 
-  $.post(url_save, {no_rawat : no_rawat,
+  // Racikan Data
+  var nama_racik = JSON.stringify($('input:hidden[name=nama_racik_copyresep]').serializeArray());
+  var kd_racik = JSON.stringify($('input:hidden[name=kd_racik_copyresep]').serializeArray());
+  var keterangan = JSON.stringify($('input:hidden[name=keterangan_copyresep]').serializeArray());
+  var no_racik = JSON.stringify($('input:hidden[name=no_racik_copyresep]').serializeArray());
+  var jml_dr = JSON.stringify($('input:text[name=jml_dr_copyresep]').serializeArray());
+  var aturan_pakai_racik = JSON.stringify($('input:text[name=aturan_pakai_copyresep]').serializeArray());
+
+  var data = {
+    no_rawat : no_rawat,
     tgl_perawatan : tgl_perawatan,
     jam_rawat : jam_rawat,
     kode_brng : kode_brng,
     jml : jml,
-    aturan_pakai : aturan_pakai
-  }, function(data) {
+    aturan_pakai : aturan_pakai,
+    nama_racik: nama_racik,
+    kd_racik: kd_racik,
+    keterangan: keterangan,
+    no_racik: no_racik,
+    jml_dr: jml_dr,
+    aturan_pakai_racik: aturan_pakai_racik
+  };
+
+  // Add dynamic racikan details
+  $('input:hidden[name^="no_racik_copyresep"]').each(function() {
+      var nr = $(this).val();
+      data['kode_brng_racikan_' + nr] = JSON.stringify($('input:hidden[name="kode_brng_racikan_copyresep_' + nr + '"]').serializeArray());
+      data['jml_racikan_' + nr] = JSON.stringify($('input:text[name="jml_racikan_copyresep_' + nr + '"]').serializeArray());
+      data['p1_' + nr] = JSON.stringify($('input:hidden[name="p1_copyresep_' + nr + '"]').serializeArray());
+      data['p2_' + nr] = JSON.stringify($('input:hidden[name="p2_copyresep_' + nr + '"]').serializeArray());
+  });
+
+  $.post(url_save, data, function(data) {
     //alert(data);
     //if(data == 'ErrorError') {
     //  alert('Stok tidak mencukupi pada satu atau lebih obat.');

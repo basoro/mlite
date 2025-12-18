@@ -10,8 +10,12 @@
         </tr>
       </thead>
       <tbody>
-        {if: $copy_resep}
+        {if: $copy_resep || $copy_resep_racikan}
         <form id="form_copy_resep">
+        {if: $copy_resep}
+        <tr>
+          <td colspan="4"><strong>Obat Non-Racikan</strong></td>
+        </tr>
         {loop: $copy_resep}
         <tr>
             <td{if: $value.jml > $value.stok} class="selisih"{/if}><input type="hidden" name="kode_brng_copyresep" value="{$value.kode_brng}">{$value.nama_brng}</td>
@@ -20,6 +24,39 @@
             <td><input type="text" name="aturan_copyresep" value="{$value.aturan_pakai}"></td>
         </tr>
         {/loop}
+        {/if}
+
+        {if: $copy_resep_racikan}
+        <tr>
+          <td colspan="4"><strong>Obat Racikan</strong></td>
+        </tr>
+        {loop: $copy_resep_racikan}
+        <tr>
+            <td colspan="4">
+              <strong>{$value.nama_racik}</strong>
+              <input type="hidden" name="nama_racik_copyresep" value="{$value.nama_racik}">
+              <input type="hidden" name="kd_racik_copyresep" value="{$value.kd_racik}">
+              <input type="hidden" name="keterangan_copyresep" value="{$value.keterangan}">
+              <input type="hidden" name="no_racik_copyresep" value="{$value.no_racik}">
+            </td>
+        </tr>
+        <tr>
+            <td>Jumlah Racikan: <input type="text" name="jml_dr_copyresep" value="{$value.jml_dr}" size="5"></td>
+            <td colspan="3">Aturan Pakai: <input type="text" name="aturan_pakai_copyresep" value="{$value.aturan_pakai}"></td>
+        </tr>
+        {loop: $value.detail as $detail}
+        <tr>
+            <td{if: $detail.jml > $detail.stok} class="selisih"{/if} style="padding-left: 20px;">
+              <input type="hidden" name="kode_brng_racikan_copyresep_{$value.no_racik}" value="{$detail.kode_brng}">
+              - {$detail.nama_brng}
+            </td>
+            <td><input type="text" name="jml_racikan_copyresep_{$value.no_racik}" value="{$detail.jml}" size="5"></td>
+            <td>{$detail.stok}</td>
+            <td><input type="hidden" name="p1_copyresep_{$value.no_racik}" value="{$detail.p1}"><input type="hidden" name="p2_copyresep_{$value.no_racik}" value="{$detail.p2}"></td>
+        </tr>
+        {/loop}
+        {/loop}
+        {/if}
         </form>
         <tr>
           <td colspan="4" class="text-center" id="simpan_copy_resep"><button type="submit" class="btn btn-primary">Simpan Copy Resep</button></td>

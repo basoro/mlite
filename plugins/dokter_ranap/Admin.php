@@ -608,7 +608,22 @@ class Admin extends AdminModule
         ->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))
         ->where('no_resep', $_POST['no_resep'])
         ->toArray();
-      echo $this->draw('copyresep.display.html', ['copy_resep' => $return]);
+
+      $racikan = $this->db('resep_dokter_racikan')
+        ->where('no_resep', $_POST['no_resep'])
+        ->toArray();
+
+      foreach ($racikan as &$r) {
+        $r['detail'] = $this->db('resep_dokter_racikan_detail')
+          ->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')
+          ->join('gudangbarang', 'gudangbarang.kode_brng=resep_dokter_racikan_detail.kode_brng')
+          ->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))
+          ->where('no_resep', $r['no_resep'])
+          ->where('no_racik', $r['no_racik'])
+          ->toArray();
+      }
+
+      echo $this->draw('copyresep.display.html', ['copy_resep' => $return, 'copy_resep_racikan' => $racikan]);
       exit();
     }
 
@@ -634,15 +649,68 @@ class Admin extends AdminModule
           'jam_penyerahan' => '00:00:00'
         ]);
 
-      $kode_brng_count = count($_POST['kode_brng']);
-      for ($i = 0; $i < $kode_brng_count; $i++) {
-          $this->db('resep_dokter')
-            ->save([
-              'no_resep' => $no_resep,
-              'kode_brng' => $_POST['kode_brng'][$i]['value'],
-              'jml' => $_POST['jml'][$i]['value'],
-              'aturan_pakai' => $_POST['aturan_pakai'][$i]['value']
-            ]);
+      if (!empty($_POST['kode_brng'])) {
+          $kode_brng_count = count($_POST['kode_brng']);
+          for ($i = 0; $i < $kode_brng_count; $i++) {
+              $this->db('resep_dokter')
+                ->save([
+                  'no_resep' => $no_resep,
+                  'kode_brng' => $_POST['kode_brng'][$i]['value'],
+                  'jml' => $_POST['jml'][$i]['value'],
+                  'aturan_pakai' => $_POST['aturan_pakai'][$i]['value']
+                ]);
+          }
+      }
+
+      if (isset($_POST['nama_racik'])) {
+          $_POST['nama_racik'] = json_decode($_POST['nama_racik'], true);
+          $_POST['kd_racik'] = json_decode($_POST['kd_racik'], true);
+          $_POST['jml_dr'] = json_decode($_POST['jml_dr'], true);
+          $_POST['aturan_pakai_racik'] = json_decode($_POST['aturan_pakai_racik'], true);
+          $_POST['keterangan'] = json_decode($_POST['keterangan'], true);
+          $_POST['no_racik'] = json_decode($_POST['no_racik'], true);
+
+          $count_racik = count($_POST['nama_racik']);
+          for ($i = 0; $i < $count_racik; $i++) {
+              $no_racik = $_POST['no_racik'][$i]['value'];
+              $nama_racik = $_POST['nama_racik'][$i]['value'];
+              $kd_racik = $_POST['kd_racik'][$i]['value'];
+              $jml_dr = $_POST['jml_dr'][$i]['value'];
+              $aturan_pakai = $_POST['aturan_pakai_racik'][$i]['value'];
+              $keterangan = $_POST['keterangan'][$i]['value'];
+
+              $this->db('resep_dokter_racikan')
+                ->save([
+                  'no_resep' => $no_resep,
+                  'no_racik' => $no_racik,
+                  'nama_racik' => $nama_racik,
+                  'kd_racik' => $kd_racik,
+                  'jml_dr' => $jml_dr,
+                  'aturan_pakai' => $aturan_pakai,
+                  'keterangan' => $keterangan
+                ]);
+              
+              $kode_brng_racikan = json_decode($_POST['kode_brng_racikan_'.$no_racik], true);
+              $jml_racikan = json_decode($_POST['jml_racikan_'.$no_racik], true);
+              $p1 = json_decode($_POST['p1_'.$no_racik], true);
+              $p2 = json_decode($_POST['p2_'.$no_racik], true);
+
+              if(!empty($kode_brng_racikan)) {
+                $count_detail = count($kode_brng_racikan);
+                for ($j = 0; $j < $count_detail; $j++) {
+                    $this->db('resep_dokter_racikan_detail')
+                        ->save([
+                            'no_resep' => $no_resep,
+                            'no_racik' => $no_racik,
+                            'kode_brng' => $kode_brng_racikan[$j]['value'],
+                            'p1' => $p1[$j]['value'],
+                            'p2' => $p2[$j]['value'],
+                            'kandungan' => '0', // Default or fetch if needed
+                            'jml' => $jml_racikan[$j]['value']
+                        ]);
+                }
+              }
+          }
       }
 
       exit();
@@ -855,6 +923,19 @@ class Admin extends AdminModule
           ->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')
           ->where('no_resep', $row['no_resep'])
           ->toArray();
+
+        $row['resep_racikan'] = $this->db('resep_dokter_racikan')
+          ->where('no_resep', $row['no_resep'])
+          ->toArray();
+          
+        foreach ($row['resep_racikan'] as &$racikan) {
+            $racikan['detail'] = $this->db('resep_dokter_racikan_detail')
+              ->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')
+              ->where('no_resep', $racikan['no_resep'])
+              ->where('no_racik', $racikan['no_racik'])
+              ->toArray();
+        }
+
         $data_resep[] = $row;
       }
 
@@ -1001,7 +1082,7 @@ class Admin extends AdminModule
             'tanggal_periksa' => $_POST['tanggal_datang'],
             'kd_dokter' => $this->core->getUserInfo('username', null, true),
             'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
-            'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $this->core->getRegPeriksaInfo('kd_poli', $no_rawat), $_POST['tanggal_rujukan']),
+            'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']), $_POST['tanggal_rujukan']),
             'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
             'limit_reg' => 0,
             'waktu_kunjungan' => $_POST['tanggal_datang'].' '.date('H:i:s'),
