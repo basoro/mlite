@@ -81,23 +81,17 @@
 				<td colspan="1">Biaya Obat & BHP</td>
 				<td></td>
 				<td></td>
-				{if: $billing_obat == true}
+				{if: $billing_obat == 'true'}
 				<td></td>
 				{else} 
 				<td>Rp. <span class="pull-right">{?= number_format($total_billing_obat,2,',','.')?}</span></td>
 				{/if}
 			</tr>
-			{if: $billing_obat == true}
-			{if: $billing_besar_detail.detail_pemberian_obat}
-			<tr>
-				<td></td>
-				<td colspan="4">Non Racikan</td>
-			</tr>
-			{/if}
+			{if: $billing_obat == 'true'}
 			{loop: $billing_besar_detail.detail_pemberian_obat as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nama_brng}</td>
+				<td>&nbsp;&nbsp;{$data.nama_brng}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_obat,2,',','.')?}</span></td>
 				<td>{$data.jml}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.total,2,',','.')?}</span></td>

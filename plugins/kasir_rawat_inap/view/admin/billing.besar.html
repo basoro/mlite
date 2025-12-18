@@ -97,7 +97,7 @@
 			{loop: $billing_besar_detail.detail_pemberian_obat as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nama_brng}</td>
+				<td>&nbsp;&nbsp;{$data.nama_brng}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_obat,2,',','.')?}</span></td>
 				<td>{$data.jml}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.total,2,',','.')?}</span></td>
