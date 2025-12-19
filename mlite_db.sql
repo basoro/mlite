@@ -3183,7 +3183,10 @@ CREATE TABLE `mlite_vedika` (
   `jenis` varchar(100) NOT NULL,
   `status` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_vedika_status_jenis_tgl` (`status`,`jenis`,`tgl_registrasi`),
+  KEY `idx_vedika_nosep` (`nosep`),
+  KEY `idx_vedika_no_rkm_medis` (`no_rkm_medis`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 
@@ -3206,7 +3209,10 @@ CREATE TABLE `mlite_veronisa` (
   `nosep` varchar(100) NOT NULL,
   `status` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_no_rawat` (`no_rawat`),
+  KEY `idx_status` (`status`),
+  KEY `idx_nosep` (`nosep`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 
