@@ -575,7 +575,7 @@ abstract class Main
     {
         $permissions = $this->db('mlite_crud_permissions')->where('user', $this->getUserInfo('username', $_SESSION['mlite_user'], true))->where('module', $module)->oneArray();
         if(!$permissions) {
-            $permissions = array('can_create' => 'false', 'can_read' => 'false', 'can_update' => 'false', 'can_delete' => 'false');
+            $permissions = array('can_create' => 'true', 'can_read' => 'true', 'can_update' => 'true', 'can_delete' => 'true');
         }
         if($this->getUserInfo('role', $_SESSION['mlite_user'], true) == 'admin') {
             $permissions = array('can_create' => 'true', 'can_read' => 'true', 'can_update' => 'true', 'can_delete' => 'true');
