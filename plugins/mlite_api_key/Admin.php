@@ -22,6 +22,217 @@ class Admin extends AdminModule
         return $this->draw('manage.html', ['mlite_users' => $mlite_users]);
     }
 
+    public function postData()
+    {
+        $draw = $_POST['draw'] ?? 0;
+        $row1 = $_POST['start'] ?? 0;
+        $rowperpage = $_POST['length'] ?? 10;
+        $columnIndex = $_POST['order'][0]['column'] ?? 0;
+        $columnName = $_POST['columns'][$columnIndex]['data'] ?? 'method';
+        $columnSortOrder = $_POST['order'][0]['dir'] ?? 'asc';
+        $searchValue = $_POST['search']['value'] ?? '';
+
+        $search_field = $_POST['search_field_mlite_api_key'] ?? '';
+        $search_text = $_POST['search_text_mlite_api_key'] ?? '';
+
+        $searchQuery = "";
+        if (!empty($search_text)) {
+            $searchQuery .= " AND (" . $search_field . " LIKE :search_text) ";
+        }
+
+        $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS allcount FROM mlite_api_key");
+        $stmt->execute();
+        $records = $stmt->fetch();
+        $totalRecords = $records['allcount'];
+
+        $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS allcount FROM mlite_api_key WHERE 1=1 $searchQuery");
+        if (!empty($search_text)) {
+            $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
+        }
+        $stmt->execute();
+        $records = $stmt->fetch();
+        $totalRecordwithFilter = $records['allcount'];
+
+        $sql = "SELECT * FROM mlite_api_key WHERE 1=1 $searchQuery ORDER BY $columnName $columnSortOrder LIMIT $row1, $rowperpage";
+        $stmt = $this->db()->pdo()->prepare($sql);
+        if (!empty($search_text)) {
+            $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
+        }
+        $stmt->execute();
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $data = [];
+        foreach ($result as $row) {
+            $data[] = [
+                'id'=>$row['id'],
+'api_key'=>$row['api_key'],
+'username'=>$row['username'],
+'method'=>$row['method'],
+'ip_range'=>$row['ip_range'],
+'exp_time'=>$row['exp_time']
+
+            ];
+        }
+
+        echo json_encode([
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordwithFilter,
+            "aaData" => $data
+        ]);
+        exit();
+    }
+
+    public function postAksi()
+    {
+        $act = $_POST['typeact'] ?? '';
+
+        if (!in_array($act, ['add', 'edit', 'del', 'lihat'])) {
+            echo json_encode(["status" => "error", "message" => "Aksi tidak dikenali."]);
+            exit();
+        }
+
+        try {
+            if ($act == 'add') {
+                $id = NULL;
+$api_key = $_POST['api_key'];
+$username = $_POST['username'];
+$method = implode(',', $_POST['method']);
+$ip_range = $_POST['ip_range'];
+$exp_time = $_POST['exp_time'];
+
+
+                $sql = "INSERT INTO mlite_api_key VALUES (?, ?, ?, ?, ?, ?)";
+                $binds = [$id, $api_key, $username, $method, $ip_range, $exp_time];
+                $stmt = $this->db()->pdo()->prepare($sql);
+                $stmt->execute($binds);
+
+                if($this->settings->get('settings.log_query') == 'ya') {
+                    \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
+                }
+
+                echo json_encode(["status" => "success", "message" => "Data berhasil ditambahkan."]);
+
+            } elseif ($act == 'edit') {
+                $id = $_POST['id'];
+$api_key = $_POST['api_key'];
+$username = $_POST['username'];
+$method = implode(',', $_POST['method']);
+$ip_range = $_POST['ip_range'];
+$exp_time = $_POST['exp_time'];
+
+
+                $sql = "UPDATE mlite_api_key SET id=?, api_key=?, username=?, method=?, ip_range=?, exp_time=? WHERE id=?";
+                $binds = [$id, $api_key, $username, $method, $ip_range, $exp_time,$id];
+                $stmt = $this->db()->pdo()->prepare($sql);
+                $stmt->execute($binds);
+
+                if($this->settings->get('settings.log_query') == 'ya') {
+                    \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
+                }
+                echo json_encode(["status" => "success", "message" => "Data berhasil diperbarui."]);
+
+            } elseif ($act == 'del') {
+                $id= $_POST['id'];
+
+                $sql = "DELETE FROM mlite_api_key WHERE id='$id'";
+                $binds = [];
+
+                $stmt = $this->db()->pdo()->prepare($sql);
+                $stmt->execute();
+
+                if($this->settings->get('settings.log_query') == 'ya') {
+                    \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
+                }
+
+                if ($stmt->rowCount() > 0) {
+                    echo json_encode(["status" => "success", "message" => "Data berhasil dihapus."]);
+                } else {
+                    echo json_encode(["status" => "error", "message" => "Data tidak ditemukan atau gagal dihapus."]);
+                }
+
+            } elseif ($act == 'lihat') {
+                $search_field = $_POST['search_field_mlite_api_key'] ?? '';
+                $search_text = $_POST['search_text_mlite_api_key'] ?? '';
+
+                $searchQuery = "";
+                if (!empty($search_text)) {
+                    $searchQuery .= " AND (" . $search_field . " LIKE :search_text) ";
+                }
+
+                $stmt = $this->db()->pdo()->prepare("SELECT * FROM mlite_api_key WHERE 1=1 $searchQuery");
+
+                if (!empty($search_text)) {
+                    $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
+                }
+
+                $stmt->execute();
+                $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+                $data = [];
+                foreach ($result as $row) {
+                    $data[] = [
+                        'id'=>$row['id'],
+'api_key'=>$row['api_key'],
+'username'=>$row['username'],
+'method'=>$row['method'],
+'ip_range'=>$row['ip_range'],
+'exp_time'=>$row['exp_time']
+                    ];
+                }
+
+                echo json_encode($data);
+            }
+        } catch (\PDOException $e) {
+            if($this->settings->get('settings.log_query') == 'ya') {            
+                if (in_array($act, ['add', 'edit', 'del'])) {
+                \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds, $e->getMessage());   
+                } 
+            }
+            echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+        }
+
+        exit();
+    }
+
+    public function getDetail($id)
+    {
+        $detail = $this->db('mlite_api_key')->where('id', $id)->toArray();
+        $settings =  $this->settings('settings');
+        echo $this->draw('detail.html', ['detail' => $detail, 'settings' => $settings]);
+        exit();
+    }
+
+    public function getChart($type = '', $column = '')
+    {
+        $slug = parseUrl();
+        if ($type == '') {
+            $type = 'pie';
+        }
+
+        $labels = $this->db('mlite_api_key')->select('method')->group('method')->toArray();
+        $labels = json_encode(array_column($labels, 'method'));
+        $datasets = $this->db('mlite_api_key')->select('COUNT(method)')->group('method')->toArray();
+        $datasets = json_encode(array_column($datasets, 'COUNT(method)'));
+
+        if (!empty($column)) {
+            $labels = $this->db('mlite_api_key')->select($column)->group($column)->toArray();
+            $labels = json_encode(array_column($labels, $column));
+            $datasets = $this->db('mlite_api_key')->select("COUNT($column)")->group($column)->toArray();
+            $datasets = json_encode(array_column($datasets, "COUNT($column)"));
+        }
+
+        $database = DBNAME;
+        $nama_table = 'mlite_api_key';
+
+        $stmt = $this->db()->pdo()->prepare("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME=?");
+        $stmt->execute([$database, $nama_table]);
+        $result = $stmt->fetchAll();
+
+        echo $this->draw('chart.html', ['type' => $type, 'column' => $result, 'labels' => $labels, 'datasets' => $datasets, 'slug' => $slug]);
+        exit();
+    }
+
     public function getTools(){
         $this->_addHeaderFiles();
         return $this->draw('tools.html');
