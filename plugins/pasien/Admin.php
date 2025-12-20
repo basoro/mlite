@@ -55,7 +55,7 @@ class Admin extends AdminModule
           'cek_pcare' => $cek_pcare,
           'offset' => $offset,
           'admin_mode' => $this->settings->get('settings.admin_mode'),
-          'mlite_disabled_menu' => $this->core->loadDisabledMenu('pasien'),
+          'mlite_crud_permissions' => $this->core->loadCrudPermissions('pasien'),
           'token' => $_SESSION['token']
         ]);
     }
@@ -184,7 +184,7 @@ class Admin extends AdminModule
           'cek_pcare' => $cek_pcare, 
           'offset' => $offset,
           'admin_mode' => $this->settings->get('settings.admin_mode'),
-          'mlite_disabled_menu' => $this->core->loadDisabledMenu('pasien')
+          'mlite_crud_permissions' => $this->core->loadCrudPermissions('pasien')
         ]);
 
         exit();
@@ -222,7 +222,7 @@ class Admin extends AdminModule
           'urlUploadPhoto' => url([ADMIN,'pasien','uploadphoto',$_POST['no_rkm_medis']]),
           'cek_pcare' => $cek_pcare,
           'usernamePcare' => $usernamePcare,
-          'mlite_disabled_menu' => $this->core->loadDisabledMenu('pasien')
+          'mlite_crud_permissions' => $this->core->loadCrudPermissions('pasien')
         ]);
       } else {
         $pasien = [
@@ -281,7 +281,7 @@ class Admin extends AdminModule
           'urlUploadPhoto' => '',
           'cek_pcare' => $cek_pcare,
           'usernamePcare' => $usernamePcare,
-          'mlite_disabled_menu' => $this->core->loadDisabledMenu('pasien')
+          'mlite_crud_permissions' => $this->core->loadCrudPermissions('pasien')
         ]);
       }
       exit();
@@ -295,7 +295,7 @@ class Admin extends AdminModule
 
     public function postSave()
     {
-      $mlite_disabled_menu = $this->core->loadDisabledMenu('pasien');
+      $mlite_crud_permissions = $this->core->loadCrudPermissions('pasien');
       $_POST['tgl_daftar'] = date('Y-m-d H:i', strtotime($_POST['tgl_daftar']));
       $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
       $cek_prop = $this->db('propinsi')->where('kd_prop', $_POST['kd_prop'])->oneArray();
@@ -321,7 +321,7 @@ class Admin extends AdminModule
       unset($_POST['manual']);
 
       if (!$pasien) {
-        if ($mlite_disabled_menu['can_create'] == 'true') {
+        if ($mlite_crud_permissions['can_create'] == 'false') {
            echo json_encode(['status' => 'error', 'msg' => 'Anda tidak memiliki hak akses untuk menambah data!']);
            exit();
         }
@@ -360,7 +360,7 @@ class Admin extends AdminModule
         }
   
       } else {
-        if ($mlite_disabled_menu['can_update'] == 'true') {
+        if ($mlite_crud_permissions['can_update'] == 'false') {
            echo json_encode(['status' => 'error', 'msg' => 'Anda tidak memiliki hak akses untuk mengubah data!']);
            exit();
         }
@@ -474,8 +474,8 @@ class Admin extends AdminModule
 
     public function postHapus()
     {
-      $mlite_disabled_menu = $this->core->loadDisabledMenu('pasien');
-      if ($mlite_disabled_menu['can_delete'] == 'true') {
+      $mlite_crud_permissions = $this->core->loadCrudPermissions('pasien');
+      if ($mlite_crud_permissions['can_delete'] == 'false') {
          echo json_encode(['status' => 'error', 'message' => 'Anda tidak memiliki hak akses untuk menghapus data!']);
          exit();
       }
@@ -1237,6 +1237,13 @@ class Admin extends AdminModule
       echo $html;
       echo "</body></html>";
       exit();
+    }
+
+    public function getTes()
+    {
+        $username = $this->core->checkAuth('GET');
+        echo $this->core->checkPermission($username, 'can_read', 'pasien');
+        exit();
     }
 
     /**

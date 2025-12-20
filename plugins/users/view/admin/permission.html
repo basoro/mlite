@@ -22,16 +22,16 @@
                                 <tr>
                                     <td>{$value.name}</td>
                                     <td class="text-center">
-                                        <input type="checkbox" name="permissions[{$value.dir}][can_create]" value="1" {if: $value.can_create}checked{/if}>
+                                        <input type="checkbox" name="permissions[{$value.dir}][can_create]" value="true" {if: $value.can_create}checked{/if}>
                                     </td>
                                     <td class="text-center">
-                                        <input type="checkbox" name="permissions[{$value.dir}][can_read]" value="1" {if: $value.can_read}checked{/if}>
+                                        <input type="checkbox" name="permissions[{$value.dir}][can_read]" value="true" {if: $value.can_read}checked{/if}>
                                     </td>
                                     <td class="text-center">
-                                        <input type="checkbox" name="permissions[{$value.dir}][can_update]" value="1" {if: $value.can_update}checked{/if}>
+                                        <input type="checkbox" name="permissions[{$value.dir}][can_update]" value="true" {if: $value.can_update}checked{/if}>
                                     </td>
                                     <td class="text-center">
-                                        <input type="checkbox" name="permissions[{$value.dir}][can_delete]" value="1" {if: $value.can_delete}checked{/if}>
+                                        <input type="checkbox" name="permissions[{$value.dir}][can_delete]" value="true" {if: $value.can_delete}checked{/if}>
                                     </td>
                                 </tr>
                                 {/loop}

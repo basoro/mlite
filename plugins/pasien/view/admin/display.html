@@ -51,17 +51,17 @@
               <li><a href="{?=url([ADMIN, 'pasien', 'folder', $value.no_rkm_medis])?}">Folder Berkas Digital</a></li>
             </ul>
           </td>
-          <td {if: $mlite_disabled_menu.can_update == 'false'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{$value.nm_pasien}</a></td>
-          <td {if: $mlite_disabled_menu.can_update == 'false'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{$value.tgl_lahir}</td>
-          <td {if: $mlite_disabled_menu.can_update == 'false'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{$value.nm_pasien}</a></td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{$value.tgl_lahir}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
           {if: $admin_mode == 'complex'}
-          <td {if: $mlite_disabled_menu.can_update == 'false'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{$value.gol_darah}</td>
-          <td {if: $mlite_disabled_menu.can_update == 'false'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{$value.pekerjaan}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{$value.gol_darah}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{$value.pekerjaan}</td>
           {/if}
-          <td {if: $mlite_disabled_menu.can_update == 'false'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{$value.alamat}</td>
-          <td {if: $mlite_disabled_menu.can_update == 'false'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{$value.no_tlp}</td>
-          <td {if: $mlite_disabled_menu.can_update == 'false'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{$value.tgl_daftar}</td>
-          <td {if: $mlite_disabled_menu.can_update == 'false'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{$value.email}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{$value.alamat}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{$value.no_tlp}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{$value.tgl_daftar}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{$value.no_rkm_medis}">{$value.email}</td>
         </tr>
         {/loop}
         {else}

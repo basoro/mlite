@@ -30,14 +30,14 @@
         <div class="row">
           <div id="notif"></div>
         </div>
-        {if: $mlite_disabled_menu.can_create == 'false' || $mlite_disabled_menu.can_update == 'false'}
+        {if: $mlite_crud_permissions.can_create == 'true' || $mlite_crud_permissions.can_update == 'true'}
         <div class="row">
           <div id="form"></div>
         </div>
         {/if}
         <div class="row">
           <div class="col col-md-6">
-            {if: $mlite_disabled_menu.can_create == 'false'}
+            {if: $mlite_crud_permissions.can_create == 'true'}
             <div class="searchbox-input form-inline padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
               <div class="input-group" id="index">
                 <input class="btn btn-default" type="button" id="bukaform" value="Buka Form" />
@@ -121,7 +121,7 @@
   var currentPage = 1;
   var baseUrl = '{?=url()?}/admin/api/pasien';
   var token = '{$token}';
-  var canUpdate = '{$mlite_disabled_menu.can_update}' == 'false';
+  var canUpdate = '{$mlite_crud_permissions.can_update}' == 'true';
   var adminMode = '{$admin_mode}';
 
   $(document).ready(function() {

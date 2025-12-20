@@ -254,7 +254,7 @@ class Admin extends AdminModule
             $details = $this->core->getModuleInfo($dir);
             $name = isset($details['name']) ? $details['name'] : $dir;
             
-            $existing = $this->db('mlite_disabled_menu')
+            $existing = $this->db('mlite_crud_permissions')
                 ->where('user', $user['username'])
                 ->where('module', $dir)
                 ->oneArray();
@@ -271,10 +271,10 @@ class Admin extends AdminModule
             $permissions[] = [
                 'dir' => $dir,
                 'name' => $name,
-                'can_create' => $existing['can_create'] == 'false',
-                'can_read'   => $existing['can_read']   == 'false',
-                'can_update' => $existing['can_update'] == 'false',
-                'can_delete' => $existing['can_delete'] == 'false',
+                'can_create' => $existing['can_create'] == 'true',
+                'can_read'   => $existing['can_read']   == 'true',
+                'can_update' => $existing['can_update'] == 'true',
+                'can_delete' => $existing['can_delete'] == 'true',
             ];
         }
         
@@ -295,12 +295,12 @@ class Admin extends AdminModule
         foreach ($modules as $module) {
             $dir = $module['dir'];
             
-            $can_create = isset($_POST['permissions'][$dir]['can_create']) ? 'false' : 'true';
-            $can_read   = isset($_POST['permissions'][$dir]['can_read'])   ? 'false' : 'true';
-            $can_update = isset($_POST['permissions'][$dir]['can_update']) ? 'false' : 'true';
-            $can_delete = isset($_POST['permissions'][$dir]['can_delete']) ? 'false' : 'true';
+            $can_create = isset($_POST['permissions'][$dir]['can_create']) ? 'true' : 'false';
+            $can_read   = isset($_POST['permissions'][$dir]['can_read'])   ? 'true' : 'false';
+            $can_update = isset($_POST['permissions'][$dir]['can_update']) ? 'true' : 'false';
+            $can_delete = isset($_POST['permissions'][$dir]['can_delete']) ? 'true' : 'false';
             
-            $existing = $this->db('mlite_disabled_menu')
+            $existing = $this->db('mlite_crud_permissions')
                 ->where('user', $user['username'])
                 ->where('module', $dir)
                 ->oneArray();
@@ -315,9 +315,9 @@ class Admin extends AdminModule
             ];
             
             if ($existing) {
-                $this->db('mlite_disabled_menu')->where('id', $existing['id'])->save($data);
+                $this->db('mlite_crud_permissions')->where('id', $existing['id'])->save($data);
             } else {
-                $this->db('mlite_disabled_menu')->save($data);
+                $this->db('mlite_crud_permissions')->save($data);
             }
         }
         

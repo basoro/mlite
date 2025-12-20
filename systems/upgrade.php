@@ -924,14 +924,14 @@ switch ($version) {
 
         $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bridging_pcare` ADD COLUMN `terapi_non_obat` text NULL AFTER `terapi_obat`;");
 
-        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_disabled_menu`  (
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_crud_permissions`  (
           `id` int NOT NULL AUTO_INCREMENT,
           `user` varchar(100) NOT NULL,
           `module` varchar(100) NOT NULL,
-          `can_create` varchar(10) NOT NULL DEFAULT 'false',
-          `can_read` varchar(10) NOT NULL DEFAULT 'false',
-          `can_update` varchar(10) NOT NULL DEFAULT 'false',
-          `can_delete` varchar(10) NOT NULL DEFAULT 'false',
+          `can_create` varchar(10) NOT NULL DEFAULT 'true',
+          `can_read` varchar(10) NOT NULL DEFAULT 'true',
+          `can_update` varchar(10) NOT NULL DEFAULT 'true',
+          `can_delete` varchar(10) NOT NULL DEFAULT 'true',
           PRIMARY KEY (`id`) USING BTREE,
           UNIQUE INDEX `user`(`user` ASC, `module` ASC) USING BTREE
         ) ENGINE = InnoDB DEFAULT CHARSET=latin1;");
