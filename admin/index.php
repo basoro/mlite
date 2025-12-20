@@ -7,6 +7,17 @@
 try {
     ob_start();
     header('Content-Type: text/html; charset=utf-8');
+
+    // CORS Headers
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: GET, POST, OPTIONS, DELETE, PUT");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Api-Key, X-Requested-With");
+
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        if (ob_get_level() > 0) ob_end_clean();
+        http_response_code(200);
+        exit;
+    }
     
     // Handle HTTPS forwarding with strict comparison
     if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
