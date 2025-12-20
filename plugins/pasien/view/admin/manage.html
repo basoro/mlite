@@ -30,14 +30,14 @@
         <div class="row">
           <div id="notif"></div>
         </div>
-        {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'rekammedis'}
+        {if: $mlite_disabled_menu.can_create == 'false' || $mlite_disabled_menu.can_update == 'false'}
         <div class="row">
           <div id="form"></div>
         </div>
         {/if}
         <div class="row">
           <div class="col col-md-6">
-            {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'rekammedis'}
+            {if: $mlite_disabled_menu.can_create == 'false'}
             <div class="searchbox-input form-inline padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
               <div class="input-group" id="index">
                 <input class="btn btn-default" type="button" id="bukaform" value="Buka Form" />
@@ -48,18 +48,228 @@
           <div class="col col-md-6">
             <div class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
               <div class="input-group">
-                <input type="text" name="cari" minlength="3" class="form-control" placeholder="Pencarian..." required>
+                <input type="text" id="searchInput" name="cari" minlength="3" class="form-control" placeholder="Pencarian..." required>
                 <span class="input-group-btn">
-                  <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                  <button class="btn btn-default" type="button" onclick="loadData(1)"><span class="glyphicon glyphicon-search"></span></button>
                 </span>
               </div>
             </div>
           </div>
         </div>
-        <div id="pasien" class="display">
-          {include: ../plugins/pasien/view/admin/display.html}
+        <div id="display" class="display">
+            <div class="table-responsive no-margin">
+                <table class="table table-striped no-padding" width="100%">
+                  <thead>
+                    <tr>
+                      <th>No. RM</th>
+                      <th>Nama Pasien</th>
+                      <th>Tgl. Lahir</th>
+                      <th>Jenis Kelamin</th>
+                      {if: $admin_mode == 'complex'}
+                      <th>Gol. Darah</th>
+                      <th>Pekerjaan</th>
+                      {/if}
+                      <th>Alamat</th>
+                      <th>Telepon</th>
+                      <th>Tgl. Daftar</th>
+                      <th>Email</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tableBody">
+                      <tr><td colspan="10" class="text-center">Memuat data...</td></tr>
+                  </tbody>
+                </table>
+            </div>
+            <nav class="row clearfix">
+                <div class="col-md-6">
+                  <b id="totalData">Jumlah: 0</b>
+                </div>
+                <div class="col-md-6">
+                  <ul class="pagination no-margin pull-right" id="pagination">
+                  </ul>
+                </div>
+            </nav>
         </div>
       </div>
     </div>
   </div>
 </div>
+<div class="modal fade" id="asuransiModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="riwayatModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-full" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="printModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+  
+  var currentPage = 1;
+  var baseUrl = '{?=url()?}/admin/api/pasien';
+  var token = '{$token}';
+  var canUpdate = '{$mlite_disabled_menu.can_update}' == 'false';
+  var adminMode = '{$admin_mode}';
+
+  $(document).ready(function() {
+      loadData();
+      
+      $('#searchInput').on('keypress', function (e) {
+          if(e.which === 13){
+              loadData(1);
+          }
+      });
+  });
+
+  function loadData(page = 1) {
+      currentPage = page;
+      var search = $('#searchInput').val();
+      
+      $.ajax({
+          url: baseUrl + '/list',
+          method: 'GET',
+          data: {
+              page: page,
+              per_page: 10,
+              s: search,
+              t: token
+          },
+          success: function(response) {
+              if(typeof response === 'string') response = JSON.parse(response);
+              
+              if(response.status === 'error') {
+                   $('#tableBody').html('<tr><td colspan="10" class="text-center text-danger">' + response.message + '</td></tr>');
+                   return;
+              }
+
+              var rows = '';
+              if(response.data && response.data.length > 0) {
+                  response.data.forEach(function(item) {
+                      rows += '<tr>';
+                      
+                      // Column 1: No RM & Dropdown
+                      rows += '<td>';
+                      rows += '<span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true"><button type="button" class="btn btn-sm btn-default">' + item.no_rkm_medis + ' <span class="caret"></span></button></span>';
+                      rows += '<ul class="dropdown-menu" role="menu">';
+                      
+                      if(response.meta.cek_vclaim) {
+                          rows += '<li><a href="' + item.cekbynokartu + '" data-toggle="modal" data-target="#asuransiModal">[VClaim] Cek Nomor Kartu</a></li>';
+                          rows += '<li><a href="' + item.cekbynik + '" data-toggle="modal" data-target="#asuransiModal">[VClaim] Cek Nomor KTP</a></li>';
+                      }
+                      if(response.meta.cek_pcare) {
+                          rows += '<li><a href="' + item.pcare_bynokartu + '" data-toggle="modal" data-target="#asuransiModal">[PCare] Cek Nomor Kartu</a></li>';
+                          rows += '<li><a href="' + item.pcare_bynik + '" data-toggle="modal" data-target="#asuransiModal">[PCare] Cek Nomor KTP</a></li>';
+                      }
+                      
+                      rows += '<li class="dropdown-submenu">';
+                      rows += '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Pendaftaran</a>';
+                      rows += '<ul class="dropdown-menu">';
+                      if(response.meta.active_modules.oral_diagnostic) {
+                          rows += '<li><a href="' + item.oral_diagnostic + '">Oral Diagnostic</a></li>';
+                      }
+                      if(response.meta.active_modules.igd) {
+                          rows += '<li><a href="' + item.igd + '">IGD / UGD</a></li>';
+                      }
+                      rows += '<li><a href="' + item.rawat_jalan + '">Poliklinik / Rawat Jalan</a></li>';
+                      rows += '</ul></li>';
+                      
+                      rows += '<li><a href="' + item.riwayatperawatan + '" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>';
+                      rows += '<li><a href="' + item.folder + '">Folder Berkas Digital</a></li>';
+                      rows += '</ul>';
+                      rows += '</td>';
+
+                      // Other Columns
+                      var editClass = canUpdate ? 'class="edit"' : '';
+                      
+                      rows += '<td ' + editClass + ' data-no_rkm_medis="' + item.no_rkm_medis + '"><a href="' + item.riwayatperawatan + '" data-toggle="modal" data-target="#riwayatModal">' + item.nm_pasien + '</a></td>';
+                      rows += '<td ' + editClass + ' data-no_rkm_medis="' + item.no_rkm_medis + '">' + item.tgl_lahir + '</td>';
+                      rows += '<td ' + editClass + ' data-no_rkm_medis="' + item.no_rkm_medis + '">' + (item.jk == 'L' ? 'Laki-Laki' : 'Perempuan') + '</td>';
+                      
+                      if(adminMode == 'complex') {
+                          rows += '<td ' + editClass + ' data-no_rkm_medis="' + item.no_rkm_medis + '">' + (item.gol_darah || '-') + '</td>';
+                          rows += '<td ' + editClass + ' data-no_rkm_medis="' + item.no_rkm_medis + '">' + (item.pekerjaan || '-') + '</td>';
+                      }
+                      
+                      rows += '<td ' + editClass + ' data-no_rkm_medis="' + item.no_rkm_medis + '">' + item.alamat + '</td>';
+                      rows += '<td ' + editClass + ' data-no_rkm_medis="' + item.no_rkm_medis + '">' + item.no_tlp + '</td>';
+                      rows += '<td ' + editClass + ' data-no_rkm_medis="' + item.no_rkm_medis + '">' + item.tgl_daftar + '</td>';
+                      rows += '<td ' + editClass + ' data-no_rkm_medis="' + item.no_rkm_medis + '">' + item.email + '</td>';
+                      
+                      rows += '</tr>';
+                  });
+              } else {
+                  rows = '<tr><td colspan="10" class="text-center">Tidak ada data pasien.</td></tr>';
+              }
+              $('#tableBody').html(rows);
+              $('#totalData').text('Jumlah: ' + response.meta.total);
+              
+              // Pagination
+              var totalPages = Math.ceil(response.meta.total / response.meta.per_page);
+              var pagination = '';
+              
+              if(page > 1) {
+                  pagination += '<li><a href="#" onclick="loadData(1)">&laquo;</a></li>';
+                  pagination += '<li><a href="#" onclick="loadData(' + (page - 1) + ')">‹</a></li>';
+              } else {
+                  pagination += '<li class="disabled"><a href="#">&laquo;</a></li>';
+                  pagination += '<li class="disabled"><a href="#">‹</a></li>';
+              }
+              
+              pagination += '<li class="disabled"><a href="#">Hal : ' + page + ' dari ' + totalPages + ' Hal</a></li>';
+              
+              if(page < totalPages) {
+                  pagination += '<li><a href="#" onclick="loadData(' + (page + 1) + ')">›</a></li>';
+                  pagination += '<li><a href="#" onclick="loadData(' + totalPages + ')">&raquo;</a></li>';
+              } else {
+                  pagination += '<li class="disabled"><a href="#">›</a></li>';
+                  pagination += '<li class="disabled"><a href="#">&raquo;</a></li>';
+              }
+              
+              $('#pagination').html(pagination);
+          },
+          error: function(xhr) {
+              console.error(xhr);
+              $('#tableBody').html('<tr><td colspan="10" class="text-center text-danger">Gagal memuat data.</td></tr>');
+          }
+      });
+  }
+
+  $(document).on('click', '#btn_cetak_pdf', function() {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url    = baseURL + '/pasien/cetak?t=' + mlite.token;
+    var cari = $('#searchInput').val();
+
+    $.post(url, {cari: cari} ,function(data) {
+      $("#printModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + baseURL + '/pasien/cetakmpdf?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+    });
+
+		return false;
+  });
+  $(document).on('click', '#btn_export_xls', function() {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url    = baseURL + '/pasien/excel?t=' + mlite.token;
+    window.open(url);
+		return false;
+  });
+
+   $(function () {
+       $('.periode_rawat_jalan').datetimepicker({
+         defaultDate: '{?=date('Y-m-d')?}',
+         format: 'YYYY-MM-DD',
+         locale: 'id'
+       });
+   });
+</script>
