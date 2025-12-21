@@ -1,8 +1,11 @@
-<link rel="stylesheet" href="{?=url('plugins/mlite_api_key/css/admin/swagger-ui.css?v=4')?}">
+<link rel="stylesheet" href="{?=url('plugins/mlite_api_key/css/admin/swagger-ui.css')?}">
 <script src="{?=url('plugins/mlite_api_key/js/admin/swagger-ui-bundle.js')?}"></script>
 <script src="{?=url('plugins/mlite_api_key/js/admin/swagger-ui-standalone-preset.js')?}"></script>
 
 <style>
+    .swagger-ui .wrapper {
+      max-width: none; /* Removes any maximum width constraints */
+    }  
     .swagger-ui .info {
         display: none !important;
     }
@@ -24,9 +27,13 @@
         color: #fff !important;
     }
 </style>
-<h3>Alat Pengujian (Swagger UI)</h3>
-<div class="container-fluid" style="margin-top: 30px;">
-    <div id="swagger-ui"></div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Alat Pengujian (Swagger UI)</h3>
+    </div>
+    <div class="panel-body">
+      <div id="swagger-ui"></div>
+    </div>
 </div>
 
 <script>
