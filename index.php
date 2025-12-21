@@ -33,7 +33,11 @@ try {
     } else {
         error_log('mLITE Error: ' . $e->getMessage());
         http_response_code(500);
-        echo 'Internal Server Error';
+        // Clean error message for production
+        $message = $e->getMessage();
+        // Remove database name pattern `dbname`.
+        $message = preg_replace('/`[^`]+`\./', '', $message);
+        echo json_encode(['status' => 'error', 'message' => $message]);
         exit;
     }
 }

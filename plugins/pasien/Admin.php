@@ -1422,7 +1422,9 @@ class Admin extends AdminModule
                 return ['status' => 'error', 'message' => 'Failed to delete'];
             }
         } catch (\Throwable $e) {
-            return ['status' => 'error', 'message' => $e->getMessage()];
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => $message];
         }
     }
 

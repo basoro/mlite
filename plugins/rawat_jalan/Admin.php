@@ -209,7 +209,9 @@ class Admin extends AdminModule
             $this->db('reg_periksa')->save($input);
             return ['status' => 'created', 'data' => $input];
         } catch (\PDOException $e) {
-            return ['status' => 'error', 'message' => $e->getMessage()];
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => $message];
         }
     }
 
@@ -233,7 +235,9 @@ class Admin extends AdminModule
             $this->db('reg_periksa')->where('no_rawat', $no_rawat)->save($input);
             return ['status' => 'updated', 'data' => $input];
         } catch (\PDOException $e) {
-            return ['status' => 'error', 'message' => $e->getMessage()];
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => $message];
         }
     }
 
@@ -257,7 +261,9 @@ class Admin extends AdminModule
             $this->db('reg_periksa')->where('no_rawat', $no_rawat)->delete();
             return ['status' => 'deleted', 'no_rawat' => $no_rawat];
         } catch (\PDOException $e) {
-            return ['status' => 'error', 'message' => $e->getMessage()];
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => $message];
         }
     }
 

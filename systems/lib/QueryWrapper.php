@@ -564,6 +564,8 @@ class QueryWrapper
             if ($e->getCode() == '23000') {
                 // Optionally append detailed info: $errorMessage .= " (" . $e->getMessage() . ")";
                 $errorMessage = $e->getMessage();
+                $errorMessage = preg_replace('/`[^`]+`\./', '', $errorMessage);
+
                 throw new \Exception($errorMessage, 23000);
             }
             
