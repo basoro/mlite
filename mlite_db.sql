@@ -1651,14 +1651,14 @@ CREATE TABLE `mlite_detailjurnal` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE `mlite_crud_permissions` (
+CREATE TABLE `mlite_disabled_menu` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user` varchar(100) NOT NULL,
   `module` varchar(100) NOT NULL,
-  `can_create` varchar(10) NOT NULL DEFAULT 'true',
-  `can_read` varchar(10) NOT NULL DEFAULT 'true',
-  `can_update` varchar(10) NOT NULL DEFAULT 'true',
-  `can_delete` varchar(10) NOT NULL DEFAULT 'true',
+  `can_create` varchar(10) NOT NULL DEFAULT 'false',
+  `can_read` varchar(10) NOT NULL DEFAULT 'false',
+  `can_update` varchar(10) NOT NULL DEFAULT 'false',
+  `can_delete` varchar(10) NOT NULL DEFAULT 'false',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `user` (`user`,`module`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -1826,22 +1826,24 @@ INSERT INTO `mlite_modules` VALUES ("1","settings","9"),
 ("15","dokter_igd","14"),
 ("16","laboratorium","15"),
 ("17","radiologi","16"),
-("18","rawat_inap","17"),
-("19","apotek_ranap","18"),
-("20","dokter_ranap","19"),
-("21","kasir_rawat_inap","20"),
-("22","operasi","21"),
-("23","anjungan","22"),
-("24","api","23"),
-("25","jkn_mobile","24"),
-("26","vclaim","25"),
-("27","keuangan","26"),
-("28","manajemen","27"),
-("29","presensi","28"),
-("30","vedika","29"),
-("31","profil","30"),
-("32","orthanc","31"),
-("33","veronisa","32");
+("18","icd_10","17"),
+("19","rawat_inap","18"),
+("20","apotek_ranap","19"),
+("21","dokter_ranap","20"),
+("22","kasir_rawat_inap","21"),
+("23","operasi","22"),
+("24","anjungan","23"),
+("25","api","24"),
+("26","jkn_mobile","25"),
+("27","vclaim","26"),
+("28","keuangan","27"),
+("29","manajemen","28"),
+("30","presensi","29"),
+("31","vedika","30"),
+("32","profil","31"),
+("33","orthanc","32"),
+("34","veronisa","33"),
+("35","icd_9","34");
 
 
 CREATE TABLE `mlite_news` (
@@ -3181,10 +3183,7 @@ CREATE TABLE `mlite_vedika` (
   `jenis` varchar(100) NOT NULL,
   `status` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_vedika_status_jenis_tgl` (`status`,`jenis`,`tgl_registrasi`),
-  KEY `idx_vedika_nosep` (`nosep`),
-  KEY `idx_vedika_no_rkm_medis` (`no_rkm_medis`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 
@@ -3207,10 +3206,7 @@ CREATE TABLE `mlite_veronisa` (
   `nosep` varchar(100) NOT NULL,
   `status` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_no_rawat` (`no_rawat`),
-  KEY `idx_status` (`status`),
-  KEY `idx_nosep` (`nosep`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 

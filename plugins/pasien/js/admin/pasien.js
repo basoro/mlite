@@ -121,8 +121,7 @@ $("#form").on("click", "#simpan", function(event){
       manual: manual 
     } ,function(data) {
       // console.log(data);
-      if (typeof data === 'string') data = JSON.parse(data);
-      
+      data = JSON.parse(data);
       var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
       audio.play();
       if(data.status == 'success') {
@@ -134,7 +133,7 @@ $("#form").on("click", "#simpan", function(event){
           ws.send(JSON.stringify(payload));
           // console.log(payload);
         } else {
-          loadData();
+          $("#display").show().load(baseURL + '/pasien/display?t=' + mlite.token);
         }
         bersih();
         $("#status_pendaftaran").hide();
@@ -142,15 +141,13 @@ $("#form").on("click", "#simpan", function(event){
         "Data pendaftaran pasien telah disimpan!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
-        $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
       }
       if(data.status == 'error') {
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
         "Gagal menyimpan data pendaftaran pasien!<br>"+
-        data.message+
+        data.msg+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
-        $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
       }
     });
   }
@@ -191,30 +188,15 @@ $("#form").on("click","#hapus", function(event){
       $.post(url, {
         no_rkm_medis: no_rkm_medis
       } ,function(data) {
-        if (typeof data === 'string') data = JSON.parse(data);
-
-        var audio = new Audio('{?=url()?}/assets/sound/' + data.status + '.mp3');
-        audio.play();
-        
         // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
         $("#form").hide();
         $("#tutupform").val("Buka Form");
         $("#tutupform").attr("id", "bukaform");
-        loadData();
-        
-        if(data.status == 'success') {
-          $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-          "Data pasien telah dihapus!"+
-          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-          "</div>").show();
-          $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
-        } else {
-          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-          "Gagal menghapus data: " + data.message +
-          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-          "</div>").show();
-          $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
-        }
+        $("#display").load(baseURL + '/pasien/display?t=' + mlite.token);
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data pasien telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
       });
     }
   });

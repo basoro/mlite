@@ -571,17 +571,17 @@ abstract class Main
         return $css;
     }
     
-    public function loadCrudPermissions($module)
+    public function loadDisabledMenu($module)
     {
-        $permissions = $this->db('mlite_crud_permissions')->where('user', $this->getUserInfo('username', $_SESSION['mlite_user'], true))->where('module', $module)->oneArray();
-        if(!$permissions) {
-            $permissions = array('can_create' => 'true', 'can_read' => 'true', 'can_update' => 'true', 'can_delete' => 'true');
+        $disable_menu = $this->db('mlite_disabled_menu')->where('user', $this->getUserInfo('username', $_SESSION['mlite_user'], true))->where('module', $module)->oneArray();
+        if(!$disable_menu) {
+            $disable_menu = array('can_create' => 'true', 'can_read' => 'true', 'can_update' => 'true', 'can_delete' => 'true');
         }
         if($this->getUserInfo('role', $_SESSION['mlite_user'], true) == 'admin') {
-            $permissions = array('can_create' => 'true', 'can_read' => 'true', 'can_update' => 'true', 'can_delete' => 'true');
+            $disable_menu = array('can_create' => 'false', 'can_read' => 'false', 'can_update' => 'false', 'can_delete' => 'false');
         }    
 
-        return $permissions;
+        return $disable_menu;
     }
 
     public function loadModules()
@@ -621,110 +621,6 @@ abstract class Main
             'umur_daftar' => $umur_daftar,
             'status_umur' => $status_umur
         ];
-    }
-
-    public function checkAuth($method)
-    {
-        // 1. Try API Key
-        $apiKey = null;
-
-        // Check $_SERVER for common variants
-        if (!empty($_SERVER['HTTP_X_API_KEY'])) {
-            $apiKey = $_SERVER['HTTP_X_API_KEY'];
-        } elseif (!empty($_SERVER['X_API_KEY'])) {
-            $apiKey = $_SERVER['X_API_KEY'];
-        } elseif (!empty($_SERVER['HTTP_API_KEY'])) {
-            $apiKey = $_SERVER['HTTP_API_KEY'];
-        } elseif (!empty($_SERVER['API_KEY'])) {
-            $apiKey = $_SERVER['API_KEY'];
-        }
-
-        // Fallback: Check all headers case-insensitively
-        if (!$apiKey) {
-            $headers = [];
-            if (function_exists('apache_request_headers')) {
-                $headers = apache_request_headers();
-            } elseif (function_exists('getallheaders')) {
-                $headers = getallheaders();
-            } else {
-                foreach ($_SERVER as $name => $value) {
-                    if (substr($name, 0, 5) == 'HTTP_') {
-                        $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-                    }
-                }
-            }
-
-            foreach ($headers as $key => $value) {
-                if (strtolower($key) === 'x-api-key' || strtolower($key) === 'api-key') {
-                    $apiKey = $value;
-                    break;
-                }
-            }
-        }
-        
-        $apiKey = trim((string)$apiKey);
-        
-        if ($apiKey) {
-            $keyRecord = $this->db('mlite_api_key')->where('api_key', $apiKey)->oneArray();
-            if (!$keyRecord) {
-                http_response_code(401);
-                echo json_encode(['status' => 'error', 'message' => 'Invalid API Key']);
-                exit;
-            }
-
-            if (!empty($keyRecord['exp_time']) && $keyRecord['exp_time'] !== '0000-00-00' && strtotime($keyRecord['exp_time']) < time()) {
-                http_response_code(401);
-                echo json_encode(['status' => 'error', 'message' => 'API Key expired']);
-                exit;
-            }
-
-            if (!empty($keyRecord['ip_range']) && $keyRecord['ip_range'] !== '*') {
-                $clientIp = $_SERVER['REMOTE_ADDR'];
-                if (strpos($keyRecord['ip_range'], $clientIp) === false) {
-                     http_response_code(401);
-                     echo json_encode(['status' => 'error', 'message' => 'IP not allowed']);
-                     exit;
-                }
-            }
-
-            $allowedMethods = explode(',', strtoupper($keyRecord['method']));
-            if (!in_array($method, $allowedMethods) && !in_array('ALL', $allowedMethods)) {
-                 http_response_code(403);
-                 echo json_encode(['status' => 'error', 'message' => 'Method not allowed']);
-                 exit;
-            }
-            
-            return $keyRecord['username'];
-        }
-        
-        // 2. Try Session (Internal)
-        if (isset($_SESSION['mlite_user'])) {
-             return $this->getUserInfo('username');
-        }
-
-        // 3. Unauthorized
-        http_response_code(401);
-        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
-        exit;
-    }
-
-    public function checkPermission($username, $action, $module)
-    {
-        $user = $this->db('mlite_users')->where('username', $username)->oneArray();
-        if ($user && $user['role'] == 'admin') {
-            return true;
-        }
-
-        $mlite_crud_permissions = $this->db('mlite_crud_permissions')
-            ->where('module', $module)
-            ->where('user', $username)
-            ->oneArray();
-            
-        if (!$mlite_crud_permissions) {
-            return true; 
-        }
-        
-        return $mlite_crud_permissions[$action] == 'true';
-    }
+    }    
 
 }

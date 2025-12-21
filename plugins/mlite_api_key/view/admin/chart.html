@@ -57,23 +57,23 @@
 	<div class="container pt-5">	
         <div class="nav">
             <ul>
-                <li class="item {if: isset($slug[2]) && ($slug[2] == '' || $slug[2] == 'pie')}active{/if}">
-                    {if: isset($slug[3])} 
-                        <a href="{?=url([ADMIN,'mlite_api_key','chart','pie', $slug[3]])?}">Pie Chart</a>
+                <li class="item {if: parseUrl()[2] == '' || parseUrl()[2] == 'pie'}active{/if}">
+                    {if: isset_or(parseUrl()[3])} 
+                        <a href="{?=url([ADMIN,'mlite_api_key','chart','pie', parseUrl()[3]])?}">Pie Chart</a>
                     {else}
                         <a href="{?=url([ADMIN,'mlite_api_key','chart','pie'])?}">Pie Chart</a>
                     {/if}
                 </li>
-                <li class="item {if: isset($slug[2]) && $slug[2] == 'line'}active{/if}">
-                    {if: isset($slug[3])} 
-                        <a href="{?=url([ADMIN,'mlite_api_key','chart','line', $slug[3]])?}">Line Chart</a>
+                <li class="item {if: parseUrl()[2] == 'line'}active{/if}">
+                    {if: isset_or(parseUrl()[3])} 
+                        <a href="{?=url([ADMIN,'mlite_api_key','chart','line', parseUrl()[3]])?}">Line Chart</a>
                     {else}
                         <a href="{?=url([ADMIN,'mlite_api_key','chart','line'])?}">Line Chart</a>
                     {/if}
                 </li>
-                <li class="item {if: isset($slug[2]) && $slug[2] == 'bar'}active{/if}">
-                    {if: isset($slug[3])} 
-                        <a href="{?=url([ADMIN,'mlite_api_key','chart','bar', $slug[3]])?}">Bar Chart</a>
+                <li class="item {if: parseUrl()[2] == 'bar'}active{/if}">
+                    {if: isset_or(parseUrl()[3])} 
+                        <a href="{?=url([ADMIN,'mlite_api_key','chart','bar', parseUrl()[3]])?}">Bar Chart</a>
                     {else}
                         <a href="{?=url([ADMIN,'mlite_api_key','chart','bar'])?}">Bar Chart</a>
                     {/if}
@@ -82,8 +82,8 @@
                     <a href="#">Datasets</a>
                     <div class="dropdown-content">
                         {loop: $column}
-                            {if: isset($slug[3])} 
-                                <a href="{?=url([ADMIN,'mlite_api_key','chart',isset($slug[2]) ? $slug[2] : 'pie', $value.COLUMN_NAME])?}">{$value.COLUMN_NAME}</a>
+                            {if: isset_or(parseUrl()[3])} 
+                                <a href="{?=url([ADMIN,'mlite_api_key','chart',parseUrl()[2], $value.COLUMN_NAME])?}">{$value.COLUMN_NAME}</a>
                             {else}
                                 <a href="{?=url([ADMIN,'mlite_api_key','chart','pie', $value.COLUMN_NAME])?}">{$value.COLUMN_NAME}</a>
                             {/if}
@@ -106,7 +106,7 @@
 		data: {
 			labels: {$labels},
 			datasets: [{
-				label: '# of {if: isset($slug[3])}{$slug[3]}{else}method{/if}',
+				label: '# of {if: isset_or(parseUrl()[3])}{?=parseUrl()[3]?}{else}method{/if}',
 				data: {$datasets}
 			}]
 		},

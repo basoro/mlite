@@ -1255,6 +1255,13 @@ class Site extends SiteModule
     private function _loginCheck()
     {
         if (isset($_SESSION['vedika_user']) && isset($_SESSION['vedika_token']) && isset($_SESSION['vedika_userAgent']) && isset($_SESSION['vedika_IPaddress'])) {
+
+            if (empty(parseURL(1))) {
+                redirect(url('veda'));
+            } elseif (!isset($_GET['t']) || ($_SESSION['vedika_token'] != @$_GET['t'])) {
+                return false;
+            }
+
             return true;
         }
 

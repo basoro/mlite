@@ -46,7 +46,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page = [
                 'title' => 'Veronisa',
-                'desc' => 'Dashboard Verifikasi Obat Kronis',
+                'desc' => 'Dashboard Verifikasi Obat Kronis Aura Syifa',
                 'content' => $this->_getManage()
             ];
             if(isset($_POST['perbaiki'])) {
@@ -77,7 +77,7 @@ class Site extends SiteModule
             }
             $page = [
                 'title' => 'Veronisa',
-                'desc' => 'Dashboard Verifikasi Obat Kronis',
+                'desc' => 'Dashboard Verifikasi Obat Kronis Aura Syifa',
                 'content' => $this->draw('login.html', ['mlite' => $this->mlite])
             ];
         }
@@ -106,122 +106,43 @@ class Site extends SiteModule
         $page = $slug[2];
       }
 
-      // --- Dynamic Query Builder ---
-      $whereClauses = [
-          "reg_periksa.tgl_registrasi BETWEEN ? AND ?",
-          "reg_periksa.status_lanjut = 'Ralan'",
-          "mlite_veronisa.status = 'Pengajuan'"
-      ];
-      $params = [$start_date, $end_date];
+      // pagination
+      $totalRecords = $this->db()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien, mlite_veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite_veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ? OR mlite_veronisa.nosep LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan'");
+      $totalRecords->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
+      $totalRecords = $totalRecords->fetchAll();
 
-      if (!empty($phrase)) {
-          $whereClauses[] = "(reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ? OR mlite_veronisa.nosep LIKE ?)";
-          $params[] = "%$phrase%";
-          $params[] = "%$phrase%";
-          $params[] = "%$phrase%";
-          $params[] = "%$phrase%";
-      }
-
-      $whereSQL = implode(' AND ', $whereClauses);
-
-      // --- Hitung Total Record (Count Only) ---
-      // Optimasi: Jangan JOIN tabel yang tidak perlu untuk COUNT
-      $countQuery = "SELECT COUNT(mlite_veronisa.no_rawat) 
-                     FROM mlite_veronisa 
-                     JOIN reg_periksa ON mlite_veronisa.no_rawat = reg_periksa.no_rawat";
-      
-      if (!empty($phrase)) {
-          $countQuery .= " JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis";
-      }
-
-      $countQuery .= " WHERE " . $whereSQL;
-
-      $count = $this->db()->pdo()->prepare($countQuery);
-      $count->execute($params);
-      $totalRecords = $count->fetchColumn();
-
-      $pagination = new \Systems\Lib\Pagination(
-        $page,
-        $totalRecords,
-        $perpage,
-        url(['vero', 'index', '%d/?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date])
-      );
-      $offset = $pagination->offset();
+      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url(['vero', 'index', '%d/?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]));
       $this->assign['pagination'] = $pagination->nav('pagination', '5');
       $this->assign['totalRecords'] = $totalRecords;
-      $this->assign['searchUrl'] = url(['vero', 'index']);
 
-      // --- Query Utama ---
-      $mainQuery = "
-          SELECT reg_periksa.no_rawat, reg_periksa.no_rkm_medis, pasien.nm_pasien, pasien.umur, reg_periksa.sttsumur, pasien.jk, pasien.alamatpj, pasien.no_peserta,
-                 reg_periksa.tgl_registrasi, reg_periksa.jam_reg, dokter.nm_dokter, poliklinik.nm_poli, mlite_veronisa.nosep
-          FROM mlite_veronisa
-          JOIN reg_periksa ON mlite_veronisa.no_rawat = reg_periksa.no_rawat
-          JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis
-          JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter
-          JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli
-          WHERE $whereSQL
-          ORDER BY reg_periksa.tgl_registrasi DESC
-          LIMIT $perpage OFFSET $offset
-      ";
-
-      $query = $this->db()->pdo()->prepare($mainQuery);
-      $query->execute($params);
+      $offset = $pagination->offset();
+      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, mlite_veronisa.no_rawat, mlite_veronisa.nosep FROM reg_periksa, pasien, dokter, poliklinik, mlite_veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.no_rawat = mlite_veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ? OR mlite_veronisa.nosep LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan' LIMIT $perpage OFFSET $offset");
+      $query->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
       $rows = $query->fetchAll();
 
       $this->assign['list'] = [];
-      if ($rows) {
-          // === Optimasi: Kumpulkan no_rawat ===
-          $noRawatList = array_column($rows, 'no_rawat');
-          $inQuery = implode(',', array_fill(0, count($noRawatList), '?'));
-
-          // --- Ambil Berkas Digital (Batch) ---
-          $berkasMap = [];
-          if (!empty($noRawatList)) {
-              $berkasRows = $this->db()
-                ->pdo()
-                ->prepare("
-                  SELECT bdp.no_rawat, mbd.nama, bdp.lokasi_file
-                  FROM berkas_digital_perawatan bdp
-                  JOIN master_berkas_digital mbd ON mbd.kode = bdp.kode
-                  WHERE bdp.no_rawat IN ($inQuery)
-                ");
-              $berkasRows->execute($noRawatList);
-              foreach ($berkasRows->fetchAll() as $b) {
-                $berkasMap[$b['no_rawat']][] = $b;
-              }
-          }
-
-          // --- Ambil Status Pengajuan (Batch) ---
-          $statusMap = [];
-          if (!empty($noRawatList)) {
-              $statusRows = $this->db('mlite_veronisa')
-                ->where('no_rawat', $noRawatList)
-                ->desc('id')
-                ->toArray();
-              foreach ($statusRows as $st) {
-                  // Kita ambil status terakhir (limit 1 logic bisa di-handle di sini jika ada banyak)
-                  // Karena array sudah di-desc by id, yang pertama ketemu untuk no_rawat tertentu adalah yang terbaru (jika kita iterasi dg hati-hati atau ambil semua)
-                  // Disini kita ambil listnya saja
-                  $statusMap[$st['no_rawat']][] = $st; 
-              }
-          }
-
+      if (count($rows)) {
           foreach ($rows as $row) {
-              $no_rawat = $row['no_rawat'];
-              $row = htmlspecialchars_array($row);
-              
-              $row['berkas_digital'] = $berkasMap[$no_rawat] ?? [];
-              $row['catatanURL'] = url(['vero', 'catatan', $row['nosep']]); // Pakai nosep dari query
-              
-              // Logic status pengajuan sebelumnya: ambil 1 record terakhir
-              $row['status_pengajuan'] = isset($statusMap[$no_rawat]) ? [reset($statusMap[$no_rawat])] : [];
+              $berkas_digital = $this->db('berkas_digital_perawatan')
+                ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
+                ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
+                ->asc('master_berkas_digital.nama')
+                ->toArray();
 
-              $row['pdfURL'] = url(['vero', 'pdf', $this->convertNorawat($no_rawat)]);
-              $row['downloadURL'] = url(['vero', 'downloadpdf', $this->convertNorawat($no_rawat)]);
+              $row = htmlspecialchars_array($row);
+              $row['berkas_digital'] = $berkas_digital;
+              $row['catatanURL'] = url(['vero', 'catatan', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
+              $row['status_pengajuan'] = $this->db('mlite_veronisa')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
+              $row['pdfURL'] = url(['vero', 'pdf', $this->convertNorawat($row['no_rawat'])]);
+              $row['downloadURL'] = url(['vero', 'downloadpdf', $this->convertNorawat($row['no_rawat'])]);
               $this->assign['list'][] = $row;
           }
       }
+
+      $this->assign['veronisa_username'] = $this->settings->get('veronisa.username');
+      $this->assign['veronisa_password'] = $this->settings->get('veronisa.password');
+
+      $this->assign['searchUrl'] =  url(['vero', 'index', $page.'?start_date='.$start_date.'&end_date='.$end_date]);
       return $this->draw('index.html', ['veronisa' => $this->assign]);
 
     }
@@ -967,6 +888,13 @@ class Site extends SiteModule
     private function _loginCheck()
     {
         if (isset($_SESSION['veronisa_user']) && isset($_SESSION['veronisa_token']) && isset($_SESSION['veronisa_userAgent']) && isset($_SESSION['veronisa_IPaddress'])) {
+
+            if (empty(parseURL(1))) {
+                redirect(url('vero'));
+            } elseif (!isset($_GET['t']) || ($_SESSION['veronisa_token'] != @$_GET['t'])) {
+                return false;
+            }
+
             return true;
         }
 

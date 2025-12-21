@@ -559,14 +559,6 @@ class QueryWrapper
         } catch (\PDOException $e) {
             // Simpan log jika terjadi error
             self::logQueryToDatabase($sql, $binds, $e->getMessage());
-            
-            // Check for integrity constraint violation
-            if ($e->getCode() == '23000') {
-                $errorMessage = "Data ini tidak dapat dihapus karena masih digunakan oleh data lain (Foreign Key Constraint).";
-                // Optionally append detailed info: $errorMessage .= " (" . $e->getMessage() . ")";
-                throw new \Exception($errorMessage, 23000);
-            }
-            
             throw $e; // lempar ulang agar error tetap ditangani di luar
         }
 

@@ -299,8 +299,8 @@ class Admin extends AdminModule
         ->save([
           'kode_brng' => $_POST['kode_brng'],
           'stok_awal' => $get_gudangbarang['stok'],
-          'masuk' => $_POST['stok'],
-          'keluar' => '0',
+          'masuk' => '0',
+          'keluar' => $_POST['stok'],
           'stok_akhir' => $get_gudangbarang['stok'] + $_POST['stok'],
           'posisi' => 'Mutasi',
           'tanggal' => date('Y-m-d'),
@@ -326,8 +326,8 @@ class Admin extends AdminModule
         ->save([
           'kode_brng' => $_POST['kode_brng'],
           'stok_awal' => $gudangbarang['stok'],
-          'masuk' => '0',
-          'keluar' => $_POST['stok'],
+          'masuk' => $_POST['stok'],
+          'keluar' => '0',
           'stok_akhir' => $gudangbarang['stok'] - $_POST['stok'],
           'posisi' => 'Mutasi',
           'tanggal' => date('Y-m-d'),

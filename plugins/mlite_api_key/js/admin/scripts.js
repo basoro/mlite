@@ -437,6 +437,96 @@ var id = rowData['id'];
     
 });
 
+$(document).ready(function() {
+    $('.--add-parameter').on('click', function(e) {
+
+        e.preventDefault();
+
+        var initial = $(this).attr('data-parameter');
+
+        $(
+            '<div class="row">' +
+                '<div class="col-md-4" style="margin-bottom: 10px;">' +
+                    '<input type="text" name="' + initial + '_key[]" class="form-control param-' + initial + '-key" placeholder="Key" />' +
+                '</div>' +
+                '<div class="col-md-8" style="margin-bottom: 10px;">' +
+                    '<div class="input-group">' +
+                        '<input type="text" name="' + initial + '_value[]" class="form-control param-' + initial + '-value" placeholder="Value" />' +
+                        '<span class="input-group-btn">' +
+                            '<button type="button" class="btn btn-default btn-sm" onclick="$(this).closest(\'.row\').remove()">' +
+                                '<i class="fa fa-close"></i>' +
+                            '</button>' +
+                        '</span>' +
+                    '</div>' +
+                '</div>' +
+            '</div>'
+        )
+        .insertBefore($(this))
+    }),
+    
+    $('.--api-debug').on('submit', function(e) {
+        e.preventDefault();
+
+        $('.response-result').trigger('click');
+        
+        if (! $(this).find('input[name=url]').val()) {
+            $('pre code').text(JSON.stringify({error: "No service URL are given"}, null, 4));
+            Prism.highlightAll();
+            
+            return;
+        }
+        
+        let header = {},
+            body = {},
+            method = $(this).find('select[name=method]').val(),
+            parameter = new FormData(this);
+
+        $('[name^=header_key]').each(function(index) {
+            let key = $(this).val().trim();
+            let val = $('[name^=header_value]').eq(index).val().trim();
+            if (key !== '') {
+                header[key] = val;
+                console.log('Header param:', key, '=', val);
+            }
+        });
+        
+        $('[name^=body_key]').each(function(index) {
+            let key = $(this).val().trim();
+            let val = $('[name^=body_value]').eq(index).val().trim();
+            if (key !== '') {
+                body[key] = val;
+                console.log('Body param:', key, '=', val);
+            }
+        });
+
+        $.ajax({
+            url: $(this).find('input[name=url]').val(),
+            method: method,
+            data: body,
+            headers: header,
+            beforeSend: function() {
+                $('pre code').text('Requesting...'),
+                $('.result-html').html('')
+            }
+        })
+        .always(function(response, status, error) {
+            if (typeof response !== 'object') {
+                response = {
+                    error: 'The response is not a valid object'
+                };
+            }
+            
+            $('pre code')
+                .removeClass()
+                .addClass('language-javascript')
+                .text(JSON.stringify((response.responseJSON || response), null, 4));
+
+            Prism.highlightAll(); // atau Prism.highlightElement($('pre code')[0]);
+
+        })
+    })
+})
+
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.toggle-submenu').forEach(function (toggleLink) {
     toggleLink.addEventListener('click', function (e) {
