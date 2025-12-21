@@ -672,7 +672,7 @@ class Admin extends AdminModule
     {
         $username = $this->core->checkAuth('GET');
         if (!$this->core->checkPermission($username, 'can_read', 'pasien')) {
-            return ['status' => 'error', 'message' => 'Permission denied'];
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
         }
 
         if (!$no_rkm_medis) {
@@ -1254,7 +1254,7 @@ class Admin extends AdminModule
 
         $username = $this->core->checkAuth('GET');
         if (!$this->core->checkPermission($username, 'can_read', 'pasien')) {
-            return ['status' => 'error', 'message' => 'Permission denied'];
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
         }
 
         $perpage = intval($_GET['per_page'] ?? 10);
@@ -1303,7 +1303,7 @@ class Admin extends AdminModule
         $meta = [
             'page' => $page,
             'per_page' => $perpage,
-            'total' => $total,
+            'total' => $username,
         ];
 
         if(!isset($_SERVER['HTTP_X_API_KEY'])) {
@@ -1326,7 +1326,7 @@ class Admin extends AdminModule
     {
         $username = $this->core->checkAuth('GET');
         if (!$this->core->checkPermission($username, 'can_read', 'pasien')) {
-            return ['status' => 'error', 'message' => 'Permission denied'];
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
         }
 
         if (!$no_rkm_medis) {
@@ -1343,7 +1343,7 @@ class Admin extends AdminModule
     {
         $username = $this->core->checkAuth('POST');
         if (!$this->core->checkPermission($username, 'can_create', 'pasien')) {
-            return ['status' => 'error', 'message' => 'Permission denied'];
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
         }
 
         $input = json_decode(file_get_contents('php://input'), true);
@@ -1378,7 +1378,7 @@ class Admin extends AdminModule
     {
         $username = $this->core->checkAuth('POST'); // Use POST for update if PUT not supported
         if (!$this->core->checkPermission($username, 'can_update', 'pasien')) {
-            return ['status' => 'error', 'message' => 'Permission denied'];
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
         }
 
         if (!$no_rkm_medis) {
@@ -1407,7 +1407,7 @@ class Admin extends AdminModule
     {
         $username = $this->core->checkAuth('DELETE');
         if (!$this->core->checkPermission($username, 'can_delete', 'pasien')) {
-            return ['status' => 'error', 'message' => 'Permission denied'];
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
         }
 
         if (!$no_rkm_medis) {
@@ -1422,7 +1422,7 @@ class Admin extends AdminModule
                 return ['status' => 'error', 'message' => 'Failed to delete'];
             }
         } catch (\Throwable $e) {
-            return ['status' => 'error', 'message' => 'Data ini tidak dapat dihapus karena masih digunakan oleh data lain (Foreign Key Constraint).'];
+            return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
 

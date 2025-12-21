@@ -204,8 +204,7 @@ if ($core->loginCheck()) {
         header('Content-Type: application/json');
         echo json_encode([
             'error' => 'Database connection failed',
-            'message' => $message,
-            'details' => DEV_MODE ? $e->getMessage() : 'System error occurred'
+            'message' => $message
         ]);
     } else {
         // Return HTML error for regular requests

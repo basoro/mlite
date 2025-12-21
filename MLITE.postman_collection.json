@@ -65,6 +65,16 @@
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -110,6 +120,16 @@
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -141,6 +161,16 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
 								"type": "text"
 							}
 						],
@@ -178,6 +208,16 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password}}",
 								"type": "text"
 							}
 						],
@@ -219,6 +259,16 @@
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -255,6 +305,16 @@
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -268,6 +328,259 @@
 								"pasien",
 								"delete",
 								"{{no_rkm_medis}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Rawat Jalan",
+			"item": [
+				{
+					"name": "List Rawat Jalan",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_jalan/list?draw=1&start=0&length=10&tgl_awal=2023-01-01&tgl_akhir=2023-12-31",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_jalan",
+								"list"
+							],
+							"query": [
+								{
+									"key": "draw",
+									"value": "1"
+								},
+								{
+									"key": "start",
+									"value": "0"
+								},
+								{
+									"key": "length",
+									"value": "10"
+								},
+								{
+									"key": "tgl_awal",
+									"value": "2023-01-01"
+								},
+								{
+									"key": "tgl_akhir",
+									"value": "2023-12-31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show Rawat Jalan",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_jalan/show/{{no_rawat}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_jalan",
+								"show",
+								"{{no_rawat}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Rawat Jalan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"no_rkm_medis\": \"000001\",\n    \"kd_poli\": \"IGD\",\n    \"kd_dokter\": \"D00001\",\n    \"kd_pj\": \"UMU\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_jalan/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_jalan",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Rawat Jalan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kd_poli\": \"POLI01\",\n    \"kd_dokter\": \"D00002\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_jalan/update/{{no_rawat}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_jalan",
+								"update",
+								"{{no_rawat}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Rawat Jalan",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_jalan/delete/{{no_rawat}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_jalan",
+								"delete",
+								"{{no_rawat}}"
 							]
 						}
 					},
@@ -294,7 +607,7 @@
 		},
 		{
 			"key": "password",
-			"value": "",
+			"value": "admin",
 			"type": "string"
 		},
 		{
@@ -317,9 +630,19 @@
 			"value": "10",
 			"type": "string"
 		},
-		{
+				{
 			"key": "no_rkm_medis",
 			"value": "000001",
+			"type": "string"
+		},
+		{
+			"key": "username_permission",
+			"value": "DR001",
+			"type": "string"
+		},
+		{
+			"key": "password_permission",
+			"value": "12345678",
 			"type": "string"
 		}
 	]

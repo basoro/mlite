@@ -259,7 +259,7 @@ abstract class Main
                     }
                 }
             }
-            setcookie('mlite_remember', null, -1, '/');
+            setcookie('mlite_remember', '', -1, '/');
         }
 
         return false;
@@ -639,21 +639,25 @@ abstract class Main
             $apiKey = $_SERVER['API_KEY'];
         }
 
-        // Fallback: Check all headers case-insensitively
-        if (!$apiKey) {
-            $headers = [];
-            if (function_exists('apache_request_headers')) {
-                $headers = apache_request_headers();
-            } elseif (function_exists('getallheaders')) {
-                $headers = getallheaders();
-            } else {
-                foreach ($_SERVER as $name => $value) {
-                    if (substr($name, 0, 5) == 'HTTP_') {
-                        $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-                    }
+        // Get headers case-insensitively for fallback and other headers
+        $headers = [];
+        if (function_exists('apache_request_headers')) {
+            $headers = apache_request_headers();
+        } elseif (function_exists('getallheaders')) {
+            $headers = getallheaders();
+        } else {
+            foreach ($_SERVER as $name => $value) {
+                if (substr($name, 0, 5) == 'HTTP_') {
+                    $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
                 }
             }
+        }
 
+        // DEBUG: Log headers for investigation
+        // file_put_contents(BASE_DIR.'/tmp/headers_debug.txt', date('Y-m-d H:i:s') . " Method: $method\n" . print_r($headers, true) . "\nSERVER:\n" . print_r($_SERVER, true) . "\n----------------\n", FILE_APPEND);
+
+        // Fallback: Check all headers case-insensitively for API Key
+        if (!$apiKey) {
             foreach ($headers as $key => $value) {
                 if (strtolower($key) === 'x-api-key' || strtolower($key) === 'api-key') {
                     $apiKey = $value;
@@ -692,6 +696,50 @@ abstract class Main
                  http_response_code(403);
                  echo json_encode(['status' => 'error', 'message' => 'Method not allowed']);
                  exit;
+            }
+
+            // Check for User Permissions Credentials (X-Username-Permission & X-Password-Permission)
+            $userPerm = null;
+            $passPerm = null;
+            
+            foreach ($headers as $key => $value) {
+                if (strtolower($key) === 'x-username-permission' || strtolower($key) === 'username-permission') {
+                    $userPerm = $value;
+                }
+                if (strtolower($key) === 'x-password-permission' || strtolower($key) === 'password-permission') {
+                    $passPerm = $value;
+                }
+            }
+            
+            // Also check $_SERVER just in case
+            if(!$userPerm && !empty($_SERVER['HTTP_X_USERNAME_PERMISSION'])) $userPerm = $_SERVER['HTTP_X_USERNAME_PERMISSION'];
+            if(!$passPerm && !empty($_SERVER['HTTP_X_PASSWORD_PERMISSION'])) $passPerm = $_SERVER['HTTP_X_PASSWORD_PERMISSION'];
+
+            // Fallback: Check request parameters (GET/POST) or JSON body
+            if (!$userPerm || !$passPerm) {
+                // Check $_REQUEST
+                if (!$userPerm && !empty($_REQUEST['username_permission'])) $userPerm = $_REQUEST['username_permission'];
+                if (!$passPerm && !empty($_REQUEST['password_permission'])) $passPerm = $_REQUEST['password_permission'];
+                
+                // Check JSON Body (especially for DELETE/PUT where $_POST might be empty)
+                if (!$userPerm || !$passPerm) {
+                    $input = json_decode(file_get_contents('php://input'), true);
+                    if (is_array($input)) {
+                        if (!$userPerm && isset($input['username_permission'])) $userPerm = $input['username_permission'];
+                        if (!$passPerm && isset($input['password_permission'])) $passPerm = $input['password_permission'];
+                    }
+                }
+            }
+
+            if ($userPerm && $passPerm) {
+                $user = $this->db('mlite_users')->where('username', $userPerm)->oneArray();
+                if ($user && password_verify(trim($passPerm), $user['password'])) {
+                    return $user['username'];
+                } else {
+                    http_response_code(401);
+                    echo json_encode(['status' => 'error', 'message' => 'Invalid User Permission Credentials']);
+                    exit;
+                }
             }
             
             return $keyRecord['username'];

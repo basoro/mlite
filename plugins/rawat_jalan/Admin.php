@@ -33,6 +33,234 @@ class Admin extends AdminModule
         ];
     }
 
+    public function apiList()
+    {
+
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $draw = $_GET['draw'] ?? 0;
+        $start = $_GET['start'] ?? 0;
+        $length = $_GET['length'] ?? 10;
+        $columnIndex = $_GET['order'][0]['column'] ?? 0;
+        $columnName = $_GET['columns'][$columnIndex]['data'] ?? 'no_reg';
+        $columnSortOrder = $_GET['order'][0]['dir'] ?? 'asc';
+        $searchValue = $_GET['search']['value'] ?? '';
+
+        $tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-d');
+        $tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-d');
+        $status_periksa = $_GET['status_periksa'] ?? '';
+        $status_bayar = $_GET['status_bayar'] ?? '';
+
+        $user_id = $this->db('mlite_users')->where('username', $username)->oneArray()['id'];
+        $poliklinik = str_replace(",","','", (string)$this->core->getUserInfo('cap', $user_id, true));
+        $igd = $this->settings('settings', 'igd');
+
+        // Base Query
+        $sql = "SELECT reg_periksa.*, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                FROM reg_periksa 
+                JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter 
+                JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+                JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                WHERE reg_periksa.kd_poli != '$igd' 
+                AND reg_periksa.tgl_registrasi BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+
+        if ($this->core->getUserInfo('role', $user_id, true) != 'admin') {
+            $sql .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
+        }
+        if($status_periksa == 'belum') {
+            $sql .= " AND reg_periksa.stts = 'Belum'";
+        }
+        if($status_periksa == 'selesai') {
+            $sql .= " AND reg_periksa.stts = 'Sudah'";
+        }
+        if($status_periksa == 'lunas') {
+            $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
+        }
+
+        // Search
+        if (!empty($searchValue)) {
+            $sql .= " AND (reg_periksa.no_rawat LIKE '%$searchValue%' OR reg_periksa.no_rkm_medis LIKE '%$searchValue%' OR pasien.nm_pasien LIKE '%$searchValue%' OR dokter.nm_dokter LIKE '%$searchValue%' OR poliklinik.nm_poli LIKE '%$searchValue%')";
+        }
+
+        // Count Total (filtered)
+        $stmt = $this->db()->pdo()->prepare($sql);
+        $stmt->execute();
+        $totalRecords = $stmt->rowCount();
+
+        // Order and Limit
+        $sql .= " ORDER BY $columnName $columnSortOrder LIMIT $start, $length";
+
+        $stmt = $this->db()->pdo()->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $data = [];
+        foreach ($rows as $row) {
+            $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $row['no_rawat'])->oneArray();
+            $row['no_sep'] = isset_or($bridging_sep['no_sep']);
+            $data[] = $row;
+        }
+
+        return [
+            "status" => "success",
+            "data" => $data,
+            "meta" => [
+                "draw" => intval($draw),
+                "page" => floor($start / $length) + 1,
+                "per_page" => intval($length),
+                "total" => $totalRecords,
+                "iTotalRecords" => $totalRecords,
+                "iTotalDisplayRecords" => $totalRecords
+            ]
+        ];
+    }
+
+    public function apiShow($no_rawat = null)
+    {
+
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        if(!$no_rawat) {
+             return ['status' => 'error', 'message' => 'No rawat missing'];
+        }
+        $no_rawat = revertNoRawat($no_rawat);
+        $row = $this->db('reg_periksa')
+            ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+            ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+            ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+            ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+            ->where('no_rawat', $no_rawat)
+            ->oneArray();
+            
+        if($row) {
+            return ['status' => 'success', 'data' => $row];
+        } else {
+            return ['status' => 'error', 'message' => 'Not found'];
+        }
+    }
+
+    public function apiCreate()
+    {
+        $username = $this->core->checkAuth('DELETE');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        if (empty($input['no_rkm_medis']) || empty($input['kd_poli']) || empty($input['kd_dokter'])) {
+            return ['status' => 'error', 'message' => 'Data incomplete'];
+        }
+
+        $input['no_rawat'] = $this->setNoRawat();
+        
+        // Calculate No Reg (Queue Number)
+        $tgl_registrasi = date('Y-m-d');
+        $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $input['kd_poli'])->where('tgl_registrasi', $tgl_registrasi)->desc('no_reg')->limit(1)->oneArray();
+        if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+            $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $input['kd_poli'])->where('kd_dokter', $input['kd_dokter'])->where('tgl_registrasi', $tgl_registrasi)->desc('no_reg')->limit(1)->oneArray();
+        }
+        if(empty($max_id['no_reg'])) {
+            $max_id['no_reg'] = '000';
+        }
+        $input['no_reg'] = sprintf('%03s', ($max_id['no_reg'] + 1));
+
+        $input['tgl_registrasi'] = date('Y-m-d');
+        $input['jam_reg'] = date('H:i:s');
+        $input['status_lanjut'] = 'Ralan';
+        $input['stts'] = 'Belum';
+        $input['status_bayar'] = 'Belum Bayar';
+        $input['p_jawab'] = $input['p_jawab'] ?? '-';
+        $input['almt_pj'] = $input['almt_pj'] ?? '-';
+        $input['hubunganpj'] = $input['hubunganpj'] ?? '-';
+
+        $poliklinik = $this->db('poliklinik')->where('kd_poli', $input['kd_poli'])->oneArray();
+        $input['biaya_reg'] = $poliklinik['registrasi'];
+
+        $pasien = $this->db('pasien')->where('no_rkm_medis', $input['no_rkm_medis'])->oneArray();
+        
+        // Calculate Age
+        $birthDate = new \DateTime($pasien['tgl_lahir']);
+        $today = new \DateTime("today");
+        $y = $today->diff($birthDate)->y;
+        $m = $today->diff($birthDate)->m;
+        $d = $today->diff($birthDate)->d;
+        $input['umurdaftar'] = $d;
+        $input['sttsumur'] = "Hr";
+        if($y !='0'){
+            $input['umurdaftar'] = $y;
+            $input['sttsumur'] = "Th";
+        }
+        if($y =='0' && $m !='0'){
+            $input['umurdaftar'] = $m;
+            $input['sttsumur'] = "Bl";
+        }
+        $input['status_poli'] = 'Lama';
+
+        try {
+            $this->db('reg_periksa')->save($input);
+            return ['status' => 'created', 'data' => $input];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiUpdate($no_rawat = null)
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_update', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        if(!$no_rawat) {
+             return ['status' => 'error', 'message' => 'No rawat missing'];
+        }
+        
+        $no_rawat = revertNoRawat($no_rawat);
+        
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('reg_periksa')->where('no_rawat', $no_rawat)->save($input);
+            return ['status' => 'updated', 'data' => $input];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDelete($no_rawat = null)
+    {
+        $username = $this->core->checkAuth('DELETE');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        if(!$no_rawat) {
+             return ['status' => 'error', 'message' => 'No rawat missing'];
+        }
+        $no_rawat = revertNoRawat($no_rawat);
+
+        if(!$this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray()) {
+            return ['status' => 'error', 'message' => 'No rawat not found'];
+        }
+
+        try {
+            $this->db('reg_periksa')->where('no_rawat', $no_rawat)->delete();
+            return ['status' => 'deleted', 'no_rawat' => $no_rawat];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
     public function getIndex()
     {
       $sub_modules = [
@@ -138,7 +366,7 @@ class Admin extends AdminModule
         $this->assign['tgl_registrasi']= date('Y-m-d');
         $this->assign['jam_reg']= date('H:i:s');
 
-        $poliklinik = str_replace(",","','", $this->core->getUserInfo('cap', null, true));
+        $poliklinik = str_replace(",","','", (string)$this->core->getUserInfo('cap', null, true));
         $igd = $this->settings('settings', 'igd');
 
         $sql = "SELECT reg_periksa.*,
@@ -2297,7 +2525,7 @@ class Admin extends AdminModule
             
             // Validate POST data
             if(empty($_POST['no_rawat'])) {
-                throw new Exception('No rawat tidak ditemukan');
+                throw new \Exception('No rawat tidak ditemukan');
             }
             
             $no_rawat = $_POST['no_rawat'];
@@ -2335,7 +2563,7 @@ class Admin extends AdminModule
             $tableExists = false;
             try {
                 $tableExists = $this->db()->pdo()->query("SHOW TABLES LIKE 'data_tb'")->rowCount() > 0;
-            } catch(Exception $e) {
+            } catch(\Exception $e) {
                 error_log('Error checking table existence: ' . $e->getMessage());
             }
             
@@ -2350,7 +2578,7 @@ class Admin extends AdminModule
                     if(!$data_tb) {
                         $data_tb = $this->getDefaultDataTb($no_rawat);
                     }
-                } catch(Exception $e) {
+                } catch(\Exception $e) {
                     error_log('Error querying data_tb: ' . $e->getMessage());
                     $data_tb = $this->getDefaultDataTb($no_rawat);
                 }
@@ -2373,7 +2601,7 @@ class Admin extends AdminModule
             error_log('anyDataTb HTML length: ' . strlen($html));
             echo $html;
             
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             error_log('anyDataTb error: ' . $e->getMessage());
             echo '<div class="modal-header">';
             echo '<button type="button" class="close" data-dismiss="modal">&times;</button>';
