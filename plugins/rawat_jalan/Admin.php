@@ -148,7 +148,7 @@ class Admin extends AdminModule
 
     public function apiCreate()
     {
-        $username = $this->core->checkAuth('DELETE');
+        $username = $this->core->checkAuth('POST');
         if (!$this->core->checkPermission($username, 'can_create', 'rawat_jalan')) {
             return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
         }
