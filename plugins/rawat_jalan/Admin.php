@@ -109,12 +109,9 @@ class Admin extends AdminModule
             "status" => "success",
             "data" => $data,
             "meta" => [
-                "draw" => intval($draw),
                 "page" => floor($start / $length) + 1,
                 "per_page" => intval($length),
-                "total" => $totalRecords,
-                "iTotalRecords" => $totalRecords,
-                "iTotalDisplayRecords" => $totalRecords
+                "total" => $totalRecords
             ]
         ];
     }
