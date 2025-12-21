@@ -217,7 +217,7 @@
 							},
 							{
 								"key": "X-Password-Permission",
-								"value": "{{password}}",
+								"value": "{{password_permission}}",
 								"type": "text"
 							}
 						],
@@ -267,7 +267,7 @@
 							},
 							{
 								"key": "X-Password-Permission",
-								"value": "{{password}}",
+								"value": "{{password_permission}}",
 								"type": "text"
 							}
 						],
@@ -365,7 +365,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/admin/api/rawat_jalan/list?draw=1&start=0&length=10&tgl_awal=2023-01-01&tgl_akhir=2023-12-31",
+							"raw": "{{baseUrl}}/admin/api/rawat_jalan/list?draw=1&start=0&length=10&tgl_awal=2025-01-01&tgl_akhir=2025-12-31",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -470,7 +470,7 @@
 							},
 							{
 								"key": "X-Password-Permission",
-								"value": "{{password}}",
+								"value": "{{password_permission}}",
 								"type": "text"
 							}
 						],
@@ -520,7 +520,7 @@
 							},
 							{
 								"key": "X-Password-Permission",
-								"value": "{{password}}",
+								"value": "{{password_permission}}",
 								"type": "text"
 							}
 						],
