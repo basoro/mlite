@@ -390,11 +390,11 @@
 								},
 								{
 									"key": "tgl_awal",
-									"value": "2023-01-01"
+									"value": "2025-01-01"
 								},
 								{
 									"key": "tgl_akhir",
-									"value": "2023-12-31"
+									"value": "2025-12-31"
 								}
 							]
 						}
@@ -633,6 +633,11 @@
 				{
 			"key": "no_rkm_medis",
 			"value": "000001",
+			"type": "string"
+		},
+		{
+			"key": "no_rawat",
+			"value": "20251221000003",
 			"type": "string"
 		},
 		{

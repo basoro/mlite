@@ -47,7 +47,7 @@ class Admin extends AdminModule
         $columnIndex = $_GET['order'][0]['column'] ?? 0;
         $columnName = $_GET['columns'][$columnIndex]['data'] ?? 'no_reg';
         $columnSortOrder = $_GET['order'][0]['dir'] ?? 'asc';
-        $searchValue = $_GET['search']['value'] ?? '';
+        $searchValue = is_array($_GET['search'] ?? null) ? ($_GET['search']['value'] ?? '') : ($_GET['search'] ?? '');
 
         $tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-d');
         $tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-d');
