@@ -639,6 +639,106 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Save SOAP Rawat Jalan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"tgl_perawatan\": \"2025-01-01\",\n    \"jam_rawat\": \"10:00:00\",\n    \"suhu_tubuh\": \"36.5\",\n    \"tensi\": \"120/80\",\n    \"nadi\": \"80\",\n    \"respirasi\": \"20\",\n    \"tinggi\": \"170\",\n    \"berat\": \"60\",\n    \"gcs\": \"E4V5M6\",\n    \"keluhan\": \"Demam\",\n    \"pemeriksaan\": \"Suhu badan tinggi\",\n    \"alergi\": \"-\",\n    \"lingkar_perut\": \"80\",\n    \"rtl\": \"Istirahat\",\n    \"penilaian\": \"Demam berdarah\",\n    \"instruksi\": \"Minum obat\",\n    \"evaluasi\": \"Baik\",\n    \"nip\": \"D00001\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_jalan/savesoap",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_jalan",
+								"savesoap"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete SOAP Rawat Jalan",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"tgl_perawatan\": \"2025-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_jalan/deletesoap",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_jalan",
+								"deletesoap"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -700,6 +800,108 @@
 									"key": "col",
 									"value": ""
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Master Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kd_dokter\": \"D00001\",\n    \"nm_dokter\": \"Dr. Contoh\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/master/save/dokter",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"master",
+								"save",
+								"dokter"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Master Data",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kd_dokter\": \"D00001\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/master/delete/dokter",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"master",
+								"delete",
+								"dokter"
 							]
 						}
 					},

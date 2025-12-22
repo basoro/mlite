@@ -285,8 +285,6 @@ class Admin extends AdminModule
                     return ['status' => 'error', 'message' => 'Jenis perawatan not found'];
                 }
 
-                $input['no_rawat'] = revertNoRawat($input['no_rawat']);
-                
                 if($input['provider'] == 'rawat_jl_dr') {
                     $this->db('rawat_jl_dr')->save([
                         'no_rawat' => $input['no_rawat'],
@@ -1480,6 +1478,76 @@ class Admin extends AdminModule
 
       echo $this->draw('soap.html', ['pemeriksaan' => $result, 'pemeriksaan_ranap' => $result_ranap, 'diagnosa' => $diagnosa, 'prosedur' => $prosedur, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
       exit();
+    }
+
+    public function apiSaveSOAP()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $required = ['no_rawat', 'tgl_perawatan', 'jam_rawat', 'suhu_tubuh', 'tensi', 'nadi', 'respirasi', 'tinggi', 'berat', 'gcs', 'keluhan', 'pemeriksaan', 'alergi', 'lingkar_perut', 'rtl', 'penilaian', 'instruksi', 'evaluasi', 'nip'];
+        
+        foreach($required as $field) {
+            if(!isset($input[$field])) {
+                return ['status' => 'error', 'message' => 'Field '.$field.' missing'];
+            }
+        }
+
+        try {
+            if(!$this->db('pemeriksaan_ralan')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('tgl_perawatan', $input['tgl_perawatan'])
+                ->where('jam_rawat', $input['jam_rawat'])
+                ->where('nip', $input['nip'])
+                ->oneArray()) {
+                $this->db('pemeriksaan_ralan')->save($input);
+            } else {
+                $this->db('pemeriksaan_ralan')
+                    ->where('no_rawat', $input['no_rawat'])
+                    ->where('tgl_perawatan', $input['tgl_perawatan'])
+                    ->where('jam_rawat', $input['jam_rawat'])
+                    ->where('nip', $input['nip'])
+                    ->save($input);
+            }
+            return ['status' => 'success', 'message' => 'SOAP saved'];
+        } catch (\PDOException $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => $message];
+        }
+    }
+
+    public function apiDeleteSOAP()
+    {
+        $username = $this->core->checkAuth('DELETE');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_REQUEST;
+
+        if(empty($input['no_rawat']) || empty($input['tgl_perawatan']) || empty($input['jam_rawat'])) {
+            return ['status' => 'error', 'message' => 'Parameters incomplete'];
+        }
+
+        try {
+            $this->db('pemeriksaan_ralan')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('tgl_perawatan', $input['tgl_perawatan'])
+                ->where('jam_rawat', $input['jam_rawat'])
+                ->delete();
+            return ['status' => 'success', 'message' => 'SOAP deleted'];
+        } catch (\PDOException $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => $message];
+        }
     }
 
     public function postSaveSOAP()

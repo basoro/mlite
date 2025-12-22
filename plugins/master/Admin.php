@@ -253,6 +253,99 @@ class Admin extends AdminModule
         ];
     }
 
+    public function apiSave($table)
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'master') && !$this->core->checkPermission($username, 'can_update', 'master')) {
+            return ['status' => 'error', 'message' => 'Permission denied'];
+        }
+
+        $property = $this->getTableProperty($table);
+        if (!$property) {
+             return ['status' => 'error', 'message' => 'Table not allowed or not found'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+        
+        // Populate $_POST for the model to use
+        foreach ($input as $key => $value) {
+            $_POST[$key] = $value;
+        }
+
+        try {
+            $result = $this->{$property}->postSave();
+            if ($result) {
+                return ['status' => 'success', 'message' => 'Data saved successfully'];
+            } else {
+                return ['status' => 'error', 'message' => 'Failed to save data'];
+            }
+        } catch (\Exception $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => $message];
+        }
+    }
+
+    public function apiDelete($table)
+    {
+        $username = $this->core->checkAuth('DELETE');
+        if (!$this->core->checkPermission($username, 'can_delete', 'master')) {
+            return ['status' => 'error', 'message' => 'Permission denied'];
+        }
+
+        $property = $this->getTableProperty($table);
+        if (!$property) {
+             return ['status' => 'error', 'message' => 'Table not allowed or not found'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_REQUEST;
+
+        // Populate $_POST for the model to use
+        foreach ($input as $key => $value) {
+            $_POST[$key] = $value;
+        }
+
+        try {
+            $result = $this->{$property}->postHapus();
+            if ($result) {
+                return ['status' => 'success', 'message' => 'Data deleted successfully'];
+            } else {
+                return ['status' => 'error', 'message' => 'Failed to delete data'];
+            }
+        } catch (\Exception $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => $message];
+        }
+    }
+
+    private function getTableProperty($table)
+    {
+        // Special mappings
+        $map = [
+            'cacat_fisik' => 'cacat',
+            'suku_bangsa' => 'suku',
+            'perusahaan_pasien' => 'perusahaan',
+            'jns_perawatan_inap' => 'jnsperawataninap',
+            'jns_perawatan_lab' => 'jnsperawatanlab',
+            'jns_perawatan_radiologi' => 'jnsperawatanradiologi'
+        ];
+
+        if (isset($map[$table])) {
+            $prop = $map[$table];
+        } else {
+            $prop = str_replace('_', '', $table);
+        }
+
+        if (property_exists($this, $prop)) {
+            return $prop;
+        }
+        
+        return false;
+    }
+
     public function getManage()
     {
       $sub_modules = [
