@@ -2448,10 +2448,10 @@ class Admin extends AdminModule
 
     public function getImportICD10()
     {
-      $fileName = 'https://basoro.id/downloads/icd10.csv';
+      $filename = 'https://basoro.id/downloads/icd10.csv';
       echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
 
-      $csvData = file_get_contents($fileName);
+      $csvData = file_get_contents($filename);
       if($csvData) {
         echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
       } else {
@@ -2532,10 +2532,10 @@ class Admin extends AdminModule
 
     public function getImportICD9()
     {
-      $fileName = 'https://basoro.id/downloads/icd9cm.csv';
+      $filename = 'https://basoro.id/downloads/icd9cm.csv';
       echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
 
-      $csvData = file_get_contents($fileName);
+      $csvData = file_get_contents($filename);
       if($csvData) {
         echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
       } else {
