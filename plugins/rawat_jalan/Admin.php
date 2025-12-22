@@ -264,6 +264,91 @@ class Admin extends AdminModule
         }
     }
 
+    public function apiSaveDetail()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        if (empty($input['kat']) || empty($input['no_rawat']) || empty($input['kd_jenis_prw']) || empty($input['provider'])) {
+            return ['status' => 'error', 'message' => 'Data incomplete'];
+        }
+
+        try {
+            if($input['kat'] == 'tindakan') {
+                $jns_perawatan = $this->db('jns_perawatan')->where('kd_jenis_prw', $input['kd_jenis_prw'])->oneArray();
+                if(!$jns_perawatan) {
+                    return ['status' => 'error', 'message' => 'Jenis perawatan not found'];
+                }
+
+                $input['no_rawat'] = revertNoRawat($input['no_rawat']);
+                
+                if($input['provider'] == 'rawat_jl_dr') {
+                    $this->db('rawat_jl_dr')->save([
+                        'no_rawat' => $input['no_rawat'],
+                        'kd_jenis_prw' => $input['kd_jenis_prw'],
+                        'kd_dokter' => $input['kode_provider'],
+                        'tgl_perawatan' => $input['tgl_perawatan'],
+                        'jam_rawat' => $input['jam_rawat'],
+                        'material' => $jns_perawatan['material'],
+                        'bhp' => $jns_perawatan['bhp'],
+                        'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
+                        'kso' => $jns_perawatan['kso'],
+                        'menejemen' => $jns_perawatan['menejemen'],
+                        'biaya_rawat' => $jns_perawatan['total_byrdr'],
+                        'stts_bayar' => 'Belum'
+                    ]);
+                }
+                if($input['provider'] == 'rawat_jl_pr') {
+                    $this->db('rawat_jl_pr')->save([
+                        'no_rawat' => $input['no_rawat'],
+                        'kd_jenis_prw' => $input['kd_jenis_prw'],
+                        'nip' => $input['kode_provider2'],
+                        'tgl_perawatan' => $input['tgl_perawatan'],
+                        'jam_rawat' => $input['jam_rawat'],
+                        'material' => $jns_perawatan['material'],
+                        'bhp' => $jns_perawatan['bhp'],
+                        'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
+                        'kso' => $jns_perawatan['kso'],
+                        'menejemen' => $jns_perawatan['menejemen'],
+                        'biaya_rawat' => $jns_perawatan['total_byrpr'],
+                        'stts_bayar' => 'Belum'
+                    ]);
+                }
+                if($input['provider'] == 'rawat_jl_drpr') {
+                    $this->db('rawat_jl_drpr')->save([
+                        'no_rawat' => $input['no_rawat'],
+                        'kd_jenis_prw' => $input['kd_jenis_prw'],
+                        'kd_dokter' => $input['kode_provider'],
+                        'nip' => $input['kode_provider2'],
+                        'tgl_perawatan' => $input['tgl_perawatan'],
+                        'jam_rawat' => $input['jam_rawat'],
+                        'material' => $jns_perawatan['material'],
+                        'bhp' => $jns_perawatan['bhp'],
+                        'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
+                        'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
+                        'kso' => $jns_perawatan['kso'],
+                        'menejemen' => $jns_perawatan['menejemen'],
+                        'biaya_rawat' => $jns_perawatan['total_byrdrpr'],
+                        'stts_bayar' => 'Belum'
+                    ]);
+                }
+                
+                return ['status' => 'success', 'message' => 'Detail saved'];
+            } else {
+                return ['status' => 'error', 'message' => 'Category not supported'];
+            }
+        } catch (\PDOException $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => $message];
+        }
+    }
+
     public function getIndex()
     {
       $sub_modules = [

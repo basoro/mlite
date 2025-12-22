@@ -589,6 +589,121 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Save Detail Rawat Jalan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kat\": \"tindakan\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_jenis_prw\": \"T001\",\n    \"provider\": \"rawat_jl_dr\",\n    \"kode_provider\": \"D00001\",\n    \"tgl_perawatan\": \"2025-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_jalan/savedetail",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_jalan",
+								"savedetail"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Master",
+			"item": [
+				{
+					"name": "List Master Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/master/list/dokter?page={{page}}&per_page={{per_page}}&s={{s}}&col=",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"master",
+								"list",
+								"dokter"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{page}}"
+								},
+								{
+									"key": "per_page",
+									"value": "{{per_page}}"
+								},
+								{
+									"key": "s",
+									"value": "{{s}}"
+								},
+								{
+									"key": "col",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}

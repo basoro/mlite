@@ -195,6 +195,64 @@ class Admin extends AdminModule
         ];
     }
 
+    public function apiList($table)
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_view', 'master')) {
+            return ['status' => 'error', 'message' => 'Permission denied'];
+        }
+
+        // Whitelist allowed tables
+        $allowed_tables = [
+            'dokter', 'petugas', 'poliklinik', 'bangsal', 'kamar', 'databarang',
+            'jns_perawatan', 'jns_perawatan_inap', 'jns_perawatan_lab', 'jns_perawatan_radiologi',
+            'bahasa', 'propinsi', 'kabupaten', 'kecamatan', 'kelurahan', 'cacat_fisik', 'suku_bangsa',
+            'perusahaan_pasien', 'penjab', 'golongan_barang', 'industri_farmasi', 'jenis', 'kategori_barang',
+            'kategori_penyakit', 'penyakit', 'icd9', 'kategori_perawatan', 'kode_satuan',
+            'master_aturan_pakai', 'master_berkas_digital', 'spesialis', 'bank', 'bidang', 'departemen',
+            'emergency_index', 'jabatan', 'jenjang_jabatan', 'kelompok_jabatan', 'pendidikan',
+            'resiko_kerja', 'status_kerja', 'status_wp', 'metode_racik', 'ruang_ok'
+        ];
+        
+        if (!in_array($table, $allowed_tables)) {
+             return ['status' => 'error', 'message' => 'Table not allowed or not found'];
+        }
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $per_page = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+        $offset = ($page - 1) * $per_page;
+        
+        // Count Query
+        $q_count = $this->db($table);
+        if (!empty($_GET['s']) && !empty($_GET['col'])) {
+            $q_count->like($_GET['col'], '%'.$_GET['s'].'%');
+        }
+        if (isset($_GET['status'])) {
+            $q_count->where('status', $_GET['status']);
+        }
+        $totalRecords = $q_count->count();
+
+        // Data Query
+        $q_data = $this->db($table);
+        if (!empty($_GET['s']) && !empty($_GET['col'])) {
+            $q_data->like($_GET['col'], '%'.$_GET['s'].'%');
+        }
+        if (isset($_GET['status'])) {
+            $q_data->where('status', $_GET['status']);
+        }
+        $rows = $q_data->offset($offset)->limit($per_page)->toArray();
+
+        return [
+            "status" => "success",
+            "data" => $rows,
+            "meta" => [
+                "page" => $page,
+                "per_page" => $per_page,
+                "total" => $totalRecords
+            ]
+        ];
+    }
+
     public function getManage()
     {
       $sub_modules = [
@@ -2448,10 +2506,10 @@ class Admin extends AdminModule
 
     public function getImportICD10()
     {
-      $fileName = 'https://basoro.id/downloads/icd10.csv';
+      $filename = 'https://basoro.id/downloads/icd10.csv';
       echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
 
-      $csvData = file_get_contents($fileName);
+      $csvData = file_get_contents($filename);
       if($csvData) {
         echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
       } else {
@@ -2532,10 +2590,10 @@ class Admin extends AdminModule
 
     public function getImportICD9()
     {
-      $fileName = 'https://basoro.id/downloads/icd9cm.csv';
+      $filename = 'https://basoro.id/downloads/icd9cm.csv';
       echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
 
-      $csvData = file_get_contents($fileName);
+      $csvData = file_get_contents($filename);
       if($csvData) {
         echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
       } else {
