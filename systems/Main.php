@@ -760,7 +760,7 @@ abstract class Main
     {
         $user = $this->db('mlite_users')->where('username', $username)->oneArray();
         if ($user && $user['role'] == 'admin') {
-            return 'true';
+            return true;
         }
 
         $mlite_crud_permissions = $this->db('mlite_crud_permissions')
@@ -769,10 +769,10 @@ abstract class Main
             ->oneArray();
             
         if (!$mlite_crud_permissions) {
-            return 'true'; 
+            return true; 
         }
         
-        return $mlite_crud_permissions[$action] === 'true';
+        return $mlite_crud_permissions[$action] == 'true';
     }
 
 }
