@@ -772,7 +772,7 @@ abstract class Main
             return true; 
         }
         
-        return $mlite_crud_permissions[$action] == 'true';
+        return isset($mlite_crud_permissions[$action]) && $mlite_crud_permissions[$action] == 'true';
     }
 
 }

@@ -198,7 +198,7 @@ class Admin extends AdminModule
     public function apiList($table)
     {
         $username = $this->core->checkAuth('GET');
-        if (!$this->core->checkPermission($username, 'can_view', 'master')) {
+        if (!$this->core->checkPermission($username, 'can_read', 'master')) {
             return ['status' => 'error', 'message' => 'Permission denied'];
         }
 

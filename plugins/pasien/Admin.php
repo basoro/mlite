@@ -1239,13 +1239,6 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getTes()
-    {
-        $username = $this->core->checkAuth('GET');
-        echo $this->core->checkPermission($username, 'can_read', 'pasien');
-        exit();
-    }
-
     /**
      * API Routes
      */
