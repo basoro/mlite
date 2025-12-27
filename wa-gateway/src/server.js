@@ -22,7 +22,12 @@ const PORT = process.env.PORT || 4000
 
 // --- SQLite Setup ---
 const dbPath = process.env.DB_PATH || 'whatsapp.db'
-const db = new Database(dbPath)
+const dbResolvedPath = path.resolve(process.cwd(), dbPath)
+const dbDir = path.dirname(dbResolvedPath)
+if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true })
+
+logger.info({ msg: 'Using database', path: dbResolvedPath })
+const db = new Database(dbResolvedPath)
 db.pragma('journal_mode = WAL')
 
 // Initialize Tables
@@ -113,13 +118,14 @@ async function startBaileys() {
   isStarting = true
   const authBase = process.env.AUTH_DIR || './wa-gateway/auth'
   const authDir = path.resolve(process.cwd(), authBase)
+  logger.info({ msg: 'Using auth directory', path: authDir })
   if (!fs.existsSync(authDir)) fs.mkdirSync(authDir, { recursive: true })
   const { state, saveCreds } = await useMultiFileAuthState(authDir)
   const { version } = await fetchLatestBaileysVersion()
   sock = makeWASocket({
       auth: state,
       version,
-      browser: ['Baileys', 'Chrome', '10.0.0'],
+      browser: ['Ubuntu', 'Chrome', '20.0.04'],
       logger,
       connectTimeoutMs: 60000,
       defaultQueryTimeoutMs: 0,
@@ -128,6 +134,7 @@ async function startBaileys() {
       retryRequestDelayMs: 250,
       markOnlineOnConnect: false,
       generateHighQualityLinkPreview: true,
+      syncFullHistory: false
   })
   
   const unwrap = (message) => {
