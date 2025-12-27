@@ -1,12 +1,10 @@
 FROM php:8.3-fpm
 
 # --------------------------------------------------
-# System dependencies (mLITE)
+# System dependencies
 # --------------------------------------------------
 RUN apt-get update && apt-get install -y \
-    apache2 \
-    apache2-utils \
-    libapache2-mod-fcgid \
+    nginx \
     git \
     curl \
     libpng-dev \
@@ -20,18 +18,11 @@ RUN apt-get update && apt-get install -y \
     libmagickwand-dev \
     zip \
     unzip \
+    supervisor \
     && rm -rf /var/lib/apt/lists/*
 
 # --------------------------------------------------
-# Apache config (MPM EVENT)
-# --------------------------------------------------
-RUN a2enmod proxy proxy_fcgi rewrite headers \
- && a2enconf php8.3-fpm \
- && a2dismod mpm_prefork \
- && a2enmod mpm_event
-
-# --------------------------------------------------
-# PHP extensions
+# PHP extensions (mLITE)
 # --------------------------------------------------
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 
@@ -55,9 +46,14 @@ RUN pecl install imagick redis \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # --------------------------------------------------
-# Apache vhost
+# Nginx config
 # --------------------------------------------------
-COPY apache.conf /etc/apache2/sites-available/000-default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# --------------------------------------------------
+# Supervisor
+# --------------------------------------------------
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # --------------------------------------------------
 # App
@@ -80,7 +76,6 @@ RUN mkdir -p admin/tmp \
     && chown -R www-data:www-data admin/tmp \
     && chmod -R 775 admin/tmp
 
-# --------------------------------------------------
-# Start Apache + PHP-FPM
-# --------------------------------------------------
-CMD service php8.3-fpm start && apachectl -D FOREGROUND
+EXPOSE 80
+
+CMD ["/usr/bin/supervisord"]
