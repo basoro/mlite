@@ -1,16 +1,17 @@
 FROM php:8.3-apache
 
 # --------------------------------------------------
-# 🔥 FIX MPM CONFLICT (WAJIB)
+# 🔥 FORCE SINGLE MPM (ANTI AH00534)
 # --------------------------------------------------
-RUN a2dismod mpm_event mpm_worker \
- && a2enmod mpm_prefork
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.load \
+          /etc/apache2/mods-enabled/mpm_*.conf \
+    && a2enmod mpm_prefork
 
 # Enable Apache rewrite
 RUN a2enmod rewrite
 
 # --------------------------------------------------
-# Install system dependencies required for mLITE
+# System dependencies (mLITE)
 # --------------------------------------------------
 RUN apt-get update && apt-get install -y \
     git \
@@ -30,7 +31,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # --------------------------------------------------
-# Configure & install PHP extensions
+# PHP extensions
 # --------------------------------------------------
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 
@@ -46,8 +47,6 @@ RUN docker-php-ext-install -j$(nproc) \
     zip \
     opcache
 
-RUN docker-php-ext-enable mysqli
-
 # --------------------------------------------------
 # PECL extensions
 # --------------------------------------------------
@@ -55,7 +54,7 @@ RUN pecl install imagick redis \
     && docker-php-ext-enable imagick redis
 
 # --------------------------------------------------
-# Install Composer
+# Composer
 # --------------------------------------------------
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -65,19 +64,15 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
 # --------------------------------------------------
-# Application setup
+# App
 # --------------------------------------------------
 WORKDIR /var/www/html
 COPY . .
 
-# Install composer dependencies (if exists)
 RUN if [ -f composer.json ]; then \
         composer install --no-dev --optimize-autoloader; \
     fi
 
-# --------------------------------------------------
-# Permissions (important for mLITE)
-# --------------------------------------------------
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
