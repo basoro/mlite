@@ -4,14 +4,20 @@ if (!version_compare(PHP_VERSION, '7.4.0', '>=')) {
     exit("mLITE requires at least <b>PHP 7.4</b> (Current: " . PHP_VERSION . ")");
 }
 
-define('DBHOST', 'localhost');
-define('DBPORT', '3306');
-define('DBUSER', 'root');
-define('DBPASS', '');
-define('DBNAME', 'mlite');
+$db_host = getenv('MYSQLHOST');
+$db_user = getenv('MYSQLUSER');
+$db_pass = getenv('MYSQLPASSWORD');
+$db_name = getenv('MYSQLDATABASE');
+$db_port = getenv('MYSQLPORT') ?: 3306;
+
+define('DBHOST', $db_host);
+define('DBPORT', $db_port);
+define('DBUSER', $db_user);
+define('DBPASS', $db_pass);
+define('DBNAME', $db_name);
 
 // URL Webapps
-define('WEBAPPS_URL', 'http://mlite.loc/uploads'); // Sesuaikan http://mlite.loc dengan domain atau IP Address server
+define('WEBAPPS_URL', 'http://mlite.up.railway.app/uploads'); // Sesuaikan http://mlite.loc dengan domain atau IP Address server
 define('WEBAPPS_PATH', BASE_DIR . '/uploads');
 
 // Multi APP
@@ -50,5 +56,8 @@ define('BASIC_MODULES', serialize([
 
 // Developer mode
 define('DEV_MODE', true);
+
+// JWT Secret
+define('JWT_SECRET', 'mlite_secret_key_change_me');
 
 ?>
