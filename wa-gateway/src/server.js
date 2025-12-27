@@ -125,7 +125,6 @@ async function startBaileys() {
   sock = makeWASocket({
       auth: state,
       version,
-      browser: ['Ubuntu', 'Chrome', '20.0.04'],
       logger,
       connectTimeoutMs: 60000,
       defaultQueryTimeoutMs: 0,
