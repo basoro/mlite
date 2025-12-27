@@ -37,8 +37,8 @@ RUN docker-php-ext-install \
     zip \
     opcache
 
-RUN pecl install imagick redis \
- && docker-php-ext-enable imagick redis
+# RUN pecl install imagick redis \
+#  && docker-php-ext-enable imagick redis
 
 # --------------------------------------------------
 # Composer
