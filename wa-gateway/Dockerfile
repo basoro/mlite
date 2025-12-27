@@ -28,7 +28,7 @@ COPY nginx.conf /app/nginx.conf
 RUN chmod +x start.sh
 
 # Create directory for auth persistence if needed
-RUN mkdir -p wa-gateway/auth
+RUN mkdir -p auth
 
 # Expose the port (Railway will override this but good for documentation)
 EXPOSE 8080
