@@ -112,7 +112,18 @@ async function startBaileys() {
   if (!fs.existsSync(authDir)) fs.mkdirSync(authDir, { recursive: true })
   const { state, saveCreds } = await useMultiFileAuthState(authDir)
   const { version } = await fetchLatestBaileysVersion()
-  sock = makeWASocket({ auth: state, version, browser: ['Ubuntu','Chrome','22.04.4'], logger })
+  sock = makeWASocket({
+      auth: state,
+      version,
+      browser: ['Baileys', 'Chrome', '10.0.0'],
+      logger,
+      connectTimeoutMs: 60000,
+      defaultQueryTimeoutMs: 0,
+      keepAliveIntervalMs: 10000,
+      emitOwnEvents: true,
+      retryRequestDelayMs: 250,
+      markOnlineOnConnect: false
+  })
   
   const unwrap = (message) => {
     let m = message || {}
