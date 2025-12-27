@@ -116,7 +116,7 @@ function normalizeDigits(d) {
 async function startBaileys() {
   if (isStarting) { logger.info({ msg: 'startBaileys skipped: already starting' }); return }
   isStarting = true
-  const authBase = process.env.AUTH_DIR || './wa-gateway/auth'
+  const authBase = process.env.AUTH_DIR || './auth'
   const authDir = path.resolve(process.cwd(), authBase)
   logger.info({ msg: 'Using auth directory', path: authDir })
   if (!fs.existsSync(authDir)) fs.mkdirSync(authDir, { recursive: true })
@@ -133,7 +133,12 @@ async function startBaileys() {
       retryRequestDelayMs: 250,
       markOnlineOnConnect: false,
       generateHighQualityLinkPreview: true,
-      syncFullHistory: false
+      syncFullHistory: false,
+      getMessage: async (key) => {
+          return {
+              conversation: 'hello'
+          }
+      }
   })
   
   const unwrap = (message) => {
