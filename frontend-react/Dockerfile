@@ -16,11 +16,11 @@ COPY . .
 # Note: Ensure VITE_API_URL is set at build time if you want it baked in, 
 # OR use a runtime configuration strategy if you need dynamic switching.
 # For simple Vite apps, environment variables usually need to be present at build time.
-ARG VITE_API_URL
+ARG VITE_API_BASE_URL
 ARG VITE_API_KEY
 ARG VITE_API_PATH
 
-ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_API_BASE_URL=$VITE_API_URL
 ENV VITE_API_KEY=$VITE_API_KEY
 ENV VITE_API_PATH=$VITE_API_PATH
 
