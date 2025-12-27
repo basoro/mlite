@@ -29,8 +29,8 @@ const Login: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const success = await login(username, password);
-      if (success) {
+      const result = await login(username, password);
+      if (result.token) {
         toast({
           title: 'Berhasil',
           description: 'Selamat datang di mKLINIK',
@@ -39,14 +39,14 @@ const Login: React.FC = () => {
       } else {
         toast({
           title: 'Error',
-          description: 'Username atau password salah',
+          description: result.error || result.message || 'Username atau password salah',
           variant: 'destructive',
         });
       }
-    } catch {
+    } catch (error: any) {
       toast({
         title: 'Error',
-        description: 'Terjadi kesalahan, silakan coba lagi',
+        description: error.message || 'Terjadi kesalahan, silakan coba lagi',
         variant: 'destructive',
       });
     } finally {

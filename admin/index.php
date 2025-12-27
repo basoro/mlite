@@ -42,9 +42,18 @@ $core = new Systems\Admin;
 // Register API routes available regardless of login state
 $core->router->set('api/login', function () use ($core) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $apiUser = $core->checkAuth('POST');
         $input = json_decode(file_get_contents('php://input'), true);
         $username = $input['username'] ?? $_POST['username'] ?? '';
         $password = $input['password'] ?? $_POST['password'] ?? '';
+
+        if ($apiUser !== $username && $apiUser !== 'admin') {
+             header('Content-Type: application/json');
+             http_response_code(401);
+             echo json_encode(['error' => 'API Key does not match the provided username']);
+             exit;
+        }
+
         $user = $core->db('mlite_users')->where('username', $username)->oneArray();
         if ($user && password_verify($password, $user['password'])) {
             $payload = [

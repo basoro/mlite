@@ -10,7 +10,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<boolean>;
+  login: (username: string, password: string) => Promise<any>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (username: string, password: string): Promise<any> => {
     try {
       const data = await apiLogin(username, password);
       
@@ -78,12 +78,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         setUser(loggedInUser);
         localStorage.setItem('user', JSON.stringify(loggedInUser));
-        return true;
       }
-      return false;
+      return data;
     } catch (error) {
       console.error('Login failed:', error);
-      return false;
+      throw error;
     }
   };
 

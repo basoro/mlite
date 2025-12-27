@@ -18,14 +18,23 @@ const config: ApiConfig = {
   apiPath: API_PATH,
   apiKey: API_KEY,
   token: localStorage.getItem('auth_token'),
-  usernamePermission: 'DR001',
-  passwordPermission: '12345678',
+  usernamePermission: localStorage.getItem('auth_username') || '',
+  passwordPermission: localStorage.getItem('auth_password') || '',
 };
 
-export const setToken = (token: string) => {
+export const setToken = (token: string, username?: string, password?: string) => {
   config.token = token;
   localStorage.setItem('auth_token', token);
   localStorage.setItem('auth_timestamp', new Date().getTime().toString());
+  
+  if (username) {
+    config.usernamePermission = username;
+    localStorage.setItem('auth_username', username);
+  }
+  if (password) {
+    config.passwordPermission = password;
+    localStorage.setItem('auth_password', password);
+  }
 };
 
 export const clearToken = () => {
@@ -59,12 +68,18 @@ const getHeaders = () => ({
 export const login = async (username: string, password: string) => {
   const response = await fetch(`${config.baseUrl}${config.apiPath}/api/login`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password }),
+    headers: { 
+      'Content-Type': 'application/json',
+      'X-Api-Key': config.apiKey,
+    },
+    body: JSON.stringify({ 
+      username: username, 
+      password: password 
+    }),
   });
   const data = await response.json();
   if (data.token) {
-    setToken(data.token);
+    setToken(data.token, username, password);
   }
   return data;
 };

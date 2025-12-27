@@ -698,6 +698,24 @@ abstract class Main
                  exit;
             }
 
+            // --- Layer 2: API Client Module Access Validation ---
+            // Check if the API Client (User linked to API Key) has access to the requested module
+            $apiClientUser = $this->db('mlite_users')->where('username', $keyRecord['username'])->oneArray();
+            if ($apiClientUser) {
+                $module = parseURL(1); // Get module name from URL
+                if ($module && $module !== 'api') { // Skip for 'api' module itself
+                     $moduleCheck = $this->db('mlite_modules')->where('dir', $module)->oneArray();
+                     if ($moduleCheck) {
+                         $assignedModules = $apiClientUser['access']; // 'all' or comma-separated list
+                         if ($assignedModules !== 'all' && !in_array($module, explode(',', $assignedModules))) {
+                             http_response_code(403);
+                             echo json_encode(['status' => 'error', 'message' => 'API Client denied access to this module']);
+                             exit;
+                         }
+                     }
+                }
+            }
+
             // Check for User Permissions Credentials (X-Username-Permission & X-Password-Permission)
             $userPerm = null;
             $passPerm = null;
@@ -734,6 +752,22 @@ abstract class Main
             if ($userPerm && $passPerm) {
                 $user = $this->db('mlite_users')->where('username', $userPerm)->oneArray();
                 if ($user && password_verify(trim($passPerm), $user['password'])) {
+                    
+                    // --- Layer 3: End-User Module Access Validation ---
+                    // Check if the End-User (logging in via Frontend) has access to the requested module
+                    $module = parseURL(1); // Get module name from URL
+                    if ($module && $module !== 'api') { // Skip for 'api' module itself
+                         $moduleCheck = $this->db('mlite_modules')->where('dir', $module)->oneArray();
+                         if ($moduleCheck) {
+                             $assignedUsers = $this->getUserInfo('access', $user['id']); // Assuming 'access' field stores assigned modules
+                             if ($assignedUsers !== 'all' && !in_array($module, explode(',', $assignedUsers))) {
+                                 http_response_code(403);
+                                 echo json_encode(['status' => 'error', 'message' => 'User access denied for this module']);
+                                 exit;
+                             }
+                         }
+                    }
+
                     return $user['username'];
                 } else {
                     http_response_code(401);

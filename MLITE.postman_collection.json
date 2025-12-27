@@ -28,6 +28,12 @@
 						"key": "Content-Type",
 						"value": "application/json",
 						"type": "text"
+					},
+					{
+						"key": "X-Api-Key",
+						"value": "{{apiKey}}",
+						"type": "text",
+						"description": "API Key wajib disertakan untuk validasi akses Layer 1"
 					}
 				],
 				"body": {
@@ -44,7 +50,8 @@
 						"api",
 						"login"
 					]
-				}
+				},
+				"description": "Mendapatkan Token JWT. \n\nKeamanan Layer 1: API Key harus sesuai dengan Username yang digunakan."
 			},
 			"response": []
 		},
