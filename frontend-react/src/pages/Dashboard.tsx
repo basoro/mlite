@@ -1,4 +1,6 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
 import { 
   Users, 
   Calendar, 
@@ -10,10 +12,12 @@ import {
   Activity, 
   FileText,
   AlertTriangle,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { getRawatJalanList } from '@/lib/api';
 
 // Stat Card Component
 interface StatCardProps {
@@ -53,21 +57,42 @@ interface ScheduleItemProps {
   time: string;
   patientName: string;
   type: string;
-  status: 'scheduled' | 'in-progress' | 'completed';
+  status: string;
 }
 
-const ScheduleItem: React.FC<ScheduleItemProps> = ({ time, patientName, type, status }) => (
-  <div className="schedule-item animate-slide-in-left">
-    <span className="text-lg font-semibold text-foreground w-24">{time}</span>
-    <div className="flex-1">
-      <p className="font-medium text-foreground">{patientName}</p>
-      <p className="text-sm text-muted-foreground">{type}</p>
+const ScheduleItem: React.FC<ScheduleItemProps> = ({ time, patientName, type, status }) => {
+  const getStatusLabel = (s: string) => {
+    switch (s) {
+      case 'Belum': return 'Menunggu';
+      case 'Sudah': return 'Selesai';
+      case 'Berkas Diterima': return 'Diperiksa';
+      case 'Batal': return 'Batal';
+      default: return s;
+    }
+  };
+
+  const getStatusClass = (s: string) => {
+    switch (s) {
+      case 'Belum': return 'badge-scheduled';
+      case 'Sudah': return 'badge-completed'; // Assuming you have this or default to scheduled
+      case 'Berkas Diterima': return 'badge-in-progress'; // Assuming you have this
+      default: return 'badge-scheduled';
+    }
+  };
+
+  return (
+    <div className="schedule-item animate-slide-in-left">
+      <span className="text-lg font-semibold text-foreground w-24">{time}</span>
+      <div className="flex-1">
+        <p className="font-medium text-foreground">{patientName}</p>
+        <p className="text-sm text-muted-foreground">{type}</p>
+      </div>
+      <span className={`badge-status ${getStatusClass(status)}`}>
+        {getStatusLabel(status)}
+      </span>
     </div>
-    <span className="badge-status badge-scheduled">
-      {status === 'scheduled' ? 'Dijadwalkan' : status === 'in-progress' ? 'Berlangsung' : 'Selesai'}
-    </span>
-  </div>
-);
+  );
+};
 
 // Quick Action Component
 interface QuickActionProps {
@@ -113,18 +138,27 @@ const AlertCard: React.FC<AlertCardProps> = ({ title, items, type }) => (
 );
 
 const Dashboard: React.FC = () => {
-  // Mock data - in production, this would come from API
-  const stats = {
-    totalPasien: 2,
-    jadwalHariIni: 2,
-    pemeriksaanSelesai: 0,
-    pendapatan: 'Rp 0',
-  };
+  const today = format(new Date(), 'yyyy-MM-dd');
 
-  const todaySchedule: ScheduleItemProps[] = [
-    { time: '08:00:00', patientName: 'Budi Santoso', type: 'Pemeriksaan Umum', status: 'scheduled' },
-    { time: '09:00:00', patientName: 'Siti Aminah', type: 'Pemeriksaan Umum', status: 'scheduled' },
-  ];
+  const { data: scheduleData, isLoading } = useQuery({
+    queryKey: ['rawatJalan', today],
+    queryFn: () => getRawatJalanList(today, today, 0, 100),
+  });
+
+  const schedules = scheduleData?.data || [];
+
+  // Calculate stats
+  const totalPasien = schedules.length;
+  const menunggu = schedules.filter((s: any) => s.stts === 'Belum').length;
+  const selesai = schedules.filter((s: any) => s.stts === 'Sudah').length;
+  // Pendapatan logic can be added later if API supports it
+  
+  const stats = {
+    totalPasien: totalPasien,
+    menunggu: menunggu,
+    pemeriksaanSelesai: selesai,
+    pendapatan: 'Rp -',
+  };
 
   const quickActions: QuickActionProps[] = [
     { icon: UserPlus, label: 'Registrasi Pasien Baru', href: '/pasien' },
@@ -132,6 +166,14 @@ const Dashboard: React.FC = () => {
     { icon: Activity, label: 'Mulai Pemeriksaan', href: '/pemeriksaan' },
     { icon: FileText, label: 'Lihat Laporan', href: '/laporan' },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -154,28 +196,27 @@ const Dashboard: React.FC = () => {
         <StatCard
           title="Total Pasien Hari Ini"
           value={stats.totalPasien}
-          subtitle="+2 dari kemarin"
+          subtitle="Pasien terdaftar"
           icon={Users}
         />
         <StatCard
-          title="Jadwal Hari Ini"
-          value={stats.jadwalHariIni}
-          subtitle="3 menunggu pemeriksaan"
+          title="Menunggu Pemeriksaan"
+          value={stats.menunggu}
+          subtitle="Pasien dalam antrian"
           icon={Calendar}
         />
         <StatCard
           title="Pemeriksaan Selesai"
           value={stats.pemeriksaanSelesai}
-          subtitle="0/2 pasien"
+          subtitle="Pasien telah diperiksa"
           icon={Stethoscope}
         />
         <StatCard
           title="Pendapatan Hari Ini"
           value={stats.pendapatan}
-          subtitle=""
+          subtitle="Estimasi pendapatan"
           icon={TrendingUp}
           valueColor="text-primary"
-          trend={{ value: '+15% dari rata-rata', positive: true }}
         />
       </div>
 
@@ -191,9 +232,19 @@ const Dashboard: React.FC = () => {
             Daftar pasien yang dijadwalkan hari ini
           </p>
           <div className="space-y-3">
-            {todaySchedule.map((schedule, index) => (
-              <ScheduleItem key={index} {...schedule} />
-            ))}
+            {schedules.length > 0 ? (
+              schedules.map((schedule: any, index: number) => (
+                <ScheduleItem 
+                  key={index} 
+                  time={schedule.jam_reg}
+                  patientName={schedule.nm_pasien}
+                  type={schedule.nm_poli}
+                  status={schedule.stts}
+                />
+              ))
+            ) : (
+              <p className="text-muted-foreground text-center py-4">Tidak ada jadwal hari ini</p>
+            )}
           </div>
         </div>
 

@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { Clock, User, Calendar, Stethoscope, FileText, Pill, Smile } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Clock, User, Calendar, Stethoscope, FileText, Pill, Smile, Loader2, Save } from 'lucide-react';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -11,74 +14,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-
-interface QueuePatient {
-  time: string;
-  name: string;
-  age: string;
-  poli: string;
-  status: 'scheduled' | 'in-progress' | 'completed';
-}
-
-// Mock data
-const queuePatients: QueuePatient[] = [
-  { time: '08:00:00', name: 'Budi Santoso', age: '0 tahun', poli: 'Poli Gigi', status: 'scheduled' },
-  { time: '09:00:00', name: 'Siti Aminah', age: 'tahun', poli: 'Poli Umum', status: 'scheduled' },
-];
-
-interface PatientHistory {
-  date: string;
-  icd10?: string;
-  icd9?: string;
-  vitals?: {
-    tekananDarah?: string;
-    nadi?: string;
-    rr?: string;
-    suhu?: string;
-    berat?: string;
-    tinggi?: string;
-    saturasiO2?: string;
-    kesadaran?: string;
-    lingkarPerut?: string;
-    gcs?: string;
-  };
-  keluhan?: string;
-  pemeriksaan?: string;
-  diagnosa?: string;
-  tindakan?: string;
-}
-
-const mockHistory: PatientHistory[] = [
-  { date: '25/12/2025, 17.55.00' },
-  {
-    date: '23/12/2025, 07.44.05',
-    icd10: 'ICD-10',
-    icd9: 'ICD-9',
-    vitals: {
-      tekananDarah: '- / -',
-      nadi: '-',
-      rr: '-',
-      suhu: '-',
-      berat: '-',
-      tinggi: '-',
-      saturasiO2: '-',
-      kesadaran: '-',
-      lingkarPerut: '-',
-      gcs: '-',
-    },
-  },
-  {
-    date: '22/12/2025, 17.33.57',
-    keluhan: 'asdasd',
-    pemeriksaan: 'asd',
-    diagnosa: 'asd',
-    tindakan: 'asd',
-  },
-];
+import { useToast } from '@/hooks/use-toast';
+import { getRawatJalanList, getRiwayatPerawatan, saveSOAP } from '@/lib/api';
 
 // Queue Item Component
 interface QueueItemProps {
-  patient: QueuePatient;
+  patient: any;
   isSelected: boolean;
   onClick: () => void;
 }
@@ -88,108 +29,154 @@ const QueueItem: React.FC<QueueItemProps> = ({ patient, isSelected, onClick }) =
     onClick={onClick}
     className={`p-4 rounded-xl border cursor-pointer transition-all ${
       isSelected
-        ? 'border-primary bg-primary/5'
-        : 'border-border hover:border-primary/50 hover:bg-accent/50'
+        ? 'border-emerald-500 bg-emerald-50'
+        : 'border-border hover:border-emerald-200 hover:bg-emerald-50/50'
     }`}
   >
     <div className="flex items-start justify-between mb-2">
-      <span className="text-lg font-bold text-foreground">{patient.time}</span>
+      <span className="text-lg font-bold text-foreground">{patient.jam_reg}</span>
       <div className="flex items-center gap-2">
-        <span className="text-xs text-muted-foreground">{patient.poli}</span>
-        <span className="badge-status badge-scheduled">Terjadwal</span>
+        <span className="text-xs text-muted-foreground">{patient.nm_poli}</span>
+        <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+            patient.stts === 'Sudah' ? 'bg-green-100 text-green-700' :
+            patient.stts === 'Berkas Diterima' ? 'bg-blue-100 text-blue-700' :
+            'bg-gray-100 text-gray-700'
+        }`}>
+            {patient.stts}
+        </span>
       </div>
     </div>
-    <p className="font-medium text-foreground">{patient.name}</p>
-    <p className="text-sm text-muted-foreground">Usia: {patient.age}</p>
+    <p className="font-medium text-foreground">{patient.nm_pasien}</p>
+    <p className="text-sm text-muted-foreground">{patient.no_rkm_medis}</p>
   </div>
 );
 
 // History Item Component
-const HistoryItem: React.FC<{ history: PatientHistory }> = ({ history }) => (
-  <div className="p-4 border border-border rounded-xl">
-    <div className="flex items-start justify-between">
-      <span className="font-medium text-foreground">{history.date}</span>
-      <Button variant="outline" size="sm">
-        Hasil Pemeriksaan
-      </Button>
+const HistoryItem: React.FC<{ history: any }> = ({ history }) => (
+  <div className="p-4 border border-border rounded-xl bg-white hover:shadow-sm transition-shadow">
+    <div className="flex items-start justify-between mb-3">
+      <div className="flex items-center gap-2">
+        <Calendar className="w-4 h-4 text-emerald-500" />
+        <span className="font-medium text-foreground">{history.tgl_registrasi}</span>
+      </div>
+      <span className="text-sm text-muted-foreground">{history.no_rawat}</span>
     </div>
-    {history.icd10 && (
-      <div className="mt-3 space-y-2">
-        <p className="text-sm text-muted-foreground">{history.icd10}</p>
-        <p className="text-sm text-muted-foreground">{history.icd9}</p>
-        {history.vitals && (
-          <div className="grid grid-cols-4 gap-4 mt-4 text-sm">
-            <div>
-              <span className="text-muted-foreground">Tekanan Darah: </span>
-              <span>{history.vitals.tekananDarah}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Nadi: </span>
-              <span>{history.vitals.nadi}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">RR: </span>
-              <span>{history.vitals.rr}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Suhu: </span>
-              <span>{history.vitals.suhu}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Berat: </span>
-              <span>{history.vitals.berat}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Tinggi: </span>
-              <span>{history.vitals.tinggi}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Saturasi O₂: </span>
-              <span>{history.vitals.saturasiO2}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Kesadaran: </span>
-              <span>{history.vitals.kesadaran}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Lingkar Perut: </span>
-              <span>{history.vitals.lingkarPerut}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">GCS: </span>
-              <span>{history.vitals.gcs}</span>
-            </div>
-          </div>
-        )}
-      </div>
-    )}
-    {history.keluhan && (
-      <div className="mt-3 space-y-1 text-sm">
-        <p>
-          <span className="text-muted-foreground">Keluhan: </span>
-          <span>{history.keluhan}</span>
-        </p>
-        <p>
-          <span className="text-muted-foreground">Pemeriksaan Fisik: </span>
-          <span>{history.pemeriksaan}</span>
-        </p>
-        <p>
-          <span className="text-muted-foreground">Diagnosa: </span>
-          <span>{history.diagnosa}</span>
-        </p>
-        <p>
-          <span className="text-muted-foreground">Tindakan: </span>
-          <span>{history.tindakan}</span>
-        </p>
-      </div>
-    )}
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div>
+            <p className="font-semibold text-gray-700 mb-1">Diagnosa</p>
+            <p className="text-gray-600">{history.diagnosa || '-'}</p>
+        </div>
+        <div>
+            <p className="font-semibold text-gray-700 mb-1">Keluhan</p>
+            <p className="text-gray-600">{history.keluhan || '-'}</p>
+        </div>
+        <div>
+            <p className="font-semibold text-gray-700 mb-1">Pemeriksaan</p>
+            <p className="text-gray-600">{history.pemeriksaan || '-'}</p>
+        </div>
+        <div>
+            <p className="font-semibold text-gray-700 mb-1">Terapi/Tindakan</p>
+            <p className="text-gray-600">{history.tindakan || '-'}</p>
+        </div>
+    </div>
   </div>
 );
 
 const Pemeriksaan: React.FC = () => {
-  const [selectedPatient, setSelectedPatient] = useState<QueuePatient | null>(queuePatients[0]);
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
+  const [dateFrom, setDateFrom] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [dateTo, setDateTo] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // SOAP Form State
+  const [soapData, setSoapData] = useState({
+    suhu_tubuh: '',
+    tensi: '',
+    nadi: '',
+    respirasi: '',
+    tinggi: '',
+    berat: '',
+    gcs: '',
+    keluhan: '',
+    pemeriksaan: '',
+    alergi: '',
+    lingkar_perut: '',
+    rtl: '',
+    penilaian: '',
+    instruksi: '',
+    evaluasi: '',
+    nip: '', // This should ideally come from logged in user
+  });
+
+  // Fetch Queue (Rawat Jalan)
+  const { data: queueData, isLoading: isQueueLoading } = useQuery({
+    queryKey: ['rawatJalan', dateFrom, dateTo],
+    queryFn: () => getRawatJalanList(dateFrom, dateTo, 0, 100),
+  });
+
+  // Fetch Patient History
+  const { data: historyData, isLoading: isHistoryLoading } = useQuery({
+    queryKey: ['riwayatPerawatan', selectedPatient?.no_rkm_medis],
+    queryFn: () => getRiwayatPerawatan(selectedPatient.no_rkm_medis),
+    enabled: !!selectedPatient?.no_rkm_medis,
+  });
+
+  const patients = queueData?.data || [];
+  
+  // Reset form when patient changes
+  useEffect(() => {
+    if (selectedPatient) {
+        setSoapData({
+            suhu_tubuh: '',
+            tensi: '',
+            nadi: '',
+            respirasi: '',
+            tinggi: '',
+            berat: '',
+            gcs: '',
+            keluhan: '',
+            pemeriksaan: '',
+            alergi: '',
+            lingkar_perut: '',
+            rtl: '',
+            penilaian: '',
+            instruksi: '',
+            evaluasi: '',
+            nip: '-',
+        });
+    }
+  }, [selectedPatient]);
+
+  const saveSoapMutation = useMutation({
+    mutationFn: (data: any) => saveSOAP(data),
+    onSuccess: () => {
+      toast({ title: 'Berhasil', description: 'Data pemeriksaan berhasil disimpan' });
+      queryClient.invalidateQueries({ queryKey: ['riwayatPerawatan'] });
+      // Optionally update status to 'Sudah'
+    },
+    onError: (error: any) => {
+      toast({ title: 'Gagal', description: error.message || 'Gagal menyimpan data', variant: 'destructive' });
+    },
+  });
+
+  const handleSoapSubmit = () => {
+    if (!selectedPatient) return;
+
+    const payload = {
+        ...soapData,
+        no_rawat: selectedPatient.no_rawat,
+        tgl_perawatan: format(new Date(), 'yyyy-MM-dd'),
+        jam_rawat: format(new Date(), 'HH:mm:ss'),
+    };
+
+    saveSoapMutation.mutate(payload);
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setSoapData(prev => ({ ...prev, [field]: value }));
+  };
 
   return (
     <div className="space-y-6">
@@ -241,22 +228,32 @@ const Pemeriksaan: React.FC = () => {
             </div>
 
             {/* Queue List */}
-            <div className="space-y-3">
-              {queuePatients.map((patient, index) => (
-                <QueueItem
-                  key={index}
-                  patient={patient}
-                  isSelected={selectedPatient?.name === patient.name}
-                  onClick={() => setSelectedPatient(patient)}
-                />
-              ))}
+            <div className="space-y-3 max-h-[600px] overflow-y-auto">
+              {isQueueLoading ? (
+                 <div className="flex justify-center py-4">
+                    <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+                 </div>
+              ) : patients.length > 0 ? (
+                patients.map((patient: any) => (
+                  <QueueItem
+                    key={patient.no_rawat}
+                    patient={patient}
+                    isSelected={selectedPatient?.no_rawat === patient.no_rawat}
+                    onClick={() => setSelectedPatient(patient)}
+                  />
+                ))
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                    Tidak ada antrian
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Right Column - Patient Info & History */}
         <div className="lg:col-span-3 space-y-4">
-          {selectedPatient && (
+          {selectedPatient ? (
             <>
               {/* Patient Info Card */}
               <div className="bg-card rounded-xl border border-border p-6">
@@ -265,42 +262,37 @@ const Pemeriksaan: React.FC = () => {
                   <h2 className="text-xl font-bold text-foreground">Informasi Pasien</h2>
                 </div>
 
-                <div className="grid grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   <div>
                     <p className="text-sm text-muted-foreground">Nama</p>
-                    <p className="font-semibold text-foreground">{selectedPatient.name}</p>
+                    <p className="font-semibold text-foreground">{selectedPatient.nm_pasien}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">ID Pasien</p>
-                    <p className="font-semibold text-foreground">000001</p>
+                    <p className="text-sm text-muted-foreground">No. RM</p>
+                    <p className="font-semibold text-foreground">{selectedPatient.no_rkm_medis}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Usia</p>
-                    <p className="font-semibold text-foreground">{selectedPatient.age}</p>
+                    <p className="text-sm text-muted-foreground">No. Rawat</p>
+                    <p className="font-semibold text-foreground text-xs">{selectedPatient.no_rawat}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Waktu</p>
-                    <p className="font-semibold text-foreground">{selectedPatient.time}</p>
+                    <p className="text-sm text-muted-foreground">Poliklinik</p>
+                    <p className="font-semibold text-foreground">{selectedPatient.nm_poli}</p>
                   </div>
-                </div>
-
-                <div className="mt-4">
-                  <p className="text-sm text-muted-foreground">Keluhan Utama</p>
-                  <p className="text-foreground">-</p>
                 </div>
               </div>
 
               {/* Tabs */}
               <div className="bg-card rounded-xl border border-border p-6">
-                <Tabs defaultValue="riwayat" className="w-full">
+                <Tabs defaultValue="pemeriksaan" className="w-full">
                   <TabsList className="grid grid-cols-5 w-full">
+                    <TabsTrigger value="pemeriksaan" className="gap-2">
+                      <Stethoscope className="w-4 h-4" />
+                      SOAP
+                    </TabsTrigger>
                     <TabsTrigger value="riwayat" className="gap-2">
                       <FileText className="w-4 h-4" />
                       Riwayat
-                    </TabsTrigger>
-                    <TabsTrigger value="pemeriksaan" className="gap-2">
-                      <Stethoscope className="w-4 h-4" />
-                      Pemeriksaan
                     </TabsTrigger>
                     <TabsTrigger value="odontogram" className="gap-2">
                       <Smile className="w-4 h-4" />
@@ -320,58 +312,114 @@ const Pemeriksaan: React.FC = () => {
                     <div className="mb-4">
                       <h3 className="text-lg font-bold text-foreground">Riwayat Pemeriksaan</h3>
                       <p className="text-sm text-muted-foreground">
-                        Pasien: {selectedPatient.name}
+                        Riwayat kunjungan sebelumnya
                       </p>
                     </div>
-                    <div className="space-y-3">
-                      {mockHistory.map((history, index) => (
-                        <HistoryItem key={index} history={history} />
-                      ))}
+                    <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                      {isHistoryLoading ? (
+                          <div className="flex justify-center py-4">
+                            <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+                          </div>
+                      ) : historyData?.data && historyData.data.length > 0 ? (
+                          historyData.data.map((history: any, index: number) => (
+                            <HistoryItem key={index} history={history} />
+                          ))
+                      ) : (
+                          <div className="text-center py-8 text-muted-foreground">
+                            Belum ada riwayat pemeriksaan
+                          </div>
+                      )}
                     </div>
                   </TabsContent>
 
                   <TabsContent value="pemeriksaan" className="mt-6">
                     <div className="space-y-4">
-                      <h3 className="text-lg font-bold text-foreground">Input Pemeriksaan</h3>
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                          <Label>Tekanan Darah</Label>
-                          <Input placeholder="120/80" />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Nadi</Label>
-                          <Input placeholder="80 bpm" />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Suhu</Label>
-                          <Input placeholder="36.5°C" />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Berat Badan</Label>
-                          <Input placeholder="60 kg" />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Tinggi Badan</Label>
-                          <Input placeholder="170 cm" />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Respirasi</Label>
-                          <Input placeholder="20 /menit" />
-                        </div>
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-bold text-foreground">Input Pemeriksaan (SOAP)</h3>
+                        <Button 
+                            onClick={handleSoapSubmit} 
+                            disabled={saveSoapMutation.isPending}
+                            className="bg-emerald-600 hover:bg-emerald-700"
+                        >
+                            {saveSoapMutation.isPending ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Menyimpan...
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="mr-2 h-4 w-4" />
+                                    Simpan Pemeriksaan
+                                </>
+                            )}
+                        </Button>
                       </div>
-                      <div className="space-y-2">
-                        <Label>Keluhan</Label>
-                        <Input placeholder="Masukkan keluhan pasien" />
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {/* Subjective & Objective */}
+                          <div className="space-y-4">
+                              <h4 className="font-semibold text-emerald-600 border-b pb-1">Tanda Vital & Fisik</h4>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <Label>Tensi (mmHg)</Label>
+                                  <Input placeholder="120/80" value={soapData.tensi} onChange={(e) => handleInputChange('tensi', e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Nadi (/menit)</Label>
+                                  <Input placeholder="80" value={soapData.nadi} onChange={(e) => handleInputChange('nadi', e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Suhu (°C)</Label>
+                                  <Input placeholder="36.5" value={soapData.suhu_tubuh} onChange={(e) => handleInputChange('suhu_tubuh', e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Respirasi (/menit)</Label>
+                                  <Input placeholder="20" value={soapData.respirasi} onChange={(e) => handleInputChange('respirasi', e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Berat (kg)</Label>
+                                  <Input placeholder="60" value={soapData.berat} onChange={(e) => handleInputChange('berat', e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Tinggi (cm)</Label>
+                                  <Input placeholder="170" value={soapData.tinggi} onChange={(e) => handleInputChange('tinggi', e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>GCS</Label>
+                                  <Input placeholder="E4V5M6" value={soapData.gcs} onChange={(e) => handleInputChange('gcs', e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Lingkar Perut (cm)</Label>
+                                  <Input placeholder="-" value={soapData.lingkar_perut} onChange={(e) => handleInputChange('lingkar_perut', e.target.value)} />
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Alergi</Label>
+                                <Input placeholder="Riwayat alergi..." value={soapData.alergi} onChange={(e) => handleInputChange('alergi', e.target.value)} />
+                              </div>
+                          </div>
+
+                          {/* Assessment & Plan */}
+                          <div className="space-y-4">
+                             <h4 className="font-semibold text-emerald-600 border-b pb-1">SOAP Detail</h4>
+                             <div className="space-y-2">
+                                <Label>Keluhan (Subjektif)</Label>
+                                <Textarea className="h-20" placeholder="Keluhan pasien..." value={soapData.keluhan} onChange={(e) => handleInputChange('keluhan', e.target.value)} />
+                             </div>
+                             <div className="space-y-2">
+                                <Label>Pemeriksaan (Objektif)</Label>
+                                <Textarea className="h-20" placeholder="Hasil pemeriksaan fisik..." value={soapData.pemeriksaan} onChange={(e) => handleInputChange('pemeriksaan', e.target.value)} />
+                             </div>
+                             <div className="space-y-2">
+                                <Label>Penilaian (Asesmen)</Label>
+                                <Textarea className="h-20" placeholder="Diagnosa/Masalah..." value={soapData.penilaian} onChange={(e) => handleInputChange('penilaian', e.target.value)} />
+                             </div>
+                             <div className="space-y-2">
+                                <Label>Rencana (Plan)</Label>
+                                <Textarea className="h-20" placeholder="Rencana terapi/tindakan..." value={soapData.rtl} onChange={(e) => handleInputChange('rtl', e.target.value)} />
+                             </div>
+                          </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label>Pemeriksaan Fisik</Label>
-                        <Input placeholder="Hasil pemeriksaan fisik" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Diagnosa</Label>
-                        <Input placeholder="Diagnosa pasien" />
-                      </div>
-                      <Button className="mt-4">Simpan Pemeriksaan</Button>
                     </div>
                   </TabsContent>
 
@@ -434,6 +482,16 @@ const Pemeriksaan: React.FC = () => {
                 </Tabs>
               </div>
             </>
+          ) : (
+             <div className="flex flex-col items-center justify-center h-full bg-card rounded-xl border border-border p-12 text-center">
+                <div className="bg-muted p-4 rounded-full mb-4">
+                    <Stethoscope className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground">Pilih Pasien</h3>
+                <p className="text-muted-foreground mt-2 max-w-sm">
+                    Silakan pilih pasien dari antrian di sebelah kiri untuk mulai melakukan pemeriksaan.
+                </p>
+             </div>
           )}
         </div>
       </div>
