@@ -1,98 +1,194 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Lock, User } from 'lucide-react';
+import { Heart, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
-const loginSchema = z.object({
-  username: z.string().min(1, 'Username is required'),
-  password: z.string().min(1, 'Password is required'),
-});
-
-type LoginFormInputs = z.infer<typeof loginSchema>;
-
-export default function Login() {
+const Login: React.FC = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [error, setError] = useState<string | null>(null);
-  
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormInputs>({
-    resolver: zodResolver(loginSchema),
-  });
+  const { toast } = useToast();
 
-  const onSubmit = async (data: LoginFormInputs) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!username || !password) {
+      toast({
+        title: 'Error',
+        description: 'Username dan password harus diisi',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      setError(null);
-      await login(data);
-      navigate('/dashboard');
-    } catch (err: any) {
-      console.error('Login failed', err);
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      const success = await login(username, password);
+      if (success) {
+        toast({
+          title: 'Berhasil',
+          description: 'Selamat datang di mKLINIK',
+        });
+        navigate('/');
+      } else {
+        toast({
+          title: 'Error',
+          description: 'Username atau password salah',
+          variant: 'destructive',
+        });
+      }
+    } catch {
+      toast({
+        title: 'Error',
+        description: 'Terjadi kesalahan, silakan coba lagi',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">mLITE Management</h1>
-          <p className="text-gray-500">Sign in to your account</p>
+    <div className="min-h-screen flex">
+      {/* Left Side - Branding */}
+      <div className="hidden lg:flex lg:w-1/2 bg-sidebar flex-col justify-between p-12">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
+            <Heart className="w-7 h-7 text-primary-foreground" />
+          </div>
+          <div>
+            <h1 className="text-sidebar-foreground font-bold text-2xl">mKLINIK</h1>
+            <p className="text-sidebar-muted text-sm">Management System</p>
+          </div>
         </div>
 
-        {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md mb-4 text-sm">
-            {error}
+        <div className="space-y-6">
+          <h2 className="text-4xl font-bold text-sidebar-foreground leading-tight">
+            Sistem Informasi<br />
+            Manajemen Klinik<br />
+            <span className="text-primary">Terintegrasi</span>
+          </h2>
+          <p className="text-sidebar-muted text-lg max-w-md">
+            Kelola data pasien, jadwal, pemeriksaan, resep, dan billing dalam satu platform yang mudah digunakan.
+          </p>
+          <div className="flex items-center gap-4 pt-4">
+            <div className="flex -space-x-2">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="w-10 h-10 rounded-full bg-sidebar-accent border-2 border-sidebar flex items-center justify-center"
+                >
+                  <span className="text-sidebar-muted text-xs font-medium">U{i}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-sidebar-muted text-sm">
+              Dipercaya oleh <span className="text-sidebar-foreground font-semibold">500+</span> klinik
+            </p>
           </div>
-        )}
+        </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <User className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
+        <p className="text-sidebar-muted text-sm">
+          © 2024 mKLINIK. Hak Cipta Dilindungi.
+        </p>
+      </div>
+
+      {/* Right Side - Login Form */}
+      <div className="flex-1 flex items-center justify-center p-8 bg-background">
+        <div className="w-full max-w-md space-y-8">
+          {/* Mobile Logo */}
+          <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+              <Heart className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-foreground font-bold text-xl">mKLINIK</h1>
+            </div>
+          </div>
+
+          <div className="text-center lg:text-left">
+            <h2 className="text-2xl font-bold text-foreground">Selamat Datang</h2>
+            <p className="text-muted-foreground mt-2">
+              Masuk ke akun Anda untuk melanjutkan
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
                 type="text"
-                className={`pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2 ${errors.username ? 'border-red-500' : ''}`}
-                placeholder="Enter username"
-                {...register('username')}
+                placeholder="Masukkan username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="h-12"
               />
             </div>
-            {errors.username && (
-              <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>
-            )}
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Masukkan password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-12 pr-12"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
-              <input
-                type="password"
-                className={`pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2 ${errors.password ? 'border-red-500' : ''}`}
-                placeholder="Enter password"
-                {...register('password')}
-              />
             </div>
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-            )}
-          </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? 'Signing in...' : 'Sign in'}
-          </button>
-        </form>
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" className="w-4 h-4 rounded border-input accent-primary" />
+                <span className="text-sm text-muted-foreground">Ingat saya</span>
+              </label>
+              <a href="#" className="text-sm text-primary hover:underline">
+                Lupa password?
+              </a>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full h-12 text-base font-semibold"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <span className="animate-pulse">Memproses...</span>
+              ) : (
+                <>
+                  Masuk
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </>
+              )}
+            </Button>
+          </form>
+
+          <p className="text-center text-sm text-muted-foreground">
+            Belum punya akun?{' '}
+            <a href="#" className="text-primary font-medium hover:underline">
+              Hubungi Admin
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default Login;

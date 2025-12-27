@@ -1303,7 +1303,7 @@ class Admin extends AdminModule
         $meta = [
             'page' => $page,
             'per_page' => $perpage,
-            'total' => $username,
+            'total' => $total,
         ];
 
         if(!isset($_SERVER['HTTP_X_API_KEY'])) {
@@ -1362,15 +1362,70 @@ class Admin extends AdminModule
             }
         }
         
-        $input['tgl_daftar'] = date('Y-m-d H:i');
-        // Sanitization and other defaults should be here
+        // Set default values for required fields
+        $defaults = [
+            'nm_ibu' => '-',
+            'alamat' => '-',
+            'gol_darah' => '-',
+            'pekerjaan' => '-',
+            'stts_nikah' => 'BELUM MENIKAH',
+            'agama' => 'ISLAM',
+            'tgl_daftar' => date('Y-m-d'),
+            'no_tlp' => '-',
+            'umur' => '0 Th 0 Bl 0 Hr',
+            'pnd' => '-',
+            'keluarga' => 'AYAH',
+            'namakeluarga' => '-',
+            'kd_pj' => 'UMUM',
+            'no_peserta' => '-',
+            'kd_kel' => '1',
+            'kd_kec' => '1',
+            'kd_kab' => '1',
+            'pekerjaanpj' => '-',
+            'alamatpj' => '-',
+            'kelurahanpj' => '-',
+            'kecamatanpj' => '-',
+            'kabupatenpj' => '-',
+            'perusahaan_pasien' => '-',
+            'suku_bangsa' => '1',
+            'bahasa_pasien' => '1',
+            'cacat_fisik' => '1',
+            'email' => '-',
+            'nip' => '-',
+            'kd_prop' => '1',
+            'propinsipj' => '-',
+            'tmp_lahir' => '-',
+            'tgl_lahir' => date('Y-m-d'),
+            'jk' => 'L',
+            'no_ktp' => '-'
+        ];
 
-        $saved = $this->db('pasien')->save($input);
-        if ($saved) {
-            $this->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='{$input['no_rkm_medis']}'");
-            return ['status' => 'success', 'data' => $input];
-        } else {
-            return ['status' => 'error', 'message' => 'Failed to create'];
+        foreach ($defaults as $key => $value) {
+            if (empty($input[$key])) {
+                $input[$key] = $value;
+            }
+        }
+
+        // Calculate umur if tgl_lahir provided
+        if (!empty($input['tgl_lahir'])) {
+            $input['umur'] = $this->hitungUmur($input['tgl_lahir']);
+        }
+
+        $input['tgl_daftar'] = date('Y-m-d H:i');
+
+        try {
+            $saved = $this->db('pasien')->save($input);
+            if ($saved) {
+                $this->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='{$input['no_rkm_medis']}'");
+                return ['status' => 'success', 'data' => $input];
+            } else {
+                $errorInfo = $this->db()->pdo()->errorInfo();
+                return ['status' => 'error', 'message' => 'Failed to create: ' . ($errorInfo[2] ?? 'Unknown error')];
+            }
+        } catch (\PDOException $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => $message];
         }
     }
 

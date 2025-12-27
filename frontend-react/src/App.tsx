@@ -1,29 +1,140 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Layout from './components/layout/Layout';
-import ProtectedRoute from './components/ProtectedRoute';
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import MainLayout from "@/components/layout/MainLayout";
+import Login from "@/pages/Login";
+import Dashboard from "@/pages/Dashboard";
+import Pasien from "@/pages/Pasien";
+import Jadwal from "@/pages/Jadwal";
+import Pemeriksaan from "@/pages/Pemeriksaan";
+import Resep from "@/pages/Resep";
+import Billing from "@/pages/Billing";
+import { 
+  Integrasi, 
+  Inventory, 
+  MasterData, 
+  Laporan, 
+  ManajemenUser, 
+  Pengaturan 
+} from "@/pages/Placeholders";
+import NotFound from "./pages/NotFound";
 
-import PatientList from './pages/PatientList';
-import PatientForm from './pages/PatientForm';
+const queryClient = new QueryClient();
 
-function App() {
-  return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      
-      <Route element={<ProtectedRoute />}>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/patients" element={<PatientList />} />
-          <Route path="/patients/new" element={<PatientForm />} />
-          <Route path="/patients/:id/edit" element={<PatientForm />} />
-        </Route>
-      </Route>
-    </Routes>
-  );
-}
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <AuthProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/"
+              element={
+                <MainLayout>
+                  <Dashboard />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/pasien"
+              element={
+                <MainLayout>
+                  <Pasien />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/jadwal"
+              element={
+                <MainLayout>
+                  <Jadwal />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/pemeriksaan"
+              element={
+                <MainLayout>
+                  <Pemeriksaan />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/resep"
+              element={
+                <MainLayout>
+                  <Resep />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/billing"
+              element={
+                <MainLayout>
+                  <Billing />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/integrasi"
+              element={
+                <MainLayout>
+                  <Integrasi />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/inventory"
+              element={
+                <MainLayout>
+                  <Inventory />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/master-data"
+              element={
+                <MainLayout>
+                  <MasterData />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/laporan"
+              element={
+                <MainLayout>
+                  <Laporan />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/manajemen-user"
+              element={
+                <MainLayout>
+                  <ManajemenUser />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/pengaturan"
+              element={
+                <MainLayout>
+                  <Pengaturan />
+                </MainLayout>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;
