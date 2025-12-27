@@ -11,7 +11,7 @@ try {
     // CORS Headers
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS, DELETE, PUT");
-    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Api-Key, X-Requested-With");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Api-Key, X-Requested-With, X-Username-Permission, X-Password-Permission");
 
     if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
         if (ob_get_level() > 0) ob_end_clean();
