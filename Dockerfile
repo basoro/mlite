@@ -1,19 +1,12 @@
-FROM php:8.3-apache
-
-# --------------------------------------------------
-# 🔥 FORCE SINGLE MPM (ANTI AH00534)
-# --------------------------------------------------
-RUN rm -f /etc/apache2/mods-enabled/mpm_*.load \
-          /etc/apache2/mods-enabled/mpm_*.conf \
-    && a2enmod mpm_prefork
-
-# Enable Apache rewrite
-RUN a2enmod rewrite
+FROM php:8.3-fpm
 
 # --------------------------------------------------
 # System dependencies (mLITE)
 # --------------------------------------------------
 RUN apt-get update && apt-get install -y \
+    apache2 \
+    apache2-utils \
+    libapache2-mod-fcgid \
     git \
     curl \
     libpng-dev \
@@ -23,35 +16,38 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libicu-dev \
     libfreetype6-dev \
-    zip \
-    unzip \
     imagemagick \
     libmagickwand-dev \
-    && apt-get clean \
+    zip \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
+
+# --------------------------------------------------
+# Apache config (MPM EVENT)
+# --------------------------------------------------
+RUN a2enmod proxy proxy_fcgi rewrite headers \
+ && a2enconf php8.3-fpm \
+ && a2dismod mpm_prefork \
+ && a2enmod mpm_event
 
 # --------------------------------------------------
 # PHP extensions
 # --------------------------------------------------
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 
-RUN docker-php-ext-install -j$(nproc) \
+RUN docker-php-ext-install \
     pdo_mysql \
     mysqli \
     mbstring \
     exif \
-    pcntl \
     bcmath \
     gd \
     intl \
     zip \
     opcache
 
-# --------------------------------------------------
-# PECL extensions
-# --------------------------------------------------
 RUN pecl install imagick redis \
-    && docker-php-ext-enable imagick redis
+ && docker-php-ext-enable imagick redis
 
 # --------------------------------------------------
 # Composer
@@ -59,7 +55,7 @@ RUN pecl install imagick redis \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # --------------------------------------------------
-# Apache config
+# Apache vhost
 # --------------------------------------------------
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
@@ -76,8 +72,15 @@ RUN if [ -f composer.json ]; then \
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
-RUN mkdir -p uploads cache tmp \
-    && chown -R www-data:www-data uploads cache tmp \
-    && chmod -R 775 uploads cache tmp
+RUN mkdir -p uploads tmp \
+    && chown -R www-data:www-data uploads tmp \
+    && chmod -R 775 uploads tmp
 
-EXPOSE 80
+RUN mkdir -p admin/tmp \
+    && chown -R www-data:www-data admin/tmp \
+    && chmod -R 775 admin/tmp
+
+# --------------------------------------------------
+# Start Apache + PHP-FPM
+# --------------------------------------------------
+CMD service php8.3-fpm start && apachectl -D FOREGROUND
