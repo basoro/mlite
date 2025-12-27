@@ -2,6 +2,7 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://mlite.loc';
 const API_KEY = import.meta.env.VITE_API_KEY || 'YOUR_API_KEY_HERE';
 const API_PATH = import.meta.env.VITE_API_PATH ?? '/admin';
+const WA_API_URL = import.meta.env.VITE_WA_API_URL ?? 'http://localhost:4000';
 
 interface ApiConfig {
   baseUrl: string;
@@ -261,5 +262,30 @@ export const deleteMasterData = async (type: string, data: Record<string, string
     headers: getHeaders(),
     body: JSON.stringify(data),
   });
+  return response.json();
+};
+
+// WhatsApp Gateway
+export const getContacts = async () => {
+  const response = await fetch(`${WA_API_URL}/api/contacts`);
+  return response.json();
+};
+
+export const getMessages = async (contactId: number) => {
+  const response = await fetch(`${WA_API_URL}/api/messages/${contactId}`);
+  return response.json();
+};
+
+export const sendMessage = async (to: string, message: string) => {
+  const response = await fetch(`${WA_API_URL}/send`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ to, message }),
+  });
+  return response.json();
+};
+
+export const getWAStatus = async () => {
+  const response = await fetch(`${WA_API_URL}/status`);
   return response.json();
 };
