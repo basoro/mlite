@@ -24,10 +24,14 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # --------------------------------------------------
+# 🔥 FIX MPM CONFLICT (WAJIB)
+# --------------------------------------------------
+RUN a2dismod mpm_event mpm_worker \
+ && a2enmod mpm_prefork
+
+# --------------------------------------------------
 # Configure & install PHP extensions
 # --------------------------------------------------
-
-# GD (configure first)
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 
 RUN docker-php-ext-install -j$(nproc) \
@@ -45,16 +49,10 @@ RUN docker-php-ext-install -j$(nproc) \
 RUN docker-php-ext-enable mysqli
 
 # --------------------------------------------------
-# Install ImageMagick PHP extension (imagick)
+# PECL extensions
 # --------------------------------------------------
-RUN pecl install imagick \
-    && docker-php-ext-enable imagick
-
-# --------------------------------------------------
-# Install Redis extension (optional, recommended)
-# --------------------------------------------------
-RUN pecl install redis \
-    && docker-php-ext-enable redis
+RUN pecl install imagick redis \
+    && docker-php-ext-enable imagick redis
 
 # --------------------------------------------------
 # Install Xdebug (DEV ONLY – comment for production)
