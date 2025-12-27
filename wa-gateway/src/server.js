@@ -7,6 +7,10 @@ import makeWASocket, { useMultiFileAuthState, DisconnectReason, fetchLatestBaile
 import Database from 'better-sqlite3'
 import fs from 'fs'
 import path from 'path'
+import dns from 'dns'
+
+// Force IPv4 for better stability in some container environments
+dns.setDefaultResultOrder('ipv4first')
 
 const logger = pino({ level: 'info' })
 const app = express()
@@ -122,7 +126,8 @@ async function startBaileys() {
       keepAliveIntervalMs: 10000,
       emitOwnEvents: true,
       retryRequestDelayMs: 250,
-      markOnlineOnConnect: false
+      markOnlineOnConnect: false,
+      generateHighQualityLinkPreview: true,
   })
   
   const unwrap = (message) => {
