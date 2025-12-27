@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, User, Building2 } from 'lucide-react';
+import { Bell, User, Building2, Menu } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,20 +11,40 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onMenuClick?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { user, logout } = useAuth();
 
   return (
-    <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6">
-      {/* Clinic Info */}
+    <header className="h-16 bg-card border-b border-border flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
+      {/* Left Section with Menu Button */}
       <div className="flex items-center gap-3">
-        <Building2 className="w-5 h-5 text-muted-foreground" />
-        <span className="font-semibold text-primary text-lg">{user?.clinicName || 'Atila Medika'}</span>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="lg:hidden"
+          onClick={onMenuClick}
+        >
+          <Menu className="w-5 h-5" />
+        </Button>
+
+        {/* Clinic Info */}
+        <div className="flex items-center gap-3">
+          <Building2 className="w-5 h-5 text-muted-foreground hidden sm:block" />
+          <span className="font-semibold text-primary text-lg truncate max-w-[150px] sm:max-w-none">
+            {user?.clinicName || 'Atila Medika'}
+          </span>
+        </div>
       </div>
 
       {/* Right Section */}
-      <div className="flex items-center gap-4">
-        <span className="text-sm text-muted-foreground">{user?.role || 'Admin Klinik'}</span>
+      <div className="flex items-center gap-2 sm:gap-4">
+        <span className="text-sm text-muted-foreground hidden sm:inline-block">
+          {user?.role || 'Admin Klinik'}
+        </span>
         
         {/* Notifications */}
         <Button variant="ghost" size="icon" className="relative">

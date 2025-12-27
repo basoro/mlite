@@ -16,6 +16,7 @@ import {
   Heart,
   Zap
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface MenuItem {
@@ -42,7 +43,11 @@ const managementMenuItems: MenuItem[] = [
   { icon: Settings, label: 'Pengaturan', path: '/pengaturan' },
 ];
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const location = useLocation();
 
   const isActive = (path: string) => {
@@ -53,20 +58,28 @@ const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="w-56 min-h-screen bg-sidebar flex flex-col">
+    <aside className="w-64 lg:w-56 h-full min-h-screen bg-sidebar flex flex-col shadow-xl lg:shadow-none border-r border-sidebar-border">
       {/* Logo */}
-      <div className="p-4 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
-          <Heart className="w-5 h-5 text-primary-foreground" />
+      <div className="p-4 flex items-center justify-between lg:justify-start gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
+            <Heart className="w-5 h-5 text-primary-foreground" />
+          </div>
+          <div>
+            <h1 className="text-sidebar-foreground font-bold text-lg">mKLINIK</h1>
+            <p className="text-sidebar-muted text-xs">Management System</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-sidebar-foreground font-bold text-lg">mKLINIK</h1>
-          <p className="text-sidebar-muted text-xs">Management System</p>
-        </div>
+        {/* Close button for mobile */}
+        {onClose && (
+          <Button variant="ghost" size="icon" className="lg:hidden text-sidebar-muted" onClick={onClose}>
+            <Zap className="w-5 h-5" />
+          </Button>
+        )}
       </div>
 
       {/* Main Menu */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         <p className="px-4 py-2 text-xs font-medium text-sidebar-muted uppercase tracking-wider">
           Menu Utama
         </p>
@@ -74,6 +87,7 @@ const Sidebar: React.FC = () => {
           <Link
             key={item.path}
             to={item.path}
+            onClick={onClose}
             className={cn(
               'sidebar-item',
               isActive(item.path) && 'sidebar-item-active'
@@ -91,6 +105,7 @@ const Sidebar: React.FC = () => {
           <Link
             key={item.path}
             to={item.path}
+            onClick={onClose}
             className={cn(
               'sidebar-item',
               isActive(item.path) && 'sidebar-item-active'
@@ -103,7 +118,7 @@ const Sidebar: React.FC = () => {
       </nav>
 
       {/* Integration Status */}
-      <div className="p-4 mx-3 mb-4 rounded-lg bg-sidebar-accent">
+      <div className="p-4 mx-3 mb-4 rounded-lg bg-sidebar-accent mt-auto">
         <div className="flex items-center gap-2 text-sidebar-primary">
           <Zap className="w-4 h-4" />
           <span className="text-sm font-medium">Integrasi</span>

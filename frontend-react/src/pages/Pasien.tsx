@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { getPasienList, createPasien } from '@/lib/api';
+import { getPasienList, createPasien, getMasterList } from '@/lib/api';
 
 interface Patient {
   id: string;
@@ -93,6 +93,11 @@ const RegistrationForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     alamat: '',
     no_tlp: '',
     kd_pj: 'UMUM',
+  });
+
+  const { data: penjabList } = useQuery({
+    queryKey: ['master', 'penjab'],
+    queryFn: () => getMasterList('penjab', 1, 100),
   });
 
   const mutation = useMutation({
@@ -191,12 +196,14 @@ const RegistrationForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           <Label htmlFor="kd_pj">Penjamin</Label>
           <Select value={formData.kd_pj} onValueChange={(value) => setFormData({ ...formData, kd_pj: value })}>
             <SelectTrigger>
-              <SelectValue placeholder="Pilih" />
+              <SelectValue placeholder="Pilih Penjamin" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="UMUM">Umum</SelectItem>
-              <SelectItem value="BPJS">BPJS</SelectItem>
-              <SelectItem value="ASURANSI">Asuransi</SelectItem>
+              {penjabList?.data?.map((pj: any) => (
+                <SelectItem key={pj.kd_pj} value={pj.kd_pj}>
+                  {pj.png_jawab}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

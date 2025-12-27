@@ -1,9 +1,11 @@
 // API Configuration for mLITE
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://mlite.loc';
 const API_KEY = import.meta.env.VITE_API_KEY || 'YOUR_API_KEY_HERE';
+const API_PATH = import.meta.env.VITE_API_PATH ?? '/admin';
 
 interface ApiConfig {
   baseUrl: string;
+  apiPath: string;
   apiKey: string;
   token: string | null;
   usernamePermission: string;
@@ -12,6 +14,7 @@ interface ApiConfig {
 
 const config: ApiConfig = {
   baseUrl: API_BASE_URL,
+  apiPath: API_PATH,
   apiKey: API_KEY,
   token: localStorage.getItem('auth_token'),
   usernamePermission: 'DR001',
@@ -21,11 +24,24 @@ const config: ApiConfig = {
 export const setToken = (token: string) => {
   config.token = token;
   localStorage.setItem('auth_token', token);
+  localStorage.setItem('auth_timestamp', new Date().getTime().toString());
 };
 
 export const clearToken = () => {
   config.token = null;
   localStorage.removeItem('auth_token');
+  localStorage.removeItem('auth_timestamp');
+};
+
+export const isSessionValid = () => {
+  const timestamp = localStorage.getItem('auth_timestamp');
+  if (!timestamp) return false;
+  
+  const now = new Date().getTime();
+  const sessionTime = parseInt(timestamp, 10);
+  const sixtyMinutes = 60 * 60 * 1000; // 60 minutes in milliseconds
+  
+  return (now - sessionTime) < sixtyMinutes;
 };
 
 export const getToken = () => config.token;
@@ -40,7 +56,7 @@ const getHeaders = () => ({
 
 // Auth
 export const login = async (username: string, password: string) => {
-  const response = await fetch(`${config.baseUrl}/admin/api/login`, {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password }),
@@ -59,21 +75,21 @@ export const getPasienList = async (page = 1, perPage = 10, search = '') => {
     per_page: perPage.toString(),
     s: search,
   });
-  const response = await fetch(`${config.baseUrl}/admin/api/pasien/list?${params}`, {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/pasien/list?${params}`, {
     headers: getHeaders(),
   });
   return response.json();
 };
 
 export const getPasienDetail = async (noRkmMedis: string) => {
-  const response = await fetch(`${config.baseUrl}/admin/api/pasien/show/${noRkmMedis}`, {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/pasien/show/${noRkmMedis}`, {
     headers: getHeaders(),
   });
   return response.json();
 };
 
 export const getRiwayatPerawatan = async (noRkmMedis: string) => {
-  const response = await fetch(`${config.baseUrl}/admin/api/pasien/riwayatperawatan/${noRkmMedis}`, {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/pasien/riwayatperawatan/${noRkmMedis}`, {
     headers: getHeaders(),
   });
   return response.json();
@@ -89,7 +105,7 @@ export const createPasien = async (data: {
   kd_pj: string;
   no_rkm_medis?: string;
 }) => {
-  const response = await fetch(`${config.baseUrl}/admin/api/pasien/create`, {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/pasien/create`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(data),
@@ -102,7 +118,7 @@ export const createPasien = async (data: {
 };
 
 export const updatePasien = async (noRkmMedis: string, data: Record<string, string>) => {
-  const response = await fetch(`${config.baseUrl}/admin/api/pasien/update/${noRkmMedis}`, {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/pasien/update/${noRkmMedis}`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(data),
@@ -111,7 +127,7 @@ export const updatePasien = async (noRkmMedis: string, data: Record<string, stri
 };
 
 export const deletePasien = async (noRkmMedis: string) => {
-  const response = await fetch(`${config.baseUrl}/admin/api/pasien/delete/${noRkmMedis}`, {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/pasien/delete/${noRkmMedis}`, {
     method: 'DELETE',
     headers: getHeaders(),
   });
@@ -128,14 +144,15 @@ export const getRawatJalanList = async (startDate: string, endDate: string, page
     tgl_akhir: endDate,
     search,
   });
-  const response = await fetch(`${config.baseUrl}/admin/api/rawat_jalan/list?${params}`, {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/list?${params}`, {
     headers: getHeaders(),
   });
   return response.json();
 };
 
 export const getRawatJalanDetail = async (noRawat: string) => {
-  const response = await fetch(`${config.baseUrl}/admin/api/rawat_jalan/show/${noRawat}`, {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/show/${normalizedNoRawat}`, {
     headers: getHeaders(),
   });
   return response.json();
@@ -147,12 +164,43 @@ export const createRawatJalan = async (data: {
   kd_dokter: string;
   kd_pj: string;
 }) => {
-  const response = await fetch(`${config.baseUrl}/admin/api/rawat_jalan/create`, {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/create`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(data),
   });
-  return response.json();
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal membuat jadwal');
+  }
+  return result;
+};
+
+export const updateRawatJalan = async (noRawat: string, data: Record<string, any>) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/update/${normalizedNoRawat}`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal memperbarui jadwal');
+  }
+  return result;
+};
+
+export const deleteRawatJalan = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/delete/${normalizedNoRawat}`, {
+    method: 'DELETE',
+    headers: getHeaders(),
+  });
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus jadwal');
+  }
+  return result;
 };
 
 export const saveSOAP = async (data: {
@@ -176,7 +224,7 @@ export const saveSOAP = async (data: {
   evaluasi?: string;
   nip?: string;
 }) => {
-  const response = await fetch(`${config.baseUrl}/admin/api/rawat_jalan/savesoap`, {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/savesoap`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(data),
@@ -192,14 +240,14 @@ export const getMasterList = async (type: string, page = 1, perPage = 10, search
     s: search,
     col: '',
   });
-  const response = await fetch(`${config.baseUrl}/admin/api/master/list/${type}?${params}`, {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/master/list/${type}?${params}`, {
     headers: getHeaders(),
   });
   return response.json();
 };
 
 export const saveMasterData = async (type: string, data: Record<string, string>) => {
-  const response = await fetch(`${config.baseUrl}/admin/api/master/save/${type}`, {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/master/save/${type}`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(data),
@@ -208,7 +256,7 @@ export const saveMasterData = async (type: string, data: Record<string, string>)
 };
 
 export const deleteMasterData = async (type: string, data: Record<string, string>) => {
-  const response = await fetch(`${config.baseUrl}/admin/api/master/delete/${type}`, {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/master/delete/${type}`, {
     method: 'DELETE',
     headers: getHeaders(),
     body: JSON.stringify(data),

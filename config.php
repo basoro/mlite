@@ -4,10 +4,10 @@ if (!version_compare(PHP_VERSION, '7.4.0', '>=')) {
     exit("mLITE requires at least <b>PHP 7.4</b> (Current: " . PHP_VERSION . ")");
 }
 
-$db_host = getenv('MYSQLHOST');
-$db_user = getenv('MYSQLUSER');
-$db_pass = getenv('MYSQLPASSWORD');
-$db_name = getenv('MYSQLDATABASE');
+$db_host = getenv('MYSQLHOST') ?: 'mysql';
+$db_user = getenv('MYSQLUSER') ?: 'root';
+$db_pass = getenv('MYSQLPASSWORD') ?: '';
+$db_name = getenv('MYSQLDATABASE') ?: 'mlite';
 $db_port = getenv('MYSQLPORT') ?: 3306;
 
 define('DBHOST', $db_host);

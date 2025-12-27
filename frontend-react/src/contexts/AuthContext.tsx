@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getToken, clearToken, setToken, login as apiLogin } from '@/lib/api';
+import { getToken, clearToken, setToken, login as apiLogin, isSessionValid } from '@/lib/api';
 
 interface User {
   username: string;
@@ -33,17 +33,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const logout = () => {
+    setUser(null);
+    clearToken();
+    localStorage.removeItem('user');
+  };
+
   useEffect(() => {
-    // Check for existing token on mount
+    // Initial check
     const token = getToken();
     if (token) {
-      // For demo purposes, restore user from localStorage
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
+      if (isSessionValid()) {
+        // For demo purposes, restore user from localStorage
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        }
+      } else {
+        logout();
       }
     }
     setIsLoading(false);
+
+    // Periodic session check
+    const interval = setInterval(() => {
+      if (getToken() && !isSessionValid()) {
+        logout();
+      }
+    }, 60000); // Check every minute
+
+    return () => clearInterval(interval);
   }, []);
 
   const login = async (username: string, password: string): Promise<boolean> => {
@@ -66,12 +85,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Login failed:', error);
       return false;
     }
-  };
-
-  const logout = () => {
-    setUser(null);
-    clearToken();
-    localStorage.removeItem('user');
   };
 
   return (
