@@ -8,7 +8,7 @@ envsubst '${PORT}' < /app/nginx.conf > /etc/nginx/nginx.conf
 
 # Start Node.js app on port 4000 (internal)
 # We override PORT to 4000 for the node app so it doesn't conflict with Nginx
-PORT=4000 node src/server.js &
+PORT=5000 node src/server.js &
 
 # Start Nginx in foreground
 nginx -g 'daemon off;'
