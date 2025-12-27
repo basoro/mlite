@@ -480,7 +480,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"no_rkm_medis\": \"000001\",\n    \"kd_poli\": \"IGD\",\n    \"kd_dokter\": \"D00001\",\n    \"kd_pj\": \"UMU\"\n}"
+							"raw": "{\n    \"no_rkm_medis\": \"000001\",\n    \"kd_poli\": \"IGD\",\n    \"kd_dokter\": \"D00001\",\n    \"kd_pj\": \"UMU\",\n    \"tgl_registrasi\": \"2025-01-01\",\n    \"jam_reg\": \"08:00:00\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/admin/api/rawat_jalan/create",

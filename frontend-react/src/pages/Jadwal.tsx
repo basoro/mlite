@@ -68,6 +68,7 @@ const getStatusColor = (status: string) => {
 
 const Jadwal: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedNoRawat, setSelectedNoRawat] = useState<string | null>(null);
@@ -195,7 +196,11 @@ const Jadwal: React.FC = () => {
     if (isEditMode) {
       updateMutation.mutate(formData);
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate({
+        ...formData,
+        tgl_registrasi: formattedDate,
+        jam_reg: format(new Date(), 'HH:mm:ss')
+      });
     }
   };
 
@@ -210,7 +215,10 @@ const Jadwal: React.FC = () => {
           <p className="text-muted-foreground mt-1">Kelola jadwal praktek dan appointment pasien</p>
         </div>
         
-        <Dialog open={isDialogOpen} onOpenChange={(open) => !open && handleCloseDialog()}>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          if (open) setIsDialogOpen(true);
+          else handleCloseDialog();
+        }}>
           <DialogTrigger asChild>
             <Button className="bg-emerald-500 hover:bg-emerald-600 text-white gap-2">
               <Plus className="w-4 h-4" />
@@ -337,7 +345,7 @@ const Jadwal: React.FC = () => {
               </h3>
               
               <div className="relative mb-4">
-                <Popover>
+                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -354,7 +362,12 @@ const Jadwal: React.FC = () => {
                     <CalendarComponent
                       mode="single"
                       selected={selectedDate}
-                      onSelect={(date) => date && setSelectedDate(date)}
+                      onSelect={(date) => {
+                        if (date) {
+                          setSelectedDate(date);
+                          setIsCalendarOpen(false);
+                        }
+                      }}
                       initialFocus
                     />
                   </PopoverContent>
@@ -480,11 +493,19 @@ const Jadwal: React.FC = () => {
                                     </div>
                                   </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  {['Belum', 'Sudah', 'Batal', 'Berkas Diterima', 'Dirujuk', 'Meninggal', 'Dirawat', 'Pulang Paksa'].map((status) => (
-                                    <DropdownMenuItem key={status} onClick={() => handleStatusChange(item.no_rawat, status)}>
-                                      {status}
-                                    </DropdownMenuItem>
-                                  ))}
+                                  {formattedDate > format(new Date(), 'yyyy-MM-dd') ? (
+                                    ['Terdaftar', 'Belum', 'Batal', 'Dokter Berhalangan'].map((status) => (
+                                      <DropdownMenuItem key={status} onClick={() => handleStatusChange(item.no_rawat, status)}>
+                                        {status}
+                                      </DropdownMenuItem>
+                                    ))
+                                  ) : (
+                                    ['Belum', 'Sudah', 'Batal', 'Berkas Diterima', 'Dirujuk', 'Meninggal', 'Dirawat', 'Pulang Paksa'].map((status) => (
+                                      <DropdownMenuItem key={status} onClick={() => handleStatusChange(item.no_rawat, status)}>
+                                        {status}
+                                      </DropdownMenuItem>
+                                    ))
+                                  )}
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </div>

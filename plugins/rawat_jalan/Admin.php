@@ -59,31 +59,61 @@ class Admin extends AdminModule
         $igd = $this->settings('settings', 'igd');
 
         // Base Query
-        $sql = "SELECT reg_periksa.*, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
-                FROM reg_periksa 
-                JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
-                JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter 
-                JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
-                JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
-                WHERE reg_periksa.kd_poli != '$igd' 
-                AND reg_periksa.tgl_registrasi BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+        if ($tgl_awal > date('Y-m-d')) {
+            $sql = "SELECT booking_registrasi.no_reg, booking_registrasi.jam_booking as jam_reg, 
+                booking_registrasi.no_rkm_medis, booking_registrasi.kd_poli, booking_registrasi.kd_dokter,
+                booking_registrasi.status as stts, 'Belum Bayar' as status_bayar, booking_registrasi.kd_pj,
+                pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab,
+                concat(date_format(booking_registrasi.tanggal_periksa, '%Y/%m/%d'), '/', lpad(booking_registrasi.no_reg, 6, '0')) as no_rawat 
+                FROM booking_registrasi 
+                JOIN pasien ON booking_registrasi.no_rkm_medis = pasien.no_rkm_medis 
+                JOIN dokter ON booking_registrasi.kd_dokter = dokter.kd_dokter 
+                JOIN poliklinik ON booking_registrasi.kd_poli = poliklinik.kd_poli 
+                JOIN penjab ON booking_registrasi.kd_pj = penjab.kd_pj 
+                WHERE booking_registrasi.kd_poli != '$igd' 
+                AND booking_registrasi.tanggal_periksa BETWEEN '$tgl_awal' AND '$tgl_akhir'";
 
-        if ($this->core->getUserInfo('role', $user_id, true) != 'admin') {
-            $sql .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
-        }
-        if($status_periksa == 'belum') {
-            $sql .= " AND reg_periksa.stts = 'Belum'";
-        }
-        if($status_periksa == 'selesai') {
-            $sql .= " AND reg_periksa.stts = 'Sudah'";
-        }
-        if($status_periksa == 'lunas') {
-            $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
-        }
+            if ($this->core->getUserInfo('role', $user_id, true) != 'admin') {
+                $sql .= " AND booking_registrasi.kd_poli IN ('$poliklinik')";
+            }
+            if($status_periksa == 'belum') {
+                $sql .= " AND booking_registrasi.status = 'Belum'";
+            }
+            if($status_periksa == 'selesai') {
+                $sql .= " AND booking_registrasi.status = 'Sudah'";
+            }
 
-        // Search
-        if (!empty($searchValue)) {
-            $sql .= " AND (reg_periksa.no_rawat LIKE '%$searchValue%' OR reg_periksa.no_rkm_medis LIKE '%$searchValue%' OR pasien.nm_pasien LIKE '%$searchValue%' OR dokter.nm_dokter LIKE '%$searchValue%' OR poliklinik.nm_poli LIKE '%$searchValue%')";
+            // Search
+            if (!empty($searchValue)) {
+                $sql .= " AND (booking_registrasi.no_rkm_medis LIKE '%$searchValue%' OR pasien.nm_pasien LIKE '%$searchValue%' OR dokter.nm_dokter LIKE '%$searchValue%' OR poliklinik.nm_poli LIKE '%$searchValue%')";
+            }
+        } else {
+            $sql = "SELECT reg_periksa.*, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                    FROM reg_periksa 
+                    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                    JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter 
+                    JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+                    JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                    WHERE reg_periksa.kd_poli != '$igd' 
+                    AND reg_periksa.tgl_registrasi BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+
+            if ($this->core->getUserInfo('role', $user_id, true) != 'admin') {
+                $sql .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
+            }
+            if($status_periksa == 'belum') {
+                $sql .= " AND reg_periksa.stts = 'Belum'";
+            }
+            if($status_periksa == 'selesai') {
+                $sql .= " AND reg_periksa.stts = 'Sudah'";
+            }
+            if($status_periksa == 'lunas') {
+                $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
+            }
+
+            // Search
+            if (!empty($searchValue)) {
+                $sql .= " AND (reg_periksa.no_rawat LIKE '%$searchValue%' OR reg_periksa.no_rkm_medis LIKE '%$searchValue%' OR pasien.nm_pasien LIKE '%$searchValue%' OR dokter.nm_dokter LIKE '%$searchValue%' OR poliklinik.nm_poli LIKE '%$searchValue%')";
+            }
         }
 
         // Count Total (filtered)
@@ -157,10 +187,37 @@ class Admin extends AdminModule
             return ['status' => 'error', 'message' => 'Data incomplete'];
         }
 
-        $input['no_rawat'] = $this->setNoRawat();
+        $input['tgl_registrasi'] = $input['tgl_registrasi'] ?? date('Y-m-d');
+        $input['jam_reg'] = $input['jam_reg'] ?? date('H:i:s');
+
+        if ($input['tgl_registrasi'] > date('Y-m-d')) {
+            $booking = [
+                'tanggal_booking' => date('Y-m-d'),
+                'jam_booking' => date('H:i:s'),
+                'no_rkm_medis' => $input['no_rkm_medis'],
+                'tanggal_periksa' => $input['tgl_registrasi'],
+                'kd_dokter' => $input['kd_dokter'],
+                'kd_poli' => $input['kd_poli'],
+                'no_reg' => $this->core->setNoBooking($input['kd_dokter'], $input['tgl_registrasi'], $input['kd_poli']),
+                'kd_pj' => $input['kd_pj'] ?? '-',
+                'limit_reg' => '0',
+                'waktu_kunjungan' => $input['tgl_registrasi'] . ' ' . $input['jam_reg'],
+                'status' => 'Belum'
+            ];
+            try {
+                $this->db('booking_registrasi')->save($booking);
+                return ['status' => 'created', 'data' => $booking];
+            } catch (\PDOException $e) {
+                $message = $e->getMessage();
+                $message = preg_replace('/`[^`]+`\./', '', $message);
+                return ['status' => 'error', 'message' => $message];
+            }
+        }
+
+        $input['no_rawat'] = $this->setNoRawat($input['tgl_registrasi']);
         
         // Calculate No Reg (Queue Number)
-        $tgl_registrasi = date('Y-m-d');
+        $tgl_registrasi = $input['tgl_registrasi'];
         $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $input['kd_poli'])->where('tgl_registrasi', $tgl_registrasi)->desc('no_reg')->limit(1)->oneArray();
         if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
             $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $input['kd_poli'])->where('kd_dokter', $input['kd_dokter'])->where('tgl_registrasi', $tgl_registrasi)->desc('no_reg')->limit(1)->oneArray();
@@ -170,8 +227,6 @@ class Admin extends AdminModule
         }
         $input['no_reg'] = sprintf('%03s', ($max_id['no_reg'] + 1));
 
-        $input['tgl_registrasi'] = date('Y-m-d');
-        $input['jam_reg'] = date('H:i:s');
         $input['status_lanjut'] = 'Ralan';
         $input['stts'] = 'Belum';
         $input['status_bayar'] = 'Belum Bayar';
@@ -228,6 +283,83 @@ class Admin extends AdminModule
         $input = json_decode(file_get_contents('php://input'), true);
         if (!is_array($input)) $input = $_POST;
 
+        $parts = explode('/', $no_rawat);
+        if (count($parts) == 4) {
+            $date = $parts[0] . '-' . $parts[1] . '-' . $parts[2];
+            if ($date > date('Y-m-d')) {
+                 $no_reg = substr($parts[3], -3);
+                 $booking = $this->db('booking_registrasi')
+                    ->where('tanggal_periksa', $date)
+                    ->where('no_reg', $no_reg)
+                    ->oneArray();
+                 
+                 if ($booking) {
+                     if(isset($input['stts'])) {
+                        $input['status'] = $input['stts'];
+                        unset($input['stts']);
+                     }
+
+                     if ($input['status'] == 'Terdaftar') {
+                        $pasien = $this->db('pasien')->where('no_rkm_medis', $booking['no_rkm_medis'])->oneArray();
+                        $poliklinik = $this->db('poliklinik')->where('kd_poli', $booking['kd_poli'])->oneArray();
+                        
+                        $birthDate = new \DateTime($pasien['tgl_lahir']);
+                        $today = new \DateTime($booking['tanggal_periksa']);
+                        $y = $today->diff($birthDate)->y;
+                        $m = $today->diff($birthDate)->m;
+                        $d = $today->diff($birthDate)->d;
+                        $umurdaftar = $d;
+                        $sttsumur = "Hr";
+                        if($y !='0'){
+                            $umurdaftar = $y;
+                            $sttsumur = "Th";
+                        }
+                        if($y =='0' && $m !='0'){
+                            $umurdaftar = $m;
+                            $sttsumur = "Bl";
+                        }
+
+                        $reg_data = [
+                            'no_reg' => $booking['no_reg'],
+                            'no_rawat' => $this->setNoRawat($booking['tanggal_periksa']),
+                            'tgl_registrasi' => $booking['tanggal_periksa'],
+                            'jam_reg' => date('H:i:s'),
+                            'kd_dokter' => $booking['kd_dokter'],
+                            'no_rkm_medis' => $booking['no_rkm_medis'],
+                            'kd_poli' => $booking['kd_poli'],
+                            'p_jawab' => $pasien['namakeluarga'] ?? '-',
+                            'almt_pj' => $pasien['alamatpj'] ?? '-',
+                            'hubunganpj' => $pasien['keluarga'] ?? '-',
+                            'biaya_reg' => $poliklinik['registrasi'],
+                            'stts' => 'Belum',
+                            'status_lanjut' => 'Ralan',
+                            'kd_pj' => $booking['kd_pj'],
+                            'umurdaftar' => $umurdaftar,
+                            'sttsumur' => $sttsumur,
+                            'status_bayar' => 'Belum Bayar',
+                            'status_poli' => 'Lama'
+                        ];
+                        
+                        if(!$this->db('reg_periksa')->where('no_rkm_medis', $booking['no_rkm_medis'])->where('tgl_registrasi', $booking['tanggal_periksa'])->oneArray()) {
+                            $this->db('reg_periksa')->save($reg_data);
+                        }
+                     }
+
+                     try {
+                        $this->db('booking_registrasi')
+                            ->where('tanggal_periksa', $date)
+                            ->where('no_reg', $no_reg)
+                            ->save($input);
+                        return ['status' => 'updated', 'data' => $input];
+                     } catch (\PDOException $e) {
+                        $message = $e->getMessage();
+                        $message = preg_replace('/`[^`]+`\./', '', $message);
+                        return ['status' => 'error', 'message' => $message];
+                     }
+                 }
+            }
+        }
+
         try {
             $this->db('reg_periksa')->where('no_rawat', $no_rawat)->save($input);
             return ['status' => 'updated', 'data' => $input];
@@ -249,6 +381,26 @@ class Admin extends AdminModule
              return ['status' => 'error', 'message' => 'No rawat missing'];
         }
         $no_rawat = revertNoRawat($no_rawat);
+
+        $parts = explode('/', $no_rawat);
+        if (count($parts) == 4) {
+            $date = $parts[0] . '-' . $parts[1] . '-' . $parts[2];
+            if ($date > date('Y-m-d')) {
+                 $no_reg = substr($parts[3], -3);
+                 $booking = $this->db('booking_registrasi')
+                    ->where('tanggal_periksa', $date)
+                    ->where('no_reg', $no_reg)
+                    ->oneArray();
+                 
+                 if ($booking) {
+                     $this->db('booking_registrasi')
+                        ->where('tanggal_periksa', $date)
+                        ->where('no_reg', $no_reg)
+                        ->delete();
+                     return ['status' => 'deleted', 'no_rawat' => $no_rawat];
+                 }
+            }
+        }
 
         if(!$this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray()) {
             return ['status' => 'error', 'message' => 'No rawat not found'];
@@ -1781,9 +1933,9 @@ class Admin extends AdminModule
         return $row[$field];
     }
 
-    public function setNoRawat()
+    public function setNoRawat($date = null)
     {
-        $date = date('Y-m-d');
+        $date = $date ?? date('Y-m-d');
         $last_no_rawat = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date'");
         $last_no_rawat->execute();
         $last_no_rawat = $last_no_rawat->fetch();
@@ -1791,7 +1943,7 @@ class Admin extends AdminModule
           $last_no_rawat[0] = '000000';
         }
         $next_no_rawat = sprintf('%06s', ($last_no_rawat[0] + 1));
-        $next_no_rawat = date('Y/m/d').'/'.$next_no_rawat;
+        $next_no_rawat = str_replace('-', '/', $date).'/'.$next_no_rawat;
 
         return $next_no_rawat;
     }

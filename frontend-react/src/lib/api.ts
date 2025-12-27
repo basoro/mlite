@@ -164,6 +164,8 @@ export const createRawatJalan = async (data: {
   kd_poli: string;
   kd_dokter: string;
   kd_pj: string;
+  tgl_registrasi?: string;
+  jam_reg?: string;
 }) => {
   const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/create`, {
     method: 'POST',

@@ -2,6 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Clock, User, Calendar, Stethoscope, FileText, Pill, Smile, Loader2, Save } from 'lucide-react';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -85,10 +92,16 @@ const HistoryItem: React.FC<{ history: any }> = ({ history }) => (
 
 const Pemeriksaan: React.FC = () => {
   const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
-  const [dateFrom, setDateFrom] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [dateTo, setDateTo] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(new Date());
+  const [dateTo, setDateTo] = useState<Date | undefined>(new Date());
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const [isDateFromOpen, setIsDateFromOpen] = useState(false);
+  const [isDateToOpen, setIsDateToOpen] = useState(false);
+
+  const formattedDateFrom = dateFrom ? format(dateFrom, 'yyyy-MM-dd') : '';
+  const formattedDateTo = dateTo ? format(dateTo, 'yyyy-MM-dd') : '';
 
   // SOAP Form State
   const [soapData, setSoapData] = useState({
@@ -112,8 +125,9 @@ const Pemeriksaan: React.FC = () => {
 
   // Fetch Queue (Rawat Jalan)
   const { data: queueData, isLoading: isQueueLoading } = useQuery({
-    queryKey: ['rawatJalan', dateFrom, dateTo],
-    queryFn: () => getRawatJalanList(dateFrom, dateTo, 0, 100),
+    queryKey: ['rawatJalan', formattedDateFrom, formattedDateTo],
+    queryFn: () => getRawatJalanList(formattedDateFrom, formattedDateTo, 0, 100),
+    enabled: !!dateFrom && !!dateTo,
   });
 
   // Fetch Patient History
@@ -186,7 +200,7 @@ const Pemeriksaan: React.FC = () => {
         <p className="text-muted-foreground mt-1">Lakukan pemeriksaan pasien dan input hasil diagnosa</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
         {/* Left Column - Patient Queue */}
         <div className="lg:col-span-2 space-y-4">
           <div className="bg-card rounded-xl border border-border p-6">
@@ -205,23 +219,61 @@ const Pemeriksaan: React.FC = () => {
                 <div>
                   <Label className="text-xs text-muted-foreground">Dari Tanggal</Label>
                   <div className="relative mt-1">
-                    <Input
-                      type="date"
-                      value={dateFrom}
-                      onChange={(e) => setDateFrom(e.target.value)}
-                      className="text-sm"
-                    />
+                    <Popover open={isDateFromOpen} onOpenChange={setIsDateFromOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full justify-start text-left font-normal text-sm",
+                            !dateFrom && "text-muted-foreground"
+                          )}
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {dateFrom ? format(dateFrom, "dd MMM yyyy") : <span>Pilih Tanggal</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <CalendarComponent
+                          mode="single"
+                          selected={dateFrom}
+                          onSelect={(date) => {
+                            setDateFrom(date);
+                            setIsDateFromOpen(false);
+                          }}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
                 <div>
                   <Label className="text-xs text-muted-foreground">Sampai Tanggal</Label>
                   <div className="relative mt-1">
-                    <Input
-                      type="date"
-                      value={dateTo}
-                      onChange={(e) => setDateTo(e.target.value)}
-                      className="text-sm"
-                    />
+                    <Popover open={isDateToOpen} onOpenChange={setIsDateToOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full justify-start text-left font-normal text-sm",
+                            !dateTo && "text-muted-foreground"
+                          )}
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {dateTo ? format(dateTo, "dd MMM yyyy") : <span>Pilih Tanggal</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <CalendarComponent
+                          mode="single"
+                          selected={dateTo}
+                          onSelect={(date) => {
+                            setDateTo(date);
+                            setIsDateToOpen(false);
+                          }}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
               </div>
@@ -252,7 +304,7 @@ const Pemeriksaan: React.FC = () => {
         </div>
 
         {/* Right Column - Patient Info & History */}
-        <div className="lg:col-span-3 space-y-4">
+        <div className="lg:col-span-4 space-y-4">
           {selectedPatient ? (
             <>
               {/* Patient Info Card */}
@@ -284,15 +336,15 @@ const Pemeriksaan: React.FC = () => {
 
               {/* Tabs */}
               <div className="bg-card rounded-xl border border-border p-6">
-                <Tabs defaultValue="pemeriksaan" className="w-full">
+                <Tabs defaultValue="riwayat" className="w-full">
                   <TabsList className="grid grid-cols-5 w-full">
-                    <TabsTrigger value="pemeriksaan" className="gap-2">
-                      <Stethoscope className="w-4 h-4" />
-                      SOAP
-                    </TabsTrigger>
                     <TabsTrigger value="riwayat" className="gap-2">
                       <FileText className="w-4 h-4" />
                       Riwayat
+                    </TabsTrigger>
+                    <TabsTrigger value="pemeriksaan" className="gap-2">
+                      <Stethoscope className="w-4 h-4" />
+                      SOAP
                     </TabsTrigger>
                     <TabsTrigger value="odontogram" className="gap-2">
                       <Smile className="w-4 h-4" />

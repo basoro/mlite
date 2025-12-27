@@ -124,7 +124,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
           <span className="text-sm font-medium">Integrasi</span>
         </div>
         <p className="text-xs text-sidebar-muted mt-1">
-          pCare BPJS & SATUSEHAT siap digunakan
+          BPJS & SATUSEHAT siap digunakan
         </p>
       </div>
     </aside>

@@ -199,7 +199,7 @@ class Admin extends AdminModule
     {
         $username = $this->core->checkAuth('GET');
         if (!$this->core->checkPermission($username, 'can_read', 'master')) {
-            return ['status' => 'error', 'message' => 'Permission denied'];
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
         }
 
         // Whitelist allowed tables
@@ -257,7 +257,7 @@ class Admin extends AdminModule
     {
         $username = $this->core->checkAuth('POST');
         if (!$this->core->checkPermission($username, 'can_create', 'master') && !$this->core->checkPermission($username, 'can_update', 'master')) {
-            return ['status' => 'error', 'message' => 'Permission denied'];
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
         }
 
         $property = $this->getTableProperty($table);
@@ -291,7 +291,7 @@ class Admin extends AdminModule
     {
         $username = $this->core->checkAuth('DELETE');
         if (!$this->core->checkPermission($username, 'can_delete', 'master')) {
-            return ['status' => 'error', 'message' => 'Permission denied'];
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
         }
 
         $property = $this->getTableProperty($table);
