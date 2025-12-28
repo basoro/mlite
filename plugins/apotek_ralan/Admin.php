@@ -307,9 +307,8 @@ class Admin extends AdminModule
           $kandungan = isset($kandunganData[$item['kode_brng']]) ? $kandunganData[$item['kode_brng']] : (isset($item['kandungan']) ? $item['kandungan'] : 0);
 
           if(isset($item['no_racik'])) {
-             $kapasitas = $this->db('databarang')->where('kode_brng', $item['kode_brng'])->oneArray();
-             $jumlah_racik = $jumlah;
-             $jumlah = round(($jumlah_racik * $kandungan) / $kapasitas['kapasitas'], 0);
+             $jumlah_racik = isset($item['jml_dr']) ? $item['jml_dr'] : (isset($jumlahData[$item['kode_brng']]) ? $jumlahData[$item['kode_brng']] : $item['jml']);
+             $jumlah = isset($jumlahData[$item['kode_brng']]) ? $jumlahData[$item['kode_brng']] : $item['jml'];
           }
 
           $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $item['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
