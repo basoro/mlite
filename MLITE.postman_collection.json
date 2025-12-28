@@ -746,6 +746,141 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Delete Detail Rawat Jalan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kat\": \"tindakan\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_jenis_prw\": \"T001\",\n    \"provider\": \"rawat_jl_dr\",\n    \"tgl_perawatan\": \"2025-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_jalan/deletedetail",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_jalan",
+								"deletedetail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show Detail Rawat Jalan",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_jalan/showdetail/tindakan/{{no_rawat}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_jalan",
+								"showdetail",
+								"tindakan",
+								"{{no_rawat}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show SOAP Rawat Jalan",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_jalan/showsoap/{{no_rawat}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_jalan",
+								"showsoap",
+								"{{no_rawat}}"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},

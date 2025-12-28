@@ -426,12 +426,15 @@ class Admin extends AdminModule
         $input = json_decode(file_get_contents('php://input'), true);
         if (!is_array($input)) $input = $_POST;
 
-        if (empty($input['kat']) || empty($input['no_rawat']) || empty($input['kd_jenis_prw']) || empty($input['provider'])) {
+        if (empty($input['kat']) || empty($input['no_rawat']) || empty($input['kd_jenis_prw'])) {
             return ['status' => 'error', 'message' => 'Data incomplete'];
         }
 
         try {
             if($input['kat'] == 'tindakan') {
+                if (empty($input['provider'])) {
+                    return ['status' => 'error', 'message' => 'Provider missing for tindakan'];
+                }
                 $jns_perawatan = $this->db('jns_perawatan')->where('kd_jenis_prw', $input['kd_jenis_prw'])->oneArray();
                 if(!$jns_perawatan) {
                     return ['status' => 'error', 'message' => 'Jenis perawatan not found'];
@@ -489,6 +492,140 @@ class Admin extends AdminModule
                 }
                 
                 return ['status' => 'success', 'message' => 'Detail saved'];
+            } elseif ($input['kat'] == 'obat') {
+                $no_resep = $this->core->setNoResep($input['tgl_perawatan']);
+                $cek_resep = $this->db('resep_obat')->where('no_rawat', $input['no_rawat'])->where('tgl_peresepan', $input['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
+
+                if (empty($cek_resep)) {
+                    $this->db('resep_obat')
+                        ->save([
+                            'no_resep' => $no_resep,
+                            'tgl_perawatan' => '0000-00-00',
+                            'jam' => '00:00:00',
+                            'no_rawat' => $input['no_rawat'],
+                            'kd_dokter' => $input['kode_provider'] ?? $username,
+                            'tgl_peresepan' => $input['tgl_perawatan'],
+                            'jam_peresepan' => $input['jam_rawat'],
+                            'status' => 'ralan',
+                            'tgl_penyerahan' => '0000-00-00',
+                            'jam_penyerahan' => '00:00:00'
+                        ]);
+
+                    if ($this->db('resep_obat')->where('no_resep', $no_resep)->oneArray()) {
+                        $this->db('resep_dokter')
+                            ->save([
+                                'no_resep' => $no_resep,
+                                'kode_brng' => $input['kd_jenis_prw'],
+                                'jml' => $input['jml'],
+                                'aturan_pakai' => $input['aturan_pakai']
+                            ]);
+                    }
+                } else {
+                    $no_resep = $cek_resep['no_resep'];
+                    $this->db('resep_dokter')
+                        ->save([
+                            'no_resep' => $no_resep,
+                            'kode_brng' => $input['kd_jenis_prw'],
+                            'jml' => $input['jml'],
+                            'aturan_pakai' => $input['aturan_pakai']
+                        ]);
+                }
+                return ['status' => 'success', 'message' => 'Obat saved'];
+            } elseif ($input['kat'] == 'racikan') {
+                $no_resep = $this->core->setNoResep($input['tgl_perawatan']);
+                $cek_resep = $this->db('resep_obat')->where('no_rawat', $input['no_rawat'])->where('tgl_peresepan', $input['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
+                
+                $jam_rawat = $input['jam_rawat'] ?? date('H:i:s');
+
+                if (empty($cek_resep)) {
+                    $this->db('resep_obat')
+                        ->save([
+                            'no_resep' => $no_resep,
+                            'tgl_perawatan' => '0000-00-00',
+                            'jam' => '00:00:00',
+                            'no_rawat' => $input['no_rawat'],
+                            'kd_dokter' => $input['kode_provider'] ?? $username,
+                            'tgl_peresepan' => $input['tgl_perawatan'],
+                            'jam_peresepan' => $jam_rawat,
+                            'status' => 'ralan',
+                            'tgl_penyerahan' => '0000-00-00',
+                            'jam_penyerahan' => '00:00:00'
+                        ]);
+
+                    if ($this->db('resep_obat')->where('no_resep', $no_resep)->oneArray()) {
+                        $no_racik = $this->db('resep_dokter_racikan')->where('no_resep', $no_resep)->count();
+                        $no_racik = $no_racik + 1;
+                        $this->db('resep_dokter_racikan')
+                            ->save([
+                                'no_resep' => $no_resep,
+                                'no_racik' => $no_racik,
+                                'nama_racik' => $input['nama_racik'],
+                                'kd_racik' => $input['kd_jenis_prw'],
+                                'jml_dr' => $input['jml'],
+                                'aturan_pakai' => $input['aturan_pakai'],
+                                'keterangan' => $input['keterangan']
+                            ]);
+                        
+                        $kode_brng_list = is_string($input['kode_brng']) ? json_decode($input['kode_brng'], true) : $input['kode_brng'];
+                        $kandungan_list = is_string($input['kandungan']) ? json_decode($input['kandungan'], true) : $input['kandungan'];
+                        
+                        $kode_brng_count = count($kode_brng_list);
+                        for ($i = 0; $i < $kode_brng_count; $i++) {
+                            $kapasitas = $this->db('databarang')->where('kode_brng', $kode_brng_list[$i]['value'])->oneArray();
+                            $jml = $input['jml'] * $kandungan_list[$i]['value'];
+                            if ($kapasitas['kapasitas'] > 0) {
+                                $jml = round(($jml / $kapasitas['kapasitas']), 1);
+                            }
+                            $this->db('resep_dokter_racikan_detail')
+                                ->save([
+                                    'no_resep' => $no_resep,
+                                    'no_racik' => $no_racik,
+                                    'kode_brng' => $kode_brng_list[$i]['value'],
+                                    'p1' => '1',
+                                    'p2' => '1',
+                                    'kandungan' => $kandungan_list[$i]['value'],
+                                    'jml' => $jml
+                                ]);
+                        }
+                    }
+                } else {
+                    $no_resep = $cek_resep['no_resep'];
+                    $no_racik = $this->db('resep_dokter_racikan')->where('no_resep', $no_resep)->count();
+                    $no_racik = $no_racik + 1;
+                    $this->db('resep_dokter_racikan')
+                        ->save([
+                            'no_resep' => $no_resep,
+                            'no_racik' => $no_racik,
+                            'nama_racik' => $input['nama_racik'],
+                            'kd_racik' => $input['kd_jenis_prw'],
+                            'jml_dr' => $input['jml'],
+                            'aturan_pakai' => $input['aturan_pakai'],
+                            'keterangan' => $input['keterangan']
+                        ]);
+
+                    $kode_brng_list = is_string($input['kode_brng']) ? json_decode($input['kode_brng'], true) : $input['kode_brng'];
+                    $kandungan_list = is_string($input['kandungan']) ? json_decode($input['kandungan'], true) : $input['kandungan'];
+
+                    $kode_brng_count = count($kode_brng_list);
+                    for ($i = 0; $i < $kode_brng_count; $i++) {
+                        $kapasitas = $this->db('databarang')->where('kode_brng', $kode_brng_list[$i]['value'])->oneArray();
+                        $jml = $input['jml'] * $kandungan_list[$i]['value'];
+                        if ($kapasitas['kapasitas'] > 0) {
+                             $jml = round(($jml / $kapasitas['kapasitas']), 1);
+                        }
+                        $this->db('resep_dokter_racikan_detail')
+                            ->save([
+                                'no_resep' => $no_resep,
+                                'no_racik' => $no_racik,
+                                'kode_brng' => $kode_brng_list[$i]['value'],
+                                'p1' => '1',
+                                'p2' => '1',
+                                'kandungan' => $kandungan_list[$i]['value'],
+                                'jml' => $jml
+                            ]);
+                    }
+                }
+                return ['status' => 'success', 'message' => 'Racikan saved'];
             } else {
                 return ['status' => 'error', 'message' => 'Category not supported'];
             }
@@ -496,6 +633,124 @@ class Admin extends AdminModule
             $message = $e->getMessage();
             $message = preg_replace('/`[^`]+`\./', '', $message);
             return ['status' => 'error', 'message' => $message];
+        }
+    }
+
+    public function apiDeleteDetail()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        if (empty($input['kat']) || empty($input['no_rawat']) || empty($input['kd_jenis_prw']) || empty($input['provider']) || empty($input['tgl_perawatan']) || empty($input['jam_rawat'])) {
+            return ['status' => 'error', 'message' => 'Data incomplete'];
+        }
+
+        try {
+            if($input['kat'] == 'tindakan') {
+                if($input['provider'] == 'rawat_jl_dr') {
+                    $this->db('rawat_jl_dr')
+                        ->where('no_rawat', $input['no_rawat'])
+                        ->where('kd_jenis_prw', $input['kd_jenis_prw'])
+                        ->where('tgl_perawatan', $input['tgl_perawatan'])
+                        ->where('jam_rawat', $input['jam_rawat'])
+                        ->delete();
+                }
+                if($input['provider'] == 'rawat_jl_pr') {
+                    $this->db('rawat_jl_pr')
+                        ->where('no_rawat', $input['no_rawat'])
+                        ->where('kd_jenis_prw', $input['kd_jenis_prw'])
+                        ->where('tgl_perawatan', $input['tgl_perawatan'])
+                        ->where('jam_rawat', $input['jam_rawat'])
+                        ->delete();
+                }
+                if($input['provider'] == 'rawat_jl_drpr') {
+                    $this->db('rawat_jl_drpr')
+                        ->where('no_rawat', $input['no_rawat'])
+                        ->where('kd_jenis_prw', $input['kd_jenis_prw'])
+                        ->where('tgl_perawatan', $input['tgl_perawatan'])
+                        ->where('jam_rawat', $input['jam_rawat'])
+                        ->delete();
+                }
+                
+                return ['status' => 'success', 'message' => 'Detail deleted'];
+            } else {
+                return ['status' => 'error', 'message' => 'Category not supported'];
+            }
+        } catch (\PDOException $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => $message];
+        }
+    }
+
+    public function apiShowDetail($kategori, $no_rawat)
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_read', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $no_rawat = revertNorawat($no_rawat);
+
+        try {
+            if ($kategori == 'tindakan') {
+                $rawat_jl_dr = $this->db('rawat_jl_dr')
+                    ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_dr.kd_jenis_prw')
+                    ->join('dokter', 'dokter.kd_dokter = rawat_jl_dr.kd_dokter')
+                    ->where('no_rawat', $no_rawat)
+                    ->toArray();
+
+                $rawat_jl_pr = $this->db('rawat_jl_pr')
+                    ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_pr.kd_jenis_prw')
+                    ->join('petugas', 'petugas.nip = rawat_jl_pr.nip')
+                    ->where('no_rawat', $no_rawat)
+                    ->toArray();
+
+                $rawat_jl_drpr = $this->db('rawat_jl_drpr')
+                    ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_drpr.kd_jenis_prw')
+                    ->join('dokter', 'dokter.kd_dokter = rawat_jl_drpr.kd_dokter')
+                    ->join('petugas', 'petugas.nip = rawat_jl_drpr.nip')
+                    ->where('no_rawat', $no_rawat)
+                    ->toArray();
+
+                return [
+                    'status' => 'success',
+                    'data' => [
+                        'rawat_jl_dr' => $rawat_jl_dr,
+                        'rawat_jl_pr' => $rawat_jl_pr,
+                        'rawat_jl_drpr' => $rawat_jl_drpr
+                    ]
+                ];
+            } else {
+                return ['status' => 'error', 'message' => 'Category not supported'];
+            }
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiShowSoap($no_rawat)
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_read', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $no_rawat = revertNorawat($no_rawat);
+
+        try {
+            $pemeriksaan = $this->db('pemeriksaan_ralan')
+                ->where('no_rawat', $no_rawat)
+                ->toArray();
+
+            return ['status' => 'success', 'data' => $pemeriksaan];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
 

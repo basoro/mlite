@@ -63,7 +63,10 @@ $core->router->set('api/login', function () use ($core) {
             ];
             $token = \Systems\Lib\Jwt::encode($payload, JWT_SECRET);
             header('Content-Type: application/json');
-            echo json_encode(['token' => $token]);
+            echo json_encode([
+                'token' => $token,
+                'fullname' => $user['fullname'] ?? $user['username']
+            ]);
         } else {
             header('Content-Type: application/json');
             http_response_code(401);

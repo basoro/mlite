@@ -60,8 +60,8 @@ const getHeaders = () => ({
   'Content-Type': 'application/json',
   'X-Api-Key': config.apiKey,
   ...(config.token && { 'Authorization': `Bearer ${config.token}` }),
-  'X-Username-Permission': config.usernamePermission,
-  'X-Password-Permission': config.passwordPermission,
+  'X-Username-Permission': localStorage.getItem('auth_username') || '',
+  'X-Password-Permission': localStorage.getItem('auth_password') || '',
 });
 
 // Auth
@@ -174,6 +174,22 @@ export const getRawatJalanDetail = async (noRawat: string) => {
   return response.json();
 };
 
+export const getRawatJalanTindakan = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/showdetail/tindakan/${normalizedNoRawat}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
+export const getRawatJalanSoap = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/showsoap/${normalizedNoRawat}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
 export const createRawatJalan = async (data: {
   no_rkm_medis: string;
   kd_poli: string;
@@ -247,6 +263,47 @@ export const saveSOAP = async (data: {
     headers: getHeaders(),
     body: JSON.stringify(data),
   });
+  return response.json();
+};
+
+export const deleteSOAP = async (data: {
+  no_rawat: string;
+  tgl_perawatan: string;
+  jam_rawat: string;
+}) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/deletesoap`, {
+    method: 'DELETE',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+};
+
+export const saveTindakan = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/savedetail`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  return response.json();
+};
+
+export const deleteTindakan = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/deletedetail`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
   return response.json();
 };
 

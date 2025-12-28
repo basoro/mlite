@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Clock, User, Calendar, Stethoscope, FileText, Pill, Smile, Loader2, Save } from 'lucide-react';
+import { Clock, User, Calendar, Stethoscope, FileText, Pill, Smile, Loader2, Save, Trash, Edit, AlertTriangle, Check, ChevronsUpDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import {
@@ -8,6 +8,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,8 +29,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { useToast } from '@/hooks/use-toast';
-import { getRawatJalanList, getRiwayatPerawatan, saveSOAP } from '@/lib/api';
+import { getRawatJalanList, getRiwayatPerawatan, saveSOAP, deleteSOAP, getMasterList, saveTindakan, getRawatJalanTindakan, deleteTindakan } from '@/lib/api';
 
 // Queue Item Component
 interface QueueItemProps {
@@ -59,36 +85,149 @@ const QueueItem: React.FC<QueueItemProps> = ({ patient, isSelected, onClick }) =
 );
 
 // History Item Component
-const HistoryItem: React.FC<{ history: any }> = ({ history }) => (
-  <div className="p-4 border border-border rounded-xl bg-white hover:shadow-sm transition-shadow">
-    <div className="flex items-start justify-between mb-3">
-      <div className="flex items-center gap-2">
-        <Calendar className="w-4 h-4 text-emerald-500" />
-        <span className="font-medium text-foreground">{history.tgl_registrasi}</span>
-      </div>
-      <span className="text-sm text-muted-foreground">{history.no_rawat}</span>
-    </div>
-    
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-        <div>
-            <p className="font-semibold text-gray-700 mb-1">Diagnosa</p>
-            <p className="text-gray-600">{history.diagnosa || '-'}</p>
+const HistoryItem: React.FC<{ history: any; onEdit?: (history: any, soap: any) => void; onDelete?: (history: any, soap: any) => void }> = ({ history, onEdit, onDelete }) => {
+    // Extract SOAP data if available (assuming first entry in pemeriksaan_ralan)
+    const soap = history.pemeriksaan_ralan && history.pemeriksaan_ralan.length > 0 ? history.pemeriksaan_ralan[0] : null;
+
+    return (
+        <div className="p-4 border border-border rounded-xl bg-white hover:shadow-sm transition-shadow">
+            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-emerald-500" />
+                <span className="font-medium text-foreground">{history.tgl_registrasi} {history.jam_reg}</span>
+            </div>
+            <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">{history.no_rawat}</span>
+                {soap && onEdit && (
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onEdit(history, soap)}>
+                        <Edit className="h-3 w-3" />
+                    </Button>
+                )}
+                {soap && onDelete && (
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:text-destructive" onClick={() => onDelete(history, soap)}>
+                        <Trash className="h-3 w-3" />
+                    </Button>
+                )}
+            </div>
+            </div>
+            
+            {soap ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div className="md:col-span-2">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3 p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p className="text-xs text-muted-foreground">Tensi</p>
+                                <p className="font-medium text-foreground">{soap.tensi || '-'}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-muted-foreground">Nadi</p>
+                                <p className="font-medium text-foreground">{soap.nadi || '-'}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-muted-foreground">Suhu</p>
+                                <p className="font-medium text-foreground">{soap.suhu_tubuh || '-'}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-muted-foreground">Respirasi</p>
+                                <p className="font-medium text-foreground">{soap.respirasi || '-'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <p className="font-semibold text-emerald-700 mb-1">Subjektif (Keluhan)</p>
+                        <p className="text-gray-600 whitespace-pre-wrap">{soap.keluhan || '-'}</p>
+                    </div>
+                    <div>
+                        <p className="font-semibold text-emerald-700 mb-1">Objektif (Pemeriksaan)</p>
+                        <p className="text-gray-600 whitespace-pre-wrap">{soap.pemeriksaan || '-'}</p>
+                    </div>
+                    <div>
+                        <p className="font-semibold text-emerald-700 mb-1">Asesmen (Penilaian)</p>
+                        <p className="text-gray-600 whitespace-pre-wrap">{soap.penilaian || soap.diagnosa || '-'}</p>
+                    </div>
+                    <div>
+                        <p className="font-semibold text-emerald-700 mb-1">Plan (Rencana)</p>
+                        <p className="text-gray-600 whitespace-pre-wrap">{soap.rtl || soap.tindakan || '-'}</p>
+                    </div>
+                    {(soap.instruksi || soap.evaluasi) && (
+                        <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 pt-2 border-t">
+                            {soap.instruksi && (
+                                <div>
+                                    <p className="font-semibold text-gray-700 mb-1">Instruksi</p>
+                                    <p className="text-gray-600 whitespace-pre-wrap">{soap.instruksi}</p>
+                                </div>
+                            )}
+                            {soap.evaluasi && (
+                                <div>
+                                    <p className="font-semibold text-gray-700 mb-1">Evaluasi</p>
+                                    <p className="text-gray-600 whitespace-pre-wrap">{soap.evaluasi}</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className="text-center py-4 text-muted-foreground text-sm italic">
+                    Belum ada data pemeriksaan (SOAP)
+                </div>
+            )}
+
+            {/* Tindakan Section */}
+            {(history.rawat_jl_dr?.length > 0 || history.rawat_jl_pr?.length > 0 || history.rawat_jl_drpr?.length > 0) && (
+                <div className="mt-4 pt-4 border-t">
+                    <h4 className="font-semibold text-sm mb-2 text-emerald-700">Riwayat Tindakan</h4>
+                    <div className="space-y-2 text-sm">
+                        {history.rawat_jl_dr?.map((item: any, idx: number) => (
+                            <div key={`dr-${idx}`} className="p-2 bg-gray-50 rounded border border-gray-100">
+                                <p className="font-medium">{item.nm_perawatan}</p>
+                                <p className="text-xs text-muted-foreground">
+                                    Dokter: {item.nm_dokter} • {item.tgl_perawatan} {item.jam_rawat}
+                                </p>
+                            </div>
+                        ))}
+                        {history.rawat_jl_pr?.map((item: any, idx: number) => (
+                            <div key={`pr-${idx}`} className="p-2 bg-gray-50 rounded border border-gray-100">
+                                <p className="font-medium">{item.nm_perawatan}</p>
+                                <p className="text-xs text-muted-foreground">
+                                    Petugas: {item.nama} • {item.tgl_perawatan} {item.jam_rawat}
+                                </p>
+                            </div>
+                        ))}
+                        {history.rawat_jl_drpr?.map((item: any, idx: number) => (
+                            <div key={`drpr-${idx}`} className="p-2 bg-gray-50 rounded border border-gray-100">
+                                <p className="font-medium">{item.nm_perawatan}</p>
+                                <p className="text-xs text-muted-foreground">
+                                    Dokter: {item.nm_dokter} & Petugas: {item.nama} • {item.tgl_perawatan} {item.jam_rawat}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Pemberian Obat Section */}
+            {history.pemberian_obat?.length > 0 && (
+                <div className="mt-4 pt-4 border-t">
+                    <h4 className="font-semibold text-sm mb-2 text-emerald-700">Riwayat Obat</h4>
+                    <div className="space-y-2 text-sm">
+                        {history.pemberian_obat.map((pemberian: any, idx: number) => (
+                            <div key={`obat-group-${idx}`}>
+                                {pemberian.data_pemberian_obat?.map((item: any, subIdx: number) => (
+                                    <div key={`obat-item-${idx}-${subIdx}`} className="p-2 bg-gray-50 rounded border border-gray-100 mb-1">
+                                        <p className="font-medium">{item.nama_brng}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Jumlah: {item.jml} • Biaya: {item.biaya_obat} • {pemberian.tgl_perawatan} {pemberian.jam}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
-        <div>
-            <p className="font-semibold text-gray-700 mb-1">Keluhan</p>
-            <p className="text-gray-600">{history.keluhan || '-'}</p>
-        </div>
-        <div>
-            <p className="font-semibold text-gray-700 mb-1">Pemeriksaan</p>
-            <p className="text-gray-600">{history.pemeriksaan || '-'}</p>
-        </div>
-        <div>
-            <p className="font-semibold text-gray-700 mb-1">Terapi/Tindakan</p>
-            <p className="text-gray-600">{history.tindakan || '-'}</p>
-        </div>
-    </div>
-  </div>
-);
+    );
+};
 
 const Pemeriksaan: React.FC = () => {
   const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
@@ -97,8 +236,50 @@ const Pemeriksaan: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Fetch Rawat Jalan Tindakan
+  const { data: rawatJalanTindakan, refetch: refetchRawatJalanTindakan } = useQuery({
+    queryKey: ['rawatJalanTindakan', selectedPatient?.no_rawat],
+    queryFn: () => getRawatJalanTindakan(selectedPatient.no_rawat),
+    enabled: !!selectedPatient?.no_rawat
+  });
+
+  const deleteTindakanMutation = useMutation({
+    mutationFn: (data: any) => deleteTindakan(data),
+    onSuccess: () => {
+      toast({ title: 'Berhasil', description: 'Tindakan berhasil dihapus' });
+      refetchRawatJalanTindakan();
+    },
+    onError: (error: any) => {
+      toast({ title: 'Gagal', description: error.message || 'Gagal menghapus tindakan', variant: 'destructive' });
+    }
+  });
+
+  const handleDeleteTindakan = (tindakan: any, providerType: string) => {
+     const payload = {
+         kat: 'tindakan',
+         no_rawat: selectedPatient.no_rawat,
+         kd_jenis_prw: tindakan.kd_jenis_prw,
+         provider: providerType,
+         tgl_perawatan: tindakan.tgl_perawatan,
+         jam_rawat: tindakan.jam_rawat
+     };
+     deleteTindakanMutation.mutate(payload);
+  };
+
   const [isDateFromOpen, setIsDateFromOpen] = useState(false);
   const [isDateToOpen, setIsDateToOpen] = useState(false);
+  
+  // Edit mode state
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editHistoryData, setEditHistoryData] = useState<any | null>(null);
+  const [activeTab, setActiveTab] = useState('riwayat');
+  
+  // Delete Dialog State
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{history: any, soap: any} | null>(null);
+
+  const [openObat, setOpenObat] = useState(false);
+  const [openRacikanObat, setOpenRacikanObat] = useState(false);
 
   const formattedDateFrom = dateFrom ? format(dateFrom, 'yyyy-MM-dd') : '';
   const formattedDateTo = dateTo ? format(dateTo, 'yyyy-MM-dd') : '';
@@ -120,8 +301,200 @@ const Pemeriksaan: React.FC = () => {
     penilaian: '',
     instruksi: '',
     evaluasi: '',
-    nip: '', // This should ideally come from logged in user
+    nip: '', 
   });
+
+  // Tindakan Form State
+  const [tindakanData, setTindakanData] = useState({
+    kd_jenis_prw: '',
+    provider: 'rawat_jl_dr',
+    kode_provider: '',
+    kode_provider2: '',
+    tgl_perawatan: format(new Date(), 'yyyy-MM-dd'),
+    jam_rawat: format(new Date(), 'HH:mm:ss')
+  });
+
+  // Resep Form State
+  const [obatData, setObatData] = useState({
+    kode_brng: '',
+    nama_brng: '',
+    jml: '',
+    aturan_pakai: '',
+    search: ''
+  });
+
+  const [racikanData, setRacikanData] = useState({
+    nama_racik: '',
+    kd_jenis_racik: '',
+    jml: '',
+    aturan_pakai: '',
+    keterangan: '',
+    items: [] as { kode_brng: string; nama_brng: string; kandungan: string }[],
+    search_obat: ''
+  });
+
+  const [racikanItem, setRacikanItem] = useState({
+    kode_brng: '',
+    nama_brng: '',
+    kandungan: ''
+  });
+
+  // Fetch Obat Data
+  const { data: obatListData } = useQuery({
+    queryKey: ['master', 'gudangbarang', obatData.search],
+    queryFn: () => getMasterList('gudangbarang', 1, 50, obatData.search),
+    enabled: true // Always enabled, but depends on search
+  });
+
+  // Fetch Racikan Obat Data (Separate search)
+  const { data: racikanObatListData } = useQuery({
+    queryKey: ['master', 'gudangbarang', racikanData.search_obat],
+    queryFn: () => getMasterList('gudangbarang', 1, 50, racikanData.search_obat),
+  });
+
+  // Fetch Metode Racik
+  const { data: metodeRacikData } = useQuery({
+    queryKey: ['master', 'metode_racik'],
+    queryFn: () => getMasterList('metode_racik', 1, 100),
+  });
+
+  const handleSaveObat = () => {
+    if (!selectedPatient || !obatData.kode_brng) return;
+
+    const payload = {
+        kat: 'obat',
+        no_rawat: selectedPatient.no_rawat,
+        tgl_perawatan: format(new Date(), 'yyyy-MM-dd'),
+        jam_rawat: format(new Date(), 'HH:mm:ss'),
+        kd_jenis_prw: obatData.kode_brng, // Map kode_brng to kd_jenis_prw for consistency with backend
+        jml: obatData.jml,
+        aturan_pakai: obatData.aturan_pakai,
+        kode_provider: localStorage.getItem('auth_username') || '',
+    };
+
+    saveTindakanMutation.mutate(payload);
+  };
+
+  const handleAddRacikanItem = () => {
+    if (racikanItem.kode_brng && racikanItem.kandungan) {
+        setRacikanData(prev => ({
+            ...prev,
+            items: [...prev.items, { ...racikanItem }]
+        }));
+        setRacikanItem({ kode_brng: '', nama_brng: '', kandungan: '' });
+    }
+  };
+
+  const handleRemoveRacikanItem = (index: number) => {
+    setRacikanData(prev => ({
+        ...prev,
+        items: prev.items.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleSaveRacikan = () => {
+    if (!selectedPatient || !racikanData.nama_racik || racikanData.items.length === 0) return;
+
+    const payload = {
+        kat: 'racikan',
+        no_rawat: selectedPatient.no_rawat,
+        tgl_perawatan: format(new Date(), 'yyyy-MM-dd'),
+        jam_rawat: format(new Date(), 'HH:mm:ss'),
+        nama_racik: racikanData.nama_racik,
+        kd_jenis_prw: racikanData.kd_jenis_racik, // Map method to kd_jenis_prw
+        jml: racikanData.jml,
+        aturan_pakai: racikanData.aturan_pakai,
+        keterangan: racikanData.keterangan,
+        kode_provider: localStorage.getItem('auth_username') || '',
+        kode_brng: racikanData.items.map(item => ({ value: item.kode_brng })),
+        kandungan: racikanData.items.map(item => ({ value: item.kandungan }))
+    };
+
+    saveTindakanMutation.mutate(payload);
+  };
+
+  // Fetch Master Data
+  const { data: jnsPerawatanData } = useQuery({
+    queryKey: ['master', 'jns_perawatan'],
+    queryFn: () => getMasterList('jns_perawatan', 1, 1000),
+  });
+
+  const { data: dokterData } = useQuery({
+    queryKey: ['master', 'dokter'],
+    queryFn: () => getMasterList('dokter', 1, 1000),
+  });
+
+  const { data: petugasData } = useQuery({
+    queryKey: ['master', 'petugas'],
+    queryFn: () => getMasterList('petugas', 1, 1000),
+  });
+
+  const saveTindakanMutation = useMutation({
+    mutationFn: (data: any) => saveTindakan(data),
+    onSuccess: () => {
+      toast({ title: 'Berhasil', description: 'Tindakan berhasil disimpan' });
+      queryClient.invalidateQueries({ queryKey: ['riwayatPerawatan'] });
+      queryClient.invalidateQueries({ queryKey: ['rawatJalanTindakan'] });
+      // Reset form (optional, maybe keep provider/date)
+      setTindakanData(prev => ({
+        ...prev,
+        kd_jenis_prw: '',
+      }));
+    },
+    onError: (error: any) => {
+      toast({ title: 'Gagal', description: error.message || 'Gagal menyimpan tindakan', variant: 'destructive' });
+    }
+  });
+
+  // Reset forms on success (hook into existing mutation)
+  useEffect(() => {
+    if (saveTindakanMutation.isSuccess) {
+        setObatData(prev => ({ ...prev, kode_brng: '', jml: '', aturan_pakai: '' }));
+        setRacikanData({
+            nama_racik: '',
+            kd_jenis_racik: '',
+            jml: '',
+            aturan_pakai: '',
+            keterangan: '',
+            items: [],
+            search_obat: ''
+        });
+    }
+  }, [saveTindakanMutation.isSuccess]);
+
+  const handleTindakanSubmit = () => {
+    if (!selectedPatient) return;
+    
+    // Get logged in user as default provider if not selected
+    const currentUser = localStorage.getItem('auth_username') || '';
+
+    const payload = {
+        kat: 'tindakan',
+        ...tindakanData,
+        no_rawat: selectedPatient.no_rawat,
+        // Fallback for provider codes if empty
+        kode_provider: tindakanData.kode_provider || currentUser,
+        // Ensure kode_provider2 is sent if relevant
+        kode_provider2: tindakanData.provider === 'rawat_jl_drpr' ? tindakanData.kode_provider2 : '',
+    };
+    
+    saveTindakanMutation.mutate(payload);
+  };
+
+  const handleTindakanChange = (field: string, value: string) => {
+    setTindakanData(prev => {
+        // Reset provider codes when switching provider type
+        if (field === 'provider') {
+            return { 
+                ...prev, 
+                [field]: value,
+                kode_provider: '',
+                kode_provider2: ''
+            };
+        }
+        return { ...prev, [field]: value };
+    });
+  };
 
   // Fetch Queue (Rawat Jalan)
   const { data: queueData, isLoading: isQueueLoading } = useQuery({
@@ -142,54 +515,138 @@ const Pemeriksaan: React.FC = () => {
   // Reset form when patient changes
   useEffect(() => {
     if (selectedPatient) {
-        setSoapData({
-            suhu_tubuh: '',
-            tensi: '',
-            nadi: '',
-            respirasi: '',
-            tinggi: '',
-            berat: '',
-            gcs: '',
-            keluhan: '',
-            pemeriksaan: '',
-            alergi: '',
-            lingkar_perut: '',
-            rtl: '',
-            penilaian: '',
-            instruksi: '',
-            evaluasi: '',
-            nip: '-',
-        });
+        resetSoapForm();
+        setIsEditMode(false);
+        setEditHistoryData(null);
     }
   }, [selectedPatient]);
+
+  const resetSoapForm = () => {
+    setSoapData({
+        suhu_tubuh: '',
+        tensi: '',
+        nadi: '',
+        respirasi: '',
+        tinggi: '',
+        berat: '',
+        gcs: '',
+        keluhan: '',
+        pemeriksaan: '',
+        alergi: '',
+        lingkar_perut: '',
+        rtl: '',
+        penilaian: '',
+        instruksi: '',
+        evaluasi: '',
+        nip: '-',
+    });
+  };
 
   const saveSoapMutation = useMutation({
     mutationFn: (data: any) => saveSOAP(data),
     onSuccess: () => {
-      toast({ title: 'Berhasil', description: 'Data pemeriksaan berhasil disimpan' });
+      toast({ title: 'Berhasil', description: `Data pemeriksaan berhasil ${isEditMode ? 'diperbarui' : 'disimpan'}` });
       queryClient.invalidateQueries({ queryKey: ['riwayatPerawatan'] });
-      // Optionally update status to 'Sudah'
+      if (isEditMode) {
+        setIsEditMode(false);
+        setEditHistoryData(null);
+        resetSoapForm();
+      }
     },
     onError: (error: any) => {
       toast({ title: 'Gagal', description: error.message || 'Gagal menyimpan data', variant: 'destructive' });
     },
   });
 
+  const deleteSoapMutation = useMutation({
+    mutationFn: (data: any) => deleteSOAP(data),
+    onSuccess: () => {
+        toast({ title: 'Berhasil', description: 'Data pemeriksaan berhasil dihapus' });
+        queryClient.invalidateQueries({ queryKey: ['riwayatPerawatan'] });
+    },
+    onError: (error: any) => {
+        toast({ title: 'Gagal', description: error.message || 'Gagal menghapus data', variant: 'destructive' });
+    }
+  });
+
   const handleSoapSubmit = () => {
     if (!selectedPatient) return;
 
+    // If edit mode, use the historical data dates, otherwise use current date
+    const tglPerawatan = isEditMode && editHistoryData ? editHistoryData.tgl_registrasi : format(new Date(), 'yyyy-MM-dd');
+    const jamRawat = isEditMode && editHistoryData ? editHistoryData.jam_reg : format(new Date(), 'HH:mm:ss');
+    const noRawat = isEditMode && editHistoryData ? editHistoryData.no_rawat : selectedPatient.no_rawat;
+    
+    // Get NIP from config/localStorage or fallback
+    const currentUserNip = localStorage.getItem('auth_username') || import.meta.env.VITE_API_USERNAME || '-';
+
     const payload = {
         ...soapData,
-        no_rawat: selectedPatient.no_rawat,
-        tgl_perawatan: format(new Date(), 'yyyy-MM-dd'),
-        jam_rawat: format(new Date(), 'HH:mm:ss'),
+        no_rawat: noRawat,
+        tgl_perawatan: tglPerawatan,
+        jam_rawat: jamRawat,
+        // Ensure NIP is sent if available
+        nip: soapData.nip && soapData.nip !== '-' ? soapData.nip : currentUserNip, 
     };
 
     saveSoapMutation.mutate(payload);
   };
 
+  const handleEditHistory = (history: any, soap: any) => {
+      // Switch to SOAP tab
+      setActiveTab('pemeriksaan');
+
+      setIsEditMode(true);
+      // Store soap data but keep history context for registration info if needed
+      setEditHistoryData({ ...history, ...soap }); 
+      
+      // Populate form with history data
+      // Note: mapping might need adjustment based on exact API response fields
+      setSoapData({
+          suhu_tubuh: soap.suhu_tubuh || '',
+          tensi: soap.tensi || '',
+          nadi: soap.nadi || '',
+          respirasi: soap.respirasi || '',
+          tinggi: soap.tinggi || '',
+          berat: soap.berat || '',
+          gcs: soap.gcs || '',
+          keluhan: soap.keluhan || '',
+          pemeriksaan: soap.pemeriksaan || '',
+          alergi: soap.alergi || '',
+          lingkar_perut: soap.lingkar_perut || '',
+          rtl: soap.rtl || '',
+          penilaian: soap.penilaian || '', // Assessment often maps to penilaian/diagnosa
+          instruksi: soap.instruksi || '',
+          evaluasi: soap.evaluasi || '',
+          nip: soap.nip || '-',
+      });
+  };
+
+  const handleDeleteHistory = (history: any, soap: any) => {
+      setItemToDelete({ history, soap });
+      setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+      if (itemToDelete) {
+          deleteSoapMutation.mutate({
+              no_rawat: itemToDelete.soap.no_rawat || itemToDelete.history.no_rawat,
+              tgl_perawatan: itemToDelete.soap.tgl_perawatan,
+              jam_rawat: itemToDelete.soap.jam_rawat
+          });
+          setDeleteDialogOpen(false);
+          setItemToDelete(null);
+      }
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setSoapData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleCancelEdit = () => {
+      setIsEditMode(false);
+      setEditHistoryData(null);
+      resetSoapForm();
   };
 
   return (
@@ -336,7 +793,7 @@ const Pemeriksaan: React.FC = () => {
 
               {/* Tabs */}
               <div className="bg-card rounded-xl border border-border p-6">
-                <Tabs defaultValue="riwayat" className="w-full">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                   <TabsList className="grid grid-cols-5 w-full">
                     <TabsTrigger value="riwayat" className="gap-2">
                       <FileText className="w-4 h-4" />
@@ -367,51 +824,69 @@ const Pemeriksaan: React.FC = () => {
                         Riwayat kunjungan sebelumnya
                       </p>
                     </div>
+                    
                     <div className="space-y-3 max-h-[500px] overflow-y-auto">
-                      {isHistoryLoading ? (
-                          <div className="flex justify-center py-4">
-                            <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
-                          </div>
-                      ) : historyData?.data && historyData.data.length > 0 ? (
-                          historyData.data.map((history: any, index: number) => (
-                            <HistoryItem key={index} history={history} />
-                          ))
-                      ) : (
-                          <div className="text-center py-8 text-muted-foreground">
-                            Belum ada riwayat pemeriksaan
-                          </div>
-                      )}
+                        {isHistoryLoading ? (
+                            <div className="flex justify-center py-4">
+                                <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+                            </div>
+                        ) : historyData?.data?.reg_periksa && historyData.data.reg_periksa.length > 0 ? (
+                            historyData.data.reg_periksa.map((history: any, index: number) => (
+                                <HistoryItem 
+                                    key={index} 
+                                    history={history} 
+                                    onEdit={handleEditHistory}
+                                    onDelete={handleDeleteHistory}
+                                />
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-muted-foreground">
+                                Belum ada riwayat pemeriksaan
+                            </div>
+                        )}
                     </div>
                   </TabsContent>
 
                   <TabsContent value="pemeriksaan" className="mt-6">
                     <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-bold text-foreground">Input Pemeriksaan (SOAP)</h3>
-                        <Button 
-                            onClick={handleSoapSubmit} 
-                            disabled={saveSoapMutation.isPending}
-                            className="bg-emerald-600 hover:bg-emerald-700"
-                        >
-                            {saveSoapMutation.isPending ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                <>
-                                    <Save className="mr-2 h-4 w-4" />
-                                    Simpan Pemeriksaan
-                                </>
-                            )}
-                        </Button>
+                        <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-bold text-foreground">
+                          {isEditMode ? 'Edit Pemeriksaan (SOAP)' : 'Input Pemeriksaan (SOAP)'}
+                        </h3>
+                        <div className="flex gap-2">
+                          {isEditMode && (
+                              <Button 
+                                  variant="outline"
+                                  onClick={handleCancelEdit}
+                              >
+                                  Batal Edit
+                              </Button>
+                          )}
+                          <Button 
+                              onClick={handleSoapSubmit} 
+                              disabled={saveSoapMutation.isPending}
+                              className="bg-emerald-600 hover:bg-emerald-700"
+                          >
+                              {saveSoapMutation.isPending ? (
+                                  <>
+                                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                      Menyimpan...
+                                  </>
+                              ) : (
+                                  <>
+                                      <Save className="mr-2 h-4 w-4" />
+                                      {isEditMode ? 'Update Pemeriksaan' : 'Simpan Pemeriksaan'}
+                                  </>
+                              )}
+                          </Button>
+                        </div>
                       </div>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                           {/* Subjective & Objective */}
                           <div className="space-y-4">
                               <h4 className="font-semibold text-emerald-600 border-b pb-1">Tanda Vital & Fisik</h4>
-                              <div className="grid grid-cols-2 gap-4">
+                              <div className="grid grid-cols-4 gap-4">
                                 <div className="space-y-2">
                                   <Label>Tensi (mmHg)</Label>
                                   <Input placeholder="120/80" value={soapData.tensi} onChange={(e) => handleInputChange('tensi', e.target.value)} />
@@ -483,53 +958,496 @@ const Pemeriksaan: React.FC = () => {
 
                   <TabsContent value="tindakan" className="mt-6">
                     <div className="space-y-4">
-                      <h3 className="text-lg font-bold text-foreground">Input Tindakan</h3>
-                      <div className="space-y-2">
-                        <Label>Jenis Tindakan</Label>
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Pilih jenis tindakan" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="konsultasi">Konsultasi</SelectItem>
-                            <SelectItem value="cabut-gigi">Cabut Gigi</SelectItem>
-                            <SelectItem value="tambal-gigi">Tambal Gigi</SelectItem>
-                            <SelectItem value="scaling">Scaling</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <Button>Tambah Tindakan</Button>
+                        <div className="flex justify-between items-center">
+                            <h3 className="text-lg font-bold text-foreground">Input Tindakan</h3>
+                            <Button 
+                                onClick={handleTindakanSubmit} 
+                                disabled={saveTindakanMutation.isPending}
+                                className="bg-emerald-600 hover:bg-emerald-700"
+                            >
+                                {saveTindakanMutation.isPending ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Menyimpan...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save className="mr-2 h-4 w-4" />
+                                        Simpan Tindakan
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Tanggal</Label>
+                                        <Input 
+                                            type="date" 
+                                            value={tindakanData.tgl_perawatan}
+                                            onChange={(e) => handleTindakanChange('tgl_perawatan', e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Jam</Label>
+                                        <Input 
+                                            type="time" 
+                                            value={tindakanData.jam_rawat}
+                                            onChange={(e) => handleTindakanChange('jam_rawat', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>Jenis Tindakan</Label>
+                                    <Select 
+                                        value={tindakanData.kd_jenis_prw} 
+                                        onValueChange={(value) => handleTindakanChange('kd_jenis_prw', value)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Pilih tindakan..." />
+                                        </SelectTrigger>
+                                        <SelectContent className="max-h-[200px]">
+                                            {jnsPerawatanData?.data?.map((item: any) => (
+                                                <SelectItem key={item.kd_jenis_prw} value={item.kd_jenis_prw}>
+                                                    {item.nm_perawatan}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>Pelaksana</Label>
+                                    <Select 
+                                        value={tindakanData.provider} 
+                                        onValueChange={(value) => handleTindakanChange('provider', value)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Pilih pelaksana" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="rawat_jl_dr">Dokter</SelectItem>
+                                            <SelectItem value="rawat_jl_pr">Petugas</SelectItem>
+                                            <SelectItem value="rawat_jl_drpr">Dokter & Petugas</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                {(tindakanData.provider === 'rawat_jl_dr' || tindakanData.provider === 'rawat_jl_drpr') && (
+                                    <div className="space-y-2">
+                                        <Label>Dokter</Label>
+                                        <Select 
+                                            value={tindakanData.kode_provider} 
+                                            onValueChange={(value) => handleTindakanChange('kode_provider', value)}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Pilih dokter" />
+                                            </SelectTrigger>
+                                            <SelectContent className="max-h-[200px]">
+                                                {dokterData?.data?.map((item: any) => (
+                                                    <SelectItem key={item.kd_dokter} value={item.kd_dokter}>
+                                                        {item.nm_dokter}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                )}
+
+                                {(tindakanData.provider === 'rawat_jl_pr' || tindakanData.provider === 'rawat_jl_drpr') && (
+                                    <div className="space-y-2">
+                                        <Label>Petugas</Label>
+                                        <Select 
+                                            value={tindakanData.provider === 'rawat_jl_drpr' ? tindakanData.kode_provider2 : tindakanData.kode_provider} 
+                                            onValueChange={(value) => {
+                                                if (tindakanData.provider === 'rawat_jl_drpr') {
+                                                    handleTindakanChange('kode_provider2', value);
+                                                } else {
+                                                    handleTindakanChange('kode_provider', value);
+                                                }
+                                            }}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Pilih petugas" />
+                                            </SelectTrigger>
+                                            <SelectContent className="max-h-[200px]">
+                                                {petugasData?.data?.map((item: any) => (
+                                                    <SelectItem key={item.nip} value={item.nip}>
+                                                        {item.nama}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="mt-8 border-t pt-6">
+                            <h4 className="font-semibold text-foreground mb-4">Daftar Tindakan Tersimpan</h4>
+                            <div className="space-y-4">
+                                {rawatJalanTindakan?.data ? (
+                                    <>
+                                        {/* Dokter */}
+                                        {rawatJalanTindakan.data.rawat_jl_dr?.length > 0 && (
+                                            <div>
+                                                <h5 className="text-sm font-medium text-emerald-600 mb-2">Tindakan Dokter</h5>
+                                                <div className="space-y-2">
+                                                    {rawatJalanTindakan.data.rawat_jl_dr.map((item: any, idx: number) => (
+                                                        <div key={`dr-${idx}`} className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                                                            <div>
+                                                                <p className="font-medium text-sm">{item.nm_perawatan}</p>
+                                                                <p className="text-xs text-muted-foreground">{item.tgl_perawatan} {item.jam_rawat} • {item.nm_dokter}</p>
+                                                            </div>
+                                                            <Button 
+                                                                variant="ghost" 
+                                                                size="icon" 
+                                                                className="h-8 w-8 text-destructive hover:text-destructive"
+                                                                onClick={() => handleDeleteTindakan(item, 'rawat_jl_dr')}
+                                                            >
+                                                                <Trash className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Petugas */}
+                                        {rawatJalanTindakan.data.rawat_jl_pr?.length > 0 && (
+                                            <div>
+                                                <h5 className="text-sm font-medium text-emerald-600 mb-2 mt-4">Tindakan Petugas</h5>
+                                                <div className="space-y-2">
+                                                    {rawatJalanTindakan.data.rawat_jl_pr.map((item: any, idx: number) => (
+                                                        <div key={`pr-${idx}`} className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                                                            <div>
+                                                                <p className="font-medium text-sm">{item.nm_perawatan}</p>
+                                                                <p className="text-xs text-muted-foreground">{item.tgl_perawatan} {item.jam_rawat} • {item.nama}</p>
+                                                            </div>
+                                                            <Button 
+                                                                variant="ghost" 
+                                                                size="icon" 
+                                                                className="h-8 w-8 text-destructive hover:text-destructive"
+                                                                onClick={() => handleDeleteTindakan(item, 'rawat_jl_pr')}
+                                                            >
+                                                                <Trash className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Dokter & Petugas */}
+                                        {rawatJalanTindakan.data.rawat_jl_drpr?.length > 0 && (
+                                            <div>
+                                                <h5 className="text-sm font-medium text-emerald-600 mb-2 mt-4">Tindakan Dokter & Petugas</h5>
+                                                <div className="space-y-2">
+                                                    {rawatJalanTindakan.data.rawat_jl_drpr.map((item: any, idx: number) => (
+                                                        <div key={`drpr-${idx}`} className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                                                            <div>
+                                                                <p className="font-medium text-sm">{item.nm_perawatan}</p>
+                                                                <p className="text-xs text-muted-foreground">{item.tgl_perawatan} {item.jam_rawat} • {item.nm_dokter} & {item.nama}</p>
+                                                            </div>
+                                                            <Button 
+                                                                variant="ghost" 
+                                                                size="icon" 
+                                                                className="h-8 w-8 text-destructive hover:text-destructive"
+                                                                onClick={() => handleDeleteTindakan(item, 'rawat_jl_drpr')}
+                                                            >
+                                                                <Trash className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                        
+                                        {!rawatJalanTindakan.data.rawat_jl_dr?.length && !rawatJalanTindakan.data.rawat_jl_pr?.length && !rawatJalanTindakan.data.rawat_jl_drpr?.length && (
+                                            <div className="text-center py-4 text-muted-foreground text-sm italic">
+                                                Belum ada tindakan yang tersimpan
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="flex justify-center py-4">
+                                        <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
                   </TabsContent>
 
                   <TabsContent value="resep" className="mt-6">
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-bold text-foreground">Resep Obat</h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label>Nama Obat</Label>
-                          <Select>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Pilih obat" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="paracetamol">Paracetamol 500mg</SelectItem>
-                              <SelectItem value="amoxicillin">Amoxicillin 500mg</SelectItem>
-                              <SelectItem value="ibuprofen">Ibuprofen 400mg</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Jumlah</Label>
-                          <Input type="number" placeholder="0" />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Aturan Pakai</Label>
-                        <Input placeholder="3 x 1 sehari" />
-                      </div>
-                      <Button>Tambah ke Resep</Button>
-                    </div>
+                    <Tabs defaultValue="non-racikan" className="w-full">
+                        <TabsList className="grid grid-cols-2 w-full mb-4">
+                            <TabsTrigger value="non-racikan">Non Racikan</TabsTrigger>
+                            <TabsTrigger value="racikan">Racikan</TabsTrigger>
+                        </TabsList>
+                        
+                        <TabsContent value="non-racikan" className="space-y-4">
+                            <h3 className="text-lg font-bold text-foreground">Resep Obat Non Racikan</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Nama Obat</Label>
+                                    <Popover open={openObat} onOpenChange={setOpenObat}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={openObat}
+                                                className="w-full justify-between"
+                                            >
+                                                {obatData.kode_brng
+                                                    ? (obatData.nama_brng || obatListData?.data?.find((item: any) => item.kode_brng === obatData.kode_brng)?.nama_brng || obatData.kode_brng)
+                                                    : "Pilih obat..."}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[400px] p-0" align="start">
+                                            <Command shouldFilter={false}>
+                                                <CommandInput
+                                                    placeholder="Cari obat..."
+                                                    value={obatData.search}
+                                                    onValueChange={(value) => setObatData(prev => ({ ...prev, search: value }))}
+                                                />
+                                                <CommandList>
+                                                    <CommandEmpty>Tidak ada obat ditemukan.</CommandEmpty>
+                                                    <CommandGroup>
+                                                        {obatListData?.data?.map((item: any, index: number) => (
+                                                            <CommandItem
+                                                                key={`${item.kode_brng}-${index}`}
+                                                                value={item.kode_brng}
+                                                                onSelect={(currentValue) => {
+                                                                    setObatData(prev => ({ 
+                                                                        ...prev, 
+                                                                        kode_brng: currentValue === obatData.kode_brng ? "" : item.kode_brng,
+                                                                        nama_brng: item.nama_brng 
+                                                                    }));
+                                                                    setOpenObat(false);
+                                                                }}
+                                                            >
+                                                                <Check
+                                                                    className={cn(
+                                                                        "mr-2 h-4 w-4",
+                                                                        obatData.kode_brng === item.kode_brng ? "opacity-100" : "opacity-0"
+                                                                    )}
+                                                                />
+                                                                {item.nama_brng} ({item.kode_sat}) - Depo: {item.nm_bangsal} (Stok: {item.stok}) {item.no_batch ? `(Batch: ${item.no_batch})` : ''}
+                                                            </CommandItem>
+                                                        ))}
+                                                    </CommandGroup>
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Jumlah</Label>
+                                    <Input 
+                                        type="number" 
+                                        placeholder="0" 
+                                        value={obatData.jml}
+                                        onChange={(e) => setObatData(prev => ({ ...prev, jml: e.target.value }))}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Aturan Pakai</Label>
+                                    <Input 
+                                        placeholder="Contoh: 3 x 1 sehari" 
+                                        value={obatData.aturan_pakai}
+                                        onChange={(e) => setObatData(prev => ({ ...prev, aturan_pakai: e.target.value }))}
+                                    />
+                                </div>
+                            </div>
+                            <Button 
+                                onClick={handleSaveObat}
+                                disabled={saveTindakanMutation.isPending || !obatData.kode_brng}
+                                className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700"
+                            >
+                                {saveTindakanMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                                Simpan Obat
+                            </Button>
+                        </TabsContent>
+
+                        <TabsContent value="racikan" className="space-y-4">
+                             <h3 className="text-lg font-bold text-foreground">Resep Obat Racikan</h3>
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Nama Racikan</Label>
+                                    <Input 
+                                        placeholder="Contoh: Racikan Batuk Pilek" 
+                                        value={racikanData.nama_racik}
+                                        onChange={(e) => setRacikanData(prev => ({ ...prev, nama_racik: e.target.value }))}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Metode Racik</Label>
+                                    <Select 
+                                        value={racikanData.kd_jenis_racik} 
+                                        onValueChange={(value) => setRacikanData(prev => ({ ...prev, kd_jenis_racik: value }))}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Pilih metode" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {metodeRacikData?.data?.map((item: any) => (
+                                                <SelectItem key={item.kd_racik} value={item.kd_racik}>
+                                                    {item.nm_racik}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Jumlah Racikan</Label>
+                                    <Input 
+                                        type="number" 
+                                        placeholder="0" 
+                                        value={racikanData.jml}
+                                        onChange={(e) => setRacikanData(prev => ({ ...prev, jml: e.target.value }))}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Aturan Pakai</Label>
+                                    <Input 
+                                        placeholder="Contoh: 3 x 1 bungkus" 
+                                        value={racikanData.aturan_pakai}
+                                        onChange={(e) => setRacikanData(prev => ({ ...prev, aturan_pakai: e.target.value }))}
+                                    />
+                                </div>
+                                <div className="col-span-1 md:col-span-2 space-y-2">
+                                    <Label>Keterangan</Label>
+                                    <Input 
+                                        placeholder="Keterangan tambahan..." 
+                                        value={racikanData.keterangan}
+                                        onChange={(e) => setRacikanData(prev => ({ ...prev, keterangan: e.target.value }))}
+                                    />
+                                </div>
+                             </div>
+
+                             <div className="border p-4 rounded-lg space-y-4 bg-muted/20">
+                                <h4 className="font-semibold text-sm">Item Komposisi Racikan</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                                    <div className="space-y-2">
+                                        <Label>Cari & Pilih Obat</Label>
+                                        <div className="space-y-2">
+                                            <Popover open={openRacikanObat} onOpenChange={setOpenRacikanObat}>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        role="combobox"
+                                                        aria-expanded={openRacikanObat}
+                                                        className="w-full justify-between"
+                                                    >
+                                                        {racikanItem.kode_brng
+                                                            ? (racikanItem.nama_brng || racikanObatListData?.data?.find((item: any) => item.kode_brng === racikanItem.kode_brng)?.nama_brng || racikanItem.kode_brng)
+                                                            : "Pilih obat..."}
+                                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-[400px] p-0" align="start">
+                                                    <Command shouldFilter={false}>
+                                                        <CommandInput
+                                                            placeholder="Cari obat..."
+                                                            value={racikanData.search_obat}
+                                                            onValueChange={(value) => setRacikanData(prev => ({ ...prev, search_obat: value }))}
+                                                        />
+                                                        <CommandList>
+                                                            <CommandEmpty>Tidak ada obat ditemukan.</CommandEmpty>
+                                                            <CommandGroup>
+                                                                {racikanObatListData?.data?.map((item: any, index: number) => (
+                                                                    <CommandItem
+                                                                        key={`${item.kode_brng}-${index}`}
+                                                                        value={item.kode_brng}
+                                                                        onSelect={(currentValue) => {
+                                                                             setRacikanItem(prev => ({ 
+                                                                                 ...prev, 
+                                                                                 kode_brng: item.kode_brng, 
+                                                                                 nama_brng: item.nama_brng 
+                                                                             }));
+                                                                             setOpenRacikanObat(false);
+                                                                        }}
+                                                                    >
+                                                                        <Check
+                                                                            className={cn(
+                                                                                "mr-2 h-4 w-4",
+                                                                                racikanItem.kode_brng === item.kode_brng ? "opacity-100" : "opacity-0"
+                                                                            )}
+                                                                        />
+                                                                        {item.nama_brng} ({item.kapasitas}) - Depo: {item.nm_bangsal} (Stok: {item.stok}) {item.no_batch ? `(Batch: ${item.no_batch})` : ''}
+                                                                    </CommandItem>
+                                                                ))}
+                                                            </CommandGroup>
+                                                        </CommandList>
+                                                    </Command>
+                                                </PopoverContent>
+                                            </Popover>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Kandungan (mg/ml/dll)</Label>
+                                        <Input 
+                                            type="number" 
+                                            placeholder="0" 
+                                            value={racikanItem.kandungan}
+                                            onChange={(e) => setRacikanItem(prev => ({ ...prev, kandungan: e.target.value }))}
+                                        />
+                                    </div>
+                                    <Button 
+                                        onClick={handleAddRacikanItem}
+                                        disabled={!racikanItem.kode_brng || !racikanItem.kandungan}
+                                        variant="secondary"
+                                    >
+                                        Tambah Item
+                                    </Button>
+                                </div>
+
+                                {racikanData.items.length > 0 && (
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Nama Obat</TableHead>
+                                                <TableHead>Kandungan</TableHead>
+                                                <TableHead className="w-[50px]"></TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {racikanData.items.map((item, idx) => (
+                                                <TableRow key={idx}>
+                                                    <TableCell>{item.nama_brng}</TableCell>
+                                                    <TableCell>{item.kandungan}</TableCell>
+                                                    <TableCell>
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            onClick={() => handleRemoveRacikanItem(idx)}
+                                                            className="text-destructive hover:text-destructive"
+                                                        >
+                                                            <Trash className="h-4 w-4" />
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                )}
+                             </div>
+
+                             <Button 
+                                onClick={handleSaveRacikan}
+                                disabled={saveTindakanMutation.isPending || !racikanData.nama_racik || racikanData.items.length === 0}
+                                className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700"
+                            >
+                                {saveTindakanMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                                Simpan Racikan
+                            </Button>
+                        </TabsContent>
+                    </Tabs>
                   </TabsContent>
                 </Tabs>
               </div>
@@ -547,6 +1465,28 @@ const Pemeriksaan: React.FC = () => {
           )}
         </div>
       </div>
+      
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="flex items-center justify-center mb-2">
+                <div className="p-3 bg-red-100 rounded-full">
+                    <AlertTriangle className="w-8 h-8 text-red-600" />
+                </div>
+            </div>
+            <AlertDialogTitle className="text-center">Konfirmasi Hapus</AlertDialogTitle>
+            <AlertDialogDescription className="text-center">
+              Apakah Anda yakin ingin menghapus data pemeriksaan ini? Tindakan ini tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="sm:justify-center gap-2">
+            <AlertDialogCancel onClick={() => setItemToDelete(null)} className="mt-0">Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Ya, Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

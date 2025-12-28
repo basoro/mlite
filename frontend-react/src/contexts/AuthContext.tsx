@@ -72,7 +72,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (data.token) {
         const loggedInUser: User = {
           username,
-          role: 'Admin Klinik', // Default role since API doesn't return user details yet
+          role: data.fullname || 'Admin Klinik', 
           clinicName: 'Klinik Utama Atila Medika',
         };
         

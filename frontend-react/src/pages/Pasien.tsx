@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { getPasienList, createPasien, getMasterList } from '@/lib/api';
+import { getPasienList, createPasien, updatePasien, getPasienDetail, getMasterList } from '@/lib/api';
 
 interface Patient {
   id: string;
@@ -32,8 +32,6 @@ interface Patient {
   lastVisit: string;
   status: 'active' | 'inactive';
 }
-
-// Mock data removed
 
 // Patient Card Component
 interface PatientCardProps {
@@ -81,18 +79,24 @@ const PatientCard: React.FC<PatientCardProps> = ({ patient, onView, onEdit }) =>
   </div>
 );
 
-// Registration Form Component
-const RegistrationForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+// Patient Form Component (Create & Edit)
+interface PatientFormProps {
+  onClose: () => void;
+  initialData?: any;
+  mode: 'create' | 'edit';
+}
+
+const PatientForm: React.FC<PatientFormProps> = ({ onClose, initialData, mode }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
-    nm_pasien: '',
-    no_ktp: '',
-    jk: '',
-    tgl_lahir: '',
-    alamat: '',
-    no_tlp: '',
-    kd_pj: 'UMUM',
+    nm_pasien: initialData?.nm_pasien || '',
+    no_ktp: initialData?.no_ktp || '',
+    jk: initialData?.jk || '',
+    tgl_lahir: initialData?.tgl_lahir || '',
+    alamat: initialData?.alamat || '',
+    no_tlp: initialData?.no_tlp || '',
+    kd_pj: initialData?.kd_pj || 'UMUM',
   });
 
   const { data: penjabList } = useQuery({
@@ -101,12 +105,17 @@ const RegistrationForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   });
 
   const mutation = useMutation({
-    mutationFn: createPasien,
+    mutationFn: (data: any) => {
+      if (mode === 'edit') {
+        return updatePasien(initialData.no_rkm_medis, data);
+      }
+      return createPasien(data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['patients'] });
       toast({
         title: 'Berhasil',
-        description: 'Data pasien berhasil disimpan',
+        description: `Data pasien berhasil ${mode === 'edit' ? 'diperbarui' : 'disimpan'}`,
       });
       onClose();
     },
@@ -228,10 +237,84 @@ const RegistrationForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   );
 };
 
+// Patient Detail View Component
+const PatientDetailView: React.FC<{ patientId: string; onClose: () => void }> = ({ patientId, onClose }) => {
+  const { data: patient, isLoading } = useQuery({
+    queryKey: ['patient', patientId],
+    queryFn: () => getPasienDetail(patientId),
+  });
+
+  if (isLoading) {
+    return <div className="flex justify-center p-8"><Loader2 className="w-8 h-8 animate-spin" /></div>;
+  }
+
+  const p = patient?.data || patient; // Handle response wrapper
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-6">
+        <div>
+          <h3 className="font-semibold text-muted-foreground mb-1">Informasi Pribadi</h3>
+          <div className="space-y-2">
+            <div className="flex justify-between border-b py-2">
+              <span className="text-sm text-muted-foreground">No. RM</span>
+              <span className="font-medium">{p?.no_rkm_medis}</span>
+            </div>
+            <div className="flex justify-between border-b py-2">
+              <span className="text-sm text-muted-foreground">Nama</span>
+              <span className="font-medium">{p?.nm_pasien}</span>
+            </div>
+            <div className="flex justify-between border-b py-2">
+              <span className="text-sm text-muted-foreground">NIK</span>
+              <span className="font-medium">{p?.no_ktp}</span>
+            </div>
+            <div className="flex justify-between border-b py-2">
+              <span className="text-sm text-muted-foreground">Jenis Kelamin</span>
+              <span className="font-medium">{p?.jk === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
+            </div>
+            <div className="flex justify-between border-b py-2">
+              <span className="text-sm text-muted-foreground">Tanggal Lahir</span>
+              <span className="font-medium">{p?.tgl_lahir}</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 className="font-semibold text-muted-foreground mb-1">Kontak & Alamat</h3>
+          <div className="space-y-2">
+            <div className="flex justify-between border-b py-2">
+              <span className="text-sm text-muted-foreground">No. Telepon</span>
+              <span className="font-medium">{p?.no_tlp}</span>
+            </div>
+            <div className="flex justify-between border-b py-2">
+              <span className="text-sm text-muted-foreground">Alamat</span>
+              <span className="font-medium text-right max-w-[200px]">{p?.alamat}</span>
+            </div>
+             <div className="flex justify-between border-b py-2">
+              <span className="text-sm text-muted-foreground">Penjamin</span>
+              <span className="font-medium">{p?.kd_pj}</span>
+            </div>
+             <div className="flex justify-between border-b py-2">
+              <span className="text-sm text-muted-foreground">BPJS</span>
+              <span className="font-medium">{p?.no_peserta || '-'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex justify-end pt-4">
+        <Button onClick={onClose}>Tutup</Button>
+      </div>
+    </div>
+  );
+};
+
 const Pasien: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'register' | 'list'>('list');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+  const [selectedPatientData, setSelectedPatientData] = useState<any>(null);
+
   const { toast } = useToast();
 
   const { data: apiResponse, isLoading, error } = useQuery({
@@ -258,17 +341,23 @@ const Pasien: React.FC = () => {
   }, [apiResponse]);
 
   const handleView = (patient: Patient) => {
-    toast({
-      title: 'Detail Pasien',
-      description: `Melihat detail pasien ${patient.name}`,
-    });
+    setSelectedPatientId(patient.id);
+    setIsViewDialogOpen(true);
   };
 
-  const handleEdit = (patient: Patient) => {
-    toast({
-      title: 'Edit Pasien',
-      description: `Mengedit data pasien ${patient.name}`,
-    });
+  const handleEdit = async (patient: Patient) => {
+    try {
+      // Fetch full detail for editing
+      const detail = await getPasienDetail(patient.id);
+      setSelectedPatientData(detail.data || detail);
+      setIsEditDialogOpen(true);
+    } catch (e) {
+      toast({
+        title: 'Error',
+        description: 'Gagal mengambil data pasien',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
@@ -279,108 +368,110 @@ const Pasien: React.FC = () => {
         <p className="text-muted-foreground mt-1">Kelola data pasien dan registrasi pasien baru</p>
       </div>
 
-      {/* Tab Buttons */}
-      <div className="flex gap-2">
-        <Button
-          variant={activeTab === 'register' ? 'outline' : 'ghost'}
-          className={activeTab === 'register' ? '' : 'text-muted-foreground'}
-          onClick={() => setActiveTab('register')}
-        >
-          <UserPlus className="w-4 h-4 mr-2" />
-          Registrasi Baru
-        </Button>
-        <Button
-          variant={activeTab === 'list' ? 'default' : 'ghost'}
-          className={activeTab === 'list' ? '' : 'text-muted-foreground'}
-          onClick={() => setActiveTab('list')}
-        >
-          <Search className="w-4 h-4 mr-2" />
-          Daftar Pasien
-        </Button>
-      </div>
-
-      {activeTab === 'list' ? (
-        <div className="bg-card rounded-xl border border-border p-6">
-          <div className="mb-6">
+      <div className="bg-card rounded-xl border border-border p-6">
+        <div className="mb-6 flex justify-between items-center">
+          <div>
             <h2 className="text-xl font-bold text-foreground">Daftar Pasien</h2>
             <p className="text-sm text-muted-foreground mt-1">
               Kelola dan lihat data semua pasien yang terdaftar
             </p>
           </div>
-
-          {/* Search Bar */}
-          <div className="flex gap-3 mb-6">
-            <div className="flex-1 relative">
-              <Input
-                placeholder="Cari berdasarkan Nomor RM, Nama, NIK, atau Nomor telepon..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pr-4"
-              />
-            </div>
-            <Button className="gap-2">
-              <Search className="w-4 h-4" />
-              Cari
-            </Button>
-          </div>
-
-          {/* Patient List */}
-          <div className="space-y-4">
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              </div>
-            ) : error ? (
-              <div className="text-center py-8 text-destructive">
-                Gagal memuat data pasien. Silakan coba lagi.
-              </div>
-            ) : (
-              <>
-                {patients.map((patient) => (
-                  <PatientCard
-                    key={patient.id}
-                    patient={patient}
-                    onView={handleView}
-                    onEdit={handleEdit}
-                  />
-                ))}
-                {patients.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Tidak ada pasien ditemukan
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <UserPlus className="w-4 h-4 mr-2" />
+                Pasien Baru
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>Registrasi Pasien Baru</DialogTitle>
+                <DialogDescription>
+                  Isi form berikut untuk mendaftarkan pasien baru
+                </DialogDescription>
+              </DialogHeader>
+              <PatientForm mode="create" onClose={() => setIsDialogOpen(false)} />
+            </DialogContent>
+          </Dialog>
         </div>
-      ) : (
-        <div className="bg-card rounded-xl border border-border p-6">
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-foreground">Registrasi Pasien Baru</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Isi form berikut untuk mendaftarkan pasien baru
-            </p>
-          </div>
-          <RegistrationForm onClose={() => setActiveTab('list')} />
-        </div>
-      )}
 
-      {/* Registration Dialog (Alternative) */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <Button className="fixed bottom-6 right-6 shadow-lg" size="lg">
-            <UserPlus className="w-5 h-5 mr-2" />
-            Pasien Baru
+        {/* Search Bar */}
+        <div className="flex gap-3 mb-6">
+          <div className="flex-1 relative">
+            <Input
+              placeholder="Cari berdasarkan Nomor RM, Nama, NIK, atau Nomor telepon..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pr-4"
+            />
+          </div>
+          <Button className="gap-2">
+            <Search className="w-4 h-4" />
+            Cari
           </Button>
-        </DialogTrigger>
+        </div>
+
+        {/* Patient List */}
+        <div className="space-y-4">
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : error ? (
+            <div className="text-center py-8 text-destructive">
+              Gagal memuat data pasien. Silakan coba lagi.
+            </div>
+          ) : (
+            <>
+              {patients.map((patient) => (
+                <PatientCard
+                  key={patient.id}
+                  patient={patient}
+                  onView={handleView}
+                  onEdit={handleEdit}
+                />
+              ))}
+              {patients.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  Tidak ada pasien ditemukan
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* View Dialog */}
+      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>Registrasi Pasien Baru</DialogTitle>
+            <DialogTitle>Detail Pasien</DialogTitle>
+          </DialogHeader>
+          {selectedPatientId && (
+            <PatientDetailView 
+              patientId={selectedPatientId} 
+              onClose={() => setIsViewDialogOpen(false)} 
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Edit Data Pasien</DialogTitle>
             <DialogDescription>
-              Isi form berikut untuk mendaftarkan pasien baru
+              Perbarui informasi data pasien
             </DialogDescription>
           </DialogHeader>
-          <RegistrationForm onClose={() => setIsDialogOpen(false)} />
+          {selectedPatientData && (
+            <PatientForm 
+              mode="edit" 
+              initialData={selectedPatientData} 
+              onClose={() => setIsEditDialogOpen(false)} 
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
