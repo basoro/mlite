@@ -363,3 +363,43 @@ export const getWAStatus = async () => {
   const response = await fetch(`${WA_API_URL}/status`);
   return response.json();
 };
+
+// Inventory
+export interface DataBarang {
+  kode_brng: string;
+  nama_brng: string;
+  kode_sat: string;
+  stokminimal: string;
+  kdjns: string;
+  expire: string;
+  status: '0' | '1';
+  h_beli: string;
+  ralan: string;
+  stok?: string; // Derived or joined
+}
+
+export interface RiwayatBarang {
+  kode_brng: string;
+  stok_awal: string;
+  masuk: string;
+  keluar: string;
+  stok_akhir: string;
+  posisi: string;
+  tanggal: string;
+  jam: string;
+  petugas: string;
+  kd_bangsal: string;
+  status: string;
+  no_batch: string;
+  no_faktur: string;
+  keterangan: string;
+  nama_brng?: string; // Joined
+}
+
+export const getInventoryList = async (page = 1, perPage = 10, search = '') => {
+  return getMasterList('databarang', page, perPage, search);
+};
+
+export const getStockMovementList = async (page = 1, perPage = 10, search = '') => {
+  return getMasterList('riwayat_barang_medis', page, perPage, search);
+};

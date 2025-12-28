@@ -211,7 +211,7 @@ class Admin extends AdminModule
             'kategori_penyakit', 'penyakit', 'icd9', 'kategori_perawatan', 'kode_satuan',
             'master_aturan_pakai', 'master_berkas_digital', 'spesialis', 'bank', 'bidang', 'departemen',
             'emergency_index', 'jabatan', 'jenjang_jabatan', 'kelompok_jabatan', 'pendidikan',
-            'resiko_kerja', 'status_kerja', 'status_wp', 'metode_racik', 'ruang_ok', 'gudangbarang'
+            'resiko_kerja', 'status_kerja', 'status_wp', 'metode_racik', 'ruang_ok', 'gudangbarang', 'riwayat_barang_medis'
         ];
         
         if (!in_array($table, $allowed_tables)) {

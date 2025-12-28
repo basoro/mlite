@@ -11,10 +11,10 @@ import Pasien from "@/pages/Pasien";
 import Jadwal from "@/pages/Jadwal";
 import Pemeriksaan from "@/pages/Pemeriksaan";
 import Resep from "@/pages/Resep";
+import Inventory from "@/pages/Inventory";
 import Billing from "@/pages/Billing";
 import { 
   Integrasi, 
-  Inventory, 
   MasterData, 
   Laporan, 
   ManajemenUser, 
