@@ -79,9 +79,9 @@ RUN if [ -f composer.json ]; then \
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
-RUN mkdir -p uploads tmp \
-    && chown -R www-data:www-data uploads tmp \
-    && chmod -R 775 uploads tmp
+RUN mkdir -p backups uploads tmp \
+    && chown -R www-data:www-data backups uploads tmp \
+    && chmod -R 775 backups uploads tmp
 
 RUN mkdir -p admin/tmp \
     && chown -R www-data:www-data admin/tmp \
