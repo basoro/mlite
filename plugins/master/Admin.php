@@ -234,7 +234,25 @@ class Admin extends AdminModule
                 $q_count->like('gudangbarang.kode_brng', '%'.$_GET['s'].'%')
                     ->orLike('databarang.nama_brng', '%'.$_GET['s'].'%')
                     ->orLike('gudangbarang.no_batch', '%'.$_GET['s'].'%')
-                    ->orLike('gudangbarang.no_faktur', '%'.$_GET['s'].'%');
+                    ->orLike('gudangbarang.no_faktur', '%'.$_GET['s'].'%')
+                    ->orLike('bangsal.nm_bangsal', '%'.$_GET['s'].'%');
+            } elseif (!empty($_GET['col'])) {
+                $q_count->like($_GET['col'], '%'.$_GET['s'].'%');
+            }
+        }
+
+        if ($table == 'riwayat_barang_medis') {
+            $q_count->join('databarang', 'databarang.kode_brng = riwayat_barang_medis.kode_brng');
+            $q_count->join('bangsal', 'bangsal.kd_bangsal = riwayat_barang_medis.kd_bangsal');
+        }
+
+        if (!empty($_GET['s'])) {
+            if ($table == 'riwayat_barang_medis') {
+                $q_count->like('riwayat_barang_medis.kode_brng', '%'.$_GET['s'].'%')
+                    ->orLike('databarang.nama_brng', '%'.$_GET['s'].'%')
+                    ->orLike('riwayat_barang_medis.no_batch', '%'.$_GET['s'].'%')
+                    ->orLike('riwayat_barang_medis.no_faktur', '%'.$_GET['s'].'%') 
+                    ->orLike('bangsal.nm_bangsal', '%'.$_GET['s'].'%');
             } elseif (!empty($_GET['col'])) {
                 $q_count->like($_GET['col'], '%'.$_GET['s'].'%');
             }
@@ -258,7 +276,26 @@ class Admin extends AdminModule
                 $q_data->like('gudangbarang.kode_brng', '%'.$_GET['s'].'%')
                     ->orLike('databarang.nama_brng', '%'.$_GET['s'].'%')
                     ->orLike('gudangbarang.no_batch', '%'.$_GET['s'].'%')
-                    ->orLike('gudangbarang.no_faktur', '%'.$_GET['s'].'%');
+                    ->orLike('gudangbarang.no_faktur', '%'.$_GET['s'].'%')
+                    ->orLike('bangsal.nm_bangsal', '%'.$_GET['s'].'%');
+            } elseif (!empty($_GET['col'])) {
+                $q_data->like($_GET['col'], '%'.$_GET['s'].'%');
+            }
+        }
+
+        if ($table == 'riwayat_barang_medis') {
+            $q_data->select('riwayat_barang_medis.*, databarang.nama_brng, databarang.kode_sat, databarang.kapasitas, bangsal.nm_bangsal');
+            $q_data->join('databarang', 'databarang.kode_brng = riwayat_barang_medis.kode_brng');
+            $q_data->join('bangsal', 'bangsal.kd_bangsal = riwayat_barang_medis.kd_bangsal');
+        }
+
+        if (!empty($_GET['s'])) {
+            if ($table == 'riwayat_barang_medis') {
+                $q_data->like('riwayat_barang_medis.kode_brng', '%'.$_GET['s'].'%')
+                    ->orLike('databarang.nama_brng', '%'.$_GET['s'].'%')
+                    ->orLike('riwayat_barang_medis.no_batch', '%'.$_GET['s'].'%')
+                    ->orLike('riwayat_barang_medis.no_faktur', '%'.$_GET['s'].'%')
+                    ->orLike('bangsal.nm_bangsal', '%'.$_GET['s'].'%');
             } elseif (!empty($_GET['col'])) {
                 $q_data->like($_GET['col'], '%'.$_GET['s'].'%');
             }
