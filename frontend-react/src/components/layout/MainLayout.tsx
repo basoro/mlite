@@ -18,6 +18,7 @@ interface MainLayoutProps {
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
   const [isChatOpen, setIsChatOpen] = React.useState(false);
   const [selectedContact, setSelectedContact] = React.useState<any>(null);
   const [messageText, setMessageText] = React.useState('');
@@ -94,12 +95,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       )}
 
       {/* Sidebar - Hidden on mobile unless toggled */}
-      <div className={`fixed lg:static inset-y-0 left-0 z-50 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-200 ease-in-out`}>
-        <Sidebar onClose={() => setIsSidebarOpen(false)} />
+      <div className={`fixed lg:sticky lg:top-0 lg:h-screen lg:max-h-screen inset-y-0 left-0 z-50 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-200 ease-in-out`}>
+        <Sidebar onClose={() => setIsSidebarOpen(false)} isCollapsed={isSidebarCollapsed} />
       </div>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <Header onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
+        <Header 
+          onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} 
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        />
         <main className="flex-1 p-4 lg:p-6 overflow-auto">
           {children}
         </main>

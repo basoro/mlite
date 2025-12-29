@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Calendar, Plus, Clock, Edit2, Trash2, ChevronDown, Activity, User, Loader2, Search, Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar, Plus, Clock, Edit2, Trash2, ChevronDown, Activity, User, Loader2, Search, Calendar as CalendarIcon, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import {
@@ -34,6 +34,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from '@/hooks/use-toast';
 import { getRawatJalanList, getMasterList, getPasienList, createRawatJalan, updateRawatJalan, deleteRawatJalan } from '@/lib/api';
 
@@ -79,6 +89,9 @@ const Pendaftaran: React.FC = () => {
     kd_pj: '',
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteNoRawat, setDeleteNoRawat] = useState<string | null>(null);
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -158,11 +171,19 @@ const Pendaftaran: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rawatJalan'] });
       toast({ title: 'Berhasil', description: 'Jadwal berhasil dihapus' });
+      setDeleteDialogOpen(false);
+      setDeleteNoRawat(null);
     },
     onError: (error: any) => {
       toast({ title: 'Gagal', description: error.message || 'Gagal menghapus jadwal', variant: 'destructive' });
     },
   });
+
+  const confirmDelete = () => {
+    if (deleteNoRawat) {
+      deleteMutation.mutate(deleteNoRawat);
+    }
+  };
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
@@ -186,9 +207,8 @@ const Pendaftaran: React.FC = () => {
   };
 
   const handleDelete = (noRawat: string) => {
-    if (confirm('Apakah Anda yakin ingin menghapus jadwal ini?')) {
-      deleteMutation.mutate(noRawat);
-    }
+    setDeleteNoRawat(noRawat);
+    setDeleteDialogOpen(true);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -575,6 +595,27 @@ const Pendaftaran: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="flex items-center justify-center mb-2">
+                <div className="p-3 bg-red-100 rounded-full">
+                    <AlertTriangle className="w-8 h-8 text-red-600" />
+                </div>
+            </div>
+            <AlertDialogTitle className="text-center">Konfirmasi Hapus</AlertDialogTitle>
+            <AlertDialogDescription className="text-center">
+              Apakah Anda yakin ingin menghapus pendaftaran ini? Tindakan ini tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="sm:justify-center gap-2">
+            <AlertDialogCancel onClick={() => setDeleteNoRawat(null)} className="mt-0">Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Ya, Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -13,9 +13,10 @@ import {
 
 interface HeaderProps {
   onMenuClick?: () => void;
+  onToggleCollapse?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
+const Header: React.FC<HeaderProps> = ({ onMenuClick, onToggleCollapse }) => {
   const { user, logout } = useAuth();
 
   return (
@@ -33,7 +34,13 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
         {/* Clinic Info */}
         <div className="flex items-center gap-3">
-          <Building2 className="w-5 h-5 text-muted-foreground hidden sm:block" />
+          <div 
+            className="cursor-pointer p-1 rounded-md hover:bg-muted hidden sm:block transition-colors"
+            onClick={onToggleCollapse}
+            title="Toggle Sidebar"
+          >
+            <Building2 className="w-5 h-5 text-muted-foreground" />
+          </div>
           <span className="font-semibold text-primary text-lg truncate max-w-[150px] sm:max-w-none">
             {user?.clinicName || 'Atila Medika'}
           </span>

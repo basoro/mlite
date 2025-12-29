@@ -97,6 +97,141 @@ export const getPasienList = async (page = 1, perPage = 10, search = '') => {
   return response.json();
 };
 
+// Kamar Inap (Rawat Inap)
+export const getKamarInapList = async (startDate: string, endDate: string, page = 0, length = 10, search = '') => {
+  const params = new URLSearchParams({
+    draw: '1',
+    start: page.toString(),
+    length: length.toString(),
+    tgl_awal: startDate,
+    tgl_akhir: endDate,
+    search,
+  });
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/list?${params}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
+export const getKamarInapDetail = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/show/${normalizedNoRawat}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
+export const createKamarInap = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/create`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menambahkan kamar inap');
+  }
+  return result;
+};
+
+export const updateKamarInap = async (noRawat: string, data: Record<string, any>) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/update/${normalizedNoRawat}`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal memperbarui kamar inap');
+  }
+  return result;
+};
+
+export const deleteKamarInap = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/delete/${normalizedNoRawat}`, {
+    method: 'DELETE',
+    headers: getHeaders(),
+    body: JSON.stringify({}),
+  });
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus kamar inap');
+  }
+  return result;
+};
+
+// SOAP & Tindakan for Kamar Inap (reusing similar structure if backend supports it, or separate endpoints)
+// Usually SOAP and Tindakan might share structure or be specific.
+// Assuming we might need specific endpoints or reused ones.
+// For now, let's assume we reuse rawat_jalan endpoints or similar structure but mapped to rawat_inap context if needed.
+// However, standard MLite usually separates them.
+// Let's assume standard endpoints for now or generic ones.
+// If specific endpoints are needed:
+export const getKamarInapSoap = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  // Note: Adjust endpoint if different
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/showsoap/${normalizedNoRawat}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
+export const saveKamarInapSOAP = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/savesoap`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+};
+
+export const deleteKamarInapSOAP = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/deletesoap`, {
+    method: 'DELETE',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+};
+
+export const getKamarInapTindakan = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/showdetail/tindakan/${normalizedNoRawat}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
+export const saveKamarInapTindakan = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/savedetail`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  return response.json();
+};
+
+export const deleteKamarInapTindakan = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/deletedetail`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return response.json();
+};
+
 export const getPasienDetail = async (noRkmMedis: string) => {
   const response = await fetch(`${config.baseUrl}${config.apiPath}/api/pasien/show/${noRkmMedis}`, {
     headers: getHeaders(),

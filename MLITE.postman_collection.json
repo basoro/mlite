@@ -885,6 +885,687 @@
 			]
 		},
 		{
+			"name": "Rawat Inap",
+			"item": [
+				{
+					"name": "List Rawat Inap",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_inap/list?draw=1&start=0&length=10&tgl_awal=2025-01-01&tgl_akhir=2025-12-31",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_inap",
+								"list"
+							],
+							"query": [
+								{
+									"key": "draw",
+									"value": "1"
+								},
+								{
+									"key": "start",
+									"value": "0"
+								},
+								{
+									"key": "length",
+									"value": "10"
+								},
+								{
+									"key": "tgl_awal",
+									"value": "2025-01-01"
+								},
+								{
+									"key": "tgl_akhir",
+									"value": "2025-12-31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show Rawat Inap",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_inap/show/{{no_rawat}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_inap",
+								"show",
+								"{{no_rawat}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Rawat Inap",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_kamar\": \"K001\",\n    \"kd_dokter\": \"D00001\",\n    \"lama\": \"1\",\n    \"diagnosa_awal\": \"Demam\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_inap/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_inap",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Rawat Inap",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kd_kamar\": \"K002\",\n    \"stts_pulang\": \"-\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_inap/update/{{no_rawat}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_inap",
+								"update",
+								"{{no_rawat}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Rawat Inap",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_inap/delete/{{no_rawat}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_inap",
+								"delete",
+								"{{no_rawat}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Save Detail Kamar Inap",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kat\": \"tindakan\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_jenis_prw\": \"T001\",\n    \"provider\": \"rawat_inap_dr\",\n    \"kode_provider\": \"D00001\",\n    \"tgl_perawatan\": \"2025-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_inap/savedetail",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_inap",
+								"savedetail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show Detail Kamar Inap",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_inap/showdetail/tindakan/{{no_rawat}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_inap",
+								"showdetail",
+								"tindakan",
+								"{{no_rawat}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Detail Kamar Inap",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kat\": \"tindakan\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_jenis_prw\": \"T001\",\n    \"provider\": \"rawat_inap_dr\",\n    \"tgl_perawatan\": \"2025-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_inap/deletedetail",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_inap",
+								"deletedetail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Save Obat Kamar Inap",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kat\": \"obat\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_jenis_prw\": \"B001\",\n    \"kode_provider\": \"D00001\",\n    \"tgl_perawatan\": \"2025-01-01\",\n    \"jam_rawat\": \"10:00:00\",\n    \"jml\": \"10\",\n    \"aturan_pakai\": \"3x1\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_inap/savedetail",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_inap",
+								"savedetail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show Obat Kamar Inap",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_inap/showdetail/obat/{{no_rawat}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_inap",
+								"showdetail",
+								"obat",
+								"{{no_rawat}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Obat Kamar Inap",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kat\": \"obat\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"no_resep\": \"202501010001\",\n    \"kd_jenis_prw\": \"B001\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_inap/deletedetail",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_inap",
+								"deletedetail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show SOAP Kamar Inap",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_inap/showsoap/{{no_rawat}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_inap",
+								"showsoap",
+								"{{no_rawat}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Save SOAP Kamar Inap",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"tgl_perawatan\": \"2025-12-29\",\n    \"jam_rawat\": \"18:30:00\",\n    \"suhu_tubuh\": \"36\",\n    \"tensi\": \"120/80\",\n    \"nadi\": \"80\",\n    \"respirasi\": \"20\",\n    \"tinggi\": \"170\",\n    \"berat\": \"60\",\n    \"spo2\": \"98\",\n    \"gcs\": \"12\",\n    \"kesadaran\": \"Sopor\",\n    \"keluhan\": \"Demam\",\n    \"pemeriksaan\": \"Suhu badan tinggi\",\n    \"alergi\": \"-\",\n    \"rtl\": \"Istirahat\",\n    \"instruksi\": \"Minum obat\",\n    \"evaluasi\": \"Baik\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_inap/savesoap",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_inap",
+								"savesoap"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete SOAP Kamar Inap",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Username-Permission",
+								"value": "{{username_permission}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Password-Permission",
+								"value": "{{password_permission}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"tgl_perawatan\": \"2025-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/api/rawat_inap/deletesoap",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"api",
+								"rawat_inap",
+								"deletesoap"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Master",
 			"item": [
 				{

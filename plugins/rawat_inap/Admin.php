@@ -2321,15 +2321,48 @@ class Admin extends AdminModule
         $input = json_decode(file_get_contents('php://input'), true);
         if (!is_array($input)) $input = $_POST;
         
-        $input['nip'] = $username;
+        $nip = $username;
+
+        // Map input to schema columns
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'tgl_perawatan' => $input['tgl_perawatan'],
+            'jam_rawat' => $input['jam_rawat'],
+            'suhu_tubuh' => $input['suhu_tubuh'] ?? null,
+            'tensi' => $input['tensi'] ?? '-',
+            'nadi' => $input['nadi'] ?? null,
+            'respirasi' => $input['respirasi'] ?? null,
+            'tinggi' => $input['tinggi'] ?? null,
+            'berat' => $input['berat'] ?? null,
+            'spo2' => $input['spo2'] ?? '-',
+            'gcs' => $input['gcs'] ?? null,
+            'kesadaran' => $input['kesadaran'] ?? 'Compos Mentis',
+            'keluhan' => $input['keluhan'] ?? null,
+            'pemeriksaan' => $input['pemeriksaan'] ?? null,
+            'alergi' => $input['alergi'] ?? null,
+            'penilaian' => $input['penilaian'] ?? '-', 
+            'rtl' => $input['rtl'] ?? '-',
+            'instruksi' => $input['instruksi'] ?? '-',
+            'evaluasi' => $input['evaluasi'] ?? '-',
+            'nip' => $nip
+        ];
         
         try {
-             if(!$this->db('pemeriksaan_ranap')->where('no_rawat', $input['no_rawat'])->where('tgl_perawatan', $input['tgl_perawatan'])->where('jam_rawat', $input['jam_rawat'])->where('nip', $input['nip'])->oneArray()) {
-                $this->db('pemeriksaan_ranap')->save($input);
+             // Check based on primary key (no_rawat, tgl_perawatan, jam_rawat)
+             if(!$this->db('pemeriksaan_ranap')
+                ->where('no_rawat', $data['no_rawat'])
+                ->where('tgl_perawatan', $data['tgl_perawatan'])
+                ->where('jam_rawat', $data['jam_rawat'])
+                ->oneArray()) {
+                $this->db('pemeriksaan_ranap')->save($data);
               } else {
-                $this->db('pemeriksaan_ranap')->where('no_rawat', $input['no_rawat'])->where('tgl_perawatan', $input['tgl_perawatan'])->where('jam_rawat', $input['jam_rawat'])->where('nip', $input['nip'])->save($input);
+                $this->db('pemeriksaan_ranap')
+                    ->where('no_rawat', $data['no_rawat'])
+                    ->where('tgl_perawatan', $data['tgl_perawatan'])
+                    ->where('jam_rawat', $data['jam_rawat'])
+                    ->save($data);
               }
-              return ['status' => 'success', 'data' => $input];
+              return ['status' => 'success', 'data' => $data];
         } catch (\PDOException $e) {
             return ['status' => 'error', 'message' => $e->getMessage()];
         }

@@ -10,6 +10,7 @@ import Dashboard from "@/pages/Dashboard";
 import Pasien from "@/pages/Pasien";
 import Pendaftaran from "@/pages/Pendaftaran";
 import Pemeriksaan from "@/pages/Pemeriksaan";
+import KamarInap from "@/pages/KamarInap";
 import Resep from "@/pages/Resep";
 import Farmasi from "@/pages/Farmasi";
 import Inventory from "@/pages/Inventory";
@@ -63,6 +64,14 @@ const App = () => (
               element={
                 <MainLayout>
                   <Pemeriksaan />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/kamar-inap"
+              element={
+                <MainLayout>
+                  <KamarInap />
                 </MainLayout>
               }
             />

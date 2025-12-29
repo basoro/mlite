@@ -15,7 +15,8 @@ import {
   Settings,
   Heart,
   Zap,
-  ClipboardList
+  ClipboardList,
+  BedDouble
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -31,6 +32,7 @@ const mainMenuItems: MenuItem[] = [
   { icon: Users, label: 'Pasien', path: '/pasien' },
   { icon: Calendar, label: 'Pendaftaran', path: '/pendaftaran' },
   { icon: Stethoscope, label: 'Pemeriksaan', path: '/pemeriksaan' },
+  { icon: BedDouble, label: 'Kamar Inap', path: '/kamar-inap' },
   { icon: Pill, label: 'Resep', path: '/resep' },
   { icon: Receipt, label: 'Billing', path: '/billing' },
   { icon: ClipboardList, label: 'Farmasi', path: '/farmasi' },
@@ -47,9 +49,10 @@ const managementMenuItems: MenuItem[] = [
 
 interface SidebarProps {
   onClose?: () => void;
+  isCollapsed?: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ onClose, isCollapsed = false }) => {
   const location = useLocation();
 
   const isActive = (path: string) => {
@@ -60,17 +63,24 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   };
 
   return (
-    <aside className="w-64 lg:w-56 h-full min-h-screen bg-sidebar flex flex-col shadow-xl lg:shadow-none border-r border-sidebar-border">
+    <aside 
+      className={cn(
+        "h-full min-h-screen bg-sidebar flex flex-col shadow-xl lg:shadow-none border-r border-sidebar-border transition-all duration-300",
+        isCollapsed ? "w-[70px]" : "w-64 lg:w-56"
+      )}
+    >
       {/* Logo */}
-      <div className="p-4 flex items-center justify-between lg:justify-start gap-3">
+      <div className={cn("p-4 flex items-center gap-3", isCollapsed ? "justify-center" : "justify-between lg:justify-start")}>
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
+          <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
             <Heart className="w-5 h-5 text-primary-foreground" />
           </div>
-          <div>
-            <h1 className="text-sidebar-foreground font-bold text-lg">mKLINIK</h1>
-            <p className="text-sidebar-muted text-xs">Management System</p>
-          </div>
+          {!isCollapsed && (
+            <div className="animate-in fade-in slide-in-from-left-4 duration-300">
+              <h1 className="text-sidebar-foreground font-bold text-lg">mKLINIK</h1>
+              <p className="text-sidebar-muted text-xs">Management System</p>
+            </div>
+          )}
         </div>
         {/* Close button for mobile */}
         {onClose && (
@@ -81,54 +91,64 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
       </div>
 
       {/* Main Menu */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        <p className="px-4 py-2 text-xs font-medium text-sidebar-muted uppercase tracking-wider">
-          Menu Utama
-        </p>
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto scrollbar-hide">
+        {!isCollapsed && (
+          <p className="px-4 py-2 text-xs font-medium text-sidebar-muted uppercase tracking-wider animate-in fade-in duration-300">
+            Menu Utama
+          </p>
+        )}
         {mainMenuItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
             onClick={onClose}
+            title={isCollapsed ? item.label : undefined}
             className={cn(
               'sidebar-item',
-              isActive(item.path) && 'sidebar-item-active'
+              isActive(item.path) && 'sidebar-item-active',
+              isCollapsed && 'justify-center px-2'
             )}
           >
-            <item.icon className="w-5 h-5" />
-            <span className="text-sm font-medium">{item.label}</span>
+            <item.icon className="w-5 h-5 shrink-0" />
+            {!isCollapsed && <span className="text-sm font-medium animate-in fade-in slide-in-from-left-2 duration-300">{item.label}</span>}
           </Link>
         ))}
 
-        <p className="px-4 py-2 mt-6 text-xs font-medium text-sidebar-muted uppercase tracking-wider">
-          Manajemen
-        </p>
+        {!isCollapsed && (
+          <p className="px-4 py-2 mt-6 text-xs font-medium text-sidebar-muted uppercase tracking-wider animate-in fade-in duration-300">
+            Manajemen
+          </p>
+        )}
         {managementMenuItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
             onClick={onClose}
+            title={isCollapsed ? item.label : undefined}
             className={cn(
               'sidebar-item',
-              isActive(item.path) && 'sidebar-item-active'
+              isActive(item.path) && 'sidebar-item-active',
+              isCollapsed && 'justify-center px-2'
             )}
           >
-            <item.icon className="w-5 h-5" />
-            <span className="text-sm font-medium">{item.label}</span>
+            <item.icon className="w-5 h-5 shrink-0" />
+            {!isCollapsed && <span className="text-sm font-medium animate-in fade-in slide-in-from-left-2 duration-300">{item.label}</span>}
           </Link>
         ))}
       </nav>
 
       {/* Integration Status */}
-      <div className="p-4 mx-3 mb-4 rounded-lg bg-sidebar-accent mt-auto">
-        <div className="flex items-center gap-2 text-sidebar-primary">
-          <Zap className="w-4 h-4" />
-          <span className="text-sm font-medium">Integrasi</span>
+      {!isCollapsed && (
+        <div className="p-4 mx-3 mb-4 rounded-lg bg-sidebar-accent mt-auto animate-in fade-in slide-in-from-bottom-4 duration-300 sticky bottom-4">
+          <div className="flex items-center gap-2 text-sidebar-primary">
+            <Zap className="w-4 h-4" />
+            <span className="text-sm font-medium">Integrasi</span>
+          </div>
+          <p className="text-xs text-sidebar-muted mt-1">
+            BPJS & SATUSEHAT siap digunakan
+          </p>
         </div>
-        <p className="text-xs text-sidebar-muted mt-1">
-          BPJS & SATUSEHAT siap digunakan
-        </p>
-      </div>
+      )}
     </aside>
   );
 };

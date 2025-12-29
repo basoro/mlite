@@ -22,6 +22,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -43,6 +53,7 @@ import {
   Trash2,
   Loader2,
   Lock,
+  AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -62,6 +73,11 @@ export default function ManajemenUser() {
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+  
+  // Delete Dialog State
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<UserData | null>(null);
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -82,6 +98,8 @@ export default function ManajemenUser() {
         title: "User dihapus",
         description: "Data user berhasil dihapus dari sistem",
       });
+      setDeleteDialogOpen(false);
+      setUserToDelete(null);
     },
     onError: () => {
       toast({
@@ -111,13 +129,18 @@ export default function ManajemenUser() {
   };
 
   const handleDelete = (user: UserData) => {
-    if (confirm("Apakah Anda yakin ingin menghapus user ini?")) {
-      deleteMutation.mutate(user);
+    setUserToDelete(user);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (userToDelete) {
+      deleteMutation.mutate(userToDelete);
     }
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Manajemen User</h1>
@@ -261,6 +284,28 @@ export default function ManajemenUser() {
         onClose={() => setIsModalOpen(false)}
         user={selectedUser}
       />
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="flex items-center justify-center mb-2">
+                <div className="p-3 bg-red-100 rounded-full">
+                    <AlertTriangle className="w-8 h-8 text-red-600" />
+                </div>
+            </div>
+            <AlertDialogTitle className="text-center">Konfirmasi Hapus</AlertDialogTitle>
+            <AlertDialogDescription className="text-center">
+              Apakah Anda yakin ingin menghapus user <strong>{userToDelete?.nama}</strong>? Tindakan ini tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="sm:justify-center gap-2">
+            <AlertDialogCancel onClick={() => setUserToDelete(null)} className="mt-0">Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Ya, Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -303,8 +348,8 @@ function UserItem({ user, onEdit, onDelete }: { user: UserData; onEdit: () => vo
             className={cn(
               "font-normal",
               user.status === "Aktif"
-                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                : "bg-red-50 text-red-700 border-red-200"
+              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+              : "bg-red-50 text-red-700 border-red-200"
             )}
           >
             {user.status}

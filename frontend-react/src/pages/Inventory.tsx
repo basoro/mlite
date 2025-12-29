@@ -151,7 +151,7 @@ export default function Inventory() {
   }, 0) || 0;
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Inventory Obat</h1>
