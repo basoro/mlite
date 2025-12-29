@@ -98,97 +98,125 @@ const QueueItem: React.FC<QueueItemProps> = ({ patient, isSelected, onClick }) =
 
 // History Item Component
 const HistoryItem: React.FC<{ history: any; onEdit?: (history: any, soap: any) => void; onDelete?: (history: any, soap: any) => void }> = ({ history, onEdit, onDelete }) => {
-    // Extract SOAP data if available
-    const soap = history.pemeriksaan_ranap && history.pemeriksaan_ranap.length > 0 ? history.pemeriksaan_ranap[0] : null;
+    // Combine both Ralan and Ranap SOAP data
+    const soaps = [
+        ...(history.pemeriksaan_ranap || []), 
+        ...(history.pemeriksaan_ralan || [])
+    ].sort((a: any, b: any) => {
+        const dateA = new Date(`${a.tgl_perawatan} ${a.jam_rawat}`);
+        const dateB = new Date(`${b.tgl_perawatan} ${b.jam_rawat}`);
+        return dateB.getTime() - dateA.getTime();
+    });
 
     return (
         <div className="p-4 border border-border rounded-xl bg-white hover:shadow-sm transition-shadow">
             <div className="flex items-start justify-between mb-3">
-            <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-emerald-500" />
-                <span className="font-medium text-foreground">{history.tgl_registrasi} {history.jam_reg}</span>
-            </div>
-            <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">{history.no_rawat}</span>
-                {soap && onEdit && (
-                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onEdit(history, soap)}>
-                        <Edit className="h-3 w-3" />
-                    </Button>
-                )}
-                {soap && onDelete && (
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:text-destructive" onClick={() => onDelete(history, soap)}>
-                        <Trash className="h-3 w-3" />
-                    </Button>
-                )}
-            </div>
+                <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-emerald-500" />
+                    <span className="font-medium text-foreground">{history.tgl_registrasi} {history.jam_reg}</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                        history.status_lanjut === 'Ralan' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'
+                    }`}>
+                        {history.status_lanjut}
+                    </span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">{history.no_rawat}</span>
+                </div>
             </div>
             
-            {soap ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div className="md:col-span-2">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3 p-3 bg-gray-50 rounded-lg">
-                            <div>
-                                <p className="text-xs text-muted-foreground">Tensi</p>
-                                <p className="font-medium text-foreground">{soap.tensi || '-'}</p>
+            {soaps.length > 0 ? (
+                <div className="space-y-4">
+                    {soaps.map((soap: any, index: number) => (
+                        <div key={index} className="border-t pt-4 first:border-t-0 first:pt-0">
+                            <div className="flex justify-between items-center mb-2">
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <Clock className="w-3 h-3" />
+                                    <span>{soap.tgl_perawatan} {soap.jam_rawat}</span>
+                                    {soap.nip && <span>• Petugas: {soap.nip}</span>}
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    {onEdit && (
+                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onEdit(history, soap)}>
+                                            <Edit className="h-3 w-3" />
+                                        </Button>
+                                    )}
+                                    {onDelete && (
+                                        <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:text-destructive" onClick={() => onDelete(history, soap)}>
+                                            <Trash className="h-3 w-3" />
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-xs text-muted-foreground">Nadi</p>
-                                <p className="font-medium text-foreground">{soap.nadi || '-'}</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-muted-foreground">Suhu</p>
-                                <p className="font-medium text-foreground">{soap.suhu_tubuh || '-'}</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-muted-foreground">Respirasi</p>
-                                <p className="font-medium text-foreground">{soap.respirasi || '-'}</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-muted-foreground">SpO2</p>
-                                <p className="font-medium text-foreground">{soap.spo2 || '-'} %</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-muted-foreground">Kesadaran</p>
-                                <p className="font-medium text-foreground">{soap.kesadaran || '-'}</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-muted-foreground">GCS</p>
-                                <p className="font-medium text-foreground">{soap.gcs || '-'}</p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div className="md:col-span-2">
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3 p-3 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <p className="text-xs text-muted-foreground">Tensi</p>
+                                            <p className="font-medium text-foreground">{soap.tensi || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-muted-foreground">Nadi</p>
+                                            <p className="font-medium text-foreground">{soap.nadi || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-muted-foreground">Suhu</p>
+                                            <p className="font-medium text-foreground">{soap.suhu_tubuh || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-muted-foreground">Respirasi</p>
+                                            <p className="font-medium text-foreground">{soap.respirasi || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-muted-foreground">SpO2</p>
+                                            <p className="font-medium text-foreground">{soap.spo2 || '-'} %</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-muted-foreground">Kesadaran</p>
+                                            <p className="font-medium text-foreground">{soap.kesadaran || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-muted-foreground">GCS</p>
+                                            <p className="font-medium text-foreground">{soap.gcs || '-'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-emerald-700 mb-1">Subjektif (Keluhan)</p>
+                                    <p className="text-gray-600 whitespace-pre-wrap">{soap.keluhan || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-emerald-700 mb-1">Objektif (Pemeriksaan)</p>
+                                    <p className="text-gray-600 whitespace-pre-wrap">{soap.pemeriksaan || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-emerald-700 mb-1">Asesmen (Penilaian)</p>
+                                    <p className="text-gray-600 whitespace-pre-wrap">{soap.penilaian || soap.diagnosa || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-emerald-700 mb-1">Plan (Rencana)</p>
+                                    <p className="text-gray-600 whitespace-pre-wrap">{soap.rtl || soap.tindakan || '-'}</p>
+                                </div>
+                                {(soap.instruksi || soap.evaluasi) && (
+                                    <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 pt-2 border-t">
+                                        {soap.instruksi && (
+                                            <div>
+                                                <p className="font-semibold text-gray-700 mb-1">Instruksi</p>
+                                                <p className="text-gray-600 whitespace-pre-wrap">{soap.instruksi}</p>
+                                            </div>
+                                        )}
+                                        {soap.evaluasi && (
+                                            <div>
+                                                <p className="font-semibold text-gray-700 mb-1">Evaluasi</p>
+                                                <p className="text-gray-600 whitespace-pre-wrap">{soap.evaluasi}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
-                    </div>
-                    <div>
-                        <p className="font-semibold text-emerald-700 mb-1">Subjektif (Keluhan)</p>
-                        <p className="text-gray-600 whitespace-pre-wrap">{soap.keluhan || '-'}</p>
-                    </div>
-                    <div>
-                        <p className="font-semibold text-emerald-700 mb-1">Objektif (Pemeriksaan)</p>
-                        <p className="text-gray-600 whitespace-pre-wrap">{soap.pemeriksaan || '-'}</p>
-                    </div>
-                    <div>
-                        <p className="font-semibold text-emerald-700 mb-1">Asesmen (Penilaian)</p>
-                        <p className="text-gray-600 whitespace-pre-wrap">{soap.penilaian || soap.diagnosa || '-'}</p>
-                    </div>
-                    <div>
-                        <p className="font-semibold text-emerald-700 mb-1">Plan (Rencana)</p>
-                        <p className="text-gray-600 whitespace-pre-wrap">{soap.rtl || soap.tindakan || '-'}</p>
-                    </div>
-                    {(soap.instruksi || soap.evaluasi) && (
-                        <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 pt-2 border-t">
-                            {soap.instruksi && (
-                                <div>
-                                    <p className="font-semibold text-gray-700 mb-1">Instruksi</p>
-                                    <p className="text-gray-600 whitespace-pre-wrap">{soap.instruksi}</p>
-                                </div>
-                            )}
-                            {soap.evaluasi && (
-                                <div>
-                                    <p className="font-semibold text-gray-700 mb-1">Evaluasi</p>
-                                    <p className="text-gray-600 whitespace-pre-wrap">{soap.evaluasi}</p>
-                                </div>
-                            )}
-                        </div>
-                    )}
+                    ))}
                 </div>
             ) : (
                 <div className="text-center py-4 text-muted-foreground text-sm italic">
@@ -573,8 +601,8 @@ const KamarInap: React.FC = () => {
   const handleSoapSubmit = () => {
     if (!selectedPatient) return;
 
-    const tglPerawatan = isEditMode && editHistoryData ? editHistoryData.tgl_registrasi : format(new Date(), 'yyyy-MM-dd');
-    const jamRawat = isEditMode && editHistoryData ? editHistoryData.jam_reg : format(new Date(), 'HH:mm:ss');
+    const tglPerawatan = isEditMode && editHistoryData ? (editHistoryData.tgl_perawatan || editHistoryData.tgl_registrasi) : format(new Date(), 'yyyy-MM-dd');
+    const jamRawat = isEditMode && editHistoryData ? (editHistoryData.jam_rawat || editHistoryData.jam_reg) : format(new Date(), 'HH:mm:ss');
     const noRawat = isEditMode && editHistoryData ? editHistoryData.no_rawat : selectedPatient.no_rawat;
     
     const currentUserNip = localStorage.getItem('auth_username') || import.meta.env.VITE_API_USERNAME || '-';
