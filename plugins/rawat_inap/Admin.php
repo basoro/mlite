@@ -2314,9 +2314,6 @@ class Admin extends AdminModule
     public function apiSaveSoap()
     {
         $username = $this->core->checkAuth('POST');
-        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
-            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
-        }
         
         $input = json_decode(file_get_contents('php://input'), true);
         if (!is_array($input)) $input = $_POST;
@@ -2354,8 +2351,18 @@ class Admin extends AdminModule
                 ->where('tgl_perawatan', $data['tgl_perawatan'])
                 ->where('jam_rawat', $data['jam_rawat'])
                 ->oneArray()) {
+
+                if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+                    return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+                }
+
                 $this->db('pemeriksaan_ranap')->save($data);
               } else {
+
+                if (!$this->core->checkPermission($username, 'can_update', 'rawat_inap')) {
+                    return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+                }
+
                 $this->db('pemeriksaan_ranap')
                     ->where('no_rawat', $data['no_rawat'])
                     ->where('tgl_perawatan', $data['tgl_perawatan'])
