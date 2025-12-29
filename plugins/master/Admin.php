@@ -266,7 +266,7 @@ class Admin extends AdminModule
         // Data Query
         $q_data = $this->db($table);
         if ($table == 'gudangbarang') {
-            $q_data->select('gudangbarang.*, databarang.nama_brng, databarang.kode_sat, databarang.kapasitas, bangsal.nm_bangsal');
+            $q_data->select('gudangbarang.*, databarang.nama_brng, databarang.kode_sat, databarang.kapasitas, databarang.h_beli, bangsal.nm_bangsal');
             $q_data->join('databarang', 'databarang.kode_brng = gudangbarang.kode_brng');
             $q_data->join('bangsal', 'bangsal.kd_bangsal = gudangbarang.kd_bangsal');
         }
