@@ -12,10 +12,10 @@ import Jadwal from "@/pages/Jadwal";
 import Pemeriksaan from "@/pages/Pemeriksaan";
 import Resep from "@/pages/Resep";
 import Inventory from "@/pages/Inventory";
+import MasterData from "@/pages/MasterData";
 import Billing from "@/pages/Billing";
 import { 
   Integrasi, 
-  MasterData, 
   Laporan, 
   ManajemenUser, 
   Pengaturan 
