@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { id } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 import { 
   getInventoryList, 
   getStockMovementList, 
@@ -13,6 +15,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { 
   Table, 
   TableBody, 
@@ -40,15 +48,15 @@ import {
   ShoppingCart,
   Pencil,
   Trash,
-  Calendar
+  Calendar as CalendarIcon
 } from "lucide-react";
 
 export default function Inventory() {
   const [activeTab, setActiveTab] = useState("inventory");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
-  const [startDate, setStartDate] = useState(format(new Date(), "yyyy-MM-01"));
-  const [endDate, setEndDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [startDate, setStartDate] = useState<Date | undefined>(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+  const [endDate, setEndDate] = useState<Date | undefined>(new Date());
 
   // Fetch Inventory Data (DataBarang)
   const { data: inventoryData, isLoading: isLoadingInventory } = useQuery({
@@ -59,7 +67,13 @@ export default function Inventory() {
   // Fetch Stock Movement Data (RiwayatBarang)
   const { data: stockData, isLoading: isLoadingStock } = useQuery({
     queryKey: ['stockMovement', page, searchQuery, startDate, endDate],
-    queryFn: () => getStockMovementList(page, 10, searchQuery, startDate, endDate),
+    queryFn: () => getStockMovementList(
+      page, 
+      10, 
+      searchQuery, 
+      startDate ? format(startDate, "yyyy-MM-dd") : "", 
+      endDate ? format(endDate, "yyyy-MM-dd") : ""
+    ),
   });
 
   // Fetch Gudang Barang (for notifications and total value)
@@ -318,27 +332,53 @@ export default function Inventory() {
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Periode Mulai</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      type="date" 
-                      className="pl-8" 
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                    />
-                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal pl-3",
+                          !startDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {startDate ? format(startDate, "dd MMMM yyyy", { locale: id }) : <span>Pilih Tanggal</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={setStartDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Periode Selesai</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      type="date" 
-                      className="pl-8" 
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                    />
-                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal pl-3",
+                          !endDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {endDate ? format(endDate, "dd MMMM yyyy", { locale: id }) : <span>Pilih Tanggal</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={endDate}
+                        onSelect={setEndDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Filter Keterangan</label>
