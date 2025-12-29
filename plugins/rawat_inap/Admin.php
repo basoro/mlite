@@ -2356,9 +2356,6 @@ class Admin extends AdminModule
                 ->oneArray()) {
                 $this->db('pemeriksaan_ranap')->save($data);
               } else {
-                unset($data['no_rawat']);
-                unset($data['tgl_perawatan']);
-                unset($data['jam_rawat']);
                 $this->db('pemeriksaan_ranap')
                     ->where('no_rawat', $data['no_rawat'])
                     ->where('tgl_perawatan', $data['tgl_perawatan'])
