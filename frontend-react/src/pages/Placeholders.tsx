@@ -26,11 +26,13 @@ const PlaceholderPage: React.FC<PlaceholderPageProps> = ({ title, description })
   );
 };
 
-export const Integrasi: React.FC = () => (
-  <PlaceholderPage 
-    title="Integrasi" 
-    description="Kelola integrasi dengan pCare BPJS, SATUSEHAT, dan layanan lainnya" 
-  />
+import ManajemenUser from "./ManajemenUser";
+
+export const Integrasi = () => (
+  <div className="p-6">
+    <h1 className="text-2xl font-bold mb-4">Integrasi Sistem</h1>
+    <p>Halaman konfigurasi integrasi (BPJS, SatuSehat, dll) akan ditampilkan di sini.</p>
+  </div>
 );
 
 export const Inventory: React.FC = () => (
@@ -54,16 +56,11 @@ export const Laporan: React.FC = () => (
   />
 );
 
-export const ManajemenUser: React.FC = () => (
-  <PlaceholderPage 
-    title="Manajemen User" 
-    description="Kelola pengguna dan hak akses sistem" 
-  />
-);
+export { ManajemenUser };
 
-export const Pengaturan: React.FC = () => (
-  <PlaceholderPage 
-    title="Pengaturan" 
-    description="Konfigurasi sistem dan preferensi klinik" 
-  />
+export const Pengaturan = () => (
+  <div className="p-6">
+    <h1 className="text-2xl font-bold mb-4">Pengaturan Aplikasi</h1>
+    <p>Halaman pengaturan umum aplikasi akan ditampilkan di sini.</p>
+  </div>
 );

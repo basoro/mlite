@@ -339,6 +339,20 @@ export const deleteMasterData = async (type: string, data: Record<string, string
   return response.json();
 };
 
+// User Management
+export const getUsersList = async (page = 1, perPage = 10, search = '') => {
+  return getMasterList('mlite_users', page, perPage, search);
+};
+
+export const saveUser = async (data: any) => {
+  return saveMasterData('mlite_user', data);
+};
+
+export const deleteUser = async (data: any) => {
+  return deleteMasterData('mlite_user', data);
+};
+
+
 // WhatsApp Gateway
 export const getContacts = async () => {
   const response = await fetch(`${WA_API_URL}/api/contacts`);
