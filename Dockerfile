@@ -87,6 +87,16 @@ RUN mkdir -p admin/tmp \
     && chown -R www-data:www-data admin/tmp \
     && chmod -R 775 admin/tmp
 
+# --------------------------------------------------
+# Entrypoint & Volume
+# --------------------------------------------------
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Define volumes for persistence
+VOLUME ["/var/www/html/backups", "/var/www/html/uploads"]
+
 EXPOSE 80
 
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["/usr/bin/supervisord","-c","/etc/supervisor/conf.d/supervisord.conf"]
