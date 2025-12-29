@@ -403,6 +403,10 @@ export interface GudangBarang {
   no_batch: string;
   no_faktur: string;
   nama_brng?: string; // Joined if available
+  h_beli?: string;
+  kapasitas?: string;
+  nm_bangsal?: string;
+  kode_sat?: string;
 }
 
 export const getInventoryList = async (page = 1, perPage = 10, search = '') => {
@@ -413,6 +417,37 @@ export const getGudangBarangList = async (page = 1, perPage = 100, search = '') 
   return getMasterList('gudangbarang', page, perPage, search);
 };
 
-export const getStockMovementList = async (page = 1, perPage = 10, search = '') => {
-  return getMasterList('riwayat_barang_medis', page, perPage, search);
+export const getStockMovementList = async (page = 1, perPage = 10, search = '', startDate?: string, endDate?: string) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    per_page: perPage.toString(),
+    s: search,
+    col: '',
+  });
+  
+  if (startDate && endDate) {
+    // If backend supports tgl_awal/tgl_akhir for filtering
+    params.append('tgl_awal', startDate);
+    params.append('tgl_akhir', endDate);
+  }
+
+  // Use raw fetch to append extra params if getMasterList doesn't support them well, 
+  // or modify getMasterList. But getMasterList only takes fixed params.
+  // So we manually fetch here to include date params if needed.
+  // Assuming getMasterList implementation:
+  // const response = await fetch(`${config.baseUrl}${config.apiPath}/api/master/list/${type}?${params}`, ...
+  
+  // Since we can't easily modify getMasterList to take arbitrary params without changing all calls,
+  // let's construct the URL here manually similar to getMasterList but with dates.
+  
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/master/list/riwayat_barang_medis?${params}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Api-Key': config.apiKey,
+      ...(config.token && { 'Authorization': `Bearer ${config.token}` }),
+      'X-Username-Permission': localStorage.getItem('auth_username') || '',
+      'X-Password-Permission': localStorage.getItem('auth_password') || '',
+    },
+  });
+  return response.json();
 };

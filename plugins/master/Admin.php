@@ -244,6 +244,10 @@ class Admin extends AdminModule
         if ($table == 'riwayat_barang_medis') {
             $q_count->join('databarang', 'databarang.kode_brng = riwayat_barang_medis.kode_brng');
             $q_count->join('bangsal', 'bangsal.kd_bangsal = riwayat_barang_medis.kd_bangsal');
+            if (isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])) {
+                $q_count->where('riwayat_barang_medis.tanggal', '>=', $_GET['tgl_awal']);
+                $q_count->where('riwayat_barang_medis.tanggal', '<=', $_GET['tgl_akhir']);
+            }
         }
 
         if (!empty($_GET['s'])) {
@@ -284,9 +288,13 @@ class Admin extends AdminModule
         }
 
         if ($table == 'riwayat_barang_medis') {
-            $q_data->select('riwayat_barang_medis.*, databarang.nama_brng, databarang.kode_sat, databarang.kapasitas, bangsal.nm_bangsal');
+            $q_data->select('riwayat_barang_medis.*, databarang.nama_brng, bangsal.nm_bangsal');
             $q_data->join('databarang', 'databarang.kode_brng = riwayat_barang_medis.kode_brng');
             $q_data->join('bangsal', 'bangsal.kd_bangsal = riwayat_barang_medis.kd_bangsal');
+            if (isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])) {
+                $q_data->where('riwayat_barang_medis.tanggal', '>=', $_GET['tgl_awal']);
+                $q_data->where('riwayat_barang_medis.tanggal', '<=', $_GET['tgl_akhir']);
+            }
         }
 
         if (!empty($_GET['s'])) {

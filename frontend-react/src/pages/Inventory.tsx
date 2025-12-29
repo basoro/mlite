@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { 
   getInventoryList, 
   getStockMovementList, 
@@ -39,14 +40,15 @@ import {
   ShoppingCart,
   Pencil,
   Trash,
-  ArrowDown,
-  ArrowUp
+  Calendar
 } from "lucide-react";
 
 export default function Inventory() {
   const [activeTab, setActiveTab] = useState("inventory");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [startDate, setStartDate] = useState(format(new Date(), "yyyy-MM-01"));
+  const [endDate, setEndDate] = useState(format(new Date(), "yyyy-MM-dd"));
 
   // Fetch Inventory Data (DataBarang)
   const { data: inventoryData, isLoading: isLoadingInventory } = useQuery({
@@ -56,11 +58,11 @@ export default function Inventory() {
 
   // Fetch Stock Movement Data (RiwayatBarang)
   const { data: stockData, isLoading: isLoadingStock } = useQuery({
-    queryKey: ['stockMovement', page, searchQuery],
-    queryFn: () => getStockMovementList(page, 10, searchQuery),
+    queryKey: ['stockMovement', page, searchQuery, startDate, endDate],
+    queryFn: () => getStockMovementList(page, 10, searchQuery, startDate, endDate),
   });
 
-  // Fetch Gudang Barang (for notifications)
+  // Fetch Gudang Barang (for notifications and total value)
   const { data: gudangData, isLoading: isLoadingGudang } = useQuery({
     queryKey: ['gudangBarang', page], // Might want to fetch all or larger page for notifications
     queryFn: () => getGudangBarangList(1, 100), // Fetch more items for notifications
@@ -125,10 +127,13 @@ export default function Inventory() {
   const totalItems = inventoryData?.data?.length || 0;
   const lowStockItems = lowStockList.length;
   const expiredItems = expiredList.length;
-  // Calculate total value only for displayed items or based on gudang data if price available
-  // For now using inventoryData (DataBarang) which has price (ralan/h_beli) and maybe stok
-  const totalValue = inventoryData?.data?.reduce((acc: number, item: DataBarang) => {
-    return acc + (parseFloat(item.ralan) * (parseFloat(item.stok || '0')));
+  
+  // Calculate total value based on gudangData (stok * h_beli)
+  const totalValue = gudangData?.data?.reduce((acc: number, item: GudangBarang) => {
+    // h_beli might come as string or number, default to 0
+    const hBeli = parseFloat(item.h_beli || '0');
+    const stok = parseFloat(item.stok || '0');
+    return acc + (hBeli * stok);
   }, 0) || 0;
 
   return (
@@ -310,12 +315,36 @@ export default function Inventory() {
               <CardTitle>Filter Pergerakan Stok</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1 space-y-2">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Periode Mulai</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                      type="date" 
+                      className="pl-8" 
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Periode Selesai</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                      type="date" 
+                      className="pl-8" 
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
                   <label className="text-sm font-medium">Filter Keterangan</label>
                   <Input placeholder="Cari berdasarkan keterangan..." />
                 </div>
-                <div className="flex-1 space-y-2">
+                <div className="space-y-2">
                   <label className="text-sm font-medium">Filter Obat</label>
                   <Select>
                     <SelectTrigger>
