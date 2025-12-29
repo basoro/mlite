@@ -14,7 +14,8 @@ import {
   UserCog, 
   Settings,
   Heart,
-  Zap
+  Zap,
+  ClipboardList
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -28,10 +29,11 @@ interface MenuItem {
 const mainMenuItems: MenuItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
   { icon: Users, label: 'Pasien', path: '/pasien' },
-  { icon: Calendar, label: 'Jadwal', path: '/jadwal' },
+  { icon: Calendar, label: 'Pendaftaran', path: '/pendaftaran' },
   { icon: Stethoscope, label: 'Pemeriksaan', path: '/pemeriksaan' },
   { icon: Pill, label: 'Resep', path: '/resep' },
   { icon: Receipt, label: 'Billing', path: '/billing' },
+  { icon: ClipboardList, label: 'Farmasi', path: '/farmasi' },
 ];
 
 const managementMenuItems: MenuItem[] = [

@@ -26,14 +26,8 @@ const PlaceholderPage: React.FC<PlaceholderPageProps> = ({ title, description })
   );
 };
 
+import Integrasi from "./Integrasi";
 import ManajemenUser from "./ManajemenUser";
-
-export const Integrasi = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold mb-4">Integrasi Sistem</h1>
-    <p>Halaman konfigurasi integrasi (BPJS, SatuSehat, dll) akan ditampilkan di sini.</p>
-  </div>
-);
 
 export const Inventory: React.FC = () => (
   <PlaceholderPage 
@@ -56,7 +50,7 @@ export const Laporan: React.FC = () => (
   />
 );
 
-export { ManajemenUser };
+export { Integrasi, ManajemenUser };
 
 export const Pengaturan = () => (
   <div className="p-6">

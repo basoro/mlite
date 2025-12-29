@@ -8,9 +8,10 @@ import MainLayout from "@/components/layout/MainLayout";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import Pasien from "@/pages/Pasien";
-import Jadwal from "@/pages/Jadwal";
+import Pendaftaran from "@/pages/Pendaftaran";
 import Pemeriksaan from "@/pages/Pemeriksaan";
 import Resep from "@/pages/Resep";
+import Farmasi from "@/pages/Farmasi";
 import Inventory from "@/pages/Inventory";
 import MasterData from "@/pages/MasterData";
 import Laporan from "@/pages/Laporan";
@@ -50,10 +51,10 @@ const App = () => (
               }
             />
             <Route
-              path="/jadwal"
+              path="/pendaftaran"
               element={
                 <MainLayout>
-                  <Jadwal />
+                  <Pendaftaran />
                 </MainLayout>
               }
             />
@@ -70,6 +71,14 @@ const App = () => (
               element={
                 <MainLayout>
                   <Resep />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/farmasi"
+              element={
+                <MainLayout>
+                  <Farmasi />
                 </MainLayout>
               }
             />

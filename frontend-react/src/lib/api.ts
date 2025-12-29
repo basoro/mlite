@@ -465,3 +465,40 @@ export const getStockMovementList = async (page = 1, perPage = 10, search = '', 
   });
   return response.json();
 };
+
+// Farmasi
+export const getResepList = async (page = 1, perPage = 10, search = '', startDate?: string, endDate?: string) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    per_page: perPage.toString(),
+    s: search,
+    col: '',
+  });
+  
+  if (startDate && endDate) {
+    params.append('tgl_peresepan', `${startDate} - ${endDate}`); // Assuming simple date filter or we might need custom logic like stock movement
+    // Or if the backend supports tgl_awal/tgl_akhir for this table:
+    params.append('tgl_awal', startDate);
+    params.append('tgl_akhir', endDate);
+  }
+
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/master/list/resep_obat?${params}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
+export const getResepDetailItems = async (noResep: string) => {
+  // Fetch items for a specific prescription
+  // We use the search parameter to filter by no_resep
+  const params = new URLSearchParams({
+    page: '1',
+    per_page: '100',
+    s: noResep,
+  });
+  
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/master/list/resep_dokter?${params}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};

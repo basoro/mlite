@@ -66,7 +66,7 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const Jadwal: React.FC = () => {
+const Pendaftaran: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -129,11 +129,11 @@ const Jadwal: React.FC = () => {
     mutationFn: (data: any) => updateRawatJalan(selectedNoRawat!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rawatJalan'] });
-      toast({ title: 'Berhasil', description: 'Jadwal berhasil diperbarui' });
+      toast({ title: 'Berhasil', description: 'Pendaftaran berhasil diperbarui' });
       handleCloseDialog();
     },
     onError: (error: any) => {
-      toast({ title: 'Gagal', description: error.message || 'Gagal memperbarui jadwal', variant: 'destructive' });
+      toast({ title: 'Gagal', description: error.message || 'Gagal memperbarui pendaftaran', variant: 'destructive' });
     },
   });
 
@@ -211,8 +211,8 @@ const Jadwal: React.FC = () => {
       {/* Page Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Manajemen Jadwal</h1>
-          <p className="text-muted-foreground mt-1">Kelola jadwal praktek dan appointment pasien</p>
+          <h1 className="text-3xl font-bold text-foreground">Manajemen Pendaftaran</h1>
+          <p className="text-muted-foreground mt-1">Kelola pendaftaran dan appointment pasien</p>
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
@@ -222,12 +222,12 @@ const Jadwal: React.FC = () => {
           <DialogTrigger asChild>
             <Button className="bg-emerald-500 hover:bg-emerald-600 text-white gap-2">
               <Plus className="w-4 h-4" />
-              Tambah Jadwal
+              Tambah Pendaftaran
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>{isEditMode ? 'Edit Jadwal' : 'Buat Jadwal Baru'}</DialogTitle>
+              <DialogTitle>{isEditMode ? 'Edit Pendaftaran' : 'Buat Pendaftaran Baru'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 pt-4">
               <div className="space-y-2">
@@ -326,7 +326,7 @@ const Jadwal: React.FC = () => {
                   Batal
                 </Button>
                 <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending || !formData.no_rkm_medis}>
-                  {createMutation.isPending || updateMutation.isPending ? 'Menyimpan...' : 'Simpan Jadwal'}
+                  {createMutation.isPending || updateMutation.isPending ? 'Menyimpan...' : 'Simpan Pendaftaran'}
                 </Button>
               </div>
             </form>
@@ -408,7 +408,7 @@ const Jadwal: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-gray-800"></span>
-                    <span>Total Jadwal:</span>
+                    <span>Total Pendaftaran:</span>
                   </div>
                   <span className="font-medium">{schedules.length}</span>
                 </div>
@@ -450,10 +450,10 @@ const Jadwal: React.FC = () => {
             <div className="mb-6">
               <h2 className="text-xl font-bold flex items-center gap-2">
                 <Clock className="w-5 h-5" />
-                Jadwal {format(selectedDate, 'EEEE, dd MMMM yyyy')}
+                Pendaftaran {format(selectedDate, 'EEEE, dd MMMM yyyy')}
               </h2>
               <p className="text-sm text-gray-500 mt-1">
-                Daftar appointment dan jadwal untuk tanggal yang dipilih
+                Daftar appointment dan pendaftaran untuk tanggal yang dipilih
               </p>
             </div>
 
@@ -567,7 +567,7 @@ const Jadwal: React.FC = () => {
                 ))}
                 {schedules.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
-                    Tidak ada jadwal untuk tanggal ini
+                    Tidak ada pendaftaran untuk tanggal ini
                   </div>
                 )}
               </div>
@@ -579,4 +579,4 @@ const Jadwal: React.FC = () => {
   );
 };
 
-export default Jadwal;
+export default Pendaftaran;
