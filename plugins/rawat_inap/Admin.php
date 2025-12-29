@@ -2601,6 +2601,356 @@ class Admin extends AdminModule
         return ['status' => 'success'];
     }
 
+    public function apiSaveDiagnosa()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'kd_penyakit' => $input['kd_penyakit'],
+            'status' => $input['status'] ?? 'Ranap',
+            'prioritas' => $input['prioritas'],
+            'status_penyakit' => 'Baru'
+        ];
+
+        try {
+            $this->db('diagnosa_pasien')->save($data);
+            return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDeleteDiagnosa()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('diagnosa_pasien')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('kd_penyakit', $input['kd_penyakit'])
+                ->where('prioritas', $input['prioritas'])
+                ->delete();
+            return ['status' => 'success'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveProsedur()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'kode' => $input['kode'],
+            'status' => $input['status'] ?? 'Ranap',
+            'prioritas' => $input['prioritas']
+        ];
+
+        try {
+            $this->db('prosedur_pasien')->save($data);
+            return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDeleteProsedur()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('prosedur_pasien')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('kode', $input['kode'])
+                ->where('prioritas', $input['prioritas'])
+                ->delete();
+            return ['status' => 'success'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveCatatan()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $input['no_rawat']);
+
+        $data = [
+            'tanggal' => date('Y-m-d'),
+            'jam' => date('H:i:s'),
+            'no_rawat' => $input['no_rawat'],
+            'kd_dokter' => $kd_dokter,
+            'catatan' => $input['catatan']
+        ];
+
+        try {
+            $this->db('catatan_perawatan')->save($data);
+            return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDeleteCatatan()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('catatan_perawatan')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('tanggal', $input['tanggal'])
+                ->where('jam', $input['jam'])
+                ->delete();
+            return ['status' => 'success'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveBerkas()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'kode' => $input['judul'] ?? '',
+            'lokasi_file' => $input['deskripsi'] ?? ''
+        ];
+
+        try {
+            $this->db('berkas_digital_perawatan')->save($data);
+            return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDeleteBerkas()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('berkas_digital_perawatan')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('kode', $input['judul'] ?? $input['kode'])
+                ->where('lokasi_file', $input['deskripsi'] ?? $input['lokasi_file'])
+                ->delete();
+            return ['status' => 'success'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveResume()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $input['no_rawat']);
+
+        // Check if exists
+        $exists = $this->db('resume_pasien')->where('no_rawat', $input['no_rawat'])->oneArray();
+
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'kd_dokter' => $kd_dokter,
+            'diagnosa_utama' => $input['diagnosa_utama'] ?? '',
+            'diagnosa_sekunder' => $input['diagnosa_sekunder'] ?? '',
+            'jalannya_penyakit' => $input['jalannya_penyakit'] ?? '',
+            'obat_pulang' => $input['terapi'] ?? '',
+            'kondisi_pulang' => $input['kondisi_pulang'] ?? 'Hidup',
+            // Default required fields
+            'keluhan_utama' => '',
+            'pemeriksaan_penunjang' => '',
+            'hasil_laborat' => '',
+            'kd_diagnosa_utama' => '',
+            'kd_diagnosa_sekunder' => '',
+            'diagnosa_sekunder2' => '',
+            'kd_diagnosa_sekunder2' => '',
+            'diagnosa_sekunder3' => '',
+            'kd_diagnosa_sekunder3' => '',
+            'diagnosa_sekunder4' => '',
+            'kd_diagnosa_sekunder4' => '',
+            'prosedur_utama' => '',
+            'kd_prosedur_utama' => '',
+            'prosedur_sekunder' => '',
+            'kd_prosedur_sekunder' => '',
+            'prosedur_sekunder2' => '',
+            'kd_prosedur_sekunder2' => '',
+            'prosedur_sekunder3' => '',
+            'kd_prosedur_sekunder3' => ''
+        ];
+
+        try {
+            if ($exists) {
+                $this->db('resume_pasien')->where('no_rawat', $input['no_rawat'])->save($data);
+            } else {
+                $this->db('resume_pasien')->save($data);
+            }
+            return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveRujukanInternal()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'kd_poli' => $input['kd_poli'],
+            'kd_dokter' => $input['kd_dokter'],
+            'isi_rujukan' => $input['catatan'] ?? ''
+        ];
+
+        try {
+            $this->db('mlite_rujukan_internal_poli')->save($data);
+            return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDeleteRujukanInternal()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('mlite_rujukan_internal_poli')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('kd_poli', $input['kd_poli'])
+                ->where('kd_dokter', $input['kd_dokter'])
+                ->delete();
+            return ['status' => 'success'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveLaporanOperasi()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'tanggal' => $input['tanggal'] . ' ' . $input['jam'],
+            'operator' => $input['operator'],
+            'laporan_operasi' => $input['laporan'] ?? '',
+            // Defaults
+            'operator2' => '-', 'operator3' => '-', 'asisten_operator1' => '-', 'asisten_operator2' => '-', 'asisten_operator3' => '-',
+            'instrumen' => '-', 'dokter_anak' => '-', 'perawat_resusitas' => '-', 'dokter_anestesi' => '-', 'asisten_anestesi' => '-',
+            'bidan' => '-', 'perawat_luar' => '-', 'omloop' => '-', 'omloop2' => '-', 'omloop3' => '-', 'omloop4' => '-', 'omloop5' => '-'
+        ];
+
+        try {
+            $this->db('laporan_operasi')->save($data);
+            return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDeleteLaporanOperasi()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $tanggal = $input['tanggal'];
+            if(isset($input['jam'])) {
+                $tanggal .= ' ' . $input['jam'];
+            }
+
+            $this->db('laporan_operasi')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('tanggal', $tanggal)
+                ->delete();
+            return ['status' => 'success'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
     private function _addHeaderFiles()
     {
         $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
