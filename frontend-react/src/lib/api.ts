@@ -184,7 +184,11 @@ export const saveKamarInapSOAP = async (data: any) => {
     headers: getHeaders(),
     body: JSON.stringify(data),
   });
-  return response.json();
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan SOAP');
+  }
+  return result;
 };
 
 export const deleteKamarInapSOAP = async (data: any) => {
@@ -193,7 +197,11 @@ export const deleteKamarInapSOAP = async (data: any) => {
     headers: getHeaders(),
     body: JSON.stringify(data),
   });
-  return response.json();
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus SOAP');
+  }
+  return result;
 };
 
 export const getKamarInapTindakan = async (noRawat: string) => {
@@ -398,7 +406,11 @@ export const saveSOAP = async (data: {
     headers: getHeaders(),
     body: JSON.stringify(data),
   });
-  return response.json();
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan SOAP');
+  }
+  return result;
 };
 
 export const deleteSOAP = async (data: {
@@ -411,7 +423,11 @@ export const deleteSOAP = async (data: {
     headers: getHeaders(),
     body: JSON.stringify(data),
   });
-  return response.json();
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus SOAP');
+  }
+  return result;
 };
 
 export const saveTindakan = async (data: any) => {
@@ -425,7 +441,11 @@ export const saveTindakan = async (data: any) => {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
   
-  return response.json();
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan tindakan');
+  }
+  return result;
 };
 
 export const deleteTindakan = async (data: any) => {
@@ -439,7 +459,11 @@ export const deleteTindakan = async (data: any) => {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  return response.json();
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus tindakan');
+  }
+  return result;
 };
 
 // Master Data
