@@ -396,8 +396,21 @@ export interface RiwayatBarang {
   nama_brng?: string; // Joined
 }
 
+export interface GudangBarang {
+  kode_brng: string;
+  kd_bangsal: string;
+  stok: string;
+  no_batch: string;
+  no_faktur: string;
+  nama_brng?: string; // Joined if available
+}
+
 export const getInventoryList = async (page = 1, perPage = 10, search = '') => {
   return getMasterList('databarang', page, perPage, search);
+};
+
+export const getGudangBarangList = async (page = 1, perPage = 100, search = '') => {
+  return getMasterList('gudangbarang', page, perPage, search);
 };
 
 export const getStockMovementList = async (page = 1, perPage = 10, search = '') => {

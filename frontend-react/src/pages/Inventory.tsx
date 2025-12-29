@@ -3,8 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { 
   getInventoryList, 
   getStockMovementList, 
+  getGudangBarangList,
   DataBarang, 
-  RiwayatBarang 
+  RiwayatBarang,
+  GudangBarang
 } from "@/lib/api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,23 +48,88 @@ export default function Inventory() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
 
-  // Fetch Inventory Data
+  // Fetch Inventory Data (DataBarang)
   const { data: inventoryData, isLoading: isLoadingInventory } = useQuery({
     queryKey: ['inventory', page, searchQuery],
     queryFn: () => getInventoryList(page, 10, searchQuery),
   });
 
-  // Fetch Stock Movement Data
+  // Fetch Stock Movement Data (RiwayatBarang)
   const { data: stockData, isLoading: isLoadingStock } = useQuery({
     queryKey: ['stockMovement', page, searchQuery],
     queryFn: () => getStockMovementList(page, 10, searchQuery),
   });
 
-  // Calculate summaries (mocked for now as we might need all data for accurate summary)
-  const totalItems = inventoryData?.data?.length || 0; // This should ideally come from metadata
-  const lowStockItems = 0; // Logic to calculate low stock
-  const expiredItems = 0; // Logic to calculate expired
-  const totalValue = 0; // Logic to calculate total value
+  // Fetch Gudang Barang (for notifications)
+  const { data: gudangData, isLoading: isLoadingGudang } = useQuery({
+    queryKey: ['gudangBarang', page], // Might want to fetch all or larger page for notifications
+    queryFn: () => getGudangBarangList(1, 100), // Fetch more items for notifications
+  });
+
+  // Logic for Notifications
+  const getLowStockItems = () => {
+    if (!gudangData?.data || !inventoryData?.data) return [];
+    
+    // Create a map of DataBarang for easy lookup of stokminimal and nama_brng
+    const dataBarangMap = new Map<string, DataBarang>();
+    inventoryData.data.forEach((item: DataBarang) => {
+      dataBarangMap.set(item.kode_brng, item);
+    });
+
+    return gudangData.data.filter((item: GudangBarang) => {
+      const dataBarang = dataBarangMap.get(item.kode_brng);
+      // Logic: If stok in gudang < stokminimal (if available) or < 10 (default)
+      const stok = parseFloat(item.stok);
+      const minStok = dataBarang ? parseFloat(dataBarang.stokminimal) : 10; 
+      return stok > 0 && stok <= minStok;
+    }).map((item: GudangBarang) => ({
+      ...item,
+      nama_brng: dataBarangMap.get(item.kode_brng)?.nama_brng || item.kode_brng,
+      min_stok: dataBarangMap.get(item.kode_brng)?.stokminimal || 10
+    }));
+  };
+
+  const getOutOfStockItems = () => {
+    if (!gudangData?.data) return [];
+    
+    const dataBarangMap = new Map<string, DataBarang>();
+    if (inventoryData?.data) {
+        inventoryData.data.forEach((item: DataBarang) => {
+            dataBarangMap.set(item.kode_brng, item);
+        });
+    }
+
+    return gudangData.data.filter((item: GudangBarang) => parseFloat(item.stok) <= 0)
+    .map((item: GudangBarang) => ({
+        ...item,
+        nama_brng: dataBarangMap.get(item.kode_brng)?.nama_brng || item.kode_brng
+    }));
+  };
+
+  const getExpiredItems = () => {
+    if (!inventoryData?.data) return [];
+    const today = new Date();
+    
+    return inventoryData.data.filter((item: DataBarang) => {
+      if (!item.expire) return false;
+      const expireDate = new Date(item.expire);
+      return expireDate < today;
+    });
+  };
+
+  const lowStockList = getLowStockItems();
+  const outOfStockList = getOutOfStockItems();
+  const expiredList = getExpiredItems();
+
+  // Calculate summaries
+  const totalItems = inventoryData?.data?.length || 0;
+  const lowStockItems = lowStockList.length;
+  const expiredItems = expiredList.length;
+  // Calculate total value only for displayed items or based on gudang data if price available
+  // For now using inventoryData (DataBarang) which has price (ralan/h_beli) and maybe stok
+  const totalValue = inventoryData?.data?.reduce((acc: number, item: DataBarang) => {
+    return acc + (parseFloat(item.ralan) * (parseFloat(item.stok || '0')));
+  }, 0) || 0;
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -326,17 +393,22 @@ export default function Inventory() {
                   <TrendingUp className="h-5 w-5" /> Stok Menipis
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Mock Item */}
-                <div className="border rounded-lg p-3 space-y-2">
-                  <div className="flex justify-between items-start">
-                    <span className="font-medium">Paramex</span>
-                    <Badge variant="outline" className="text-orange-500 border-orange-200 bg-orange-50">
-                      Min: 50
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">Sisa: 10 Tablet</p>
-                </div>
+              <CardContent className="space-y-4 max-h-[400px] overflow-auto">
+                {lowStockList.length > 0 ? (
+                  lowStockList.map((item: any, index: number) => (
+                    <div key={index} className="border rounded-lg p-3 space-y-2">
+                      <div className="flex justify-between items-start">
+                        <span className="font-medium">{item.nama_brng}</span>
+                        <Badge variant="outline" className="text-orange-500 border-orange-200 bg-orange-50">
+                          Min: {item.min_stok}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Sisa: {item.stok} {item.kode_sat}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-4">Tidak ada stok menipis</p>
+                )}
               </CardContent>
             </Card>
 
@@ -346,8 +418,21 @@ export default function Inventory() {
                   <Package className="h-5 w-5" /> Habis Stok
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground text-center py-4">Tidak ada obat habis</p>
+              <CardContent className="max-h-[400px] overflow-auto">
+                {outOfStockList.length > 0 ? (
+                    outOfStockList.map((item: any, index: number) => (
+                        <div key={index} className="border rounded-lg p-3 space-y-2 mb-2">
+                            <div className="flex justify-between items-start">
+                                <span className="font-medium">{item.nama_brng}</span>
+                                <Badge variant="outline" className="text-gray-500 border-gray-200 bg-gray-50">
+                                    Stok: 0
+                                </Badge>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-sm text-muted-foreground text-center py-4">Tidak ada obat habis</p>
+                )}
               </CardContent>
             </Card>
 
@@ -357,8 +442,21 @@ export default function Inventory() {
                   <AlertTriangle className="h-5 w-5" /> Kadaluwarsa
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground text-center py-4">Tidak ada obat kadaluarsa</p>
+              <CardContent className="max-h-[400px] overflow-auto">
+                {expiredList.length > 0 ? (
+                    expiredList.map((item: DataBarang, index: number) => (
+                        <div key={index} className="border rounded-lg p-3 space-y-2 mb-2">
+                            <div className="flex justify-between items-start">
+                                <span className="font-medium">{item.nama_brng}</span>
+                                <Badge variant="outline" className="text-red-500 border-red-200 bg-red-50">
+                                    {item.expire}
+                                </Badge>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-sm text-muted-foreground text-center py-4">Tidak ada obat kadaluarsa</p>
+                )}
               </CardContent>
             </Card>
           </div>
