@@ -2561,4 +2561,18 @@ class Admin extends AdminModule
         return ['status' => 'success'];
     }
 
+    private function _addHeaderFiles()
+    {
+        $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+        $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
+        $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
+        $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
+        $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
+        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+        $this->core->addJS('https://cdn.jsdelivr.net/npm/chart.js');
+        $this->core->addJS(url([ADMIN, 'rawat_inap', 'javascript']), 'footer');
+    }
 
+}
