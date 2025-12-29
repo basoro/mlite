@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Clock, User, Calendar, Stethoscope, FileText, Pill, Smile, Loader2, Save, Trash, Edit, AlertTriangle, Check, ChevronsUpDown } from 'lucide-react';
+import { Clock, User, Calendar, Stethoscope, FileText, Pill, Smile, Loader2, Save, Trash, Edit, AlertTriangle, Check, ChevronsUpDown, TestTube, Scan, Code, File, Files, ArrowRight, Scissors, MoreHorizontal, ArrowUp, ArrowDown, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import {
   Popover,
   PopoverContent,
@@ -48,7 +56,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useToast } from '@/hooks/use-toast';
-import { getRawatJalanList, getRiwayatPerawatan, saveSOAP, deleteSOAP, getMasterList, saveTindakan, getRawatJalanTindakan, deleteTindakan } from '@/lib/api';
+import { getRawatJalanList, getRiwayatPerawatan, saveSOAP, deleteSOAP, getMasterList, saveTindakan, getRawatJalanTindakan, deleteTindakan, saveDiagnosa, saveProsedur, saveCatatan, saveBerkas, saveResume, saveRujukanInternal, saveLaporanOperasi } from '@/lib/api';
 
 // Queue Item Component
 interface QueueItemProps {
@@ -265,6 +273,48 @@ const HistoryItem: React.FC<{ history: any; onEdit?: (history: any, soap: any) =
                     </div>
                 </div>
             )}
+
+            {/* Diagnosa Section */}
+            {history.diagnosa_pasien?.length > 0 && (
+                <div className="mt-4 pt-4 border-t">
+                    <h4 className="font-semibold text-sm mb-2 text-emerald-700">Riwayat Diagnosa (ICD-10)</h4>
+                    <div className="space-y-2 text-sm">
+                        {history.diagnosa_pasien.map((item: any, idx: number) => (
+                            <div key={`diagnosa-${idx}`} className="p-2 bg-gray-50 rounded border border-gray-100">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="font-medium"><span className="font-mono bg-emerald-100 text-emerald-800 px-1 rounded mr-1">{item.kd_penyakit}</span> {item.nm_penyakit}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Status: {item.status} • Prioritas: {item.prioritas} • {item.status_penyakit}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Prosedur Section */}
+            {history.prosedur_pasien?.length > 0 && (
+                <div className="mt-4 pt-4 border-t">
+                    <h4 className="font-semibold text-sm mb-2 text-emerald-700">Riwayat Prosedur (ICD-9)</h4>
+                    <div className="space-y-2 text-sm">
+                        {history.prosedur_pasien.map((item: any, idx: number) => (
+                            <div key={`prosedur-${idx}`} className="p-2 bg-gray-50 rounded border border-gray-100">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="font-medium"><span className="font-mono bg-blue-100 text-blue-800 px-1 rounded mr-1">{item.kode}</span> {item.deskripsi_panjang || item.deskripsi_pendek}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Status: {item.status} • Prioritas: {item.prioritas}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
@@ -320,6 +370,15 @@ const Pemeriksaan: React.FC = () => {
 
   const [openObat, setOpenObat] = useState(false);
   const [openRacikanObat, setOpenRacikanObat] = useState(false);
+
+  // More Menu & Modals State
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const [isICDModalOpen, setIsICDModalOpen] = useState(false);
+  const [isCatatanModalOpen, setIsCatatanModalOpen] = useState(false);
+  const [isBerkasModalOpen, setIsBerkasModalOpen] = useState(false);
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [isRujukanModalOpen, setIsRujukanModalOpen] = useState(false);
+  const [isOperasiModalOpen, setIsOperasiModalOpen] = useState(false);
 
   const formattedDateFrom = dateFrom ? format(dateFrom, 'yyyy-MM-dd') : '';
   const formattedDateTo = dateTo ? format(dateTo, 'yyyy-MM-dd') : '';
@@ -377,6 +436,46 @@ const Pemeriksaan: React.FC = () => {
     kode_brng: '',
     nama_brng: '',
     kandungan: ''
+  });
+
+  // ICD State
+  const [icd10List, setIcd10List] = useState<any[]>([]);
+  const [icd10Search, setIcd10Search] = useState('');
+  const [openIcd10Search, setOpenIcd10Search] = useState(false);
+  
+  const [icd9List, setIcd9List] = useState<any[]>([]);
+  const [icd9Search, setIcd9Search] = useState('');
+  const [openIcd9Search, setOpenIcd9Search] = useState(false);
+
+  // Catatan Pasien State
+  const [catatanPasien, setCatatanPasien] = useState('');
+
+  // Berkas Digital State
+  const [berkasJudul, setBerkasJudul] = useState('');
+  const [berkasDeskripsi, setBerkasDeskripsi] = useState('');
+  
+  // Resume Medis State
+  const [resumeData, setResumeData] = useState({
+    diagnosa_utama: '',
+    diagnosa_sekunder: '',
+    jalannya_penyakit: '',
+    terapi: '',
+    kondisi_pulang: '',
+  });
+
+  // Rujukan Internal State
+  const [rujukanData, setRujukanData] = useState({
+    kd_poli: '',
+    kd_dokter: '',
+    catatan: '',
+  });
+
+  // Laporan Operasi State
+  const [operasiData, setOperasiData] = useState({
+    laporan: '',
+    operator: '',
+    tanggal: format(new Date(), 'yyyy-MM-dd'),
+    jam: format(new Date(), 'HH:mm:ss'),
   });
 
   // Fetch Obat Data
@@ -468,6 +567,200 @@ const Pemeriksaan: React.FC = () => {
     queryKey: ['master', 'petugas'],
     queryFn: () => getMasterList('petugas', 1, 1000),
   });
+
+  // Fetch ICD Data
+  const { data: icd10Master } = useQuery({
+    queryKey: ['master', 'penyakit', icd10Search],
+    queryFn: () => getMasterList('penyakit', 1, 50, icd10Search),
+  });
+
+  const { data: icd9Master } = useQuery({
+    queryKey: ['master', 'icd9', icd9Search],
+    queryFn: () => getMasterList('icd9', 1, 50, icd9Search),
+  });
+
+  const { data: poliData } = useQuery({
+    queryKey: ['master', 'poliklinik'],
+    queryFn: () => getMasterList('poliklinik', 1, 100),
+  });
+
+  const saveDiagnosaMutation = useMutation({
+    mutationFn: saveDiagnosa,
+    onSuccess: () => {
+        // toast({ title: 'Berhasil', description: 'Diagnosa berhasil disimpan' });
+    }
+  });
+
+  const saveProsedurMutation = useMutation({
+    mutationFn: saveProsedur,
+    onSuccess: () => {
+        // toast({ title: 'Berhasil', description: 'Prosedur berhasil disimpan' });
+    }
+  });
+
+  const saveCatatanMutation = useMutation({
+    mutationFn: saveCatatan,
+    onSuccess: () => {
+        toast({ title: 'Berhasil', description: 'Catatan pasien berhasil disimpan' });
+        setIsCatatanModalOpen(false);
+        setCatatanPasien('');
+    },
+    onError: (e: any) => toast({ title: 'Gagal', description: e.message, variant: 'destructive' })
+  });
+
+  const saveBerkasMutation = useMutation({
+    mutationFn: saveBerkas,
+    onSuccess: () => {
+        toast({ title: 'Berhasil', description: 'Berkas berhasil disimpan' });
+        setIsBerkasModalOpen(false);
+        setBerkasJudul('');
+        setBerkasDeskripsi('');
+    },
+    onError: (e: any) => toast({ title: 'Gagal', description: e.message, variant: 'destructive' })
+  });
+
+  const saveResumeMutation = useMutation({
+    mutationFn: saveResume,
+    onSuccess: () => {
+        toast({ title: 'Berhasil', description: 'Resume medis berhasil disimpan' });
+        setIsResumeModalOpen(false);
+        setResumeData({ diagnosa_utama: '', diagnosa_sekunder: '', jalannya_penyakit: '', terapi: '', kondisi_pulang: '' });
+    },
+    onError: (e: any) => toast({ title: 'Gagal', description: e.message, variant: 'destructive' })
+  });
+
+  const saveRujukanMutation = useMutation({
+    mutationFn: saveRujukanInternal,
+    onSuccess: () => {
+        toast({ title: 'Berhasil', description: 'Rujukan internal berhasil disimpan' });
+        setIsRujukanModalOpen(false);
+        setRujukanData({ kd_poli: '', kd_dokter: '', catatan: '' });
+    },
+    onError: (e: any) => toast({ title: 'Gagal', description: e.message, variant: 'destructive' })
+  });
+
+  const saveOperasiMutation = useMutation({
+    mutationFn: saveLaporanOperasi,
+    onSuccess: () => {
+        toast({ title: 'Berhasil', description: 'Laporan operasi berhasil disimpan' });
+        setIsOperasiModalOpen(false);
+        setOperasiData({ laporan: '', operator: '', tanggal: format(new Date(), 'yyyy-MM-dd'), jam: format(new Date(), 'HH:mm:ss') });
+    },
+    onError: (e: any) => toast({ title: 'Gagal', description: e.message, variant: 'destructive' })
+  });
+
+  const handleAddIcd10 = (item: any) => {
+    if (!icd10List.find(i => i.kd_penyakit === item.kd_penyakit)) {
+        setIcd10List([...icd10List, item]);
+    }
+    setOpenIcd10Search(false);
+  };
+
+  const handleAddIcd9 = (item: any) => {
+    if (!icd9List.find(i => i.kode === item.kode)) {
+        setIcd9List([...icd9List, item]);
+    }
+    setOpenIcd9Search(false);
+  };
+
+  const handleRemoveIcd10 = (index: number) => {
+    setIcd10List(icd10List.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveIcd9 = (index: number) => {
+    setIcd9List(icd9List.filter((_, i) => i !== index));
+  };
+
+  const moveIcd10 = (index: number, direction: 'up' | 'down') => {
+    if ((direction === 'up' && index === 0) || (direction === 'down' && index === icd10List.length - 1)) return;
+    const newList = [...icd10List];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    [newList[index], newList[targetIndex]] = [newList[targetIndex], newList[index]];
+    setIcd10List(newList);
+  };
+
+  const moveIcd9 = (index: number, direction: 'up' | 'down') => {
+    if ((direction === 'up' && index === 0) || (direction === 'down' && index === icd9List.length - 1)) return;
+    const newList = [...icd9List];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    [newList[index], newList[targetIndex]] = [newList[targetIndex], newList[index]];
+    setIcd9List(newList);
+  };
+
+  const handleSaveICD = async () => {
+      if (!selectedPatient) return;
+      
+      try {
+          // Save ICD 10
+          for (let i = 0; i < icd10List.length; i++) {
+              await saveDiagnosaMutation.mutateAsync({
+                  no_rawat: selectedPatient.no_rawat,
+                  kd_penyakit: icd10List[i].kd_penyakit,
+                  status: 'Ralan', 
+                  prioritas: i + 1,
+                  status_penyakit: 'Baru' 
+              });
+          }
+
+          // Save ICD 9
+          for (let i = 0; i < icd9List.length; i++) {
+              await saveProsedurMutation.mutateAsync({
+                  no_rawat: selectedPatient.no_rawat,
+                  kode: icd9List[i].kode,
+                  status: 'Ralan',
+                  prioritas: i + 1
+              });
+          }
+          
+          toast({ title: 'Berhasil', description: 'Data ICD berhasil disimpan' });
+          setIsICDModalOpen(false);
+          setIcd10List([]);
+          setIcd9List([]);
+      } catch (e: any) {
+          toast({ title: 'Gagal', description: e.message || 'Gagal menyimpan data ICD', variant: 'destructive' });
+      }
+  };
+
+  const handleSaveCatatan = () => {
+      if (!selectedPatient) return;
+      saveCatatanMutation.mutate({
+          no_rawat: selectedPatient.no_rawat,
+          catatan: catatanPasien
+      });
+  };
+
+  const handleSaveBerkas = () => {
+      if (!selectedPatient) return;
+      saveBerkasMutation.mutate({
+          no_rawat: selectedPatient.no_rawat,
+          judul: berkasJudul,
+          deskripsi: berkasDeskripsi
+      });
+  };
+
+  const handleSaveResume = () => {
+      if (!selectedPatient) return;
+      saveResumeMutation.mutate({
+          no_rawat: selectedPatient.no_rawat,
+          ...resumeData
+      });
+  };
+
+  const handleSaveRujukan = () => {
+      if (!selectedPatient) return;
+      saveRujukanMutation.mutate({
+          no_rawat: selectedPatient.no_rawat,
+          ...rujukanData
+      });
+  };
+
+  const handleSaveOperasi = () => {
+      if (!selectedPatient) return;
+      saveOperasiMutation.mutate({
+          no_rawat: selectedPatient.no_rawat,
+          ...operasiData
+      });
+  };
 
   const saveTindakanMutation = useMutation({
     mutationFn: (data: any) => saveTindakan(data),
@@ -834,7 +1127,7 @@ const Pemeriksaan: React.FC = () => {
               {/* Tabs */}
               <div className="bg-card rounded-xl border border-border p-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid grid-cols-5 w-full">
+                  <TabsList className="grid grid-cols-7 w-full">
                     <TabsTrigger value="riwayat" className="gap-2">
                       <FileText className="w-4 h-4" />
                       Riwayat
@@ -842,10 +1135,6 @@ const Pemeriksaan: React.FC = () => {
                     <TabsTrigger value="pemeriksaan" className="gap-2">
                       <Stethoscope className="w-4 h-4" />
                       SOAP
-                    </TabsTrigger>
-                    <TabsTrigger value="odontogram" className="gap-2">
-                      <Smile className="w-4 h-4" />
-                      Odontogram
                     </TabsTrigger>
                     <TabsTrigger value="tindakan" className="gap-2">
                       <Calendar className="w-4 h-4" />
@@ -855,6 +1144,89 @@ const Pemeriksaan: React.FC = () => {
                       <Pill className="w-4 h-4" />
                       Resep
                     </TabsTrigger>
+                    <TabsTrigger value="laboratorium" className="gap-2">
+                      <TestTube className="w-4 h-4" />
+                      Laboratorium
+                    </TabsTrigger>
+                    <TabsTrigger value="radiologi" className="gap-2">
+                      <Scan className="w-4 h-4" />
+                      Radiologi
+                    </TabsTrigger>
+                    <Dialog open={isMoreMenuOpen} onOpenChange={setIsMoreMenuOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" className="gap-2 w-full data-[state=open]:bg-muted">
+                          <MoreHorizontal className="w-4 h-4" />
+                          More
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                          <DialogTitle>Menu Lainnya</DialogTitle>
+                        </DialogHeader>
+                        <div className="grid grid-cols-2 gap-4 py-2">
+                          <Button 
+                            variant="outline" 
+                            className="h-24 flex flex-col items-center justify-center gap-2 hover:border-blue-500 hover:bg-blue-50 transition-all"
+                            onClick={() => { setIsMoreMenuOpen(false); setIsICDModalOpen(true); }}
+                          >
+                            <div className="p-2 bg-blue-100 text-blue-600 rounded-full">
+                              <Code className="w-6 h-6" />
+                            </div>
+                            <span className="font-medium text-xs">ICD Management</span>
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="h-24 flex flex-col items-center justify-center gap-2 hover:border-yellow-500 hover:bg-yellow-50 transition-all"
+                            onClick={() => { setIsMoreMenuOpen(false); setIsCatatanModalOpen(true); }}
+                          >
+                            <div className="p-2 bg-yellow-100 text-yellow-600 rounded-full">
+                              <File className="w-6 h-6" />
+                            </div>
+                            <span className="font-medium text-xs">Catatan Pasien</span>
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="h-24 flex flex-col items-center justify-center gap-2 hover:border-purple-500 hover:bg-purple-50 transition-all"
+                            onClick={() => { setIsMoreMenuOpen(false); setIsBerkasModalOpen(true); }}
+                          >
+                            <div className="p-2 bg-purple-100 text-purple-600 rounded-full">
+                              <Files className="w-6 h-6" />
+                            </div>
+                            <span className="font-medium text-xs">Berkas Digital</span>
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="h-24 flex flex-col items-center justify-center gap-2 hover:border-indigo-500 hover:bg-indigo-50 transition-all"
+                            onClick={() => { setIsMoreMenuOpen(false); setIsResumeModalOpen(true); }}
+                          >
+                            <div className="p-2 bg-indigo-100 text-indigo-600 rounded-full">
+                              <FileText className="w-6 h-6" />
+                            </div>
+                            <span className="font-medium text-xs">Resume Medis</span>
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="h-24 flex flex-col items-center justify-center gap-2 hover:border-orange-500 hover:bg-orange-50 transition-all"
+                            onClick={() => { setIsMoreMenuOpen(false); setIsRujukanModalOpen(true); }}
+                          >
+                            <div className="p-2 bg-orange-100 text-orange-600 rounded-full">
+                              <ArrowRight className="w-6 h-6" />
+                            </div>
+                            <span className="font-medium text-xs">Rujukan Internal</span>
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="h-24 flex flex-col items-center justify-center gap-2 hover:border-red-500 hover:bg-red-50 transition-all"
+                            onClick={() => { setIsMoreMenuOpen(false); setIsOperasiModalOpen(true); }}
+                          >
+                            <div className="p-2 bg-red-100 text-red-600 rounded-full">
+                              <Scissors className="w-6 h-6" />
+                            </div>
+                            <span className="font-medium text-xs">Laporan Operasi</span>
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </TabsList>
 
                   <TabsContent value="riwayat" className="mt-6">
@@ -987,12 +1359,6 @@ const Pemeriksaan: React.FC = () => {
                              </div>
                           </div>
                       </div>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="odontogram" className="mt-6">
-                    <div className="text-center py-12 text-muted-foreground">
-                      Fitur Odontogram akan tersedia di pembaruan berikutnya
                     </div>
                   </TabsContent>
 
@@ -1489,6 +1855,19 @@ const Pemeriksaan: React.FC = () => {
                         </TabsContent>
                     </Tabs>
                   </TabsContent>
+
+                  <TabsContent value="laboratorium" className="mt-6">
+                    <div className="text-center py-12 text-muted-foreground">
+                      Fitur Laboratorium akan tersedia di pembaruan berikutnya
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="radiologi" className="mt-6">
+                    <div className="text-center py-12 text-muted-foreground">
+                      Fitur Radiologi akan tersedia di pembaruan berikutnya
+                    </div>
+                  </TabsContent>
+
                 </Tabs>
               </div>
             </>
@@ -1527,6 +1906,403 @@ const Pemeriksaan: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Feature Modals */}
+      <Dialog open={isICDModalOpen} onOpenChange={setIsICDModalOpen}>
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+                <DialogTitle>ICD Management</DialogTitle>
+            </DialogHeader>
+            <Tabs defaultValue="icd10" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="icd10">Diagnosa (ICD 10)</TabsTrigger>
+                    <TabsTrigger value="icd9">Prosedur (ICD 9)</TabsTrigger>
+                </TabsList>
+                
+                {/* ICD 10 Tab */}
+                <TabsContent value="icd10" className="space-y-4 py-4">
+                    {/* Search */}
+                    <div className="flex gap-2">
+                        <Popover open={openIcd10Search} onOpenChange={setOpenIcd10Search}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    aria-expanded={openIcd10Search}
+                                    className="w-full justify-between"
+                                >
+                                    Pilih Diagnosa (ICD 10)...
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[600px] p-0">
+                                <Command shouldFilter={false}>
+                                    <CommandInput placeholder="Cari kode atau nama penyakit..." onValueChange={setIcd10Search} />
+                                    <CommandList>
+                                        <CommandEmpty>Tidak ditemukan.</CommandEmpty>
+                                        <CommandGroup>
+                                            {icd10Master?.data?.map((item: any) => (
+                                                <CommandItem
+                                                    key={item.kd_penyakit}
+                                                    value={item.kd_penyakit}
+                                                    onSelect={() => handleAddIcd10(item)}
+                                                >
+                                                    <Check className={cn("mr-2 h-4 w-4", icd10List.find(i => i.kd_penyakit === item.kd_penyakit) ? "opacity-100" : "opacity-0")} />
+                                                    {item.kd_penyakit} - {item.nm_penyakit}
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+
+                    {/* Table */}
+                    <div className="border rounded-md">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[100px]">Kode</TableHead>
+                                    <TableHead>Nama Penyakit</TableHead>
+                                    <TableHead className="w-[100px]">Prioritas</TableHead>
+                                    <TableHead className="w-[100px] text-right">Aksi</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {icd10List.map((item, index) => (
+                                    <TableRow key={item.kd_penyakit}>
+                                        <TableCell className="font-medium">{item.kd_penyakit}</TableCell>
+                                        <TableCell>{item.nm_penyakit}</TableCell>
+                                        <TableCell>
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${index === 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700'}`}>
+                                                {index === 0 ? 'Primer' : `Sekunder ${index}`}
+                                            </span>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-1">
+                                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => moveIcd10(index, 'up')} disabled={index === 0}>
+                                                    <ArrowUp className="h-4 w-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => moveIcd10(index, 'down')} disabled={index === icd10List.length - 1}>
+                                                    <ArrowDown className="h-4 w-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleRemoveIcd10(index)}>
+                                                    <X className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {icd10List.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                                            Belum ada diagnosa dipilih
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </TabsContent>
+
+                {/* ICD 9 Tab */}
+                <TabsContent value="icd9" className="space-y-4 py-4">
+                     {/* Search */}
+                    <div className="flex gap-2">
+                        <Popover open={openIcd9Search} onOpenChange={setOpenIcd9Search}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    aria-expanded={openIcd9Search}
+                                    className="w-full justify-between"
+                                >
+                                    Pilih Prosedur (ICD 9)...
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[600px] p-0">
+                                <Command shouldFilter={false}>
+                                    <CommandInput placeholder="Cari kode atau deskripsi..." onValueChange={setIcd9Search} />
+                                    <CommandList>
+                                        <CommandEmpty>Tidak ditemukan.</CommandEmpty>
+                                        <CommandGroup>
+                                            {icd9Master?.data?.map((item: any) => (
+                                                <CommandItem
+                                                    key={item.kode}
+                                                    value={item.kode}
+                                                    onSelect={() => handleAddIcd9(item)}
+                                                >
+                                                    <Check className={cn("mr-2 h-4 w-4", icd9List.find(i => i.kode === item.kode) ? "opacity-100" : "opacity-0")} />
+                                                    {item.kode} - {item.deskripsi_panjang}
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+
+                    {/* Table */}
+                    <div className="border rounded-md">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[100px]">Kode</TableHead>
+                                    <TableHead>Deskripsi</TableHead>
+                                    <TableHead className="w-[100px]">Prioritas</TableHead>
+                                    <TableHead className="w-[100px] text-right">Aksi</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {icd9List.map((item, index) => (
+                                    <TableRow key={item.kode}>
+                                        <TableCell className="font-medium">{item.kode}</TableCell>
+                                        <TableCell>{item.deskripsi_panjang}</TableCell>
+                                        <TableCell>
+                                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                                                {index + 1}
+                                            </span>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-1">
+                                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => moveIcd9(index, 'up')} disabled={index === 0}>
+                                                    <ArrowUp className="h-4 w-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => moveIcd9(index, 'down')} disabled={index === icd9List.length - 1}>
+                                                    <ArrowDown className="h-4 w-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleRemoveIcd9(index)}>
+                                                    <X className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {icd9List.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                                            Belum ada prosedur dipilih
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </TabsContent>
+            </Tabs>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setIsICDModalOpen(false)}>Batal</Button>
+                <Button onClick={handleSaveICD} disabled={saveDiagnosaMutation.isPending || saveProsedurMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
+                    {(saveDiagnosaMutation.isPending || saveProsedurMutation.isPending) ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Menyimpan...
+                        </>
+                    ) : (
+                        <>
+                            <Save className="mr-2 h-4 w-4" />
+                            Simpan Semua
+                        </>
+                    )}
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isCatatanModalOpen} onOpenChange={setIsCatatanModalOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+                <DialogTitle>Catatan Pasien</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                    <Label htmlFor="catatan">Catatan</Label>
+                    <Textarea 
+                        id="catatan" 
+                        placeholder="Tulis catatan pasien..." 
+                        value={catatanPasien}
+                        onChange={(e) => setCatatanPasien(e.target.value)}
+                        className="h-32"
+                    />
+                </div>
+            </div>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setIsCatatanModalOpen(false)}>Batal</Button>
+                <Button onClick={handleSaveCatatan} disabled={saveCatatanMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
+                    {saveCatatanMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    Simpan
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isBerkasModalOpen} onOpenChange={setIsBerkasModalOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+                <DialogTitle>Berkas Digital</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                    <Label htmlFor="judul">Judul Berkas</Label>
+                    <Input 
+                        id="judul" 
+                        placeholder="Contoh: Hasil Lab Luar" 
+                        value={berkasJudul}
+                        onChange={(e) => setBerkasJudul(e.target.value)}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="deskripsi">Deskripsi / URL</Label>
+                    <Textarea 
+                        id="deskripsi" 
+                        placeholder="Tulis deskripsi atau URL berkas..." 
+                        value={berkasDeskripsi}
+                        onChange={(e) => setBerkasDeskripsi(e.target.value)}
+                    />
+                </div>
+            </div>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setIsBerkasModalOpen(false)}>Batal</Button>
+                <Button onClick={handleSaveBerkas} disabled={saveBerkasMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
+                    {saveBerkasMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    Simpan
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isResumeModalOpen} onOpenChange={setIsResumeModalOpen}>
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+                <DialogTitle>Resume Medis</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label>Diagnosa Utama</Label>
+                        <Input value={resumeData.diagnosa_utama} onChange={(e) => setResumeData({...resumeData, diagnosa_utama: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Diagnosa Sekunder</Label>
+                        <Input value={resumeData.diagnosa_sekunder} onChange={(e) => setResumeData({...resumeData, diagnosa_sekunder: e.target.value})} />
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <Label>Jalannya Penyakit</Label>
+                    <Textarea value={resumeData.jalannya_penyakit} onChange={(e) => setResumeData({...resumeData, jalannya_penyakit: e.target.value})} />
+                </div>
+                <div className="space-y-2">
+                    <Label>Terapi</Label>
+                    <Textarea value={resumeData.terapi} onChange={(e) => setResumeData({...resumeData, terapi: e.target.value})} />
+                </div>
+                <div className="space-y-2">
+                    <Label>Kondisi Pulang</Label>
+                    <Input value={resumeData.kondisi_pulang} onChange={(e) => setResumeData({...resumeData, kondisi_pulang: e.target.value})} />
+                </div>
+            </div>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setIsResumeModalOpen(false)}>Batal</Button>
+                <Button onClick={handleSaveResume} disabled={saveResumeMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
+                    {saveResumeMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    Simpan
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isRujukanModalOpen} onOpenChange={setIsRujukanModalOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+                <DialogTitle>Rujukan Internal</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                    <Label>Poli Rujukan</Label>
+                    <Select onValueChange={(v) => setRujukanData({...rujukanData, kd_poli: v})} value={rujukanData.kd_poli}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Pilih Poli" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {poliData?.data?.map((p: any) => (
+                                <SelectItem key={p.kd_poli} value={p.kd_poli}>{p.nm_poli}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label>Dokter Rujukan</Label>
+                    <Select onValueChange={(v) => setRujukanData({...rujukanData, kd_dokter: v})} value={rujukanData.kd_dokter}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Pilih Dokter" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {petugasData?.data?.map((d: any) => (
+                                <SelectItem key={d.nip} value={d.nip}>{d.nama}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label>Catatan Rujukan</Label>
+                    <Textarea value={rujukanData.catatan} onChange={(e) => setRujukanData({...rujukanData, catatan: e.target.value})} />
+                </div>
+            </div>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setIsRujukanModalOpen(false)}>Batal</Button>
+                <Button onClick={handleSaveRujukan} disabled={saveRujukanMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
+                    {saveRujukanMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    Simpan
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isOperasiModalOpen} onOpenChange={setIsOperasiModalOpen}>
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+                <DialogTitle>Laporan Operasi</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label>Tanggal Operasi</Label>
+                        <Input type="date" value={operasiData.tanggal} onChange={(e) => setOperasiData({...operasiData, tanggal: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Jam Operasi</Label>
+                        <Input type="time" value={operasiData.jam} onChange={(e) => setOperasiData({...operasiData, jam: e.target.value})} />
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <Label>Operator</Label>
+                    <Select onValueChange={(v) => setOperasiData({...operasiData, operator: v})} value={operasiData.operator}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Pilih Operator" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {petugasData?.data?.map((d: any) => (
+                                <SelectItem key={d.nip} value={d.nip}>{d.nama}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label>Laporan Operasi</Label>
+                    <Textarea className="min-h-[200px]" value={operasiData.laporan} onChange={(e) => setOperasiData({...operasiData, laporan: e.target.value})} />
+                </div>
+            </div>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setIsOperasiModalOpen(false)}>Batal</Button>
+                <Button onClick={handleSaveOperasi} disabled={saveOperasiMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
+                    {saveOperasiMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    Simpan
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

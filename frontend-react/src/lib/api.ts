@@ -237,7 +237,155 @@ export const deleteKamarInapTindakan = async (data: any) => {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  return response.json();
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus tindakan');
+  }
+  return result;
+};
+
+export const saveKamarInapCatatan = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/savecatatan`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan catatan');
+  }
+  return result;
+};
+
+export const deleteKamarInapCatatan = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/deletecatatan`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus catatan');
+  }
+  return result;
+};
+
+export const saveKamarInapBerkas = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/saveberkas`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan berkas');
+  }
+  return result;
+};
+
+export const deleteKamarInapBerkas = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/deleteberkas`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus berkas');
+  }
+  return result;
+};
+
+export const saveKamarInapRujukanInternal = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/saverujukaninternal`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan rujukan internal');
+  }
+  return result;
+};
+
+export const deleteKamarInapRujukanInternal = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/deleterujukaninternal`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus rujukan internal');
+  }
+  return result;
+};
+
+export const saveKamarInapLaporanOperasi = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/savelaporanoperasi`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan laporan operasi');
+  }
+  return result;
+};
+
+export const deleteKamarInapLaporanOperasi = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/deletelaporanoperasi`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus laporan operasi');
+  }
+  return result;
 };
 
 export const getPasienDetail = async (noRkmMedis: string) => {
@@ -462,6 +610,240 @@ export const deleteTindakan = async (data: any) => {
   const result = await response.json();
   if (result.status === 'error') {
     throw new Error(result.message || 'Gagal menghapus tindakan');
+  }
+  return result;
+};
+
+export const saveDiagnosa = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/savediagnosa`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan diagnosa');
+  }
+  return result;
+};
+
+export const deleteDiagnosa = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/deletediagnosa`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus diagnosa');
+  }
+  return result;
+};
+
+export const saveProsedur = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/saveprosedur`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan prosedur');
+  }
+  return result;
+};
+
+export const deleteProsedur = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/deleteprosedur`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus prosedur');
+  }
+  return result;
+};
+
+export const saveCatatan = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/savecatatan`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan catatan');
+  }
+  return result;
+};
+
+export const deleteCatatan = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/deletecatatan`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus catatan');
+  }
+  return result;
+};
+
+export const saveBerkas = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/saveberkas`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan berkas');
+  }
+  return result;
+};
+
+export const deleteBerkas = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/deleteberkas`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus berkas');
+  }
+  return result;
+};
+
+export const saveResume = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/saveresume`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan resume');
+  }
+  return result;
+};
+
+export const saveRujukanInternal = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/saverujukaninternal`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan rujukan internal');
+  }
+  return result;
+};
+
+export const deleteRujukanInternal = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/deleterujukaninternal`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus rujukan internal');
+  }
+  return result;
+};
+
+export const saveLaporanOperasi = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/savelaporanoperasi`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan laporan operasi');
+  }
+  return result;
+};
+
+export const deleteLaporanOperasi = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/deletelaporanoperasi`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus laporan operasi');
   }
   return result;
 };
