@@ -13,10 +13,10 @@ import Pemeriksaan from "@/pages/Pemeriksaan";
 import Resep from "@/pages/Resep";
 import Inventory from "@/pages/Inventory";
 import MasterData from "@/pages/MasterData";
+import Laporan from "@/pages/Laporan";
 import Billing from "@/pages/Billing";
 import { 
   Integrasi, 
-  Laporan, 
   ManajemenUser, 
   Pengaturan 
 } from "@/pages/Placeholders";
