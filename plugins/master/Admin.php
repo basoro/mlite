@@ -212,7 +212,7 @@ class Admin extends AdminModule
             'master_aturan_pakai', 'master_berkas_digital', 'spesialis', 'bank', 'bidang', 'departemen',
             'emergency_index', 'jabatan', 'jenjang_jabatan', 'kelompok_jabatan', 'pendidikan',
             'resiko_kerja', 'status_kerja', 'status_wp', 'metode_racik', 'ruang_ok', 'gudangbarang', 'riwayat_barang_medis', 
-            'mlite_users'
+            'mlite_users', 'resep_obat', 'resep_dokter', 'resep_dokter_racikan', 'resep_dokter_racikan_detail'
         ];
         
         if (!in_array($table, $allowed_tables)) {
