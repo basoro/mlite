@@ -2575,4 +2575,5 @@ class Admin extends AdminModule
         $this->core->addJS(url([ADMIN, 'rawat_inap', 'javascript']), 'footer');
     }
 
+
 }
