@@ -2321,7 +2321,7 @@ class Admin extends AdminModule
         $input = json_decode(file_get_contents('php://input'), true);
         if (!is_array($input)) $input = $_POST;
         
-        $input['nip'] = $this->core->getUserInfo('username', null, true);
+        $input['nip'] = $username;
         
         try {
              if(!$this->db('pemeriksaan_ranap')->where('no_rawat', $input['no_rawat'])->where('tgl_perawatan', $input['tgl_perawatan'])->where('jam_rawat', $input['jam_rawat'])->where('nip', $input['nip'])->oneArray()) {
@@ -2574,6 +2574,5 @@ class Admin extends AdminModule
         $this->core->addJS('https://cdn.jsdelivr.net/npm/chart.js');
         $this->core->addJS(url([ADMIN, 'rawat_inap', 'javascript']), 'footer');
     }
-
 
 }
