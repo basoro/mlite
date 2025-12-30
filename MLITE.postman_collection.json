@@ -3010,7 +3010,7 @@
     "variable": [
         {
             "key": "baseUrl",
-            "value": "http://mlite.loc",
+            "value": "https://mlite.up.railway.app",
             "type": "string"
         },
         {
