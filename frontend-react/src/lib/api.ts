@@ -614,6 +614,81 @@ export const deleteTindakan = async (data: any) => {
   return result;
 };
 
+export const getRawatJalanResep = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  // Fetch both obat and racikan
+  const [obatRes, racikanRes] = await Promise.all([
+    fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/showdetail/obat/${normalizedNoRawat}`, { headers: getHeaders() }),
+    fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/showdetail/racikan/${normalizedNoRawat}`, { headers: getHeaders() })
+  ]);
+  
+  const obatData = await obatRes.json();
+  const racikanData = await racikanRes.json();
+  
+  return {
+    status: 'success',
+    data: {
+      obat: obatData.data || [],
+      racikan: racikanData.data || []
+    }
+  };
+};
+
+export const deleteRawatJalanResep = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/deletedetail`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus resep');
+  }
+  return result;
+};
+
+export const getRawatInapResep = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const [obatRes, racikanRes] = await Promise.all([
+    fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/showdetail/obat/${normalizedNoRawat}`, { headers: getHeaders() }),
+    fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/showdetail/racikan/${normalizedNoRawat}`, { headers: getHeaders() })
+  ]);
+  
+  const obatData = await obatRes.json();
+  const racikanData = await racikanRes.json();
+  
+  return {
+    status: 'success',
+    data: {
+      obat: obatData.data?.obat || [],
+      racikan: racikanData.data?.racikan || []
+    }
+  };
+};
+
+export const deleteRawatInapResep = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/deletedetail`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus resep');
+  }
+  return result;
+};
+
 export const saveDiagnosa = async (data: any) => {
   const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/savediagnosa`, {
     method: 'POST',

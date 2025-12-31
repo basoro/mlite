@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Clock, User, Calendar, Stethoscope, FileText, Pill, Smile, Loader2, Save, Trash, Edit, AlertTriangle, Check, ChevronsUpDown, TestTube, Scan, Code, File, Files, ArrowRight, Scissors, MoreHorizontal, ArrowUp, ArrowDown, X } from 'lucide-react';
+import { Clock, User, Calendar, Stethoscope, FileText, Pill, Smile, Loader2, Save, Trash, Edit, AlertTriangle, Check, ChevronsUpDown, TestTube, Scan, Code, File, Files, ArrowRight, Scissors, MoreHorizontal, ArrowUp, ArrowDown, X, Copy } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import {
@@ -56,7 +56,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useToast } from '@/hooks/use-toast';
-import { getRawatJalanList, getRiwayatPerawatan, saveSOAP, deleteSOAP, getMasterList, saveTindakan, getRawatJalanTindakan, deleteTindakan, saveDiagnosa, saveProsedur, saveCatatan, saveBerkas, saveResume, saveRujukanInternal, saveLaporanOperasi } from '@/lib/api';
+import { getRawatJalanList, getRiwayatPerawatan, saveSOAP, deleteSOAP, getMasterList, saveTindakan, getRawatJalanTindakan, deleteTindakan, saveDiagnosa, saveProsedur, saveCatatan, saveBerkas, saveResume, saveRujukanInternal, saveLaporanOperasi, getRawatJalanSoap, getRawatJalanResep, deleteRawatJalanResep } from '@/lib/api';
 
 // Queue Item Component
 interface QueueItemProps {
@@ -93,7 +93,7 @@ const QueueItem: React.FC<QueueItemProps> = ({ patient, isSelected, onClick }) =
 );
 
 // History Item Component
-const HistoryItem: React.FC<{ history: any; onEdit?: (history: any, soap: any) => void; onDelete?: (history: any, soap: any) => void }> = ({ history, onEdit, onDelete }) => {
+const HistoryItem: React.FC<{ history: any; onEdit?: (history: any, soap: any) => void; onDelete?: (history: any, soap: any) => void; onCopy?: (soap: any) => void }> = ({ history, onEdit, onDelete, onCopy }) => {
     // Combine both Ralan and Ranap SOAP data
     const soaps = [
         ...(history.pemeriksaan_ranap || []), 
@@ -132,6 +132,11 @@ const HistoryItem: React.FC<{ history: any; onEdit?: (history: any, soap: any) =
                                     {soap.nip && <span>• Petugas: {soap.nip}</span>}
                                 </div>
                                 <div className="flex items-center gap-1">
+                                    {onCopy && (
+                                        <Button variant="ghost" size="icon" className="h-6 w-6 text-blue-600 hover:text-blue-700 hover:bg-blue-50" onClick={() => onCopy(soap)} title="Salin Data">
+                                            <Copy className="h-3 w-3" />
+                                        </Button>
+                                    )}
                                     {onEdit && (
                                         <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onEdit(history, soap)}>
                                             <Edit className="h-3 w-3" />
@@ -333,6 +338,13 @@ const Pemeriksaan: React.FC = () => {
     enabled: !!selectedPatient?.no_rawat
   });
 
+  // Fetch Rawat Jalan SOAP
+  const { data: rawatJalanSoap, refetch: refetchRawatJalanSoap } = useQuery({
+    queryKey: ['rawatJalanSoap', selectedPatient?.no_rawat],
+    queryFn: () => getRawatJalanSoap(selectedPatient.no_rawat),
+    enabled: !!selectedPatient?.no_rawat
+  });
+
   const deleteTindakanMutation = useMutation({
     mutationFn: (data: any) => deleteTindakan(data),
     onSuccess: () => {
@@ -354,6 +366,34 @@ const Pemeriksaan: React.FC = () => {
          jam_rawat: tindakan.jam_rawat
      };
      deleteTindakanMutation.mutate(payload);
+  };
+
+  // Fetch Rawat Jalan Resep
+  const { data: rawatJalanResep, refetch: refetchRawatJalanResep } = useQuery({
+    queryKey: ['rawatJalanResep', selectedPatient?.no_rawat],
+    queryFn: () => getRawatJalanResep(selectedPatient.no_rawat),
+    enabled: !!selectedPatient?.no_rawat
+  });
+
+  const deleteResepMutation = useMutation({
+    mutationFn: (data: any) => deleteRawatJalanResep(data),
+    onSuccess: () => {
+      toast({ title: 'Berhasil', description: 'Resep berhasil dihapus' });
+      refetchRawatJalanResep();
+    },
+    onError: (error: any) => {
+      toast({ title: 'Gagal', description: error.message || 'Gagal menghapus resep', variant: 'destructive' });
+    }
+  });
+
+  const handleDeleteResep = (resep: any) => {
+     const payload = {
+         no_rawat: selectedPatient.no_rawat,
+         kode_brng: resep.kode_brng,
+         tgl_peresepan: resep.tgl_peresepan,
+         jam_peresepan: resep.jam_peresepan
+     };
+     deleteResepMutation.mutate(payload);
   };
 
   const [isDateFromOpen, setIsDateFromOpen] = useState(false);
@@ -392,6 +432,8 @@ const Pemeriksaan: React.FC = () => {
     tinggi: '',
     berat: '',
     gcs: '',
+    kesadaran: 'Compos Mentis',
+    spo2: '',
     keluhan: '',
     pemeriksaan: '',
     alergi: '',
@@ -768,6 +810,7 @@ const Pemeriksaan: React.FC = () => {
       toast({ title: 'Berhasil', description: 'Tindakan berhasil disimpan' });
       queryClient.invalidateQueries({ queryKey: ['riwayatPerawatan'] });
       queryClient.invalidateQueries({ queryKey: ['rawatJalanTindakan'] });
+      queryClient.invalidateQueries({ queryKey: ['rawatJalanResep'] });
       // Reset form (optional, maybe keep provider/date)
       setTindakanData(prev => ({
         ...prev,
@@ -854,6 +897,39 @@ const Pemeriksaan: React.FC = () => {
     }
   }, [selectedPatient]);
 
+  // Populate form with latest SOAP data
+  useEffect(() => {
+    if (rawatJalanSoap?.data?.length > 0 && !isEditMode) {
+      const sortedSoap = [...rawatJalanSoap.data].sort((a: any, b: any) => {
+          const dateA = new Date(`${a.tgl_perawatan} ${a.jam_rawat}`);
+          const dateB = new Date(`${b.tgl_perawatan} ${b.jam_rawat}`);
+          return dateB.getTime() - dateA.getTime();
+      });
+      const latestSoap = sortedSoap[0];
+      setSoapData(prev => ({
+        ...prev,
+        suhu_tubuh: latestSoap.suhu_tubuh || '',
+        tensi: latestSoap.tensi || '',
+        nadi: latestSoap.nadi || '',
+        respirasi: latestSoap.respirasi || '',
+        tinggi: latestSoap.tinggi || '',
+        berat: latestSoap.berat || '',
+        gcs: latestSoap.gcs || '',
+        kesadaran: latestSoap.kesadaran || 'Compos Mentis',
+        spo2: latestSoap.spo2 || '',
+        keluhan: latestSoap.keluhan || '',
+        pemeriksaan: latestSoap.pemeriksaan || '',
+        alergi: latestSoap.alergi || '',
+        lingkar_perut: latestSoap.lingkar_perut || '',
+        rtl: latestSoap.rtl || '',
+        penilaian: latestSoap.penilaian || '',
+        instruksi: latestSoap.instruksi || '',
+        evaluasi: latestSoap.evaluasi || '',
+        nip: latestSoap.nip || ''
+      }));
+    }
+  }, [rawatJalanSoap, isEditMode]);
+
   const resetSoapForm = () => {
     setSoapData({
         suhu_tubuh: '',
@@ -863,6 +939,8 @@ const Pemeriksaan: React.FC = () => {
         tinggi: '',
         berat: '',
         gcs: '',
+        kesadaran: 'Compos Mentis',
+        spo2: '',
         keluhan: '',
         pemeriksaan: '',
         alergi: '',
@@ -880,6 +958,7 @@ const Pemeriksaan: React.FC = () => {
     onSuccess: () => {
       toast({ title: 'Berhasil', description: `Data pemeriksaan berhasil ${isEditMode ? 'diperbarui' : 'disimpan'}` });
       queryClient.invalidateQueries({ queryKey: ['riwayatPerawatan'] });
+      queryClient.invalidateQueries({ queryKey: ['rawatJalanSoap'] });
       if (isEditMode) {
         setIsEditMode(false);
         setEditHistoryData(null);
@@ -943,6 +1022,8 @@ const Pemeriksaan: React.FC = () => {
           tinggi: soap.tinggi || '',
           berat: soap.berat || '',
           gcs: soap.gcs || '',
+          kesadaran: soap.kesadaran || 'Compos Mentis',
+          spo2: soap.spo2 || '',
           keluhan: soap.keluhan || '',
           pemeriksaan: soap.pemeriksaan || '',
           alergi: soap.alergi || '',
@@ -980,6 +1061,33 @@ const Pemeriksaan: React.FC = () => {
       setIsEditMode(false);
       setEditHistoryData(null);
       resetSoapForm();
+  };
+
+  const handleCopySoap = (soap: any) => {
+    setActiveTab('pemeriksaan');
+    setSoapData({
+        suhu_tubuh: soap.suhu_tubuh || '',
+        tensi: soap.tensi || '',
+        nadi: soap.nadi || '',
+        respirasi: soap.respirasi || '',
+        tinggi: soap.tinggi || '',
+        berat: soap.berat || '',
+        gcs: soap.gcs || '',
+        kesadaran: soap.kesadaran || 'Compos Mentis',
+        spo2: soap.spo2 || '',
+        keluhan: soap.keluhan || '',
+        pemeriksaan: soap.pemeriksaan || '',
+        alergi: soap.alergi || '',
+        lingkar_perut: soap.lingkar_perut || '',
+        rtl: soap.rtl || '',
+        penilaian: soap.penilaian || '',
+        instruksi: soap.instruksi || '',
+        evaluasi: soap.evaluasi || '',
+        nip: soap.nip || '-',
+    });
+    setIsEditMode(false);
+    setEditHistoryData(null);
+    toast({ title: 'Berhasil', description: 'Data SOAP disalin ke form input' });
   };
 
   return (
@@ -1127,34 +1235,34 @@ const Pemeriksaan: React.FC = () => {
               {/* Tabs */}
               <div className="bg-card rounded-xl border border-border p-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid grid-cols-7 w-full">
-                    <TabsTrigger value="riwayat" className="gap-2">
+                  <TabsList className="flex w-full overflow-x-auto justify-start h-auto p-1">
+                    <TabsTrigger value="riwayat" className="gap-2 min-w-fit flex-shrink-0">
                       <FileText className="w-4 h-4" />
                       Riwayat
                     </TabsTrigger>
-                    <TabsTrigger value="pemeriksaan" className="gap-2">
+                    <TabsTrigger value="pemeriksaan" className="gap-2 min-w-fit flex-shrink-0">
                       <Stethoscope className="w-4 h-4" />
                       SOAP
                     </TabsTrigger>
-                    <TabsTrigger value="tindakan" className="gap-2">
+                    <TabsTrigger value="tindakan" className="gap-2 min-w-fit flex-shrink-0">
                       <Calendar className="w-4 h-4" />
                       Tindakan
                     </TabsTrigger>
-                    <TabsTrigger value="resep" className="gap-2">
+                    <TabsTrigger value="resep" className="gap-2 min-w-fit flex-shrink-0">
                       <Pill className="w-4 h-4" />
                       Resep
                     </TabsTrigger>
-                    <TabsTrigger value="laboratorium" className="gap-2">
+                    <TabsTrigger value="laboratorium" className="gap-2 min-w-fit flex-shrink-0">
                       <TestTube className="w-4 h-4" />
                       Laboratorium
                     </TabsTrigger>
-                    <TabsTrigger value="radiologi" className="gap-2">
+                    <TabsTrigger value="radiologi" className="gap-2 min-w-fit flex-shrink-0">
                       <Scan className="w-4 h-4" />
                       Radiologi
                     </TabsTrigger>
                     <Dialog open={isMoreMenuOpen} onOpenChange={setIsMoreMenuOpen}>
                       <DialogTrigger asChild>
-                        <Button variant="ghost" className="gap-2 w-full data-[state=open]:bg-muted">
+                        <Button variant="ghost" className="gap-2 min-w-fit flex-shrink-0 data-[state=open]:bg-muted">
                           <MoreHorizontal className="w-4 h-4" />
                           More
                         </Button>
@@ -1249,6 +1357,7 @@ const Pemeriksaan: React.FC = () => {
                                     history={history} 
                                     onEdit={handleEditHistory}
                                     onDelete={handleDeleteHistory}
+                                    onCopy={handleCopySoap}
                                 />
                             ))
                         ) : (
@@ -1357,6 +1466,111 @@ const Pemeriksaan: React.FC = () => {
                                 <Label>Rencana (Plan)</Label>
                                 <Textarea className="h-20" placeholder="Rencana terapi/tindakan..." value={soapData.rtl} onChange={(e) => handleInputChange('rtl', e.target.value)} />
                              </div>
+                          </div>
+                      </div>
+
+                      <div className="mt-8 border-t pt-6">
+                          <h4 className="font-semibold text-foreground mb-4">Daftar SOAP Tersimpan</h4>
+                          <div className="space-y-4">
+                              {rawatJalanSoap?.data && rawatJalanSoap.data.length > 0 ? (
+                                  [...rawatJalanSoap.data].sort((a: any, b: any) => {
+                                      const dateA = new Date(`${a.tgl_perawatan} ${a.jam_rawat}`);
+                                      const dateB = new Date(`${b.tgl_perawatan} ${b.jam_rawat}`);
+                                      return dateB.getTime() - dateA.getTime();
+                                  }).map((item: any, idx: number) => (
+                                      <div key={`soap-${idx}`} className="p-4 border rounded-lg bg-muted/20">
+                                          <div className="flex justify-between items-start mb-2">
+                                              <div className="flex items-center gap-2">
+                                                  <span className="text-sm font-medium text-emerald-600">{item.tgl_perawatan} {item.jam_rawat}</span>
+                                                  <span className="text-xs text-muted-foreground">• {item.nip}</span>
+                                              </div>
+                                              <div className="flex gap-1">
+                                                  <Button 
+                                                      variant="ghost" 
+                                                      size="icon" 
+                                                      className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                                      onClick={() => handleCopySoap(item)}
+                                                      title="Salin Data"
+                                                  >
+                                                      <Copy className="h-4 w-4" />
+                                                  </Button>
+                                                  <Button 
+                                                      variant="ghost" 
+                                                      size="icon" 
+                                                      className="h-8 w-8 text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                                                      onClick={() => handleEditHistory(selectedPatient, item)}
+                                                      title="Edit Data"
+                                                  >
+                                                      <Edit className="h-4 w-4" />
+                                                  </Button>
+                                                  <Button 
+                                                      variant="ghost" 
+                                                      size="icon" 
+                                                      className="h-8 w-8 text-destructive hover:text-destructive"
+                                                      onClick={() => handleDeleteHistory(selectedPatient, item)}
+                                                      title="Hapus Data"
+                                                  >
+                                                      <Trash className="h-4 w-4" />
+                                                  </Button>
+                                              </div>
+                                          </div>
+
+                                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3 p-3 bg-white rounded-lg border border-gray-100">
+                                              <div>
+                                                  <p className="text-xs text-muted-foreground">Tensi</p>
+                                                  <p className="font-medium text-foreground">{item.tensi || '-'}</p>
+                                              </div>
+                                              <div>
+                                                  <p className="text-xs text-muted-foreground">Nadi</p>
+                                                  <p className="font-medium text-foreground">{item.nadi || '-'}</p>
+                                              </div>
+                                              <div>
+                                                  <p className="text-xs text-muted-foreground">Suhu</p>
+                                                  <p className="font-medium text-foreground">{item.suhu_tubuh || '-'}</p>
+                                              </div>
+                                              <div>
+                                                  <p className="text-xs text-muted-foreground">Respirasi</p>
+                                                  <p className="font-medium text-foreground">{item.respirasi || '-'}</p>
+                                              </div>
+                                              <div>
+                                                  <p className="text-xs text-muted-foreground">SpO2</p>
+                                                  <p className="font-medium text-foreground">{item.spo2 || '-'} %</p>
+                                              </div>
+                                              <div>
+                                                  <p className="text-xs text-muted-foreground">Kesadaran</p>
+                                                  <p className="font-medium text-foreground">{item.kesadaran || '-'}</p>
+                                              </div>
+                                              <div>
+                                                  <p className="text-xs text-muted-foreground">GCS</p>
+                                                  <p className="font-medium text-foreground">{item.gcs || '-'}</p>
+                                              </div>
+                                          </div>
+
+                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                              <div>
+                                                  <p className="font-semibold text-gray-700">S</p>
+                                                  <p className="text-gray-600 whitespace-pre-wrap">{item.keluhan || '-'}</p>
+                                              </div>
+                                              <div>
+                                                  <p className="font-semibold text-gray-700">O</p>
+                                                  <p className="text-gray-600 whitespace-pre-wrap">{item.pemeriksaan || '-'}</p>
+                                              </div>
+                                              <div>
+                                                  <p className="font-semibold text-gray-700">A</p>
+                                                  <p className="text-gray-600 whitespace-pre-wrap">{item.penilaian || '-'}</p>
+                                              </div>
+                                              <div>
+                                                  <p className="font-semibold text-gray-700">P</p>
+                                                  <p className="text-gray-600 whitespace-pre-wrap">{item.rtl || '-'}</p>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  ))
+                              ) : (
+                                  <div className="text-center py-4 text-muted-foreground text-sm italic">
+                                      Belum ada SOAP yang tersimpan
+                                  </div>
+                              )}
                           </div>
                       </div>
                     </div>
@@ -1678,6 +1892,49 @@ const Pemeriksaan: React.FC = () => {
                                 {saveTindakanMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                                 Simpan Obat
                             </Button>
+
+                            <div className="mt-8 border-t pt-6">
+                                <h4 className="font-semibold text-foreground mb-4">Daftar Obat Tersimpan</h4>
+                                <div className="space-y-4">
+                                    {rawatJalanResep?.data?.filter((item: any) => item.kat === 'obat' || !item.kat).length > 0 ? (
+                                        <div className="border rounded-md">
+                                            <Table>
+                                                <TableHeader>
+                                                    <TableRow>
+                                                        <TableHead>Nama Obat</TableHead>
+                                                        <TableHead>Jumlah</TableHead>
+                                                        <TableHead>Aturan Pakai</TableHead>
+                                                        <TableHead className="w-[50px]"></TableHead>
+                                                    </TableRow>
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {rawatJalanResep.data.filter((item: any) => item.kat === 'obat' || !item.kat).map((item: any, idx: number) => (
+                                                        <TableRow key={idx}>
+                                                            <TableCell>{item.nama_brng}</TableCell>
+                                                            <TableCell>{item.jml}</TableCell>
+                                                            <TableCell>{item.aturan_pakai}</TableCell>
+                                                            <TableCell>
+                                                                <Button 
+                                                                    variant="ghost" 
+                                                                    size="icon" 
+                                                                    className="text-destructive hover:text-destructive"
+                                                                    onClick={() => handleDeleteResep(item)}
+                                                                >
+                                                                    <Trash className="h-4 w-4" />
+                                                                </Button>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-4 text-muted-foreground text-sm italic">
+                                            Belum ada resep obat tersimpan
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </TabsContent>
 
                         <TabsContent value="racikan" className="space-y-4">
@@ -1852,6 +2109,50 @@ const Pemeriksaan: React.FC = () => {
                                 {saveTindakanMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                                 Simpan Racikan
                             </Button>
+
+                             <div className="mt-8 border-t pt-6">
+                                <h4 className="font-semibold text-foreground mb-4">Daftar Racikan Tersimpan</h4>
+                                <div className="space-y-4">
+                                    {rawatJalanResep?.data?.filter((item: any) => item.kat === 'racikan').length > 0 ? (
+                                        <div className="space-y-4">
+                                            {rawatJalanResep.data.filter((item: any) => item.kat === 'racikan').map((item: any, idx: number) => (
+                                                <div key={idx} className="p-4 border rounded-lg bg-muted/20">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <div>
+                                                            <p className="font-bold text-foreground">{item.nama_racik}</p>
+                                                            <p className="text-sm text-muted-foreground">{item.metode_racik} • {item.jml} • {item.aturan_pakai}</p>
+                                                            <p className="text-xs text-muted-foreground italic">{item.keterangan}</p>
+                                                        </div>
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            className="text-destructive hover:text-destructive"
+                                                            onClick={() => handleDeleteResep(item)}
+                                                        >
+                                                            <Trash className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                    
+                                                    {item.detail && item.detail.length > 0 && (
+                                                        <div className="mt-2 pl-4 border-l-2 border-emerald-200">
+                                                            <p className="text-xs font-semibold text-muted-foreground mb-1">Komposisi:</p>
+                                                            <ul className="text-xs space-y-1">
+                                                                {item.detail.map((det: any, dIdx: number) => (
+                                                                    <li key={dIdx}>{det.nama_brng} ({det.kandungan})</li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-4 text-muted-foreground text-sm italic">
+                                            Belum ada resep racikan tersimpan
+                                        </div>
+                                    )}
+                                </div>
+                             </div>
                         </TabsContent>
                     </Tabs>
                   </TabsContent>

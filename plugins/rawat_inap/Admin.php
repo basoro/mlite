@@ -2428,17 +2428,28 @@ class Admin extends AdminModule
                 ->where('no_rawat', $no_rawat)
                 ->toArray();
         } elseif($category == 'obat') {
-             $rows = $this->db('resep_obat')
-                ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-                ->where('no_rawat', $no_rawat)
+             $data['obat'] = $this->db('resep_dokter')
+                ->join('resep_obat', 'resep_obat.no_resep = resep_dokter.no_resep')
+                ->join('databarang', 'databarang.kode_brng = resep_dokter.kode_brng')
+                ->where('resep_obat.no_rawat', $no_rawat)
                 ->where('resep_obat.status', 'ranap')
                 ->toArray();
-              $resep = [];
-              foreach ($rows as $row) {
-                $row['resep_dokter'] = $this->db('resep_dokter')->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
-                $resep[] = $row;
-              }
-              $data['obat'] = $resep;
+        } elseif($category == 'racikan') {
+            $resep_racikan = $this->db('resep_dokter_racikan')
+                ->join('resep_obat', 'resep_obat.no_resep = resep_dokter_racikan.no_resep')
+                ->join('metode_racik', 'metode_racik.kd_racik = resep_dokter_racikan.kd_racik')
+                ->where('resep_obat.no_rawat', $no_rawat)
+                ->where('resep_obat.status', 'ranap')
+                ->toArray();
+
+            foreach ($resep_racikan as &$racikan) {
+                $racikan['detail'] = $this->db('resep_dokter_racikan_detail')
+                    ->join('databarang', 'databarang.kode_brng = resep_dokter_racikan_detail.kode_brng')
+                    ->where('no_resep', $racikan['no_resep'])
+                    ->where('no_racik', $racikan['no_racik'])
+                    ->toArray();
+            }
+            $data['racikan'] = $resep_racikan;
         }
         
         return ['status' => 'success', 'data' => $data];
@@ -2542,6 +2553,65 @@ class Admin extends AdminModule
                   'aturan_pakai' => $input['aturan_pakai']
                 ]);
             }
+        } elseif ($input['kat'] == 'racikan') {
+            $no_resep = $this->core->setNoResep($input['tgl_perawatan']);
+            $cek_resep = $this->db('resep_obat')->where('no_rawat', $input['no_rawat'])->where('tgl_peresepan', $input['tgl_perawatan'])->where('tgl_perawatan', 'IS', 'NULL')->where('status', 'ranap')->oneArray();
+
+            $jam_rawat = $input['jam_rawat'] ?? date('H:i:s');
+
+            if(empty($cek_resep)) {
+              $this->db('resep_obat')
+                ->save([
+                  'no_resep' => $no_resep,
+                  'tgl_perawatan' => '0000-00-00',
+                  'jam' => '00:00:00',
+                  'no_rawat' => $input['no_rawat'],
+                  'kd_dokter' => $input['kode_provider'],
+                  'tgl_peresepan' => $input['tgl_perawatan'],
+                  'jam_peresepan' => $jam_rawat,
+                  'status' => 'ranap',
+                  'tgl_penyerahan' => '0000-00-00',
+                  'jam_penyerahan' => '00:00:00'
+                ]);
+            } else {
+              $no_resep = $cek_resep['no_resep'];
+            }
+
+            $no_racik = $this->db('resep_dokter_racikan')->where('no_resep', $no_resep)->count();
+            $no_racik = $no_racik + 1;
+            
+            $this->db('resep_dokter_racikan')
+                ->save([
+                    'no_resep' => $no_resep,
+                    'no_racik' => $no_racik,
+                    'nama_racik' => $input['nama_racik'],
+                    'kd_racik' => $input['kd_jenis_prw'],
+                    'jml_dr' => $input['jml'],
+                    'aturan_pakai' => $input['aturan_pakai'],
+                    'keterangan' => $input['keterangan']
+                ]);
+            
+            $kode_brng_list = is_string($input['kode_brng']) ? json_decode($input['kode_brng'], true) : $input['kode_brng'];
+            $kandungan_list = is_string($input['kandungan']) ? json_decode($input['kandungan'], true) : $input['kandungan'];
+            
+            $kode_brng_count = count($kode_brng_list);
+            for ($i = 0; $i < $kode_brng_count; $i++) {
+                $kapasitas = $this->db('databarang')->where('kode_brng', $kode_brng_list[$i]['value'])->oneArray();
+                $jml = $input['jml'] * $kandungan_list[$i]['value'];
+                if ($kapasitas['kapasitas'] > 0) {
+                    $jml = round(($jml / $kapasitas['kapasitas']), 1);
+                }
+                $this->db('resep_dokter_racikan_detail')
+                    ->save([
+                        'no_resep' => $no_resep,
+                        'no_racik' => $no_racik,
+                        'kode_brng' => $kode_brng_list[$i]['value'],
+                        'p1' => '1',
+                        'p2' => '1',
+                        'kandungan' => $kandungan_list[$i]['value'],
+                        'jml' => $jml
+                    ]);
+            }
         }
         
         return ['status' => 'success'];
@@ -2595,6 +2665,23 @@ class Admin extends AdminModule
                 ->where('tgl_peresepan', $input['tgl_peresepan'])
                 ->where('jam_peresepan', $input['jam_peresepan'])
                 ->delete();
+            }
+        } elseif ($input['kat'] == 'racikan') {
+            if(isset($input['kd_jenis_prw']) && isset($input['no_racik'])) {
+                $this->db('resep_dokter_racikan_detail')
+                    ->where('no_resep', $input['no_resep'])
+                    ->where('no_racik', $input['no_racik'])
+                    ->where('kode_brng', $input['kd_jenis_prw'])
+                    ->delete();
+            } elseif (isset($input['no_racik'])) {
+                $this->db('resep_dokter_racikan')
+                    ->where('no_resep', $input['no_resep'])
+                    ->where('no_racik', $input['no_racik'])
+                    ->delete();
+                $this->db('resep_dokter_racikan_detail')
+                    ->where('no_resep', $input['no_resep'])
+                    ->where('no_racik', $input['no_racik'])
+                    ->delete();
             }
         }
         

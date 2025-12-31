@@ -626,6 +626,32 @@ class Admin extends AdminModule
                     }
                 }
                 return ['status' => 'success', 'message' => 'Racikan saved'];
+            } elseif($input['kat'] == 'obat') {
+                 if(isset($input['kd_jenis_prw'])) {
+                    $this->db('resep_dokter')
+                        ->where('no_resep', $input['no_resep'])
+                        ->where('kode_brng', $input['kd_jenis_prw'])
+                        ->delete();
+                 }
+                 return ['status' => 'success', 'message' => 'Resep deleted'];
+            } elseif ($input['kat'] == 'racikan') {
+                if(isset($input['kd_jenis_prw']) && isset($input['no_racik'])) {
+                    $this->db('resep_dokter_racikan_detail')
+                        ->where('no_resep', $input['no_resep'])
+                        ->where('no_racik', $input['no_racik'])
+                        ->where('kode_brng', $input['kd_jenis_prw'])
+                        ->delete();
+                } elseif (isset($input['no_racik'])) {
+                    $this->db('resep_dokter_racikan')
+                        ->where('no_resep', $input['no_resep'])
+                        ->where('no_racik', $input['no_racik'])
+                        ->delete();
+                    $this->db('resep_dokter_racikan_detail')
+                        ->where('no_resep', $input['no_resep'])
+                        ->where('no_racik', $input['no_racik'])
+                        ->delete();
+                }
+                return ['status' => 'success', 'message' => 'Racikan deleted'];
             } else {
                 return ['status' => 'error', 'message' => 'Category not supported'];
             }
@@ -678,6 +704,39 @@ class Admin extends AdminModule
                 }
                 
                 return ['status' => 'success', 'message' => 'Detail deleted'];
+            } elseif ($input['kat'] == 'obat') {
+                if(isset($input['kd_jenis_prw'])) {
+                    $this->db('resep_dokter')
+                        ->where('no_resep', $input['no_resep'])
+                        ->where('kode_brng', $input['kd_jenis_prw'])
+                        ->delete();
+                } else {
+                    $this->db('resep_obat')
+                        ->where('no_resep', $input['no_resep'])
+                        ->where('no_rawat', $input['no_rawat'])
+                        ->where('tgl_peresepan', $input['tgl_peresepan'])
+                        ->where('jam_peresepan', $input['jam_peresepan'])
+                        ->delete();
+                }
+                return ['status' => 'success', 'message' => 'Resep deleted'];
+            } elseif ($input['kat'] == 'racikan') {
+                if(isset($input['kd_jenis_prw']) && isset($input['no_racik'])) {
+                    $this->db('resep_dokter_racikan_detail')
+                        ->where('no_resep', $input['no_resep'])
+                        ->where('no_racik', $input['no_racik'])
+                        ->where('kode_brng', $input['kd_jenis_prw'])
+                        ->delete();
+                } elseif (isset($input['no_racik'])) {
+                    $this->db('resep_dokter_racikan')
+                        ->where('no_resep', $input['no_resep'])
+                        ->where('no_racik', $input['no_racik'])
+                        ->delete();
+                    $this->db('resep_dokter_racikan_detail')
+                        ->where('no_resep', $input['no_resep'])
+                        ->where('no_racik', $input['no_racik'])
+                        ->delete();
+                }
+                return ['status' => 'success', 'message' => 'Racikan deleted'];
             } else {
                 return ['status' => 'error', 'message' => 'Category not supported'];
             }
@@ -725,6 +784,38 @@ class Admin extends AdminModule
                         'rawat_jl_pr' => $rawat_jl_pr,
                         'rawat_jl_drpr' => $rawat_jl_drpr
                     ]
+                ];
+            } elseif ($kategori == 'obat') {
+                $resep_dokter = $this->db('resep_dokter')
+                    ->join('resep_obat', 'resep_obat.no_resep = resep_dokter.no_resep')
+                    ->join('databarang', 'databarang.kode_brng = resep_dokter.kode_brng')
+                    ->where('resep_obat.no_rawat', $no_rawat)
+                    ->where('resep_obat.status', 'ralan')
+                    ->toArray();
+
+                return [
+                    'status' => 'success',
+                    'data' => $resep_dokter
+                ];
+            } elseif ($kategori == 'racikan') {
+                $resep_racikan = $this->db('resep_dokter_racikan')
+                    ->join('resep_obat', 'resep_obat.no_resep = resep_dokter_racikan.no_resep')
+                    ->join('metode_racik', 'metode_racik.kd_racik = resep_dokter_racikan.kd_racik')
+                    ->where('resep_obat.no_rawat', $no_rawat)
+                    ->where('resep_obat.status', 'ralan')
+                    ->toArray();
+
+                foreach ($resep_racikan as &$racikan) {
+                    $racikan['detail'] = $this->db('resep_dokter_racikan_detail')
+                        ->join('databarang', 'databarang.kode_brng = resep_dokter_racikan_detail.kode_brng')
+                        ->where('no_resep', $racikan['no_resep'])
+                        ->where('no_racik', $racikan['no_racik'])
+                        ->toArray();
+                }
+
+                return [
+                    'status' => 'success',
+                    'data' => $resep_racikan
                 ];
             } else {
                 return ['status' => 'error', 'message' => 'Category not supported'];
