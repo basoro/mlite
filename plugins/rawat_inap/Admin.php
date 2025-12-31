@@ -2116,12 +2116,15 @@ class Admin extends AdminModule
             return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
         }
 
+        $user_id = $this->db('mlite_users')->where('username', $username)->oneArray()['id'];
+        $bangsal = str_replace(",","','", $this->core->getUserInfo('cap', $user_id, true));
+
         $draw = $_GET['draw'] ?? 0;
         $start = $_GET['start'] ?? 0;
         $length = $_GET['length'] ?? 10;
         $search = $_GET['search'] ?? '';
-        $tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-d');
-        $tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-d');
+        $tgl_awal = $_GET['tgl_awal'] ?? null;
+        $tgl_akhir = $_GET['tgl_akhir'] ?? null;
         $status_pulang = $_GET['status_pulang'] ?? '-';
 
         $sql = "SELECT kamar_inap.*, reg_periksa.no_rkm_medis, pasien.nm_pasien, kamar.kd_kamar, bangsal.nm_bangsal, dokter.nm_dokter 
@@ -2132,10 +2135,23 @@ class Admin extends AdminModule
                 JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal
                 JOIN dpjp_ranap ON kamar_inap.no_rawat = dpjp_ranap.no_rawat
                 JOIN dokter ON dpjp_ranap.kd_dokter = dokter.kd_dokter
-                WHERE kamar_inap.tgl_masuk BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+                WHERE 1=1";
         
-        if ($status_pulang != 'all') {
+
+        if ($this->core->getUserInfo('role', $user_id, true) != 'admin') {
+          $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
+        }
+        if ($status_pulang == '-') {
+            $sql .= " AND kamar_inap.stts_pulang = '-'";
+        } elseif ($status_pulang != 'all') {
             $sql .= " AND kamar_inap.stts_pulang = '$status_pulang'";
+            if ($tgl_awal && $tgl_akhir) {
+                $sql .= " AND kamar_inap.tgl_masuk BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+            }
+        } else {
+             if ($tgl_awal && $tgl_akhir) {
+                $sql .= " AND kamar_inap.tgl_masuk BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+            }
         }
 
         if (!empty($search)) {
