@@ -665,8 +665,8 @@ export const getRawatInapResep = async (noRawat: string) => {
   return {
     status: 'success',
     data: {
-      obat: obatData.data?.obat || [],
-      racikan: racikanData.data?.racikan || []
+      obat: obatData.data || [],
+      racikan: racikanData.data || []
     }
   };
 };
