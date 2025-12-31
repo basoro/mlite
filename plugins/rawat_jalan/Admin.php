@@ -628,32 +628,6 @@ class Admin extends AdminModule
                     }
                 }
                 return ['status' => 'success', 'message' => 'Racikan saved'];
-            } elseif($kategori == 'obat') {
-                 if(isset($input['kd_jenis_prw'])) {
-                    $this->db('resep_dokter')
-                        ->where('no_resep', $input['no_resep'])
-                        ->where('kode_brng', $input['kd_jenis_prw'])
-                        ->delete();
-                 }
-                 return ['status' => 'success', 'message' => 'Resep deleted'];
-            } elseif ($kategori == 'racikan') {
-                if(isset($input['kd_jenis_prw']) && isset($input['no_racik'])) {
-                    $this->db('resep_dokter_racikan_detail')
-                        ->where('no_resep', $input['no_resep'])
-                        ->where('no_racik', $input['no_racik'])
-                        ->where('kode_brng', $input['kd_jenis_prw'])
-                        ->delete();
-                } elseif (isset($input['no_racik'])) {
-                    $this->db('resep_dokter_racikan')
-                        ->where('no_resep', $input['no_resep'])
-                        ->where('no_racik', $input['no_racik'])
-                        ->delete();
-                    $this->db('resep_dokter_racikan_detail')
-                        ->where('no_resep', $input['no_resep'])
-                        ->where('no_racik', $input['no_racik'])
-                        ->delete();
-                }
-                return ['status' => 'success', 'message' => 'Racikan deleted'];
             } else {
                 return ['status' => 'error', 'message' => 'Category not supported'];
             }

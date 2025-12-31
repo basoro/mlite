@@ -1912,33 +1912,48 @@ const KamarInap: React.FC = () => {
                                 Simpan Obat
                             </Button>
 
-                            {kamarInapResep?.data?.obat && kamarInapResep.data.obat.length > 0 && (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Daftar Obat Tersimpan</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="space-y-4">
-                                            {kamarInapResep.data.obat.map((item: any, index: number) => (
-                                                <div key={index} className="flex justify-between items-center p-4 border rounded-lg">
-                                                    <div>
-                                                        <p className="font-medium">{item.nama_brng}</p>
-                                                        <p className="text-sm text-gray-500">{item.jml} {item.kode_sat}</p>
-                                                        <p className="text-sm text-gray-500">{item.aturan_pakai}</p>
-                                                    </div>
-                                                    <Button
-                                                        variant="destructive"
-                                                        size="sm"
-                                                        onClick={() => handleDeleteResep(item, 'obat')}
-                                                    >
-                                                        Hapus
-                                                    </Button>
-                                                </div>
-                                            ))}
+                            <div className="mt-8 border-t pt-6">
+                                <h4 className="font-semibold text-foreground mb-4">Daftar Obat Tersimpan</h4>
+                                <div className="space-y-4">
+                                    {kamarInapResep?.data?.obat && kamarInapResep.data.obat.length > 0 ? (
+                                        <div className="border rounded-md">
+                                            <Table>
+                                                <TableHeader>
+                                                    <TableRow>
+                                                        <TableHead>Nama Obat</TableHead>
+                                                        <TableHead>Jumlah</TableHead>
+                                                        <TableHead>Aturan Pakai</TableHead>
+                                                        <TableHead className="w-[50px]"></TableHead>
+                                                    </TableRow>
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {kamarInapResep.data.obat.map((item: any, idx: number) => (
+                                                        <TableRow key={idx}>
+                                                            <TableCell>{item.nama_brng}</TableCell>
+                                                            <TableCell>{item.jml} {item.kode_sat}</TableCell>
+                                                            <TableCell>{item.aturan_pakai}</TableCell>
+                                                            <TableCell>
+                                                                <Button 
+                                                                    variant="ghost" 
+                                                                    size="icon" 
+                                                                    className="text-destructive hover:text-destructive"
+                                                                    onClick={() => handleDeleteResep(item, 'obat')}
+                                                                >
+                                                                    <Trash className="h-4 w-4" />
+                                                                </Button>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
                                         </div>
-                                    </CardContent>
-                                </Card>
-                            )}
+                                    ) : (
+                                        <div className="text-center py-4 text-muted-foreground text-sm italic">
+                                            Belum ada resep obat tersimpan
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </TabsContent>
 
                         <TabsContent value="racikan" className="space-y-4">
@@ -2114,41 +2129,49 @@ const KamarInap: React.FC = () => {
                                 Simpan Racikan
                             </Button>
 
-                            {kamarInapResep?.data?.racikan && kamarInapResep.data.racikan.length > 0 && (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Daftar Racikan Tersimpan</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
+                             <div className="mt-8 border-t pt-6">
+                                <h4 className="font-semibold text-foreground mb-4">Daftar Racikan Tersimpan</h4>
+                                <div className="space-y-4">
+                                    {kamarInapResep?.data?.racikan && kamarInapResep.data.racikan.length > 0 ? (
                                         <div className="space-y-4">
-                                            {kamarInapResep.data.racikan.map((item: any, index: number) => (
-                                                <div key={index} className="flex justify-between items-center p-4 border rounded-lg">
-                                                    <div>
-                                                        <p className="font-medium">{item.nama_racik}</p>
-                                                        <p className="text-sm text-gray-500">{item.jml} {item.nm_racik}</p>
-                                                        <p className="text-sm text-gray-500">{item.aturan_pakai}</p>
-                                                        <div className="mt-2 text-xs text-gray-500">
-                                                            <p className="font-semibold">Komposisi:</p>
-                                                            <ul className="list-disc list-inside">
-                                                                {item.detail?.map((d: any, i: number) => (
-                                                                    <li key={i}>{d.nama_brng} - {d.kandungan} mg</li>
+                                            {kamarInapResep.data.racikan.map((item: any, idx: number) => (
+                                                <div key={idx} className="p-4 border rounded-lg bg-muted/20">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <div>
+                                                            <p className="font-bold text-foreground">{item.nama_racik}</p>
+                                                            <p className="text-sm text-muted-foreground">{item.nm_racik} • {item.jml} • {item.aturan_pakai}</p>
+                                                            <p className="text-xs text-muted-foreground italic">{item.keterangan}</p>
+                                                        </div>
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            className="text-destructive hover:text-destructive"
+                                                            onClick={() => handleDeleteResep(item, 'racikan')}
+                                                        >
+                                                            <Trash className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                    
+                                                    {item.detail && item.detail.length > 0 && (
+                                                        <div className="mt-2 pl-4 border-l-2 border-emerald-200">
+                                                            <p className="text-xs font-semibold text-muted-foreground mb-1">Komposisi:</p>
+                                                            <ul className="text-xs space-y-1">
+                                                                {item.detail.map((det: any, dIdx: number) => (
+                                                                    <li key={dIdx}>{det.nama_brng} ({det.kandungan})</li>
                                                                 ))}
                                                             </ul>
                                                         </div>
-                                                    </div>
-                                                    <Button
-                                                        variant="destructive"
-                                                        size="sm"
-                                                        onClick={() => handleDeleteResep(item, 'racikan')}
-                                                    >
-                                                        Hapus
-                                                    </Button>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>
-                                    </CardContent>
-                                </Card>
-                            )}
+                                    ) : (
+                                        <div className="text-center py-4 text-muted-foreground text-sm italic">
+                                            Belum ada resep racikan tersimpan
+                                        </div>
+                                    )}
+                                </div>
+                             </div>
                         </TabsContent>
                     </Tabs>
                   </TabsContent>
