@@ -755,6 +755,7 @@ class Admin extends AdminModule
         }
 
         $no_rawat = revertNorawat($no_rawat);
+        $kategori = trim($kategori);
 
         try {
             if ($kategori == 'tindakan') {
@@ -818,7 +819,7 @@ class Admin extends AdminModule
                     'data' => $resep_racikan
                 ];
             } else {
-                return ['status' => 'error', 'message' => 'Category not supported'];
+                return ['status' => 'error', 'message' => 'Category not supported: ' . $kategori];
             }
         } catch (\PDOException $e) {
             return ['status' => 'error', 'message' => $e->getMessage()];

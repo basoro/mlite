@@ -1896,7 +1896,7 @@ const Pemeriksaan: React.FC = () => {
                             <div className="mt-8 border-t pt-6">
                                 <h4 className="font-semibold text-foreground mb-4">Daftar Obat Tersimpan</h4>
                                 <div className="space-y-4">
-                                    {rawatJalanResep?.data?.filter((item: any) => item.kat === 'obat' || !item.kat).length > 0 ? (
+                                    {rawatJalanResep?.data?.obat && rawatJalanResep.data.obat.length > 0 ? (
                                         <div className="border rounded-md">
                                             <Table>
                                                 <TableHeader>
@@ -1908,7 +1908,7 @@ const Pemeriksaan: React.FC = () => {
                                                     </TableRow>
                                                 </TableHeader>
                                                 <TableBody>
-                                                    {rawatJalanResep.data.filter((item: any) => item.kat === 'obat' || !item.kat).map((item: any, idx: number) => (
+                                                    {rawatJalanResep.data.obat.map((item: any, idx: number) => (
                                                         <TableRow key={idx}>
                                                             <TableCell>{item.nama_brng}</TableCell>
                                                             <TableCell>{item.jml}</TableCell>
@@ -2113,9 +2113,9 @@ const Pemeriksaan: React.FC = () => {
                              <div className="mt-8 border-t pt-6">
                                 <h4 className="font-semibold text-foreground mb-4">Daftar Racikan Tersimpan</h4>
                                 <div className="space-y-4">
-                                    {rawatJalanResep?.data?.filter((item: any) => item.kat === 'racikan').length > 0 ? (
+                                    {rawatJalanResep?.data?.racikan && rawatJalanResep.data.racikan.length > 0 ? (
                                         <div className="space-y-4">
-                                            {rawatJalanResep.data.filter((item: any) => item.kat === 'racikan').map((item: any, idx: number) => (
+                                            {rawatJalanResep.data.racikan.map((item: any, idx: number) => (
                                                 <div key={idx} className="p-4 border rounded-lg bg-muted/20">
                                                     <div className="flex justify-between items-start mb-2">
                                                         <div>
