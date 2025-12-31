@@ -425,13 +425,15 @@ class Admin extends AdminModule
 
         $input = json_decode(file_get_contents('php://input'), true);
         if (!is_array($input)) $input = $_POST;
+        
+        $kategori = trim($input['kat']);
 
-        if (empty($input['kat']) || empty($input['no_rawat']) || empty($input['kd_jenis_prw'])) {
+        if (empty($kategori) || empty($input['no_rawat']) || empty($input['kd_jenis_prw'])) {
             return ['status' => 'error', 'message' => 'Data incomplete'];
         }
 
         try {
-            if($input['kat'] == 'tindakan') {
+            if($kategori == 'tindakan') {
                 if (empty($input['provider'])) {
                     return ['status' => 'error', 'message' => 'Provider missing for tindakan'];
                 }
@@ -492,7 +494,7 @@ class Admin extends AdminModule
                 }
                 
                 return ['status' => 'success', 'message' => 'Detail saved'];
-            } elseif ($input['kat'] == 'obat') {
+            } elseif ($kategori == 'obat') {
                 $no_resep = $this->core->setNoResep($input['tgl_perawatan']);
                 $cek_resep = $this->db('resep_obat')->where('no_rawat', $input['no_rawat'])->where('tgl_peresepan', $input['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
 
@@ -531,7 +533,7 @@ class Admin extends AdminModule
                         ]);
                 }
                 return ['status' => 'success', 'message' => 'Obat saved'];
-            } elseif ($input['kat'] == 'racikan') {
+            } elseif ($kategori == 'racikan') {
                 $no_resep = $this->core->setNoResep($input['tgl_perawatan']);
                 $cek_resep = $this->db('resep_obat')->where('no_rawat', $input['no_rawat'])->where('tgl_peresepan', $input['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
                 
@@ -626,7 +628,7 @@ class Admin extends AdminModule
                     }
                 }
                 return ['status' => 'success', 'message' => 'Racikan saved'];
-            } elseif($input['kat'] == 'obat') {
+            } elseif($kategori == 'obat') {
                  if(isset($input['kd_jenis_prw'])) {
                     $this->db('resep_dokter')
                         ->where('no_resep', $input['no_resep'])
@@ -634,7 +636,7 @@ class Admin extends AdminModule
                         ->delete();
                  }
                  return ['status' => 'success', 'message' => 'Resep deleted'];
-            } elseif ($input['kat'] == 'racikan') {
+            } elseif ($kategori == 'racikan') {
                 if(isset($input['kd_jenis_prw']) && isset($input['no_racik'])) {
                     $this->db('resep_dokter_racikan_detail')
                         ->where('no_resep', $input['no_resep'])
@@ -671,13 +673,15 @@ class Admin extends AdminModule
 
         $input = json_decode(file_get_contents('php://input'), true);
         if (!is_array($input)) $input = $_POST;
+        
+        $kategori = trim($input['kat']);
 
-        if (empty($input['kat']) || empty($input['no_rawat']) || empty($input['kd_jenis_prw']) || empty($input['provider']) || empty($input['tgl_perawatan']) || empty($input['jam_rawat'])) {
+        if (empty($kategori) || empty($input['no_rawat']) || empty($input['kd_jenis_prw']) || empty($input['provider']) || empty($input['tgl_perawatan']) || empty($input['jam_rawat'])) {
             return ['status' => 'error', 'message' => 'Data incomplete'];
         }
 
         try {
-            if($input['kat'] == 'tindakan') {
+            if($kategori == 'tindakan') {
                 if($input['provider'] == 'rawat_jl_dr') {
                     $this->db('rawat_jl_dr')
                         ->where('no_rawat', $input['no_rawat'])
@@ -704,7 +708,7 @@ class Admin extends AdminModule
                 }
                 
                 return ['status' => 'success', 'message' => 'Detail deleted'];
-            } elseif ($input['kat'] == 'obat') {
+            } elseif ($kategori == 'obat') {
                 if(isset($input['kd_jenis_prw'])) {
                     $this->db('resep_dokter')
                         ->where('no_resep', $input['no_resep'])
@@ -719,7 +723,7 @@ class Admin extends AdminModule
                         ->delete();
                 }
                 return ['status' => 'success', 'message' => 'Resep deleted'];
-            } elseif ($input['kat'] == 'racikan') {
+            } elseif ($kategori == 'racikan') {
                 if(isset($input['kd_jenis_prw']) && isset($input['no_racik'])) {
                     $this->db('resep_dokter_racikan_detail')
                         ->where('no_resep', $input['no_resep'])
