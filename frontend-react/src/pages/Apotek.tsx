@@ -68,7 +68,7 @@ interface PrescriptionItem {
   instruksi: string;
 }
 
-const Resep: React.FC = () => {
+const Apotek: React.FC = () => {
   const { toast } = useToast();
   const [date, setDate] = useState<{ from: Date; to: Date }>({
     from: new Date(),
@@ -398,9 +398,9 @@ const Resep: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Resep Obat & Tindakan Medis</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Apotek & Penyerahan Resep</h1>
         <p className="text-muted-foreground">
-          Buat resep obat dan catat tindakan medis untuk pasien
+          Kelola resep obat, validasi permintaan, dan penyerahan obat ke pasien
         </p>
       </div>
 
@@ -786,4 +786,4 @@ const Resep: React.FC = () => {
   );
 };
 
-export default Resep;
+export default Apotek;

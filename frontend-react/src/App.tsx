@@ -9,14 +9,14 @@ import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import Pasien from "@/pages/Pasien";
 import Pendaftaran from "@/pages/Pendaftaran";
-import Pemeriksaan from "@/pages/Pemeriksaan";
+import Poliklinik from "@/pages/Poliklinik";
 import KamarInap from "@/pages/KamarInap";
-import Resep from "@/pages/Resep";
+import Apotek from "@/pages/Apotek";
 import Farmasi from "@/pages/Farmasi";
 import Inventory from "@/pages/Inventory";
 import MasterData from "@/pages/MasterData";
 import Laporan from "@/pages/Laporan";
-import Billing from "@/pages/Billing";
+import Kasir from "@/pages/Kasir";
 import { 
   Integrasi, 
   ManajemenUser, 
@@ -60,10 +60,10 @@ const App = () => (
               }
             />
             <Route
-              path="/pemeriksaan"
+              path="/poliklinik"
               element={
                 <MainLayout>
-                  <Pemeriksaan />
+                  <Poliklinik />
                 </MainLayout>
               }
             />
@@ -76,10 +76,10 @@ const App = () => (
               }
             />
             <Route
-              path="/resep"
+              path="/apotek"
               element={
                 <MainLayout>
-                  <Resep />
+                  <Apotek />
                 </MainLayout>
               }
             />
@@ -92,10 +92,10 @@ const App = () => (
               }
             />
             <Route
-              path="/billing"
+              path="/kasir"
               element={
                 <MainLayout>
-                  <Billing />
+                  <Kasir />
                 </MainLayout>
               }
             />

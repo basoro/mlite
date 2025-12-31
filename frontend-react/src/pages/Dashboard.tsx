@@ -163,7 +163,7 @@ const Dashboard: React.FC = () => {
   const quickActions: QuickActionProps[] = [
     { icon: UserPlus, label: 'Registrasi Pasien Baru', href: '/pasien' },
     { icon: CalendarPlus, label: 'Buat Jadwal Baru', href: '/jadwal' },
-    { icon: Activity, label: 'Mulai Pemeriksaan', href: '/pemeriksaan' },
+    { icon: Activity, label: 'Mulai Pemeriksaan', href: '/poliklinik' },
     { icon: FileText, label: 'Lihat Laporan', href: '/laporan' },
   ];
 

@@ -31,10 +31,10 @@ const mainMenuItems: MenuItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
   { icon: Users, label: 'Pasien', path: '/pasien' },
   { icon: Calendar, label: 'Pendaftaran', path: '/pendaftaran' },
-  { icon: Stethoscope, label: 'Pemeriksaan', path: '/pemeriksaan' },
+  { icon: Stethoscope, label: 'Poliklinik', path: '/poliklinik' },
   { icon: BedDouble, label: 'Kamar Inap', path: '/kamar-inap' },
-  { icon: Pill, label: 'Resep', path: '/resep' },
-  { icon: Receipt, label: 'Billing', path: '/billing' },
+  { icon: Pill, label: 'Apotek', path: '/apotek' },
+  { icon: Receipt, label: 'Kasir', path: '/kasir' },
   { icon: ClipboardList, label: 'Farmasi', path: '/farmasi' },
 ];
 

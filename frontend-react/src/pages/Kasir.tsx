@@ -80,7 +80,7 @@ interface BillItem {
   total: number;
 }
 
-const Billing: React.FC = () => {
+const Kasir: React.FC = () => {
   const { toast } = useToast();
   const [date, setDate] = useState<{ from: Date; to: Date }>({
     from: new Date(),
@@ -379,9 +379,9 @@ const Billing: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Billing & Faktur</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Kasir & Pembayaran</h1>
         <p className="text-muted-foreground">
-          Kelola tagihan pasien dan cetak faktur
+          Kelola pembayaran pasien dan cetak struk
         </p>
       </div>
 
@@ -982,4 +982,4 @@ function Receipt(props: any) {
   )
 }
 
-export default Billing;
+export default Kasir;
