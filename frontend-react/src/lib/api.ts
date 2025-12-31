@@ -1085,36 +1085,113 @@ export const getStockMovementList = async (page = 1, perPage = 10, search = '', 
 // Farmasi
 export const getResepList = async (page = 1, perPage = 10, search = '', startDate?: string, endDate?: string) => {
   const params = new URLSearchParams({
-    page: page.toString(),
-    per_page: perPage.toString(),
+    draw: '1',
+    start: ((page - 1) * perPage).toString(),
+    length: perPage.toString(),
     s: search,
-    col: '',
   });
   
   if (startDate && endDate) {
-    params.append('tgl_peresepan', `${startDate} - ${endDate}`); // Assuming simple date filter or we might need custom logic like stock movement
-    // Or if the backend supports tgl_awal/tgl_akhir for this table:
     params.append('tgl_awal', startDate);
     params.append('tgl_akhir', endDate);
   }
 
-  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/master/list/resep_obat?${params}`, {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/apotek_ralan/reseplist?${params}`, {
     headers: getHeaders(),
   });
   return response.json();
 };
 
-export const getResepDetailItems = async (noResep: string) => {
-  // Fetch items for a specific prescription
-  // We use the search parameter to filter by no_resep
+export const getResepDetailItems = async (noResep: string, noRawat: string, status: string) => {
+  // Determine endpoint based on status
+  const endpointBase = status === 'ranap' ? 'rawat_inap' : 'rawat_jalan';
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  
+  // Create URLSearchParams to safely append query parameters
   const params = new URLSearchParams({
-    page: '1',
-    per_page: '100',
-    s: noResep,
+      no_resep: noResep
+  });
+
+  // Fetch both obat and racikan
+  const [obatRes, racikanRes] = await Promise.all([
+    fetch(`${config.baseUrl}${config.apiPath}/api/${endpointBase}/showdetail/obat/${normalizedNoRawat}?${params.toString()}`, { headers: getHeaders() }),
+    fetch(`${config.baseUrl}${config.apiPath}/api/${endpointBase}/showdetail/racikan/${normalizedNoRawat}?${params.toString()}`, { headers: getHeaders() })
+  ]);
+  
+  const obatData = await obatRes.json();
+  const racikanData = await racikanRes.json();
+  
+  // Filter by no_resep (redundant but safe)
+  const obat = (obatData.data || []);
+  const racikan = (racikanData.data || []);
+  
+  const result: any[] = [];
+  
+  // Normalize Obat
+  obat.forEach((item: any) => {
+    result.push({
+        ...item,
+        jenis: 'Obat',
+        aturan_pakai: item.aturan_pakai || '' 
+    });
   });
   
-  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/master/list/resep_dokter?${params}`, {
-    headers: getHeaders(),
+  // Normalize Racikan
+  racikan.forEach((item: any) => {
+      // Header
+      result.push({
+          ...item,
+          jenis: 'Racikan',
+          nama_brng: item.nama_racik,
+          jml: item.jml_dr,
+          aturan_pakai: item.aturan_pakai || '',
+          keterangan: item.keterangan
+      });
+      
+      // Details
+      if (item.detail) {
+          item.detail.forEach((det: any) => {
+              result.push({
+                  ...det,
+                  jenis: 'Racikan Detail',
+                  no_racik: item.no_racik,
+                  jml: det.jml,
+                  kandungan: det.kandungan
+              });
+          });
+      }
   });
-  return response.json();
+  
+  return { status: 'success', data: result };
+};
+
+export const validasiResep = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/apotek_ralan/validasiresep`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  // The backend might return JSON or empty body, handle accordingly
+  const text = await response.text();
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    return { status: response.ok ? 'success' : 'error', message: text };
+  }
+};
+
+export const hapusResep = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/apotek_ralan/hapusresep`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  const text = await response.text();
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    return { status: response.ok ? 'success' : 'error', message: text };
+  }
 };

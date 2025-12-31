@@ -734,6 +734,17 @@ class Admin extends AdminModule
 
         $no_rawat = revertNorawat($no_rawat);
         $kategori = trim($kategori);
+        $no_resep = isset($_GET['no_resep']) ? $_GET['no_resep'] : null;
+
+        $pasien = $this->db('reg_periksa')
+            ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+            ->where('no_rawat', $no_rawat)
+            ->oneArray();
+
+        $patient_info = [
+            'nm_pasien' => $pasien['nm_pasien'] ?? '',
+            'no_rkm_medis' => $pasien['no_rkm_medis'] ?? ''
+        ];
 
         try {
             if ($kategori == 'tindakan') {
@@ -758,6 +769,7 @@ class Admin extends AdminModule
 
                 return [
                     'status' => 'success',
+                    'patient' => $patient_info,
                     'data' => [
                         'rawat_jl_dr' => $rawat_jl_dr,
                         'rawat_jl_pr' => $rawat_jl_pr,
@@ -765,24 +777,35 @@ class Admin extends AdminModule
                     ]
                 ];
             } elseif ($kategori == 'obat') {
-                $resep_dokter = $this->db('resep_dokter')
+                $query = $this->db('resep_dokter')
                     ->join('resep_obat', 'resep_obat.no_resep = resep_dokter.no_resep')
                     ->join('databarang', 'databarang.kode_brng = resep_dokter.kode_brng')
                     ->where('resep_obat.no_rawat', $no_rawat)
-                    ->where('resep_obat.status', 'ralan')
-                    ->toArray();
+                    ->where('resep_obat.status', 'ralan');
+
+                if ($no_resep) {
+                    $query->where('resep_obat.no_resep', $no_resep);
+                }
+
+                $resep_dokter = $query->toArray();
 
                 return [
                     'status' => 'success',
+                    'patient' => $patient_info,
                     'data' => $resep_dokter
                 ];
             } elseif ($kategori == 'racikan') {
-                $resep_racikan = $this->db('resep_dokter_racikan')
+                $query = $this->db('resep_dokter_racikan')
                     ->join('resep_obat', 'resep_obat.no_resep = resep_dokter_racikan.no_resep')
                     ->join('metode_racik', 'metode_racik.kd_racik = resep_dokter_racikan.kd_racik')
                     ->where('resep_obat.no_rawat', $no_rawat)
-                    ->where('resep_obat.status', 'ralan')
-                    ->toArray();
+                    ->where('resep_obat.status', 'ralan');
+
+                if ($no_resep) {
+                    $query->where('resep_obat.no_resep', $no_resep);
+                }
+
+                $resep_racikan = $query->toArray();
 
                 foreach ($resep_racikan as &$racikan) {
                     $racikan['detail'] = $this->db('resep_dokter_racikan_detail')
@@ -794,6 +817,7 @@ class Admin extends AdminModule
 
                 return [
                     'status' => 'success',
+                    'patient' => $patient_info,
                     'data' => $resep_racikan
                 ];
             } else {
