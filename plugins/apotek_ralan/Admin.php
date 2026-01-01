@@ -1272,10 +1272,11 @@ class Admin extends AdminModule
                 $query = $this->db('resep_dokter')
                     ->join('resep_obat', 'resep_obat.no_resep = resep_dokter.no_resep')
                     ->join('databarang', 'databarang.kode_brng = resep_dokter.kode_brng')
+                    ->leftJoin('reg_periksa', 'reg_periksa.no_rawat = resep_obat.no_rawat')
+                    ->leftJoin('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                     ->where('resep_obat.no_rawat', $no_rawat)
                     ->where(function($query) {
-                        $query->where('resep_obat.status', 'ralan')
-                              ->orWhere('resep_obat.status', 'Ralan');
+                        $query->where('resep_obat.status', 'ralan');
                     });
 
                 if ($no_resep) {
@@ -1293,10 +1294,11 @@ class Admin extends AdminModule
                 $query = $this->db('resep_dokter_racikan')
                     ->join('resep_obat', 'resep_obat.no_resep = resep_dokter_racikan.no_resep')
                     ->join('metode_racik', 'metode_racik.kd_racik = resep_dokter_racikan.kd_racik')
+                    ->leftJoin('reg_periksa', 'reg_periksa.no_rawat = resep_obat.no_rawat')
+                    ->leftJoin('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                     ->where('resep_obat.no_rawat', $no_rawat)
                     ->where(function($query) {
-                        $query->where('resep_obat.status', 'ralan')
-                              ->orWhere('resep_obat.status', 'Ralan');
+                        $query->where('resep_obat.status', 'ralan');
                     });
 
                 if ($no_resep) {
