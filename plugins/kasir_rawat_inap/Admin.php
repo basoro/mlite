@@ -86,7 +86,7 @@ class Admin extends AdminModule
              echo json_encode(['status' => 'error', 'message' => 'You do not have permission to access this resource']);
              exit;
         }
-        $no_rawat = urldecode($no_rawat);
+        $no_rawat = revertNorawat($no_rawat);
 
         // Basic Info
         $reg_periksa = $this->db('reg_periksa')
