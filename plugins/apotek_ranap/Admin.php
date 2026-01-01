@@ -1400,10 +1400,11 @@ class Admin extends AdminModule
             ->desc('resep_obat.jam_peresepan')
             ->toArray();
 
-        foreach ($data as &$row) {
-            $row['detail'] = $this->apiShowDetail('obat', $row['no_rawat'], $row['no_resep']);
-            $row['racikan'] = $this->apiShowDetail('racikan', $row['no_rawat'], $row['no_resep']);
-        }
+        // Optimization: Details are fetched asynchronously on frontend
+        // foreach ($data as &$row) {
+        //    $row['detail'] = $this->apiShowDetail('obat', $row['no_rawat'], $row['no_resep']);
+        //    $row['racikan'] = $this->apiShowDetail('racikan', $row['no_rawat'], $row['no_resep']);
+        // }
 
         return [
             'status' => 'success',

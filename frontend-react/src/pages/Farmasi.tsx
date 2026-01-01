@@ -277,7 +277,7 @@ const Farmasi = () => {
                       resepList.map((resep: any) => (
                         <TableRow 
                           key={resep.no_resep} 
-                          className={cn("cursor-pointer hover:bg-muted/50", selectedResep?.no_resep === resep.no_resep && "bg-muted")}
+                          className={cn("cursor-pointer hover:bg-muted/50 transition-colors", selectedResep?.no_resep === resep.no_resep && "bg-blue-50/50")}
                           onClick={() => setSelectedResep(resep)}
                         >
                           <TableCell className="font-medium">{resep.no_resep}</TableCell>
@@ -307,7 +307,17 @@ const Farmasi = () => {
                             )}
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button size="sm" variant="ghost">Detail</Button>
+                            <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="hover:text-blue-600"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedResep(resep);
+                                }}
+                            >
+                                Detail
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))
