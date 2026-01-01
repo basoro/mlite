@@ -1226,6 +1226,53 @@ export const validasiResep = async (data: any, type: 'ralan' | 'ranap' = 'ralan'
   }
 };
 
+// Kasir
+export const getKasirRalanList = async (page = 1, perPage = 10, search = '', startDate?: string, endDate?: string) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    per_page: perPage.toString(),
+    s: search,
+  });
+  
+  if (startDate && endDate) {
+    params.append('tgl_awal', startDate);
+    params.append('tgl_akhir', endDate);
+  }
+
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/kasir_rawat_jalan/billinglist?${params}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
+export const getKasirRanapList = async (page = 1, perPage = 10, search = '', startDate?: string, endDate?: string) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    per_page: perPage.toString(),
+    s: search,
+  });
+  
+  if (startDate && endDate) {
+    params.append('tgl_awal', startDate);
+    params.append('tgl_akhir', endDate);
+  }
+
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/kasir_rawat_inap/billinglist?${params}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
+export const getBillingDetail = async (noRawat: string, status: 'ralan' | 'ranap') => {
+  const endpointBase = status === 'ranap' ? 'kasir_rawat_inap' : 'kasir_rawat_jalan';
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/${endpointBase}/billingdetail/${normalizedNoRawat}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
 export const hapusResep = async (data: any, type: 'ralan' | 'ranap' = 'ralan') => {
   const endpoint = type === 'ranap' ? 'apotek_ranap' : 'apotek_ralan';
   const response = await fetch(`${config.baseUrl}${config.apiPath}/api/${endpoint}/hapusresep`, {
