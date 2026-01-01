@@ -1375,8 +1375,8 @@ class Admin extends AdminModule
         $tgl_akhir = isset($_GET['tgl_akhir']) ? $_GET['tgl_akhir'] : date('Y-m-d');
 
         $query = $this->db('resep_obat')
-            ->join('reg_periksa', 'reg_periksa.no_rawat = resep_obat.no_rawat')
-            ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+            ->leftJoin('reg_periksa', 'reg_periksa.no_rawat = resep_obat.no_rawat')
+            ->leftJoin('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
             ->leftJoin('dokter', 'dokter.kd_dokter = resep_obat.kd_dokter')
             ->where(function($query) {
                 $query->where('resep_obat.status', 'ranap')
@@ -1430,7 +1430,7 @@ class Admin extends AdminModule
         }
 
         $pasien = $this->db('reg_periksa')
-            ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+            ->leftJoin('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
             ->where('no_rawat', $no_rawat)
             ->oneArray();
 
