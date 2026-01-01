@@ -1379,8 +1379,7 @@ class Admin extends AdminModule
             ->leftJoin('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
             ->leftJoin('dokter', 'dokter.kd_dokter = resep_obat.kd_dokter')
             ->where(function($query) {
-                $query->where('resep_obat.status', 'ranap')
-                      ->orWhere('resep_obat.status', 'Ranap');
+                $query->where('resep_obat.status', 'ranap');
             })
             ->where('resep_obat.tgl_peresepan', '>=', $tgl_awal)
             ->where('resep_obat.tgl_peresepan', '<=', $tgl_akhir);
@@ -1448,8 +1447,7 @@ class Admin extends AdminModule
                     ->leftJoin('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                     ->where('resep_obat.no_rawat', $no_rawat)
                     ->where(function($query) {
-                        $query->where('resep_obat.status', 'ranap')
-                              ->orWhere('resep_obat.status', 'Ranap');
+                        $query->where('resep_obat.status', 'ranap');
                     });
 
                 if ($no_resep) {
@@ -1471,8 +1469,7 @@ class Admin extends AdminModule
                     ->leftJoin('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                     ->where('resep_obat.no_rawat', $no_rawat)
                     ->where(function($query) {
-                        $query->where('resep_obat.status', 'ranap')
-                              ->orWhere('resep_obat.status', 'Ranap');
+                        $query->where('resep_obat.status', 'ranap');
                     });
 
                 if ($no_resep) {
