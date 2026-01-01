@@ -1148,7 +1148,7 @@ export const getResepList = async (page = 1, perPage = 10, search = '', startDat
 
 export const getResepDetailItems = async (noResep: string, noRawat: string, status: string) => {
   // Determine endpoint based on status
-  const endpointBase = status === 'ranap' ? 'rawat_inap' : 'rawat_jalan';
+  const endpointBase = status === 'ranap' ? 'apotek_ranap' : 'apotek_ralan';
   const normalizedNoRawat = noRawat.replace(/\//g, '');
   
   // Create URLSearchParams to safely append query parameters

@@ -11,7 +11,6 @@ import Pasien from "@/pages/Pasien";
 import Pendaftaran from "@/pages/Pendaftaran";
 import Poliklinik from "@/pages/Poliklinik";
 import KamarInap from "@/pages/KamarInap";
-import Apotek from "@/pages/Apotek";
 import Farmasi from "@/pages/Farmasi";
 import Inventory from "@/pages/Inventory";
 import MasterData from "@/pages/MasterData";
@@ -77,14 +76,6 @@ const App = () => (
             />
             <Route
               path="/apotek"
-              element={
-                <MainLayout>
-                  <Apotek />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/farmasi"
               element={
                 <MainLayout>
                   <Farmasi />

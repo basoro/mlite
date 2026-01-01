@@ -35,7 +35,6 @@ const mainMenuItems: MenuItem[] = [
   { icon: BedDouble, label: 'Kamar Inap', path: '/kamar-inap' },
   { icon: Pill, label: 'Apotek', path: '/apotek' },
   { icon: Receipt, label: 'Kasir', path: '/kasir' },
-  { icon: ClipboardList, label: 'Farmasi', path: '/farmasi' },
 ];
 
 const managementMenuItems: MenuItem[] = [
