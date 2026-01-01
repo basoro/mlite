@@ -10,7 +10,8 @@ import {
   CheckCircle2, 
   AlertCircle,
   Stethoscope,
-  ClipboardList
+  ClipboardList,
+  BedDouble
 } from 'lucide-react';
 
 import { Button } from "@/components/ui/button";
@@ -38,11 +39,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { getResepList, getResepDetailItems } from '@/lib/api';
+import { getApotekRalanList, getApotekRanapList, getResepDetailItems } from '@/lib/api';
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Farmasi = () => {
+  const [activeTab, setActiveTab] = useState<"ralan" | "ranap">("ralan");
   const [date, setDate] = useState<{ from: Date; to: Date }>({
     from: new Date(),
     to: new Date(),
@@ -52,20 +60,16 @@ const Farmasi = () => {
 
   // Fetch Resep List
   const { data: resepData, isLoading: isLoadingResep, refetch: refetchResep } = useQuery({
-    queryKey: ['resep-obat', date.from, date.to, search],
-    queryFn: () => getResepList(
-      1, 
-      100, 
-      search, 
-      format(date.from, 'yyyy-MM-dd'), 
-      format(date.to, 'yyyy-MM-dd')
-    ),
+    queryKey: ['resep-obat', activeTab, date.from, date.to, search],
+    queryFn: () => activeTab === 'ralan'
+      ? getApotekRalanList(1, 100, search, format(date.from, 'yyyy-MM-dd'), format(date.to, 'yyyy-MM-dd'))
+      : getApotekRanapList(1, 100, search, format(date.from, 'yyyy-MM-dd'), format(date.to, 'yyyy-MM-dd')),
   });
 
   // Fetch Detail Resep (Items)
   const { data: detailData, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ['resep-detail', selectedResep?.no_resep],
-    queryFn: () => getResepDetailItems(selectedResep?.no_resep),
+    queryKey: ['resep-detail', selectedResep?.no_resep, activeTab],
+    queryFn: () => getResepDetailItems(selectedResep?.no_resep, selectedResep?.no_rawat, activeTab),
     enabled: !!selectedResep?.no_resep,
   });
 
@@ -79,6 +83,52 @@ const Farmasi = () => {
     menunggu: resepList.filter((r: any) => r.tgl_perawatan === '0000-00-00' || r.tgl_perawatan === null).length,
   };
 
+  const renderDetailItem = (item: any, idx: number) => {
+    const isRacikanHeader = item.jenis === 'Racikan';
+    const isRacikanDetail = item.jenis === 'Racikan Detail';
+    
+    return (
+      <div 
+        key={idx} 
+        className={cn(
+          "border-b pb-4 last:border-0 border-blue-100",
+          isRacikanDetail && "pl-8 bg-slate-50/50 py-2 border-dashed",
+          isRacikanHeader && "bg-blue-50/80 pt-4 px-2 rounded-t-md border-b-2 border-blue-200"
+        )}
+      >
+         <div className="flex justify-between items-center mb-1">
+            <h4 className={cn(
+              "font-semibold text-sm",
+              isRacikanHeader ? "text-blue-900" : "text-slate-800"
+            )}>
+              {isRacikanDetail ? `- ${item.nama_brng}` : (isRacikanHeader ? `Racikan: ${item.nama_brng}` : `${idx + 1}. ${item.nama_brng}`)}
+            </h4>
+            {!isRacikanHeader && !isRacikanDetail && (
+              <Badge variant="outline" className="text-[10px]">{item.jml} {item.kode_sat}</Badge>
+            )}
+            {isRacikanHeader && (
+               <Badge className="bg-blue-600 text-[10px]">{item.jml} Bungkus</Badge>
+            )}
+         </div>
+         
+         {!isRacikanHeader ? (
+           <div className="text-xs text-slate-500">
+              {isRacikanDetail ? (
+                <span>Kandungan: {item.kandungan} | Jml: {item.jml}</span>
+              ) : (
+                <span>Aturan: {item.aturan_pakai}</span>
+              )}
+           </div>
+         ) : (
+            <div className="text-xs text-blue-800 mt-1">
+               <span className="font-medium">Aturan: {item.aturan_pakai}</span>
+               {item.keterangan && <div className="italic mt-1">"{item.keterangan}"</div>}
+            </div>
+         )}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-2">
@@ -87,6 +137,21 @@ const Farmasi = () => {
           Kelola resep masuk, validasi, dan penyerahan obat
         </p>
       </div>
+
+      <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v as "ralan" | "ranap"); setSelectedResep(null); }} className="w-full">
+        <div className="flex items-center justify-between mb-4">
+            <TabsList className="grid w-[400px] grid-cols-2">
+              <TabsTrigger value="ralan" className="flex items-center gap-2">
+                <Stethoscope className="h-4 w-4" />
+                Rawat Jalan
+              </TabsTrigger>
+              <TabsTrigger value="ranap" className="flex items-center gap-2">
+                <BedDouble className="h-4 w-4" />
+                Rawat Inap
+              </TabsTrigger>
+            </TabsList>
+        </div>
+      </Tabs>
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3">
@@ -128,7 +193,7 @@ const Farmasi = () => {
           <Card className="h-full flex flex-col">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>Daftar Resep Masuk</CardTitle>
+                <CardTitle>Daftar Resep Masuk ({activeTab === 'ralan' ? 'Rawat Jalan' : 'Rawat Inap'})</CardTitle>
                 <div className="flex items-center gap-2">
                   <Popover>
                     <PopoverTrigger asChild>
@@ -285,6 +350,10 @@ const Farmasi = () => {
                       <span className="font-medium">{selectedResep.nm_pasien}</span>
                     </div>
                     <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">No. RM:</span>
+                      <span className="font-medium">{selectedResep.no_rkm_medis}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Dokter:</span>
                       <span className="font-medium">{selectedResep.nm_dokter}</span>
                     </div>
@@ -294,7 +363,7 @@ const Farmasi = () => {
                   <div className="space-y-3">
                     <h3 className="font-medium text-sm flex items-center gap-2 border-b pb-2">
                       <ClipboardList className="h-4 w-4" />
-                      Daftar Obat
+                      Daftar Obat & Racikan
                     </h3>
                     
                     {isLoadingDetail ? (
@@ -306,19 +375,7 @@ const Farmasi = () => {
                       <p className="text-sm text-muted-foreground py-4 text-center">Tidak ada item obat</p>
                     ) : (
                       <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                        {resepItems.map((item: any, idx: number) => (
-                          <div key={idx} className="flex justify-between items-start p-3 border rounded bg-white shadow-sm">
-                            <div>
-                              <p className="font-medium text-sm">{item.nama_brng || item.kode_brng}</p>
-                              <p className="text-xs text-slate-500 mt-1">
-                                {item.jml} {item.kode_sat || 'pcs'} • {item.aturan_pakai}
-                              </p>
-                            </div>
-                            <Badge variant="outline" className="text-xs">
-                              {item.jml}
-                            </Badge>
-                          </div>
-                        ))}
+                        {resepItems.map((item: any, idx: number) => renderDetailItem(item, idx))}
                       </div>
                     )}
                   </div>

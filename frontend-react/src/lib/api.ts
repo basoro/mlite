@@ -1083,87 +1083,66 @@ export const getStockMovementList = async (page = 1, perPage = 10, search = '', 
 };
 
 // Farmasi
-export const getResepList = async (page = 1, perPage = 10, search = '', startDate?: string, endDate?: string) => {
-  // Since we need to aggregate data from multiple patients based on Rawat Jalan/Inap lists, 
-  // and the user requested to use specific showdetail endpoints which are per-patient,
-  // we first need to fetch the list of patients (Rawat Jalan & Rawat Inap) for the given date range.
-  // Then for each patient, we fetch their prescription details.
-  // This is potentially heavy but aligns with the requested data source pattern.
+export const getApotekRalanList = async (page = 1, perPage = 10, search = '', startDate?: string, endDate?: string) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    per_page: perPage.toString(),
+    s: search,
+  });
+  
+  if (startDate && endDate) {
+    params.append('tgl_awal', startDate);
+    params.append('tgl_akhir', endDate);
+  }
 
-  // 1. Fetch Rawat Jalan & Inap Patients
-  const [ralanRes, ranapRes] = await Promise.all([
-      getRawatJalanList(startDate || '', endDate || '', 0, 100, search), // Limit 100 for now
-      getKamarInapList(startDate || '', endDate || '', 0, 100, search)
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/apotek_ralan/reseplist?${params}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
+export const getApotekRanapList = async (page = 1, perPage = 10, search = '', startDate?: string, endDate?: string) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    per_page: perPage.toString(),
+    s: search,
+  });
+  
+  if (startDate && endDate) {
+    params.append('tgl_awal', startDate);
+    params.append('tgl_akhir', endDate);
+  }
+
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/apotek_ranap/reseplist?${params}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
+export const getResepList = async (page = 1, perPage = 10, search = '', startDate?: string, endDate?: string) => {
+  // Legacy support or aggregate if needed, but we prefer specific calls now.
+  // For backward compatibility or combined view:
+  const [ralan, ranap] = await Promise.all([
+    getApotekRalanList(page, perPage, search, startDate, endDate),
+    getApotekRanapList(page, perPage, search, startDate, endDate)
   ]);
 
-  const ralanPatients = ralanRes.data || [];
-  const ranapPatients = ranapRes.data || [];
+  const ralanData = (ralan.data || []).map((item: any) => ({ ...item, status: 'ralan' }));
+  const ranapData = (ranap.data || []).map((item: any) => ({ ...item, status: 'ranap' }));
+
+  const combined = [...ralanData, ...ranapData];
   
-  // Combine patients
-  const allPatients = [
-      ...ralanPatients.map((p: any) => ({ ...p, type: 'ralan' })), 
-      ...ranapPatients.map((p: any) => ({ ...p, type: 'ranap' }))
-  ];
-
-  // 2. Fetch Prescriptions for each patient
-  const prescriptionPromises = allPatients.map(async (patient: any) => {
-      const endpointBase = patient.type === 'ranap' ? 'rawat_inap' : 'rawat_jalan';
-      const normalizedNoRawat = patient.no_rawat.replace(/\//g, '');
-
-      try {
-          const [obatRes, racikanRes] = await Promise.all([
-            fetch(`${config.baseUrl}${config.apiPath}/api/${endpointBase}/showdetail/obat/${normalizedNoRawat}`, { headers: getHeaders() }),
-            fetch(`${config.baseUrl}${config.apiPath}/api/${endpointBase}/showdetail/racikan/${normalizedNoRawat}`, { headers: getHeaders() })
-          ]);
-
-          const obatData = await obatRes.json();
-          const racikanData = await racikanRes.json();
-
-          const items = [...(obatData.data || []), ...(racikanData.data || [])];
-          
-          if (items.length > 0) {
-              // Group by no_resep
-              const groups: Record<string, any> = {};
-              items.forEach((item: any) => {
-                  if (!groups[item.no_resep]) {
-                      groups[item.no_resep] = {
-                          no_resep: item.no_resep,
-                          no_rawat: patient.no_rawat,
-                          nm_pasien: patient.nm_pasien,
-                          no_rkm_medis: patient.no_rkm_medis,
-                          tgl_peresepan: item.tgl_peresepan,
-                          jam_peresepan: item.jam_peresepan,
-                          status: patient.type, // 'ralan' or 'ranap'
-                          tgl_penyerahan: item.tgl_penyerahan, // Check one item
-                          items: []
-                      };
-                  }
-                  groups[item.no_resep].items.push(item);
-              });
-              return Object.values(groups);
-          }
-          return [];
-      } catch (e) {
-          console.error(`Failed to fetch resep for ${patient.no_rawat}`, e);
-          return [];
-      }
-  });
-
-  const results = await Promise.all(prescriptionPromises);
-  const flatResults = results.flat();
-
   // Sort by date/time desc
-  flatResults.sort((a, b) => {
+  combined.sort((a, b) => {
       const dateA = new Date(`${a.tgl_peresepan} ${a.jam_peresepan}`).getTime();
       const dateB = new Date(`${b.tgl_peresepan} ${b.jam_peresepan}`).getTime();
       return dateB - dateA;
   });
 
   return {
-      draw: 1,
-      recordsTotal: flatResults.length,
-      recordsFiltered: flatResults.length,
-      data: flatResults
+      status: 'success',
+      data: combined,
+      total: combined.length // This is approximate since pagination is per-endpoint
   };
 };
 
@@ -1230,8 +1209,9 @@ export const getResepDetailItems = async (noResep: string, noRawat: string, stat
   return { status: 'success', data: result };
 };
 
-export const validasiResep = async (data: any) => {
-  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/apotek_ralan/validasiresep`, {
+export const validasiResep = async (data: any, type: 'ralan' | 'ranap' = 'ralan') => {
+  const endpoint = type === 'ranap' ? 'apotek_ranap' : 'apotek_ralan';
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/${endpoint}/validasiresep`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(data),
@@ -1246,8 +1226,9 @@ export const validasiResep = async (data: any) => {
   }
 };
 
-export const hapusResep = async (data: any) => {
-  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/apotek_ralan/hapusresep`, {
+export const hapusResep = async (data: any, type: 'ralan' | 'ranap' = 'ralan') => {
+  const endpoint = type === 'ranap' ? 'apotek_ranap' : 'apotek_ralan';
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/${endpoint}/hapusresep`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(data),

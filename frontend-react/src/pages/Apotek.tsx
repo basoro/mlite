@@ -9,16 +9,21 @@ import {
   Paperclip,
   Trash2,
   Check,
-  Clock
+  Clock,
+  BedDouble,
+  Stethoscope
 } from 'lucide-react';
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { 
   getGudangBarangList, 
   getRawatJalanList, 
+  getKamarInapList,
   GudangBarang, 
   getRawatJalanResep,
-  getResepList,
+  getRawatInapResep,
+  getApotekRalanList,
+  getApotekRanapList,
   getResepDetailItems,
   validasiResep,
   hapusResep
@@ -48,13 +53,11 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
@@ -70,6 +73,7 @@ interface PrescriptionItem {
 
 const Apotek: React.FC = () => {
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState<"ralan" | "ranap">("ralan");
   const [date, setDate] = useState<{ from: Date; to: Date }>({
     from: new Date(),
     to: new Date(),
@@ -98,7 +102,19 @@ const Apotek: React.FC = () => {
       format(date.to, 'yyyy-MM-dd'),
       0,
       100
-    )
+    ),
+    enabled: activeTab === 'ralan'
+  });
+
+  const { data: rawatInapData } = useQuery({
+    queryKey: ['rawat-inap', date.from, date.to],
+    queryFn: () => getKamarInapList(
+      format(date.from, 'yyyy-MM-dd'),
+      format(date.to, 'yyyy-MM-dd'),
+      0,
+      100
+    ),
+    enabled: activeTab === 'ranap'
   });
 
   const { data: gudangData } = useQuery({
@@ -107,17 +123,13 @@ const Apotek: React.FC = () => {
   });
 
   const { data: resepData, refetch: refetchResep } = useQuery({
-    queryKey: ['resep-list', date.from, date.to],
-    queryFn: () => getResepList(
-      1, 
-      100, 
-      '', 
-      format(date.from, 'yyyy-MM-dd'),
-      format(date.to, 'yyyy-MM-dd')
-    )
+    queryKey: ['resep-list', activeTab, date.from, date.to],
+    queryFn: () => activeTab === 'ralan' 
+      ? getApotekRalanList(1, 100, '', format(date.from, 'yyyy-MM-dd'), format(date.to, 'yyyy-MM-dd'))
+      : getApotekRanapList(1, 100, '', format(date.from, 'yyyy-MM-dd'), format(date.to, 'yyyy-MM-dd'))
   });
 
-  const patients = rawatJalanData?.data || [];
+  const patients = activeTab === 'ralan' ? (rawatJalanData?.data || []) : (rawatInapData?.data || []);
   const medicines: GudangBarang[] = gudangData?.data || [];
   const resepList = resepData?.data || [];
 
@@ -132,7 +144,10 @@ const Apotek: React.FC = () => {
     if (selectedPatient) {
       const fetchPrescriptions = async () => {
         try {
-          const result = await getRawatJalanResep(selectedPatient);
+          const result = activeTab === 'ralan' 
+            ? await getRawatJalanResep(selectedPatient)
+            : await getRawatInapResep(selectedPatient);
+            
           if (result.status === 'success') {
             setSavedPrescriptions(result.data);
           }
@@ -144,7 +159,7 @@ const Apotek: React.FC = () => {
     } else {
       setSavedPrescriptions({ obat: [], racikan: [] });
     }
-  }, [selectedPatient]);
+  }, [selectedPatient, activeTab]);
 
   // Fetch detail items when a request is selected
   useEffect(() => {
@@ -152,11 +167,11 @@ const Apotek: React.FC = () => {
       const fetchDetails = async () => {
         setIsDetailLoading(true);
         try {
-          // Pass no_rawat and status (default to 'ralan' if missing)
+          // Pass no_rawat and status
           const result = await getResepDetailItems(
             selectedRequest.no_resep, 
             selectedRequest.no_rawat, 
-            selectedRequest.status || 'ralan'
+            activeTab
           );
           if (result.status === 'success') {
             setRequestDetails(result.data);
@@ -171,7 +186,8 @@ const Apotek: React.FC = () => {
     } else {
       setRequestDetails([]);
     }
-  }, [selectedRequest]);
+  }, [selectedRequest, activeTab]);
+
 
   // Group saved prescriptions by no_resep
   const groupedSavedPrescriptions = React.useMemo(() => {
@@ -290,7 +306,7 @@ const Apotek: React.FC = () => {
             // For now, we assume simple validation of existing items
         };
         
-        const result = await validasiResep(payload);
+        const result = await validasiResep(payload, activeTab);
         
         if (result.status === 'success' || !result.status) { // Handle void response
             toast({
@@ -326,7 +342,7 @@ const Apotek: React.FC = () => {
               jam_peresepan: selectedRequest.jam_peresepan
           };
 
-          const result = await hapusResep(payload);
+          const result = await hapusResep(payload, activeTab);
            if (result.status === 'success' || !result.status) {
               toast({
                   title: "Berhasil",
@@ -403,6 +419,21 @@ const Apotek: React.FC = () => {
           Kelola resep obat, validasi permintaan, dan penyerahan obat ke pasien
         </p>
       </div>
+
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "ralan" | "ranap")} className="w-full">
+        <div className="flex items-center justify-between mb-4">
+            <TabsList className="grid w-[400px] grid-cols-2">
+              <TabsTrigger value="ralan" className="flex items-center gap-2">
+                <Stethoscope className="h-4 w-4" />
+                Rawat Jalan
+              </TabsTrigger>
+              <TabsTrigger value="ranap" className="flex items-center gap-2">
+                <BedDouble className="h-4 w-4" />
+                Rawat Inap
+              </TabsTrigger>
+            </TabsList>
+        </div>
+      </Tabs>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column */}
