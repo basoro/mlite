@@ -1222,8 +1222,8 @@ class Admin extends AdminModule
             ->select('dokter.nm_dokter')
             ->offset($offset)
             ->limit($per_page)
-            ->orderBy('resep_obat.tgl_peresepan', 'DESC')
-            ->orderBy('resep_obat.jam_peresepan', 'DESC')
+            ->desc('resep_obat.tgl_peresepan')
+            ->desc('resep_obat.jam_peresepan')
             ->toArray();
 
         foreach ($data as &$row) {
