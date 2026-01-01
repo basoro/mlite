@@ -184,7 +184,7 @@ class Admin extends AdminModule
         $obat = $this->db('detail_pemberian_obat')
             ->join('databarang', 'databarang.kode_brng = detail_pemberian_obat.kode_brng')
             ->where('no_rawat', $no_rawat)
-            ->where('status', 'Ranap')
+            ->where('detail_pemberian_obat.status', 'Ranap')
             ->toArray();
             
         foreach ($obat as $o) {
