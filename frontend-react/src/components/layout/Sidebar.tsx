@@ -78,7 +78,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose, isCollapsed = false }) => {
           </div>
           {!isCollapsed && (
             <div className="animate-in fade-in slide-in-from-left-4 duration-300">
-              <h1 className="text-sidebar-foreground font-bold text-lg">mKLINIK</h1>
+              <h1 className="text-sidebar-foreground font-bold text-lg">mLITE React</h1>
               <p className="text-sidebar-muted text-xs">Management System</p>
             </div>
           )}

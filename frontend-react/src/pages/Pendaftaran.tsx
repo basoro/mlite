@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { getRawatJalanList, getIgdList, getMasterList, getPasienList, createRawatJalan, updateRawatJalan, deleteRawatJalan, createIgd, updateIgd, deleteIgd } from '@/lib/api';
 
 interface ScheduleItem {
@@ -568,108 +569,112 @@ const Pendaftaran: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {schedules.map((item) => (
-                  <div key={item.no_rawat} className="border rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors">
-                    <div className="flex flex-col md:flex-row justify-between gap-4">
-                      <div className="flex gap-4 flex-1">
-                        <div className="flex flex-col items-center gap-1 w-24 flex-shrink-0">
-                          <div className="font-bold text-lg text-gray-700">
-                            {item.jam_reg}
-                          </div>
-                          <div className="bg-gray-200 text-gray-600 text-xl font-bold w-14 h-14 flex items-center justify-center rounded-sm border-l-2 border-gray-400">
-                            {item.no_reg}
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-col gap-1 flex-1">
-                          <div className="flex items-center gap-3 h-[28px]">
-                            <Badge variant="secondary" className={`
-                                ${item.nm_poli.toLowerCase().includes('gigi') ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}
-                                hover:bg-opacity-80 border-none px-3 py-1 rounded-full text-xs font-medium
-                              `}>
-                                {item.nm_poli}
-                              </Badge>
-                              <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition-colors ${getStatusColor(item.stts)}`}>
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <div className="flex items-center gap-1 cursor-pointer w-full justify-between">
-                                      <span>{item.stts}</span>
-                                      <ChevronDown className="w-3 h-3" />
-                                    </div>
-                                  </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  {formattedDate > format(new Date(), 'yyyy-MM-dd') ? (
-                                    ['Terdaftar', 'Belum', 'Batal', 'Dokter Berhalangan'].map((status) => (
-                                      <DropdownMenuItem key={status} onClick={() => handleStatusChange(item.no_rawat, status)}>
-                                        {status}
-                                      </DropdownMenuItem>
-                                    ))
-                                  ) : (
-                                    ['Belum', 'Sudah', 'Batal', 'Berkas Diterima', 'Dirujuk', 'Meninggal', 'Dirawat', 'Pulang Paksa'].map((status) => (
-                                      <DropdownMenuItem key={status} onClick={() => handleStatusChange(item.no_rawat, status)}>
-                                        {status}
-                                      </DropdownMenuItem>
-                                    ))
-                                  )}
-                                </DropdownMenuContent>
-                              </DropdownMenu>
+                <ScrollArea className="h-[calc(100vh-380px)]">
+                  <div className="space-y-4 pr-4">
+                    {schedules.map((item) => (
+                      <div key={item.no_rawat} className="border rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors">
+                        <div className="flex flex-col md:flex-row justify-between gap-4">
+                          <div className="flex gap-4 flex-1">
+                            <div className="flex flex-col items-center gap-1 w-24 flex-shrink-0">
+                              <div className="font-bold text-lg text-gray-700">
+                                {item.jam_reg}
+                              </div>
+                              <div className="bg-gray-200 text-gray-600 text-xl font-bold w-14 h-14 flex items-center justify-center rounded-sm border-l-2 border-gray-400">
+                                {item.no_reg}
+                              </div>
+                            </div>
+                            
+                            <div className="flex flex-col gap-1 flex-1">
+                              <div className="flex items-center gap-3 h-[28px]">
+                                <Badge variant="secondary" className={`
+                                    ${item.nm_poli.toLowerCase().includes('gigi') ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}
+                                    hover:bg-opacity-80 border-none px-3 py-1 rounded-full text-xs font-medium
+                                  `}>
+                                    {item.nm_poli}
+                                  </Badge>
+                                  <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition-colors ${getStatusColor(item.stts)}`}>
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <div className="flex items-center gap-1 cursor-pointer w-full justify-between">
+                                          <span>{item.stts}</span>
+                                          <ChevronDown className="w-3 h-3" />
+                                        </div>
+                                      </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      {formattedDate > format(new Date(), 'yyyy-MM-dd') ? (
+                                        ['Terdaftar', 'Belum', 'Batal', 'Dokter Berhalangan'].map((status) => (
+                                          <DropdownMenuItem key={status} onClick={() => handleStatusChange(item.no_rawat, status)}>
+                                            {status}
+                                          </DropdownMenuItem>
+                                        ))
+                                      ) : (
+                                        ['Belum', 'Sudah', 'Batal', 'Berkas Diterima', 'Dirujuk', 'Meninggal', 'Dirawat', 'Pulang Paksa'].map((status) => (
+                                          <DropdownMenuItem key={status} onClick={() => handleStatusChange(item.no_rawat, status)}>
+                                            {status}
+                                          </DropdownMenuItem>
+                                        ))
+                                      )}
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center gap-2 h-[40px]">
+                                <User className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                                <span className="font-bold text-gray-800">{item.nm_pasien}</span>
+                                <span className="text-gray-400 text-sm">({item.no_rkm_medis})</span>
+                                <span className="text-gray-400 text-sm">| {item.no_rawat}</span>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <Badge variant="outline" className="text-xs font-normal border-purple-200 text-purple-700 bg-purple-50">
+                                    {item.png_jawab}
+                                </Badge>
+                                <Badge variant="outline" className={`text-xs font-normal ${
+                                    item.status_bayar === 'Sudah Bayar' ? 'border-emerald-200 text-emerald-700 bg-emerald-50' : 
+                                    'border-orange-200 text-orange-700 bg-orange-50'
+                                }`}>
+                                    {item.status_bayar}
+                                </Badge>
+                              </div>
                             </div>
                           </div>
-                          
-                          <div className="flex items-center gap-2 h-[40px]">
-                            <User className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                            <span className="font-bold text-gray-800">{item.nm_pasien}</span>
-                            <span className="text-gray-400 text-sm">({item.no_rkm_medis})</span>
-                            <span className="text-gray-400 text-sm">| {item.no_rawat}</span>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="outline" className="text-xs font-normal border-purple-200 text-purple-700 bg-purple-50">
-                                {item.png_jawab}
-                            </Badge>
-                            <Badge variant="outline" className={`text-xs font-normal ${
-                                item.status_bayar === 'Sudah Bayar' ? 'border-emerald-200 text-emerald-700 bg-emerald-50' : 
-                                'border-orange-200 text-orange-700 bg-orange-50'
-                            }`}>
-                                {item.status_bayar}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
 
-                      <div className="flex flex-col items-end gap-3 justify-between">
-                        <div className="flex gap-2">
-                          <Button 
-                            variant="outline" 
-                            size="icon" 
-                            className="h-8 w-8 text-gray-500 hover:text-gray-700"
-                            onClick={() => handleEdit(item)}
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="icon" 
-                            className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 hover:border-red-200"
-                            onClick={() => handleDelete(item.no_rawat)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                        
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm" className="h-8 text-blue-600 border-blue-200 bg-blue-50 hover:bg-blue-100 gap-1.5 text-xs font-medium">
-                            <Activity className="w-3.5 h-3.5" />
-                            BPJS
-                          </Button>
-                          <Button variant="outline" size="sm" className="h-8 text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 gap-1.5 text-xs font-medium">
-                            <User className="w-3.5 h-3.5" />
-                            Satu Sehat
-                          </Button>
+                          <div className="flex flex-col items-end gap-3 justify-between">
+                            <div className="flex gap-2">
+                              <Button 
+                                variant="outline" 
+                                size="icon" 
+                                className="h-8 w-8 text-gray-500 hover:text-gray-700"
+                                onClick={() => handleEdit(item)}
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="icon" 
+                                className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 hover:border-red-200"
+                                onClick={() => handleDelete(item.no_rawat)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                            
+                            <div className="flex gap-2">
+                              <Button variant="outline" size="sm" className="h-8 text-blue-600 border-blue-200 bg-blue-50 hover:bg-blue-100 gap-1.5 text-xs font-medium">
+                                <Activity className="w-3.5 h-3.5" />
+                                BPJS
+                              </Button>
+                              <Button variant="outline" size="sm" className="h-8 text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 gap-1.5 text-xs font-medium">
+                                <User className="w-3.5 h-3.5" />
+                                Satu Sehat
+                              </Button>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
+                </ScrollArea>
                 {schedules.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     Tidak ada pendaftaran untuk tanggal ini

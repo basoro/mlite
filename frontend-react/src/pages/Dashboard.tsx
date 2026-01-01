@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { 
@@ -17,7 +17,9 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { getRawatJalanList } from '@/lib/api';
+import { getRawatJalanList, getIgdList } from '@/lib/api';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Stat Card Component
 interface StatCardProps {
@@ -138,19 +140,29 @@ const AlertCard: React.FC<AlertCardProps> = ({ title, items, type }) => (
 );
 
 const Dashboard: React.FC = () => {
+  const [activeTab, setActiveTab] = useState('poliklinik');
   const today = format(new Date(), 'yyyy-MM-dd');
 
-  const { data: scheduleData, isLoading } = useQuery({
+  const { data: scheduleData, isLoading: isRalanLoading } = useQuery({
     queryKey: ['rawatJalan', today],
     queryFn: () => getRawatJalanList(today, today, 0, 100),
   });
 
-  const schedules = scheduleData?.data || [];
+  const { data: igdScheduleData, isLoading: isIgdLoading } = useQuery({
+    queryKey: ['igd', today],
+    queryFn: () => getIgdList(today, today, 0, 100),
+  });
 
-  // Calculate stats
-  const totalPasien = schedules.length;
-  const menunggu = schedules.filter((s: any) => s.stts === 'Belum').length;
-  const selesai = schedules.filter((s: any) => s.stts === 'Sudah').length;
+  const ralanSchedules = scheduleData?.data || [];
+  const igdSchedules = igdScheduleData?.data || [];
+  
+  const currentSchedules = activeTab === 'poliklinik' ? ralanSchedules : igdSchedules;
+  const isLoading = activeTab === 'poliklinik' ? isRalanLoading : isIgdLoading;
+
+  // Calculate stats based on active tab
+  const totalPasien = currentSchedules.length;
+  const menunggu = currentSchedules.filter((s: any) => s.stts === 'Belum').length;
+  const selesai = currentSchedules.filter((s: any) => s.stts === 'Sudah').length;
   // Pendapatan logic can be added later if API supports it
   
   const stats = {
@@ -162,7 +174,7 @@ const Dashboard: React.FC = () => {
 
   const quickActions: QuickActionProps[] = [
     { icon: UserPlus, label: 'Registrasi Pasien Baru', href: '/pasien' },
-    { icon: CalendarPlus, label: 'Buat Jadwal Baru', href: '/jadwal' },
+    { icon: CalendarPlus, label: 'Buat Jadwal Baru', href: '/pendaftaran' },
     { icon: Activity, label: 'Mulai Pemeriksaan', href: '/poliklinik' },
     { icon: FileText, label: 'Lihat Laporan', href: '/laporan' },
   ];
@@ -231,20 +243,30 @@ const Dashboard: React.FC = () => {
           <p className="text-sm text-muted-foreground mb-4">
             Daftar pasien yang dijadwalkan hari ini
           </p>
+          
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-4">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="poliklinik">Poliklinik</TabsTrigger>
+              <TabsTrigger value="igd">IGD</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
           <div className="space-y-3">
-            {schedules.length > 0 ? (
-              schedules.map((schedule: any, index: number) => (
-                <ScheduleItem 
-                  key={index} 
-                  time={schedule.jam_reg}
-                  patientName={schedule.nm_pasien}
-                  type={schedule.nm_poli}
-                  status={schedule.stts}
-                />
-              ))
-            ) : (
-              <p className="text-muted-foreground text-center py-4">Tidak ada jadwal hari ini</p>
-            )}
+            <ScrollArea className="h-[450px]">
+              {currentSchedules.length > 0 ? (
+                currentSchedules.map((schedule: any, index: number) => (
+                  <ScheduleItem 
+                    key={index} 
+                    time={schedule.jam_reg}
+                    patientName={schedule.nm_pasien}
+                    type={schedule.nm_poli}
+                    status={schedule.stts}
+                  />
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-4">Tidak ada jadwal hari ini</p>
+              )}
+            </ScrollArea>
           </div>
         </div>
 

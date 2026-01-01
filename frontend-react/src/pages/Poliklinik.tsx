@@ -1187,7 +1187,7 @@ const Pemeriksaan: React.FC = () => {
             </div>
 
             {/* Queue List */}
-            <div className="space-y-3 max-h-[600px] overflow-y-auto">
+            <div className="space-y-3 h-[calc(100vh-470px)] overflow-y-auto">
               {isQueueLoading ? (
                  <div className="flex justify-center py-4">
                     <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
