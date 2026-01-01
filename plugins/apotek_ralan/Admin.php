@@ -1203,12 +1203,11 @@ class Admin extends AdminModule
         $tgl_akhir = isset($_GET['tgl_akhir']) ? $_GET['tgl_akhir'] : date('Y-m-d');
 
         $query = $this->db('resep_obat')
-            ->leftJoin('reg_periksa', 'reg_periksa.no_rawat = resep_obat.no_rawat')
-            ->leftJoin('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
-            ->leftJoin('dokter', 'dokter.kd_dokter = resep_obat.kd_dokter')
+            // ->leftJoin('reg_periksa', 'reg_periksa.no_rawat = resep_obat.no_rawat')
+            // ->leftJoin('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+            // ->leftJoin('dokter', 'dokter.kd_dokter = resep_obat.kd_dokter')
             ->where(function($query) {
-                $query->where('resep_obat.status', 'ralan')
-                      ->orWhere('resep_obat.status', 'Ralan');
+                $query->where('resep_obat.status', 'ralan');
             })
             ->where('resep_obat.tgl_peresepan', '>=', $tgl_awal)
             ->where('resep_obat.tgl_peresepan', '<=', $tgl_akhir);
@@ -1220,9 +1219,9 @@ class Admin extends AdminModule
         $total = $query->count();
         $data = $query
             ->select('resep_obat.*')
-            ->select('pasien.nm_pasien')
-            ->select('pasien.no_rkm_medis')
-            ->select('dokter.nm_dokter')
+            // ->select('pasien.nm_pasien')
+            // ->select('pasien.no_rkm_medis')
+            // ->select('dokter.nm_dokter')
             ->offset($offset)
             ->limit($per_page)
             ->desc('resep_obat.tgl_peresepan')
