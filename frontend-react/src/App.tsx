@@ -10,6 +10,7 @@ import Dashboard from "@/pages/Dashboard";
 import Pasien from "@/pages/Pasien";
 import Pendaftaran from "@/pages/Pendaftaran";
 import Poliklinik from "@/pages/Poliklinik";
+import Igd from "@/pages/Igd";
 import KamarInap from "@/pages/KamarInap";
 import Farmasi from "@/pages/Farmasi";
 import Inventory from "@/pages/Inventory";
@@ -63,6 +64,14 @@ const App = () => (
               element={
                 <MainLayout>
                   <Poliklinik />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/igd"
+              element={
+                <MainLayout>
+                  <Igd />
                 </MainLayout>
               }
             />

@@ -388,6 +388,43 @@ export const deleteKamarInapLaporanOperasi = async (data: any) => {
   return result;
 };
 
+export const getRawatInapResep = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const [obatRes, racikanRes] = await Promise.all([
+    fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/showdetail/obat/${normalizedNoRawat}`, { headers: getHeaders() }),
+    fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/showdetail/racikan/${normalizedNoRawat}`, { headers: getHeaders() })
+  ]);
+  
+  const obatData = await obatRes.json();
+  const racikanData = await racikanRes.json();
+  
+  return {
+    status: 'success',
+    data: {
+      obat: obatData.data || [],
+      racikan: racikanData.data || []
+    }
+  };
+};
+
+export const deleteRawatInapResep = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/deletedetail`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus resep');
+  }
+  return result;
+};
+
 export const getPasienDetail = async (noRkmMedis: string) => {
   const response = await fetch(`${config.baseUrl}${config.apiPath}/api/pasien/show/${noRkmMedis}`, {
     headers: getHeaders(),
@@ -636,43 +673,6 @@ export const getRawatJalanResep = async (noRawat: string) => {
 
 export const deleteRawatJalanResep = async (data: any) => {
   const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_jalan/deletedetail`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify(data),
-  });
-  
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const result = await response.json();
-  if (result.status === 'error') {
-    throw new Error(result.message || 'Gagal menghapus resep');
-  }
-  return result;
-};
-
-export const getRawatInapResep = async (noRawat: string) => {
-  const normalizedNoRawat = noRawat.replace(/\//g, '');
-  const [obatRes, racikanRes] = await Promise.all([
-    fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/showdetail/obat/${normalizedNoRawat}`, { headers: getHeaders() }),
-    fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/showdetail/racikan/${normalizedNoRawat}`, { headers: getHeaders() })
-  ]);
-  
-  const obatData = await obatRes.json();
-  const racikanData = await racikanRes.json();
-  
-  return {
-    status: 'success',
-    data: {
-      obat: obatData.data || [],
-      racikan: racikanData.data || []
-    }
-  };
-};
-
-export const deleteRawatInapResep = async (data: any) => {
-  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/rawat_inap/deletedetail`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(data),
@@ -1287,4 +1287,450 @@ export const hapusResep = async (data: any, type: 'ralan' | 'ranap' = 'ralan') =
   } catch (e) {
     return { status: response.ok ? 'success' : 'error', message: text };
   }
+};
+
+
+// IGD API Endpoints
+
+export const getIgdList = async (startDate: string, endDate: string, page = 0, length = 10, search = '') => {
+  const params = new URLSearchParams({
+    draw: '1',
+    start: page.toString(),
+    length: length.toString(),
+    tgl_awal: startDate,
+    tgl_akhir: endDate,
+    search,
+  });
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/list?${params}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
+export const getIgdDetail = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/show/${normalizedNoRawat}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
+export const getIgdTindakan = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/showdetail/tindakan/${normalizedNoRawat}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
+export const getIgdSoap = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/showsoap/${normalizedNoRawat}`, {
+    headers: getHeaders(),
+  });
+  return response.json();
+};
+
+export const createIgd = async (data: {
+  no_rkm_medis: string;
+  kd_poli: string;
+  kd_dokter: string;
+  kd_pj: string;
+  tgl_registrasi?: string;
+  jam_reg?: string;
+}) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/create`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal membuat jadwal IGD');
+  }
+  return result;
+};
+
+export const updateIgd = async (noRawat: string, data: Record<string, any>) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/update/${normalizedNoRawat}`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal memperbarui jadwal IGD');
+  }
+  return result;
+};
+
+export const deleteIgd = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/delete/${normalizedNoRawat}`, {
+    method: 'DELETE',
+    headers: getHeaders(),
+  });
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus jadwal IGD');
+  }
+  return result;
+};
+
+export const saveIgdSOAP = async (data: {
+  no_rawat: string;
+  tgl_perawatan: string;
+  jam_rawat: string;
+  suhu_tubuh?: string;
+  tensi?: string;
+  nadi?: string;
+  respirasi?: string;
+  tinggi?: string;
+  berat?: string;
+  gcs?: string;
+  keluhan?: string;
+  pemeriksaan?: string;
+  alergi?: string;
+  lingkar_perut?: string;
+  rtl?: string;
+  penilaian?: string;
+  instruksi?: string;
+  evaluasi?: string;
+  nip?: string;
+}) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/savesoap`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan SOAP IGD');
+  }
+  return result;
+};
+
+export const deleteIgdSOAP = async (data: {
+  no_rawat: string;
+  tgl_perawatan: string;
+  jam_rawat: string;
+}) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/deletesoap`, {
+    method: 'DELETE',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus SOAP IGD');
+  }
+  return result;
+};
+
+export const saveIgdTindakan = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/savedetail`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan tindakan IGD');
+  }
+  return result;
+};
+
+export const deleteIgdTindakan = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/deletedetail`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus tindakan IGD');
+  }
+  return result;
+};
+
+export const getIgdResep = async (noRawat: string) => {
+  const normalizedNoRawat = noRawat.replace(/\//g, '');
+  const [obatRes, racikanRes] = await Promise.all([
+    fetch(`${config.baseUrl}${config.apiPath}/api/igd/showdetail/obat/${normalizedNoRawat}`, { headers: getHeaders() }),
+    fetch(`${config.baseUrl}${config.apiPath}/api/igd/showdetail/racikan/${normalizedNoRawat}`, { headers: getHeaders() })
+  ]);
+  
+  const obatData = await obatRes.json();
+  const racikanData = await racikanRes.json();
+  
+  return {
+    status: 'success',
+    data: {
+      obat: obatData.data || [],
+      racikan: racikanData.data || []
+    }
+  };
+};
+
+export const deleteIgdResep = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/deletedetail`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus resep IGD');
+  }
+  return result;
+};
+
+export const saveIgdDiagnosa = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/savediagnosa`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan diagnosa IGD');
+  }
+  return result;
+};
+
+export const deleteIgdDiagnosa = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/deletediagnosa`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus diagnosa IGD');
+  }
+  return result;
+};
+
+export const saveIgdProsedur = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/saveprosedur`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan prosedur IGD');
+  }
+  return result;
+};
+
+export const deleteIgdProsedur = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/deleteprosedur`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus prosedur IGD');
+  }
+  return result;
+};
+
+export const saveIgdCatatan = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/savecatatan`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan catatan IGD');
+  }
+  return result;
+};
+
+export const deleteIgdCatatan = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/deletecatatan`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus catatan IGD');
+  }
+  return result;
+};
+
+export const saveIgdBerkas = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/saveberkas`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan berkas IGD');
+  }
+  return result;
+};
+
+export const deleteIgdBerkas = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/deleteberkas`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus berkas IGD');
+  }
+  return result;
+};
+
+export const saveIgdResume = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/saveresume`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan resume IGD');
+  }
+  return result;
+};
+
+export const saveIgdRujukanInternal = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/saverujukaninternal`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan rujukan internal IGD');
+  }
+  return result;
+};
+
+export const deleteIgdRujukanInternal = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/deleterujukaninternal`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus rujukan internal IGD');
+  }
+  return result;
+};
+
+export const saveIgdLaporanOperasi = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/savelaporanoperasi`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menyimpan laporan operasi IGD');
+  }
+  return result;
+};
+
+export const deleteIgdLaporanOperasi = async (data: any) => {
+  const response = await fetch(`${config.baseUrl}${config.apiPath}/api/igd/deletelaporanoperasi`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (result.status === 'error') {
+    throw new Error(result.message || 'Gagal menghapus laporan operasi IGD');
+  }
+  return result;
 };

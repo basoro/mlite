@@ -16,7 +16,8 @@ import {
   Heart,
   Zap,
   ClipboardList,
-  BedDouble
+  BedDouble,
+  Ambulance
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -32,6 +33,7 @@ const mainMenuItems: MenuItem[] = [
   { icon: Users, label: 'Pasien', path: '/pasien' },
   { icon: Calendar, label: 'Pendaftaran', path: '/pendaftaran' },
   { icon: Stethoscope, label: 'Poliklinik', path: '/poliklinik' },
+  { icon: Ambulance, label: 'IGD', path: '/igd' },
   { icon: BedDouble, label: 'Kamar Inap', path: '/kamar-inap' },
   { icon: Pill, label: 'Apotek', path: '/apotek' },
   { icon: Receipt, label: 'Kasir', path: '/kasir' },

@@ -56,7 +56,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useToast } from '@/hooks/use-toast';
-import { getRawatJalanList, getRiwayatPerawatan, saveSOAP, deleteSOAP, getMasterList, saveTindakan, getRawatJalanTindakan, deleteTindakan, saveDiagnosa, saveProsedur, saveCatatan, saveBerkas, saveResume, saveRujukanInternal, saveLaporanOperasi, getRawatJalanSoap, getRawatJalanResep, deleteRawatJalanResep } from '@/lib/api';
+import { getIgdList, getRiwayatPerawatan, saveIgdSOAP, deleteIgdSOAP, getMasterList, saveIgdTindakan, getIgdTindakan, deleteIgdTindakan, saveIgdDiagnosa, saveIgdProsedur, saveIgdCatatan, saveIgdBerkas, saveIgdResume, saveIgdRujukanInternal, saveIgdLaporanOperasi, getIgdSoap, getIgdResep, deleteIgdResep } from '@/lib/api';
 
 // Queue Item Component
 interface QueueItemProps {
@@ -75,9 +75,7 @@ const QueueItem: React.FC<QueueItemProps> = ({ patient, isSelected, onClick }) =
     }`}
   >
     <div className="flex items-start justify-between mb-2">
-      <span className="text-lg font-bold text-foreground">
-        {patient.no_reg}
-      </span>
+      <span className="text-lg font-bold text-foreground">{patient.no_reg}</span>
       <div className="flex items-center gap-2">
         <span className="text-xs text-muted-foreground">{patient.nm_poli}</span>
         <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
@@ -333,7 +331,7 @@ const HistoryItem: React.FC<{ history: any; onEdit?: (history: any, soap: any) =
     );
 };
 
-const Pemeriksaan: React.FC = () => {
+const Igd: React.FC = () => {
   const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
   const [dateFrom, setDateFrom] = useState<Date | undefined>(new Date());
   const [dateTo, setDateTo] = useState<Date | undefined>(new Date());
@@ -341,21 +339,21 @@ const Pemeriksaan: React.FC = () => {
   const queryClient = useQueryClient();
 
   // Fetch Rawat Jalan Tindakan
-  const { data: rawatJalanTindakan, refetch: refetchRawatJalanTindakan } = useQuery({
-    queryKey: ['rawatJalanTindakan', selectedPatient?.no_rawat],
-    queryFn: () => getRawatJalanTindakan(selectedPatient.no_rawat),
+  const { data: igdTindakan, refetch: refetchRawatJalanTindakan } = useQuery({
+    queryKey: ['igdTindakan', selectedPatient?.no_rawat],
+    queryFn: () => getIgdTindakan(selectedPatient.no_rawat),
     enabled: !!selectedPatient?.no_rawat
   });
 
   // Fetch Rawat Jalan SOAP
-  const { data: rawatJalanSoap, refetch: refetchRawatJalanSoap } = useQuery({
-    queryKey: ['rawatJalanSoap', selectedPatient?.no_rawat],
-    queryFn: () => getRawatJalanSoap(selectedPatient.no_rawat),
+  const { data: igdSoap, refetch: refetchRawatJalanSoap } = useQuery({
+    queryKey: ['igdSoap', selectedPatient?.no_rawat],
+    queryFn: () => getIgdSoap(selectedPatient.no_rawat),
     enabled: !!selectedPatient?.no_rawat
   });
 
-  const deleteTindakanMutation = useMutation({
-    mutationFn: (data: any) => deleteTindakan(data),
+  const deleteIgdTindakanMutation = useMutation({
+    mutationFn: (data: any) => deleteIgdTindakan(data),
     onSuccess: () => {
       toast({ title: 'Berhasil', description: 'Tindakan berhasil dihapus' });
       refetchRawatJalanTindakan();
@@ -374,18 +372,18 @@ const Pemeriksaan: React.FC = () => {
          tgl_perawatan: tindakan.tgl_perawatan,
          jam_rawat: tindakan.jam_rawat
      };
-     deleteTindakanMutation.mutate(payload);
+     deleteIgdTindakanMutation.mutate(payload);
   };
 
   // Fetch Rawat Jalan Resep
-  const { data: rawatJalanResep, refetch: refetchRawatJalanResep } = useQuery({
-    queryKey: ['rawatJalanResep', selectedPatient?.no_rawat],
-    queryFn: () => getRawatJalanResep(selectedPatient.no_rawat),
+  const { data: igdResep, refetch: refetchRawatJalanResep } = useQuery({
+    queryKey: ['igdResep', selectedPatient?.no_rawat],
+    queryFn: () => getIgdResep(selectedPatient.no_rawat),
     enabled: !!selectedPatient?.no_rawat
   });
 
   const deleteResepMutation = useMutation({
-    mutationFn: (data: any) => deleteRawatJalanResep(data),
+    mutationFn: (data: any) => deleteIgdResep(data),
     onSuccess: () => {
       toast({ title: 'Berhasil', description: 'Resep berhasil dihapus' });
       refetchRawatJalanResep();
@@ -562,7 +560,7 @@ const Pemeriksaan: React.FC = () => {
         kode_provider: localStorage.getItem('auth_username') || '',
     };
 
-    saveTindakanMutation.mutate(payload);
+    saveIgdTindakanMutation.mutate(payload);
   };
 
   const handleAddRacikanItem = () => {
@@ -600,7 +598,7 @@ const Pemeriksaan: React.FC = () => {
         kandungan: racikanData.items.map(item => ({ value: item.kandungan }))
     };
 
-    saveTindakanMutation.mutate(payload);
+    saveIgdTindakanMutation.mutate(payload);
   };
 
   // Fetch Master Data
@@ -635,22 +633,22 @@ const Pemeriksaan: React.FC = () => {
     queryFn: () => getMasterList('poliklinik', 1, 100),
   });
 
-  const saveDiagnosaMutation = useMutation({
-    mutationFn: saveDiagnosa,
+  const saveIgdDiagnosaMutation = useMutation({
+    mutationFn: saveIgdDiagnosa,
     onSuccess: () => {
         // toast({ title: 'Berhasil', description: 'Diagnosa berhasil disimpan' });
     }
   });
 
-  const saveProsedurMutation = useMutation({
-    mutationFn: saveProsedur,
+  const saveIgdProsedurMutation = useMutation({
+    mutationFn: saveIgdProsedur,
     onSuccess: () => {
         // toast({ title: 'Berhasil', description: 'Prosedur berhasil disimpan' });
     }
   });
 
-  const saveCatatanMutation = useMutation({
-    mutationFn: saveCatatan,
+  const saveIgdCatatanMutation = useMutation({
+    mutationFn: saveIgdCatatan,
     onSuccess: () => {
         toast({ title: 'Berhasil', description: 'Catatan pasien berhasil disimpan' });
         setIsCatatanModalOpen(false);
@@ -659,8 +657,8 @@ const Pemeriksaan: React.FC = () => {
     onError: (e: any) => toast({ title: 'Gagal', description: e.message, variant: 'destructive' })
   });
 
-  const saveBerkasMutation = useMutation({
-    mutationFn: saveBerkas,
+  const saveIgdBerkasMutation = useMutation({
+    mutationFn: saveIgdBerkas,
     onSuccess: () => {
         toast({ title: 'Berhasil', description: 'Berkas berhasil disimpan' });
         setIsBerkasModalOpen(false);
@@ -670,8 +668,8 @@ const Pemeriksaan: React.FC = () => {
     onError: (e: any) => toast({ title: 'Gagal', description: e.message, variant: 'destructive' })
   });
 
-  const saveResumeMutation = useMutation({
-    mutationFn: saveResume,
+  const saveIgdResumeMutation = useMutation({
+    mutationFn: saveIgdResume,
     onSuccess: () => {
         toast({ title: 'Berhasil', description: 'Resume medis berhasil disimpan' });
         setIsResumeModalOpen(false);
@@ -680,8 +678,8 @@ const Pemeriksaan: React.FC = () => {
     onError: (e: any) => toast({ title: 'Gagal', description: e.message, variant: 'destructive' })
   });
 
-  const saveRujukanMutation = useMutation({
-    mutationFn: saveRujukanInternal,
+  const saveIgdRujukanMutation = useMutation({
+    mutationFn: saveIgdRujukanInternal,
     onSuccess: () => {
         toast({ title: 'Berhasil', description: 'Rujukan internal berhasil disimpan' });
         setIsRujukanModalOpen(false);
@@ -690,8 +688,8 @@ const Pemeriksaan: React.FC = () => {
     onError: (e: any) => toast({ title: 'Gagal', description: e.message, variant: 'destructive' })
   });
 
-  const saveOperasiMutation = useMutation({
-    mutationFn: saveLaporanOperasi,
+  const saveIgdLaporanOperasiMutation = useMutation({
+    mutationFn: saveIgdLaporanOperasi,
     onSuccess: () => {
         toast({ title: 'Berhasil', description: 'Laporan operasi berhasil disimpan' });
         setIsOperasiModalOpen(false);
@@ -744,7 +742,7 @@ const Pemeriksaan: React.FC = () => {
       try {
           // Save ICD 10
           for (let i = 0; i < icd10List.length; i++) {
-              await saveDiagnosaMutation.mutateAsync({
+              await saveIgdDiagnosaMutation.mutateAsync({
                   no_rawat: selectedPatient.no_rawat,
                   kd_penyakit: icd10List[i].kd_penyakit,
                   status: 'Ralan', 
@@ -755,7 +753,7 @@ const Pemeriksaan: React.FC = () => {
 
           // Save ICD 9
           for (let i = 0; i < icd9List.length; i++) {
-              await saveProsedurMutation.mutateAsync({
+              await saveIgdProsedurMutation.mutateAsync({
                   no_rawat: selectedPatient.no_rawat,
                   kode: icd9List[i].kode,
                   status: 'Ralan',
@@ -774,7 +772,7 @@ const Pemeriksaan: React.FC = () => {
 
   const handleSaveCatatan = () => {
       if (!selectedPatient) return;
-      saveCatatanMutation.mutate({
+      saveIgdCatatanMutation.mutate({
           no_rawat: selectedPatient.no_rawat,
           catatan: catatanPasien
       });
@@ -782,7 +780,7 @@ const Pemeriksaan: React.FC = () => {
 
   const handleSaveBerkas = () => {
       if (!selectedPatient) return;
-      saveBerkasMutation.mutate({
+      saveIgdBerkasMutation.mutate({
           no_rawat: selectedPatient.no_rawat,
           judul: berkasJudul,
           deskripsi: berkasDeskripsi
@@ -791,7 +789,7 @@ const Pemeriksaan: React.FC = () => {
 
   const handleSaveResume = () => {
       if (!selectedPatient) return;
-      saveResumeMutation.mutate({
+      saveIgdResumeMutation.mutate({
           no_rawat: selectedPatient.no_rawat,
           ...resumeData
       });
@@ -799,27 +797,27 @@ const Pemeriksaan: React.FC = () => {
 
   const handleSaveRujukan = () => {
       if (!selectedPatient) return;
-      saveRujukanMutation.mutate({
+      saveIgdRujukanMutation.mutate({
           no_rawat: selectedPatient.no_rawat,
           ...rujukanData
       });
   };
 
-  const handleSaveOperasi = () => {
+  const handleSaveIgdOperasi = () => {
       if (!selectedPatient) return;
-      saveOperasiMutation.mutate({
+      saveIgdLaporanOperasiMutation.mutate({
           no_rawat: selectedPatient.no_rawat,
           ...operasiData
       });
   };
 
-  const saveTindakanMutation = useMutation({
-    mutationFn: (data: any) => saveTindakan(data),
+  const saveIgdTindakanMutation = useMutation({
+    mutationFn: (data: any) => saveIgdTindakan(data),
     onSuccess: () => {
       toast({ title: 'Berhasil', description: 'Tindakan berhasil disimpan' });
       queryClient.invalidateQueries({ queryKey: ['riwayatPerawatan'] });
-      queryClient.invalidateQueries({ queryKey: ['rawatJalanTindakan'] });
-      queryClient.invalidateQueries({ queryKey: ['rawatJalanResep'] });
+      queryClient.invalidateQueries({ queryKey: ['igdTindakan'] });
+      queryClient.invalidateQueries({ queryKey: ['igdResep'] });
       // Reset form (optional, maybe keep provider/date)
       setTindakanData(prev => ({
         ...prev,
@@ -833,7 +831,7 @@ const Pemeriksaan: React.FC = () => {
 
   // Reset forms on success (hook into existing mutation)
   useEffect(() => {
-    if (saveTindakanMutation.isSuccess) {
+    if (saveIgdTindakanMutation.isSuccess) {
         setObatData(prev => ({ ...prev, kode_brng: '', jml: '', aturan_pakai: '' }));
         setRacikanData({
             nama_racik: '',
@@ -845,7 +843,7 @@ const Pemeriksaan: React.FC = () => {
             search_obat: ''
         });
     }
-  }, [saveTindakanMutation.isSuccess]);
+  }, [saveIgdTindakanMutation.isSuccess]);
 
   const handleTindakanSubmit = () => {
     if (!selectedPatient) return;
@@ -863,7 +861,7 @@ const Pemeriksaan: React.FC = () => {
         kode_provider2: tindakanData.provider === 'rawat_jl_drpr' ? tindakanData.kode_provider2 : '',
     };
     
-    saveTindakanMutation.mutate(payload);
+    saveIgdTindakanMutation.mutate(payload);
   };
 
   const handleTindakanChange = (field: string, value: string) => {
@@ -883,8 +881,8 @@ const Pemeriksaan: React.FC = () => {
 
   // Fetch Queue (Rawat Jalan)
   const { data: queueData, isLoading: isQueueLoading } = useQuery({
-    queryKey: ['rawatJalan', formattedDateFrom, formattedDateTo],
-    queryFn: () => getRawatJalanList(formattedDateFrom, formattedDateTo, 0, 100),
+    queryKey: ['igd', formattedDateFrom, formattedDateTo],
+    queryFn: () => getIgdList(formattedDateFrom, formattedDateTo, 0, 100),
     enabled: !!dateFrom && !!dateTo,
   });
 
@@ -908,8 +906,8 @@ const Pemeriksaan: React.FC = () => {
 
   // Populate form with latest SOAP data
   useEffect(() => {
-    if (rawatJalanSoap?.data?.length > 0 && !isEditMode) {
-      const sortedSoap = [...rawatJalanSoap.data].sort((a: any, b: any) => {
+    if (igdSoap?.data?.length > 0 && !isEditMode) {
+      const sortedSoap = [...igdSoap.data].sort((a: any, b: any) => {
           const dateA = new Date(`${a.tgl_perawatan} ${a.jam_rawat}`);
           const dateB = new Date(`${b.tgl_perawatan} ${b.jam_rawat}`);
           return dateB.getTime() - dateA.getTime();
@@ -937,7 +935,7 @@ const Pemeriksaan: React.FC = () => {
         nip: latestSoap.nip || ''
       }));
     }
-  }, [rawatJalanSoap, isEditMode]);
+  }, [igdSoap, isEditMode]);
 
   const resetSoapForm = () => {
     setSoapData({
@@ -963,11 +961,11 @@ const Pemeriksaan: React.FC = () => {
   };
 
   const saveSoapMutation = useMutation({
-    mutationFn: (data: any) => saveSOAP(data),
+    mutationFn: (data: any) => saveIgdSOAP(data),
     onSuccess: () => {
       toast({ title: 'Berhasil', description: `Data pemeriksaan berhasil ${isEditMode ? 'diperbarui' : 'disimpan'}` });
       queryClient.invalidateQueries({ queryKey: ['riwayatPerawatan'] });
-      queryClient.invalidateQueries({ queryKey: ['rawatJalanSoap'] });
+      queryClient.invalidateQueries({ queryKey: ['igdSoap'] });
       if (isEditMode) {
         setIsEditMode(false);
         setEditHistoryData(null);
@@ -980,7 +978,7 @@ const Pemeriksaan: React.FC = () => {
   });
 
   const deleteSoapMutation = useMutation({
-    mutationFn: (data: any) => deleteSOAP(data),
+    mutationFn: (data: any) => deleteIgdSOAP(data),
     onSuccess: () => {
         toast({ title: 'Berhasil', description: 'Data pemeriksaan berhasil dihapus' });
         queryClient.invalidateQueries({ queryKey: ['riwayatPerawatan'] });
@@ -1103,7 +1101,7 @@ const Pemeriksaan: React.FC = () => {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Poliklinik & Diagnosa</h1>
+        <h1 className="text-3xl font-bold text-foreground">IGD & Diagnosa</h1>
         <p className="text-muted-foreground mt-1">Lakukan pemeriksaan pasien dan input hasil diagnosa</p>
       </div>
 
@@ -1481,8 +1479,8 @@ const Pemeriksaan: React.FC = () => {
                       <div className="mt-8 border-t pt-6">
                           <h4 className="font-semibold text-foreground mb-4">Daftar SOAP Tersimpan</h4>
                           <div className="space-y-4">
-                              {rawatJalanSoap?.data && rawatJalanSoap.data.length > 0 ? (
-                                  [...rawatJalanSoap.data].sort((a: any, b: any) => {
+                              {igdSoap?.data && igdSoap.data.length > 0 ? (
+                                  [...igdSoap.data].sort((a: any, b: any) => {
                                       const dateA = new Date(`${a.tgl_perawatan} ${a.jam_rawat}`);
                                       const dateB = new Date(`${b.tgl_perawatan} ${b.jam_rawat}`);
                                       return dateB.getTime() - dateA.getTime();
@@ -1591,10 +1589,10 @@ const Pemeriksaan: React.FC = () => {
                             <h3 className="text-lg font-bold text-foreground">Input Tindakan</h3>
                             <Button 
                                 onClick={handleTindakanSubmit} 
-                                disabled={saveTindakanMutation.isPending}
+                                disabled={saveIgdTindakanMutation.isPending}
                                 className="bg-emerald-600 hover:bg-emerald-700"
                             >
-                                {saveTindakanMutation.isPending ? (
+                                {saveIgdTindakanMutation.isPending ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                         Menyimpan...
@@ -1718,14 +1716,14 @@ const Pemeriksaan: React.FC = () => {
                         <div className="mt-8 border-t pt-6">
                             <h4 className="font-semibold text-foreground mb-4">Daftar Tindakan Tersimpan</h4>
                             <div className="space-y-4">
-                                {rawatJalanTindakan?.data ? (
+                                {igdTindakan?.data ? (
                                     <>
                                         {/* Dokter */}
-                                        {rawatJalanTindakan.data.rawat_jl_dr?.length > 0 && (
+                                        {igdTindakan.data.rawat_jl_dr?.length > 0 && (
                                             <div>
                                                 <h5 className="text-sm font-medium text-emerald-600 mb-2">Tindakan Dokter</h5>
                                                 <div className="space-y-2">
-                                                    {rawatJalanTindakan.data.rawat_jl_dr.map((item: any, idx: number) => (
+                                                    {igdTindakan.data.rawat_jl_dr.map((item: any, idx: number) => (
                                                         <div key={`dr-${idx}`} className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                                                             <div>
                                                                 <p className="font-medium text-sm">{item.nm_perawatan}</p>
@@ -1746,11 +1744,11 @@ const Pemeriksaan: React.FC = () => {
                                         )}
 
                                         {/* Petugas */}
-                                        {rawatJalanTindakan.data.rawat_jl_pr?.length > 0 && (
+                                        {igdTindakan.data.rawat_jl_pr?.length > 0 && (
                                             <div>
                                                 <h5 className="text-sm font-medium text-emerald-600 mb-2 mt-4">Tindakan Petugas</h5>
                                                 <div className="space-y-2">
-                                                    {rawatJalanTindakan.data.rawat_jl_pr.map((item: any, idx: number) => (
+                                                    {igdTindakan.data.rawat_jl_pr.map((item: any, idx: number) => (
                                                         <div key={`pr-${idx}`} className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                                                             <div>
                                                                 <p className="font-medium text-sm">{item.nm_perawatan}</p>
@@ -1771,11 +1769,11 @@ const Pemeriksaan: React.FC = () => {
                                         )}
 
                                         {/* Dokter & Petugas */}
-                                        {rawatJalanTindakan.data.rawat_jl_drpr?.length > 0 && (
+                                        {igdTindakan.data.rawat_jl_drpr?.length > 0 && (
                                             <div>
                                                 <h5 className="text-sm font-medium text-emerald-600 mb-2 mt-4">Tindakan Dokter & Petugas</h5>
                                                 <div className="space-y-2">
-                                                    {rawatJalanTindakan.data.rawat_jl_drpr.map((item: any, idx: number) => (
+                                                    {igdTindakan.data.rawat_jl_drpr.map((item: any, idx: number) => (
                                                         <div key={`drpr-${idx}`} className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                                                             <div>
                                                                 <p className="font-medium text-sm">{item.nm_perawatan}</p>
@@ -1795,7 +1793,7 @@ const Pemeriksaan: React.FC = () => {
                                             </div>
                                         )}
                                         
-                                        {!rawatJalanTindakan.data.rawat_jl_dr?.length && !rawatJalanTindakan.data.rawat_jl_pr?.length && !rawatJalanTindakan.data.rawat_jl_drpr?.length && (
+                                        {!igdTindakan.data.rawat_jl_dr?.length && !igdTindakan.data.rawat_jl_pr?.length && !igdTindakan.data.rawat_jl_drpr?.length && (
                                             <div className="text-center py-4 text-muted-foreground text-sm italic">
                                                 Belum ada tindakan yang tersimpan
                                             </div>
@@ -1895,17 +1893,17 @@ const Pemeriksaan: React.FC = () => {
                             </div>
                             <Button 
                                 onClick={handleSaveObat}
-                                disabled={saveTindakanMutation.isPending || !obatData.kode_brng}
+                                disabled={saveIgdTindakanMutation.isPending || !obatData.kode_brng}
                                 className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700"
                             >
-                                {saveTindakanMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                                {saveIgdTindakanMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                                 Simpan Obat
                             </Button>
 
                             <div className="mt-8 border-t pt-6">
                                 <h4 className="font-semibold text-foreground mb-4">Daftar Obat Tersimpan</h4>
                                 <div className="space-y-4">
-                                    {rawatJalanResep?.data?.obat && rawatJalanResep.data.obat.length > 0 ? (
+                                    {igdResep?.data?.obat && igdResep.data.obat.length > 0 ? (
                                         <div className="border rounded-md">
                                             <Table>
                                                 <TableHeader>
@@ -1917,7 +1915,7 @@ const Pemeriksaan: React.FC = () => {
                                                     </TableRow>
                                                 </TableHeader>
                                                 <TableBody>
-                                                    {rawatJalanResep.data.obat.map((item: any, idx: number) => (
+                                                    {igdResep.data.obat.map((item: any, idx: number) => (
                                                         <TableRow key={idx}>
                                                             <TableCell>{item.nama_brng}</TableCell>
                                                             <TableCell>{item.jml}</TableCell>
@@ -2112,19 +2110,19 @@ const Pemeriksaan: React.FC = () => {
 
                              <Button 
                                 onClick={handleSaveRacikan}
-                                disabled={saveTindakanMutation.isPending || !racikanData.nama_racik || racikanData.items.length === 0}
+                                disabled={saveIgdTindakanMutation.isPending || !racikanData.nama_racik || racikanData.items.length === 0}
                                 className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700"
                             >
-                                {saveTindakanMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                                {saveIgdTindakanMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                                 Simpan Racikan
                             </Button>
 
                              <div className="mt-8 border-t pt-6">
                                 <h4 className="font-semibold text-foreground mb-4">Daftar Racikan Tersimpan</h4>
                                 <div className="space-y-4">
-                                    {rawatJalanResep?.data?.racikan && rawatJalanResep.data.racikan.length > 0 ? (
+                                    {igdResep?.data?.racikan && igdResep.data.racikan.length > 0 ? (
                                         <div className="space-y-4">
-                                            {rawatJalanResep.data.racikan.map((item: any, idx: number) => (
+                                            {igdResep.data.racikan.map((item: any, idx: number) => (
                                                 <div key={idx} className="p-4 border rounded-lg bg-muted/20">
                                                     <div className="flex justify-between items-start mb-2">
                                                         <div>
@@ -2405,8 +2403,8 @@ const Pemeriksaan: React.FC = () => {
             </Tabs>
             <DialogFooter>
                 <Button variant="outline" onClick={() => setIsICDModalOpen(false)}>Batal</Button>
-                <Button onClick={handleSaveICD} disabled={saveDiagnosaMutation.isPending || saveProsedurMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
-                    {(saveDiagnosaMutation.isPending || saveProsedurMutation.isPending) ? (
+                <Button onClick={handleSaveICD} disabled={saveIgdDiagnosaMutation.isPending || saveIgdProsedurMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
+                    {(saveIgdDiagnosaMutation.isPending || saveIgdProsedurMutation.isPending) ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             Menyimpan...
@@ -2441,8 +2439,8 @@ const Pemeriksaan: React.FC = () => {
             </div>
             <DialogFooter>
                 <Button variant="outline" onClick={() => setIsCatatanModalOpen(false)}>Batal</Button>
-                <Button onClick={handleSaveCatatan} disabled={saveCatatanMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
-                    {saveCatatanMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                <Button onClick={handleSaveCatatan} disabled={saveIgdCatatanMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
+                    {saveIgdCatatanMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                     Simpan
                 </Button>
             </DialogFooter>
@@ -2476,8 +2474,8 @@ const Pemeriksaan: React.FC = () => {
             </div>
             <DialogFooter>
                 <Button variant="outline" onClick={() => setIsBerkasModalOpen(false)}>Batal</Button>
-                <Button onClick={handleSaveBerkas} disabled={saveBerkasMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
-                    {saveBerkasMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                <Button onClick={handleSaveBerkas} disabled={saveIgdBerkasMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
+                    {saveIgdBerkasMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                     Simpan
                 </Button>
             </DialogFooter>
@@ -2515,8 +2513,8 @@ const Pemeriksaan: React.FC = () => {
             </div>
             <DialogFooter>
                 <Button variant="outline" onClick={() => setIsResumeModalOpen(false)}>Batal</Button>
-                <Button onClick={handleSaveResume} disabled={saveResumeMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
-                    {saveResumeMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                <Button onClick={handleSaveResume} disabled={saveIgdResumeMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
+                    {saveIgdResumeMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                     Simpan
                 </Button>
             </DialogFooter>
@@ -2562,8 +2560,8 @@ const Pemeriksaan: React.FC = () => {
             </div>
             <DialogFooter>
                 <Button variant="outline" onClick={() => setIsRujukanModalOpen(false)}>Batal</Button>
-                <Button onClick={handleSaveRujukan} disabled={saveRujukanMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
-                    {saveRujukanMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                <Button onClick={handleSaveRujukan} disabled={saveIgdRujukanMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
+                    {saveIgdRujukanMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                     Simpan
                 </Button>
             </DialogFooter>
@@ -2606,8 +2604,8 @@ const Pemeriksaan: React.FC = () => {
             </div>
             <DialogFooter>
                 <Button variant="outline" onClick={() => setIsOperasiModalOpen(false)}>Batal</Button>
-                <Button onClick={handleSaveOperasi} disabled={saveOperasiMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
-                    {saveOperasiMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                <Button onClick={handleSaveIgdOperasi} disabled={saveIgdLaporanOperasiMutation.isPending} className="bg-emerald-600 hover:bg-emerald-700">
+                    {saveIgdLaporanOperasiMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}   
                     Simpan
                 </Button>
             </DialogFooter>
@@ -2617,4 +2615,4 @@ const Pemeriksaan: React.FC = () => {
   );
 };
 
-export default Pemeriksaan;
+export default Igd;

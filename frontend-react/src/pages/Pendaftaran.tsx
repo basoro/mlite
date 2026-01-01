@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Calendar, Plus, Clock, Edit2, Trash2, ChevronDown, Activity, User, Loader2, Search, Calendar as CalendarIcon, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
+import { id } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import {
   Popover,
@@ -45,7 +46,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useToast } from '@/hooks/use-toast';
-import { getRawatJalanList, getMasterList, getPasienList, createRawatJalan, updateRawatJalan, deleteRawatJalan } from '@/lib/api';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getRawatJalanList, getIgdList, getMasterList, getPasienList, createRawatJalan, updateRawatJalan, deleteRawatJalan, createIgd, updateIgd, deleteIgd } from '@/lib/api';
 
 interface ScheduleItem {
   no_rawat: string;
@@ -91,6 +93,7 @@ const Pendaftaran: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteNoRawat, setDeleteNoRawat] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('poliklinik');
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -98,9 +101,14 @@ const Pendaftaran: React.FC = () => {
   // Get current date formatted as YYYY-MM-DD
   const formattedDate = format(selectedDate, 'yyyy-MM-dd');
   
-  const { data: scheduleData, isLoading } = useQuery({
+  const { data: scheduleData, isLoading: isRalanLoading } = useQuery({
     queryKey: ['rawatJalan', formattedDate],
     queryFn: () => getRawatJalanList(formattedDate, formattedDate, 0, 100),
+  });
+
+  const { data: igdScheduleData, isLoading: isIgdLoading } = useQuery({
+    queryKey: ['igd', formattedDate],
+    queryFn: () => getIgdList(formattedDate, formattedDate, 0, 100),
   });
 
   // Fetch Master Data for Dropdowns
@@ -130,11 +138,23 @@ const Pendaftaran: React.FC = () => {
     mutationFn: createRawatJalan,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rawatJalan'] });
-      toast({ title: 'Berhasil', description: 'Jadwal berhasil ditambahkan' });
+      toast({ title: 'Berhasil', description: 'Jadwal Poliklinik berhasil ditambahkan' });
       handleCloseDialog();
     },
     onError: (error: any) => {
       toast({ title: 'Gagal', description: error.message || 'Gagal menambahkan jadwal', variant: 'destructive' });
+    },
+  });
+
+  const createIgdMutation = useMutation({
+    mutationFn: createIgd,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['igd'] });
+      toast({ title: 'Berhasil', description: 'Jadwal IGD berhasil ditambahkan' });
+      handleCloseDialog();
+    },
+    onError: (error: any) => {
+      toast({ title: 'Gagal', description: error.message || 'Gagal menambahkan jadwal IGD', variant: 'destructive' });
     },
   });
 
@@ -150,6 +170,18 @@ const Pendaftaran: React.FC = () => {
     },
   });
 
+  const updateIgdMutation = useMutation({
+    mutationFn: (data: any) => updateIgd(selectedNoRawat!, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['igd'] });
+      toast({ title: 'Berhasil', description: 'Pendaftaran IGD berhasil diperbarui' });
+      handleCloseDialog();
+    },
+    onError: (error: any) => {
+      toast({ title: 'Gagal', description: error.message || 'Gagal memperbarui pendaftaran IGD', variant: 'destructive' });
+    },
+  });
+
   const updateStatusMutation = useMutation({
     mutationFn: ({ noRawat, stts }: { noRawat: string; stts: string }) => 
       updateRawatJalan(noRawat, { stts }),
@@ -162,8 +194,24 @@ const Pendaftaran: React.FC = () => {
     },
   });
 
+  const updateIgdStatusMutation = useMutation({
+    mutationFn: ({ noRawat, stts }: { noRawat: string; stts: string }) => 
+      updateIgd(noRawat, { stts }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['igd'] });
+      toast({ title: 'Berhasil', description: 'Status IGD berhasil diperbarui' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Gagal', description: error.message || 'Gagal memperbarui status IGD', variant: 'destructive' });
+    },
+  });
+
   const handleStatusChange = (noRawat: string, stts: string) => {
-    updateStatusMutation.mutate({ noRawat, stts });
+    if (activeTab === 'poliklinik') {
+      updateStatusMutation.mutate({ noRawat, stts });
+    } else {
+      updateIgdStatusMutation.mutate({ noRawat, stts });
+    }
   };
 
   const deleteMutation = useMutation({
@@ -179,9 +227,26 @@ const Pendaftaran: React.FC = () => {
     },
   });
 
+  const deleteIgdMutation = useMutation({
+    mutationFn: deleteIgd,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['igd'] });
+      toast({ title: 'Berhasil', description: 'Jadwal IGD berhasil dihapus' });
+      setDeleteDialogOpen(false);
+      setDeleteNoRawat(null);
+    },
+    onError: (error: any) => {
+      toast({ title: 'Gagal', description: error.message || 'Gagal menghapus jadwal IGD', variant: 'destructive' });
+    },
+  });
+
   const confirmDelete = () => {
     if (deleteNoRawat) {
-      deleteMutation.mutate(deleteNoRawat);
+      if (activeTab === 'poliklinik') {
+        deleteMutation.mutate(deleteNoRawat);
+      } else {
+        deleteIgdMutation.mutate(deleteNoRawat);
+      }
     }
   };
 
@@ -213,18 +278,31 @@ const Pendaftaran: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isEditMode) {
-      updateMutation.mutate(formData);
-    } else {
-      createMutation.mutate({
+    const data = {
         ...formData,
         tgl_registrasi: formattedDate,
         jam_reg: format(new Date(), 'HH:mm:ss')
-      });
+    };
+
+    if (activeTab === 'poliklinik') {
+      if (isEditMode) {
+        updateMutation.mutate(formData);
+      } else {
+        createMutation.mutate(data);
+      }
+    } else {
+      if (isEditMode) {
+        updateIgdMutation.mutate(formData);
+      } else {
+        createIgdMutation.mutate(data);
+      }
     }
   };
 
-  const schedules: ScheduleItem[] = scheduleData?.data || [];
+  const ralanSchedules: ScheduleItem[] = scheduleData?.data || [];
+  const igdSchedules: ScheduleItem[] = igdScheduleData?.data || [];
+  const schedules = activeTab === 'poliklinik' ? ralanSchedules : igdSchedules;
+  const currentLoading = activeTab === 'poliklinik' ? isRalanLoading : isIgdLoading;
 
   return (
     <div className="space-y-6">
@@ -242,12 +320,12 @@ const Pendaftaran: React.FC = () => {
           <DialogTrigger asChild>
             <Button className="bg-emerald-500 hover:bg-emerald-600 text-white gap-2">
               <Plus className="w-4 h-4" />
-              Tambah Pendaftaran
+              {activeTab === 'poliklinik' ? 'Tambah Pendaftaran' : 'Tambah IGD'}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>{isEditMode ? 'Edit Pendaftaran' : 'Buat Pendaftaran Baru'}</DialogTitle>
+              <DialogTitle>{isEditMode ? 'Edit Pendaftaran' : (activeTab === 'poliklinik' ? 'Buat Pendaftaran Baru' : 'Buat Pendaftaran IGD')}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 pt-4">
               <div className="space-y-2">
@@ -375,7 +453,7 @@ const Pendaftaran: React.FC = () => {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {selectedDate ? format(selectedDate, "dd MMMM yyyy") : "Pilih Tanggal"}
+                      {selectedDate ? format(selectedDate, "dd MMMM yyyy", { locale: id }) : "Pilih Tanggal"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -470,14 +548,21 @@ const Pendaftaran: React.FC = () => {
             <div className="mb-6">
               <h2 className="text-xl font-bold flex items-center gap-2">
                 <Clock className="w-5 h-5" />
-                Pendaftaran {format(selectedDate, 'EEEE, dd MMMM yyyy')}
+                Pendaftaran {format(selectedDate, 'EEEE, dd MMMM yyyy', { locale: id })}
               </h2>
               <p className="text-sm text-gray-500 mt-1">
                 Daftar appointment dan pendaftaran untuk tanggal yang dipilih
               </p>
             </div>
 
-            {isLoading ? (
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-4">
+                <TabsTrigger value="poliklinik">Poliklinik</TabsTrigger>
+                <TabsTrigger value="igd">IGD</TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            {currentLoading ? (
               <div className="flex justify-center py-8">
                 <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
               </div>
