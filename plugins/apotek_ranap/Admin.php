@@ -1378,7 +1378,10 @@ class Admin extends AdminModule
             ->join('reg_periksa', 'reg_periksa.no_rawat = resep_obat.no_rawat')
             ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
             ->leftJoin('dokter', 'dokter.kd_dokter = resep_obat.kd_dokter')
-            ->in('resep_obat.status', ['ranap', 'Ranap'])
+            ->where(function($query) {
+                $query->where('resep_obat.status', 'ranap')
+                      ->orWhere('resep_obat.status', 'Ranap');
+            })
             ->where('resep_obat.tgl_peresepan', '>=', $tgl_awal)
             ->where('resep_obat.tgl_peresepan', '<=', $tgl_akhir);
 
@@ -1442,7 +1445,10 @@ class Admin extends AdminModule
                     ->join('resep_obat', 'resep_obat.no_resep = resep_dokter.no_resep')
                     ->join('databarang', 'databarang.kode_brng = resep_dokter.kode_brng')
                     ->where('resep_obat.no_rawat', $no_rawat)
-                    ->in('resep_obat.status', ['ranap', 'Ranap']);
+                    ->where(function($query) {
+                        $query->where('resep_obat.status', 'ranap')
+                              ->orWhere('resep_obat.status', 'Ranap');
+                    });
 
                 if ($no_resep) {
                     $query->where('resep_obat.no_resep', $no_resep);
@@ -1460,7 +1466,10 @@ class Admin extends AdminModule
                     ->join('resep_obat', 'resep_obat.no_resep = resep_dokter_racikan.no_resep')
                     ->join('metode_racik', 'metode_racik.kd_racik = resep_dokter_racikan.kd_racik')
                     ->where('resep_obat.no_rawat', $no_rawat)
-                    ->in('resep_obat.status', ['ranap', 'Ranap']);
+                    ->where(function($query) {
+                        $query->where('resep_obat.status', 'ranap')
+                              ->orWhere('resep_obat.status', 'Ranap');
+                    });
 
                 if ($no_resep) {
                     $query->where('resep_obat.no_resep', $no_resep);
