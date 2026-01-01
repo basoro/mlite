@@ -2862,6 +2862,122 @@
                     "response": []
                 }
             ]
+        },
+        {
+            "name": "Apotek Ralan",
+            "item": [
+                {
+                    "name": "Resep List",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/apotek_ralan/reseplist?page={{page}}&per_page={{per_page}}&s={{s}}&tgl_awal={{tgl_awal}}&tgl_akhir={{tgl_akhir}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "apotek_ralan",
+                                "reseplist"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "{{page}}"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "{{per_page}}"
+                                },
+                                {
+                                    "key": "s",
+                                    "value": "{{s}}"
+                                },
+                                {
+                                    "key": "tgl_awal",
+                                    "value": "{{tgl_awal}}"
+                                },
+                                {
+                                    "key": "tgl_akhir",
+                                    "value": "{{tgl_akhir}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Apotek Ranap",
+            "item": [
+                {
+                    "name": "Resep List",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/apotek_ranap/reseplist?page={{page}}&per_page={{per_page}}&s={{s}}&tgl_awal={{tgl_awal}}&tgl_akhir={{tgl_akhir}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "apotek_ranap",
+                                "reseplist"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "{{page}}"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "{{per_page}}"
+                                },
+                                {
+                                    "key": "s",
+                                    "value": "{{s}}"
+                                },
+                                {
+                                    "key": "tgl_awal",
+                                    "value": "{{tgl_awal}}"
+                                },
+                                {
+                                    "key": "tgl_akhir",
+                                    "value": "{{tgl_akhir}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
         }
     ],
     "variable": [
@@ -2923,6 +3039,16 @@
         {
             "key": "password_permission",
             "value": "12345678",
+            "type": "string"
+        },
+        {
+            "key": "tgl_awal",
+            "value": "2025-01-01",
+            "type": "string"
+        },
+        {
+            "key": "tgl_akhir",
+            "value": "2025-01-01",
             "type": "string"
         }
     ]

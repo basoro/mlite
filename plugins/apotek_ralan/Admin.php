@@ -1203,10 +1203,6 @@ class Admin extends AdminModule
         $tgl_akhir = isset($_GET['tgl_akhir']) ? $_GET['tgl_akhir'] : date('Y-m-d');
 
         $query = $this->db('resep_obat')
-            ->select('resep_obat.*')
-            ->select('pasien.nm_pasien')
-            ->select('pasien.no_rkm_medis')
-            ->select('dokter.nm_dokter')
             ->join('reg_periksa', 'reg_periksa.no_rawat = resep_obat.no_rawat')
             ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
             ->join('dokter', 'dokter.kd_dokter = resep_obat.kd_dokter')
@@ -1219,7 +1215,16 @@ class Admin extends AdminModule
         }
 
         $total = $query->count();
-        $data = $query->offset($offset)->limit($per_page)->orderBy('resep_obat.tgl_peresepan', 'DESC')->orderBy('resep_obat.jam_peresepan', 'DESC')->toArray();
+        $data = $query
+            ->select('resep_obat.*')
+            ->select('pasien.nm_pasien')
+            ->select('pasien.no_rkm_medis')
+            ->select('dokter.nm_dokter')
+            ->offset($offset)
+            ->limit($per_page)
+            ->orderBy('resep_obat.tgl_peresepan', 'DESC')
+            ->orderBy('resep_obat.jam_peresepan', 'DESC')
+            ->toArray();
 
         foreach ($data as &$row) {
             $row['detail'] = $this->apiShowDetail('obat', $row['no_rawat'], $row['no_resep']);
