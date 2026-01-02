@@ -16,7 +16,7 @@ ARG EXPO_PUBLIC_API_URL
 ENV EXPO_PUBLIC_API_URL=$EXPO_PUBLIC_API_URL
 
 # Expose default Expo port
-EXPOSE 8081
+EXPOSE 8080
 
 # Start Expo
 # Railway will route the public domain to this port
