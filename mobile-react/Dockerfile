@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY package*.json ./
 
-# Install only production deps
-RUN npm install --omit=dev
+# Install all dependencies (including devDependencies for TypeScript)
+RUN npm install
 
 COPY . .
 
