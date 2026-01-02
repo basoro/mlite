@@ -40,6 +40,8 @@ plugins/website_ausy
 plugins/pasien_galleries
 # plugins/log_antrian_taskid
 
+mobile-react/node_modules/
+
 docker/
 docker/mysql*
 docker/orthanc/orthanc-db/*
@@ -59,3 +61,4 @@ themes/atilamedika
 .vercel
 api/
 docker/.env
+mobile-react/node_modules/.package-lock.json
