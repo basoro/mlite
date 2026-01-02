@@ -105,27 +105,32 @@ const Pendaftaran: React.FC = () => {
   const { data: scheduleData, isLoading: isRalanLoading } = useQuery({
     queryKey: ['rawatJalan', formattedDate],
     queryFn: () => getRawatJalanList(formattedDate, formattedDate, 0, 100),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: igdScheduleData, isLoading: isIgdLoading } = useQuery({
     queryKey: ['igd', formattedDate],
     queryFn: () => getIgdList(formattedDate, formattedDate, 0, 100),
+    staleTime: 5 * 60 * 1000,
   });
 
   // Fetch Master Data for Dropdowns
   const { data: poliList } = useQuery({
     queryKey: ['master', 'poliklinik'],
     queryFn: () => getMasterList('poliklinik', 1, 100),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: dokterList } = useQuery({
     queryKey: ['master', 'dokter'],
     queryFn: () => getMasterList('dokter', 1, 100),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: penjabList } = useQuery({
     queryKey: ['master', 'penjab'],
     queryFn: () => getMasterList('penjab', 1, 100),
+    staleTime: 5 * 60 * 1000,
   });
 
   // Patient Search
@@ -133,6 +138,7 @@ const Pendaftaran: React.FC = () => {
     queryKey: ['pasien', searchTerm],
     queryFn: () => getPasienList(1, 10, searchTerm),
     enabled: searchTerm.length > 2,
+    staleTime: 5 * 60 * 1000,
   });
 
   const createMutation = useMutation({

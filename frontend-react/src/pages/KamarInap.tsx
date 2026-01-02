@@ -254,7 +254,7 @@ const HistoryItem: React.FC<{ history: any; onEdit?: (history: any, soap: any) =
                     <h4 className="font-semibold text-sm mb-2 text-emerald-700">Riwayat Tindakan</h4>
                     <div className="space-y-2 text-sm">
                         {history.rawat_inap_dr?.map((item: any, idx: number) => (
-                            <div key={`dr-${idx}`} className="p-2 bg-gray-50 rounded border border-gray-100">
+                            <div key={`dr-${idx}-${item.tgl_perawatan}-${item.jam_rawat}`} className="p-2 bg-gray-50 rounded border border-gray-100">
                                 <p className="font-medium">{item.nm_perawatan}</p>
                                 <p className="text-xs text-muted-foreground">
                                     Dokter: {item.nm_dokter} • {item.tgl_perawatan} {item.jam_rawat}
@@ -262,7 +262,7 @@ const HistoryItem: React.FC<{ history: any; onEdit?: (history: any, soap: any) =
                             </div>
                         ))}
                         {history.rawat_inap_pr?.map((item: any, idx: number) => (
-                            <div key={`pr-${idx}`} className="p-2 bg-gray-50 rounded border border-gray-100">
+                            <div key={`pr-${idx}-${item.tgl_perawatan}-${item.jam_rawat}`} className="p-2 bg-gray-50 rounded border border-gray-100">
                                 <p className="font-medium">{item.nm_perawatan}</p>
                                 <p className="text-xs text-muted-foreground">
                                     Petugas: {item.nama} • {item.tgl_perawatan} {item.jam_rawat}
@@ -270,7 +270,7 @@ const HistoryItem: React.FC<{ history: any; onEdit?: (history: any, soap: any) =
                             </div>
                         ))}
                         {history.rawat_inap_drpr?.map((item: any, idx: number) => (
-                            <div key={`drpr-${idx}`} className="p-2 bg-gray-50 rounded border border-gray-100">
+                            <div key={`drpr-${idx}-${item.tgl_perawatan}-${item.jam_rawat}`} className="p-2 bg-gray-50 rounded border border-gray-100">
                                 <p className="font-medium">{item.nm_perawatan}</p>
                                 <p className="text-xs text-muted-foreground">
                                     Dokter: {item.nm_dokter} & Petugas: {item.nama} • {item.tgl_perawatan} {item.jam_rawat}
@@ -287,7 +287,7 @@ const HistoryItem: React.FC<{ history: any; onEdit?: (history: any, soap: any) =
                     <h4 className="font-semibold text-sm mb-2 text-emerald-700">Riwayat Diagnosa (ICD-10)</h4>
                     <div className="space-y-2 text-sm">
                         {history.diagnosa_pasien.map((item: any, idx: number) => (
-                            <div key={`diagnosa-${idx}`} className="p-2 bg-gray-50 rounded border border-gray-100">
+                            <div key={`diagnosa-${idx}-${item.kd_penyakit}`} className="p-2 bg-gray-50 rounded border border-gray-100">
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <p className="font-medium"><span className="font-mono bg-emerald-100 text-emerald-800 px-1 rounded mr-1">{item.kd_penyakit}</span> {item.nm_penyakit}</p>
@@ -308,7 +308,7 @@ const HistoryItem: React.FC<{ history: any; onEdit?: (history: any, soap: any) =
                     <h4 className="font-semibold text-sm mb-2 text-emerald-700">Riwayat Prosedur (ICD-9)</h4>
                     <div className="space-y-2 text-sm">
                         {history.prosedur_pasien.map((item: any, idx: number) => (
-                            <div key={`prosedur-${idx}`} className="p-2 bg-gray-50 rounded border border-gray-100">
+                            <div key={`prosedur-${idx}-${item.kode}`} className="p-2 bg-gray-50 rounded border border-gray-100">
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <p className="font-medium"><span className="font-mono bg-blue-100 text-blue-800 px-1 rounded mr-1">{item.kode}</span> {item.deskripsi_panjang || item.deskripsi_pendek}</p>
@@ -330,6 +330,7 @@ const KamarInap: React.FC = () => {
   const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
   const [dateFrom, setDateFrom] = useState<Date | undefined>(new Date());
   const [dateTo, setDateTo] = useState<Date | undefined>(new Date());
+  const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -337,6 +338,7 @@ const KamarInap: React.FC = () => {
   const { data: kamarInapTindakan, refetch: refetchKamarInapTindakan } = useQuery({
     queryKey: ['kamarInapTindakan', selectedPatient?.no_rawat],
     queryFn: () => getKamarInapTindakan(selectedPatient.no_rawat),
+    staleTime: 5 * 60 * 1000,
     enabled: !!selectedPatient?.no_rawat
   });
 
@@ -344,6 +346,7 @@ const KamarInap: React.FC = () => {
   const { data: kamarInapSoap, refetch: refetchKamarInapSoap } = useQuery({
     queryKey: ['kamarInapSoap', selectedPatient?.no_rawat],
     queryFn: () => getKamarInapSoap(selectedPatient.no_rawat),
+    staleTime: 5 * 60 * 1000,
     enabled: !!selectedPatient?.no_rawat
   });
 
@@ -498,6 +501,7 @@ const KamarInap: React.FC = () => {
   const { data: obatListData } = useQuery({
     queryKey: ['master', 'gudangbarang', obatData.search],
     queryFn: () => getMasterList('gudangbarang', 1, 50, obatData.search),
+    staleTime: 5 * 60 * 1000,
     enabled: true 
   });
 
@@ -505,18 +509,21 @@ const KamarInap: React.FC = () => {
   const { data: racikanObatListData } = useQuery({
     queryKey: ['master', 'gudangbarang', racikanData.search_obat],
     queryFn: () => getMasterList('gudangbarang', 1, 50, racikanData.search_obat),
+    staleTime: 5 * 60 * 1000,
   });
 
   // Fetch Metode Racik
   const { data: metodeRacikData } = useQuery({
     queryKey: ['master', 'metode_racik'],
     queryFn: () => getMasterList('metode_racik', 1, 100),
+    staleTime: 5 * 60 * 1000,
   });
 
   // Fetch Kamar Inap Resep
   const { data: kamarInapResep } = useQuery({
     queryKey: ['kamarInapResep', selectedPatient?.no_rawat],
     queryFn: () => getRawatInapResep(selectedPatient?.no_rawat),
+    staleTime: 5 * 60 * 1000,
     enabled: !!selectedPatient?.no_rawat,
   });
 
@@ -608,32 +615,38 @@ const KamarInap: React.FC = () => {
   const { data: jnsPerawatanData } = useQuery({
     queryKey: ['master', 'jns_perawatan_inap'], // Assuming separate master or same
     queryFn: () => getMasterList('jns_perawatan_inap', 1, 1000), // Check if this exists or use jns_perawatan
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: dokterData } = useQuery({
     queryKey: ['master', 'dokter'],
     queryFn: () => getMasterList('dokter', 1, 1000),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: petugasData } = useQuery({
     queryKey: ['master', 'petugas'],
     queryFn: () => getMasterList('petugas', 1, 1000),
+    staleTime: 5 * 60 * 1000,
   });
 
   // Fetch ICD Data
   const { data: icd10Master } = useQuery({
     queryKey: ['master', 'penyakit', icd10Search],
     queryFn: () => getMasterList('penyakit', 1, 50, icd10Search),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: icd9Master } = useQuery({
     queryKey: ['master', 'icd9', icd9Search],
     queryFn: () => getMasterList('icd9', 1, 50, icd9Search),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: poliData } = useQuery({
     queryKey: ['master', 'poliklinik'],
     queryFn: () => getMasterList('poliklinik', 1, 100),
+    staleTime: 5 * 60 * 1000,
   });
 
   const saveDiagnosaMutation = useMutation({
@@ -881,6 +894,7 @@ const KamarInap: React.FC = () => {
   const { data: queueData, isLoading: isQueueLoading } = useQuery({
     queryKey: ['kamarInap', formattedDateFrom, formattedDateTo],
     queryFn: () => getKamarInapList(formattedDateFrom, formattedDateTo, 0, 100),
+    staleTime: 5 * 60 * 1000,
     enabled: !!dateFrom && !!dateTo,
   });
 
@@ -888,10 +902,15 @@ const KamarInap: React.FC = () => {
   const { data: historyData, isLoading: isHistoryLoading } = useQuery({
     queryKey: ['riwayatPerawatan', selectedPatient?.no_rkm_medis],
     queryFn: () => getRiwayatPerawatan(selectedPatient.no_rkm_medis),
+    staleTime: 5 * 60 * 1000,
     enabled: !!selectedPatient?.no_rkm_medis,
   });
 
-  const patients = queueData?.data || [];
+  const patients = queueData?.data?.filter((p: any) => 
+    p.nm_pasien.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    p.no_rkm_medis.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.no_rawat.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
   
   useEffect(() => {
     if (selectedPatient) {
@@ -1174,6 +1193,15 @@ const KamarInap: React.FC = () => {
             </div>
 
             {/* Queue List */}
+            <div className="mb-4">
+              <Input
+                placeholder="Cari pasien..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full"
+              />
+            </div>
+
             <div className="space-y-3 max-h-[600px] overflow-y-auto">
               {isQueueLoading ? (
                  <div className="flex justify-center py-4">

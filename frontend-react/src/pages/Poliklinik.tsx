@@ -337,6 +337,7 @@ const Pemeriksaan: React.FC = () => {
   const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
   const [dateFrom, setDateFrom] = useState<Date | undefined>(new Date());
   const [dateTo, setDateTo] = useState<Date | undefined>(new Date());
+  const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -344,6 +345,7 @@ const Pemeriksaan: React.FC = () => {
   const { data: rawatJalanTindakan, refetch: refetchRawatJalanTindakan } = useQuery({
     queryKey: ['rawatJalanTindakan', selectedPatient?.no_rawat],
     queryFn: () => getRawatJalanTindakan(selectedPatient.no_rawat),
+    staleTime: 5 * 60 * 1000,
     enabled: !!selectedPatient?.no_rawat
   });
 
@@ -351,6 +353,7 @@ const Pemeriksaan: React.FC = () => {
   const { data: rawatJalanSoap, refetch: refetchRawatJalanSoap } = useQuery({
     queryKey: ['rawatJalanSoap', selectedPatient?.no_rawat],
     queryFn: () => getRawatJalanSoap(selectedPatient.no_rawat),
+    staleTime: 5 * 60 * 1000,
     enabled: !!selectedPatient?.no_rawat
   });
 
@@ -381,6 +384,7 @@ const Pemeriksaan: React.FC = () => {
   const { data: rawatJalanResep, refetch: refetchRawatJalanResep } = useQuery({
     queryKey: ['rawatJalanResep', selectedPatient?.no_rawat],
     queryFn: () => getRawatJalanResep(selectedPatient.no_rawat),
+    staleTime: 5 * 60 * 1000,
     enabled: !!selectedPatient?.no_rawat
   });
 
@@ -432,7 +436,21 @@ const Pemeriksaan: React.FC = () => {
   const formattedDateFrom = dateFrom ? format(dateFrom, 'yyyy-MM-dd') : '';
   const formattedDateTo = dateTo ? format(dateTo, 'yyyy-MM-dd') : '';
 
-  // SOAP Form State
+  // Fetch Patient Queue
+  const { data: queueData, isLoading: isQueueLoading } = useQuery({
+    queryKey: ['rawatJalan', formattedDateFrom, formattedDateTo],
+    queryFn: () => getRawatJalanList(
+        formattedDateFrom || format(new Date(), 'yyyy-MM-dd'),
+        formattedDateTo || format(new Date(), 'yyyy-MM-dd'),
+        0, 1000
+    ),
+  });
+
+  const patients = queueData?.data?.filter((p: any) => 
+    p.nm_pasien.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    p.no_rkm_medis.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.no_rawat.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
   const [soapData, setSoapData] = useState({
     suhu_tubuh: '',
     tensi: '',
@@ -533,6 +551,7 @@ const Pemeriksaan: React.FC = () => {
   const { data: obatListData } = useQuery({
     queryKey: ['master', 'gudangbarang', obatData.search],
     queryFn: () => getMasterList('gudangbarang', 1, 50, obatData.search),
+    staleTime: 5 * 60 * 1000,
     enabled: true // Always enabled, but depends on search
   });
 
@@ -540,12 +559,14 @@ const Pemeriksaan: React.FC = () => {
   const { data: racikanObatListData } = useQuery({
     queryKey: ['master', 'gudangbarang', racikanData.search_obat],
     queryFn: () => getMasterList('gudangbarang', 1, 50, racikanData.search_obat),
+    staleTime: 5 * 60 * 1000,
   });
 
   // Fetch Metode Racik
   const { data: metodeRacikData } = useQuery({
     queryKey: ['master', 'metode_racik'],
     queryFn: () => getMasterList('metode_racik', 1, 100),
+    staleTime: 5 * 60 * 1000,
   });
 
   const handleSaveObat = () => {
@@ -607,32 +628,38 @@ const Pemeriksaan: React.FC = () => {
   const { data: jnsPerawatanData } = useQuery({
     queryKey: ['master', 'jns_perawatan'],
     queryFn: () => getMasterList('jns_perawatan', 1, 1000),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: dokterData } = useQuery({
     queryKey: ['master', 'dokter'],
     queryFn: () => getMasterList('dokter', 1, 1000),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: petugasData } = useQuery({
     queryKey: ['master', 'petugas'],
     queryFn: () => getMasterList('petugas', 1, 1000),
+    staleTime: 5 * 60 * 1000,
   });
 
   // Fetch ICD Data
   const { data: icd10Master } = useQuery({
     queryKey: ['master', 'penyakit', icd10Search],
     queryFn: () => getMasterList('penyakit', 1, 50, icd10Search),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: icd9Master } = useQuery({
     queryKey: ['master', 'icd9', icd9Search],
     queryFn: () => getMasterList('icd9', 1, 50, icd9Search),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: poliData } = useQuery({
     queryKey: ['master', 'poliklinik'],
     queryFn: () => getMasterList('poliklinik', 1, 100),
+    staleTime: 5 * 60 * 1000,
   });
 
   const saveDiagnosaMutation = useMutation({
@@ -881,21 +908,13 @@ const Pemeriksaan: React.FC = () => {
     });
   };
 
-  // Fetch Queue (Rawat Jalan)
-  const { data: queueData, isLoading: isQueueLoading } = useQuery({
-    queryKey: ['rawatJalan', formattedDateFrom, formattedDateTo],
-    queryFn: () => getRawatJalanList(formattedDateFrom, formattedDateTo, 0, 100),
-    enabled: !!dateFrom && !!dateTo,
-  });
-
   // Fetch Patient History
   const { data: historyData, isLoading: isHistoryLoading } = useQuery({
     queryKey: ['riwayatPerawatan', selectedPatient?.no_rkm_medis],
     queryFn: () => getRiwayatPerawatan(selectedPatient.no_rkm_medis),
+    staleTime: 5 * 60 * 1000,
     enabled: !!selectedPatient?.no_rkm_medis,
   });
-
-  const patients = queueData?.data || [];
   
   // Reset form when patient changes
   useEffect(() => {
@@ -1187,7 +1206,16 @@ const Pemeriksaan: React.FC = () => {
             </div>
 
             {/* Queue List */}
-            <div className="space-y-3 h-[calc(100vh-470px)] overflow-y-auto">
+            <div className="mb-4">
+              <Input
+                placeholder="Cari pasien..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full"
+              />
+            </div>
+
+            <div className="space-y-3 h-[calc(100vh-540px)] overflow-y-auto">
               {isQueueLoading ? (
                  <div className="flex justify-center py-4">
                     <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />

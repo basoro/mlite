@@ -2158,6 +2158,8 @@ class Admin extends AdminModule
             $sql .= " AND (pasien.nm_pasien LIKE '%$search%' OR reg_periksa.no_rkm_medis LIKE '%$search%' OR kamar_inap.no_rawat LIKE '%$search%')";
         }
 
+        $sql .= " GROUP BY kamar_inap.no_rawat";
+
         $stmt = $this->db()->pdo()->prepare($sql);
         $stmt->execute();
         $totalRecords = $stmt->rowCount();
