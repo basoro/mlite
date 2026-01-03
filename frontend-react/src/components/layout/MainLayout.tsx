@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getContacts, getMessages, sendMessage, getWAStatus } from '@/lib/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { format } from 'date-fns';
+import { format, isToday, isYesterday, isSameDay } from 'date-fns';
+import { id } from 'date-fns/locale';
 import { QRCodeSVG } from 'qrcode.react';
 
 interface MainLayoutProps {
@@ -208,30 +209,49 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
                     {/* Messages Area */}
                     <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')]">
-                      {messagesData?.data?.map((msg: any) => (
-                        <div
-                          key={msg.id}
-                          className={`flex ${msg.direction === 'out' ? 'justify-end' : 'justify-start'}`}
-                        >
-                          <div
-                            className={`max-w-[70%] rounded-lg p-2 px-3 text-sm shadow-sm relative ${
-                              msg.direction === 'out' 
-                                ? 'bg-[#d9fdd3] rounded-tr-none' 
-                                : 'bg-white rounded-tl-none'
-                            }`}
-                          >
-                            <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                            <div className="text-[10px] text-gray-500 text-right mt-1 flex items-center justify-end gap-1">
-                              {format(new Date(msg.created_at), 'HH:mm')}
-                              {msg.direction === 'out' && (
-                                <span className={msg.status === 'read' ? 'text-blue-500' : 'text-gray-400'}>
-                                  ✓✓
+                      {messagesData?.data?.map((msg: any, index: number) => {
+                        const currentDate = new Date(msg.created_at);
+                        const previousDate = index > 0 ? new Date(messagesData.data[index - 1].created_at) : null;
+                        const showDateHeader = !previousDate || !isSameDay(currentDate, previousDate);
+
+                        return (
+                          <React.Fragment key={msg.id}>
+                            {showDateHeader && (
+                              <div className="flex justify-center my-4 sticky top-0 z-10">
+                                <span className="bg-[#e6f2fb]/90 backdrop-blur-sm text-gray-600 text-xs px-3 py-1.5 rounded-lg shadow-sm font-medium border border-white/50 uppercase">
+                                  {isToday(currentDate) 
+                                    ? 'Hari Ini' 
+                                    : isYesterday(currentDate) 
+                                      ? 'Kemarin' 
+                                      : format(currentDate, 'd MMMM yyyy', { locale: id })
+                                  }
                                 </span>
-                              )}
+                              </div>
+                            )}
+                            <div
+                              className={`flex ${msg.direction === 'out' ? 'justify-end' : 'justify-start'}`}
+                            >
+                              <div
+                                className={`max-w-[70%] rounded-lg p-2 px-3 text-sm shadow-sm relative ${
+                                  msg.direction === 'out' 
+                                    ? 'bg-[#d9fdd3] rounded-tr-none' 
+                                    : 'bg-white rounded-tl-none'
+                                }`}
+                              >
+                                <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                                <div className="text-[10px] text-gray-500 text-right mt-1 flex items-center justify-end gap-1">
+                                  {format(new Date(msg.created_at), 'HH:mm')}
+                                  {msg.direction === 'out' && (
+                                    <span className={msg.status === 'read' ? 'text-blue-500' : 'text-gray-400'}>
+                                      ✓✓
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      ))}
+                          </React.Fragment>
+                        );
+                      })}
                       <div ref={messagesEndRef} />
                     </div>
 
