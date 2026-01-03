@@ -36,8 +36,8 @@ class Admin extends AdminModule
 
     public function getSign($ref_type, $ref_id)
     {
-        $this->core->addJS(url('plugins/esignature/assets/signature_pad.min.js'));
-        $this->core->addJS(url('plugins/esignature/assets/esignature.js'));
+        // $this->core->addJS(url('plugins/esignature/assets/signature_pad.min.js'));
+        // $this->core->addJS(url('plugins/esignature/assets/esignature.js'));
 
         $signer_role = 'dokter'; // Default for admin/staff
         $signer_id = $this->core->getUserInfo('username');
@@ -46,13 +46,13 @@ class Admin extends AdminModule
         // Logic to detect if patient (if this was a public portal or kiosk)
         // For now, assume logged in user is signing
         
-        return $this->draw('sign.html', [
+        exit($this->draw('sign.html', [
             'ref_type' => $ref_type,
             'ref_id' => $ref_id,
             'signer_role' => $signer_role,
             'signer_id' => $signer_id,
             'signer_name' => $signer_name
-        ]);
+        ]));
     }
 
     public function postSaveSignature()
