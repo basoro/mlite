@@ -1,0 +1,43 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Audit Log Tanda Tangan Elektronik</h3>
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ref</th>
+                        <th>Penandatangan</th>
+                        <th>Waktu</th>
+                        <th>Hash</th>
+                        <th>IP Address</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {loop: $signatures}
+                    <tr>
+                        <td>{$value.id}</td>
+                        <td>{$value.ref_type} #{$value.ref_id}</td>
+                        <td>
+                            <b>{$value.signer_name}</b><br>
+                            <small>{$value.signer_role}</small>
+                        </td>
+                        <td>{$value.signed_at}</td>
+                        <td>
+                            <small style="font-family:monospace;">{?=substr($value.signature_hash, 0, 10)?}...</small>
+                        </td>
+                        <td>{$value.ip_address}</td>
+                        <td>
+                            <a href="{?=url(['esignature', 'verify', $value.signature_hash])?}" target="_blank" class="btn btn-xs btn-info">Verifikasi</a>
+                            <a href="{?=url([ADMIN, 'esignature', 'generatepdf', $value.ref_type, $value.ref_id])?}" target="_blank" class="btn btn-xs btn-default"><i class="fa fa-file-pdf-o"></i> PDF</a>
+                        </td>
+                    </tr>
+                    {/loop}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

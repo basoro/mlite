@@ -1,0 +1,41 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Pengaturan E-Signature</h3>
+    </div>
+    <div class="panel-body">
+        <form method="post" action="{?=url([ADMIN, 'esignature', 'settings'])?}" class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Mode Tanda Tangan</label>
+                <div class="col-sm-10">
+                    <select name="mode" class="form-control">
+                        <option value="internal">Internal (Hash & Audit Trail)</option>
+                        <option value="bsre">BSrE (Balai Sertifikasi Elektronik)</option>
+                        <option value="privy">PrivyID (PSrE)</option>
+                    </select>
+                    <p class="help-block">Pilih penyedia layanan sertifikasi elektronik.</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Passphrase P12 (Jika BSrE)</label>
+                <div class="col-sm-10">
+                    <input type="password" name="passphrase" class="form-control">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Kode Berkas Digital</label>
+                <div class="col-sm-10">
+                    <select name="esignature[kode_berkasdigital]" class="form-control">
+                        {loop: $master_berkas_digital}
+                        <option value="{$value.kode}" {if: $value.kode == $settings.kode_berkasdigital} selected="selected"{/if}>{$value.nama}</option>
+                        {/loop}
+                    </select>   
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -27,7 +27,14 @@ class Router
         }
 
         $url = rtrim(dirname($_SERVER["SCRIPT_NAME"]), '/');
-        $url = trim(preg_replace('#'.$url.'#', '', $_SERVER['PATH_INFO'], 1), '/');
+        if (!empty($url)) {
+            $url = trim(preg_replace('#'.$url.'#', '', $_SERVER['PATH_INFO'], 1), '/');
+        } else {
+            $url = trim($_SERVER['PATH_INFO'], '/');
+        }
+
+        // Debug Log
+        // file_put_contents(BASE_DIR.'/tmp/router_debug.txt', date('Y-m-d H:i:s')." URL: $url\nRoutes: ".print_r(array_keys($this->routes), true)."\n", FILE_APPEND);
 
         if ($returnPath) {
             return $url;
