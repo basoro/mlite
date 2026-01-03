@@ -221,26 +221,18 @@ $("#form").on("click","#hapus", function(event){
 });
 
 // ketika inputbox pencarian diisi
-$('input:text[name=cari]').on('input',function(e){
-  var baseURL = mlite.url + '/' + mlite.admin;
-  var url    = baseURL + '/pasien/display?t=' + mlite.token;
-  var cari = $('input:text[name=cari]').val();
-
-  if(cari!="") {
-      $.post(url, {cari: cari} ,function(data) {
-        // tampilkan data yang sudah di perbaharui dan sembunyikan notif
-        $("#notif").hide();
-        $("#display").html(data).show();
-      });
-  } else {
-      $("#notif").hide();
-      $("#display").load(baseURL + '/pasien/display?t=' + mlite.token);
-  }
-
-});
+// $('input:text[name=cari]').on('input',function(e){
+  // Debounce logic or just rely on Enter key in manage.html
+  // To avoid conflict with apiList implementation in manage.html, we disable this old handler
+  // if(typeof loadData === 'function') {
+  //    loadData(1);
+  // }
+// });
 
 // ketika tombol halaman ditekan
-$("#display").on("click", ".halaman",function(event){
+// $("#display").on("click", ".halaman",function(event){
+  // Legacy pagination handler - disabled
+  /*
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url    = baseURL + '/pasien/display?t=' + mlite.token;
@@ -259,8 +251,8 @@ $("#display").on("click", ".halaman",function(event){
       $("#display").html(data).show();
     });
   }
-
-});
+  */
+// });
 
 $("#display").on("click",".riwayat_perawatan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
@@ -367,7 +359,11 @@ $(function (event) {
       output = JSON.parse(response.data);
       if(output['action'] == 'simpan'){
         if(output['modul'] == 'pasien'){
-          $("#pasien #display").show().load(baseURL + '/pasien/display?t=' + mlite.token);
+          if(typeof loadData === 'function') {
+            loadData();
+          } else {
+            $("#pasien #display").show().load(baseURL + '/pasien/display?t=' + mlite.token);
+          }
         }
       }
     }catch(e){

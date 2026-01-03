@@ -20,28 +20,27 @@ class Admin extends AdminModule
         $this->core->addJS(url(MODULES.'/dashboard/js/admin/webcam.js?v={$mlite.version}'));
         $this->_addHeaderFiles();
 
-        $perpage = '10';
+        if(isset($_POST['cari'])) $_GET['s'] = $_POST['cari'];
+        if(isset($_POST['halaman'])) $_GET['page'] = $_POST['halaman'];
 
-        $totalRecords = $this->db('pasien')
-          ->select('no_rkm_medis')
-          ->toArray();
-        $jumlah_data    = count($totalRecords);
-  			$offset         = 10;
-  			$jml_halaman    = ceil($jumlah_data / $offset);
-        $halaman    = 1;
+        $result = $this->apiList();
 
-        $rows = $this->db('pasien')
-          ->desc('no_rkm_medis')
-          ->offset(0)
-          ->limit($perpage)
-          ->toArray();
-
-        $pasien = [];
-        foreach ($rows as $row) {
-          $row['cekbynokartu'] = url([ADMIN, 'pasien', 'vclaim_bynokartu', $row['no_peserta'], date('Y-m-d')]);
-          $row['cekbynik'] = url([ADMIN, 'pasien', 'vclaim_bynik', $row['no_ktp'], date('Y-m-d')]);
-          $pasien[] = $row;
+        if (isset($result['status']) && $result['status'] == 'error') {
+            $pasien = [];
+            $meta = [
+                'page' => 1,
+                'per_page' => 10,
+                'total' => 0
+            ];
+        } else {
+            $pasien = $result['data'];
+            $meta = $result['meta'];
         }
+
+        $halaman = $meta['page'];
+        $jumlah_data = $meta['total'];
+        $offset = $meta['per_page'];
+        $jml_halaman = ceil($jumlah_data / $offset);
 
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $cek_pcare = $this->db('mlite_modules')->where('dir', 'pcare')->oneArray();
@@ -58,136 +57,6 @@ class Admin extends AdminModule
           'mlite_crud_permissions' => $this->core->loadCrudPermissions('pasien'),
           'token' => $_SESSION['token']
         ]);
-    }
-
-    public function anyDisplay()
-    {
-        $this->_addHeaderFiles();
-
-        $perpage = '10';
-
-        $totalRecords = $this->db('pasien')->select('no_rkm_medis')->toArray();
-        $jumlah_data    = count($totalRecords);
-  			$offset         = 10;
-  			$jml_halaman    = ceil($jumlah_data / $offset);
-        $halaman    = 1;
-
-        if(isset($_POST['cari'])) {
-          if(isset($_POST['halaman']) && $_POST['halaman'] !='') {
-            $_offset = (($_POST['halaman'] - 1) * $perpage);
-            $totalRecords = $this->db('pasien')
-              ->select('no_rkm_medis')
-              ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
-              ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
-              ->orLike('alamat', '%'.$_POST['cari'].'%')
-              ->orLike('no_ktp', '%'.$_POST['cari'].'%')
-              ->orLike('no_peserta', '%'.$_POST['cari'].'%')
-              ->orLike('no_tlp', '%'.$_POST['cari'].'%')
-              ->toArray();
-            $rows = $this->db('pasien')
-              ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
-              ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
-              ->orLike('alamat', '%'.$_POST['cari'].'%')
-              ->orLike('no_ktp', '%'.$_POST['cari'].'%')
-              ->orLike('no_peserta', '%'.$_POST['cari'].'%')
-              ->orLike('no_tlp', '%'.$_POST['cari'].'%')
-              ->desc('no_rkm_medis')
-              ->offset($_offset)
-              ->limit($perpage)
-              ->toArray();
-            $jumlah_data = count($totalRecords);
-            $jml_halaman = ceil($jumlah_data / $offset);
-            $halaman = $_POST['halaman'];
-          } else {
-            $totalRecords = $this->db('pasien')
-              ->select('no_rkm_medis')
-              ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
-              ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
-              ->orLike('alamat', '%'.$_POST['cari'].'%')
-              ->orLike('no_ktp', '%'.$_POST['cari'].'%')
-              ->orLike('no_peserta', '%'.$_POST['cari'].'%')
-              ->orLike('no_tlp', '%'.$_POST['cari'].'%')
-              ->toArray();
-            $rows = $this->db('pasien')
-              ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
-              ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
-              ->orLike('alamat', '%'.$_POST['cari'].'%')
-              ->orLike('no_ktp', '%'.$_POST['cari'].'%')
-              ->orLike('no_peserta', '%'.$_POST['cari'].'%')
-              ->orLike('no_tlp', '%'.$_POST['cari'].'%')
-              ->desc('no_rkm_medis')
-              ->offset(0)
-              ->limit($perpage)
-              ->toArray();
-            $jumlah_data = count($totalRecords);
-      			$jml_halaman = ceil($jumlah_data / $offset);
-          }
-        }elseif(isset($_POST['halaman'])){
-          if(isset($_POST['cari']) && $_POST['cari'] !='') {
-            $_offset = (($_POST['halaman'] - 1) * $perpage);
-            $totalRecords = $this->db('pasien')
-              ->select('no_rkm_medis')
-              ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
-              ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
-              ->orLike('alamat', '%'.$_POST['cari'].'%')
-              ->orLike('no_ktp', '%'.$_POST['cari'].'%')
-              ->orLike('no_peserta', '%'.$_POST['cari'].'%')
-              ->orLike('no_tlp', '%'.$_POST['cari'].'%')
-              ->toArray();
-            $rows = $this->db('pasien')
-              ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
-              ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
-              ->orLike('alamat', '%'.$_POST['cari'].'%')
-              ->orLike('no_ktp', '%'.$_POST['cari'].'%')
-              ->orLike('no_peserta', '%'.$_POST['cari'].'%')
-              ->orLike('no_tlp', '%'.$_POST['cari'].'%')
-              ->desc('no_rkm_medis')
-              ->offset($_offset)
-              ->limit($perpage)
-              ->toArray();
-            $jumlah_data = count($totalRecords);
-            $jml_halaman = ceil($jumlah_data / $offset);
-            $halaman = $_POST['halaman'];
-          } else {
-            $_offset = (($_POST['halaman'] - 1) * $perpage);
-            $rows = $this->db('pasien')
-              ->desc('no_rkm_medis')
-              ->offset($_offset)
-              ->limit($perpage)
-              ->toArray();
-              $halaman = $_POST['halaman'];
-          }
-        }else{
-          $rows = $this->db('pasien')
-            ->desc('no_rkm_medis')
-            ->offset(0)
-            ->limit($perpage)
-            ->toArray();
-        }
-
-        $pasien = [];
-        foreach ($rows as $row) {
-          $row['cekbynokartu'] = url([ADMIN, 'pasien', 'vclaim_bynokartu', $row['no_peserta'], date('Y-m-d')]);
-          $row['cekbynik'] = url([ADMIN, 'pasien', 'vclaim_bynik', $row['no_ktp'], date('Y-m-d')]);
-          $pasien[] = $row;
-        }
-
-        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
-        $cek_pcare = $this->db('mlite_modules')->where('dir', 'pcare')->oneArray();
-
-        echo $this->draw('display.html', [
-          'pasien' => $pasien,
-          'halaman' => $halaman,
-          'jumlah_data' => $jumlah_data,
-          'jml_halaman' => $jml_halaman,
-          'cek_vclaim' => $cek_vclaim,
-          'cek_pcare' => $cek_pcare, 
-          'offset' => $offset,
-          'admin_mode' => $this->settings->get('settings.admin_mode'),
-          'mlite_crud_permissions' => $this->core->loadCrudPermissions('pasien')
-        ]);
-
-        exit();
     }
 
     public function anyForm()
@@ -1245,9 +1114,11 @@ class Admin extends AdminModule
     public function apiList()
     {
 
-        $username = $this->core->checkAuth('GET');
-        if (!$this->core->checkPermission($username, 'can_read', 'pasien')) {
-            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        if(isset($_SERVER['HTTP_X_API_KEY'])) {
+          $username = $this->core->checkAuth('GET');
+          if (!$this->core->checkPermission($username, 'can_read', 'pasien')) {
+              return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+          }
         }
 
         $perpage = intval($_GET['per_page'] ?? 10);
