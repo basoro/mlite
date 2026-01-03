@@ -268,6 +268,10 @@ $exp_time = $_POST['exp_time'];
         
         if (file_exists($file_path)) {
             $json = file_get_contents($file_path);
+            // Check for BOM
+            if (substr($json, 0, 3) == pack("CCC", 0xef, 0xbb, 0xbf)) {
+                $json = substr($json, 3);
+            }
             $postmanCollection = json_decode($json, true);
         }
 
@@ -316,7 +320,7 @@ $exp_time = $_POST['exp_time'];
         }
 
         echo json_encode($openApi, JSON_PRETTY_PRINT);
-        exit;
+        exit();
     }
 
     private function _processPostmanItem($item, &$openApi, $tag = null) {
