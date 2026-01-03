@@ -256,8 +256,12 @@ $exp_time = $_POST['exp_time'];
 
     public function getSwaggerJson()
     {
-        // Clear output buffer to bypass license verification callback
-        if (ob_get_level()) {
+        // Disable error reporting to prevent output pollution
+        error_reporting(0);
+        ini_set('display_errors', 0);
+
+        // Clear all output buffers to bypass license verification callback and ensure clean JSON
+        while (ob_get_level()) {
             ob_end_clean();
         }
 
@@ -272,7 +276,10 @@ $exp_time = $_POST['exp_time'];
             if (substr($json, 0, 3) == pack("CCC", 0xef, 0xbb, 0xbf)) {
                 $json = substr($json, 3);
             }
-            $postmanCollection = json_decode($json, true);
+            $decoded = json_decode($json, true);
+            if (is_array($decoded)) {
+                $postmanCollection = $decoded;
+            }
         }
 
         // Convert Postman Collection to OpenAPI (Simplified)
@@ -319,7 +326,13 @@ $exp_time = $_POST['exp_time'];
             }
         }
 
-        echo json_encode($openApi, JSON_PRETTY_PRINT);
+        $output = json_encode($openApi, JSON_PRETTY_PRINT);
+        
+        if ($output === false) {
+            echo json_encode(['error' => 'JSON Encoding Failed: ' . json_last_error_msg()]);
+        } else {
+            echo $output;
+        }
         exit();
     }
 
