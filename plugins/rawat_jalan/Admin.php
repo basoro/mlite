@@ -2380,6 +2380,20 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postKPS()
+    {
+      if (isset($_POST['no_rawat']) && $_POST['no_rawat'] !='') {
+        $this->db('catatan_perawatan')->save([
+          'tanggal' => date('Y-m-d'),
+          'jam' => date('H:i:s'),
+          'no_rawat' => $_POST['no_rawat'],
+          'kd_dokter' => $_POST['kd_dokter'],
+          'catatan' => 'KPS'
+        ]);
+      }
+      exit();
+    }    
+
     public function getOdontogram($no_rkm_medis)
     {
 

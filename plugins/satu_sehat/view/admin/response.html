@@ -106,6 +106,7 @@
                             <th style="white-space: nowrap;">ID Diagnostic Report Lab MB</th> -->
                             <th style="white-space: nowrap;">ID Care Plan</th>
                             <th style="white-space: nowrap;">ID Allergy</th>
+                            <th style="white-space: nowrap;">ID Questionnaire</th>
                         </tr>    
                     </thead>
                 </table>
@@ -541,6 +542,15 @@
                     return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="allergy" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
                 }else if(row.id_allergy == '' && row.allergy == ''){
                     return `<span class="badge badge-error">Allergy Kosong</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_questionnaire', 
+            render:function(data, type, row) {
+                if(row.id_questionnaire == '' && row.questionnaire != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="questionnaire" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_questionnaire == '' && row.questionnaire == ''){
+                    return `<span class="badge badge-error">Questionnaire Kosong</span>`; 
                 }else{return `${data}`}
             }
             },
