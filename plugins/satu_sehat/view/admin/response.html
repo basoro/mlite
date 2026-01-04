@@ -104,6 +104,7 @@
                             <!-- <th style="white-space: nowrap;">ID Diagnostic Report Lab PA</th>
                             <th style="white-space: nowrap;">ID Diagnostic Report Lab MB</th> -->
                             <th style="white-space: nowrap;">ID Care Plan</th>
+                            <th style="white-space: nowrap;">ID Allergy</th>
                         </tr>    
                     </thead>
                 </table>
@@ -521,6 +522,15 @@
                     return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="careplan" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
                 }else if(row.id_careplan == '' && row.care_plan == ''){
                     return `<span class="badge badge-error">Care Plan Kosong</span>`; 
+                }else{return `${data}`}
+            }
+            },
+            { data: 'id_allergy', 
+            render:function(data, type, row) {
+                if(row.id_allergy == '' && row.allergy != ''){
+                    return `<a href="" class="btn btn-xs btn-info" data-id="${row.no_rawat_converted}" data-tipe="allergy" data-toggle="modal" data-target="#asuransiModal" id="clearModalBtn"><i class="fa fa-check"></i></a>`;
+                }else if(row.id_allergy == '' && row.allergy == ''){
+                    return `<span class="badge badge-error">Allergy Kosong</span>`; 
                 }else{return `${data}`}
             }
             },
