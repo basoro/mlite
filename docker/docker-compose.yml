@@ -277,6 +277,34 @@ services:
     networks:
       - app-network  
 
+  whatsapp:
+    build:
+      context: ./whatsapp
+      dockerfile: Dockerfile
+    container_name: mlite_wagateway
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./whatsapp/auth:/app/auth
+    networks:
+      - app-network
+
+  mlite-react:
+    build:
+      context: ./mlite-react
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://mlite.loc}
+        VITE_API_KEY: ${VITE_API_KEY:-}
+        VITE_API_PATH: ${VITE_API_PATH:-}
+    container_name: mlite_react
+    ports:
+      - "4000:80"
+    networks:
+      - app-network
+    restart: unless-stopped
+
 networks:
   app-network:
     driver: bridge

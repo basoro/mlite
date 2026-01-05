@@ -86,4 +86,6 @@ define('BASIC_MODULES', serialize([
 // Developer mode
 define('DEV_MODE', true);
 
+define('JWT_SECRET', 'mlite_secret_key_change_me');
+
 ?>
