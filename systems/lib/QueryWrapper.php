@@ -604,9 +604,12 @@ class QueryWrapper
         }
 
         try {
+            $driver = static::$db->getAttribute(\PDO::ATTR_DRIVER_NAME);
+            $now = ($driver == 'sqlite') ? "datetime('now')" : "NOW()";
+            
             $log_stmt = static::$db->prepare("
                 INSERT INTO mlite_query_logs (sql_text, bindings, error_message, username, created_at)
-                VALUES (:sql_text, :bindings, :error_message, :username, NOW())
+                VALUES (:sql_text, :bindings, :error_message, :username, $now)
             ");
             $log_stmt->execute([
                 ':sql_text' => $sql,
@@ -622,6 +625,11 @@ class QueryWrapper
 
     protected function _getColumns()
     {
+        $driver = $this->pdo()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+        if ($driver === 'sqlite') {
+            $q = $this->pdo()->query("PRAGMA table_info($this->table)")->fetchAll();
+            return array_column($q, 'name');
+        }
         $q = $this->pdo()->query("DESCRIBE $this->table;")->fetchAll();
         return array_column($q, 'Field');
     }
@@ -646,9 +654,12 @@ class QueryWrapper
         }
     
         try {
+            $driver = static::$db->getAttribute(\PDO::ATTR_DRIVER_NAME);
+            $now = ($driver == 'sqlite') ? "datetime('now')" : "NOW()";
+            
             $stmt = static::$db->prepare("
                 INSERT INTO mlite_query_logs (sql_text, bindings, error_message, username, created_at)
-                VALUES (:sql_text, :bindings, :error_message, :username, NOW())
+                VALUES (:sql_text, :bindings, :error_message, :username, $now)
             ");
             $stmt->execute([
                 ':sql_text' => $sql,

@@ -1884,7 +1884,7 @@ CREATE TABLE `mlite_notifications` (
   `id` int NOT NULL AUTO_INCREMENT,
   `judul` varchar(250) NOT NULL,
   `pesan` text NOT NULL,
-  `tanggal` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `tanggal` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `no_rkm_medis` varchar(255) NOT NULL,
   `status` varchar(250) NOT NULL DEFAULT 'unread',
   PRIMARY KEY (`id`)
@@ -3118,7 +3118,7 @@ CREATE TABLE `mlite_triase_igd` (
   `keluhan_utama` text,
   `diagnosa_awal` text,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_triase`) USING BTREE,
   KEY `no_rawat` (`no_rawat`) USING BTREE,
   CONSTRAINT `fk_triase_reg_periksa` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE

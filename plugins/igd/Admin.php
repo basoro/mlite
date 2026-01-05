@@ -1663,7 +1663,8 @@ class Admin extends AdminModule
                 
                 // Remove null timestamp fields and let MySQL handle them
                 unset($data_to_save['created_at']);
-                unset($data_to_save['updated_at']);
+                // unset($data_to_save['updated_at']);
+                $data_to_save['updated_at'] = date('Y-m-d H:i:s');
                 
                 // Build UPDATE query manually to avoid framework interference
                 $fields = array_keys($data_to_save);

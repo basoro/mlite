@@ -24,7 +24,11 @@ abstract class Main
     public function __construct()
     {
         $this->setSession();
-        QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."", DBUSER, DBPASS);
+        $dsn = "mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."";
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            $dsn = "sqlite:".DBNAME;
+        }
+        QueryWrapper::connect($dsn, DBUSER, DBPASS);
 
         if (!is_dir(WEBAPPS_PATH)) {
             mkdir(WEBAPPS_PATH, 0777);
