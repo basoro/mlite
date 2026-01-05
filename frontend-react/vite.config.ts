@@ -7,15 +7,15 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080,
+    port: 8081,
     proxy: {
       '/admin/api': {
-        target: 'https://mlite.up.railway.app',
+        target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
       },
       '/login': {
-        target: 'https://mlite.up.railway.app',
+        target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
       }
