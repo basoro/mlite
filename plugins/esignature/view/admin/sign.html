@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=0.1">
+    <title>e-Sign</title>
+    <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="{?=url(MODULES)?}/anjungan/css/bootstrap.min.css">
+    <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+    <script src="{?=url(MODULES)?}/esignature/assets/signature_pad.min.js"></script>
+    <script src="{?=url(MODULES)?}/esignature/assets/esignature.js"></script>
+    <style>
+        .signature-wrapper {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container signature-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Tanda Tangan Elektronik</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="alert alert-info">
+                            <p>Saya menyatakan bahwa tanda tangan ini sah dan mengikat secara hukum sesuai Peraturan Direktur {?=$this->core->settings->get('settings.nama_instansi')?} dan UU ITE Republik Indonesia.</p>
+                            <p><strong>Penandatangan:</strong> {$signer_name} ({$signer_role})</p>
+                        </div>
+                        
+                        <div class="signature-wrapper" style="border: 1px solid #ccc; width: 100%; height: 300px; position: relative;">
+                            <canvas id="signature-pad" style="width: 100%; height: 100%; touch-action: none;"></canvas>
+                        </div>
+                        
+                        <br>
+                        <button type="button" class="btn btn-warning" id="clear">Hapus</button>
+                        <button type="button" class="btn btn-primary" id="save">Simpan Tanda Tangan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    var wrapper = document.querySelector(".signature-wrapper canvas");
+    var clearButton = document.getElementById("clear");
+    var saveButton = document.getElementById("save");
+    var canvas = wrapper;
+    
+    function resizeCanvas() {
+        var ratio =  Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+    }
+    window.onresize = resizeCanvas;
+    resizeCanvas();
+
+    var signaturePad = new SignaturePad(canvas, {
+        backgroundColor: 'rgb(255, 255, 255)'
+    });
+
+    clearButton.addEventListener("click", function (event) {
+        signaturePad.clear();
+    });
+
+    saveButton.addEventListener("click", function (event) {
+        if (signaturePad.isEmpty()) {
+            alert("Silakan tanda tangan terlebih dahulu.");
+        } else {
+            var dataUrl = signaturePad.toDataURL();
+            $.post('{?=url([ADMIN, "esignature", "saveSignature"])?}&t={?=$_SESSION['token']?}', {
+                ref_type: '{$ref_type}',
+                ref_id: '{$ref_id}',
+                signer_role: '{$signer_role}',
+                signer_id: '{$signer_id}',
+                signer_name: '{$signer_name}',
+                image_data: dataUrl
+            }, function(response){
+                var res = typeof response === 'object' ? response : JSON.parse(response);
+                if(res.status == 'success') {
+                    alert('Tanda tangan berhasil disimpan.\nHash: ' + res.hash);
+                    
+                    // Open PDF in new window
+                    window.open('{?=url([ADMIN, "esignature", "generatepdf", $ref_type, $ref_id])?}', '_blank');
+
+                    // Close window or refresh parent
+                    if(window.opener) {
+                        window.opener.location.reload();
+                        window.close();
+                    } else {
+                        window.location.reload();
+                    }
+                } else {
+                    alert('Gagal menyimpan.');
+                }
+            });
+        }
+    });
+</script>
+</html>

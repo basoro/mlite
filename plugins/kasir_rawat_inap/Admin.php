@@ -20,6 +20,243 @@ class Admin extends AdminModule
         ];
     }
 
+    public function apiBillingList()
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'kasir_rawat_inap')) {
+            echo json_encode(['status' => 'error', 'message' => 'You do not have permission to access this resource']);
+            exit;
+        }
+        
+        $page = $_GET['page'] ?? 1;
+        $per_page = $_GET['per_page'] ?? 10;
+        $offset = ($page - 1) * $per_page;
+        $search = $_GET['s'] ?? '';
+        $tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-d');
+        $tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-d');
+
+        $query = $this->db('kamar_inap')
+            ->join('reg_periksa', 'reg_periksa.no_rawat = kamar_inap.no_rawat')
+            ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+            ->join('kamar', 'kamar.kd_kamar = kamar_inap.kd_kamar')
+            ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
+            ->where('kamar_inap.tgl_masuk', '>=', $tgl_awal)
+            ->where('kamar_inap.tgl_masuk', '<=', $tgl_akhir);
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('reg_periksa.no_rawat', 'LIKE', "%$search%")
+                  ->orWhere('pasien.nm_pasien', 'LIKE', "%$search%")
+                  ->orWhere('pasien.no_rkm_medis', 'LIKE', "%$search%");
+            });
+        }
+
+        $total = $query->count();
+        $data = $query->select('kamar_inap.*')
+            ->select('reg_periksa.no_rkm_medis')
+            ->select('pasien.nm_pasien')
+            ->select('kamar.kd_kamar')
+            ->select('bangsal.nm_bangsal')
+            ->offset($offset)
+            ->limit($per_page)
+            ->desc('kamar_inap.tgl_masuk')
+            ->desc('kamar_inap.jam_masuk')
+            ->toArray();
+
+        foreach ($data as &$row) {
+             $billing = $this->db('mlite_billing')->where('no_rawat', $row['no_rawat'])->like('kd_billing', 'RI%')->oneArray();
+             $row['total_tagihan'] = $billing ? $billing['jumlah_harus_bayar'] : 0;
+             $row['status_bayar'] = $this->db('reg_periksa')->where('no_rawat', $row['no_rawat'])->oneArray()['status_bayar'] ?? '';
+        }
+
+        echo json_encode([
+            'status' => 'success',
+            'data' => $data,
+            'total' => $total,
+            'page' => $page,
+            'per_page' => $per_page
+        ]);
+        exit;
+    }
+
+    public function apiBillingDetail($no_rawat)
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'kasir_rawat_inap')) {
+             echo json_encode(['status' => 'error', 'message' => 'You do not have permission to access this resource']);
+             exit;
+        }
+        $no_rawat = revertNorawat($no_rawat);
+
+        // Basic Info
+        $reg_periksa = $this->db('reg_periksa')
+            ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+            ->where('reg_periksa.no_rawat', $no_rawat)
+            ->oneArray();
+
+        if (!$reg_periksa) {
+            echo json_encode(['status' => 'error', 'message' => 'Data not found']);
+            exit;
+        }
+        
+        $kamar_inap = $this->db('kamar_inap')
+            ->join('kamar', 'kamar.kd_kamar = kamar_inap.kd_kamar')
+            ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
+            ->where('no_rawat', $no_rawat)
+            ->desc('tgl_masuk')
+            ->limit(1)
+            ->oneArray();
+
+        $details = [];
+        $total_biaya = 0;
+
+        // 1. Registrasi (Usually for Ranap, is there registration fee? Maybe just Room charge)
+        // Check if there is a 'registrasi' component or if it's covered by Kamar
+        
+        // 2. Kamar (Room Charge)
+        if ($kamar_inap) {
+             // Calculate days
+             $masuk = new \DateTime($kamar_inap['tgl_masuk'] . ' ' . $kamar_inap['jam_masuk']);
+             $keluar = $kamar_inap['tgl_keluar'] == '0000-00-00' ? new \DateTime() : new \DateTime($kamar_inap['tgl_keluar'] . ' ' . $kamar_inap['jam_keluar']);
+             $interval = $masuk->diff($keluar);
+             $days = $interval->days;
+             if ($days == 0) $days = 1; // Minimum 1 day
+             
+             $biaya_kamar = $kamar_inap['trf_kamar'];
+             $total_kamar = $biaya_kamar * $days;
+             
+             $details[] = [
+                'kategori' => 'Kamar',
+                'nama' => $kamar_inap['nm_bangsal'] . ' (' . $days . ' hari)',
+                'biaya' => $biaya_kamar,
+                'jumlah' => $days,
+                'subtotal' => $total_kamar
+             ];
+             $total_biaya += $total_kamar;
+        }
+
+        // 3. Tindakan Dokter
+        $tindakan_dr = $this->db('rawat_inap_dr')
+            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_dr.kd_jenis_prw')
+            ->where('no_rawat', $no_rawat)->toArray();
+        foreach ($tindakan_dr as $t) {
+            $details[] = [
+                'kategori' => 'Tindakan Dokter',
+                'nama' => $t['nm_perawatan'],
+                'biaya' => $t['biaya_rawat'],
+                'jumlah' => 1,
+                'subtotal' => $t['biaya_rawat']
+            ];
+            $total_biaya += $t['biaya_rawat'];
+        }
+
+        // 4. Tindakan Perawat
+        $tindakan_pr = $this->db('rawat_inap_pr')
+            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_pr.kd_jenis_prw')
+            ->where('no_rawat', $no_rawat)->toArray();
+        foreach ($tindakan_pr as $t) {
+            $details[] = [
+                'kategori' => 'Tindakan Perawat',
+                'nama' => $t['nm_perawatan'],
+                'biaya' => $t['biaya_rawat'],
+                'jumlah' => 1,
+                'subtotal' => $t['biaya_rawat']
+            ];
+            $total_biaya += $t['biaya_rawat'];
+        }
+
+        // 5. Tindakan Dokter & Perawat
+        $tindakan_drpr = $this->db('rawat_inap_drpr')
+            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_drpr.kd_jenis_prw')
+            ->where('no_rawat', $no_rawat)->toArray();
+        foreach ($tindakan_drpr as $t) {
+            $details[] = [
+                'kategori' => 'Tindakan Dokter & Perawat',
+                'nama' => $t['nm_perawatan'],
+                'biaya' => $t['biaya_rawat'],
+                'jumlah' => 1,
+                'subtotal' => $t['biaya_rawat']
+            ];
+            $total_biaya += $t['biaya_rawat'];
+        }
+
+        // 6. Obat & BHP
+        $obat = $this->db('detail_pemberian_obat')
+            ->join('databarang', 'databarang.kode_brng = detail_pemberian_obat.kode_brng')
+            ->where('no_rawat', $no_rawat)
+            ->where('detail_pemberian_obat.status', 'Ranap')
+            ->toArray();
+            
+        foreach ($obat as $o) {
+            $details[] = [
+                'kategori' => 'Obat & BHP',
+                'nama' => $o['nama_brng'],
+                'biaya' => $o['biaya_obat'],
+                'jumlah' => $o['jml'],
+                'subtotal' => $o['total'] + $o['embalase'] + $o['tuslah']
+            ];
+            $total_biaya += ($o['total'] + $o['embalase'] + $o['tuslah']);
+        }
+
+        // 7. Laboratorium
+        $lab = $this->db('periksa_lab')
+            ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw = periksa_lab.kd_jenis_prw')
+            ->where('no_rawat', $no_rawat)
+            ->where('periksa_lab.status', 'Ranap')
+            ->toArray();
+        foreach ($lab as $l) {
+            $details[] = [
+                'kategori' => 'Laboratorium',
+                'nama' => $l['nm_perawatan'],
+                'biaya' => $l['biaya'],
+                'jumlah' => 1,
+                'subtotal' => $l['biaya']
+            ];
+            $total_biaya += $l['biaya'];
+        }
+
+        // 8. Radiologi
+        $rad = $this->db('periksa_radiologi')
+            ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw = periksa_radiologi.kd_jenis_prw')
+            ->where('no_rawat', $no_rawat)
+            ->where('periksa_radiologi.status', 'Ranap')
+            ->toArray();
+        foreach ($rad as $r) {
+            $details[] = [
+                'kategori' => 'Radiologi',
+                'nama' => $r['nm_perawatan'],
+                'biaya' => $r['biaya'],
+                'jumlah' => 1,
+                'subtotal' => $r['biaya']
+            ];
+            $total_biaya += $r['biaya'];
+        }
+        
+        // 9. Tambahan Biaya
+        $tambahan = $this->db('tambahan_biaya')->where('no_rawat', $no_rawat)->toArray();
+        foreach ($tambahan as $t) {
+             $details[] = [
+                'kategori' => 'Tambahan',
+                'nama' => $t['nama_biaya'],
+                'biaya' => $t['besar_biaya'],
+                'jumlah' => 1,
+                'subtotal' => $t['besar_biaya']
+            ];
+            $total_biaya += $t['besar_biaya'];
+        }
+
+        echo json_encode([
+            'status' => 'success',
+            'data' => [
+                'registrasi' => $reg_periksa,
+                'kamar_inap' => $kamar_inap,
+                'details' => $details,
+                'total' => $total_biaya
+            ]
+        ]);
+        exit;
+    }
+
     public function anyManage()
     {
         $tgl_masuk = '';

@@ -118,6 +118,11 @@ location ^~ /systems/data/ {
     return 403;
 }
 
+location ~* \.(sdb|txt|env|md)$ {
+    deny all;
+    return 403;
+}
+
 location  /admin {
     index index.php;
     try_files $uri $uri/ /admin/index.php?$args;
@@ -135,6 +140,11 @@ location  /lite {
 }
 
 location ^~ /lite/systems/data/ {
+    deny all;
+    return 403;
+}
+
+location ~* \.(sdb|txt|env|md)$ {
     deny all;
     return 403;
 }

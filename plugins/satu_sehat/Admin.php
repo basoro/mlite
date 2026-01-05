@@ -2972,6 +2972,146 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     exit();
   }
 
+  public function getQuestionnaire($no_rawat, $render = true)
+  {
+
+    $zonawaktu = '+07:00';
+    if ($this->settings->get('satu_sehat.zonawaktu') == 'WITA') {
+      $zonawaktu = '+08:00';
+    }
+    if ($this->settings->get('satu_sehat.zonawaktu') == 'WIT') {
+      $zonawaktu = '+09:00';
+    }
+
+
+    $no_rawat = revertNoRawat($no_rawat);
+    $kd_poli = $this->core->getRegPeriksaInfo('kd_poli', $no_rawat);
+    $nm_poli = $this->core->getPoliklinikInfo('nm_poli', $kd_poli);
+    $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat);
+    $no_ktp_dokter = $this->core->getPegawaiInfo('no_ktp', $kd_dokter);
+    $nama_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
+    $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
+    $no_ktp_pasien = $this->core->getPasienInfo('no_ktp', $no_rkm_medis);
+    $nama_pasien = $this->core->getPasienInfo('nm_pasien', $no_rkm_medis);
+    $status_lanjut = $this->core->getRegPeriksaInfo('status_lanjut', $no_rawat);
+    $tgl_registrasi = $this->core->getRegPeriksaInfo('tgl_registrasi', $no_rawat);
+    $jam_reg = $this->core->getRegPeriksaInfo('jam_reg', $no_rawat);
+    $mlite_billing = $this->db('mlite_billing')->where('no_rawat', $no_rawat)->oneArray();
+    $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat);
+
+    $id_dokter = $this->db('mlite_satu_sehat_mapping_praktisi')->select('practitioner_id')->where('kd_dokter', $kd_dokter)->oneArray();
+
+    $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
+
+    $__patientResp = $this->getPatient($no_ktp_pasien);
+    $__patientJson = json_decode($__patientResp);
+    $id_pasien = '';
+    if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+      $id_pasien = $__patientJson->entry[0]->resource->id;
+    }
+    if ($id_pasien === '') {
+      $resp = json_encode(['error' => 'Data tidak lengkap untuk Diet Gizi', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+      if ($render) {
+        echo $this->draw('dietgizi.html', ['pesan' => 'Gagal mengirim diet gizi platform Satu Sehat!!', 'response' => $resp]);
+      } else {
+        echo $resp;
+      }
+      exit();
+    }
+    $id_encounter = $mlite_satu_sehat_response['id_encounter'];
+
+    $date = date('Y-m-d');
+    $time = date('H:i:s');
+
+    $nama_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
+    $tgl_registrasi = $this->core->getRegPeriksaInfo('tgl_registrasi', $no_rawat);
+    $adime_gizi = $this->db('catatan_adime_gizi')->where('no_rawat', $no_rawat)->oneArray();
+    $instruksi = isset_or($adime_gizi['instruksi'], '');
+
+    $catatan_perawatan = $this->db('catatan_perawatan')->where('no_rawat', $no_rawat)->where('kd_dokter', $kd_dokter)->where('catatan', 'KPS')->oneArray();
+
+    $curl = curl_init();
+
+    $data = '{
+        "resourceType": "QuestionnaireResponse",
+        "questionnaire": "https://fhir.kemkes.go.id/Questionnaire/Q0002",
+        "status": "completed",
+        "subject": {
+            "reference" : "Patient/' . $id_pasien . '",
+            "display" : "' . $nama_pasien . '"
+        },
+        "encounter": {
+            "reference" : "Encounter/' . $id_encounter . '"
+        },
+        "authored": "' . $catatan_perawatan['tanggal'] . 'T' . $catatan_perawatan['jam'] . '' . $zonawaktu . '",
+        "author": {
+            "reference": "Practitioner/' . $id_dokter['practitioner_id'] . '"
+        },
+        "source": {
+            "reference": "Patient/' . $id_pasien . '"
+        },
+        "item": [
+            {
+                "linkId": "1",
+                "text": "Status Kesejahteraan",
+                "answer": [
+                    {
+                        "valueString": "Keluarga Pra Sejahtera (KPS)"
+                    }
+                ]
+            }
+        ]
+    }';
+
+    // echo '<pre>' . $data . '</pre>';
+
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $this->fhirurl . '/QuestionnaireResponse',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => $data
+    ));
+
+    $response = curl_exec($curl);
+
+    $id_questionnaire = isset_or(json_decode($response)->id, '');
+    $pesan = 'Gagal mengirim questionnaire response platform Satu Sehat!!';
+    if ($id_questionnaire) { 
+      $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
+      if ($mlite_satu_sehat_response) {
+        $this->db('mlite_satu_sehat_response')
+          ->where('no_rawat', $no_rawat)
+          ->save([
+            'no_rawat' => $no_rawat,
+            'id_questionnaire' => $id_questionnaire  
+          ]);
+      } else {
+        $this->db('mlite_satu_sehat_response')
+          ->save([
+            'no_rawat' => $no_rawat,
+            'id_questionnaire' => $id_questionnaire
+          ]);
+      }
+      $pesan = 'Sukses mengirim questionnaire response platform Satu Sehat!!';
+    }
+
+    curl_close($curl);
+    // echo $response;
+    // echo '<pre>' . $data . '</pre>';
+    if ($render) {
+      echo $this->draw('questionnaire.html', ['pesan' => $pesan, 'response' => $response]);
+    } else {
+      echo $response;
+    }
+    exit();
+  }
+
   public function getVaksin($no_rawat, $render = true)
   {
 
@@ -3147,7 +3287,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
       $response = curl_exec($curl);
 
-      $id_immunization = json_decode($response)->id;
+      $id_immunization = isset_or(json_decode($response)->id, '');
       $pesan = 'Gagal mengirim vaksin/imunisasi platform Satu Sehat!!';
       if ($id_immunization) {
         $this->db('mlite_satu_sehat_response')
@@ -3502,7 +3642,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
         $response = curl_exec($curl);
 
-        $id_medication_request = json_decode($response)->id;
+        $id_medication_request = isset_or(json_decode($response)->id, '');
         $pesan = 'Gagal mengirim medication request platform Satu Sehat!!';
         if ($id_medication_request) {
           $this->db('mlite_satu_sehat_response')
@@ -3584,12 +3724,12 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
               "resourceType": "MedicationDispense",
               "identifier": [
                   {
-                      "system": "http://sys-ids.kemkes.go.id/medicationdispense/' . $this->organizationid . '",
+                      "system": "http://sys-ids.kemkes.go.id/prescription/' . $this->organizationid . '",
                       "use": "official",
                       "value": "' . $obat['no_resep'] . '"
                   },
                   {
-                      "system": "http://sys-ids.kemkes.go.id/medicationdispense-item/' . $this->organizationid . '",
+                      "system": "http://sys-ids.kemkes.go.id/prescription-item/' . $this->organizationid . '",
                       "use": "official",
                       "value": "' . $obat['kode_brng'] . '"
                   }
@@ -3689,7 +3829,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
         $response = curl_exec($curl);
 
-        $id_medication_dispense = json_decode($response)->id;
+        $id_medication_dispense = isset_or(json_decode($response)->id, '');
         $pesan = 'Gagal mengirim medication dispense platform Satu Sehat!!';
         if ($id_medication_dispense) {
           $this->db('mlite_satu_sehat_response')
@@ -3706,6 +3846,174 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
       }
     } else if ($tipe === 'statement') {
+
+      // Data resep dan mapping obat
+      $row['medications'] = $this->db('resep_obat')
+        ->join('resep_dokter', 'resep_dokter.no_resep = resep_obat.no_resep')
+        ->join('mlite_satu_sehat_mapping_obat', 'mlite_satu_sehat_mapping_obat.kode_brng = resep_dokter.kode_brng')
+        ->where('mlite_satu_sehat_mapping_obat.type', 'obat')
+        ->where('no_rawat', $no_rawat)
+        ->toArray();
+
+      if (count($row['medications']) === 0) {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Medication Dispense', 'missing' => ['noresep' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
+
+      // Data pasien dan dokter
+      $no_rkm_medis  = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
+      $nm_pasien = $this->core->getPasienInfo('nm_pasien', $no_rkm_medis);
+      $no_ktp_pasien = $this->core->getPasienInfo('no_ktp', $no_rkm_medis);
+      $kd_dokter     = $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat);
+      $nm_dokter     = $this->core->getPegawaiInfo('nama', $kd_dokter);
+      $id_dokter     = $this->db('mlite_satu_sehat_mapping_praktisi')
+        ->select('practitioner_id')
+        ->where('kd_dokter', $kd_dokter)
+        ->oneArray();
+      $__patientResp = $this->getPatient($no_ktp_pasien);
+      $__patientJson = json_decode($__patientResp);
+      $id_pasien = '';
+      if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+        $id_pasien = $__patientJson->entry[0]->resource->id;
+      }
+
+      if ($id_pasien === '') {
+        echo json_encode(['error' => 'Data tidak lengkap untuk Medication', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit();
+      }
+
+      $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
+      $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $this->core->getSettings('satu_sehat', 'farmasi'))->oneArray();
+
+      foreach ($row['medications'] as $i => $obat) {
+        $medReqId = $this->gen_uuid();
+        $medId = $obat['no_resep'] . '' . $obat['kode_brng'];
+        $medUuid = "urn:uuid:" . $this->gen_uuid();
+        $system_cek = 'http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm';
+        if (ctype_digit($obat['satuan_den'])) {
+          $system_cek = 'http://snomed.info/sct';
+        }
+
+        // Parsing aturan pakai
+        if (preg_match_all('/\d+/', $obat['aturan_pakai'], $m) && count($m[0]) >= 2) {
+          $frequency = (int)$m[0][0];
+          $doseValue = (int)$m[0][1];
+        } else {
+          $frequency = 1;
+          $doseValue = 1;
+        }
+
+        // $duration = max(1, (int)round($obat['jml'] / $frequency / $doseValue));
+        // $startDate = $obat['tgl_peresepan'];
+        // $endDate = date('Y-m-d', strtotime("$startDate +{$duration} days"));
+
+        $satu_sehat_mapping_obat = $this->db('mlite_satu_sehat_mapping_obat')->where('kode_brng', $obat['kode_brng'])->oneArray();
+
+        $data = '{
+              "resourceType": "MedicationStatement",
+              "identifier": [
+                  {
+                      "system": "http://sys-ids.kemkes.go.id/medication-statement",
+                      "use": "official",
+                      "value": "' . $obat['no_resep'] . '-' . $obat['kode_brng'] . '"
+                  }
+              ],
+              "status": "completed",
+              "category": {
+                  "coding": [
+                      {
+                          "system": "http://terminology.kemkes.go.id/CodeSystem/medication-statement-category",
+                          "code": "outpatient",
+                          "display": "Outpatient"
+                      }
+                  ]
+              },
+              "medicationReference": {
+                  "reference": "Medication/' . $satu_sehat_mapping_obat['id_medication'] . '",
+                  "display": "' . $obat['nama_kfa'] . '"
+              },
+              "subject": {
+                  "reference": "Patient/' . $id_pasien . '",
+                  "display": "' . $nm_pasien . '"
+              },
+              "dosage": [
+                  {
+                      "text": "' . $obat['aturan_pakai'] . '",
+                      "timing": {
+                          "repeat": {
+                              "frequency": ' . $doseValue . ',
+                              "period": 1,
+                              "periodUnit": "d"
+                          }
+                      },
+                      "route": {
+                          "coding": [
+                              {
+                                  "system": "http://www.whocc.no/atc",
+                                  "code": "' . $obat['kode_route'] . '",
+                                  "display": "' . $obat['nama_route'] . '"
+                              }
+                          ]
+                      },
+                      "doseAndRate": [
+                          {
+                              "doseQuantity": {
+                                  "value": ' . $frequency . ',
+                                  "unit": "' . $obat['satuan_den'] . '",
+                                  "system": "' . $system_cek . '",
+                                  "code": "' . $obat['satuan_den'] . '"
+                              }
+                          }
+                      ]
+                  }
+              ],
+              "dateAsserted": "' . $obat['tgl_penyerahan'] . 'T' . $obat['jam_penyerahan'] . '' . $zonawaktu . '",
+              "informationSource": {
+                  "reference": "Patient/' . $id_pasien . '",
+                  "display": "' . $nm_pasien . '"
+              },
+              "context": {
+                  "reference": "Encounter/' . $mlite_satu_sehat_response['id_encounter'] . '"
+              },
+              "note": [{
+                  "text": "Sudah dilakukan proses telaah obat oleh petugas dan obat sudah diserahkan ke pasien."
+              }]
+            }';
+
+        // echo '<pre>'. $data. '</pre>';
+
+        $url = $this->fhirurl . '/MedicationStatement';
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => $url,
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS => $data,
+        ));
+
+        $response = curl_exec($curl);
+
+        $id_medication_statement = isset_or(json_decode($response)->id, '');
+        $pesan = 'Gagal mengirim medication statement platform Satu Sehat!!';
+        if ($id_medication_statement) {
+          $this->db('mlite_satu_sehat_response')
+            ->where('no_rawat', $no_rawat)
+            ->save([
+              'id_medication_statement' => $id_medication_statement
+            ]);
+          $pesan = 'Sukses mengirim medication statement platform Satu Sehat!!';
+        }
+
+        curl_close($curl);
+
+      }
     } else if ($tipe == 'mapping') {
       $satu_sehat_mapping_obat = $this->db('mlite_satu_sehat_mapping_obat')->where('kode_brng', $kode_brng)->oneArray();
       $data = '{
@@ -3775,7 +4083,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
       $response = curl_exec($curl);
 
-      $id_medication = json_decode($response)->id;
+      $id_medication = isset_or(json_decode($response)->id, '');
       $pesan = 'Gagal mengirim mapping medication platform Satu Sehat!!';
       if ($id_medication) {
         $this->db('mlite_satu_sehat_mapping_obat')
@@ -5010,6 +5318,11 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
     $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
 
+    $id_dokter     = $this->db('mlite_satu_sehat_mapping_praktisi')
+      ->select('practitioner_id')
+      ->where('kd_dokter', $kd_dokter)
+      ->oneArray();
+
     $kunjungan = 'Kunjungan';
     if ($status_lanjut == 'Ranap') {
       $kunjungan = 'Perawatan';
@@ -5048,22 +5361,10 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       exit();
     }
 
-    $curl = curl_init();
-
-    curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->fhirurl . '/CarePlan',
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => '',
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 0,
-      CURLOPT_FOLLOWLOCATION => true,
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
-      CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS => '{
+    $careplan = '{
         "resourceType" : "CarePlan", 
         "identifier" : {
-            "system" : "http://sys-ids.kemkes.go.id/careplan/"' . $this->settings->get('satu_sehat.idsatu_sehat') . '", 
+            "system" : "http://sys-ids.kemkes.go.id/careplan/' . $this->organizationid . '", 
             "value" : "' . $no_rawat . '"
         }, 
         "title" : "Instruksi Medik dan Keperawatan Pasien", 
@@ -5074,9 +5375,9 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
                     {
                         "system" : "http://snomed.info/sct", 
                         "code" : "736271009", 
-                        "display" : "Outpatient care plan""
+                        "display" : "Outpatient care plan"
                     }
-                ]"
+                ]
             }
         ], 
         "intent" : "plan", 
@@ -5089,12 +5390,28 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
             "reference": "Encounter/' . $encounter_id . '",
             "display": "' . $kunjungan . ' ' . $nama_pasien . ' dari tanggal ' . $tgl_registrasi . '"
         }, 
-        "created" : "' . $pemeriksaan['tgl_perawatan'] . 'T' . $pemeriksaan['jam_rawat'] . $zonawaktu . '"
+        "created" : "' . $pemeriksaan['tgl_perawatan'] . 'T' . $pemeriksaan['jam_rawat'] . $zonawaktu . '", 
         "author" : {
-            "reference" : "Practitioner/' . $kd_dokter . '", 
+            "reference" : "Practitioner/' . $id_dokter['practitioner_id'] . '", 
             "display" : "' . $nama_dokter . '"
         }
-      }',
+      }';
+
+    // echo '<pre>'.$careplan.'</pre>';
+
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $this->fhirurl . '/CarePlan',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => $careplan,
     ));
 
     $response = curl_exec($curl);
@@ -5125,6 +5442,233 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
     if ($render) {
       echo $this->draw('careplan.html', ['pesan' => $pesan, 'response' => $response]);
+    } else {
+      echo $response;
+    }
+    exit();
+  }
+
+  public function getAllergy($no_rawat, $render = true)
+  {
+
+    $zonawaktu = '+07:00';
+    if ($this->settings->get('satu_sehat.zonawaktu') == 'WITA') {
+      $zonawaktu = '+08:00';
+    }
+    if ($this->settings->get('satu_sehat.zonawaktu') == 'WIT') {
+      $zonawaktu = '+09:00';
+    }
+
+
+    $no_rawat = revertNoRawat($no_rawat);
+    $kd_poli = $this->core->getRegPeriksaInfo('kd_poli', $no_rawat);
+    $nm_poli = $this->core->getPoliklinikInfo('nm_poli', $kd_poli);
+    $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat);
+    $no_ktp_dokter = $this->core->getPegawaiInfo('no_ktp', $kd_dokter);
+    $nama_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
+    $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
+    $no_ktp_pasien = $this->core->getPasienInfo('no_ktp', $no_rkm_medis);
+    $nama_pasien = $this->core->getPasienInfo('nm_pasien', $no_rkm_medis);
+    $status_lanjut = $this->core->getRegPeriksaInfo('status_lanjut', $no_rawat);
+    $tgl_registrasi = $this->core->getRegPeriksaInfo('tgl_registrasi', $no_rawat);
+    $jam_reg = $this->core->getRegPeriksaInfo('jam_reg', $no_rawat);
+    $mlite_billing = $this->db('mlite_billing')->where('no_rawat', $no_rawat)->oneArray();
+    $pemeriksaan = $this->db('pemeriksaan_ralan')->where('no_rawat', $no_rawat)->oneArray();
+    
+    $rtl = $pemeriksaan['rtl'] ?? null;
+
+    $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
+
+    $id_dokter     = $this->db('mlite_satu_sehat_mapping_praktisi')
+      ->select('practitioner_id')
+      ->where('kd_dokter', $kd_dokter)
+      ->oneArray();
+
+    $kunjungan = 'Kunjungan';
+    if ($status_lanjut == 'Ranap') {
+      $kunjungan = 'Perawatan';
+      $row['pemeriksaan'] = $this->db('pemeriksaan_ranap')
+        ->where('no_rawat', $no_rawat)
+        ->limit(1)
+        ->desc('tgl_perawatan')
+        ->oneArray();
+      $rtl = $pemeriksaan['rtl'] ?? null;
+    }
+
+    $__patientResp = $this->getPatient($no_ktp_pasien);
+    $__patientJson = json_decode($__patientResp);
+    $ihs_patient = '';
+    if (is_object($__patientJson) && isset($__patientJson->entry) && is_array($__patientJson->entry) && isset($__patientJson->entry[0]) && isset($__patientJson->entry[0]->resource) && isset($__patientJson->entry[0]->resource->id)) {
+      $ihs_patient = $__patientJson->entry[0]->resource->id;
+    }
+
+    $encounter_id = $mlite_satu_sehat_response['id_encounter'] ?? null;
+
+    if ($ihs_patient === '' || !$encounter_id) {
+      $error = [
+        'error' => 'Data tidak lengkap untuk Allergy',
+        'missing' => [
+          'patient_id' => $ihs_patient === '' ? 'missing' : 'ok',
+          'rtl' => !$rtl ? 'missing' : 'ok',
+          'id_encounter' => !$encounter_id ? 'missing' : 'ok'
+        ]
+      ];
+      $response = json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+      if ($render) {
+        echo $this->draw('allergy.html', ['pesan' => 'Gagal mengirim allergy platform Satu Sehat!!', 'response' => $response]);
+      } else {
+        echo $response;
+      }
+      exit();
+    }
+
+    $allergy_list = [
+        [
+            'deskripsi' => 'Allergy to food',
+            'snomed_ct' => '414285001',
+            'icd_10'    => 'T78.1',
+            'category'  => 'food'
+        ],
+        [
+            'deskripsi' => 'Allergy to drug',
+            'snomed_ct' => '416098002',
+            'icd_10'    => 'T88.7',
+            'category'  => 'drug'
+        ],
+        [
+            'deskripsi' => 'Allergy to nutraceutical',
+            'snomed_ct' => '300910009',
+            'icd_10'    => 'J30.1',
+            'category'  => 'environment'
+        ],
+        [
+            'deskripsi' => 'Allergy to dust',
+            'snomed_ct' => '232350006',
+            'icd_10'    => 'J30.8',
+            'category'  => 'environment'
+        ],
+        [
+            'deskripsi' => 'Allergic disposition',
+            'snomed_ct' => '609328004',
+            'icd_10'    => 'T78.4',
+            'category'  => 'environment'
+        ]
+    ];
+
+    $allergy_icd10 = array_column($allergy_list, 'icd_10');
+
+    $row['allergy'] = [];
+    
+    $allergy = $this->db('diagnosa_pasien')
+        ->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')
+        ->where('no_rawat', $no_rawat)
+        ->where('diagnosa_pasien.status', $status_lanjut)
+        ->in('diagnosa_pasien.kd_penyakit', $allergy_icd10)
+        ->oneArray();
+
+    $allergy_map = array_column($allergy_list, null, 'icd_10');
+
+    if (!empty($allergy) && isset($allergy_map[$allergy['kd_penyakit']])) {
+        $row['allergy'] = $allergy_map[$allergy['kd_penyakit']];
+    }
+
+    $allergy = '{
+        "resourceType" : "AllergyIntolerance", 
+        "identifier" : {
+            "system" : "http://sys-ids.kemkes.go.id/allergy/' . $this->organizationid . '", 
+            "use" : "official",
+            "value" : "' . $no_rawat . '"
+        }, 
+        "clinicalStatus": {
+            "coding": [
+                {
+                    "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+                    "code": "active",
+                    "display": "Active"
+                }
+            ]
+        },
+        "verificationStatus": {
+            "coding": [
+                {
+                    "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+                    "code": "confirmed",
+                    "display": "Confirmed"
+                }
+            ]
+        },
+        "category": [
+            "food"
+        ],
+        "code": {
+            "coding": [
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "'.$row['allergy']['snomed_ct'].'",
+                    "display": "'.$row['allergy']['deskripsi'].'"
+                }
+            ],
+            "text": "'.$row['allergy']['deskripsi'].'"
+        },
+        "patient": {
+            "reference": "Patient/' . $ihs_patient . '",
+            "display": "' . $nama_pasien . '"
+        },
+        "encounter": {
+            "reference": "Encounter/' . $encounter_id . '",
+            "display": "' . $kunjungan . ' ' . $nama_pasien . ' dari tanggal ' . $tgl_registrasi . '"
+        },
+        "recordedDate": "' . $pemeriksaan['tgl_perawatan'] . 'T' . $pemeriksaan['jam_rawat'] . $zonawaktu . '",
+        "recorder": {
+            "reference": "Practitioner/' . $id_dokter['practitioner_id'] . '",
+            "display": "' . $nama_dokter . '"
+        }
+      }';
+
+    $curl = curl_init();
+    // echo '<pre>' . $allergy . '</pre>';
+
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $this->fhirurl . '/AllergyIntolerance',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => $allergy
+    ));
+
+    $response = curl_exec($curl);
+
+    $decoded = json_decode($response);
+    $id_allergy = (is_object($decoded) && isset($decoded->id)) ? $decoded->id : null;
+    $pesan = 'Gagal mengirim allergy platform Satu Sehat!!';
+    if ($id_allergy) {
+      $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
+      if ($mlite_satu_sehat_response) {
+        $this->db('mlite_satu_sehat_response')
+          ->where('no_rawat', $no_rawat)
+          ->save([
+            'no_rawat' => $no_rawat,
+            'id_allergy' => $id_allergy
+          ]);
+      } else {
+        $this->db('mlite_satu_sehat_response')
+          ->save([
+            'no_rawat' => $no_rawat,
+            'id_allergy' => $id_allergy
+          ]);
+      }
+      $pesan = 'Sukses mengirim allergy platform Satu Sehat!!';
+    }
+
+    curl_close($curl);
+
+    if ($render) {
+      echo $this->draw('allergy.html', ['pesan' => $pesan, 'response' => $response]);
     } else {
       echo $response;
     }
@@ -5806,6 +6350,8 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
       $row['medication_dispense'] = isset_or($row['medications']['tgl_perawatan'], '');
 
+      $row['medication_statement'] = isset_or($row['medications']['tgl_penyerahan'], '');
+
       $row['permintaan_radiologi'] = $this->db('permintaan_radiologi')
         ->where('no_rawat', $row['no_rawat'])
         ->oneArray();
@@ -5848,6 +6394,58 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
       $row['care_plan'] = isset_or($row['pemeriksaan']['rtl'], '');
 
+      $allergy_list = [
+          [
+              'deskripsi' => 'Allergy to food',
+              'snomed_ct' => '414285001',
+              'icd_10'    => 'T78.1',
+              'category'  => 'food'
+          ],
+          [
+              'deskripsi' => 'Allergy to drug',
+              'snomed_ct' => '416098002',
+              'icd_10'    => 'T88.7',
+              'category'  => 'drug'
+          ],
+          [
+              'deskripsi' => 'Allergy to nutraceutical',
+              'snomed_ct' => '300910009',
+              'icd_10'    => 'J30.1',
+              'category'  => 'environment'
+          ],
+          [
+              'deskripsi' => 'Allergy to dust',
+              'snomed_ct' => '232350006',
+              'icd_10'    => 'J30.8',
+              'category'  => 'environment'
+          ],
+          [
+              'deskripsi' => 'Allergic disposition',
+              'snomed_ct' => '609328004',
+              'icd_10'    => 'T78.4',
+              'category'  => 'environment'
+          ]
+      ];
+
+      $allergy_icd10 = array_column($allergy_list, 'icd_10');
+
+      $row['allergy'] = [];
+
+      $allergy = $this->db('diagnosa_pasien')
+          ->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')
+          ->where('no_rawat', $row['no_rawat'])
+          ->where('diagnosa_pasien.status', $row['status_lanjut'])
+          ->in('diagnosa_pasien.kd_penyakit', $allergy_icd10)
+          ->oneArray();
+
+      $allergy_map = array_column($allergy_list, null, 'icd_10');
+
+      if (!empty($allergy) && isset($allergy_map[$allergy['kd_penyakit']])) {
+          $row['allergy'][] = $allergy_map[$allergy['kd_penyakit']];
+      }
+      
+      $row['questionnaire'] = $this->db('catatan_perawatan')->where('no_rawat', $row['no_rawat'])->where('catatan', 'KPS')->oneArray();
+    
       $row['id_encounter'] = isset_or($mlite_satu_sehat_response['id_encounter'], '');
       $row['id_condition'] = isset_or($mlite_satu_sehat_response['id_condition'], '');
       $row['id_clinical_impression'] = isset_or($mlite_satu_sehat_response['id_clinical_impression'], '');
@@ -5890,6 +6488,8 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $row['id_diagnostic_report_lab_pa'] = isset_or($mlite_satu_sehat_response['id_diagnostic_report_lab_pa'], '');
       $row['id_diagnostic_report_lab_mb'] = isset_or($mlite_satu_sehat_response['id_diagnostic_report_lab_mb'], '');
       $row['id_careplan'] = isset_or($mlite_satu_sehat_response['id_careplan'], '');
+      $row['id_allergy'] = isset_or($mlite_satu_sehat_response['id_allergy'], '');
+      $row['id_questionnaire'] = isset_or($mlite_satu_sehat_response['id_questionnaire'], '');
       $data_response[] = $row;
     }
     // Format hasil

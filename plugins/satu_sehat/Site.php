@@ -15,6 +15,8 @@ class Site extends SiteModule
         $this->route('satu-sehat/diet-gizi/(:any)', 'forwardDietGizi');
         $this->route('satu-sehat/vaksin/(:any)', 'forwardVaksin');
         $this->route('satu-sehat/care-plan/(:any)', 'forwardCarePlan');
+        $this->route('satu-sehat/allergy/(:any)', 'forwardAllergy');
+        $this->route('satu-sehat/questionnaire/(:any)', 'forwardQuestionnaire');
         $this->route('satu-sehat/clinical-impression/(:any)', 'forwardClinicalImpression');
         $this->route('satu-sehat/medication/(:any)/(:any)', 'forwardMedication');
         $this->route('satu-sehat/medication/(:any)', 'forwardMedication');
@@ -187,6 +189,34 @@ class Site extends SiteModule
         return $admin->getCarePlan($no_rawat, false);
     }
 
+    public function forwardAllergy($no_rawat = null)
+    {
+        if ($no_rawat === null && isset($_GET['no_rawat'])) {
+            $no_rawat = $_GET['no_rawat'];
+        }
+        if ($no_rawat === null) {
+            echo json_encode(['error' => 'no_rawat kosong']);
+            exit();
+        }
+        $admin = new \Plugins\Satu_Sehat\Admin($this->core);
+        $admin->init();
+        return $admin->getAllergy($no_rawat, false);
+    }    
+
+    public function forwardQuestionnaire($no_rawat = null)
+    {
+        if ($no_rawat === null && isset($_GET['no_rawat'])) {
+            $no_rawat = $_GET['no_rawat'];
+        }
+        if ($no_rawat === null) {
+            echo json_encode(['error' => 'no_rawat kosong']);
+            exit();
+        }
+        $admin = new \Plugins\Satu_Sehat\Admin($this->core);
+        $admin->init();
+        return $admin->getQuestionnaire($no_rawat, false);
+    }    
+
     public function forwardLaboratory($no_rawat = null, $tipe = null)
     {
         if ($no_rawat === null && isset($_GET['no_rawat'])) {
@@ -282,6 +312,8 @@ class Site extends SiteModule
         $vaxBase = '/satu-sehat/vaksin/';
         $dietBase = '/satu-sehat/diet-gizi/';
         $careBase = '/satu-sehat/care-plan/';
+        $allergyBase = '/satu-sehat/allergy/';
+        $questionnaireBase = '/satu-sehat/questionnaire/';
         $medBase = '/satu-sehat/medication/';
         $labBase = '/satu-sehat/laboratory/';
         $radBase = '/satu-sehat/radiology/';
@@ -422,6 +454,23 @@ class Site extends SiteModule
                     "<div>Care Plan:<pre>" + (typeof care === "string" ? care : JSON.stringify(care, null, 2)) + "</pre></div>"
                 );
 
+                // Allergy
+                const allergyTxt = await call("' . $allergyBase . '" + nrUrl);
+                const allergy = toJsonOrString(allergyTxt);
+                container.insertAdjacentHTML(
+                    "beforeend",
+                    "<div>Allergy:<pre>" + (typeof allergy === "string" ? allergy : JSON.stringify(allergy, null, 2)) + "</pre></div>"
+                );
+
+
+                // Questionnaire
+                const questionnaireTxt = await call("' . $questionnaireBase . '" + nrUrl);
+                const questionnaire = toJsonOrString(questionnaireTxt);
+                container.insertAdjacentHTML(
+                    "beforeend",
+                    "<div>Questionnaire:<pre>" + (typeof questionnaire === "string" ? questionnaire : JSON.stringify(questionnaire, null, 2)) + "</pre></div>"
+                );
+                
                 // Medication (request/dispense/statement)
                 const medTypes = ["request", "dispense", "statement"];
                 const medRes = {};
@@ -471,6 +520,8 @@ class Site extends SiteModule
                     vaksin: vax,
                     diet_gizi: diet,
                     care_plan: care,
+                    allergy: allergy,
+                    questionnaire: questionnaire,
                     medication: medRes,
                     laboratory: labRes,
                     radiology: radRes
@@ -518,6 +569,8 @@ class Site extends SiteModule
         $vaxBase = '/satu-sehat/vaksin/';
         $dietBase = '/satu-sehat/diet-gizi/';
         $careBase = '/satu-sehat/care-plan/';
+        $allergyBase = '/satu-sehat/allergy/';
+        $questionnaireBase = '/satu-sehat/questionnaire/';
         $medBase = '/satu-sehat/medication/';
         $labBase = '/satu-sehat/laboratory/';
         $radBase = '/satu-sehat/radiology/';
@@ -657,6 +710,22 @@ class Site extends SiteModule
                     "<div>Care Plan:<pre>" + (typeof care === "string" ? care : JSON.stringify(care, null, 2)) + "</pre></div>"
                 );
 
+                // Allergy
+                const allergyTxt = await call("' . $allergyBase . '" + nrUrl);
+                const allergy = toJsonOrString(allergyTxt);
+                container.insertAdjacentHTML(
+                    "beforeend",
+                    "<div>Allergy:<pre>" + (typeof allergy === "string" ? allergy : JSON.stringify(allergy, null, 2)) + "</pre></div>"
+                );
+
+                // Questionnaire
+                const questionnaireTxt = await call("' . $questionnaireBase . '" + nrUrl);
+                const questionnaire = toJsonOrString(questionnaireTxt);
+                container.insertAdjacentHTML(
+                    "beforeend",
+                    "<div>Questionnaire:<pre>" + (typeof questionnaire === "string" ? questionnaire : JSON.stringify(questionnaire, null, 2)) + "</pre></div>"
+                );
+
                 // Medication (request/dispense/statement)
                 const medTypes = ["request", "dispense", "statement"];
                 const medRes = {};
@@ -706,6 +775,8 @@ class Site extends SiteModule
                     vaksin: vax,
                     diet_gizi: diet,
                     care_plan: care,
+                    allergy: allergy,
+                    questionnaire: questionnaire,
                     medication: medRes,
                     laboratory: labRes,
                     radiology: radRes

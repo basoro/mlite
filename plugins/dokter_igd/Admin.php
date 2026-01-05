@@ -1921,7 +1921,8 @@ class Admin extends AdminModule
             
             // Remove null timestamp fields and let MySQL handle them
             unset($data_to_save['created_at']);
-            unset($data_to_save['updated_at']);
+            // unset($data_to_save['updated_at']);
+            $data_to_save['updated_at'] = date('Y-m-d H:i:s');
             
             // Use direct SQL approach to bypass framework timestamp behavior
             if(!empty($_POST['id_triase'])) {

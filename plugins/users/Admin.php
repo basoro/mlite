@@ -37,6 +37,7 @@ class Admin extends AdminModule
                 $row['fullname'] = '----';
             }
             $row['editURL'] = url([ADMIN, 'users', 'edit', $row['id']]);
+            $row['permURL'] = url([ADMIN, 'users', 'permission', $row['id']]);
             $row['delURL']  = url([ADMIN, 'users', 'delete', $row['id']]);
         }
         $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
@@ -233,6 +234,95 @@ class Admin extends AdminModule
             }
         }
         redirect(url([ADMIN, 'users', 'manage']));
+    }
+
+    /**
+    * manage user permissions
+    */
+    public function getPermission($id)
+    {
+        $user = $this->db('mlite_users')->oneArray($id);
+        if (!$user) {
+             redirect(url([ADMIN, 'users', 'manage']));
+        }
+
+        $modules = $this->db('mlite_modules')->toArray();
+        $permissions = [];
+        
+        foreach ($modules as $module) {
+            $dir = $module['dir'];
+            $details = $this->core->getModuleInfo($dir);
+            $name = isset($details['name']) ? $details['name'] : $dir;
+            
+            $existing = $this->db('mlite_crud_permissions')
+                ->where('user', $user['username'])
+                ->where('module', $dir)
+                ->oneArray();
+            
+            if (!$existing) {
+                $existing = [
+                    'can_create' => 'true',
+                    'can_read' => 'true',
+                    'can_update' => 'true',
+                    'can_delete' => 'true'
+                ];
+            }
+            
+            $permissions[] = [
+                'dir' => $dir,
+                'name' => $name,
+                'can_create' => $existing['can_create'] == 'true',
+                'can_read'   => $existing['can_read']   == 'true',
+                'can_update' => $existing['can_update'] == 'true',
+                'can_delete' => $existing['can_delete'] == 'true',
+            ];
+        }
+        
+        return $this->draw('permission.html', ['user' => $user, 'permissions' => $permissions]);
+    }
+
+    /**
+    * save user permissions
+    */
+    public function postSavePermission($id)
+    {
+        $user = $this->db('mlite_users')->oneArray($id);
+        if (!$user) {
+             redirect(url([ADMIN, 'users', 'manage']));
+        }
+        
+        $modules = $this->db('mlite_modules')->toArray();
+        foreach ($modules as $module) {
+            $dir = $module['dir'];
+            
+            $can_create = isset($_POST['permissions'][$dir]['can_create']) ? 'true' : 'false';
+            $can_read   = isset($_POST['permissions'][$dir]['can_read'])   ? 'true' : 'false';
+            $can_update = isset($_POST['permissions'][$dir]['can_update']) ? 'true' : 'false';
+            $can_delete = isset($_POST['permissions'][$dir]['can_delete']) ? 'true' : 'false';
+            
+            $existing = $this->db('mlite_crud_permissions')
+                ->where('user', $user['username'])
+                ->where('module', $dir)
+                ->oneArray();
+                
+            $data = [
+                'user' => $user['username'],
+                'module' => $dir,
+                'can_create' => $can_create,
+                'can_read' => $can_read,
+                'can_update' => $can_update,
+                'can_delete' => $can_delete
+            ];
+            
+            if ($existing) {
+                $this->db('mlite_crud_permissions')->where('id', $existing['id'])->save($data);
+            } else {
+                $this->db('mlite_crud_permissions')->save($data);
+            }
+        }
+        
+        $this->notify('success', 'Hak akses pengguna berhasil disimpan.');
+        redirect(url([ADMIN, 'users', 'permission', $id]));
     }
 
     private function _addInfoUser() {

@@ -1651,14 +1651,14 @@ CREATE TABLE `mlite_detailjurnal` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE `mlite_disabled_menu` (
+CREATE TABLE `mlite_crud_permissions` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user` varchar(100) NOT NULL,
   `module` varchar(100) NOT NULL,
-  `can_create` varchar(10) NOT NULL DEFAULT 'false',
-  `can_read` varchar(10) NOT NULL DEFAULT 'false',
-  `can_update` varchar(10) NOT NULL DEFAULT 'false',
-  `can_delete` varchar(10) NOT NULL DEFAULT 'false',
+  `can_create` varchar(10) NOT NULL DEFAULT 'true',
+  `can_read` varchar(10) NOT NULL DEFAULT 'true',
+  `can_update` varchar(10) NOT NULL DEFAULT 'true',
+  `can_delete` varchar(10) NOT NULL DEFAULT 'true',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `user` (`user`,`module`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -1826,24 +1826,22 @@ INSERT INTO `mlite_modules` VALUES ("1","settings","9"),
 ("15","dokter_igd","14"),
 ("16","laboratorium","15"),
 ("17","radiologi","16"),
-("18","icd_10","17"),
-("19","rawat_inap","18"),
-("20","apotek_ranap","19"),
-("21","dokter_ranap","20"),
-("22","kasir_rawat_inap","21"),
-("23","operasi","22"),
-("24","anjungan","23"),
-("25","api","24"),
-("26","jkn_mobile","25"),
-("27","vclaim","26"),
-("28","keuangan","27"),
-("29","manajemen","28"),
-("30","presensi","29"),
-("31","vedika","30"),
-("32","profil","31"),
-("33","orthanc","32"),
-("34","veronisa","33"),
-("35","icd_9","34");
+("18","rawat_inap","17"),
+("19","apotek_ranap","18"),
+("20","dokter_ranap","19"),
+("21","kasir_rawat_inap","20"),
+("22","operasi","21"),
+("23","anjungan","22"),
+("24","api","23"),
+("25","jkn_mobile","24"),
+("26","vclaim","25"),
+("27","keuangan","26"),
+("28","manajemen","27"),
+("29","presensi","28"),
+("30","vedika","29"),
+("31","profil","30"),
+("32","orthanc","31"),
+("33","veronisa","32");
 
 
 CREATE TABLE `mlite_news` (
@@ -1886,7 +1884,7 @@ CREATE TABLE `mlite_notifications` (
   `id` int NOT NULL AUTO_INCREMENT,
   `judul` varchar(250) NOT NULL,
   `pesan` text NOT NULL,
-  `tanggal` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `tanggal` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `no_rkm_medis` varchar(255) NOT NULL,
   `status` varchar(250) NOT NULL DEFAULT 'unread',
   PRIMARY KEY (`id`)
@@ -2699,6 +2697,8 @@ CREATE TABLE `mlite_satu_sehat_response` (
   `id_lab_mb_observation` varchar(50) DEFAULT NULL,
   `id_lab_mb_diagnostic` varchar(50) DEFAULT NULL,
   `id_careplan` varchar(50) DEFAULT NULL,
+  `id_allergy` varchar(50) DEFAULT NULL,
+  `id_questionnaire` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`no_rawat`),
   CONSTRAINT `mlite_satu_sehat_response_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -2729,11 +2729,11 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("16","settings","pj_laboratorium","DR001"),
 ("17","settings","radiologi","-"),
 ("18","settings","pj_radiologi","DR001"),
-("19","settings","dokter_ralan_per_dokter",'false'),
-("20","settings","cekstatusbayar",'false'),
-("21","settings","ceklimit",'false'),
-("22","settings","responsivevoice",'false'),
-("23","settings","notif_presensi",'true'),
+("19","settings","dokter_ralan_per_dokter","false"),
+("20","settings","cekstatusbayar","false"),
+("21","settings","ceklimit","false"),
+("22","settings","responsivevoice","false"),
+("23","settings","notif_presensi","true"),
 ("24","settings","BpjsApiUrl","https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev/"),
 ("25","settings","BpjsConsID","-"),
 ("26","settings","BpjsSecretKey","-"),
@@ -3118,7 +3118,7 @@ CREATE TABLE `mlite_triase_igd` (
   `keluhan_utama` text,
   `diagnosa_awal` text,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_triase`) USING BTREE,
   KEY `no_rawat` (`no_rawat`) USING BTREE,
   CONSTRAINT `fk_triase_reg_periksa` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3183,7 +3183,10 @@ CREATE TABLE `mlite_vedika` (
   `jenis` varchar(100) NOT NULL,
   `status` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_vedika_status_jenis_tgl` (`status`,`jenis`,`tgl_registrasi`),
+  KEY `idx_vedika_nosep` (`nosep`),
+  KEY `idx_vedika_no_rkm_medis` (`no_rkm_medis`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 
@@ -3206,7 +3209,10 @@ CREATE TABLE `mlite_veronisa` (
   `nosep` varchar(100) NOT NULL,
   `status` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_no_rawat` (`no_rawat`),
+  KEY `idx_status` (`status`),
+  KEY `idx_nosep` (`nosep`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 

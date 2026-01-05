@@ -43,4 +43,6 @@ spl_autoload_register(['Autoloader', 'init']);
 // Load Composer autoloader if available
 if (file_exists(BASE_DIR . '/vendor/autoload.php')) {
     require_once(BASE_DIR . '/vendor/autoload.php');
+} elseif (file_exists(__DIR__ . '/../../vendor/autoload.php')) {
+    require_once(__DIR__ . '/../../vendor/autoload.php');
 }

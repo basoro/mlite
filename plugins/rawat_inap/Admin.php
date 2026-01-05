@@ -2101,6 +2101,1056 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function init()
+    {
+      $this->consid = $this->settings->get('settings.BpjsConsID');
+      $this->secretkey = $this->settings->get('settings.BpjsSecretKey');
+      $this->user_key = $this->settings->get('settings.BpjsUserKey');
+      $this->api_url = $this->settings->get('settings.BpjsApiUrl');
+    }
+
+    public function apiList()
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $user_id = $this->db('mlite_users')->where('username', $username)->oneArray()['id'];
+        $bangsal = str_replace(",","','", $this->core->getUserInfo('cap', $user_id, true));
+
+        $draw = $_GET['draw'] ?? 0;
+        $start = $_GET['start'] ?? 0;
+        $length = $_GET['length'] ?? 10;
+        $search = $_GET['search'] ?? '';
+        $tgl_awal = $_GET['tgl_awal'] ?? null;
+        $tgl_akhir = $_GET['tgl_akhir'] ?? null;
+        $status_pulang = $_GET['status_pulang'] ?? '-';
+
+        $sql = "SELECT kamar_inap.*, reg_periksa.no_rkm_medis, pasien.nm_pasien, kamar.kd_kamar, bangsal.nm_bangsal, dokter.nm_dokter 
+                FROM kamar_inap 
+                JOIN reg_periksa ON kamar_inap.no_rawat = reg_periksa.no_rawat
+                JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis
+                JOIN kamar ON kamar_inap.kd_kamar = kamar.kd_kamar
+                JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal
+                JOIN dpjp_ranap ON kamar_inap.no_rawat = dpjp_ranap.no_rawat
+                JOIN dokter ON dpjp_ranap.kd_dokter = dokter.kd_dokter
+                WHERE 1=1";
+        
+
+        if ($this->core->getUserInfo('role', $user_id, true) != 'admin') {
+          $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
+        }
+        if ($status_pulang == '-') {
+            $sql .= " AND kamar_inap.stts_pulang = '-'";
+        } elseif ($status_pulang != 'all') {
+            $sql .= " AND kamar_inap.stts_pulang = '$status_pulang'";
+            if ($tgl_awal && $tgl_akhir) {
+                $sql .= " AND kamar_inap.tgl_masuk BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+            }
+        } else {
+             if ($tgl_awal && $tgl_akhir) {
+                $sql .= " AND kamar_inap.tgl_masuk BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+            }
+        }
+
+        if (!empty($search)) {
+            $sql .= " AND (pasien.nm_pasien LIKE '%$search%' OR reg_periksa.no_rkm_medis LIKE '%$search%' OR kamar_inap.no_rawat LIKE '%$search%')";
+        }
+
+        $sql .= " GROUP BY kamar_inap.no_rawat";
+
+        $stmt = $this->db()->pdo()->prepare($sql);
+        $stmt->execute();
+        $totalRecords = $stmt->rowCount();
+
+        $sql .= " LIMIT $start, $length";
+        $stmt = $this->db()->pdo()->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return [
+            "status" => "success",
+            "data" => $rows,
+            "meta" => [
+                "page" => floor($start / $length) + 1,
+                "per_page" => intval($length),
+                "total" => $totalRecords
+            ]
+        ];
+    }
+
+    public function apiShow($no_rawat = null)
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        if(!$no_rawat) {
+             return ['status' => 'error', 'message' => 'No rawat missing'];
+        }
+        $no_rawat = revertNoRawat($no_rawat);
+        $row = $this->db('kamar_inap')
+            ->join('reg_periksa', 'kamar_inap.no_rawat=reg_periksa.no_rawat')
+            ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+            ->join('kamar', 'kamar_inap.kd_kamar=kamar.kd_kamar')
+            ->join('bangsal', 'kamar.kd_bangsal=bangsal.kd_bangsal')
+            ->join('dpjp_ranap', 'kamar_inap.no_rawat=dpjp_ranap.no_rawat')
+            ->join('dokter', 'dpjp_ranap.kd_dokter=dokter.kd_dokter')
+            ->where('kamar_inap.no_rawat', $no_rawat)
+            ->oneArray();
+            
+        if($row) {
+            return ['status' => 'success', 'data' => $row];
+        } else {
+            return ['status' => 'error', 'message' => 'Not found'];
+        }
+    }
+
+    public function apiCreate()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        if (empty($input['no_rawat']) || empty($input['kd_kamar'])) {
+             return ['status' => 'error', 'message' => 'Data incomplete'];
+        }
+
+        $kamar = $this->db('kamar')->where('kd_kamar', $input['kd_kamar'])->oneArray();
+        
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'kd_kamar' => $input['kd_kamar'],
+            'trf_kamar' => $kamar['trf_kamar'],
+            'lama' => $input['lama'] ?? 1,
+            'tgl_masuk' => $input['tgl_masuk'] ?? date('Y-m-d'),
+            'jam_masuk' => $input['jam_masuk'] ?? date('H:i:s'),
+            'ttl_biaya' => $kamar['trf_kamar'] * ($input['lama'] ?? 1),
+            'tgl_keluar' => '0000-00-00',
+            'jam_keluar' => '00:00:00',
+            'diagnosa_awal' => $input['diagnosa_awal'] ?? '-',
+            'diagnosa_akhir' => '-',
+            'stts_pulang' => '-'
+        ];
+
+        try {
+            $this->db('kamar_inap')->save($data);
+            $this->db('kamar')->where('kd_kamar', $input['kd_kamar'])->save(['status' => 'ISI']);
+            
+            if(!empty($input['kd_dokter'])) {
+                 $this->db('dpjp_ranap')->save(['no_rawat' => $input['no_rawat'], 'kd_dokter' => $input['kd_dokter']]);
+            }
+            
+            $this->db('reg_periksa')->where('no_rawat', $input['no_rawat'])->save(['status_lanjut' => 'Ranap']);
+
+            return ['status' => 'created', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiUpdate($no_rawat = null)
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_update', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        if(!$no_rawat) {
+             return ['status' => 'error', 'message' => 'No rawat missing'];
+        }
+        
+        $no_rawat = revertNoRawat($no_rawat);
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('kamar_inap')->where('no_rawat', $no_rawat)->save($input);
+            
+            // If discharge
+            if(isset($input['stts_pulang']) && $input['stts_pulang'] != '-') {
+                 $kamar_inap = $this->db('kamar_inap')->where('no_rawat', $no_rawat)->oneArray();
+                 $this->db('kamar')->where('kd_kamar', $kamar_inap['kd_kamar'])->save(['status' => 'KOSONG']);
+                 $this->db('reg_periksa')->where('no_rawat', $no_rawat)->save(['stts' => 'Sudah']);
+            }
+            
+            return ['status' => 'success', 'data' => $input];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDelete($no_rawat = null)
+    {
+        $username = $this->core->checkAuth('DELETE');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        if(!$no_rawat) {
+             return ['status' => 'error', 'message' => 'No rawat missing'];
+        }
+
+        $no_rawat = revertNoRawat($no_rawat);
+        $kamar_inap = $this->db('kamar_inap')->where('no_rawat', $no_rawat)->oneArray();
+
+        try {
+            $this->db('kamar_inap')->where('no_rawat', $no_rawat)->delete();
+            if($kamar_inap) {
+                $this->db('kamar')->where('kd_kamar', $kamar_inap['kd_kamar'])->save(['status' => 'KOSONG']);
+                $this->db('dpjp_ranap')->where('no_rawat', $no_rawat)->delete();
+                $this->db('reg_periksa')->where('no_rawat', $no_rawat)->save(['status_lanjut' => 'Ralan']);
+            }
+            return ['status' => 'success', 'message' => 'Data deleted'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+    
+    public function apiShowSoap($no_rawat = null)
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+        
+        if(!$no_rawat) {
+             return ['status' => 'error', 'message' => 'No rawat missing'];
+        }
+        $no_rawat = revertNoRawat($no_rawat);
+        
+        $pemeriksaan = $this->db('pemeriksaan_ranap')->where('no_rawat', $no_rawat)->toArray();
+        return ['status' => 'success', 'data' => $pemeriksaan];
+    }
+    
+    public function apiSaveSoap()
+    {
+        $username = $this->core->checkAuth('POST');
+        
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+        
+        $nip = $username;
+
+        // Map input to schema columns
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'tgl_perawatan' => $input['tgl_perawatan'],
+            'jam_rawat' => $input['jam_rawat'],
+            'suhu_tubuh' => $input['suhu_tubuh'] ?? null,
+            'tensi' => $input['tensi'] ?? '-',
+            'nadi' => $input['nadi'] ?? null,
+            'respirasi' => $input['respirasi'] ?? null,
+            'tinggi' => $input['tinggi'] ?? null,
+            'berat' => $input['berat'] ?? null,
+            'spo2' => $input['spo2'] ?? '-',
+            'gcs' => $input['gcs'] ?? null,
+            'kesadaran' => $input['kesadaran'] ?? 'Compos Mentis',
+            'keluhan' => $input['keluhan'] ?? null,
+            'pemeriksaan' => $input['pemeriksaan'] ?? null,
+            'alergi' => $input['alergi'] ?? null,
+            'penilaian' => $input['penilaian'] ?? '-', 
+            'rtl' => $input['rtl'] ?? '-',
+            'instruksi' => $input['instruksi'] ?? '-',
+            'evaluasi' => $input['evaluasi'] ?? '-',
+            'nip' => $nip
+        ];
+        
+        try {
+             // Check based on primary key (no_rawat, tgl_perawatan, jam_rawat)
+             if(!$this->db('pemeriksaan_ranap')
+                ->where('no_rawat', $data['no_rawat'])
+                ->where('tgl_perawatan', $data['tgl_perawatan'])
+                ->where('jam_rawat', $data['jam_rawat'])
+                ->oneArray()) {
+
+                if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+                    return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+                }
+
+                $this->db('pemeriksaan_ranap')->save($data);
+              } else {
+
+                if (!$this->core->checkPermission($username, 'can_update', 'rawat_inap')) {
+                    return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+                }
+
+                $this->db('pemeriksaan_ranap')
+                    ->where('no_rawat', $data['no_rawat'])
+                    ->where('tgl_perawatan', $data['tgl_perawatan'])
+                    ->where('jam_rawat', $data['jam_rawat'])
+                    ->save($data);
+              }
+              return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+    
+    public function apiDeleteSoap()
+    {
+        $username = $this->core->checkAuth('DELETE');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+        
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+        
+        try {
+            $this->db('pemeriksaan_ranap')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('tgl_perawatan', $input['tgl_perawatan'])
+                ->where('jam_rawat', $input['jam_rawat'])
+                ->delete();
+             return ['status' => 'success', 'message' => 'Deleted'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiShowDetail($category = null, $no_rawat = null)
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        if(!$no_rawat) {
+             return ['status' => 'error', 'message' => 'No rawat missing'];
+        }
+        $no_rawat = revertNorawat($no_rawat);
+        $kategori = trim($category);
+        $no_resep = isset($_GET['no_resep']) ? $_GET['no_resep'] : null;
+
+        $pasien = $this->db('reg_periksa')
+            ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+            ->where('no_rawat', $no_rawat)
+            ->oneArray();
+
+        $patient_info = [
+            'nm_pasien' => $pasien['nm_pasien'] ?? '',
+            'no_rkm_medis' => $pasien['no_rkm_medis'] ?? ''
+        ];
+
+        $data = [];
+        try {        
+            if($kategori == 'tindakan') {
+                $data['rawat_inap_dr'] = $this->db('rawat_inap_dr')
+                    ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_dr.kd_jenis_prw')
+                    ->join('dokter', 'dokter.kd_dokter=rawat_inap_dr.kd_dokter')
+                    ->where('no_rawat', $no_rawat)
+                    ->toArray();
+                $data['rawat_inap_pr'] = $this->db('rawat_inap_pr')
+                    ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_pr.kd_jenis_prw')
+                    ->join('petugas', 'petugas.nip=rawat_inap_pr.nip')
+                    ->where('no_rawat', $no_rawat)
+                    ->toArray();
+                $data['rawat_inap_drpr'] = $this->db('rawat_inap_drpr')
+                    ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_drpr.kd_jenis_prw')
+                    ->join('dokter', 'dokter.kd_dokter=rawat_inap_drpr.kd_dokter')
+                    ->join('petugas', 'petugas.nip=rawat_inap_drpr.nip')
+                    ->where('no_rawat', $no_rawat)
+                    ->toArray();
+
+                return [
+                    'status' => 'success',
+                    'patient' => $patient_info,
+                    'data' => [
+                        'rawat_jl_dr' => $data['rawat_inap_dr'],
+                        'rawat_jl_pr' => $data['rawat_inap_pr'],
+                        'rawat_jl_drpr' => $data['rawat_inap_drpr']
+                    ]
+                ];
+
+            } elseif($kategori == 'obat') {
+                $query = $this->db('resep_dokter')
+                    ->join('resep_obat', 'resep_obat.no_resep = resep_dokter.no_resep')
+                    ->join('databarang', 'databarang.kode_brng = resep_dokter.kode_brng')
+                    ->where('resep_obat.no_rawat', $no_rawat)
+                    ->where('resep_obat.status', 'ranap');
+                
+                if ($no_resep) {
+                    $query->where('resep_obat.no_resep', $no_resep);
+                }
+
+                $data['obat'] = $query->toArray();
+
+                return ['status' => 'success', 'patient' => $patient_info, 'data' => $data['obat']];
+
+            } elseif($kategori == 'racikan') {
+                $query = $this->db('resep_dokter_racikan')
+                    ->join('resep_obat', 'resep_obat.no_resep = resep_dokter_racikan.no_resep')
+                    ->join('metode_racik', 'metode_racik.kd_racik = resep_dokter_racikan.kd_racik')
+                    ->where('resep_obat.no_rawat', $no_rawat)
+                    ->where('resep_obat.status', 'ranap');
+
+                if ($no_resep) {
+                    $query->where('resep_obat.no_resep', $no_resep);
+                }
+
+                $resep_racikan = $query->toArray();
+
+                foreach ($resep_racikan as &$racikan) {
+                    $racikan['detail'] = $this->db('resep_dokter_racikan_detail')
+                        ->join('databarang', 'databarang.kode_brng = resep_dokter_racikan_detail.kode_brng')
+                        ->where('no_resep', $racikan['no_resep'])
+                        ->where('no_racik', $racikan['no_racik'])
+                        ->toArray();
+                }
+                $data['racikan'] = $resep_racikan;
+                return ['status' => 'success', 'patient' => $patient_info, 'data' => $data['racikan']];
+
+            } else {
+                return ['status' => 'error', 'message' => 'Category not supported: ' . $kategori];
+            }
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+        
+    }
+    
+    public function apiSaveDetail()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+        
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+        
+        $kategori = trim($input['kat']);
+
+        if (empty($kategori) || empty($input['no_rawat']) || empty($input['kd_jenis_prw'])) {
+            return ['status' => 'error', 'message' => 'Data incomplete'];
+        }
+
+        try {
+
+            if($kategori == 'tindakan') {
+                $jns_perawatan = $this->db('jns_perawatan_inap')->where('kd_jenis_prw', $input['kd_jenis_prw'])->oneArray();
+                if($input['provider'] == 'rawat_inap_dr') {
+                  $this->db('rawat_inap_dr')->save([
+                    'no_rawat' => $input['no_rawat'],
+                    'kd_jenis_prw' => $input['kd_jenis_prw'],
+                    'kd_dokter' => $input['kode_provider'],
+                    'tgl_perawatan' => $input['tgl_perawatan'],
+                    'jam_rawat' => $input['jam_rawat'],
+                    'material' => $jns_perawatan['material'],
+                    'bhp' => $jns_perawatan['bhp'],
+                    'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
+                    'kso' => $jns_perawatan['kso'],
+                    'menejemen' => $jns_perawatan['menejemen'],
+                    'biaya_rawat' => $jns_perawatan['total_byrdr']
+                  ]);
+                }
+                if($input['provider'] == 'rawat_inap_pr') {
+                  $this->db('rawat_inap_pr')->save([
+                    'no_rawat' => $input['no_rawat'],
+                    'kd_jenis_prw' => $input['kd_jenis_prw'],
+                    'nip' => $input['kode_provider2'] ?? $input['kode_provider'], 
+                    'tgl_perawatan' => $input['tgl_perawatan'],
+                    'jam_rawat' => $input['jam_rawat'],
+                    'material' => $jns_perawatan['material'],
+                    'bhp' => $jns_perawatan['bhp'],
+                    'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
+                    'kso' => $jns_perawatan['kso'],
+                    'menejemen' => $jns_perawatan['menejemen'],
+                    'biaya_rawat' => $jns_perawatan['total_byrpr']
+                  ]);
+                }
+                if($input['provider'] == 'rawat_inap_drpr') {
+                  $this->db('rawat_inap_drpr')->save([
+                    'no_rawat' => $input['no_rawat'],
+                    'kd_jenis_prw' => $input['kd_jenis_prw'],
+                    'kd_dokter' => $input['kode_provider'],
+                    'nip' => $input['kode_provider2'],
+                    'tgl_perawatan' => $input['tgl_perawatan'],
+                    'jam_rawat' => $input['jam_rawat'],
+                    'material' => $jns_perawatan['material'],
+                    'bhp' => $jns_perawatan['bhp'],
+                    'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
+                    'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
+                    'kso' => $jns_perawatan['kso'],
+                    'menejemen' => $jns_perawatan['menejemen'],
+                    'biaya_rawat' => $jns_perawatan['total_byrdrpr']
+                  ]);
+                }
+                return ['status' => 'success', 'message' => 'Detail saved'];
+            } elseif ($kategori == 'obat') {
+                $no_resep = $this->core->setNoResep($input['tgl_perawatan']);
+                $cek_resep = $this->db('resep_obat')->where('no_rawat', $input['no_rawat'])->where('tgl_peresepan', $input['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
+
+                if (empty($cek_resep)) {
+                    $this->db('resep_obat')
+                        ->save([
+                            'no_resep' => $no_resep,
+                            'tgl_perawatan' => '0000-00-00',
+                            'jam' => '00:00:00',
+                            'no_rawat' => $input['no_rawat'],
+                            'kd_dokter' => $input['kode_provider'] ?? $username,
+                            'tgl_peresepan' => $input['tgl_perawatan'],
+                            'jam_peresepan' => $input['jam_rawat'],
+                            'status' => 'ranap',
+                            'tgl_penyerahan' => '0000-00-00',
+                            'jam_penyerahan' => '00:00:00'
+                        ]);
+
+                    if ($this->db('resep_obat')->where('no_resep', $no_resep)->oneArray()) {
+                        $this->db('resep_dokter')
+                            ->save([
+                                'no_resep' => $no_resep,
+                                'kode_brng' => $input['kd_jenis_prw'],
+                                'jml' => $input['jml'],
+                                'aturan_pakai' => $input['aturan_pakai']
+                            ]);
+                    }
+                } else {
+                    $no_resep = $cek_resep['no_resep'];
+                    $this->db('resep_dokter')
+                        ->save([
+                            'no_resep' => $no_resep,
+                            'kode_brng' => $input['kd_jenis_prw'],
+                            'jml' => $input['jml'],
+                            'aturan_pakai' => $input['aturan_pakai']
+                        ]);
+                }
+                return ['status' => 'success', 'message' => 'Obat saved'];
+            } elseif ($kategori == 'racikan') {
+                $no_resep = $this->core->setNoResep($input['tgl_perawatan']);
+                $cek_resep = $this->db('resep_obat')->where('no_rawat', $input['no_rawat'])->where('tgl_peresepan', $input['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
+                
+                $jam_rawat = $input['jam_rawat'] ?? date('H:i:s');
+
+                if (empty($cek_resep)) {
+                    $this->db('resep_obat')
+                        ->save([
+                            'no_resep' => $no_resep,
+                            'tgl_perawatan' => '0000-00-00',
+                            'jam' => '00:00:00',
+                            'no_rawat' => $input['no_rawat'],
+                            'kd_dokter' => $input['kode_provider'] ?? $username,
+                            'tgl_peresepan' => $input['tgl_perawatan'],
+                            'jam_peresepan' => $jam_rawat,
+                            'status' => 'ranap',
+                            'tgl_penyerahan' => '0000-00-00',
+                            'jam_penyerahan' => '00:00:00'
+                        ]);
+
+                    if ($this->db('resep_obat')->where('no_resep', $no_resep)->oneArray()) {
+                        $no_racik = $this->db('resep_dokter_racikan')->where('no_resep', $no_resep)->count();
+                        $no_racik = $no_racik + 1;
+                        $this->db('resep_dokter_racikan')
+                            ->save([
+                                'no_resep' => $no_resep,
+                                'no_racik' => $no_racik,
+                                'nama_racik' => $input['nama_racik'],
+                                'kd_racik' => $input['kd_jenis_prw'],
+                                'jml_dr' => $input['jml'],
+                                'aturan_pakai' => $input['aturan_pakai'],
+                                'keterangan' => $input['keterangan']
+                            ]);
+                        
+                        $kode_brng_list = is_string($input['kode_brng']) ? json_decode($input['kode_brng'], true) : $input['kode_brng'];
+                        $kandungan_list = is_string($input['kandungan']) ? json_decode($input['kandungan'], true) : $input['kandungan'];
+                        
+                        $kode_brng_count = count($kode_brng_list);
+                        for ($i = 0; $i < $kode_brng_count; $i++) {
+                            $kapasitas = $this->db('databarang')->where('kode_brng', $kode_brng_list[$i]['value'])->oneArray();
+                            $jml = $input['jml'] * $kandungan_list[$i]['value'];
+                            if ($kapasitas['kapasitas'] > 0) {
+                                $jml = round(($jml / $kapasitas['kapasitas']), 1);
+                            }
+                            $this->db('resep_dokter_racikan_detail')
+                                ->save([
+                                    'no_resep' => $no_resep,
+                                    'no_racik' => $no_racik,
+                                    'kode_brng' => $kode_brng_list[$i]['value'],
+                                    'p1' => '1',
+                                    'p2' => '1',
+                                    'kandungan' => $kandungan_list[$i]['value'],
+                                    'jml' => $jml
+                                ]);
+                        }
+                    }
+                } else {
+                    $no_resep = $cek_resep['no_resep'];
+                    $no_racik = $this->db('resep_dokter_racikan')->where('no_resep', $no_resep)->count();
+                    $no_racik = $no_racik + 1;
+                    $this->db('resep_dokter_racikan')
+                        ->save([
+                            'no_resep' => $no_resep,
+                            'no_racik' => $no_racik,
+                            'nama_racik' => $input['nama_racik'],
+                            'kd_racik' => $input['kd_jenis_prw'],
+                            'jml_dr' => $input['jml'],
+                            'aturan_pakai' => $input['aturan_pakai'],
+                            'keterangan' => $input['keterangan']
+                        ]);
+
+                    $kode_brng_list = is_string($input['kode_brng']) ? json_decode($input['kode_brng'], true) : $input['kode_brng'];
+                    $kandungan_list = is_string($input['kandungan']) ? json_decode($input['kandungan'], true) : $input['kandungan'];
+
+                    $kode_brng_count = count($kode_brng_list);
+                    for ($i = 0; $i < $kode_brng_count; $i++) {
+                        $kapasitas = $this->db('databarang')->where('kode_brng', $kode_brng_list[$i]['value'])->oneArray();
+                        $jml = $input['jml'] * $kandungan_list[$i]['value'];
+                        if ($kapasitas['kapasitas'] > 0) {
+                             $jml = round(($jml / $kapasitas['kapasitas']), 1);
+                        }
+                        $this->db('resep_dokter_racikan_detail')
+                            ->save([
+                                'no_resep' => $no_resep,
+                                'no_racik' => $no_racik,
+                                'kode_brng' => $kode_brng_list[$i]['value'],
+                                'p1' => '1',
+                                'p2' => '1',
+                                'kandungan' => $kandungan_list[$i]['value'],
+                                'jml' => $jml
+                            ]);
+                    }
+                }
+                return ['status' => 'success', 'message' => 'Racikan saved'];
+            } else {
+                return ['status' => 'error', 'message' => 'Category not supported'];
+            }
+        } catch (\PDOException $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => $message];
+        }
+    }
+    
+    public function apiDeleteDetail()
+    {
+        $username = $this->core->checkAuth('DELETE');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+        
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+        
+        $kategori = trim($input['kat']);
+
+        if($kategori == 'tindakan') {
+            if($input['provider'] == 'rawat_inap_dr') {
+                $this->db('rawat_inap_dr')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('kd_jenis_prw', $input['kd_jenis_prw'])
+                ->where('tgl_perawatan', $input['tgl_perawatan'])
+                ->where('jam_rawat', $input['jam_rawat'])
+                ->delete();
+            }
+             if($input['provider'] == 'rawat_inap_pr') {
+                $this->db('rawat_inap_pr')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('kd_jenis_prw', $input['kd_jenis_prw'])
+                ->where('tgl_perawatan', $input['tgl_perawatan'])
+                ->where('jam_rawat', $input['jam_rawat'])
+                ->delete();
+            }
+             if($input['provider'] == 'rawat_inap_drpr') {
+                $this->db('rawat_inap_drpr')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('kd_jenis_prw', $input['kd_jenis_prw'])
+                ->where('tgl_perawatan', $input['tgl_perawatan'])
+                ->where('jam_rawat', $input['jam_rawat'])
+                ->delete();
+            }
+        } elseif ($kategori == 'obat') {
+            if(isset($input['kd_jenis_prw'])) {
+                $this->db('resep_dokter')
+                ->where('no_resep', $input['no_resep'])
+                ->where('kode_brng', $input['kd_jenis_prw'])
+                ->delete();
+            } else {
+                $this->db('resep_obat')
+                ->where('no_resep', $input['no_resep'])
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('tgl_peresepan', $input['tgl_peresepan'])
+                ->where('jam_peresepan', $input['jam_peresepan'])
+                ->delete();
+            }
+        } elseif ($kategori == 'racikan') {
+            if(isset($input['kd_jenis_prw']) && isset($input['no_racik'])) {
+                $this->db('resep_dokter_racikan_detail')
+                    ->where('no_resep', $input['no_resep'])
+                    ->where('no_racik', $input['no_racik'])
+                    ->where('kode_brng', $input['kd_jenis_prw'])
+                    ->delete();
+            } elseif (isset($input['no_racik'])) {
+                $this->db('resep_dokter_racikan')
+                    ->where('no_resep', $input['no_resep'])
+                    ->where('no_racik', $input['no_racik'])
+                    ->delete();
+                $this->db('resep_dokter_racikan_detail')
+                    ->where('no_resep', $input['no_resep'])
+                    ->where('no_racik', $input['no_racik'])
+                    ->delete();
+            }
+        }
+        
+        return ['status' => 'success'];
+    }
+
+    public function apiSaveDiagnosa()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'kd_penyakit' => $input['kd_penyakit'],
+            'status' => $input['status'] ?? 'Ranap',
+            'prioritas' => $input['prioritas'],
+            'status_penyakit' => 'Baru'
+        ];
+
+        try {
+            $this->db('diagnosa_pasien')->save($data);
+            return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDeleteDiagnosa()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('diagnosa_pasien')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('kd_penyakit', $input['kd_penyakit'])
+                ->where('prioritas', $input['prioritas'])
+                ->delete();
+            return ['status' => 'success'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveProsedur()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'kode' => $input['kode'],
+            'status' => $input['status'] ?? 'Ranap',
+            'prioritas' => $input['prioritas']
+        ];
+
+        try {
+            $this->db('prosedur_pasien')->save($data);
+            return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDeleteProsedur()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('prosedur_pasien')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('kode', $input['kode'])
+                ->where('prioritas', $input['prioritas'])
+                ->delete();
+            return ['status' => 'success'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveCatatan()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $input['no_rawat']);
+
+        $data = [
+            'tanggal' => date('Y-m-d'),
+            'jam' => date('H:i:s'),
+            'no_rawat' => $input['no_rawat'],
+            'kd_dokter' => $kd_dokter,
+            'catatan' => $input['catatan']
+        ];
+
+        try {
+            $this->db('catatan_perawatan')->save($data);
+            return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDeleteCatatan()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('catatan_perawatan')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('tanggal', $input['tanggal'])
+                ->where('jam', $input['jam'])
+                ->delete();
+            return ['status' => 'success'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveBerkas()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'kode' => $input['judul'] ?? '',
+            'lokasi_file' => $input['deskripsi'] ?? ''
+        ];
+
+        try {
+            $this->db('berkas_digital_perawatan')->save($data);
+            return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDeleteBerkas()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('berkas_digital_perawatan')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('kode', $input['judul'] ?? $input['kode'])
+                ->where('lokasi_file', $input['deskripsi'] ?? $input['lokasi_file'])
+                ->delete();
+            return ['status' => 'success'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveResume()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $input['no_rawat']);
+
+        // Check if exists
+        $exists = $this->db('resume_pasien')->where('no_rawat', $input['no_rawat'])->oneArray();
+
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'kd_dokter' => $kd_dokter,
+            'diagnosa_utama' => $input['diagnosa_utama'] ?? '',
+            'diagnosa_sekunder' => $input['diagnosa_sekunder'] ?? '',
+            'jalannya_penyakit' => $input['jalannya_penyakit'] ?? '',
+            'obat_pulang' => $input['terapi'] ?? '',
+            'kondisi_pulang' => $input['kondisi_pulang'] ?? 'Hidup',
+            // Default required fields
+            'keluhan_utama' => '',
+            'pemeriksaan_penunjang' => '',
+            'hasil_laborat' => '',
+            'kd_diagnosa_utama' => '',
+            'kd_diagnosa_sekunder' => '',
+            'diagnosa_sekunder2' => '',
+            'kd_diagnosa_sekunder2' => '',
+            'diagnosa_sekunder3' => '',
+            'kd_diagnosa_sekunder3' => '',
+            'diagnosa_sekunder4' => '',
+            'kd_diagnosa_sekunder4' => '',
+            'prosedur_utama' => '',
+            'kd_prosedur_utama' => '',
+            'prosedur_sekunder' => '',
+            'kd_prosedur_sekunder' => '',
+            'prosedur_sekunder2' => '',
+            'kd_prosedur_sekunder2' => '',
+            'prosedur_sekunder3' => '',
+            'kd_prosedur_sekunder3' => ''
+        ];
+
+        try {
+            if ($exists) {
+                $this->db('resume_pasien')->where('no_rawat', $input['no_rawat'])->save($data);
+            } else {
+                $this->db('resume_pasien')->save($data);
+            }
+            return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveRujukanInternal()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'kd_poli' => $input['kd_poli'],
+            'kd_dokter' => $input['kd_dokter'],
+            'isi_rujukan' => $input['catatan'] ?? ''
+        ];
+
+        try {
+            $this->db('mlite_rujukan_internal_poli')->save($data);
+            return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDeleteRujukanInternal()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('mlite_rujukan_internal_poli')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('kd_poli', $input['kd_poli'])
+                ->where('kd_dokter', $input['kd_dokter'])
+                ->delete();
+            return ['status' => 'success'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveLaporanOperasi()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $data = [
+            'no_rawat' => $input['no_rawat'],
+            'tanggal' => $input['tanggal'] . ' ' . $input['jam'],
+            'operator' => $input['operator'],
+            'laporan_operasi' => $input['laporan'] ?? '',
+            // Defaults
+            'operator2' => '-', 'operator3' => '-', 'asisten_operator1' => '-', 'asisten_operator2' => '-', 'asisten_operator3' => '-',
+            'instrumen' => '-', 'dokter_anak' => '-', 'perawat_resusitas' => '-', 'dokter_anestesi' => '-', 'asisten_anestesi' => '-',
+            'bidan' => '-', 'perawat_luar' => '-', 'omloop' => '-', 'omloop2' => '-', 'omloop3' => '-', 'omloop4' => '-', 'omloop5' => '-'
+        ];
+
+        try {
+            $this->db('laporan_operasi')->save($data);
+            return ['status' => 'success', 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDeleteLaporanOperasi()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_inap')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $tanggal = $input['tanggal'];
+            if(isset($input['jam'])) {
+                $tanggal .= ' ' . $input['jam'];
+            }
+
+            $this->db('laporan_operasi')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('tanggal', $tanggal)
+                ->delete();
+            return ['status' => 'success'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
     private function _addHeaderFiles()
     {
         $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));

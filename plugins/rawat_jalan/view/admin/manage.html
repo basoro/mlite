@@ -70,11 +70,133 @@
   </div>
 </div>
 <script type="text/javascript">
+   var currentPage = 1;
+   var baseUrl = '{?=url()?}/admin/api/rawat_jalan';
+   var token = '{?=$_SESSION['token']?}';
+
    $(function () {
        $('.periode_rawat_jalan').datetimepicker({
          defaultDate: '{?=date('Y-m-d')?}',
          format: 'YYYY-MM-DD',
          locale: 'id'
        });
+       
+       loadData();
+
+       $('#searchInput').on('keypress', function (e) {
+          if(e.which === 13){
+              loadData(1);
+          }
+       });
+
+       $('#submit_periode_rawat_jalan').click(function() {
+           loadData(1);
+       });
+       
+       $('#belum_periode_rawat_jalan').click(function() {
+           loadData(1, 'belum');
+       });
+       
+       $('#selesai_periode_rawat_jalan').click(function() {
+           loadData(1, 'selesai');
+       });
+       
+       $('#lunas_periode_rawat_jalan').click(function() {
+           loadData(1, 'lunas');
+       });
    });
+
+   function loadData(page = 1, status_periksa = '') {
+      currentPage = page;
+      var search = $('#searchInput').val();
+      var tgl_awal = $('#periode_rawat_jalan').val();
+      var tgl_akhir = $('#periode_rawat_jalan_akhir').val();
+      
+      $.ajax({
+          url: baseUrl + '/list',
+          method: 'GET',
+          data: {
+              draw: 1,
+              start: (page - 1) * 10,
+              length: 10,
+              search: { value: search },
+              tgl_awal: tgl_awal,
+              tgl_akhir: tgl_akhir,
+              status_periksa: status_periksa,
+              t: token
+          },
+          success: function(response) {
+              console.log(response);
+              if(typeof response === 'string') response = JSON.parse(response);
+              
+              if(response.status === 'error') {
+                   $('#tableBody').html('<tr><td colspan="12" class="text-center text-danger">' + response.message + '</td></tr>');
+                   return;
+              }
+
+              var rows = '';
+              if(response.data && response.data.length > 0) {
+                  response.data.forEach(function(item) {
+                      var bgStyle = item.stts == 'Sudah' ? 'style="background-color: #dff0d8 !important;"' : '';
+                      rows += '<tr ' + bgStyle + '>';
+                      
+                      // Column 1: No RM & Dropdown (Simplified for now, add full dropdown later)
+                      rows += '<td style="white-space: nowrap;">';
+                      rows += '<span class="dropdown-toggle" data-toggle="dropdown"><button type="button" class="btn btn-sm btn-default">' + item.no_rkm_medis + ' <span class="caret"></span></button></span>';
+                      rows += '<ul class="dropdown-menu" role="menu">';
+                      // Add menu items here consistent with display.html
+                      rows += '<li><a href="#soap" data-no_rawat="' + item.no_rawat + '" data-no_rkm_medis="' + item.no_rkm_medis + '" data-nm_pasien="' + item.nm_pasien + '">SOAPIE & Pemeriksaan</a></li>';
+                      rows += '</ul>';
+                      rows += '</td>';
+
+                      rows += '<td style="white-space: nowrap;">' + item.nm_pasien + '</td>';
+                      rows += '<td>' + item.no_rawat + '</td>';
+                      rows += '<td style="white-space: nowrap;"><button class="btn btn-xs btn-warning">' + item.no_reg + '</button></td>';
+                      rows += '<td style="white-space: nowrap;">' + item.nm_poli + '</td>';
+                      rows += '<td style="white-space: nowrap;">' + item.nm_dokter + '</td>';
+                      rows += '<td style="white-space: nowrap;">' + item.png_jawab + '</td>';
+                      rows += '<td style="white-space: nowrap;">' + (item.no_peserta || '-') + '</td>';
+                      rows += '<td style="white-space: nowrap;">' + item.tgl_registrasi + ' ' + item.jam_reg + '</td>';
+                      rows += '<td style="white-space: nowrap;">' + item.stts + '</td>';
+                      rows += '<td style="white-space: nowrap;">' + item.status_lanjut + '</td>';
+                      rows += '<td style="white-space: nowrap;">' + item.status_bayar + '</td>';
+                      
+                      rows += '</tr>';
+                  });
+              } else {
+                  rows = '<tr><td colspan="12" class="text-center">Tidak ada data.</td></tr>';
+              }
+              $('#tableBody').html(rows);
+              $('#totalData').text('Jumlah: ' + response.meta.total);
+              
+              // Pagination
+              var totalPages = Math.ceil(response.meta.total / response.meta.per_page);
+              var pagination = '';
+              
+              if(page > 1) {
+                  pagination += '<li><a href="#" onclick="loadData(1)">&laquo;</a></li>';
+                  pagination += '<li><a href="#" onclick="loadData(' + (page - 1) + ')">‹</a></li>';
+              } else {
+                  pagination += '<li class="disabled"><a href="#">&laquo;</a></li>';
+                  pagination += '<li class="disabled"><a href="#">‹</a></li>';
+              }
+              
+              pagination += '<li class="disabled"><a href="#">Hal : ' + page + ' dari ' + totalPages + ' Hal</a></li>';
+              
+              if(page < totalPages) {
+                  pagination += '<li><a href="#" onclick="loadData(' + (page + 1) + ')">›</a></li>';
+                  pagination += '<li><a href="#" onclick="loadData(' + totalPages + ')">&raquo;</a></li>';
+              } else {
+                  pagination += '<li class="disabled"><a href="#">›</a></li>';
+                  pagination += '<li class="disabled"><a href="#">&raquo;</a></li>';
+              }
+              
+              $('#pagination').html(pagination);
+          },
+          error: function(xhr) {
+              console.error(xhr);
+              $('#tableBody').html('<tr><td colspan="12" class="text-center text-danger">Gagal memuat data.</td></tr>');
+          }
+      });
+   }
 </script>
