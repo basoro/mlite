@@ -598,18 +598,13 @@
                     "response": []
                 },
                 {
-                    "name": "Save Detail Rawat Jalan",
+                    "name": "Show SOAP Rawat Jalan",
                     "request": {
-                        "method": "POST",
+                        "method": "GET",
                         "header": [
                             {
                                 "key": "X-Api-Key",
                                 "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
                                 "type": "text"
                             },
                             {
@@ -628,12 +623,8 @@
                                 "type": "text"
                             }
                         ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"kat\": \"tindakan\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_jenis_prw\": \"T001\",\n    \"provider\": \"rawat_jl_dr\",\n    \"kode_provider\": \"D00001\",\n    \"tgl_perawatan\": \"2025-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
-                        },
                         "url": {
-                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/savedetail",
+                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/showsoap/{{no_rawat}}",
                             "host": [
                                 "{{baseUrl}}"
                             ],
@@ -641,7 +632,8 @@
                                 "admin",
                                 "api",
                                 "rawat_jalan",
-                                "savedetail"
+                                "showsoap",
+                                "{{no_rawat}}"
                             ]
                         }
                     },
@@ -748,6 +740,99 @@
                     "response": []
                 },
                 {
+                    "name": "Show Detail Rawat Jalan",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/showdetail/tindakan/{{no_rawat}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "rawat_jalan",
+                                "showdetail",
+                                "tindakan",
+                                "{{no_rawat}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Save Detail Rawat Jalan",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"kat\": \"tindakan\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_jenis_prw\": \"T001\",\n    \"provider\": \"rawat_jl_dr\",\n    \"kode_provider\": \"D00001\",\n    \"tgl_perawatan\": \"2025-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/savedetail",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "rawat_jalan",
+                                "savedetail"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
                     "name": "Delete Detail Rawat Jalan",
                     "request": {
                         "method": "POST",
@@ -792,91 +877,6 @@
                                 "api",
                                 "rawat_jalan",
                                 "deletedetail"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Show Detail Rawat Jalan",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/showdetail/tindakan/{{no_rawat}}",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "rawat_jalan",
-                                "showdetail",
-                                "tindakan",
-                                "{{no_rawat}}"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Show SOAP Rawat Jalan",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/showsoap/{{no_rawat}}",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "rawat_jalan",
-                                "showsoap",
-                                "{{no_rawat}}"
                             ]
                         }
                     },
@@ -1128,202 +1128,6 @@
                     }
                 },
                 {
-                    "name": "Save Berkas",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"judul\": \"Hasil Lab Luar\",\n    \"deskripsi\": \"http://link-to-file.com/file.pdf\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/saveberkas",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "rawat_jalan",
-                                "saveberkas"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Save Resume",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"diagnosa_utama\": \"Demam Berdarah\",\n    \"diagnosa_sekunder\": \"Tifus\",\n    \"jalannya_penyakit\": \"Demam 3 hari...\",\n    \"terapi\": \"Paracetamol 3x1\",\n    \"kondisi_pulang\": \"Hidup\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/saveresume",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "rawat_jalan",
-                                "saveresume"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Save Rujukan Internal",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"kd_poli\": \"P001\",\n    \"kd_dokter\": \"D001\",\n    \"catatan\": \"Mohon konsul bedah\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/saverujukaninternal",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "rawat_jalan",
-                                "saverujukaninternal"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Save Laporan Operasi",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"tanggal\": \"2023-01-01\",\n    \"jam\": \"10:00:00\",\n    \"operator\": \"D001\",\n    \"laporan\": \"Operasi berjalan lancar\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/savelaporanoperasi",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "rawat_jalan",
-                                "savelaporanoperasi"
-                            ]
-                        }
-                    }
-                },
-                {
                     "name": "Delete Catatan",
                     "request": {
                         "method": "POST",
@@ -1368,6 +1172,55 @@
                                 "api",
                                 "rawat_jalan",
                                 "deletecatatan"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Save Berkas",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"judul\": \"Hasil Lab Luar\",\n    \"deskripsi\": \"http://link-to-file.com/file.pdf\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/saveberkas",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "rawat_jalan",
+                                "saveberkas"
                             ]
                         }
                     }
@@ -1422,6 +1275,153 @@
                     }
                 },
                 {
+                    "name": "Save Resume",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"diagnosa_utama\": \"Demam Berdarah\",\n    \"diagnosa_sekunder\": \"Tifus\",\n    \"jalannya_penyakit\": \"Demam 3 hari...\",\n    \"terapi\": \"Paracetamol 3x1\",\n    \"kondisi_pulang\": \"Hidup\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/saveresume",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "rawat_jalan",
+                                "saveresume"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Resume",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"kd_dokter\": \"D001\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/deleteresume",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "rawat_jalan",
+                                "deleteresume"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Save Rujukan Internal",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"kd_poli\": \"P001\",\n    \"kd_dokter\": \"D001\",\n    \"catatan\": \"Mohon konsul bedah\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/saverujukaninternal",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "rawat_jalan",
+                                "saverujukaninternal"
+                            ]
+                        }
+                    }
+                },
+                {
                     "name": "Delete Rujukan Internal",
                     "request": {
                         "method": "POST",
@@ -1466,6 +1466,55 @@
                                 "api",
                                 "rawat_jalan",
                                 "deleterujukaninternal"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Save Laporan Operasi",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"tanggal\": \"2023-01-01\",\n    \"jam\": \"10:00:00\",\n    \"operator\": \"D001\",\n    \"laporan\": \"Operasi berjalan lancar\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/rawat_jalan/savelaporanoperasi",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "rawat_jalan",
+                                "savelaporanoperasi"
                             ]
                         }
                     }
@@ -4528,7 +4577,7 @@
     "variable": [
         {
             "key": "baseUrl",
-            "value": "http://mlite.loc",
+            "value": "https://mlite.up.railway.app",
             "type": "string"
         },
         {
