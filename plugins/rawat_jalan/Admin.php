@@ -3773,6 +3773,10 @@ class Admin extends AdminModule
         if (!is_array($input)) $input = $_POST;
 
         try {
+            if (!isset($input['no_rawat']) || !isset($input['kd_dokter'])) {
+                return ['status' => 'error', 'message' => 'Missing required parameters: no_rawat or kd_dokter'];
+            }
+
             $this->db('resume_pasien')
                 ->where('no_rawat', $input['no_rawat'])
                 ->where('kd_dokter', $input['kd_dokter'])
