@@ -45,7 +45,7 @@ RUN mkdir -p /var/lib/php/sessions \
     && chmod -R 700 /var/lib/php/sessions
 
 # Custom PHP config (session)
-COPY php.ini /usr/local/etc/php/conf.d/99-mlite.ini
+COPY railway/php.ini /usr/local/etc/php/conf.d/99-mlite.ini
 
 # Ensure php-fpm runs as www-data
 RUN sed -i 's/^user = .*/user = www-data/' /usr/local/etc/php-fpm.d/www.conf \
@@ -59,12 +59,12 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # --------------------------------------------------
 # Nginx config
 # --------------------------------------------------
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY railway/nginx.conf /etc/nginx/nginx.conf
 
 # --------------------------------------------------
 # Supervisor
 # --------------------------------------------------
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY railway/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # --------------------------------------------------
 # App
@@ -90,7 +90,7 @@ RUN mkdir -p admin/tmp \
 # --------------------------------------------------
 # Entrypoint & Volume
 # --------------------------------------------------
-COPY docker-entrypoint.sh /usr/local/bin/
+COPY railway/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Define volumes for persistence
