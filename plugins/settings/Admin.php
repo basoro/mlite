@@ -677,7 +677,11 @@ class Admin extends AdminModule
     public function getBackupRestore()
     {
         $database = DBNAME;
-        $get_table = $this->db()->pdo()->prepare("SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='$database'");
+        if (DBDRIVER == 'sqlite') {
+            $get_table = $this->db()->pdo()->prepare("SELECT name AS TABLE_NAME FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+        } else {
+            $get_table = $this->db()->pdo()->prepare("SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='$database'");
+        }
 	    $get_table->execute();
 	    $result = $get_table->fetchAll();
 

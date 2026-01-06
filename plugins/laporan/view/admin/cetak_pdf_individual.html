@@ -40,7 +40,7 @@
         var doc = new jsPDF('p', 'pt', 'A4'); // portrait orientation
         
         // Header dengan logo dan informasi rumah sakit
-        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        var img = "{?=base64_encode(file_get_contents(BASE_DIR . '/' . $settings['logo']))?}";
         if(img) {
             doc.addImage(img, 'JPEG', 20, 10, 50, 50);
         }

@@ -378,7 +378,7 @@ class Admin extends AdminModule
         'margin_bottom' => 4
       ]);
 
-      $url = url(ADMIN.'/tmp/kartu.html');
+      $url = BASE_DIR . '/tmp/kartu.html';
       $html = file_get_contents($url);
       $mpdf->WriteHTML($html);
 
@@ -982,7 +982,7 @@ class Admin extends AdminModule
       $mpdf->SetHTMLHeader($this->core->setPrintHeader());
       $mpdf->SetHTMLFooter($this->core->setPrintFooter());
             
-      $url = url(ADMIN.'/tmp/pasien.export.pdf.html');
+      $url = BASE_DIR . '/tmp/pasien.export.pdf.html';
       $html = file_get_contents($url);
       $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
       $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
@@ -1045,7 +1045,7 @@ class Admin extends AdminModule
       $mpdf->SetHTMLHeader($this->core->setPrintHeader());
       $mpdf->SetHTMLFooter($this->core->setPrintFooter());
             
-      $url = url(ADMIN.'/tmp/cetak.pasien.html');
+      $url = BASE_DIR . '/tmp/cetak.pasien.html';
       $html = file_get_contents($url);
       $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
       $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
@@ -1085,7 +1085,7 @@ class Admin extends AdminModule
       // $mpdf->SetHTMLHeader($this->core->setPrintHeader());
       // $mpdf->SetHTMLFooter($this->core->setPrintFooter());
             
-      $url = url(ADMIN.'/tmp/riwayat.perawatan.html');
+      $url = BASE_DIR . '/tmp/riwayat.perawatan.html';
       $html = file_get_contents($url);
       $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
       $mpdf->WriteHTML($css);
@@ -1099,7 +1099,7 @@ class Admin extends AdminModule
     public function getExcel()
     {
       $file = "data.pasien.xls";
-      $html = file_get_contents(url(ADMIN.'/tmp/cetak.pasien.html'));
+      $html = file_get_contents(BASE_DIR . '/tmp/cetak.pasien.html');
       header("Content-type: application/vnd-ms-excel");
       header("Content-Disposition: attachment; filename=$file");
       echo "<!DOCTYPE html><html><head></head><body>";

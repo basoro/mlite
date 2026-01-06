@@ -398,7 +398,7 @@ class Admin extends AdminModule
         </style>
         ';
         
-        $url = url(ADMIN.'/tmp/billing.besar.html');
+        $url = BASE_DIR . '/tmp/billing.besar.html';
         $html = file_get_contents($url);
         $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
         $mpdf->WriteHTML($css);

@@ -85,6 +85,10 @@ class Restore_Database {
     }
 
     protected function initializeDatabase() {
+        if (DBDRIVER == 'sqlite') {
+            return new \PDO("sqlite:" . $this->dbName);
+        }
+
         try {
             $conn = mysqli_connect($this->host, $this->username, $this->passwd, $this->dbName);
             if (mysqli_connect_errno()) {
@@ -116,6 +120,10 @@ class Restore_Database {
      * @param string $tables
      */
     public function restoreDb() {
+        if (DBDRIVER == 'sqlite') {
+            return $this->restoreDbSqlite();
+        }
+
         try {
             $sql = '';
             $multiLineComment = false;
@@ -177,6 +185,113 @@ class Restore_Database {
             return false;
         }
 
+        if ($backupFileIsGzipped) {
+            unlink($backupDir . '/' . $backupFile);
+        }
+
+        return true;
+    }
+
+    protected function restoreDbSqlite() {
+        try {
+            // Force close existing connection to release locks
+            $this->conn = null;
+            
+            // Re-open fresh connection
+            $pdo = new \PDO("sqlite:" . $this->dbName);
+            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            
+            // Optimization settings
+            $pdo->exec("PRAGMA synchronous = OFF");
+            $pdo->exec("PRAGMA journal_mode = MEMORY");
+            $pdo->exec("PRAGMA foreign_keys = OFF");
+
+            $backupDir = $this->backupDir;
+            $backupFile = $this->backupFile;
+
+            // ... (gunzip logic remains same)
+            $backupFileIsGzipped = substr($backupFile, -3, 3) == '.gz' ? true : false;
+            if ($backupFileIsGzipped) {
+                if (!$backupFile = $this->gunzipBackupFile()) {
+                    throw new \Exception("ERROR: couldn't gunzip backup file " . $backupDir . '/' . $backupFile);
+                }
+            }
+
+            // Close connection before replacement to avoid "database is locked"
+            $pdo = null; 
+            
+            // Replace the database file
+            $sourceSql = $backupDir . '/' . $backupFile;
+            
+            // If it is a full binary copy or we treat it as import?
+            // Wait, the file is SQL dump, not binary DB file. 
+            // So we MUST execute SQL.
+            
+            // Re-open connection
+            $pdo = new \PDO("sqlite:" . $this->dbName);
+            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            
+            // Drop all tables first for clean restore
+            $tablesQuery = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+            $tables = $tablesQuery->fetchAll(\PDO::FETCH_COLUMN);
+            
+            $pdo->exec("PRAGMA foreign_keys = OFF");
+            $pdo->beginTransaction();
+            foreach ($tables as $table) {
+                $pdo->exec("DROP TABLE IF EXISTS `$table`");
+            }
+            $pdo->commit();
+            
+            // Now execute the dump
+            $handle = fopen($backupDir . '/' . $backupFile, "r");
+            if ($handle) {
+                $sql = '';
+                $multiLineComment = false;
+                
+                // $pdo->beginTransaction(); // Dump usually has transaction
+
+                while (($line = fgets($handle)) !== false) {
+                     // ... (existing parsing logic)
+                    $line = trim($line);
+                    if (strlen($line) > 1) { 
+                        $lineIsComment = false;
+                        if (preg_match('/^\/\*/', $line)) {
+                            $multiLineComment = true;
+                            $lineIsComment = true;
+                        }
+                        if ($multiLineComment or preg_match('/^\/\//', $line) or preg_match('/^--/', $line)) {
+                            $lineIsComment = true;
+                        }
+                        if (!$lineIsComment) {
+                            $sql .= $line . "\n";
+                            if (preg_match('/;$/', trim($line))) {
+                                try {
+                                    $pdo->exec($sql);
+                                    if (preg_match('/^CREATE TABLE `?([^`\s]+)`?/i', $sql, $tableName)) {
+                                        $this->obfPrint("Table successfully restored: `" . $tableName[1] . "`");
+                                    }
+                                } catch (\PDOException $e) {
+                                    $this->obfPrint("WARNING: " . $e->getMessage());
+                                }
+                                $sql = '';
+                            }
+                        } else if (preg_match('/\*\/$/', $line)) {
+                            $multiLineComment = false;
+                        }
+                    }
+                }
+                
+                // $pdo->commit();
+                fclose($handle);
+            }
+
+        } catch (\Exception $e) {
+             // ...
+             print_r($e->getMessage());
+             return false;
+        }
+        
+        // Cleanup
         if ($backupFileIsGzipped) {
             unlink($backupDir . '/' . $backupFile);
         }

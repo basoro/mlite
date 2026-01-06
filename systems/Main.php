@@ -592,6 +592,11 @@ abstract class Main
         }
     }
 
+    public function getRegisteredPages()
+    {
+        return $this->router->getRegisteredPages();
+    }
+
     public function umurDaftar($tgl_lahir) {
         $birthDate = new \DateTime($tgl_lahir);
         $today = new \DateTime("today");

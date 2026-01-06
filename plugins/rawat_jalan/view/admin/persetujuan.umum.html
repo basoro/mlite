@@ -272,7 +272,7 @@
     // ===========================================
     $("#export_pdf").click(function () {
         var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
-        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        var img = "{?=base64_encode(file_get_contents(BASE_DIR . '/' . $settings['logo']))?}";
         var canvas = document.getElementById('canvas');
         var imgData = canvas.toDataURL("image/png", 1.0);
         doc.addImage(img, 'JPEG', 20, 10, 50, 50);
