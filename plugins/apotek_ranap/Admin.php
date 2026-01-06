@@ -1166,7 +1166,7 @@ class Admin extends AdminModule
         'margin_bottom' => 2
       ]);
 
-      $url = BASE_DIR . '/tmp/cetak.etiket.html';
+      $url = url(ADMIN.'/tmp/cetak.etiket.html');
       $html = file_get_contents($url);
       $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
       $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
@@ -1250,7 +1250,7 @@ class Admin extends AdminModule
         'margin_bottom' => 2
       ]);
 
-      $url = BASE_DIR . '/tmp/cetak.eresep.html';
+      $url = url(ADMIN.'/tmp/cetak.eresep.html');
       $html = file_get_contents($url);
       $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
       $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
@@ -1330,7 +1330,7 @@ class Admin extends AdminModule
         'margin_bottom' => 2
       ]);
 
-      $url = BASE_DIR . '/tmp/cetak.eresep.html';
+      $url = url(ADMIN.'/tmp/cetak.eresep.html'); 
       $html = file_get_contents($url);
       $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
       $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);

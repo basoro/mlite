@@ -129,7 +129,7 @@ jQuery().ready(function () {
     // ===========================================
     $("#export_pdf_dokter").click(function () {
         var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
-        var img = "{?=base64_encode(file_get_contents(BASE_DIR . '/' . $settings['logo']))?}";
+        var img = "{?=base64_encode(file_get_contents(url(ADMIN . '/' . $settings['logo'])))?}";
         doc.addImage(img, 'JPEG', 20, 10, 50, 50);
         doc.setFontSize(20);
         doc.text("{$settings.nama_instansi}", 80, 35, null, null, null);
@@ -172,7 +172,7 @@ jQuery().ready(function () {
     // ===========================================
     $("#export_pdf_perawat").click(function () {
         var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
-        var img = "{?=base64_encode(file_get_contents(BASE_DIR . '/' . $settings['logo']))?}";
+        var img = "{?=base64_encode(file_get_contents(url(ADMIN . '/' . $settings['logo'])))?}";
         doc.addImage(img, 'JPEG', 20, 10, 50, 50);
         doc.setFontSize(20);
         doc.text("{$settings.nama_instansi}", 80, 35, null, null, null);
