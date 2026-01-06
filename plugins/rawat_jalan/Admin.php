@@ -3762,6 +3762,27 @@ class Admin extends AdminModule
         }
     }
 
+    public function apiDeleteResume()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'rawat_jalan')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('resume_pasien')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('kd_dokter', $input['kd_dokter'])
+                ->delete();
+            return ['status' => 'success'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
     public function apiSaveRujukanInternal()
     {
         $username = $this->core->checkAuth('POST');
