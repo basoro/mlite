@@ -23,6 +23,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'migrate') {
     $pdo->exec("PRAGMA synchronous = OFF");
     $pdo->exec("PRAGMA journal_mode = MEMORY");
 
+    // Nonaktifkan strict mode agar bisa insert '0000-00-00'
+    $pdo->exec("PRAGMA strict = OFF");
+
     $sqlContent = file_get_contents($inputFile);
 
     // Clean up
