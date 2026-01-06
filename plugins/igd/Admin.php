@@ -847,12 +847,13 @@ class Admin extends AdminModule
       } else {
         $tgl_registrasi = date('Y-m-d');
       }
-      $max_id = $this->db('reg_periksa')->select(['no_rawat' => 'ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0)'])->where('tgl_registrasi', $tgl_registrasi)->oneArray();
-      if(empty($max_id['no_rawat'])) {
-        $max_id['no_rawat'] = '000000';
-      }
-      $_next_no_rawat = sprintf('%06s', ($max_id['no_rawat'] + 1));
-      $next_no_rawat = date('Y/m/d', strtotime($tgl_registrasi)).'/'.$_next_no_rawat;
+      $urut = $this->db('reg_periksa')
+          ->where('tgl_registrasi', $tgl_registrasi)
+          ->nextRightNumber('no_rawat', 6);
+
+      $next_no_rawat = date('Y/m/d', strtotime($tgl_registrasi))
+          . '/' . sprintf('%06d', $urut);
+
       echo $next_no_rawat;
       exit();
     }
@@ -865,12 +866,12 @@ class Admin extends AdminModule
         $tgl_registrasi = date('Y-m-d');
       }
 
-      $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $this->settings('settings', 'igd'))->where('tgl_registrasi', $tgl_registrasi)->desc('no_reg')->limit(1)->oneArray();
-      if(empty($max_id['no_reg'])) {
-        $max_id['no_reg'] = '000';
-      }
-      $_next_no_reg = sprintf('%03s', ($max_id['no_reg'] + 1));
-      echo $_next_no_reg;
+      $urut = $this->db('reg_periksa')
+          ->where('kd_poli', $this->settings('settings', 'igd'))
+          ->where('tgl_registrasi', $tgl_registrasi)
+          ->nextRightNumber('no_reg', 3);
+
+      echo sprintf('%03d', $urut);
       exit();
     }
 
@@ -1197,7 +1198,6 @@ class Admin extends AdminModule
     public function postSimpanSuratSakit()
     {
       $query = $this->db('mlite_surat_sakit')->save([
-        'id' => NULL, 
         'nomor_surat' => $_POST['nomor_surat'], 
         'no_rawat' => $_POST['no_rawat'], 
         'no_rkm_medis' => $_POST['no_rkm_medis'], 
@@ -1234,7 +1234,6 @@ class Admin extends AdminModule
     public function postSimpanSuratSehat()
     {
       $query = $this->db('mlite_surat_sehat')->save([
-        'id' => NULL, 
         'nomor_surat' => $_POST['nomor_surat'], 
         'no_rawat' => $_POST['no_rawat'], 
         'no_rkm_medis' => $_POST['no_rkm_medis'], 
@@ -1272,7 +1271,6 @@ class Admin extends AdminModule
     public function postSimpanSuratRujukan()
     {
       $query = $this->db('mlite_surat_rujukan')->save([
-        'id' => NULL, 
         'nomor_surat' => $_POST['nomor_surat'], 
         'no_rawat' => $_POST['no_rawat'], 
         'no_rkm_medis' => $_POST['no_rkm_medis'], 
@@ -1981,14 +1979,17 @@ class Admin extends AdminModule
         
         // Calculate No Reg (Queue Number)
         $tgl_registrasi = $input['tgl_registrasi'];
-        $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $input['kd_poli'])->where('tgl_registrasi', $tgl_registrasi)->desc('no_reg')->limit(1)->oneArray();
-        if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
-            $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $input['kd_poli'])->where('kd_dokter', $input['kd_dokter'])->where('tgl_registrasi', $tgl_registrasi)->desc('no_reg')->limit(1)->oneArray();
+        $q = $this->db('reg_periksa')
+            ->where('kd_poli', $input['kd_poli'])
+            ->where('tgl_registrasi', $tgl_registrasi);
+
+        if ($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+            $q->where('kd_dokter', $input['kd_dokter']);
         }
-        if(empty($max_id['no_reg'])) {
-            $max_id['no_reg'] = '000';
-        }
-        $input['no_reg'] = sprintf('%03s', ($max_id['no_reg'] + 1));
+
+        $urut = $q->nextRightNumber('no_reg', 3);
+
+        $input['no_reg'] = sprintf('%03d', $urut);
 
         $input['status_lanjut'] = 'Ralan';
         $input['stts'] = 'Belum';
@@ -2691,14 +2692,12 @@ class Admin extends AdminModule
     public function setNoRawat($date = null)
     {
         $date = $date ?? date('Y-m-d');
-        $last_no_rawat = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date'");
-        $last_no_rawat->execute();
-        $last_no_rawat = $last_no_rawat->fetch();
-        if(empty($last_no_rawat[0])) {
-          $last_no_rawat[0] = '000000';
-        }
-        $next_no_rawat = sprintf('%06s', ($last_no_rawat[0] + 1));
-        $next_no_rawat = str_replace('-', '/', $date).'/'.$next_no_rawat;
+        $urut = $this->db('reg_periksa')
+            ->where('tgl_registrasi', $date)
+            ->nextRightNumber('no_rawat', 6);
+
+        $next_no_rawat = str_replace('-', '/', $date)
+            . '/' . sprintf('%06d', $urut);
 
         return $next_no_rawat;
     }

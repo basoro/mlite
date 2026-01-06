@@ -1029,24 +1029,24 @@ class Admin extends AdminModule
 
     public function postMaxid()
     {
-      $max_id = $this->db('reg_periksa')->select(['no_rawat' => 'ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0)'])->where('tgl_registrasi', date('Y-m-d'))->oneArray();
-      if(empty($max_id['no_rawat'])) {
-        $max_id['no_rawat'] = '000000';
-      }
-      $_next_no_rawat = sprintf('%06s', ($max_id['no_rawat'] + 1));
-      $next_no_rawat = date('Y/m/d').'/'.$_next_no_rawat;
+      $urut = $this->db('reg_periksa')
+          ->where('kd_poli', $this->settings->get('settings.rawat_inap'))
+          ->where('tgl_registrasi', date('Y-m-d'))
+          ->nextRightNumber('no_rawat', 6);
+
+      $next_no_rawat = date('Y/m/d').'/'.$urut;
       echo $next_no_rawat;
       exit();
     }
 
     public function postMaxAntrian()
     {
-      $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $_POST['kd_poli'])->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
-      if(empty($max_id['no_reg'])) {
-        $max_id['no_reg'] = '000';
-      }
-      $_next_no_reg = sprintf('%03s', ($max_id['no_reg'] + 1));
-      echo $_next_no_reg;
+      $urut = $this->db('reg_periksa')
+          ->where('kd_poli', $this->settings->get('settings.rawat_inap'))
+          ->where('tgl_registrasi', date('Y-m-d'))
+          ->nextRightNumber('no_reg', 3);
+
+      echo sprintf('%03d', $urut);
       exit();
     }
 
@@ -1142,7 +1142,6 @@ class Admin extends AdminModule
     public function postSimpanSuratSakit()
     {
       $query = $this->db('mlite_surat_sakit')->save([
-        'id' => NULL, 
         'nomor_surat' => $_POST['nomor_surat'], 
         'no_rawat' => $_POST['no_rawat'], 
         'no_rkm_medis' => $_POST['no_rkm_medis'], 
@@ -1179,7 +1178,6 @@ class Admin extends AdminModule
     public function postSimpanSuratSehat()
     {
       $query = $this->db('mlite_surat_sehat')->save([
-        'id' => NULL, 
         'nomor_surat' => $_POST['nomor_surat'], 
         'no_rawat' => $_POST['no_rawat'], 
         'no_rkm_medis' => $_POST['no_rkm_medis'], 
@@ -1217,7 +1215,6 @@ class Admin extends AdminModule
     public function postSimpanSuratRujukan()
     {
       $query = $this->db('mlite_surat_rujukan')->save([
-        'id' => NULL, 
         'nomor_surat' => $_POST['nomor_surat'], 
         'no_rawat' => $_POST['no_rawat'], 
         'no_rkm_medis' => $_POST['no_rkm_medis'], 

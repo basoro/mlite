@@ -312,12 +312,27 @@ class QueryWrapper
         if ($column) {
             $this->set($column, $value);
         }
-        $st = $this->_build();
-        if ($lid = static::$db->lastInsertId()) {
-            return $lid;
-        } else {
-            return $st;
+
+        // AUTO-ID HANDLING (MySQL + SQLite)
+        foreach (['id', 'kd'] as $autoKey) {
+            if (
+                array_key_exists($autoKey, $this->sets) &&
+                $this->sets[$autoKey] === null &&
+                $this->isSqliteAutoId($autoKey)
+            ) {
+                unset($this->sets[$autoKey]);
+            }
         }
+
+        $st = $this->_build();
+
+        $lid = static::$db->lastInsertId();
+        return $lid ?: $st;
+    }
+
+    public function lastId()
+    {
+        return static::$db->lastInsertId();
     }
 
     public function update($column = null, $value = null)
@@ -632,6 +647,91 @@ class QueryWrapper
         }
         $q = $this->pdo()->query("DESCRIBE $this->table;")->fetchAll();
         return array_column($q, 'Field');
+    }
+
+    protected function driver(): string
+    {
+        return $this->pdo()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+    }
+
+    protected function isSQLite(): bool
+    {
+        return $this->driver() === 'sqlite';
+    }
+
+    public function maxRightInt(string $column, int $length = 6, int $default = 0): string
+    {
+        if ($this->isSQLite()) {
+            return "IFNULL(MAX(CAST(substr($column, -$length) AS INTEGER)),$default)";
+        }
+
+        return "IFNULL(MAX(CONVERT(RIGHT($column,$length), SIGNED)),$default)";
+    }
+
+    public function nextRightNumber(
+        string $column,
+        int $length = 6,
+        string $whereColumn = null,
+        $whereValue = null
+    ): int {
+        if ($whereColumn !== null) {
+            $this->where($whereColumn, $whereValue);
+        }
+
+        $row = $this->select([
+            'max' => $this->maxRightInt($column, $length)
+        ])->oneArray();
+
+        return ((int) $row['max']) + 1;
+    }
+
+    public function orderByRightNumber($field, $length, $dir = 'ASC')
+    {
+        $driver = $this->pdo()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+
+        if ($driver === 'sqlite') {
+            $expr = "CAST(substr($field, -$length) AS INTEGER)";
+        } else {
+            $expr = "CAST(RIGHT($field, $length) AS UNSIGNED)";
+        }
+
+        array_push($this->orders, "$expr $dir");
+        return $this;
+    }
+
+    protected function isAutoPrimaryKey(string $column = 'id'): bool
+    {
+        $driver = $this->pdo()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+
+        // SQLite: id INTEGER PRIMARY KEY
+        if ($driver === 'sqlite') {
+            return true;
+        }
+
+        // MySQL: AUTO_INCREMENT
+        if ($driver === 'mysql') {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function isSqliteAutoId(string $column): bool
+    {
+        $driver = static::$db->getAttribute(PDO::ATTR_DRIVER_NAME);
+        if ($driver !== 'sqlite') return true; // MySQL aman
+
+        $stmt = static::$db->query("PRAGMA table_info({$this->table})");
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $col) {
+            if (
+                $col['name'] === $column &&
+                stripos($col['type'], 'INTEGER') !== false &&
+                (int)$col['pk'] === 1
+            ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static function logPdoQuery($sql, $bindings = [], $error = null)

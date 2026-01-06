@@ -351,13 +351,12 @@ class Admin extends AdminModule
   public function setNoPendonor()
   {
       $date = date('Y-m-d');
-      $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_pendonor,6),signed)),0) FROM utd_pendonor");
-      $last_no->execute();
-      $last_no = $last_no->fetch();
-      if(empty($last_no[0])) {
-        $last_no[0] = '000000';
+      $urut = $this->db('utd_pendonor')
+          ->nextRightNumber('no_pendonor', 6);
+      if(empty($urut)) {
+        $urut = '000000';
       }
-      $next_no = sprintf('%06s', ($last_no[0] + 1));
+      $next_no = sprintf('%06s', $urut);
       $next_no = 'UTD'.$next_no;
 
       return $next_no;

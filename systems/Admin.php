@@ -353,7 +353,7 @@ class Admin extends Main
 
     private function registerPage($name, $path)
     {
-        $this->registerPage[] = ['id' => null, 'title' => $name, 'slug' => $path];
+        $this->registerPage[] = ['title' => $name, 'slug' => $path];
     }
 
     private function _getPoliklinik($kd_poli = null)

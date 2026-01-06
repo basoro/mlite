@@ -61,10 +61,15 @@ class Site extends SiteModule
     {
         unset($_POST['save']);
         if(isset($_POST['daftar'])) {
-            $max = $this->db('booking_periksa')
-                ->select(['no_booking' => 'ifnull(MAX(CONVERT(RIGHT(no_booking,4),signed)),0)+1'])
-                ->where('tanggal', $_POST['tanggal'])
-                ->oneArray();
+
+            $max['no_booking'] = $this->db('booking_periksa')
+                ->nextRightNumber(
+                    'no_booking',     // kolom
+                    4,                // panjang digit
+                    'tanggal',        // where column
+                    $_POST['tanggal'] // where value
+                );
+
             $no_urut = "BP".str_replace('-','',$_POST['tanggal']).''.sprintf("%04s", $max['no_booking']);
             $query = $this->db('booking_periksa')->save([
                 'no_booking' => $no_urut,
@@ -181,7 +186,7 @@ class Site extends SiteModule
                 $assign['published_at'] = str_replace($keys, $vals, strtolower($assign['published_at']));
 
                 $this->setTemplate("post.html");
-                $this->tpl->set('page', ['title' => $assign['title'], 'desc' => trim(mb_strimwidth(htmlspecialchars(strip_tags(preg_replace('/\{(.*?)\}/', null, $assign['content']))), 0, 155, "...", "utf-8"))]);
+                $this->tpl->set('page', ['title' => $assign['title'], 'desc' => trim(mb_strimwidth(htmlspecialchars(strip_tags(preg_replace('/\{(.*?)\}/', '', $assign['content']))), 0, 155, "...", "utf-8"))]);
                 $this->tpl->set('post', $assign);
                 $this->tpl->set('website', [
                     'title' => $this->settings('website.title'),
@@ -196,7 +201,7 @@ class Site extends SiteModule
         $this->core->append('<meta property="og:url" content="'.url(['news', 'post', $row['slug']]).'">', 'header');
         $this->core->append('<meta property="og:type" content="article">', 'header');
         $this->core->append('<meta property="og:title" content="'.$row['title'].'">', 'header');
-        $this->core->append('<meta property="og:description" content="'.trim(mb_strimwidth(htmlspecialchars(strip_tags(preg_replace('/\{(.*?)\}/', null, $assign['content']))), 0, 155, "...", "utf-8")).'">', 'header');
+        $this->core->append('<meta property="og:description" content="'.trim(mb_strimwidth(htmlspecialchars(strip_tags(preg_replace('/\{(.*?)\}/', '', $assign['content']))), 0, 155, "...", "utf-8")).'">', 'header');
         if (!empty($row['cover_photo'])) {
             $this->core->append('<meta property="og:image" content="'.url(UPLOADS.'/website/news/'.$row['cover_photo']).'?'.$row['published_at'].'">', 'header');
         }

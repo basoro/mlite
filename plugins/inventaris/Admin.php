@@ -383,14 +383,10 @@ class Admin extends AdminModule
 
   public function setNoInventaris()
   {
-      $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_inventaris,4),signed)),0) FROM inventaris");
-      $last_no_order->execute();
-      $last_no_order = $last_no_order->fetch();
-      if(empty($last_no_order[0])) {
-        $last_no_order[0] = '0000';
-      }
-      $next_no_order = sprintf('%04s', ($last_no_order[0] + 1));
-      $next_no_order = 'IN'.date('Ymd').''.$next_no_order;
+      $urut = $this->db('inventaris')
+          ->nextRightNumber('no_inventaris', 4);
+
+      $next_no_order = 'IN' . date('Ymd') . sprintf('%04d', $urut);
 
       return $next_no_order;
   }
@@ -398,14 +394,12 @@ class Admin extends AdminModule
   public function setNoPermintaan()
   {
       $date = date('Y-m-d');
-      $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_permintaan,4),signed)),0) FROM permintaan_perbaikan_inventaris WHERE tanggal LIKE '%$date%'");
-      $last_no_order->execute();
-      $last_no_order = $last_no_order->fetch();
-      if(empty($last_no_order[0])) {
-        $last_no_order[0] = '0000';
-      }
-      $next_no_order = sprintf('%04s', ($last_no_order[0] + 1));
-      $next_no_order = 'PI'.date('Ymd').''.$next_no_order;
+
+      $urut = $this->db('permintaan_perbaikan_inventaris')
+          ->where('tanggal', $date)
+          ->nextRightNumber('no_permintaan', 4);
+
+      $next_no_order = 'PI' . date('Ymd') . sprintf('%04d', $urut);
 
       return $next_no_order;
   }

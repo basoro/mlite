@@ -494,13 +494,27 @@ class Site extends SiteModule
                 $kuota->execute();
                 $kuota = $kuota->fetch();
 
-                $max_antrian = $this->db()->pdo()->prepare("SELECT booking_registrasi.no_reg FROM booking_registrasi WHERE booking_registrasi.status='Belum' AND booking_registrasi.kd_dokter='$kddokter[kd_dokter]' AND booking_registrasi.kd_poli='$kdpoli[kd_poli_rs]' AND booking_registrasi.tanggal_periksa='$decode[tanggalperiksa]' ORDER BY CONVERT(RIGHT(booking_registrasi.no_reg,3),signed) LIMIT 1 ");
+                $table = ($decode['tanggalperiksa'] == date('Y-m-d'))
+                    ? 'reg_periksa'
+                    : 'booking_registrasi';
 
-                if($decode['tanggalperiksa'] == date('Y-m-d')) {
-                  $max_antrian = $this->db()->pdo()->prepare("SELECT reg_periksa.no_reg FROM reg_periksa WHERE reg_periksa.stts='Belum' AND reg_periksa.kd_dokter='$kddokter[kd_dokter]' AND reg_periksa.kd_poli='$kdpoli[kd_poli_rs]' AND reg_periksa.tgl_registrasi='$decode[tanggalperiksa]' ORDER BY CONVERT(RIGHT(reg_periksa.no_reg,3),signed) LIMIT 1 ");
+                $q = $this->db($table)
+                    ->select(['no_reg'])
+                    ->where('stts', 'Belum')
+                    ->where('kd_dokter', $kddokter['kd_dokter'])
+                    ->where('kd_poli', $kdpoli['kd_poli_rs']);
+
+                if ($table === 'reg_periksa') {
+                    $q->where('tgl_registrasi', $decode['tanggalperiksa']);
+                } else {
+                    $q->where('tanggal_periksa', $decode['tanggalperiksa']);
                 }
-                $max_antrian->execute();
-                $max_antrian = $max_antrian->fetch();
+
+                $max_antrian = $q
+                    ->orderByRightNumber('no_reg', 3, 'ASC')
+                    ->limit(1)
+                    ->oneArray();
+
 
                 if(strtotime($decode['tanggalperiksa']) == strtotime(date('Y-m-d'))) {
                   $data = $this->db()->pdo()->prepare("SELECT poliklinik.nm_poli,COUNT(reg_periksa.kd_poli) as total_antrean,dokter.nm_dokter,
@@ -923,9 +937,15 @@ class Site extends SiteModule
                     }else if($booking_registrasi['status']=='Terdaftar'){
                         $noreg = $this->db('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tgl_registrasi', $booking_registrasi['tanggal_periksa'])->oneArray();
 
-                        $max_antrian = $this->db()->pdo()->prepare("SELECT reg_periksa.no_reg FROM reg_periksa WHERE reg_periksa.stts='Belum' AND reg_periksa.kd_dokter='$booking_registrasi[kd_dokter]' AND reg_periksa.kd_poli='$booking_registrasi[kd_poli]' AND reg_periksa.tgl_registrasi='$booking_registrasi[tanggal_periksa]' ORDER BY CONVERT(RIGHT(reg_periksa.no_reg,3),signed) LIMIT 1 ");
-                        $max_antrian->execute();
-                        $max_antrian = $max_antrian->fetch();
+                        $max_antrian = $this->db('reg_periksa')
+                            ->select(['no_reg'])
+                            ->where('stts', 'Belum')
+                            ->where('kd_dokter', $booking_registrasi['kd_dokter'])
+                            ->where('kd_poli', $booking_registrasi['kd_poli'])
+                            ->where('tgl_registrasi', $booking_registrasi['tanggal_periksa'])
+                            ->orderByRightNumber('no_reg', 3, 'ASC')
+                            ->limit(1)
+                            ->oneArray();
 
                         $data = $this->db()->pdo()->prepare("SELECT reg_periksa.kd_poli,poliklinik.nm_poli,dokter.nm_dokter,
                             reg_periksa.no_reg,COUNT(reg_periksa.no_rawat) as total_antrean,
@@ -943,7 +963,7 @@ class Site extends SiteModule
                                     'namapoli' => $data['nm_poli'],
                                     'namadokter' => $data['nm_dokter'],
                                     'sisaantrean' => ($data['sisa_antrean']>0?$data['sisa_antrean']:0),
-                                    'antreanpanggil' => "A-".$max_antrian['no_reg'],
+                                    'antreanpanggil' => "A-".$max_antrian['no_reg'] ?? '000',
                                     'waktutunggu' => (($data['sisa_antrean']*10)*1000),
                                     'keterangan' => "Datanglah Minimal 30 Menit, jika no antrian anda terlewat, silakan konfirmasi ke layanan pelanggan, Terima Kasih .."
                                 ),
@@ -1733,7 +1753,6 @@ class Site extends SiteModule
                                         if (!$mlite_antrian_loket['postdate']) {
                                             $this->db('mlite_antrian_loket')
                                             ->save([
-                                            'kd' => NULL,
                                             'type' => 'Loket',
                                             'noantrian' => $next_antrian,
                                             'no_rkm_medis' => $booking_registrasi['no_rkm_medis'],

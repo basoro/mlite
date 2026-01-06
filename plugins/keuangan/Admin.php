@@ -631,7 +631,6 @@ class Admin extends AdminModule
         if($_POST['simpan']) {
           $this->db('mlite_akun_kegiatan')
           ->save([
-            'id' => NULL,
             'kegiatan' => $_POST['nama_kegiatan'],
             'kd_rek' => $_POST['kd_rek']
           ]);

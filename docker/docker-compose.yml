@@ -305,6 +305,19 @@ services:
       - app-network
     restart: unless-stopped
 
+  mlite-mobile:
+    build:
+      context: ./mlite-mobile
+      dockerfile: Dockerfile
+      args:
+        EXPO_PUBLIC_API_URL: ${EXPO_PUBLIC_API_URL:-http://mlite.loc}
+    container_name: mlite_mobile
+    ports:
+      - "6000:8080"
+    networks:
+      - app-network
+    restart: unless-stopped
+
 networks:
   app-network:
     driver: bridge

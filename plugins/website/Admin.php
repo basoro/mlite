@@ -120,7 +120,6 @@ class Admin extends AdminModule
 
         if ($id === null) {
             $news = [
-                'id' => null,
                 'title' => '',
                 'content' => '',
                 'slug' => '',

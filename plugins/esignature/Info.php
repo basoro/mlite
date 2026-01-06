@@ -7,7 +7,7 @@ return [
     'category'      =>  'manajemen',
     'version'       =>  '1.0',
     'compatibility' =>  '5.*.*',
-    'icon'          =>  'pen-nib',
+    'icon'          =>  'sticky-note-o',
     'install'       =>  function () use ($core) {
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `esignatures` (
             `id` int(11) NOT NULL AUTO_INCREMENT,

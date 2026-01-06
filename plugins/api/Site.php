@@ -93,16 +93,9 @@ class Site extends SiteModule
 
               unset($_POST);
 
-              $no_rkm_medis = '000001';
-              /*$max_id = $this->db('pasien')->select(['no_rkm_medis' => 'ifnull(MAX(CONVERT(RIGHT(no_rkm_medis,6),signed)),0)'])->oneArray();
-              if($max_id['no_rkm_medis']) {
-                $no_rkm_medis = sprintf('%06s', ($max_id['no_rkm_medis'] + 1));
-              }*/
-
-              $last_no_rm = $this->db('set_no_rkm_medis')->oneArray();
-              $last_no_rm = substr($last_no_rm['no_rkm_medis'], 0, 6);
-              $next_no_rm = sprintf('%06s', ($last_no_rm + 1));
-              $no_rkm_medis = $next_no_rm;
+              $next_no_rkm_medis = $this->db('set_no_rkm_medis')
+                  ->nextRightNumber('no_rkm_medis', 6);
+              $no_rkm_medis = sprintf('%06d', $next_no_rkm_medis);
 
               $_POST['nm_pasien'] = trim($_REQUEST['nm_pasien']);
               $_POST['email'] = trim($_REQUEST['email']);
@@ -535,14 +528,16 @@ class Site extends SiteModule
                   $mysql_time = date( 'H:i:s' );
                   $waktu_kunjungan = $tanggal . ' ' . $mysql_time;
 
-                  $max_id = $this->db('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
-                  if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
-                    $max_id = $this->db('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
+                  $q = $this->db('booking_registrasi')
+                      ->where('kd_poli', $kd_poli)
+                      ->where('tanggal_periksa', $tanggal);
+
+                  if ($this->settings->get('settings.dokter_ralan_per_dokter') === 'true') {
+                      $q->where('kd_dokter', $kd_dokter);
                   }
-                  if(empty($max_id['no_reg'])) {
-                    $max_id['no_reg'] = '000';
-                  }
-                  $no_reg = sprintf('%03s', ($max_id['no_reg'] + 1));
+
+                  $urut = $q->nextRightNumber('no_reg', 3);
+                  $no_reg = sprintf('%03d', $urut);
 
                   unset($_POST);
                   $_POST['no_rkm_medis'] = $no_rkm_medis;
@@ -638,12 +633,12 @@ class Site extends SiteModule
             break;
             case "simpanpengaduan":
               $send_data = array();
-              $max_id = $this->db('mlite_pengaduan')->select(['id' => 'ifnull(MAX(CONVERT(RIGHT(id,6),signed)),0)'])->like('tanggal', ''.date('Y-m-d').'%')->oneArray();
-              if(empty($max_id['id'])) {
-                $max_id['id'] = '000000';
-              }
-              $_next_id = sprintf('%06s', ($max_id['id'] + 1));
+              $urut = $this->db('mlite_pengaduan')
+                  ->like('tanggal', date('Y-m-d') . '%')
+                  ->nextRightNumber('id', 6);
+              $_next_id = sprintf('%06d', $urut);
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
+
               $message = trim($_REQUEST['message']);
               unset($_POST);
               $_POST['id'] = date('Ymd').''.$_next_id;
@@ -919,14 +914,15 @@ class Site extends SiteModule
                   $mysql_time = date( 'H:i:s' );
                   $waktu_kunjungan = $tanggal . ' ' . $mysql_time;
 
-                  $max_id = $this->db('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
-                  if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
-                    $max_id = $this->db('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
+                  $q = $this->db('booking_registrasi')
+                      ->where('kd_poli', $kd_poli)
+                      ->where('tanggal_periksa', $tanggal);
+
+                  if ($this->settings->get('settings.dokter_ralan_per_dokter') === 'true') {
+                      $q->where('kd_dokter', $kd_dokter);
                   }
-                  if(empty($max_id['no_reg'])) {
-                    $max_id['no_reg'] = '000';
-                  }
-                  $no_reg = sprintf('%03s', ($max_id['no_reg'] + 1));
+                  $urut = $q->nextRightNumber('no_reg', 3);
+                  $no_reg = sprintf('%03d', $urut);
 
                   unset($_POST);
                   $_POST['no_rkm_medis'] = $no_rkm_medis;

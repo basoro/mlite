@@ -57,7 +57,6 @@ class Site extends SiteModule
               ]);
               if($simpan_status) {
                 $this->db('mlite_veronisa_feedback')->save([
-                  'id' => NULL,
                   'nosep' => $_POST['nosep'],
                   'tanggal' => date('Y-m-d'),
                   'catatan' => $_POST['catatan'],

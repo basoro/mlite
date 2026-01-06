@@ -56,7 +56,6 @@ class Admin extends AdminModule
     if (isset($_POST['submit'])) {
       if (!$this->db('mlite_veronisa')->where('nosep', $_POST['nosep'])->oneArray()) {
         $simpan_status = $this->db('mlite_veronisa')->save([
-          'id' => NULL,
           'tanggal' => date('Y-m-d'),
           'no_rkm_medis' => $_POST['no_rkm_medis'],
           'no_rawat' => $_POST['no_rawat'],
@@ -74,7 +73,6 @@ class Admin extends AdminModule
       }
       if ($simpan_status) {
         $this->db('mlite_veronisa_feedback')->save([
-          'id' => NULL,
           'nosep' => $_POST['nosep'],
           'tanggal' => date('Y-m-d'),
           'catatan' => $_POST['catatan'],
@@ -2032,7 +2030,6 @@ public function postHapusResepResponse()
         ]);
 
         $this->db('mlite_veronisa')->save([
-          'id' => NULL,
           'tanggal' => date('Y-m-d'),
           'no_rawat' => $no_rawat,
           'no_rkm_medis' => $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat),

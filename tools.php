@@ -137,7 +137,10 @@ function processCreateTable($pdo, $sql) {
             if (stripos($def, 'AUTO_INCREMENT') !== false) {
                 $def = str_ireplace('AUTO_INCREMENT', '', $def);
                 if ($colName === $pkColumn) {
-                    $def = preg_replace('/INTEGER/', 'INTEGER PRIMARY KEY AUTOINCREMENT', $def, 1);
+                    // Check if it's explicitly "int NOT NULL" which is common in MySQL dumps
+                    // Replace "int NOT NULL" or similar with INTEGER PRIMARY KEY AUTOINCREMENT
+                    // SQLite requires exactly "INTEGER PRIMARY KEY AUTOINCREMENT" for auto-inc behavior
+                    $def = preg_replace('/(int|integer)\s+(not\s+null)?/i', 'INTEGER PRIMARY KEY AUTOINCREMENT', $def);
                 }
             }
             

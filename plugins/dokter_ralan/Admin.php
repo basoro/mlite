@@ -358,12 +358,10 @@ class Admin extends AdminModule
       if($_POST['kat'] == 'laboratorium') {
         $cek_lab = $this->db('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', date('Y-m-d'))->where('tgl_sampel', '0000-00-00')->where('status', 'ralan')->oneArray();
         if(!$cek_lab) {
-          $max_id = $this->db('permintaan_lab')->select(['noorder' => 'ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0)'])->where('tgl_permintaan', date('Y-m-d'))->oneArray();
-          if(empty($max_id['noorder'])) {
-            $max_id['noorder'] = '0000';
-          }
-          $_next_noorder = sprintf('%04s', ($max_id['noorder'] + 1));
-          $noorder = 'PL'.date('Ymd').''.$_next_noorder;
+          $urut = $this->db('permintaan_lab')
+              ->where('tgl_permintaan', date('Y-m-d'))
+              ->nextRightNumber('noorder', 4);
+          $noorder = 'PL' . date('Ymd') . sprintf('%04d', $urut);
 
           $permintaan_lab = $this->db('permintaan_lab')
             ->save([
@@ -422,12 +420,10 @@ class Admin extends AdminModule
       if($_POST['kat'] == 'radiologi') {
         $cek_rad = $this->db('permintaan_radiologi')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', date('Y-m-d'))->where('tgl_sampel', '<>', '0000-00-00')->where('status', 'ralan')->oneArray();
         if(!$cek_rad) {
-          $max_id = $this->db('permintaan_radiologi')->select(['noorder' => 'ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0)'])->where('tgl_permintaan', date('Y-m-d'))->oneArray();
-          if(empty($max_id['noorder'])) {
-            $max_id['noorder'] = '0000';
-          }
-          $_next_noorder = sprintf('%04s', ($max_id['noorder'] + 1));
-          $noorder = 'PR'.date('Ymd').''.$_next_noorder;
+          $urut = $this->db('permintaan_radiologi')
+              ->where('tgl_permintaan', date('Y-m-d'))
+              ->nextRightNumber('noorder', 4);
+          $noorder = 'PR' . date('Ymd') . sprintf('%04d', $urut);
 
           $permintaan_rad = $this->db('permintaan_radiologi')
             ->save([
@@ -2065,7 +2061,6 @@ class Admin extends AdminModule
     public function postSimpanSuratSakit()
     {
       $query = $this->db('mlite_surat_sakit')->save([
-        'id' => NULL, 
         'nomor_surat' => $_POST['nomor_surat'], 
         'no_rawat' => $_POST['no_rawat'], 
         'no_rkm_medis' => $_POST['no_rkm_medis'], 
@@ -2102,7 +2097,6 @@ class Admin extends AdminModule
     public function postSimpanSuratSehat()
     {
       $query = $this->db('mlite_surat_sehat')->save([
-        'id' => NULL, 
         'nomor_surat' => $_POST['nomor_surat'], 
         'no_rawat' => $_POST['no_rawat'], 
         'no_rkm_medis' => $_POST['no_rkm_medis'], 
@@ -2140,7 +2134,6 @@ class Admin extends AdminModule
     public function postSimpanSuratRujukan()
     {
       $query = $this->db('mlite_surat_rujukan')->save([
-        'id' => NULL, 
         'nomor_surat' => $_POST['nomor_surat'], 
         'no_rawat' => $_POST['no_rawat'], 
         'no_rkm_medis' => $_POST['no_rkm_medis'], 

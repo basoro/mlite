@@ -209,7 +209,6 @@ class Admin extends AdminModule
     if (isset($_POST['submit'])) {
       if (!$this->db('mlite_vedika')->where('nosep', $_POST['nosep'])->oneArray()) {
         $simpan_status = $this->db('mlite_vedika')->save([
-          'id' => NULL,
           'tanggal' => date('Y-m-d'),
           'no_rkm_medis' => $_POST['no_rkm_medis'],
           'no_rawat' => $_POST['no_rawat'],
@@ -229,7 +228,6 @@ class Admin extends AdminModule
       }
       if ($simpan_status) {
         $this->db('mlite_vedika_feedback')->save([
-          'id' => NULL,
           'nosep' => $_POST['nosep'],
           'tanggal' => date('Y-m-d'),
           'catatan' => $_POST['status'].' - '.$_POST['catatan'],
@@ -444,7 +442,6 @@ class Admin extends AdminModule
     if (isset($_POST['submit'])) {
       if (!$this->db('mlite_vedika')->where('nosep', $_POST['nosep'])->oneArray()) {
         $simpan_status = $this->db('mlite_vedika')->save([
-          'id' => NULL,
           'tanggal' => date('Y-m-d'),
           'no_rkm_medis' => $_POST['no_rkm_medis'],
           'no_rawat' => $_POST['no_rawat'],
@@ -464,7 +461,6 @@ class Admin extends AdminModule
       }
       if ($simpan_status) {
         $this->db('mlite_vedika_feedback')->save([
-          'id' => NULL,
           'nosep' => $_POST['nosep'],
           'tanggal' => date('Y-m-d'),
           'catatan' => $_POST['status'].' - '.$_POST['catatan'],
@@ -676,7 +672,6 @@ class Admin extends AdminModule
     if (isset($_POST['submit'])) {
       if (!$this->db('mlite_vedika')->where('nosep', $_POST['nosep'])->oneArray()) {
         $simpan_status = $this->db('mlite_vedika')->save([
-          'id' => NULL,
           'tanggal' => date('Y-m-d'),
           'no_rkm_medis' => $_POST['no_rkm_medis'],
           'no_rawat' => $_POST['no_rawat'],
@@ -696,7 +691,6 @@ class Admin extends AdminModule
       }
       if ($simpan_status) {
         $this->db('mlite_vedika_feedback')->save([
-          'id' => NULL,
           'nosep' => $_POST['nosep'],
           'tanggal' => date('Y-m-d'),
           'catatan' => $_POST['status'].' - '.$_POST['catatan'],
@@ -1030,7 +1024,6 @@ class Admin extends AdminModule
     if (isset($_POST['submit'])) {
       if (!$this->db('mlite_vedika')->where('nosep', $_POST['nosep'])->oneArray()) {
         $simpan_status = $this->db('mlite_vedika')->save([
-          'id' => NULL,
           'tanggal' => date('Y-m-d'),
           'no_rkm_medis' => $_POST['no_rkm_medis'],
           'no_rawat' => $_POST['no_rawat'],
@@ -1050,7 +1043,6 @@ class Admin extends AdminModule
       }
       if ($simpan_status) {
         $this->db('mlite_vedika_feedback')->save([
-          'id' => NULL,
           'nosep' => $_POST['nosep'],
           'tanggal' => date('Y-m-d'),
           'catatan' => $_POST['status'].' - '.$_POST['catatan'],
@@ -3691,7 +3683,6 @@ class Admin extends AdminModule
               ]);
             if ($simpan_status) {
               $this->db('mlite_vedika_feedback')->save([
-                'id' => NULL,
                 'nosep' => $nosep,
                 'tanggal' => date('Y-m-d'),
                 'catatan' => 'Pengajuan - Kirim ke Data Center',

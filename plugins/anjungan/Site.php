@@ -438,7 +438,6 @@ class Site extends SiteModule
                 }
                 $row['selanjutnya'] = $this->db('reg_periksa')
                   ->select('reg_periksa.no_reg')
-                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
                   ->select('pasien.nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                   ->where('reg_periksa.tgl_registrasi', $date)
@@ -448,11 +447,11 @@ class Site extends SiteModule
                   ->asc('reg_periksa.no_reg')
                   ->toArray();
                 $row['get_no_reg'] = $this->db('reg_periksa')
-                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
-                  ->where('tgl_registrasi', $date)
-                  ->where('kd_poli', $row['kd_poli'])
-                  ->where('kd_dokter', $row['kd_dokter'])
-                  ->oneArray();
+                    ->where('tgl_registrasi', $date)
+                    ->where('kd_poli', $row['kd_poli'])
+                    ->where('kd_dokter', $row['kd_dokter'])
+                    ->nextRightNumber('no_reg', 3);
+
                 $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
                 $row['interval'] = 0;
                 if($row['diff'] == 0) {
@@ -690,7 +689,6 @@ class Site extends SiteModule
                 }
                 $row['selanjutnya'] = $this->db('reg_periksa')
                   ->select('reg_periksa.no_reg')
-                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
                   ->select('pasien.nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                   ->where('reg_periksa.tgl_registrasi', $date)
@@ -699,12 +697,13 @@ class Site extends SiteModule
                   ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
                   ->asc('reg_periksa.no_reg')
                   ->toArray();
+
                 $row['get_no_reg'] = $this->db('reg_periksa')
-                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
                   ->where('tgl_registrasi', $date)
                   ->where('kd_poli', $row['kd_poli'])
                   ->where('kd_dokter', $row['kd_dokter'])
-                  ->oneArray();
+                  ->nextRightNumber('no_reg', 3);
+
                 $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
                 $row['interval'] = 0;
                 if($row['diff'] == 0) {
@@ -823,7 +822,6 @@ class Site extends SiteModule
                 }
                 $row['selanjutnya'] = $this->db('reg_periksa')
                   ->select('reg_periksa.no_reg')
-                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
                   ->select('pasien.nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                   ->where('reg_periksa.tgl_registrasi', $date)
@@ -833,11 +831,10 @@ class Site extends SiteModule
                   ->asc('reg_periksa.no_reg')
                   ->toArray();
                 $row['get_no_reg'] = $this->db('reg_periksa')
-                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
                   ->where('tgl_registrasi', $date)
                   ->where('kd_poli', $row['kd_poli'])
                   ->where('kd_dokter', $row['kd_dokter'])
-                  ->oneArray();
+                  ->nextRightNumber('no_reg', 3);
                 $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
                 $row['interval'] = 0;
                 if($row['diff'] == 0) {
@@ -956,7 +953,6 @@ class Site extends SiteModule
                 }
                 $row['selanjutnya'] = $this->db('reg_periksa')
                   ->select('reg_periksa.no_reg')
-                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
                   ->select('pasien.nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                   ->where('reg_periksa.tgl_registrasi', $date)
@@ -966,11 +962,10 @@ class Site extends SiteModule
                   ->asc('reg_periksa.no_reg')
                   ->toArray();
                 $row['get_no_reg'] = $this->db('reg_periksa')
-                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
                   ->where('tgl_registrasi', $date)
                   ->where('kd_poli', $row['kd_poli'])
                   ->where('kd_dokter', $row['kd_dokter'])
-                  ->oneArray();
+                  ->nextRightNumber('no_reg', 3);
                 $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
                 $row['interval'] = 0;
                 if($row['diff'] == 0) {
@@ -1097,7 +1092,6 @@ class Site extends SiteModule
                 }
                 $row['selanjutnya'] = $this->db('reg_periksa')
                   ->select('reg_periksa.no_reg')
-                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
                   ->select('pasien.nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                   ->where('reg_periksa.tgl_registrasi', $date)
@@ -1107,11 +1101,10 @@ class Site extends SiteModule
                   ->asc('reg_periksa.no_reg')
                   ->toArray();
                 $row['get_no_reg'] = $this->db('reg_periksa')
-                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
                   ->where('tgl_registrasi', $date)
                   ->where('kd_poli', $row['kd_poli'])
                   ->where('kd_dokter', $row['kd_dokter'])
-                  ->oneArray();
+                  ->nextRightNumber('no_reg', 3);
                 $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
                 $row['interval'] = 0;
                 if($row['diff'] == 0) {
@@ -1729,7 +1722,6 @@ class Site extends SiteModule
         case "simpanloket":
           $this->db('mlite_antrian_loket')
             ->save([
-              'kd' => NULL,
               'type' => 'Loket',
               'noantrian' => $_GET['noantrian'],
               'postdate' => date('Y-m-d'),
@@ -1801,7 +1793,6 @@ class Site extends SiteModule
         case "simpancs":
           $this->db('mlite_antrian_loket')
             ->save([
-              'kd' => NULL,
               'type' => 'CS',
               'noantrian' => $_GET['noantrian'],
               'postdate' => date('Y-m-d'),
@@ -1876,7 +1867,6 @@ class Site extends SiteModule
         case "simpanapotek":
           $this->db('mlite_antrian_loket')
             ->save([
-              'kd' => NULL,
               'type' => 'Apotek',
               'noantrian' => $_GET['noantrian'],
               'no_rkm_medis' => $_POST['no_rkm_medis'],

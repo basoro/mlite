@@ -270,12 +270,11 @@ class DataBarang
 
     public function postMaxId()
     {
-      $max_id = $this->db('databarang')->select(['kode_brng' => 'ifnull(MAX(CONVERT(RIGHT(kode_brng,5),signed)),0)'])->oneArray();
-      if(empty($max_id['kode_brng'])) {
-        $max_id['kode_brng'] = '00000';
-      }
-      $_next_max_id = sprintf('%05s', ($max_id['kode_brng'] + 1));
-      $next_max_id = 'B'.$_next_max_id;
+      $urut = $this->db('databarang')
+          ->nextRightNumber('kode_brng', 5);
+
+      $next_max_id = 'B' . sprintf('%05d', $urut);
+
       echo $next_max_id;
       exit();
     }

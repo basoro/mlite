@@ -128,12 +128,11 @@ class JnsPerawatanRadiologi
 
     public function postMaxId()
     {
-      $max_id = $this->db('jns_perawatan_radiologi')->select(['kd_jenis_prw' => 'ifnull(MAX(CONVERT(RIGHT(kd_jenis_prw,3),signed)),0)'])->oneArray();
-      if(empty($max_id['kd_jenis_prw'])) {
-        $max_id['kd_jenis_prw'] = '000';
-      }
-      $_next_max_id = sprintf('%03s', ($max_id['kd_jenis_prw'] + 1));
-      $next_max_id = 'RAD'.$_next_max_id;
+      $urut = $this->db('jns_perawatan_radiologi')
+          ->nextRightNumber('kd_jenis_prw', 3);
+
+      $next_max_id = 'RAD' . sprintf('%03d', $urut);
+
       echo $next_max_id;
       exit();
     }
