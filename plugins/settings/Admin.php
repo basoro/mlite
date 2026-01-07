@@ -61,9 +61,17 @@ class Admin extends AdminModule
         $settings['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
         $settings['themes'] = $this->_getThemes();
         $settings['timezones'] = $this->_getTimezones();
+        
+        $mysql_version = '';
+        if (DBDRIVER == 'sqlite') {
+            $mysql_version = $this->db()->pdo()->query('SELECT sqlite_version()')->fetch()[0];
+        } else {
+            $mysql_version = $this->db()->pdo()->query('SELECT VERSION() as version')->fetch()[0];
+        }
+
         $settings['system'] = [
             'php'           => PHP_VERSION,
-            'mysql'         => $this->db()->pdo()->query('SELECT VERSION() as version')->fetch()[0]
+            'mysql'         => $mysql_version
         ];
 
         $settings['license'] = [];
