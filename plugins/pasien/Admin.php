@@ -629,7 +629,7 @@ private function _renderHtmlRiwayat(array $data)
 
     foreach ($reg as $r) {
 
-        $html .= '<pagebreak />
+        $html .= '
         <h3>Kunjungan: '.$r['no_rawat'].'</h3>
 
         <table>
