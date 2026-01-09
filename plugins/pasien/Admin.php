@@ -560,19 +560,16 @@ public function getPdfRiwayatPerawatan($no_rkm_medis, $no_rawat = null)
     }
 
     $safeRawat = preg_replace('/[^A-Za-z0-9]/', '', (string)$no_rawat);
-    $fileName  = 'Riwayat_Perawatan_' . $data['pasien']['no_rkm_medis'] . '_' . $safeRawat . '_' . date('YmdHis') . '.pdf';
+    $fileName  = 'Riwayat_Perawatan_' . $data['pasien']['no_rkm_medis'] . '_' . $safeRawat . '.pdf';
     $filePath  = $baseDir . '/' . $fileName;
 
-    // 🧾 Generate PDF hanya jika belum ada
-    if (!file_exists($filePath)) {
-        $mpdf = new \Mpdf\Mpdf([
-            'mode'   => 'utf-8',
-            'format' => 'A4'
-        ]);
+    $mpdf = new \Mpdf\Mpdf([
+        'mode'   => 'utf-8',
+        'format' => 'A4'
+    ]);
 
-        $mpdf->WriteHTML($this->_renderHtmlRiwayat($data));
-        $mpdf->Output($filePath, 'F'); // ✅ SIMPAN KE FILE
-    }
+    $mpdf->WriteHTML($this->_renderHtmlRiwayat($data));
+    $mpdf->Output($filePath, 'F'); // ✅ SIMPAN KE FILE
 
     // 📤 Tampilkan ke browser
     header('Content-Type: application/pdf');
