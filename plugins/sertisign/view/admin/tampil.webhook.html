@@ -56,7 +56,11 @@
                         </button>
                         <a href="${row.document_url}" target="_blank" 
                             class="btn btn-xs btn-danger btn-pdf"
-                            <i class="fa fa-file-pdf-o"></i> Buka PDF
+                            <i class="fa fa-file-pdf-o"></i> PDF Remote
+                        </a>
+                        <a href="{?=url()?}/uploads/sertisign-log/${row.transaction_id}.pdf" target="_blank" 
+                            class="btn btn-xs btn-success btn-pdf"
+                            <i class="fa fa-file-pdf-o"></i> PDF Lokal
                         </a>
                     `
                 }
