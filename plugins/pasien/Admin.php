@@ -560,7 +560,7 @@ public function getPdfRiwayatPerawatan($no_rkm_medis, $no_rawat = null)
     }
 
     $safeRawat = preg_replace('/[^A-Za-z0-9]/', '', (string)$no_rawat);
-    $fileName  = 'Riwayat_Perawatan_' . $data['pasien']['no_rkm_medis'] . '_' . $safeRawat . '.pdf';
+    $fileName  = 'Riwayat_Perawatan_' . $data['pasien']['no_rkm_medis'] . '_' . $safeRawat . '_' . date('YmdHis') . '.pdf';
     $filePath  = $baseDir . '/' . $fileName;
 
     // 🧾 Generate PDF hanya jika belum ada
