@@ -482,6 +482,62 @@ public function postSigningQrERM()
         );
     }
 
+    public function getSertisignWebhook()
+    {
+        header('Content-Type: application/json');
+
+        $transactionId = $_GET['transaction_id'] ?? null;
+        $limit  = isset($_GET['limit']) ? (int) $_GET['limit'] : 20;
+        $offset = isset($_GET['offset']) ? (int) $_GET['offset'] : 0;
+
+        $db = $this->db('mlite_sertisign_webhook');
+
+        /* ===============================
+        * Filter by transaction_id
+        * =============================== */
+        if (!empty($transactionId)) {
+            $data = $db
+                ->where('transaction_id', $transactionId)
+                ->oneArray();
+
+            if (!$data) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Data tidak ditemukan'
+                ]);
+                return;
+            }
+
+            $data['payload'] = json_decode($data['payload'], true);
+
+            echo json_encode([
+                'success' => true,
+                'data'    => $data
+            ]);
+            return;
+        }
+
+        /* ===============================
+        * Ambil semua data (pagination)
+        * =============================== */
+        $rows = $db
+            ->limit($limit)
+            ->offset($offset)
+            ->desc('received_at')
+            ->toArray();
+
+        foreach ($rows as &$row) {
+            $row['payload'] = json_decode($row['payload'], true);
+        }
+
+        echo json_encode([
+            'success' => true,
+            'total'   => count($rows),
+            'limit'   => $limit,
+            'offset'  => $offset,
+            'data'    => $rows
+        ]);
+    }
     
     // Base64 variants could be added here if needed, but file upload is usually preferred for server-side operations.
 }

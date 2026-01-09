@@ -7,51 +7,102 @@ class Site extends SiteModule
 {
     public function routes()
     {
-        $this->route('sertisign/webhook', 'getWebhook');
+        $this->route('sertisign/webhook', 'postWebhook');
     }
 
-    public function getWebhook()
+    public function postWebhook()
     {
-        if($_SERVER['REQUEST_METHOD'] == 'GET') {
-            header("HTTP/1.0 404 Not Found");
-            die();
-        }
-        $param = [];
-        $pPost = $_POST;
-
-        function isJson($string) {
-            json_decode($string);
-            return json_last_error() === JSON_ERROR_NONE;
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(404);
+            exit;
         }
 
-        if(!empty($pPost)){
-            $param = json_encode($pPost);
+        header('Content-Type: application/json');
+
+        /* ===============================
+         * Ambil payload JSON / POST
+         * =============================== */
+        $raw = file_get_contents('php://input');
+        $payload = [];
+
+        if (!empty($raw)) {
+            $json = json_decode($raw, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $payload = $json;
+            }
         }
-        $pRaw = file_get_contents('php://input');
-            if(isJson($pRaw)){
-            $param = array_merge($param, json_decode($pRaw, true));
+
+        if (empty($payload)) {
+            echo json_encode(['error' => 'Payload kosong / tidak valid']);
+            return;
         }
-        if(!isset($param[0]['transaction_id']) || empty($param[0]['transaction_id'])){
+
+        /* ===============================
+         * Normalisasi data
+         * Sertisign biasanya kirim array
+         * =============================== */
+        $data = isset($payload[0]) ? $payload[0] : $payload;
+
+        if (empty($data['transaction_id'])) {
             echo json_encode(['error' => 'transaction_id tidak ditemukan']);
-            die();
+            return;
         }
 
-        file_put_contents($param[0]['transaction_id'].'.txt', json_encode($param, true).PHP_EOL, FILE_APPEND);
-        file_put_contents($param[0]['transaction_id'].'.html', '<pre>'.json_encode($param, JSON_PRETTY_PRINT).'</pre>'.PHP_EOL, FILE_APPEND);
+        $transactionId = $data['transaction_id'];
+        $documentUrl   = $data['document_url'] ?? null;
+        $status        = $data['status'] ?? 'unknown';
 
-        $remote = fopen($param[0]['document_url'], 'r');
-        $local  = fopen($param[0]['transaction_id'].'.pdf', 'w');
+        /* ===============================
+         * Simpan ke Database
+         * =============================== */
+        $this->db('mlite_sertisign_webhook')->save([
+            'transaction_id' => $transactionId,
+            'status'         => $status,
+            'document_url'   => $documentUrl,
+            'payload'        => json_encode($payload),
+            'received_at'    => date('Y-m-d H:i:s')
+        ]);
 
-        stream_copy_to_stream($remote, $local);
+        /* ===============================
+         * Simpan file log
+         * =============================== */
+        $basePath = UPLOADS . '/storage/sertisign';
+        if (!is_dir($basePath)) {
+            mkdir($basePath, 0777, true);
+        }
 
-        $logFile = (empty($_SERVER['HTTPS']) ? 'http' : 'https')."://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"].'/'.$param[0]['transaction_id'].'.txt';
-        $pdfFile = (empty($_SERVER['HTTPS']) ? 'http' : 'https')."://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"].'/'.$param[0]['transaction_id'].'.pdf';
-        echo json_encode(['error' => 'transaction_id tidak ditemukan']);
+        file_put_contents(
+            $basePath . '/' . $transactionId . '.json',
+            json_encode($payload, JSON_PRETTY_PRINT)
+        );
 
-        $data['Transaction ID'] = $param[0]['transaction_id'];
-        $data['Log File'] = $logFile;
-        $data['Pdf File'] = $pdfFile;
-        print_r(json_encode($data));   
+        /* ===============================
+         * Download PDF jika ada
+         * =============================== */
+        $pdfPath = null;
 
+        if (!empty($documentUrl)) {
+            $pdfPath = $basePath . '/' . $transactionId . '.pdf';
+
+            try {
+                $remote = fopen($documentUrl, 'r');
+                $local  = fopen($pdfPath, 'w');
+                stream_copy_to_stream($remote, $local);
+                fclose($remote);
+                fclose($local);
+            } catch (\Throwable $e) {
+                $pdfPath = null;
+            }
+        }
+
+        /* ===============================
+         * Response ke Sertisign
+         * =============================== */
+        echo json_encode([
+            'success'        => true,
+            'transaction_id'=> $transactionId,
+            'stored'         => true,
+            'pdf_saved'      => $pdfPath ? true : false
+        ]);
     }
 }
