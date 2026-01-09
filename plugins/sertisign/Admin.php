@@ -11,6 +11,7 @@ class Admin extends AdminModule
             'Manage' => 'manage',
             'TTE QR Visual' => 'signingqr',
             'TTE Invisible' => 'signinginvisible',
+            'Webhook Data' => 'datawebhook',
             'Pengaturan' => 'settings',
         ];
     }
@@ -482,7 +483,7 @@ public function postSigningQrERM()
         );
     }
 
-    public function getSertisignWebhook()
+    public function getDataWebhook()
     {
         header('Content-Type: application/json');
 
@@ -537,6 +538,7 @@ public function postSigningQrERM()
             'offset'  => $offset,
             'data'    => $rows
         ]);
+        exit();
     }
     
     // Base64 variants could be added here if needed, but file upload is usually preferred for server-side operations.
