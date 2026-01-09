@@ -1,0 +1,22 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Pengaturan Sertisign</h3>
+            </div>
+            <div class="panel-body">
+                <form action="{?=url(ADMIN.'/sertisign/saveSettings')?}" method="POST">
+                    <div class="form-group">
+                        <label>API Host</label>
+                        <input type="text" name="api_host" class="form-control" value="{$settings.api_host}" placeholder="https://api-stag.sertisign.id/" />
+                    </div>
+                    <div class="form-group">
+                        <label>API Key</label>
+                        <input type="text" name="api_key" class="form-control" value="{$settings.api_key}" />
+                    </div>
+                    <input type="submit" class="btn btn-primary" value="Simpan" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

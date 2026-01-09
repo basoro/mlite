@@ -29,7 +29,7 @@
 							{loop: $modules}
                                 {loop: $value}
                                 <tr>
-                                    <td class="text-center"><i class="fa fa-{$value.icon} fa-2x"></i></td>
+                                    <td class="text-center"><a href="{$value.url}"><i class="fa fa-{$value.icon} fa-2x"></i></a></td>
                                     <td>
                                         <a href="{$value.detailsUrl}" data-toggle="modal" data-target="#moduleModal">
                                             <strong>{$value.name}</strong>

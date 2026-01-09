@@ -2352,202 +2352,6 @@
                     }
                 },
                 {
-                    "name": "Save Berkas",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"judul\": \"Hasil Lab Luar\",\n    \"deskripsi\": \"http://link-to-file.com/file.pdf\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/rawat_inap/saveberkas",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "rawat_inap",
-                                "saveberkas"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Save Resume",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"diagnosa_utama\": \"Demam Berdarah\",\n    \"diagnosa_sekunder\": \"Tifus\",\n    \"jalannya_penyakit\": \"Demam 3 hari...\",\n    \"terapi\": \"Paracetamol 3x1\",\n    \"kondisi_pulang\": \"Hidup\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/rawat_inap/saveresume",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "rawat_inap",
-                                "saveresume"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Save Rujukan Internal",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"kd_poli\": \"P001\",\n    \"kd_dokter\": \"D001\",\n    \"catatan\": \"Mohon konsul bedah\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/rawat_inap/saverujukaninternal",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "rawat_inap",
-                                "saverujukaninternal"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Save Laporan Operasi",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"tanggal\": \"2023-01-01\",\n    \"jam\": \"10:00:00\",\n    \"operator\": \"D001\",\n    \"laporan\": \"Operasi berjalan lancar\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/rawat_inap/savelaporanoperasi",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "rawat_inap",
-                                "savelaporanoperasi"
-                            ]
-                        }
-                    }
-                },
-                {
                     "name": "Delete Catatan",
                     "request": {
                         "method": "POST",
@@ -2592,6 +2396,55 @@
                                 "api",
                                 "rawat_inap",
                                 "deletecatatan"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Save Berkas",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"judul\": \"Hasil Lab Luar\",\n    \"deskripsi\": \"http://link-to-file.com/file.pdf\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/rawat_inap/saveberkas",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "rawat_inap",
+                                "saveberkas"
                             ]
                         }
                     }
@@ -2646,7 +2499,7 @@
                     }
                 },
                 {
-                    "name": "Delete Rujukan Internal",
+                    "name": "Save Resume",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -2673,7 +2526,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"kd_poli\": \"P001\",\n    \"kd_dokter\": \"D001\",\n    \"catatan\": \"Mohon konsul bedah\"\n}",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"diagnosa_utama\": \"Demam Berdarah\",\n    \"diagnosa_sekunder\": \"Tifus\",\n    \"jalannya_penyakit\": \"Demam 3 hari...\",\n    \"terapi\": \"Paracetamol 3x1\",\n    \"kondisi_pulang\": \"Hidup\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -2681,7 +2534,7 @@
                             }
                         },
                         "url": {
-                            "raw": "{{baseUrl}}/admin/api/rawat_inap/deleterujukaninternal",
+                            "raw": "{{baseUrl}}/admin/api/rawat_inap/saveresume",
                             "host": [
                                 "{{baseUrl}}"
                             ],
@@ -2689,7 +2542,56 @@
                                 "admin",
                                 "api",
                                 "rawat_inap",
-                                "deleterujukaninternal"
+                                "saveresume"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Save Laporan Operasi",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"tanggal\": \"2023-01-01\",\n    \"jam\": \"10:00:00\",\n    \"operator\": \"D001\",\n    \"laporan\": \"Operasi berjalan lancar\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/rawat_inap/savelaporanoperasi",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "rawat_inap",
+                                "savelaporanoperasi"
                             ]
                         }
                     }
@@ -4180,202 +4082,6 @@
                     }
                 },
                 {
-                    "name": "Save Berkas",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"judul\": \"Hasil Lab Luar\",\n    \"deskripsi\": \"http://link-to-file.com/file.pdf\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/saveberkas",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "saveberkas"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Save Resume",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"diagnosa_utama\": \"Demam Berdarah\",\n    \"diagnosa_sekunder\": \"Tifus\",\n    \"jalannya_penyakit\": \"Demam 3 hari...\",\n    \"terapi\": \"Paracetamol 3x1\",\n    \"kondisi_pulang\": \"Hidup\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/saveresume",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "saveresume"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Save Rujukan Internal",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"kd_poli\": \"P001\",\n    \"kd_dokter\": \"D001\",\n    \"catatan\": \"Mohon konsul bedah\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/saverujukaninternal",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "saverujukaninternal"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Save Laporan Operasi",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"tanggal\": \"2023-01-01\",\n    \"jam\": \"10:00:00\",\n    \"operator\": \"D001\",\n    \"laporan\": \"Operasi berjalan lancar\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/savelaporanoperasi",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "savelaporanoperasi"
-                            ]
-                        }
-                    }
-                },
-                {
                     "name": "Delete Catatan",
                     "request": {
                         "method": "POST",
@@ -4420,6 +4126,55 @@
                                 "api",
                                 "igd",
                                 "deletecatatan"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Save Berkas",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"judul\": \"Hasil Lab Luar\",\n    \"deskripsi\": \"http://link-to-file.com/file.pdf\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/saveberkas",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "saveberkas"
                             ]
                         }
                     }
@@ -4474,7 +4229,7 @@
                     }
                 },
                 {
-                    "name": "Delete Rujukan Internal",
+                    "name": "Save Resume",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -4501,7 +4256,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"kd_poli\": \"P001\",\n    \"kd_dokter\": \"D001\",\n    \"catatan\": \"Mohon konsul bedah\"\n}",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"diagnosa_utama\": \"Demam Berdarah\",\n    \"diagnosa_sekunder\": \"Tifus\",\n    \"jalannya_penyakit\": \"Demam 3 hari...\",\n    \"terapi\": \"Paracetamol 3x1\",\n    \"kondisi_pulang\": \"Hidup\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -4509,7 +4264,7 @@
                             }
                         },
                         "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/deleterujukaninternal",
+                            "raw": "{{baseUrl}}/admin/api/igd/saveresume",
                             "host": [
                                 "{{baseUrl}}"
                             ],
@@ -4517,7 +4272,56 @@
                                 "admin",
                                 "api",
                                 "igd",
-                                "deleterujukaninternal"
+                                "saveresume"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Save Laporan Operasi",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"tanggal\": \"2023-01-01\",\n    \"jam\": \"10:00:00\",\n    \"operator\": \"D001\",\n    \"laporan\": \"Operasi berjalan lancar\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/savelaporanoperasi",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "savelaporanoperasi"
                             ]
                         }
                     }

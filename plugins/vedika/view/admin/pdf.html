@@ -38,6 +38,23 @@ Ralan :
 8. Lap op (after katarak dan laser unt px katarak yg komplikasi dm)
 -->
 <body>
+<a href="{?=url([ADMIN, 'esignature', 'sign', 'pdf', parseUrl(3)])?}"
+   onclick="
+     const w = 600;
+     const h = 800;
+     const left = (screen.width / 2) - (w / 2);
+     const top  = (screen.height / 2) - (h / 2);
+
+     window.open(
+       this.href,
+       'signwindow',
+       `width=${w},height=${h},left=${left},top=${top}`
+     );
+     return false;
+   "
+   class="btn btn-primary">
+   <i class="fa fa-pencil"></i> Tanda Tangani {?=parseUrl(3)?}
+</a>
   <br><br>
   {if: isset($print_sep.bpjs_prb)}
   <fieldset style="page-break-before:always;">

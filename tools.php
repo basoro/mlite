@@ -3,7 +3,7 @@
  * Tools and Router script for PHP Built-in Web Server
  * Emulates Apache .htaccess rewrite rules
  * 
- * Usage: php -S localhost:8000 tools.php
+ * Usage: PHP_CLI_SERVER_WORKERS=8 php -S localhost:8000 tools.php
  */
 
 if (isset($_GET['action']) && $_GET['action'] == 'migrate') {

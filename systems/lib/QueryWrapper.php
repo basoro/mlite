@@ -314,7 +314,7 @@ class QueryWrapper
         }
 
         // AUTO-ID HANDLING (MySQL + SQLite)
-        foreach (['id', 'kd'] as $autoKey) {
+        foreach (['id', 'kd', 'no_id', 'id_billing', 'id_template'] as $autoKey) {
             if (
                 array_key_exists($autoKey, $this->sets) &&
                 $this->sets[$autoKey] === null &&

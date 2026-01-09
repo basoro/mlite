@@ -47,6 +47,8 @@ class Admin extends AdminModule
     $this->_addHeaderFiles();
     $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
     $carabayar = str_replace(",","','", $this->settings->get('vedika.carabayar'));
+    $carabayarArr = explode(',', $carabayar); 
+    $inPlaceholders = implode(',', array_fill(0, count($carabayarArr), '?'));
     $stats['Chart'] = $this->Chart();
     $date = $this->settings->get('vedika.periode');
     if(isset($_GET['periode']) && $_GET['periode'] !=''){
@@ -73,24 +75,66 @@ class Admin extends AdminModule
       $stats = array_merge($stats, \apcu_fetch($cache_key));
     } else {
       // Optimized single query untuk semua statistik klaim
+      if (DBDRIVER === 'sqlite') {
+          $addMonth = "date(?, '+1 month')";
+      } else { // mysql
+          $addMonth = "DATE_ADD(?, INTERVAL 1 MONTH)";
+      }
+
       $sql_klaim = "
-        SELECT 
-          COUNT(CASE WHEN reg_periksa.status_lanjut = 'Ralan' THEN 1 END) as KlaimRalan,
-          COUNT(CASE WHEN reg_periksa.status_lanjut = 'Ranap' AND kamar_inap.no_rawat IS NOT NULL THEN 1 END) as KlaimRanap
-        FROM reg_periksa 
-        JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
-        LEFT JOIN kamar_inap ON reg_periksa.no_rawat = kamar_inap.no_rawat 
-          AND kamar_inap.tgl_keluar >= ? AND kamar_inap.tgl_keluar < DATE_ADD(?, INTERVAL 1 MONTH)
-        WHERE penjab.kd_pj IN ('$carabayar') 
-        AND (
-          (reg_periksa.status_lanjut = 'Ralan' AND reg_periksa.tgl_registrasi >= ? AND reg_periksa.tgl_registrasi < DATE_ADD(?, INTERVAL 1 MONTH))
-          OR 
-          (reg_periksa.status_lanjut = 'Ranap' AND kamar_inap.no_rawat IS NOT NULL)
+      SELECT 
+        COUNT(CASE 
+          WHEN reg_periksa.status_lanjut = 'Ralan' 
+          THEN 1 
+        END) AS KlaimRalan,
+
+        COUNT(CASE 
+          WHEN reg_periksa.status_lanjut = 'Ranap' 
+              AND kamar_inap.no_rawat IS NOT NULL 
+          THEN 1 
+        END) AS KlaimRanap
+
+      FROM reg_periksa
+      JOIN penjab 
+        ON reg_periksa.kd_pj = penjab.kd_pj
+
+      LEFT JOIN kamar_inap 
+        ON reg_periksa.no_rawat = kamar_inap.no_rawat
+      AND kamar_inap.tgl_keluar >= ?
+      AND kamar_inap.tgl_keluar < $addMonth
+
+      WHERE penjab.kd_pj IN ($inPlaceholders)
+      AND (
+        (
+          reg_periksa.status_lanjut = 'Ralan'
+          AND reg_periksa.tgl_registrasi >= ?
+          AND reg_periksa.tgl_registrasi < $addMonth
         )
+        OR
+        (
+          reg_periksa.status_lanjut = 'Ranap'
+          AND kamar_inap.no_rawat IS NOT NULL
+        )
+      )
       ";
-      
+
+      $params_klaim = [];
+
+      /* 1–2: untuk kamar_inap */
+      $params_klaim[] = $date;
+      $params_klaim[] = $date;
+
+      /* 3: IN (...) carabayar */
+      foreach ($carabayarArr as $pj) {
+          $params_klaim[] = $pj;
+      }
+
+      /* 4–5: tgl_registrasi */
+      $params_klaim[] = $date;
+      $params_klaim[] = $date;
+
       $stmt_klaim = $this->db()->pdo()->prepare($sql_klaim);
-      $stmt_klaim->execute([$date, $date, $date, $date]);
+      $stmt_klaim->execute($params_klaim);      
       $klaim_result = $stmt_klaim->fetch(\PDO::FETCH_ASSOC);
       
       $stats['KlaimRalan'] = (int)$klaim_result['KlaimRalan'];
@@ -99,20 +143,73 @@ class Admin extends AdminModule
 
       // Optimized query untuk statistik vedika dengan JOIN instead of subquery
       $sql_vedika = "
-        SELECT 
-          COUNT(CASE WHEN v.status = 'Lengkap' AND v.jenis = '2' THEN 1 END) as LengkapRalan,
-          COUNT(CASE WHEN v.status = 'Lengkap' AND v.jenis = '1' AND ki.no_rawat IS NOT NULL THEN 1 END) as LengkapRanap,
-          COUNT(CASE WHEN v.status = 'Pengajuan' AND v.jenis = '2' THEN 1 END) as PengajuanRalan,
-          COUNT(CASE WHEN v.status = 'Pengajuan' AND v.jenis = '1' AND ki.no_rawat IS NOT NULL THEN 1 END) as PengajuanRanap,
-          COUNT(CASE WHEN v.status = 'Perbaiki' AND v.jenis = '2' AND uv.username IS NOT NULL THEN 1 END) as PerbaikanRalan,
-          COUNT(CASE WHEN v.status = 'Perbaiki' AND v.jenis = '2' AND uv.username IS NULL THEN 1 END) as PerbaikanRalan1,
-          COUNT(CASE WHEN v.status = 'Perbaiki' AND v.jenis = '1' AND ki.no_rawat IS NOT NULL AND uv.username IS NOT NULL THEN 1 END) as PerbaikanRanap,
-          COUNT(CASE WHEN v.status = 'Perbaiki' AND v.jenis = '1' AND ki.no_rawat IS NOT NULL AND uv.username IS NULL THEN 1 END) as PerbaikanRanap1
-        FROM mlite_vedika v
-        LEFT JOIN kamar_inap ki ON v.no_rawat = ki.no_rawat 
-          AND ki.tgl_keluar >= ? AND ki.tgl_keluar < DATE_ADD(?, INTERVAL 1 MONTH)
-        LEFT JOIN mlite_users_vedika uv ON v.username = uv.username
-        WHERE v.tgl_registrasi >= ? AND v.tgl_registrasi < DATE_ADD(?, INTERVAL 1 MONTH)
+      SELECT 
+        COUNT(CASE 
+          WHEN v.status = 'Lengkap' AND v.jenis = '2' 
+          THEN 1 
+        END) AS LengkapRalan,
+
+        COUNT(CASE 
+          WHEN v.status = 'Lengkap' 
+              AND v.jenis = '1' 
+              AND ki.no_rawat IS NOT NULL 
+          THEN 1 
+        END) AS LengkapRanap,
+
+        COUNT(CASE 
+          WHEN v.status = 'Pengajuan' AND v.jenis = '2' 
+          THEN 1 
+        END) AS PengajuanRalan,
+
+        COUNT(CASE 
+          WHEN v.status = 'Pengajuan' 
+              AND v.jenis = '1' 
+              AND ki.no_rawat IS NOT NULL 
+          THEN 1 
+        END) AS PengajuanRanap,
+
+        COUNT(CASE 
+          WHEN v.status = 'Perbaiki' 
+              AND v.jenis = '2' 
+              AND uv.username IS NOT NULL 
+          THEN 1 
+        END) AS PerbaikanRalan,
+
+        COUNT(CASE 
+          WHEN v.status = 'Perbaiki' 
+              AND v.jenis = '2' 
+              AND uv.username IS NULL 
+          THEN 1 
+        END) AS PerbaikanRalan1,
+
+        COUNT(CASE 
+          WHEN v.status = 'Perbaiki' 
+              AND v.jenis = '1' 
+              AND ki.no_rawat IS NOT NULL 
+              AND uv.username IS NOT NULL 
+          THEN 1 
+        END) AS PerbaikanRanap,
+
+        COUNT(CASE 
+          WHEN v.status = 'Perbaiki' 
+              AND v.jenis = '1' 
+              AND ki.no_rawat IS NOT NULL 
+              AND uv.username IS NULL 
+          THEN 1 
+        END) AS PerbaikanRanap1
+
+      FROM mlite_vedika v
+
+      LEFT JOIN kamar_inap ki 
+        ON v.no_rawat = ki.no_rawat
+      AND ki.tgl_keluar >= ?
+      AND ki.tgl_keluar < $addMonth
+
+      LEFT JOIN mlite_users_vedika uv 
+        ON v.username = uv.username
+
+      WHERE v.tgl_registrasi >= ?
+        AND v.tgl_registrasi < $addMonth
       ";
       
       $stmt_vedika = $this->db()->pdo()->prepare($sql_vedika);
@@ -1475,7 +1572,19 @@ class Admin extends AdminModule
 
     $no_rawat = $this->revertNorawat($id);
 
-    $check_billing = $this->db()->pdo()->query("SHOW TABLES LIKE 'billing'");
+    if (DBDRIVER === 'sqlite') {
+        $sql = "
+          SELECT name 
+          FROM sqlite_master 
+          WHERE type = 'table' 
+            AND name = 'billing'
+        ";
+    } else { // mysql
+        $sql = "SHOW TABLES LIKE 'billing'";
+    }
+
+
+    $check_billing = $this->db()->pdo()->query($sql);
     $check_billing->execute();
     $check_billing = $check_billing->fetch();
 

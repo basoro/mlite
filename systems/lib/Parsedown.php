@@ -585,7 +585,7 @@ class Parsedown
         }
     }
 
-    protected function blockSetextHeader($Line, array $Block = null)
+    protected function blockSetextHeader(array $Line, ?array $Block)
     {
         if (! isset($Block) or isset($Block['type']) or isset($Block['interrupted'])) {
             return;
@@ -694,7 +694,7 @@ class Parsedown
         }
     }
 
-    protected function blockTable($Line, array $Block = null)
+    protected function blockTable(array $Line, ?array $Block)
     {
         if (! isset($Block) or isset($Block['type']) or isset($Block['interrupted'])) {
             return;

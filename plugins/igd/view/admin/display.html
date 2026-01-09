@@ -339,8 +339,8 @@
         + '<div class="form-group">'
         + '<label for="status_keluar">Pilih Status Lanjut</label>'
         + '<select name="status_lanjut" id="status_lanjut" class="form-control" data-use-dimmer="false">'
-        + '<option value="ralan">Rawat Jalan</option>'
-        + '<option value="ranap">Rawat Inap</option>'
+        + '<option value="Ralan">Rawat Jalan</option>'
+        + '<option value="Ranap">Rawat Inap</option>'
         + '</select>'
         + '</div>'
         + '';
@@ -382,7 +382,7 @@
                 "</div>").show();
               
               // Kondisi redirect berdasarkan status_lanjut
-              if (status_lanjut == 'ranap') {
+              if (status_lanjut == 'Ranap') {
                 // redirect ke plugins/rawat_inap setelah menyimpan status lanjut
                 window.location.href = baseURL + '/rawat_inap/manage?t=' + mlite.token + '&no_rawat=' + no_rawat;
               } else {

@@ -154,27 +154,66 @@ class Admin extends AdminModule
         return $this->draw('settings.apam.html', ['settings' => $this->assign]);
     }
 
-    public function postSaveSettingsApam()
-    {
-        $cek_prop = $this->db('propinsi')->where('kd_prop', $_POST['api[apam_kdprop]'])->oneArray();
-        if(!$cek_prop){
-          $this->db('propinsi')->save(['kd_prop' => $_POST['api[apam_kdprop]'], 'nm_prop' => $_POST['nm_prop']]);
-        }
-        $cek_kab = $this->db('kabupaten')->where('kd_kab', $_POST['api[apam_kdkab]'])->oneArray();
-        if(!$cek_kab){
-          $this->db('kabupaten')->save(['kd_kab' => $_POST['api[apam_kdkab]'], 'nm_kab' => $_POST['nm_kab']]);
-        }
-        $cek_kec = $this->db('kecamatan')->where('kd_kec', $_POST['api[apam_kdkec]'])->oneArray();
-        if(!$cek_kec){
-          $this->db('kecamatan')->save(['kd_kec' => $_POST['api[apam_kdkec]'], 'nm_kec' => $_POST['nm_kec']]);
-        }
+public function postSaveSettingsApam()
+{
+    $api = $_POST['api'] ?? [];
 
-        foreach ($_POST['api'] as $key => $val) {
-            $this->settings('api', $key, $val);
+    // ---------- PROPINSI ----------
+    if (!empty($api['apam_kdprop'])) {
+        $cek_prop = $this->db('propinsi')
+            ->select('*')
+            ->where('kd_prop', $api['apam_kdprop'])
+            ->limit(1)
+            ->oneArray();
+
+        if (!$cek_prop) {
+            $this->db('propinsi')->save([
+                'kd_prop' => $api['apam_kdprop'],
+                'nm_prop' => $_POST['nm_prop'] ?? ''
+            ]);
         }
-        $this->notify('success', 'Pengaturan telah disimpan');
-        redirect(url([ADMIN, 'api', 'settingsapam']));
     }
+
+    // ---------- KABUPATEN ----------
+    if (!empty($api['apam_kdkab'])) {
+        $cek_kab = $this->db('kabupaten')
+            ->select('*')
+            ->where('kd_kab', $api['apam_kdkab'])
+            ->limit(1)
+            ->oneArray();
+
+        if (!$cek_kab) {
+            $this->db('kabupaten')->save([
+                'kd_kab' => $api['apam_kdkab'],
+                'nm_kab' => $_POST['nm_kab'] ?? ''
+            ]);
+        }
+    }
+
+    // ---------- KECAMATAN ----------
+    if (!empty($api['apam_kdkec'])) {
+        $cek_kec = $this->db('kecamatan')
+            ->select('*')
+            ->where('kd_kec', $api['apam_kdkec'])
+            ->limit(1)
+            ->oneArray();
+
+        if (!$cek_kec) {
+            $this->db('kecamatan')->save([
+                'kd_kec' => $api['apam_kdkec'],
+                'nm_kec' => $_POST['nm_kec'] ?? ''
+            ]);
+        }
+    }
+
+    foreach ($api as $key => $val) {
+        $this->settings('api', $key, $val);
+    }
+
+    $this->notify('success', 'Pengaturan telah disimpan');
+    redirect(url([ADMIN, 'api', 'settingsapam']));
+}
+
     /* End Settings Farmasi Section */
 
     /* Settings Section */

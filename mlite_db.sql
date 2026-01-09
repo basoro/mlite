@@ -1192,7 +1192,7 @@ INSERT INTO `jns_perawatan_radiologi` VALUES ("RAD001","Thorax","0","0","0","150
 
 
 CREATE TABLE `kabupaten` (
-  `kd_kab` int NOT NULL AUTO_INCREMENT,
+  `kd_kab` int NOT NULL,
   `nm_kab` varchar(60) NOT NULL,
   PRIMARY KEY (`kd_kab`),
   UNIQUE KEY `nm_kab` (`nm_kab`)
@@ -1276,7 +1276,7 @@ INSERT INTO `kategori_perawatan` VALUES ("-","-");
 
 
 CREATE TABLE `kecamatan` (
-  `kd_kec` int NOT NULL AUTO_INCREMENT,
+  `kd_kec` int NOT NULL,
   `nm_kec` varchar(60) NOT NULL,
   PRIMARY KEY (`kd_kec`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
@@ -3096,7 +3096,7 @@ CREATE TABLE `mlite_triase_detail` (
 
 
 CREATE TABLE `mlite_triase_igd` (
-  `id_triase` bigint NOT NULL AUTO_INCREMENT,
+  `id_triase` int NOT NULL AUTO_INCREMENT,
   `no_rawat` varchar(17) NOT NULL,
   `no_rkm_medis` varchar(15) NOT NULL,
   `tgl_triase` datetime NOT NULL,
@@ -4482,7 +4482,7 @@ INSERT INTO `poliklinik` VALUES ("-","-","0","0","1"),
 
 
 CREATE TABLE `propinsi` (
-  `kd_prop` int NOT NULL AUTO_INCREMENT,
+  `kd_prop` int NOT NULL,
   `nm_prop` varchar(30) NOT NULL,
   PRIMARY KEY (`kd_prop`),
   UNIQUE KEY `nm_prop` (`nm_prop`)

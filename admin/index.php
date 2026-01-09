@@ -144,10 +144,31 @@ $core->router->set('api/(:str)/(:str)(:any)', function ($module, $method, $param
 
 // Execute API route early if requested
 $__path = $core->router->execute(true);
-if (strpos($__path, 'api/') === 0) {
+
+// daftar API yang TIDAK lewat API umum
+$excludedApiPrefixes = [
+    'api/manage',
+    'api/notifikasi',
+    'api/settingsapam',
+    'api/paymentduitku',
+    'api/settingskey',
+    'api/saveSettingsApam',
+    'api/saveSettingsKey',
+];
+
+$skipApi = false;
+foreach ($excludedApiPrefixes as $prefix) {
+    if (strpos($__path, $prefix) === 0) {
+        $skipApi = true;
+        break;
+    }
+}
+
+if (!$skipApi && strpos($__path, 'api/') === 0) {
     $core->router->execute();
     return;
 }
+
 
 if ($core->loginCheck()) {
     $core->loadModules();

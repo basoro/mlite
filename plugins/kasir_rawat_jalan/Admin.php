@@ -1383,8 +1383,17 @@ class Admin extends AdminModule
         </style>
         ';
         
-        $url = url(ADMIN.'/tmp/billing.besar.html');
+        $url = BASE_DIR . '/' . ADMIN . '/tmp/billing.besar.html';
+
+        if (!file_exists($url)) {
+            throw new \Exception("Template billing.besar.html tidak ditemukan: " . $url);
+        }
+
         $html = file_get_contents($url);
+        if ($html === false || trim($html) === '') {
+            throw new \Exception("Template billing.besar.html kosong atau gagal dibaca");
+        }
+
         $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
         $mpdf->WriteHTML($css);
         $mpdf->WriteHTML($html);

@@ -228,6 +228,9 @@ class Admin extends AdminModule
         
         $html .= '</div>';
 
+        $mpdf->shrink_tables_to_fit = 1;
+        $mpdf->use_kwt = true;
+
         $mpdf->WriteHTML($html);
 
         // Footer with global QR if needed or page numbers
