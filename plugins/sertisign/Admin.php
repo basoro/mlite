@@ -12,6 +12,7 @@ class Admin extends AdminModule
             'TTE QR Visual' => 'signingqr',
             'TTE Invisible' => 'signinginvisible',
             'Webhook Data' => 'datawebhook',
+            'Tampil Webhook' => 'tampilwebhook',
             'Pengaturan' => 'settings',
         ];
     }
@@ -515,7 +516,7 @@ public function postSigningQrERM()
                 'success' => true,
                 'data'    => $data
             ]);
-            return;
+            exit();
         }
 
         /* ===============================
@@ -540,6 +541,83 @@ public function postSigningQrERM()
         ]);
         exit();
     }
+
+    public function getTampilWebhook()
+    {
+        // Ambil data JSON dari fungsi getDataWebhook()
+        ob_start();
+        $this->getDataWebhook();
+        $json = ob_get_clean();
+
+        $result = json_decode($json, true);
+
+        if (!$result || empty($result['success'])) {
+            echo '<div class="alert alert-danger">Gagal mengambil data webhook</div>';
+            return;
+        }
+
+        if (empty($result['data'])) {
+            echo '<div class="alert alert-warning">Data webhook kosong</div>';
+            return;
+        }
+
+        echo '<div class="panel panel-default">';
+        echo '<div class="panel-heading"><strong>Log Webhook Sertisign</strong></div>';
+        echo '<div class="panel-body">';
+
+        foreach ($result['data'] as $row) {
+
+            echo '<table class="table table-bordered table-striped">';
+            echo '<tr><th width="200">Transaction ID</th><td>' . htmlspecialchars($row['transaction_id']) . '</td></tr>';
+            echo '<tr><th>Status</th><td><span class="label label-success">' . htmlspecialchars($row['status']) . '</span></td></tr>';
+            echo '<tr><th>Received At</th><td>' . htmlspecialchars($row['received_at']) . '</td></tr>';
+
+            if (!empty($row['document_url'])) {
+                echo '<tr><th>Dokumen</th><td>
+                    <a href="' . htmlspecialchars($row['document_url']) . '" target="_blank" class="btn btn-xs btn-primary">
+                        <i class="fa fa-file-pdf-o"></i> Lihat PDF
+                    </a>
+                </td></tr>';
+            }
+
+            echo '</table>';
+
+            /* ===============================
+            * Payload Detail
+            * =============================== */
+            if (!empty($row['payload']) && is_array($row['payload'])) {
+
+                echo '<h4>Payload Detail</h4>';
+
+                foreach ($row['payload'] as $payload) {
+
+                    echo '<table class="table table-condensed table-hover table-bordered">';
+                    foreach ($payload as $key => $value) {
+
+                        if (is_array($value)) {
+                            $value = '<pre style="margin:0">' .
+                                json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) .
+                                '</pre>';
+                        } else {
+                            $value = htmlspecialchars($value);
+                        }
+
+                        echo '<tr>';
+                        echo '<th width="200">' . htmlspecialchars($key) . '</th>';
+                        echo '<td>' . $value . '</td>';
+                        echo '</tr>';
+                    }
+                    echo '</table>';
+                }
+            }
+
+            echo '<hr>';
+        }
+
+        echo '</div>';
+        echo '</div>';
+    }
+
     
     // Base64 variants could be added here if needed, but file upload is usually preferred for server-side operations.
 }
