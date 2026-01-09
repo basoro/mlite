@@ -7,7 +7,7 @@ return [
     'version'       =>  '1.0',
     'category'      =>  'bridging',
     'compatibility' =>  '5.*.*',
-    'icon'          =>  'file-signature',
+    'icon'          =>  'sticky-note',
     'install'       =>  function() use($core) {
         if(DBDRIVER == 'sqlite') {
             $core->db()->pdo()->exec("CREATE TABLE mlite_sertisign_webhook (
@@ -25,7 +25,7 @@ return [
                 `status` varchar(50) NOT NULL,
                 `document_url` varchar(255) NOT NULL,
                 `payload` text NOT NULL,
-                `received_at` datetime NOT NULL
+                `received_at` datetime NOT NULL, 
                 PRIMARY KEY (`id`),
                 KEY `transaction_idx` (`transaction_id`),
                 KEY `status_idx` (`status`)
