@@ -484,139 +484,70 @@ public function postSigningQrERM()
         );
     }
 
-    public function getDataWebhook()
-    {
-        header('Content-Type: application/json');
+public function getDataWebhook($return = false)
+{
+    $transactionId = $_GET['transaction_id'] ?? null;
+    $limit  = isset($_GET['limit']) ? (int) $_GET['limit'] : 20;
+    $offset = isset($_GET['offset']) ? (int) $_GET['offset'] : 0;
 
-        $transactionId = $_GET['transaction_id'] ?? null;
-        $limit  = isset($_GET['limit']) ? (int) $_GET['limit'] : 20;
-        $offset = isset($_GET['offset']) ? (int) $_GET['offset'] : 0;
+    $draw   = intval($_GET['draw'] ?? 1);
+    $start  = intval($_GET['start'] ?? 0);
+    $length = intval($_GET['length'] ?? 10);
+        
+    $db = $this->db('mlite_sertisign_webhook');
 
-        $db = $this->db('mlite_sertisign_webhook');
+    if (!empty($transactionId)) {
+        $data = $db->where('transaction_id', $transactionId)->oneArray();
 
-        /* ===============================
-        * Filter by transaction_id
-        * =============================== */
-        if (!empty($transactionId)) {
-            $data = $db
-                ->where('transaction_id', $transactionId)
-                ->oneArray();
-
-            if (!$data) {
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Data tidak ditemukan'
-                ]);
-                return;
-            }
-
-            $data['payload'] = json_decode($data['payload'], true);
-
-            echo json_encode([
-                'success' => true,
-                'data'    => $data
-            ]);
-            exit();
+        if (!$data) {
+            $result = ['success' => false, 'message' => 'Data tidak ditemukan'];
+            return $return ? $result : print json_encode($result);
         }
 
-        /* ===============================
-        * Ambil semua data (pagination)
-        * =============================== */
-        $rows = $db
-            ->limit($limit)
-            ->offset($offset)
-            ->desc('received_at')
-            ->toArray();
-
-        foreach ($rows as &$row) {
-            $row['payload'] = json_decode($row['payload'], true);
-        }
-
-        echo json_encode([
-            'success' => true,
-            'total'   => count($rows),
-            'limit'   => $limit,
-            'offset'  => $offset,
-            'data'    => $rows
-        ]);
-        exit();
+        $data['payload'] = json_decode($data['payload'], true);
+        $result = ['success' => true, 'data' => [$data]];
+        return $return ? $result : print json_encode($result);
     }
 
-    public function getTampilWebhook()
-    {
-        // Ambil data JSON dari fungsi getDataWebhook()
-        ob_start();
-        $this->getDataWebhook();
-        $json = ob_get_clean();
+    $rows = $db
+        ->limit($limit)
+        ->offset($offset)
+        ->desc('received_at')
+        ->toArray();
 
-        $result = json_decode($json, true);
-
-        if (!$result || empty($result['success'])) {
-            echo '<div class="alert alert-danger">Gagal mengambil data webhook</div>';
-            return;
-        }
-
-        if (empty($result['data'])) {
-            echo '<div class="alert alert-warning">Data webhook kosong</div>';
-            return;
-        }
-
-        echo '<div class="panel panel-default">';
-        echo '<div class="panel-heading"><strong>Log Webhook Sertisign</strong></div>';
-        echo '<div class="panel-body">';
-
-        foreach ($result['data'] as $row) {
-
-            echo '<table class="table table-bordered table-striped">';
-            echo '<tr><th width="200">Transaction ID</th><td>' . htmlspecialchars($row['transaction_id']) . '</td></tr>';
-            echo '<tr><th>Status</th><td><span class="label label-success">' . htmlspecialchars($row['status']) . '</span></td></tr>';
-            echo '<tr><th>Received At</th><td>' . htmlspecialchars($row['received_at']) . '</td></tr>';
-
-            if (!empty($row['document_url'])) {
-                echo '<tr><th>Dokumen</th><td>
-                    <a href="' . htmlspecialchars($row['document_url']) . '" target="_blank" class="btn btn-xs btn-primary">
-                        <i class="fa fa-file-pdf-o"></i> Lihat PDF
-                    </a>
-                </td></tr>';
-            }
-
-            echo '</table>';
-
-            /* ===============================
-            * Payload Detail
-            * =============================== */
-            if (!empty($row['payload']) && is_array($row['payload'])) {
-
-                echo '<h4>Payload Detail</h4>';
-
-                foreach ($row['payload'] as $payload) {
-
-                    echo '<table class="table table-condensed table-hover table-bordered">';
-                    foreach ($payload as $key => $value) {
-
-                        if (is_array($value)) {
-                            $value = '<pre style="margin:0">' .
-                                json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) .
-                                '</pre>';
-                        } else {
-                            $value = htmlspecialchars($value);
-                        }
-
-                        echo '<tr>';
-                        echo '<th width="200">' . htmlspecialchars($key) . '</th>';
-                        echo '<td>' . $value . '</td>';
-                        echo '</tr>';
-                    }
-                    echo '</table>';
-                }
-            }
-
-            echo '<hr>';
-        }
-
-        echo '</div>';
-        echo '</div>';
+    foreach ($rows as &$row) {
+        $row['payload'] = json_decode($row['payload'], true);
     }
+
+    $result = [
+        'success' => true,
+        'draw'    => $draw,
+        'total'   => count($rows),
+        'limit'   => $limit,
+        'offset'  => $offset,
+        'recordsTotal'    => count($rows),
+        'recordsFiltered' => count($rows),
+        'data'    => $rows
+    ];
+
+    if ($return) {
+        return $result;
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode($result);
+    exit;
+}
+
+public function getTampilWebhook()
+{
+    $this->core->addCSS(url('assets/css/datatables.min.css'));
+    $this->core->addJS(url('assets/jscripts/datatables.min.js'));
+
+    $result = $this->getDataWebhook(true); // 🔥 ambil array, bukan JSON
+    return $this->draw('tampil.webhook.html', ['data' => $result]);
+}
+
 
     
     // Base64 variants could be added here if needed, but file upload is usually preferred for server-side operations.

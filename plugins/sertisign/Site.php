@@ -66,7 +66,7 @@ class Site extends SiteModule
         /* ===============================
          * Simpan file log
          * =============================== */
-        $basePath = UPLOADS . '/storage/sertisign';
+        $basePath = UPLOADS . '/sertisign-log';
         if (!is_dir($basePath)) {
             mkdir($basePath, 0777, true);
         }

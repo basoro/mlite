@@ -1,0 +1,81 @@
+    <table id="tblWebhook" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Transaction ID</th>
+                <th>Status</th>
+                <th>Received At</th>
+                <th width="150">Aksi</th>
+            </tr>
+        </thead>
+    </table>
+
+    <!-- Modal Payload -->
+    <div class="modal fade" id="modalPayload">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Detail Payload</h4>
+                </div>
+                <div class="modal-body">
+                    <pre id="payloadContent"
+                         style="max-height:500px;overflow:auto"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    $(function () {
+
+        let table = $('#tblWebhook').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '{?=url([ADMIN, "sertisign", "datawebhook"])?}',
+                data: { datatable: 1 }
+            },
+            order: [[3, 'desc']],
+            columns: [
+                { data: 'id' },
+                { data: 'transaction_id' },
+                {
+                    data: 'status',
+                    render: d =>
+                        `<span class="label label-${d==='success'?'success':'danger'}">${d}</span>`
+                },
+                { data: 'received_at' },
+                {
+                    data: null,
+                    orderable: false,
+                    render: row => `
+                        <button class="btn btn-xs btn-info btn-payload"
+                            data-payload='${JSON.stringify(row.payload)}'>
+                            <i class="fa fa-code"></i>
+                        </button>
+                        <a href="${row.document_url}" target="_blank" 
+                            class="btn btn-xs btn-danger btn-pdf"
+                            <i class="fa fa-file-pdf-o"></i> Buka PDF
+                        </a>
+                    `
+                }
+            ]
+        });
+
+        /* Payload Modal */
+        $('#tblWebhook').on('click', '.btn-payload', function () {
+            $('#payloadContent').text(
+                JSON.stringify($(this).data('payload'), null, 2)
+            );
+            $('#modalPayload').modal('show');
+        });
+
+        /* PDF Modal */
+        $('#tblWebhook').on('click', '.btn-pdf', function () {
+            $('#pdfFrame').attr('src', $(this).data('url'));
+            $('#modalPdf').modal('show');
+        });
+
+    });
+    </script>
