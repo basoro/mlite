@@ -4,24 +4,6 @@ if (!version_compare(PHP_VERSION, '8.0.0', '>=')) {
     exit("mLITE requires at least <b>PHP 8.0.0</b> (Current: " . PHP_VERSION . ")");
 }
 
-// Simple .env loader
-if (file_exists(BASE_DIR . '/.env')) {
-    $lines = file(BASE_DIR . '/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        if (strpos(trim($line), '#') === 0) {
-            continue;
-        }
-        list($name, $value) = explode('=', $line, 2);
-        $name = trim($name);
-        $value = trim($value);
-        if (!array_key_exists($name, $_SERVER) && !array_key_exists($name, $_ENV)) {
-            putenv(sprintf('%s=%s', $name, $value));
-            $_ENV[$name] = $value;
-            $_SERVER[$name] = $value;
-        }
-    }
-}
-
 // Database Driver: 'mysql' or 'sqlite'
 define('DBDRIVER', getenv('DBDRIVER') ?: '');
 
@@ -32,11 +14,11 @@ if (DBDRIVER == 'sqlite') {
     $db_name = BASE_DIR . '/mlite.sdb';
     $db_port = '';
 } else {
-    $db_host = getenv('MYSQLHOST') ?: '';
-    $db_user = getenv('MYSQLUSER') ?: '';
+    $db_host = getenv('MYSQLHOST') ?: 'localhost';
+    $db_user = getenv('MYSQLUSER') ?: 'root';
     $db_pass = getenv('MYSQLPASSWORD') ?: '';
-    $db_name = getenv('MYSQLDATABASE') ?: '';
-    $db_port = getenv('MYSQLPORT') ?: '';
+    $db_name = getenv('MYSQLDATABASE') ?: 'mlite';
+    $db_port = getenv('MYSQLPORT') ?: '3306';
 }
 
 define('DBHOST', $db_host);
