@@ -182,7 +182,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{baseUrl}}/admin/api/pasien/riwayatperawatan/{{no_rkm_medis}}",
+                            "raw": "{{baseUrl}}/admin/api/pasien/riwayatperawatan/{{no_rkm_medis}}/{{no_rawat}}",
                             "host": [
                                 "{{baseUrl}}"
                             ],
@@ -191,7 +191,8 @@
                                 "api",
                                 "pasien",
                                 "riwayatperawatan",
-                                "{{no_rkm_medis}}"
+                                "{{no_rkm_medis}}",  
+                                "{{no_rawat}}"
                             ]
                         }
                     },
@@ -3037,7 +3038,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{baseUrl}}/admin/api/kasir_rawat_jalan/billingdetail/2024/01/01/000001",
+                            "raw": "{{baseUrl}}/admin/api/kasir_rawat_jalan/billingdetail/{{no_rawat}}",
                             "host": [
                                 "{{baseUrl}}"
                             ],
@@ -3046,7 +3047,7 @@
                                 "api",
                                 "kasir_rawat_jalan",
                                 "billingdetail",
-                                "2024/01/01/000001"
+                                "{{no_rawat}}"
                             ]
                         }
                     }
@@ -3135,7 +3136,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{baseUrl}}/admin/api/kasir_rawat_inap/billingdetail/2024/01/01/000001",
+                            "raw": "{{baseUrl}}/admin/api/kasir_rawat_inap/billingdetail/{{no_rawat}}",
                             "host": [
                                 "{{baseUrl}}"
                             ],
