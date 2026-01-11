@@ -32,7 +32,7 @@
     <div>
       <div class="colors" id="colorSel"></div>
       <span class="pull-right" style="margin-top: 2px;margin-right: 20px;">
-        <button type="button" class="btn btn-xs btn-success">Simpan</button>
+        <button type="button" class="btn btn-xs btn-success" id="btnSimpan">Simpan</button>
         <button type="button" class="btn btn-xs btn-primary" data-dismiss="modal">Tutup</button>
       </span>
     </div>
@@ -279,7 +279,35 @@ jQuery(document).ready( $ => {
       }
 
   }
-  loadImage("{?=url()?}/assets/img/lokalis.jpeg");
-          
+  
+  if('{$lokalis}' !== ""){
+    loadImage("{?=url(UPLOADS)?}/lokalis/{?=$lokalis?}");
+  } else {
+    loadImage("{?=url()?}/assets/img/lokalis.jpeg");
+  }
+            
+  $('#btnSimpan').on('click', function () {
+
+    const dataURL = drawing.toDataURL('image/png');
+    var no_rawat = '{?=$no_rawat?}';
+
+    $.ajax({
+      url: '{?=url([ADMIN, "dokter_igd", "simpanlokalis"])?}',
+      method: 'POST',
+      data: {
+        image: dataURL,
+        no_rawat: no_rawat
+      },
+      success: function (res) {
+        console.log(res);
+        alert('Gambar berhasil disimpan');
+      },
+      error: function () {
+        alert('Gagal menyimpan gambar');
+      }
+    });
+
+  });
+
 });
 </script>

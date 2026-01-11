@@ -1306,61 +1306,69 @@ class Admin extends AdminModule
       exit();
     }
 
-public function postCetak()
-{
-  $this->db()->pdo()->exec("DELETE FROM mlite_temporary");
-
-  $tgl_awal  = $_POST['tgl_awal'];
-  $tgl_akhir = $_POST['tgl_akhir'];
-  $igd       = $this->settings->get('settings.igd');
-
-  $stmt = $this->db()->pdo()->prepare("
-    INSERT INTO mlite_temporary (
-      temp1,temp2,temp3,temp4,temp5,temp6,temp7,temp8,temp9,temp10,
-      temp11,temp12,temp13,temp14,temp15,temp16,temp17,temp18,temp19
-    )
-    SELECT *
-    FROM reg_periksa
-    WHERE kd_poli = ?
-    AND tgl_registrasi BETWEEN ? AND ?
-  ");
-  $stmt->execute([$igd, $tgl_awal, $tgl_akhir]);
-
-  exit;
-}
-
-public function getCetakPdf()
-{
-  $cetak = $this->db('mlite_temporary')->toArray();
-
-  $html = $this->draw('cetak.igd.html', [
-    'cetak' => $cetak
-  ]);
-
-  $mpdf = new \Mpdf\Mpdf([
-    'mode' => 'utf-8',
-    'orientation' => 'L'
-  ]);
-
-  $mpdf->SetHTMLHeader($this->core->setPrintHeader());
-  $mpdf->SetHTMLFooter($this->core->setPrintFooter());
-
-  $mpdf->WriteHTML(
-    $this->core->setPrintCss(),
-    \Mpdf\HTMLParserMode::HEADER_CSS
-  );
-  $mpdf->WriteHTML(
-    $html,
-    \Mpdf\HTMLParserMode::HTML_BODY
-  );
-
-  $mpdf->Output();
-  exit;
-}
-
-    public function getLokalis()
+    public function postCetak()
     {
-      echo $this->draw('lokalis.html');
+      $this->db()->pdo()->exec("DELETE FROM mlite_temporary");
+
+      $tgl_awal  = $_POST['tgl_awal'];
+      $tgl_akhir = $_POST['tgl_akhir'];
+      $igd       = $this->settings->get('settings.igd');
+
+      $stmt = $this->db()->pdo()->prepare("
+        INSERT INTO mlite_temporary (
+          temp1,temp2,temp3,temp4,temp5,temp6,temp7,temp8,temp9,temp10,
+          temp11,temp12,temp13,temp14,temp15,temp16,temp17,temp18,temp19
+        )
+        SELECT *
+        FROM reg_periksa
+        WHERE kd_poli = ?
+        AND tgl_registrasi BETWEEN ? AND ?
+      ");
+      $stmt->execute([$igd, $tgl_awal, $tgl_akhir]);
+
+      exit;
+    }
+
+    public function getCetakPdf()
+    {
+      $cetak = $this->db('mlite_temporary')->toArray();
+
+      $html = $this->draw('cetak.igd.html', [
+        'cetak' => $cetak
+      ]);
+
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'orientation' => 'L'
+      ]);
+
+      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+
+      $mpdf->WriteHTML(
+        $this->core->setPrintCss(),
+        \Mpdf\HTMLParserMode::HEADER_CSS
+      );
+      $mpdf->WriteHTML(
+        $html,
+        \Mpdf\HTMLParserMode::HTML_BODY
+      );
+
+      $mpdf->Output();
+      exit;
+    }
+
+    public function getLokalis($no_rawat)
+    {
+      $filename = 'lokalis_' . $no_rawat . '.png';
+      $lokalis = UPLOADS . '/lokalis/' . $filename;
+      if(!file_exists($lokalis)) {
+        $filename = '';
+      }
+      echo $this->draw('lokalis.html', [
+        'no_rawat' => revertNorawat($no_rawat),
+        'lokalis' => $filename
+      ]);
       exit();
     }
 
@@ -1722,7 +1730,7 @@ public function getCetakPdf()
                 error_log('DEBUG: Database operation failed');
             }
             
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $data['status'] = 'error';
             $data['msg'] = $e->getMessage();
             error_log('DEBUG: Exception caught: ' . $e->getMessage());
@@ -1752,7 +1760,7 @@ public function getCetakPdf()
                 $data['msg'] = 'Gagal menghapus data triase';
             }
             
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $data['status'] = 'error';
             $data['msg'] = $e->getMessage();
         }
@@ -1786,6 +1794,34 @@ public function getCetakPdf()
             }
         }
         exit();
+    }
+
+    public function postSimpanLokalis()
+    {
+        $img = $_POST['image'] ?? '';
+        $no_rawat = $_POST['no_rawat'] ?? '';
+        $no_rawat = convertNoRawat($no_rawat);
+
+        if (!$img) {
+            http_response_code(400);
+            exit('Data kosong');
+        }
+
+        $img = str_replace('data:image/png;base64,', '', $img);
+        $img = base64_decode($img);
+
+        if(!is_dir(UPLOADS . '/lokalis/')) {
+            mkdir(UPLOADS . '/lokalis/', 0755, true);
+        }
+
+        $filename = 'lokalis_' . $no_rawat . '.png';
+        file_put_contents(UPLOADS . '/lokalis/' . $filename, $img);
+
+        echo json_encode([
+            'status' => 'ok',
+            'file' => $filename
+        ]);
+        exit;
     }
 
     private function _addHeaderFiles()

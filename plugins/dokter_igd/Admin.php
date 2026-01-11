@@ -1361,9 +1361,17 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getLokalis()
+    public function getLokalis($no_rawat)
     {
-      echo $this->draw('lokalis.html');
+      $filename = 'lokalis_' . $no_rawat . '.png';
+      $lokalis = UPLOADS . '/lokalis/' . $filename;
+      if(!file_exists($lokalis)) {
+        $filename = '';
+      }
+      echo $this->draw('lokalis.html', [
+        'no_rawat' => revertNorawat($no_rawat),
+        'lokalis' => $filename
+      ]);
       exit();
     }
   
@@ -2018,6 +2026,35 @@ class Admin extends AdminModule
         }
         exit();
     }
+    
+    public function postSimpanLokalis()
+    {
+        $img = $_POST['image'] ?? '';
+        $no_rawat = $_POST['no_rawat'] ?? '';
+        $no_rawat = convertNoRawat($no_rawat);
+
+        if (!$img) {
+            http_response_code(400);
+            exit('Data kosong');
+        }
+
+        $img = str_replace('data:image/png;base64,', '', $img);
+        $img = base64_decode($img);
+
+        if(!is_dir(UPLOADS . '/lokalis/')) {
+            mkdir(UPLOADS . '/lokalis/', 0755, true);
+        }
+
+        $filename = 'lokalis_' . $no_rawat . '.png';
+        file_put_contents(UPLOADS . '/lokalis/' . $filename, $img);
+
+        echo json_encode([
+            'status' => 'ok',
+            'file' => $filename
+        ]);
+        exit;
+    }
+
 
     private function _addHeaderFiles()
     {

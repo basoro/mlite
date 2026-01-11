@@ -332,149 +332,148 @@ class Admin extends AdminModule
       redirect(url([ADMIN, 'penjualan', 'index']));
     }
 
-public function anyFaktur()
-{
-    $settings = $this->settings('settings');
-    $this->tpl->set(
-        'settings',
-        $this->tpl->noParse_array(htmlspecialchars_array($settings))
-    );
+    public function anyFaktur()
+    {
+        $settings = $this->settings('settings');
+        $this->tpl->set(
+            'settings',
+            $this->tpl->noParse_array(htmlspecialchars_array($settings))
+        );
 
-    $show = $_GET['show'] ?? '';
+        $show = $_GET['show'] ?? '';
 
-    switch ($show) {
-
-        /* ===============================
-         * VALIDASI DEFAULT
-         * =============================== */
-        default:
-            if (
-                $this->db('mlite_penjualan_billing')
-                    ->where('id_penjualan', $_POST['id_penjualan'])
-                    ->oneArray()
-            ) {
-                echo 'OK';
-            }
-        break;
-
-        /* ===============================
-         * FAKTUR BESAR
-         * =============================== */
-        case 'besar':
-
-            $id_penjualan = $_GET['id_penjualan'];
-
-            $billing = $this->db('mlite_penjualan_billing')
-                ->where('id_penjualan', $id_penjualan)
-                ->desc('id')
-                ->oneArray();
-
-            $rows = $this->db('mlite_penjualan_detail')
-                ->where('id_penjualan', $id_penjualan)
-                ->toArray();
-
-            $total = 0;
-            $detail = [];
-            $no = 1;
-
-            foreach ($rows as $row) {
-                $row['no'] = $no++;
-                $total += $row['harga_total'];
-                $detail[] = $row;
-            }
-
-            $pembeli = $this->db('mlite_penjualan')
-                ->where('id', $id_penjualan)
-                ->oneArray();
-
-            /* ===== QR CODE ===== */
-            $qr = QRCode::getMinimumQRCode(
-                $this->core->getUserInfo('fullname', null, true),
-                QR_ERROR_CORRECT_LEVEL_L
-            );
-            $im = $qr->createImage(4, 4);
-            $qrPath = BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png';
-            imagepng($im, $qrPath);
-            imagedestroy($im);
-
-            $qrCode = url().'/'.ADMIN.'/tmp/qrcode.png';
-
-            /* ===== INJECT DATA KE TEMPLATE ===== */
-            $this->tpl->set('wagateway', $this->settings->get('wagateway'));
-            $this->tpl->set('billing', $billing);
-            $this->tpl->set('billing_besar_detail', $detail);
-            $this->tpl->set('pembeli', $pembeli);
-            $this->tpl->set('qrCode', $qrCode);
-            $this->tpl->set('fullname', $this->core->getUserInfo('fullname', null, true));
-            $this->tpl->set('total', $total);
+        switch ($show) {
 
             /* ===============================
-             * RENDER HTML SEKALI
-             * =============================== */
-            $html = $this->draw('billing.besar.html');
+            * VALIDASI DEFAULT
+            * =============================== */
+            default:
+                if (
+                    $this->db('mlite_penjualan_billing')
+                        ->where('id_penjualan', $_POST['id_penjualan'])
+                        ->oneArray()
+                ) {
+                    echo 'OK';
+                }
+            break;
 
             /* ===============================
-             * GENERATE PDF
-             * =============================== */
-            $pdfPath = UPLOADS.'/invoices/'.$billing['id_penjualan'].'.pdf';
-            if (file_exists($pdfPath)) {
-                unlink($pdfPath);
-            }
+            * FAKTUR BESAR
+            * =============================== */
+            case 'besar':
 
-            $mpdf = new \Mpdf\Mpdf([
-                'mode' => 'utf-8',
-                'format' => 'A4',
-                'orientation' => 'P'
-            ]);
+                $id_penjualan = $_GET['id_penjualan'];
 
-            $css = '
-                del { display:none; }
-                table { padding-top:1cm; padding-bottom:1cm; }
-                td, th { border-bottom:1px solid #ddd; padding:5px; }
-            ';
+                $billing = $this->db('mlite_penjualan_billing')
+                    ->where('id_penjualan', $id_penjualan)
+                    ->desc('id')
+                    ->oneArray();
 
-            $mpdf->WriteHTML(
-                $this->core->setPrintCss(),
-                \Mpdf\HTMLParserMode::HEADER_CSS
-            );
-            $mpdf->WriteHTML('<style>'.$css.'</style>');
-            $mpdf->WriteHTML($html);
+                $rows = $this->db('mlite_penjualan_detail')
+                    ->where('id_penjualan', $id_penjualan)
+                    ->toArray();
 
-            $mpdf->Output($pdfPath, 'F');
+                $total = 0;
+                $detail = [];
+                $no = 1;
+
+                foreach ($rows as $row) {
+                    $row['no'] = $no++;
+                    $total += $row['harga_total'];
+                    $detail[] = $row;
+                }
+
+                $pembeli = $this->db('mlite_penjualan')
+                    ->where('id', $id_penjualan)
+                    ->oneArray();
+
+                /* ===== QR CODE ===== */
+                $qr = QRCode::getMinimumQRCode(
+                    $this->core->getUserInfo('fullname', null, true),
+                    QR_ERROR_CORRECT_LEVEL_L
+                );
+                $im = $qr->createImage(4, 4);
+                $qrPath = BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png';
+                imagepng($im, $qrPath);
+                imagedestroy($im);
+
+                $qrCode = url().'/'.ADMIN.'/tmp/qrcode.png';
+
+                /* ===== INJECT DATA KE TEMPLATE ===== */
+                $this->tpl->set('wagateway', $this->settings->get('wagateway'));
+                $this->tpl->set('billing', $billing);
+                $this->tpl->set('billing_besar_detail', $detail);
+                $this->tpl->set('pembeli', $pembeli);
+                $this->tpl->set('qrCode', $qrCode);
+                $this->tpl->set('fullname', $this->core->getUserInfo('fullname', null, true));
+                $this->tpl->set('total', $total);
+
+                /* ===============================
+                * RENDER HTML SEKALI
+                * =============================== */
+                $html = $this->draw('billing.besar.html');
+
+                /* ===============================
+                * GENERATE PDF
+                * =============================== */
+                $pdfPath = UPLOADS.'/invoices/'.$billing['id_penjualan'].'.pdf';
+                if (file_exists($pdfPath)) {
+                    unlink($pdfPath);
+                }
+
+                $mpdf = new \Mpdf\Mpdf([
+                    'mode' => 'utf-8',
+                    'format' => 'A4',
+                    'orientation' => 'P'
+                ]);
+
+                $css = '
+                    del { display:none; }
+                    table { padding-top:1cm; padding-bottom:1cm; }
+                    td, th { border-bottom:1px solid #ddd; padding:5px; }
+                ';
+
+                $mpdf->WriteHTML(
+                    $this->core->setPrintCss(),
+                    \Mpdf\HTMLParserMode::HEADER_CSS
+                );
+                $mpdf->WriteHTML('<style>'.$css.'</style>');
+                $mpdf->WriteHTML($html);
+
+                $mpdf->Output($pdfPath, 'F');
+
+                /* ===============================
+                * PREVIEW HTML
+                * =============================== */
+                echo $html;
+            break;
 
             /* ===============================
-             * PREVIEW HTML
-             * =============================== */
-            echo $html;
-        break;
+            * FAKTUR KECIL (HTML SAJA)
+            * =============================== */
+            case 'kecil':
 
-        /* ===============================
-         * FAKTUR KECIL (HTML SAJA)
-         * =============================== */
-        case 'kecil':
+                $id_penjualan = $_GET['id_penjualan'];
 
-            $id_penjualan = $_GET['id_penjualan'];
+                $pembeli = $this->db('mlite_penjualan')
+                    ->where('id', $id_penjualan)
+                    ->oneArray();
 
-            $pembeli = $this->db('mlite_penjualan')
-                ->where('id', $id_penjualan)
-                ->oneArray();
+                $billing = $this->db('mlite_penjualan_billing')
+                    ->where('id_penjualan', $id_penjualan)
+                    ->desc('id')
+                    ->oneArray();
 
-            $billing = $this->db('mlite_penjualan_billing')
-                ->where('id_penjualan', $id_penjualan)
-                ->desc('id')
-                ->oneArray();
+                echo $this->draw('billing.kecil.html', [
+                    'billing' => $billing,
+                    'pembeli' => $pembeli,
+                    'fullname' => $this->core->getUserInfo('fullname', null, true)
+                ]);
+            break;
+        }
 
-            echo $this->draw('billing.kecil.html', [
-                'billing' => $billing,
-                'pembeli' => $pembeli,
-                'fullname' => $this->core->getUserInfo('fullname', null, true)
-            ]);
-        break;
+        exit;
     }
-
-    exit;
-}
-
 
     private function _addHeaderFiles()
     {

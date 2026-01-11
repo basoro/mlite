@@ -135,39 +135,38 @@ class Admin extends AdminModule
     exit();
   }
 
-public function getCetakPendonor()
-{
-    $mpdf = new \Mpdf\Mpdf([
-        'mode' => 'utf-8',
-        'orientation' => 'L'
-    ]);
+  public function getCetakPendonor()
+  {
+      $mpdf = new \Mpdf\Mpdf([
+          'mode' => 'utf-8',
+          'orientation' => 'L'
+      ]);
 
-    $mpdf->SetHTMLHeader($this->core->setPrintHeader());
-    $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
 
-    // ambil data yang sama
-    $cetak = $this->db('mlite_temporary')->toArray();
+      // ambil data yang sama
+      $cetak = $this->db('mlite_temporary')->toArray();
 
-    // inject ke template
-    $this->tpl->set('cetak', $cetak);
+      // inject ke template
+      $this->tpl->set('cetak', $cetak);
 
-    // render HTML TANPA HTTP
-    $html = $this->draw('cetak.utd.html', ['cetak' => $cetak]);
+      // render HTML TANPA HTTP
+      $html = $this->draw('cetak.utd.html', ['cetak' => $cetak]);
 
-    $mpdf->WriteHTML(
-        $this->core->setPrintCss(),
-        \Mpdf\HTMLParserMode::HEADER_CSS
-    );
+      $mpdf->WriteHTML(
+          $this->core->setPrintCss(),
+          \Mpdf\HTMLParserMode::HEADER_CSS
+      );
 
-    $mpdf->WriteHTML(
-        $html,
-        \Mpdf\HTMLParserMode::HTML_BODY
-    );
+      $mpdf->WriteHTML(
+          $html,
+          \Mpdf\HTMLParserMode::HTML_BODY
+      );
 
-    $mpdf->Output();
-    exit;
-}
-
+      $mpdf->Output();
+      exit;
+  }
 
   public function getDonor()
   {

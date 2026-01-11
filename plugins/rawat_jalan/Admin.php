@@ -2314,84 +2314,81 @@ class Admin extends AdminModule
         return $next_no_rawat;
     }
 
-public function postCetak()
-{
-    $this->db()->pdo()->exec("DELETE FROM mlite_temporary");
+    public function postCetak()
+    {
+        $this->db()->pdo()->exec("DELETE FROM mlite_temporary");
 
-    $cari      = $_POST['cari'];
-    $tgl_awal  = $_POST['tgl_awal'];
-    $tgl_akhir = $_POST['tgl_akhir'];
-    $igd       = $this->settings->get('settings.igd');
+        $cari      = $_POST['cari'];
+        $tgl_awal  = $_POST['tgl_awal'];
+        $tgl_akhir = $_POST['tgl_akhir'];
+        $igd       = $this->settings->get('settings.igd');
 
-    $this->db()->pdo()->exec("
-        INSERT INTO mlite_temporary (
-          `temp1`,
-          `temp2`,
-          `temp3`,
-          `temp4`,
-          `temp5`,
-          `temp6`,
-          `temp7`,
-          `temp8`,
-          `temp9`,
-          `temp10`,
-          `temp11`,
-          `temp12`,
-          `temp13`,
-          `temp14`,
-          `temp15`,
-          `temp16`,
-          `temp17`,
-          `temp18`,
-          `temp19`
-        )
-        SELECT *
-        FROM reg_periksa
-        WHERE kd_poli <> '$igd'
-        AND tgl_registrasi BETWEEN '$tgl_awal' AND '$tgl_akhir'
-    ");
+        $this->db()->pdo()->exec("
+            INSERT INTO mlite_temporary (
+              `temp1`,
+              `temp2`,
+              `temp3`,
+              `temp4`,
+              `temp5`,
+              `temp6`,
+              `temp7`,
+              `temp8`,
+              `temp9`,
+              `temp10`,
+              `temp11`,
+              `temp12`,
+              `temp13`,
+              `temp14`,
+              `temp15`,
+              `temp16`,
+              `temp17`,
+              `temp18`,
+              `temp19`
+            )
+            SELECT *
+            FROM reg_periksa
+            WHERE kd_poli <> '$igd'
+            AND tgl_registrasi BETWEEN '$tgl_awal' AND '$tgl_akhir'
+        ");
 
-    // redirect ke PDF
-    // redirect(url([ADMIN, 'utd', 'cetakpdf']));
-    exit;
-}
+        exit;
+    }
 
 
-public function getCetakPdf()
-{
-    $mpdf = new \Mpdf\Mpdf([
-        'mode' => 'utf-8',
-        'orientation' => 'L'
-    ]);
+    public function getCetakPdf()
+    {
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'orientation' => 'L'
+        ]);
 
-    $mpdf->SetHTMLHeader($this->core->setPrintHeader());
-    $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+        $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+        $mpdf->SetHTMLFooter($this->core->setPrintFooter());
 
-    // ambil data
-    $cetak = $this->db('mlite_temporary')->toArray();
+        // ambil data
+        $cetak = $this->db('mlite_temporary')->toArray();
 
-    // inject ke template
-    $this->tpl->set('cetak', $cetak);
+        // inject ke template
+        $this->tpl->set('cetak', $cetak);
 
-    // render template (PATH BENAR)
-    $html = $this->draw('cetak.rawat_jalan.html');
+        // render template (PATH BENAR)
+        $html = $this->draw('cetak.rawat_jalan.html');
 
-    // CSS
-    $mpdf->WriteHTML(
-        $this->core->setPrintCss(),
-        \Mpdf\HTMLParserMode::HEADER_CSS
-    );
+        // CSS
+        $mpdf->WriteHTML(
+            $this->core->setPrintCss(),
+            \Mpdf\HTMLParserMode::HEADER_CSS
+        );
 
-    // BODY
-    $mpdf->WriteHTML(
-        $html,
-        \Mpdf\HTMLParserMode::HTML_BODY
-    );
+        // BODY
+        $mpdf->WriteHTML(
+            $html,
+            \Mpdf\HTMLParserMode::HTML_BODY
+        );
 
-    $mpdf->Output();
-    exit;
-}
-
+        $mpdf->Output();
+        exit;
+    }
 
     public function getExcel()
     {
