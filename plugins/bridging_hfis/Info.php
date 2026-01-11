@@ -6,7 +6,7 @@
         'author'        =>  'Adly',
         'category'      =>  'bridging', 
         'version'       =>  '1.0',
-        'compatibility' =>  '5.*.*',
+        'compatibility' =>  '6.*.*',
         'icon'          =>  'shield',
         'install'       =>  function () use ($core) {
         },

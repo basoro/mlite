@@ -1694,12 +1694,12 @@ switch ($version) {
         $this->core->db()->pdo()->exec("ALTER TABLE `mlite_users` ADD COLUMN `otp_expires` DATETIME NULL AFTER `otp_code`");
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'log_query', 'tidak')");
 
-        $return = '5.4.0'; 
+        $return = '6.0.0'; 
         break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '5.4.0';
+        $return = '6.0.0';
     }
 
 return $return;

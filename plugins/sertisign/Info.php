@@ -6,7 +6,7 @@ return [
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
     'category'      =>  'bridging',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'sticky-note',
     'install'       =>  function() use($core) {
         if(DBDRIVER == 'sqlite') {

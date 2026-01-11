@@ -6,7 +6,7 @@
         'author'        =>  'Basoro',
         'category'      =>  'main', 
         'version'       =>  '1.0',
-        'compatibility' =>  '5.*.*',
+        'compatibility' =>  '6.*.*',
         'icon'          =>  'database',
         'install'       =>  function () use ($core) {
         },

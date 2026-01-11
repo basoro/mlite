@@ -6,7 +6,7 @@ return [
     'author'        =>  'Basoro',
     'category'      =>  'rekammedik', 
     'version'       =>  '1.1',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'group',
     'install'       =>  function () use ($core) {
     },

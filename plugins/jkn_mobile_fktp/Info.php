@@ -5,7 +5,7 @@ return [
     'author'        =>  'Basoro',
     'category'      =>  'bridging', 
     'version'       =>  '1.0',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'tasks',
     'pages'         =>  ['JKN Mobile FKTP' => 'jknmobilefktp'],
     'install'       =>  function () use ($core) {

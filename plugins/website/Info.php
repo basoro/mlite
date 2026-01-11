@@ -6,7 +6,7 @@ return [
     'author'        =>  'Basoro',
     'category'      =>  'manajemen', 
     'version'       =>  '1.3',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'pencil-square',
     'pages'         =>  ['Homepage' => 'homepage', 'Berita' => 'news'],
     'install'       =>  function () use ($core) {

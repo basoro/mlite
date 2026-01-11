@@ -6,7 +6,7 @@ return [
     'author'        =>  'Basoro.ID',
     'category'      =>  'main', 
     'version'       =>  '1.1',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'user',
     'pages'         =>  ['Login' => 'login'],
 

@@ -258,7 +258,7 @@ class Admin extends AdminModule
                     'description' => '',
                     'author' => '',
                     'category' => '',
-                    'compatibility' => '5.0.0'
+                    'compatibility' => '6.0.0'
                 ], $details);
                 
                 // Ensure description exists and is not null before processing
@@ -297,7 +297,7 @@ class Admin extends AdminModule
                     $other['basic'] = false;
                 }
 
-                $other['compatible'] = $this->checkCompatibility(isset_or($details['compatibility'], '5.0.0'));
+                $other['compatible'] = $this->checkCompatibility(isset_or($details['compatibility'], '6.0.0'));
                 $result[] = $details + $urls + $other;
             }
         }

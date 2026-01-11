@@ -6,7 +6,7 @@ return [
     'author'        =>  'Basoro',
     'category'      =>  'farmasi', 
     'version'       =>  '1.1',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'medkit',
     'install'       =>  function () use ($core) {
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'deporalan', '-')");

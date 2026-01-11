@@ -6,7 +6,7 @@ return [
   'author'        =>  'Basoro',
   'category'      =>  'bridging', 
   'version'       =>  '1.0',
-  'compatibility' =>  '5.*.*',
+  'compatibility' =>  '6.*.*',
   'icon'          =>  'heartbeat',
   'install'       =>  function () use ($core) {
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'organizationid', '')");

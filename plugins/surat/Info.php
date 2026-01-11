@@ -6,7 +6,7 @@ return [
     'author'        =>  'Basoro',
     'category'      =>  'manajemen',
     'version'       =>  '1.0',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'code',
     'install'       =>  function () use ($core) {
     },
