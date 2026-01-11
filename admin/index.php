@@ -23,8 +23,8 @@ try {
     if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
         $_SERVER['HTTPS'] = 'on';
     }
-define('BASE_DIR', __DIR__.'/..');
-require_once('../config.php');
+    define('BASE_DIR', __DIR__.'/..');
+    require_once('../config.php');
 
     if (DEV_MODE) {
         error_reporting(E_ALL);
@@ -240,6 +240,7 @@ if ($core->loginCheck()) {
             'message' => $message
         ]);
     } else {
+        
         // Return HTML error for regular requests
         if (DEV_MODE) {
             echo '<h1>Error</h1><pre>' . htmlspecialchars($e->getMessage()) . '</pre>';
