@@ -302,9 +302,9 @@ public function postSigningQrERM()
     public function signingQr(
         string $document_path,
         $signers,
-        $page = 'first',
         int $w,
         int $h,        
+        $page = 'first',
         $flagging = null,
         $pageNumber = null,
         $pageRange = null

@@ -33,10 +33,10 @@ class Admin extends AdminModule
   {
     $this->_addHeaderFiles();
     $pendonor = $this->db('utd_pendonor')
-      ->join('propinsi', 'propinsi.kd_prop=utd_pendonor.kd_prop')
-      ->join('kabupaten', 'kabupaten.kd_kab=utd_pendonor.kd_kab')
-      ->join('kecamatan', 'kecamatan.kd_kec=utd_pendonor.kd_kec')
-      ->join('kelurahan', 'kelurahan.kd_kel=utd_pendonor.kd_kel')
+      ->leftJoin('propinsi', 'propinsi.kd_prop=utd_pendonor.kd_prop')
+      ->leftJoin('kabupaten', 'kabupaten.kd_kab=utd_pendonor.kd_kab')
+      ->leftJoin('kecamatan', 'kecamatan.kd_kec=utd_pendonor.kd_kec')
+      ->leftJoin('kelurahan', 'kelurahan.kd_kel=utd_pendonor.kd_kel')
       ->toArray();
     return $this->draw('data.pendonor.html', [
       'pendonor' => $pendonor,
@@ -132,32 +132,42 @@ class Admin extends AdminModule
     FROM `utd_pendonor`
     WHERE (`no_pendonor` LIKE '%$cari%' OR `nama` LIKE '%$cari%' OR `alamat` LIKE '%$cari%')
     ");
-
-    $cetak = $this->db('mlite_temporary')->toArray();
-    return $this->draw('cetak.utd.html', ['cetak' => $cetak]);
     exit();
   }
 
-  public function getCetakPendonor()
-  {
+public function getCetakPendonor()
+{
     $mpdf = new \Mpdf\Mpdf([
-      'mode' => 'utf-8',
-      'orientation' => 'L'
+        'mode' => 'utf-8',
+        'orientation' => 'L'
     ]);
 
     $mpdf->SetHTMLHeader($this->core->setPrintHeader());
     $mpdf->SetHTMLFooter($this->core->setPrintFooter());
-          
-    $url = url(ADMIN.'/tmp/cetak.utd.html');
-    $html = file_get_contents($url);
-    $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-    $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
 
-    // Output a PDF file directly to the browser
+    // ambil data yang sama
+    $cetak = $this->db('mlite_temporary')->toArray();
+
+    // inject ke template
+    $this->tpl->set('cetak', $cetak);
+
+    // render HTML TANPA HTTP
+    $html = $this->draw('cetak.utd.html', ['cetak' => $cetak]);
+
+    $mpdf->WriteHTML(
+        $this->core->setPrintCss(),
+        \Mpdf\HTMLParserMode::HEADER_CSS
+    );
+
+    $mpdf->WriteHTML(
+        $html,
+        \Mpdf\HTMLParserMode::HTML_BODY
+    );
+
     $mpdf->Output();
-    exit();      
+    exit;
+}
 
-  }
 
   public function getDonor()
   {
@@ -338,15 +348,39 @@ class Admin extends AdminModule
 
   public function getKartuDonor($no_pendonor)
   {
-      $pdf=new PDF_Code128('L', 'mm', array(59,98));
-      $pdf->AddPage();
-      $pdf->SetFont('Arial','',10);
-      $pdf->Code128(9,35,$no_pendonor,80,20);
-      $pdf->SetFont('Arial','B',16);
-      $pdf->SetXY(8,0);
-      $pdf->Cell(0,35,$no_pendonor);
-      $pdf->Output('kartudonor_'.$no_pendonor.'.pdf','I');
+      $mpdf = new \Mpdf\Mpdf([
+          'mode' => 'utf-8',
+          'format' => [98, 59], // width x height (mm)
+          'margin_left' => 5,
+          'margin_right' => 5,
+          'margin_top' => 5,
+          'margin_bottom' => 5,
+      ]);
+
+      $html = '
+      <div style="text-align:center; font-family: Arial;">
+          <div style="font-size:16px; font-weight:bold; margin-bottom:4mm;">
+              KARTU DONOR
+          </div>
+
+          <barcode 
+              code="'.$no_pendonor.'" 
+              type="C128" 
+              size="1.2" 
+              height="1.5" 
+          />
+
+          <div style="margin-top:3mm; font-size:14px; font-weight:bold;">
+              '.$no_pendonor.'
+          </div>
+      </div>
+      ';
+
+      $mpdf->WriteHTML($html);
+      $mpdf->Output('kartudonor_'.$no_pendonor.'.pdf', 'I');
+      exit;
   }
+
 
   public function setNoPendonor()
   {

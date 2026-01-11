@@ -3,13 +3,13 @@
     <div style="text-align:center;">
     <b>{$settings.nama_instansi}</b><br>
     {$settings.alamat}<br>{$settings.kota} - {$settings.nomor_telepon}<br>
-    <b>{$farmasi.keterangan_etiket}</b>
+    {if: isset($farmasi.keterangan_etiket)}<b>{$farmasi.keterangan_etiket}</b>{/if}
     </div>
     <hr>
     <div align="right">{$tanggal}</div>
     a/n : <b>{$pasien} - {$no_rm}</b><br><br>
     <div style="text-align:center;">
-        {$value.aturan_pakai}<br>
+        {?= isset($value.aturan_pakai) ? $value.aturan_pakai : '' ?}<br>
         Pagi / Siang / Sore / Malam<br>
         Sebelum Makan / Sesudah Makan / Habiskan<br>
     </div>

@@ -1306,47 +1306,57 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function postCetak()
-    {
-      $this->db()->pdo()->exec("DELETE FROM `mlite_temporary`");
-      $cari = $_POST['cari'];
-      $tgl_awal = $_POST['tgl_awal'];
-      $tgl_akhir = $_POST['tgl_akhir'];
-      $igd = $this->settings->get('settings.igd');
-      $this->db()->pdo()->exec("INSERT INTO `mlite_temporary` (
-        `temp1`,`temp2`,`temp3`,`temp4`,`temp5`,`temp6`,`temp7`,`temp8`,`temp9`,`temp10`,`temp11`,`temp12`,`temp13`,`temp14`,`temp15`,`temp16`,`temp17`,`temp18`,`temp19`
-      )
-      SELECT *
-      FROM `reg_periksa`
-      WHERE `kd_poli` = '$igd'
-      AND `tgl_registrasi` BETWEEN '$tgl_awal' AND '$tgl_akhir'
-      ");
+public function postCetak()
+{
+  $this->db()->pdo()->exec("DELETE FROM mlite_temporary");
 
-      $cetak = $this->db('mlite_temporary')->toArray();
-      echo $this->draw('cetak.igd.html', ['cetak' => $cetak]);
+  $tgl_awal  = $_POST['tgl_awal'];
+  $tgl_akhir = $_POST['tgl_akhir'];
+  $igd       = $this->settings->get('settings.igd');
 
-      exit();
-    }
+  $stmt = $this->db()->pdo()->prepare("
+    INSERT INTO mlite_temporary (
+      temp1,temp2,temp3,temp4,temp5,temp6,temp7,temp8,temp9,temp10,
+      temp11,temp12,temp13,temp14,temp15,temp16,temp17,temp18,temp19
+    )
+    SELECT *
+    FROM reg_periksa
+    WHERE kd_poli = ?
+    AND tgl_registrasi BETWEEN ? AND ?
+  ");
+  $stmt->execute([$igd, $tgl_awal, $tgl_akhir]);
 
-    public function getCetakPdf()
-    {
-      $mpdf = new \Mpdf\Mpdf([
-        'mode' => 'utf-8',
-        'orientation' => 'L'
-      ]);
-  
-      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
-      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
-            
-      $url = url(ADMIN.'/tmp/cetak.igd.html');
-      $html = file_get_contents($url);
-      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
-  
-      // Output a PDF file directly to the browser
-      $mpdf->Output();
-      exit();
-    }
+  exit;
+}
+
+public function getCetakPdf()
+{
+  $cetak = $this->db('mlite_temporary')->toArray();
+
+  $html = $this->draw('cetak.igd.html', [
+    'cetak' => $cetak
+  ]);
+
+  $mpdf = new \Mpdf\Mpdf([
+    'mode' => 'utf-8',
+    'orientation' => 'L'
+  ]);
+
+  $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+  $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+
+  $mpdf->WriteHTML(
+    $this->core->setPrintCss(),
+    \Mpdf\HTMLParserMode::HEADER_CSS
+  );
+  $mpdf->WriteHTML(
+    $html,
+    \Mpdf\HTMLParserMode::HTML_BODY
+  );
+
+  $mpdf->Output();
+  exit;
+}
 
     public function getLokalis()
     {

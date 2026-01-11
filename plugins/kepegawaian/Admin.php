@@ -252,28 +252,40 @@ class Admin extends AdminModule
 
     public function getPrint()
     {
-      $pegawai = $this->db('pegawai')->toArray();
+        $pegawai = $this->db('pegawai')->toArray();
 
-      echo $this->draw('cetak.pegawai.html', [
-        'pegawai' => $pegawai
-      ]);
+        $html = $this->draw('cetak.pegawai.html', ['pegawai' => $pegawai]);
 
-    $mpdf = new \Mpdf\Mpdf([
-        'mode' => 'utf-8',
-        'orientation' => 'P'
-      ]);
-  
-      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
-      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
-            
-      $url = url(ADMIN.'/tmp/cetak.pegawai.html');
-      $html = file_get_contents($url);
-      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
-  
-      // Output a PDF file directly to the browser
-      $mpdf->Output();
-      exit();    
+        /* ===============================
+        * OUTPUT HTML (PREVIEW)
+        * =============================== */
+        echo $html;
+
+        /* ===============================
+        * GENERATE PDF
+        * =============================== */
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'orientation' => 'L'
+        ]);
+
+        $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+        $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+
+        $mpdf->WriteHTML(
+            $this->core->setPrintCss(),
+            \Mpdf\HTMLParserMode::HEADER_CSS
+        );
+
+        $mpdf->WriteHTML(
+            $html,
+            \Mpdf\HTMLParserMode::HTML_BODY
+        );
+
+        // Output PDF ke browser
+        $mpdf->Output();
+
+        exit;
     }
 
     public function getCSS()

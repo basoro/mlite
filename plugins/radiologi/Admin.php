@@ -419,96 +419,110 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getCetakHasil()
-    {
-      $settings = $this->settings('settings');
-      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-      $pj_radiologi = $this->db('dokter')->where('kd_dokter', $this->settings->get('settings.pj_radiologi'))->oneArray();
-      $qr = QRCode::getMinimumQRCode($pj_radiologi['nm_dokter'], QR_ERROR_CORRECT_LEVEL_L);
-      $im = $qr->createImage(4, 4);
-      imagepng($im, BASE_DIR .'/'.ADMIN.'/tmp/qrcode.png');
-      imagedestroy($im);
-      $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
+public function getCetakHasil()
+{
+    /* =======================
+     * SETTINGS & DATA DASAR
+     * ======================= */
+    $settings = $this->settings('settings');
+    $this->tpl->set(
+        'settings',
+        $this->tpl->noParse_array(htmlspecialchars_array($settings))
+    );
 
-      $pasien = $this->db('reg_periksa')
+    $no_rawat   = $_GET['no_rawat'];
+    $tgl        = $_GET['tgl_periksa'];
+    $jam        = $_GET['jam'];
+    $status     = $_GET['status'];
+
+    /* =======================
+     * PJ RADIOLOGI + QR
+     * ======================= */
+    $pj_radiologi = $this->db('dokter')
+        ->where('kd_dokter', $this->settings->get('settings.pj_radiologi'))
+        ->oneArray();
+
+    $qr = QRCode::getMinimumQRCode(
+        $pj_radiologi['nm_dokter'],
+        QR_ERROR_CORRECT_LEVEL_L
+    );
+    $im = $qr->createImage(4, 4);
+    $qrPath = BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png';
+    imagepng($im, $qrPath);
+    imagedestroy($im);
+
+    $qrCode = url().'/'.ADMIN.'/tmp/qrcode.png';
+
+    /* =======================
+     * DATA PASIEN
+     * ======================= */
+    $pasien = $this->db('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
         ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
-        ->where('no_rawat', $_GET['no_rawat'])
+        ->where('no_rawat', $no_rawat)
         ->oneArray();
-      $dokter_perujuk = $this->db('periksa_radiologi')
+
+    $dokter_perujuk = $this->db('periksa_radiologi')
         ->join('pegawai', 'pegawai.nik=periksa_radiologi.dokter_perujuk')
-        ->where('no_rawat', $_GET['no_rawat'])
-        ->where('tgl_periksa', $_GET['tgl_periksa'])
-        ->where('jam', $_GET['jam'])
+        ->where('no_rawat', $no_rawat)
+        ->where('tgl_periksa', $tgl)
+        ->where('jam', $jam)
         ->oneArray();
 
-      // $rows_periksa_radiologi = $this->db('periksa_radiologi')
-      // ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
-      // ->join('hasil_radiologi', 'hasil_radiologi.no_rawat=periksa_radiologi.no_rawat')
-      // ->where('periksa_radiologi.no_rawat', $_GET['no_rawat'])
-      // ->where('periksa_radiologi.status', $_GET['status'])
-      // ->group('periksa_radiologi.no_rawat')
-      // ->group('periksa_radiologi.tgl_periksa')
-      // ->group('periksa_radiologi.jam')
-      // ->toArray();
-      //
-      // $periksa_radiologi = [];
-      // $jumlah_total_radiologi = 0;
-      // $no_radiologi = 1;
-      // foreach ($rows_periksa_radiologi as $row) {
-      //   $jumlah_total_radiologi += $row['biaya'];
-      //   $row['nomor'] = $no_radiologi++;
-      //   $row['gambar_radiologi'] = $this->db('gambar_radiologi')
-      //     ->where('no_rawat', $_GET['no_rawat'])
-      //     ->toArray();
-      //   $periksa_radiologi[] = $row;
-      // }
+    /* =======================
+     * PERIKSA RADIOLOGI
+     * ======================= */
+    $rows = $this->db('periksa_radiologi')
+        ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+        ->join('reg_periksa', 'reg_periksa.no_rawat=periksa_radiologi.no_rawat')
+        ->join('dokter', 'dokter.kd_dokter=periksa_radiologi.kd_dokter')
+        ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+        ->join('petugas', 'petugas.nip=periksa_radiologi.nip')
+        ->where('periksa_radiologi.status', $status)
+        ->where('periksa_radiologi.no_rawat', $no_rawat)
+        ->where('periksa_radiologi.tgl_periksa', $tgl)
+        ->where('periksa_radiologi.jam', $jam)
+        ->toArray();
 
-      $rows_periksa_radiologi = $this->db('periksa_radiologi')
-      ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
-      ->join('reg_periksa', 'reg_periksa.no_rawat=periksa_radiologi.no_rawat')
-      ->join('dokter', 'dokter.kd_dokter=periksa_radiologi.kd_dokter')
-      ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
-      ->join('petugas', 'petugas.nip=periksa_radiologi.nip')
-      ->where('periksa_radiologi.status', $_GET['status'])
-      ->where('periksa_radiologi.no_rawat', $_GET['no_rawat'])
-      ->where('periksa_radiologi.tgl_periksa', $_GET['tgl_periksa'])
-      ->where('periksa_radiologi.jam', $_GET['jam'])
-      ->toArray();
+    $periksa_radiologi = [];
+    $jumlah_total_radiologi = 0;
+    $no = 1;
 
-      $periksa_radiologi = [];
-      $jumlah_total_radiologi = 0;
-      $no_radiologi = 1;
-      foreach ($rows_periksa_radiologi as $row) {
+    foreach ($rows as $row) {
         $jumlah_total_radiologi += $row['biaya'];
-        $row['nomor'] = $no_radiologi++;
-        $row['status_periksa'] = $_GET['status'];
+        $row['nomor'] = $no++;
+        $row['status_periksa'] = $status;
         $periksa_radiologi[] = $row;
-      }
+    }
 
-      $hasil_radiologi = $this->db('hasil_radiologi')
-        ->where('no_rawat', $_GET['no_rawat'])
-        ->where('tgl_periksa', $_GET['tgl_periksa'])
-        ->where('jam', $_GET['jam'])
+    $hasil_radiologi = $this->db('hasil_radiologi')
+        ->where('no_rawat', $no_rawat)
+        ->where('tgl_periksa', $tgl)
+        ->where('jam', $jam)
         ->toArray();
 
-      $gambar_radiologi = $this->db('gambar_radiologi')
-        ->where('no_rawat', $_GET['no_rawat'])
-        ->where('tgl_periksa', $_GET['tgl_periksa'])
-        ->where('jam', $_GET['jam'])
+    $gambar_radiologi = $this->db('gambar_radiologi')
+        ->where('no_rawat', $no_rawat)
+        ->where('tgl_periksa', $tgl)
+        ->where('jam', $jam)
         ->toArray();
 
-      $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
-      $im=$qr->createImage(4,4);
-      imagepng($im,BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
-      imagedestroy($im);
+    /* =======================
+     * FILENAME PDF
+     * ======================= */
+    $filename = convertNorawat($dokter_perujuk['no_rawat'])
+        .'_'.$dokter_perujuk['kd_jenis_prw']
+        .'_'.$dokter_perujuk['tgl_periksa'];
 
-      $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
+    $pdfPath = UPLOADS.'/radiologi/'.$filename.'.pdf';
+    if (file_exists($pdfPath)) {
+        unlink($pdfPath);
+    }
 
-      $filename = convertNorawat($dokter_perujuk['no_rawat']).'_'.$dokter_perujuk['kd_jenis_prw'].'_'.$dokter_perujuk['tgl_periksa'];
-      if (file_exists(UPLOADS.'/radiologi/'.$filename.'.pdf')) {
-        unlink(UPLOADS.'/radiologi/'.$filename.'.pdf');
-      }
+    /* =======================
+     * INJECT KE TEMPLATE
+     * ======================= */
+
 
       echo $this->draw('cetakhasil.html', [
         'periksa_radiologi' => $periksa_radiologi,
@@ -524,42 +538,51 @@ class Admin extends AdminModule
         'wagateway' => $this->settings->get('wagateway')
       ]);
 
-      $mpdf = new \Mpdf\Mpdf([
+    $this->tpl->set('periksa_radiologi', $periksa_radiologi);
+    $this->tpl->set('hasil_radiologi', $hasil_radiologi);
+    $this->tpl->set('gambar_radiologi', $gambar_radiologi);
+    $this->tpl->set('jumlah_total_radiologi', $jumlah_total_radiologi);
+    $this->tpl->set('qrCode', $qrCode);
+    $this->tpl->set('pj_radiologi', $pj_radiologi['nm_dokter']);
+    $this->tpl->set('dokter_perujuk', $dokter_perujuk['nama']);
+    $this->tpl->set('pasien', $pasien);
+    $this->tpl->set('filename', $filename);
+    $this->tpl->set('no_rawat', $no_rawat);
+    $this->tpl->set('wagateway', $this->settings->get('wagateway'));
+
+    // render HTML TANPA draw()
+    $html = $this->draw('cetakhasil.html');
+
+    /* =======================
+     * mPDF
+     * ======================= */
+    $mpdf = new \Mpdf\Mpdf([
         'mode' => 'utf-8',
-        'format' => 'A4', 
+        'format' => 'A4',
         'orientation' => 'P'
-      ]);
+    ]);
 
-      $css = '
-      <style>
-        del { 
-          display: none;
-        }
-        table {
-          padding-top: 1cm;
-          padding-bottom: 1cm;
-        }
-        td, th {
-          border-bottom: 1px solid #dddddd;
-          padding: 5px;
-        }        
-        tr:nth-child(even) {
-          background-color: #ffffff;
-        }
-      </style>
-      ';
-      
-      $url = url(ADMIN.'/tmp/cetakhasil.html');
-      $html = file_get_contents($url);
-      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-      $mpdf->WriteHTML($css);
-      $mpdf->WriteHTML($html);
-  
-      // Output a PDF file save to server
-      $mpdf->Output(UPLOADS.'/radiologi/'.$filename.'.pdf','F');
+    $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+    $mpdf->SetHTMLFooter($this->core->setPrintFooter());
 
-      exit();
-    }
+    $css = '
+        del { display:none; }
+        table { padding-top:1cm; padding-bottom:1cm; }
+        td, th { border-bottom:1px solid #ddd; padding:5px; }
+    ';
+
+    $mpdf->WriteHTML(
+        $this->core->setPrintCss(),
+        \Mpdf\HTMLParserMode::HEADER_CSS
+    );
+    $mpdf->WriteHTML('<style>'.$css.'</style>');
+    $mpdf->WriteHTML($html);
+
+    // simpan ke server
+    $mpdf->Output($pdfPath, 'F');
+    exit;
+}
+
 
     public function getCetakPermintaan()
     {

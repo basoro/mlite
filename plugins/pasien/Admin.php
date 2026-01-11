@@ -165,7 +165,7 @@ class Admin extends AdminModule
     public function postSave()
     {
       $mlite_crud_permissions = $this->core->loadCrudPermissions('pasien');
-      $_POST['tgl_daftar'] = date('Y-m-d H:i', strtotime($_POST['tgl_daftar']));
+      $_POST['tgl_daftar'] = date('Y-m-d', strtotime($_POST['tgl_daftar']));
       $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
       $cek_prop = $this->db('propinsi')->where('kd_prop', $_POST['kd_prop'])->oneArray();
       if(!$cek_prop){
@@ -364,29 +364,33 @@ class Admin extends AdminModule
 
     public function getCetakKartu($no_rkm_medis)
     {
-      $kartu['settings'] = $this->settings('settings');
-      $kartu['pasien'] = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
-      $this->tpl->set('kartu', $this->tpl->noParse_array(htmlspecialchars_array($kartu)));
-      echo $this->draw('kartu.html');
+      $kartu = [
+        'settings' => $this->settings('settings'),
+        'pasien'   => $this->db('pasien')
+                          ->where('no_rkm_medis', $no_rkm_medis)
+                          ->oneArray()
+      ];
+
+      // Render HTML langsung (tanpa echo & tmp)
+      $html = $this->draw('kartu.html', [
+        'kartu' => $kartu
+      ]);
 
       $mpdf = new \Mpdf\Mpdf([
         'mode' => 'utf-8',
-        'format' => [100, 70], 
+        'format' => [100, 70],
         'margin_left' => 4,
         'margin_right' => 4,
         'margin_top' => 4,
         'margin_bottom' => 4
       ]);
 
-      $url = url(ADMIN.'/tmp/kartu.html');
-      $html = file_get_contents($url);
       $mpdf->WriteHTML($html);
-
-      // Output a PDF file directly to the browser
       $mpdf->Output();
-            
-      exit();
+
+      exit;
     }
+
 
     public function getFolder($no_rkm_medis, $no_rawat='')
     {
@@ -1180,6 +1184,8 @@ private function _renderHtmlRiwayat(array $data)
     {
       $this->db()->pdo()->exec("DELETE FROM `mlite_temporary`");
       $cari = $_POST['cari'];
+      $tgl_awal = $_POST['tgl_awal'];
+      $tgl_akhir = $_POST['tgl_akhir'];
       $this->db()->pdo()->exec("INSERT INTO `mlite_temporary` (
         `temp1`,
         `temp2`,
@@ -1221,6 +1227,7 @@ private function _renderHtmlRiwayat(array $data)
       SELECT *
       FROM `pasien`
       WHERE (`no_rkm_medis` LIKE '%$cari%' OR `nm_pasien` LIKE '%$cari%' OR `alamat` LIKE '%$cari%')
+      AND `tgl_daftar` BETWEEN '$tgl_awal' AND '$tgl_akhir'
       ");
 
       $cetak = $this->db('mlite_temporary')->toArray();
@@ -1310,26 +1317,32 @@ private function _renderHtmlRiwayat(array $data)
 
     public function getExportPDF()
     {
-      $query = $_GET['query'];
-      $tgl_awal = $_GET['tgl_awal'];
-      $tgl_akhir = $_GET['tgl_akhir'];
-      $filter = $_GET['filter'];
+      $query     = $_GET['query'] ?? '';
+      $tgl_awal  = $_GET['tgl_awal'] ?? '';
+      $tgl_akhir = $_GET['tgl_akhir'] ?? '';
+      $filter    = $_GET['filter'] ?? '';
 
-      $sql = "SELECT * FROM pasien";
-        if(isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir']) && $_GET['tgl_awal'] !='' && $_GET['tgl_akhir'] !='') {
-          $sql .=" WHERE tgl_daftar BETWEEN '$tgl_awal' AND '$tgl_akhir'";
-        }
-        if(isset($_GET['query']) && $_GET['query'] !='') {
-          $sql .=" AND nm_pasien LIKE '%$query%'";
-        }
-        if(isset($_GET['filter']) && $_GET['filter'] !='') {
-          $sql .=" AND kd_pj = '$filter'";
-        }
-      $stmt = $this->db()->pdo()->prepare($sql);
-      $stmt->execute();
-      $rows = $stmt->fetchAll();        
+      // Pakai QueryWrapper (lebih aman & konsisten)
+      $db = $this->db('pasien');
 
-      echo $this->draw('pasien.export.pdf.html', ['pasien' => $rows]);
+      if ($tgl_awal !== '' && $tgl_akhir !== '') {
+        $db->where('tgl_daftar', '>=', $tgl_awal)->where('tgl_daftar', '<=', $tgl_akhir);
+      }
+
+      if ($query !== '') {
+        $db->like('nm_pasien', "%{$query}%");
+      }
+
+      if ($filter !== '') {
+        $db->where('kd_pj', $filter);
+      }
+
+      $rows = $db->toArray();
+
+      // Render HTML langsung
+      $html = $this->draw('pasien.export.pdf.html', [
+        'pasien' => $rows
+      ]);
 
       $mpdf = new \Mpdf\Mpdf([
         'mode' => 'utf-8',
@@ -1338,15 +1351,18 @@ private function _renderHtmlRiwayat(array $data)
 
       $mpdf->SetHTMLHeader($this->core->setPrintHeader());
       $mpdf->SetHTMLFooter($this->core->setPrintFooter());
-            
-      $url = url(ADMIN.'/tmp/pasien.export.pdf.html');
-      $html = file_get_contents($url);
-      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
 
-      // Output a PDF file directly to the browser
+      $mpdf->WriteHTML(
+        $this->core->setPrintCss(),
+        \Mpdf\HTMLParserMode::HEADER_CSS
+      );
+      $mpdf->WriteHTML(
+        $html,
+        \Mpdf\HTMLParserMode::HTML_BODY
+      );
+
       $mpdf->Output();
-      exit();
+      exit;
     }
 
     public function getExportXLS()
@@ -1480,24 +1496,40 @@ private function _renderHtmlRiwayat(array $data)
 
         $perpage = intval($_GET['per_page'] ?? 10);
         if ($perpage <= 0) $perpage = 10;
+
         $page = intval($_GET['page'] ?? 1);
         if ($page <= 0) $page = 1;
+
         $offset = ($page - 1) * $perpage;
         $phrase = trim((string)($_GET['s'] ?? ''));
 
+        $tgl_awal  = $_GET['tgl_awal']  ?? '';
+        $tgl_akhir = $_GET['tgl_akhir'] ?? '';
+
         $query = $this->db('pasien')->desc('no_rkm_medis');
+
+        // filter tanggal (AMAN & konsisten)
+        if ($tgl_awal !== '' && $tgl_akhir !== '') {
+          $query
+            ->where('tgl_daftar', '>=', $tgl_awal)
+            ->where('tgl_daftar', '<=', $tgl_akhir);
+        }
+
+        // filter pencarian (DIGROUP)
         if ($phrase !== '') {
-            $query = $query
-                ->like('no_rkm_medis', '%'.$phrase.'%')
-                ->orLike('nm_pasien', '%'.$phrase.'%')
-                ->orLike('alamat', '%'.$phrase.'%')
-                ->orLike('no_ktp', '%'.$phrase.'%')
-                ->orLike('no_peserta', '%'.$phrase.'%')
-                ->orLike('no_tlp', '%'.$phrase.'%');
+          $query->where(function ($st) use ($phrase) {
+            $st->like('no_rkm_medis', "%$phrase%")
+              ->orLike('nm_pasien', "%$phrase%")
+              ->orLike('alamat', "%$phrase%")
+              ->orLike('no_ktp', "%$phrase%")
+              ->orLike('no_peserta', "%$phrase%")
+              ->orLike('no_tlp', "%$phrase%");
+          });
         }
 
         $total = $query->count();
-        $rows = $query->offset($offset)->limit($perpage)->toArray();
+        $rows  = $query->offset($offset)->limit($perpage)->toArray();
+
 
         // Add extra data for display
         $pasien = [];
@@ -1632,7 +1664,7 @@ private function _renderHtmlRiwayat(array $data)
             $input['umur'] = $this->hitungUmur($input['tgl_lahir']);
         }
 
-        $input['tgl_daftar'] = date('Y-m-d H:i');
+        $input['tgl_daftar'] = date('Y-m-d');
 
         try {
             $saved = $this->db('pasien')->save($input);

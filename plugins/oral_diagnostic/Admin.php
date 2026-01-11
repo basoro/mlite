@@ -1162,44 +1162,72 @@ class Admin extends AdminModule
 
     public function postCetak()
     {
-      $this->db()->pdo()->exec("DELETE FROM `mlite_temporary`");
-      $cari = $_POST['cari'];
-      $tgl_awal = $_POST['tgl_awal'];
-      $tgl_akhir = $_POST['tgl_akhir'];
-      $this->db()->pdo()->exec("INSERT INTO `mlite_temporary` (
-        `temp1`,`temp2`,`temp3`,`temp4`,`temp5`,`temp6`,`temp7`,`temp8`,`temp9`,`temp10`,`temp11`,`temp12`,`temp13`,`temp14`,`temp15`,`temp16`,`temp17`,`temp18`,`temp19`
-      )
-      SELECT *
-      FROM `mlite_pendaftaran_oral_diagnostic`
-      WHERE `kd_poli` = '$this->oral_diagnostic'
-      AND `tgl_registrasi` BETWEEN '$tgl_awal' AND '$tgl_akhir'
-      ");
+        $this->db()->pdo()->exec("DELETE FROM `mlite_temporary`");
 
-      $cetak = $this->db('mlite_temporary')->toArray();
-      echo $this->draw('cetak.oral_diagnostic.html', ['cetak' => $cetak]);
+        $tgl_awal  = $_POST['tgl_awal'];
+        $tgl_akhir = $_POST['tgl_akhir'];
 
-      exit();
+        $this->db()->pdo()->exec("
+            INSERT INTO `mlite_temporary` (
+                `temp1`,`temp2`,`temp3`,`temp4`,`temp5`,`temp6`,`temp7`,
+                `temp8`,`temp9`,`temp10`,`temp11`,`temp12`,`temp13`,
+                `temp14`,`temp15`,`temp16`,`temp17`,`temp18`,`temp19`
+            )
+            SELECT *
+            FROM `mlite_pendaftaran_oral_diagnostic`
+            WHERE `kd_poli` = '{$this->oral_diagnostic}'
+            AND `tgl_registrasi` BETWEEN '$tgl_awal' AND '$tgl_akhir'
+        ");
+
+        $cetak = $this->db('mlite_temporary')->toArray();
+
+        echo $this->draw('cetak.oral_diagnostic.html', [
+            'cetak' => $cetak,
+            'tgl_awal' => $tgl_awal,
+            'tgl_akhir' => $tgl_akhir
+        ]);
+
+        exit;
     }
 
     public function getCetakPdf()
     {
-      $mpdf = new \Mpdf\Mpdf([
-        'mode' => 'utf-8',
-        'orientation' => 'L'
-      ]);
-  
-      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
-      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
-            
-      $url = url(ADMIN.'/tmp/cetak.oral_diagnostic.html');
-      $html = file_get_contents($url);
-      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
-  
-      // Output a PDF file directly to the browser
-      $mpdf->Output();
-      exit();
+        $cetak = $this->db('mlite_temporary')->toArray();
+
+        /* ===============================
+        * INJECT DATA KE TEMPLATE
+        * =============================== */
+        $this->tpl->set('cetak', $cetak);
+
+        /* ===============================
+        * RENDER HTML SEKALI
+        * =============================== */
+        $html = $this->draw('cetak.oral_diagnostic.html');
+
+        /* ===============================
+        * GENERATE PDF
+        * =============================== */
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'orientation' => 'L'
+        ]);
+
+        $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+        $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+
+        $mpdf->WriteHTML(
+            $this->core->setPrintCss(),
+            \Mpdf\HTMLParserMode::HEADER_CSS
+        );
+        $mpdf->WriteHTML(
+            $html,
+            \Mpdf\HTMLParserMode::HTML_BODY
+        );
+
+        $mpdf->Output();
+        exit;
     }
+
 
     public function getLokalis()
     {

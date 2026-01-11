@@ -1346,62 +1346,66 @@ class Admin extends AdminModule
         $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
         $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
 
-        $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
-        $im=$qr->createImage(4,4);
-        imagepng($im,BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
+
+        /* ===============================
+        * QR CODE
+        * =============================== */
+        $qr = QRCode::getMinimumQRCode(
+            $this->core->getUserInfo('fullname', null, true),
+            QR_ERROR_CORRECT_LEVEL_L
+        );
+        $im = $qr->createImage(4,4);
+        imagepng($im, BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
         imagedestroy($im);
 
-        $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
         $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
 
+        /* ===============================
+        * PREPARE TEMPLATE DATA
+        * =============================== */
+        $this->tpl->set('billing_obat', $this->settings->get('settings.billing_obat'));
+        $this->tpl->set('wagateway', $this->settings->get('wagateway'));
+        $this->tpl->set('billing', $result);
+        $this->tpl->set('total_billing_obat', $total_detail_pemberian_obat);
+        $this->tpl->set('billing_besar_detail', $result_detail);
+        $this->tpl->set('pasien', $pasien);
+        $this->tpl->set('qrCode', $qrCode);
+        $this->tpl->set('fullname', $this->core->getUserInfo('fullname', null, true));
+
+        /* ===============================
+        * RENDER HTML SEKALI
+        * =============================== */
+        $html = $this->draw('billing.besar.html');
+
+        /* ===============================
+        * GENERATE PDF
+        * =============================== */
         if (file_exists(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf')) {
-          unlink(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf');
+            unlink(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf');
         }
 
         $mpdf = new \Mpdf\Mpdf([
-          'mode' => 'utf-8',
-          'format' => 'A4', 
-          'orientation' => 'P'
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P'
         ]);
-  
-        $css = '
-        <style>
-          del { 
-            display: none;
-          }
-          table {
-            padding-top: 1cm;
-            padding-bottom: 1cm;
-          }
-          td, th {
-            border-bottom: 1px solid #dddddd;
-            padding: 5px;
-          }        
-          tr:nth-child(even) {
-            background-color: #ffffff;
-          }
-        </style>
-        ';
-        
-        $url = BASE_DIR . '/' . ADMIN . '/tmp/billing.besar.html';
 
-        if (!file_exists($url)) {
-            throw new \Exception("Template billing.besar.html tidak ditemukan: " . $url);
-        }
+        $mpdf->WriteHTML(
+            $this->core->setPrintCss(),
+            \Mpdf\HTMLParserMode::HEADER_CSS
+        );
 
-        $html = file_get_contents($url);
-        if ($html === false || trim($html) === '') {
-            throw new \Exception("Template billing.besar.html kosong atau gagal dibaca");
-        }
-
-        $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-        $mpdf->WriteHTML($css);
         $mpdf->WriteHTML($html);
-    
-        // Output a PDF file save to server
-        $mpdf->Output(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf','F');
-                
-        echo $this->draw('billing.besar.html', ['billing_obat' => $this->settings->get('settings.billing_obat'), 'wagateway' => $this->settings->get('wagateway'), 'billing' => $result, 'total_billing_obat' => $total_detail_pemberian_obat, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'qrCode' => $qrCode, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
+
+        $mpdf->Output(
+            UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',
+            'F'
+        );
+
+        /* ===============================
+        * OUTPUT HTML (PREVIEW)
+        * =============================== */
+        echo $html;
         break;
         case "kecil":
         $result = $this->db('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();

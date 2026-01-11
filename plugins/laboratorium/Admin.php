@@ -415,115 +415,184 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getCetakHasil()
-    {
-      $settings = $this->settings('settings');
-      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-      $pj_lab = $this->db('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
-      $qr = QRCode::getMinimumQRCode($pj_lab['nm_dokter'], QR_ERROR_CORRECT_LEVEL_L);
-      $im = $qr->createImage(4, 4);
-      imagepng($im, BASE_DIR .'/'.ADMIN.'/tmp/qrcode.png');
-      imagedestroy($im);
-      $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
+public function getCetakHasil()
+{
+    /* ===============================
+     * SETTINGS
+     * =============================== */
+    $settings = $this->settings('settings');
+    $this->tpl->set(
+        'settings',
+        $this->tpl->noParse_array(htmlspecialchars_array($settings))
+    );
 
-      $pasien = $this->db('reg_periksa')
+    /* ===============================
+     * PENANGGUNG JAWAB LAB + QR
+     * =============================== */
+    $pj_lab = $this->db('dokter')
+        ->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))
+        ->oneArray();
+
+    $qr = QRCode::getMinimumQRCode(
+        $pj_lab['nm_dokter'],
+        QR_ERROR_CORRECT_LEVEL_L
+    );
+    $im = $qr->createImage(4, 4);
+    imagepng($im, BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
+    imagedestroy($im);
+
+    $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
+
+    /* ===============================
+     * DATA PASIEN
+     * =============================== */
+    $pasien = $this->db('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
         ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
         ->where('no_rawat', $_GET['no_rawat'])
         ->oneArray();
-      $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
-      $dokter_perujuk = $this->db('periksa_lab')
+
+    $reg_periksa = $this->db('reg_periksa')
+        ->where('no_rawat', $_GET['no_rawat'])
+        ->oneArray();
+
+    $dokter_perujuk = $this->db('periksa_lab')
         ->join('pegawai', 'pegawai.nik=periksa_lab.dokter_perujuk')
         ->where('no_rawat', $_GET['no_rawat'])
         ->where('tgl_periksa', $_GET['tgl_periksa'])
         ->where('jam', $_GET['jam'])
         ->oneArray();
 
-      $rows_periksa_lab = $this->db('periksa_lab')
-      ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
-      ->where('no_rawat', $_GET['no_rawat'])
-      ->where('tgl_periksa', $_GET['tgl_periksa'])
-      ->where('jam', $_GET['jam'])
-      ->where('periksa_lab.status', $_GET['status'])
-      ->toArray();
+    /* ===============================
+     * DATA PEMERIKSAAN LAB
+     * =============================== */
+    $rows = $this->db('periksa_lab')
+        ->join(
+            'jns_perawatan_lab',
+            'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw'
+        )
+        ->where('no_rawat', $_GET['no_rawat'])
+        ->where('tgl_periksa', $_GET['tgl_periksa'])
+        ->where('jam', $_GET['jam'])
+        ->where('periksa_lab.status', $_GET['status'])
+        ->toArray();
 
-      $periksa_lab = [];
-      $jumlah_total_lab = 0;
-      $no_lab = 1;
-      foreach ($rows_periksa_lab as $row) {
+    $periksa_lab = [];
+    $jumlah_total_lab = 0;
+    $no = 1;
+
+    foreach ($rows as $row) {
         $jumlah_total_lab += $row['biaya'];
-        $row['nomor'] = $no_lab++;
+        $row['nomor'] = $no++;
+
         $row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
-          ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
-          ->where('detail_periksa_lab.no_rawat', $_GET['no_rawat'])
-          ->where('detail_periksa_lab.tgl_periksa', $_GET['tgl_periksa'])
-          ->where('detail_periksa_lab.jam', $_GET['jam'])
-          ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
-          ->toArray();
+            ->join(
+                'template_laboratorium',
+                'template_laboratorium.id_template=detail_periksa_lab.id_template'
+            )
+            ->where('detail_periksa_lab.no_rawat', $_GET['no_rawat'])
+            ->where('detail_periksa_lab.tgl_periksa', $_GET['tgl_periksa'])
+            ->where('detail_periksa_lab.jam', $_GET['jam'])
+            ->where(
+                'detail_periksa_lab.kd_jenis_prw',
+                $row['kd_jenis_prw']
+            )
+            ->toArray();
+
         $periksa_lab[] = $row;
-      }
-
-      $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
-      $im=$qr->createImage(4,4);
-      imagepng($im,BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
-      imagedestroy($im);
-
-      $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
-
-      $filename = convertNorawat($dokter_perujuk['no_rawat']).'_'.$dokter_perujuk['kd_jenis_prw'].'_'.$dokter_perujuk['tgl_periksa'];
-      if (file_exists(UPLOADS.'/laboratorium/'.$filename.'.pdf')) {
-        unlink(UPLOADS.'/laboratorium/'.$filename.'.pdf');
-      }
-
-      echo $this->draw('cetakhasil.html', [
-        'periksa_lab' => $periksa_lab,
-        'jumlah_total_lab' => $jumlah_total_lab,
-        'qrCode' => $qrCode,
-        'pj_lab' => $pj_lab['nm_dokter'],
-        'dokter_perujuk' => $dokter_perujuk['nama'],
-        'pasien' => $pasien,
-        'reg_periksa' => $reg_periksa, 
-        'filename' => $filename,
-        'no_rawat' => $_GET['no_rawat'],
-        'wagateway' => $this->settings->get('wagateway')
-      ]);
-
-      $mpdf = new \Mpdf\Mpdf([
-        'mode' => 'utf-8',
-        'format' => 'A4', 
-        'orientation' => 'P'
-      ]);
-
-      $css = '
-      <style>
-        del { 
-          display: none;
-        }
-        table {
-          padding-top: 1cm;
-          padding-bottom: 1cm;
-        }
-        td, th {
-          border-bottom: 1px solid #dddddd;
-          padding: 5px;
-        }        
-        tr:nth-child(even) {
-          background-color: #ffffff;
-        }
-      </style>
-      ';
-      
-      $url = url(ADMIN.'/tmp/cetakhasil.html');
-      $html = file_get_contents($url);
-      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-      $mpdf->WriteHTML($css);
-      $mpdf->WriteHTML($html);
-  
-      // Output a PDF file save to server
-      $mpdf->Output(UPLOADS.'/laboratorium/'.$filename.'.pdf','F');
-
-      exit();
     }
+
+    /* ===============================
+     * FILENAME PDF
+     * =============================== */
+    $filename =
+        convertNorawat($dokter_perujuk['no_rawat']) . '_' .
+        $dokter_perujuk['kd_jenis_prw'] . '_' .
+        $dokter_perujuk['tgl_periksa'];
+
+    if (file_exists(UPLOADS.'/laboratorium/'.$filename.'.pdf')) {
+        unlink(UPLOADS.'/laboratorium/'.$filename.'.pdf');
+    }
+
+    /* ===============================
+     * INJECT DATA KE TEMPLATE
+     * =============================== */
+    $this->tpl->set(
+        'periksa_lab',
+        $periksa_lab
+    );
+    $this->tpl->set(
+        'jumlah_total_lab',
+        $jumlah_total_lab
+    );
+    $this->tpl->set(
+        'qrCode',
+        $qrCode
+    );
+    $this->tpl->set(
+        'pj_lab',
+        $pj_lab['nm_dokter']
+    );
+    $this->tpl->set(
+        'dokter_perujuk',
+        $dokter_perujuk['nama']
+    );
+    $this->tpl->set(
+        'pasien',
+        $pasien
+    );
+    $this->tpl->set(
+        'reg_periksa',
+        $reg_periksa
+    );
+    $this->tpl->set(
+        'filename',
+        $filename
+    );
+    $this->tpl->set(
+        'no_rawat',
+        $_GET['no_rawat']
+    );
+    $this->tpl->set(
+        'wagateway',
+        $this->settings->get('wagateway')
+    );
+
+    /* ===============================
+     * RENDER HTML SEKALI
+     * =============================== */
+    $html = $this->draw('cetakhasil.html');
+
+    /* ===============================
+     * OUTPUT HTML (PREVIEW)
+     * =============================== */
+    echo $html;
+
+    /* ===============================
+     * GENERATE PDF
+     * =============================== */
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'orientation' => 'P'
+    ]);
+
+    $mpdf->WriteHTML(
+        $this->core->setPrintCss(),
+        \Mpdf\HTMLParserMode::HEADER_CSS
+    );
+
+    $mpdf->WriteHTML($html, \Mpdf\HTMLParserMode::HTML_BODY);
+
+    // Simpan PDF ke server
+    $mpdf->Output(
+        UPLOADS.'/laboratorium/'.$filename.'.pdf',
+        'F'
+    );
+
+    exit;
+}
+
 
     public function getCetakPermintaan()
     {
