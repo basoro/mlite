@@ -1,5 +1,5 @@
 <p align="right">
-    <b>Codename: Kirana</b><br>
+    <b>Codename: Sabrina</b><br>
 </p>
 
 # mLITE
