@@ -175,6 +175,7 @@ $("#form_rincian").on("click", "#selesai", function(event){
 
 // ketika baris data diklik
 $("#display").on("click", ".layanan_obat", function(event){
+  {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_update', 'apotek_ralan') == true}
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
 
@@ -201,6 +202,7 @@ $("#display").on("click", ".layanan_obat", function(event){
     $("#notif").hide();
     $("#rincian").html(data).show();
   });
+  {/if}
 });
 
 // ketika inputbox pencarian diisi

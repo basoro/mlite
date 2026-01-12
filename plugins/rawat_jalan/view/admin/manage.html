@@ -40,11 +40,13 @@
           <div id="notif"></div>
         </div>
         {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'rekammedis'}
+        {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_create', 'rawat_jalan') == true}
         <div class="row">
           <div id="form">
             {include: ../plugins/rawat_jalan/view/admin/form.html}
           </div>
         </div>
+        {/if}
         {/if}
         <div id="rawat_jalan" class="display">
           {include: ../plugins/rawat_jalan/view/admin/display.html}

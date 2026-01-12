@@ -110,6 +110,7 @@
 </div>
 <script type="text/javascript">
   $(document).on('click', 'a[href="#layanan_obat"]', function(event){
+    {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_update', 'radiologi') == true}
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -136,6 +137,7 @@
         $("#form_rincian #jam_reg").val(data);
       });
     });
+    {/if}
   });
 
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);

@@ -110,6 +110,7 @@
 </div>
 <script type="text/javascript">
   $(document).on('click', 'a[href="#layanan_obat"]', function(event){
+    {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_update', 'laboratorium') == true}
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -132,6 +133,7 @@
       $("#notif").hide();
       $("#rincian").html(data).show();
     });
+    {/if}
   });
 
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);

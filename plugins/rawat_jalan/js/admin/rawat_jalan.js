@@ -178,6 +178,7 @@ $("#display").on("click",".riwayat_perawatan", function(event){
 
 // ketika baris data diklik
 $("#display").on("click", ".edit", function(event){
+  {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_update', 'rawat_jalan') == true}
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/rawat_jalan/form?t=' + mlite.token;
@@ -193,6 +194,7 @@ $("#display").on("click", ".edit", function(event){
       $('input:hidden[name=stts_daftar]').val(get_stts_daftar);
     });
   });
+  {/if}
 });
 
 // ketika tombol hapus ditekan

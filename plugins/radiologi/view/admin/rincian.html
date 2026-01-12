@@ -83,8 +83,10 @@
           <!--<button type="button" class="btn btn-danger btn-xs {if: $value.tgl_sampel !== '0000-00-00' || $value.jam_sampel !== '00:00:00'}disabled{else}hapus_permintaan_lab{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_permintaan="{$value.tgl_permintaan}" data-jam_permintaan="{$value.jam_permintaan}" data-noorder="{$value.noorder}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>-->
           <button type="button" name="button" class="btn btn-xs btn-warning cetak_permintaan"><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></button>
           <!-- <button type="button" name="button" class="btn btn-xs btn-info nota_rad"><i class="fa fa-money"></i><span class="hidden-xs"> Nota</span></button> -->
+          {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_update', 'radiologi') == true}
           <button type="button" class="btn btn-success btn-xs {if: $value.tgl_sampel !== '0000-00-00' || $value.jam_sampel !== '00:00:00'}disabled{else}validasi_permintaan_radiologi{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_permintaan="{$value.tgl_permintaan}" data-jam_permintaan="{$value.jam_permintaan}" data-noorder="{$value.noorder}"><i class="fa fa-check"></i><span class="hidden-xs"> Validasi</span></button>
           <button type="button" class="btn btn-success btn-xs {if: $value.tgl_hasil !== '0000-00-00' || $value.jam_hasil !== '00:00:00'}disabled{else}validasi_hasil_radiologi{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_permintaan="{$value.tgl_permintaan}" data-jam_permintaan="{$value.jam_permintaan}" data-noorder="{$value.noorder}"><i class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+          {/if}
         </td>
       </tr>
       <tr>

@@ -98,8 +98,8 @@
   </div>
   <div class="col-md-12 m-b-xl">
     <div class="text-center">
-      <button type="button" name="button" class="btn btn-primary" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
-      <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+      <button type="button" name="button" class="btn btn-primary" id="simpan" {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_create', 'laboratorium') == false}disabled{/if}><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+      <button type="button" name="button" class="btn btn-danger" id="hapus" {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_delete', 'laboratorium') == false}disabled{/if}><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
       <button type="button" name="button" class="btn btn-warning" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
     </div>
   </div>

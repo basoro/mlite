@@ -157,11 +157,17 @@
         <td>{$value.no_resep}</td>
         <td>{$value.tgl_peresepan} {$value.jam_peresepan}</td>
         <td colspan="3">
+          {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_delete', 'apotek_ranap') == true}
           <button type="button" class="btn btn-danger btn-xs {if: $value.tgl_perawatan !== '0000-00-00'}disabled{else}hapus_resep_obat{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+          {/if}
+          {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_update', 'apotek_ranap') == true}
           <button type="button" class="btn btn-success btn-xs {if: $value.tgl_perawatan !== '0000-00-00' && isset($value.tgl_penyerahan) && $value.tgl_penyerahan !== '0000-00-00'}disabled{else}validasi_resep_obat{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}" data-penyerahan="{if: $value.tgl_perawatan !== '0000-00-00' && isset($value.tgl_penyerahan) && $value.tgl_penyerahan == '0000-00-00'}penyerahan{/if}"><i class="fa fa-check"></i><span class="hidden-xs"> {if: $value.tgl_perawatan !== '0000-00-00' && isset($value.tgl_penyerahan) && $value.tgl_penyerahan == '0000-00-00'}Penyerahan{else}Validasi{/if}</span></button>
+          {/if}
           <button type="button" class="btn btn-danger btn-xs cetak_eresep" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="racikan"><i class="fa fa-print"></i><span class="hidden-xs"> e-Resep</span></button>
+          {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_create', 'apotek_ranap') == true}
           {if: $value.tgl_perawatan !== '0000-00-00'}
           <button type="button" class="btn btn-primary btn-xs tambah_item_barang" data-no_resep="{$value.no_resep}" data-no_racik="{$value.no_racik}" data-jml_dr="{$value.jml_dr}" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="racikan"><i class="fa fa-plus"></i></button>
+          {/if}
           {/if}
         </td>
       </tr>

@@ -150,6 +150,7 @@ $("#display").on("click",".riwayat_perawatan", function(event){
 
 // ketika baris data diklik
 $("#display").on("click", ".edit", function(event){
+  {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_update', 'laboratorium') == true}
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/laboratorium/form?t=' + mlite.token;
@@ -163,6 +164,7 @@ $("#display").on("click", ".edit", function(event){
       $("#stts_daftar").html(data).show();
     });
   });
+  {/if}
 });
 
 // ketika tombol hapus ditekan

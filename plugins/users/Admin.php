@@ -355,7 +355,7 @@ class Admin extends AdminModule
     private function _getInfoCap($kd_poli = null)
     {
         $result = [];
-        $rows = $this->db()->pdo()->prepare("(SELECT kd_poli AS cap, nm_poli AS nm_cap FROM poliklinik) UNION (SELECT kd_bangsal AS cap, nm_bangsal AS nm_cap FROM bangsal)");
+        $rows = $this->db()->pdo()->prepare("SELECT kd_poli AS cap, nm_poli AS nm_cap FROM poliklinik UNION SELECT kd_bangsal AS cap, nm_bangsal AS nm_cap FROM bangsal");
         $rows->execute();
         $rows = $rows->fetchAll();
 

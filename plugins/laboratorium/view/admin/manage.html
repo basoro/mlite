@@ -74,11 +74,13 @@
           <div id="notif"></div>
         </div>
         {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'rekammedis'}
+        {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_create', 'laboratorium') == true || $this->core->checkPermission($this->core->getUserInfo('username'), 'can_update', 'laboratorium') == true}
         <div class="row">
           <div id="form">
             {include: ../plugins/laboratorium/view/admin/form.html}
           </div>
         </div>
+        {/if}
         {/if}
         <div id="laboratorium" class="display">
           {include: ../plugins/laboratorium/view/admin/display.html}
