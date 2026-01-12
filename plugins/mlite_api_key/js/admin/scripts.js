@@ -367,7 +367,7 @@ var id = rowData['id'];
     $("#export_pdf").click(function () {
 
         var doc = new jsPDF('p', 'pt', 'A4'); /* pilih 'l' atau 'p' */
-        var img = "{?=base64_encode(file_get_contents(url($settings['logo'])))?}";
+        var img = "{?=base64_encode(file_get_contents(BASE_DIR.'/'.$settings['logo']))?}";
         var ext = "{$settings['logo']}".split('.').pop().toLowerCase();
         var format = 'JPEG';
         if (ext === 'png') {
