@@ -337,6 +337,15 @@ $exp_time = $_POST['exp_time'];
     }
 
     private function _processPostmanItem($item, &$openApi, $tag = null) {
+        // Handle folder structure recursively
+        if (isset($item['item']) && is_array($item['item'])) {
+            $groupName = $item['name'] ?? $tag;
+            foreach ($item['item'] as $subItem) {
+                $this->_processPostmanItem($subItem, $openApi, $groupName);
+            }
+            return;
+        }
+
         if (!isset($item['request'])) return;
 
         $method = strtolower($item['request']['method']);

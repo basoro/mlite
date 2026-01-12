@@ -1572,6 +1572,1232 @@
             ]
         },
         {
+            "name": "IGD",
+            "item": [
+                {
+                    "name": "List IGD",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/list?tgl_awal={{tgl_awal}}&tgl_akhir={{tgl_akhir}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "list"
+                            ],
+                            "query": [
+                                {
+                                    "key": "draw",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "start",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "length",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "tgl_awal",
+                                    "value": "2025-01-01"
+                                },
+                                {
+                                    "key": "tgl_akhir",
+                                    "value": "2025-12-31"
+                                },
+                                {
+                                    "key": "search",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Detail IGD",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/show/{{no_rawat}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "show",
+                                "{{no_rawat}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create IGD",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rkm_medis\": \"123456\",\n    \"kd_poli\": \"IGD\",\n    \"kd_dokter\": \"D001\",\n    \"kd_pj\": \"A01\",\n    \"tgl_registrasi\": \"2024-01-01\",\n    \"jam_reg\": \"08:00:00\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/create",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "create"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update IGD",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"stts\": \"Sudah\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/update/{{no_rawat}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "update",
+                                "{{no_rawat}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete IGD",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/delete/{{no_rawat}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "delete",
+                                "{{no_rawat}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show SOAP",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/showsoap/{{no_rawat}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "showsoap",
+                                "{{no_rawat}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Save SOAP",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"tgl_perawatan\": \"2024-01-01\",\n    \"jam_rawat\": \"10:00:00\",\n    \"suhu_tubuh\": \"36.5\",\n    \"tensi\": \"120/80\",\n    \"nadi\": \"80\",\n    \"respirasi\": \"20\",\n    \"tinggi\": \"170\",\n    \"berat\": \"65\",\n    \"gcs\": \"E4V5M6\",\n    \"keluhan\": \"Sakit kepala\",\n    \"pemeriksaan\": \"Keadaan umum baik\",\n    \"alergi\": \"-\",\n    \"lingkar_perut\": \"-\",\n    \"rtl\": \"Istirahat\",\n    \"penilaian\": \"-\",\n    \"instruksi\": \"-\",\n    \"evaluasi\": \"-\",\n    \"nip\": \"-\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/savesoap",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "savesoap"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete SOAP",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"tgl_perawatan\": \"2024-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/deletesoap",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "deletesoap"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show Tindakan",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/showdetail/tindakan/{{no_rawat}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "showdetail",
+                                "tindakan",
+                                "{{no_rawat}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Save Tindakan",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"kat\": \"tindakan\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"tgl_perawatan\": \"2024-01-01\",\n    \"jam_rawat\": \"10:00:00\",\n    \"kd_jenis_prw\": \"T001\",\n    \"provider\": \"rawat_jl_dr\",\n    \"kode_provider\": \"D001\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/savedetail",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "savedetail"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Tindakan",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"provider\": \"rawat_jl_dr\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_jenis_prw\": \"T001\",\n    \"tgl_perawatan\": \"2024-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/deletedetail",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "deletedetail"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show Obat",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/showdetail/obat/{{no_rawat}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "showdetail",
+                                "obat",
+                                "{{no_rawat}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Save Obat",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"kat\": \"obat\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"tgl_perawatan\": \"2024-01-01\",\n    \"jam_rawat\": \"10:00:00\",\n    \"kd_jenis_prw\": \"OB001\",\n    \"jml\": \"10\",\n    \"aturan_pakai\": \"3x1\",\n    \"kode_provider\": \"D001\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/savedetail",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "savedetail"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Obat",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kode_brng\": \"OB001\",\n    \"tgl_peresepan\": \"2024-01-01\",\n    \"jam_peresepan\": \"10:00:00\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/deletedetail",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "deletedetail"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Save Diagnosa",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_penyakit\": \"A00.1\",\n    \"status\": \"Ralan\",\n    \"prioritas\": \"1\",\n    \"status_penyakit\": \"Lama\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/savediagnosa",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "savediagnosa"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Diagnosa",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_penyakit\": \"A00.1\",\n    \"prioritas\": \"1\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/deletediagnosa",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "deletediagnosa"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Save Prosedur",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"kode\": \"89.01\",\n    \"status\": \"Ralan\",\n    \"prioritas\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/saveprosedur",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "saveprosedur"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Prosedur",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"kode\": \"89.01\",\n    \"prioritas\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/deleteprosedur",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "deleteprosedur"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Save Catatan",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"catatan\": \"Pasien perlu istirahat cukup\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/savecatatan",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "savecatatan"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Catatan",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"catatan\": \"Pasien perlu istirahat cukup\",\n    \"tanggal\": \"2025-01-01\",\n    \"jam\": \"12:00:00\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/deletecatatan",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "deletecatatan"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Save Berkas",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"judul\": \"Hasil Lab Luar\",\n    \"deskripsi\": \"http://link-to-file.com/file.pdf\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/saveberkas",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "saveberkas"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Berkas",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"judul\": \"Hasil Lab Luar\",\n    \"deskripsi\": \"http://link-to-file.com/file.pdf\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/deleteberkas",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "deleteberkas"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Save Resume",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"diagnosa_utama\": \"Demam Berdarah\",\n    \"diagnosa_sekunder\": \"Tifus\",\n    \"jalannya_penyakit\": \"Demam 3 hari...\",\n    \"terapi\": \"Paracetamol 3x1\",\n    \"kondisi_pulang\": \"Hidup\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/saveresume",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "saveresume"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Save Laporan Operasi",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"tanggal\": \"2023-01-01\",\n    \"jam\": \"10:00:00\",\n    \"operator\": \"D001\",\n    \"laporan\": \"Operasi berjalan lancar\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/savelaporanoperasi",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "savelaporanoperasi"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Laporan Operasi",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"tanggal\": \"2023-01-01\",\n    \"jam\": \"10:00:00\",\n    \"operator\": \"D001\",\n    \"laporan\": \"Operasi berjalan lancar\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/deletelaporanoperasi",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "deletelaporanoperasi"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
             "name": "Rawat Inap",
             "item": [
                 {
@@ -2957,6 +4183,7 @@
                 {
                     "name": "Billing List (Rawat Jalan)",
                     "request": {
+                        "method": "GET",
                         "header": [
                             {
                                 "key": "X-Api-Key",
@@ -3113,6 +4340,7 @@
                 {
                     "name": "Billing Detail (Rawat Inap)",
                     "request": {
+                        "method": "GET",
                         "header": [
                             {
                                 "key": "X-Api-Key",
@@ -3146,1232 +4374,6 @@
                                 "kasir_rawat_inap",
                                 "billingdetail",
                                 "2024/01/01/000001"
-                            ]
-                        }
-                    }
-                }
-            ]
-        },
-        {
-            "name": "IGD",
-            "item": [
-                {
-                    "name": "List IGD",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/list?tgl_awal={{tgl_awal}}&tgl_akhir={{tgl_akhir}}",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "list"
-                            ],
-                            "query": [
-                                {
-                                    "key": "draw",
-                                    "value": "1"
-                                },
-                                {
-                                    "key": "start",
-                                    "value": "0"
-                                },
-                                {
-                                    "key": "length",
-                                    "value": "10"
-                                },
-                                {
-                                    "key": "tgl_awal",
-                                    "value": "2025-01-01"
-                                },
-                                {
-                                    "key": "tgl_akhir",
-                                    "value": "2025-12-31"
-                                },
-                                {
-                                    "key": "search",
-                                    "value": ""
-                                }
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Detail IGD",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/show/{{no_rawat}}",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "show",
-                                "{{no_rawat}}"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Create IGD",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rkm_medis\": \"123456\",\n    \"kd_poli\": \"IGD\",\n    \"kd_dokter\": \"D001\",\n    \"kd_pj\": \"A01\",\n    \"tgl_registrasi\": \"2024-01-01\",\n    \"jam_reg\": \"08:00:00\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/create",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "create"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Update IGD",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"stts\": \"Sudah\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/update/{{no_rawat}}",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "update",
-                                "{{no_rawat}}"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Delete IGD",
-                    "request": {
-                        "method": "DELETE",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/delete/{{no_rawat}}",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "delete",
-                                "{{no_rawat}}"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Show SOAP",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/showsoap/{{no_rawat}}",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "showsoap",
-                                "{{no_rawat}}"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Save SOAP",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"tgl_perawatan\": \"2024-01-01\",\n    \"jam_rawat\": \"10:00:00\",\n    \"suhu_tubuh\": \"36.5\",\n    \"tensi\": \"120/80\",\n    \"nadi\": \"80\",\n    \"respirasi\": \"20\",\n    \"tinggi\": \"170\",\n    \"berat\": \"65\",\n    \"gcs\": \"E4V5M6\",\n    \"keluhan\": \"Sakit kepala\",\n    \"pemeriksaan\": \"Keadaan umum baik\",\n    \"alergi\": \"-\",\n    \"lingkar_perut\": \"-\",\n    \"rtl\": \"Istirahat\",\n    \"penilaian\": \"-\",\n    \"instruksi\": \"-\",\n    \"evaluasi\": \"-\",\n    \"nip\": \"-\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/savesoap",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "savesoap"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Delete SOAP",
-                    "request": {
-                        "method": "DELETE",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"tgl_perawatan\": \"2024-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/deletesoap",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "deletesoap"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Show Tindakan",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/showdetail/tindakan/{{no_rawat}}",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "showdetail",
-                                "tindakan",
-                                "{{no_rawat}}"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Save Tindakan",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"kat\": \"tindakan\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"tgl_perawatan\": \"2024-01-01\",\n    \"jam_rawat\": \"10:00:00\",\n    \"kd_jenis_prw\": \"T001\",\n    \"provider\": \"rawat_jl_dr\",\n    \"kode_provider\": \"D001\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/savedetail",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "savedetail"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Delete Tindakan",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"provider\": \"rawat_jl_dr\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_jenis_prw\": \"T001\",\n    \"tgl_perawatan\": \"2024-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/deletedetail",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "deletedetail"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Show Obat",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/showdetail/obat/{{no_rawat}}",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "showdetail",
-                                "obat",
-                                "{{no_rawat}}"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Save Obat",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"kat\": \"obat\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"tgl_perawatan\": \"2024-01-01\",\n    \"jam_rawat\": \"10:00:00\",\n    \"kd_jenis_prw\": \"OB001\",\n    \"jml\": \"10\",\n    \"aturan_pakai\": \"3x1\",\n    \"kode_provider\": \"D001\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/savedetail",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "savedetail"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Delete Obat",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kode_brng\": \"OB001\",\n    \"tgl_peresepan\": \"2024-01-01\",\n    \"jam_peresepan\": \"10:00:00\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/deletedetail",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "deletedetail"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Save Diagnosa",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_penyakit\": \"A00.1\",\n    \"status\": \"Ralan\",\n    \"prioritas\": \"1\",\n    \"status_penyakit\": \"Lama\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/savediagnosa",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "savediagnosa"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Delete Diagnosa",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_penyakit\": \"A00.1\",\n    \"prioritas\": \"1\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/deletediagnosa",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "deletediagnosa"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Save Prosedur",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"kode\": \"89.01\",\n    \"status\": \"Ralan\",\n    \"prioritas\": 1\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/saveprosedur",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "saveprosedur"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Delete Prosedur",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"kode\": \"89.01\",\n    \"prioritas\": 1\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/deleteprosedur",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "deleteprosedur"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Save Catatan",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"catatan\": \"Pasien perlu istirahat cukup\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/savecatatan",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "savecatatan"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Delete Catatan",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"catatan\": \"Pasien perlu istirahat cukup\",\n    \"tanggal\": \"2025-01-01\",\n    \"jam\": \"12:00:00\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/deletecatatan",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "deletecatatan"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Save Berkas",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"judul\": \"Hasil Lab Luar\",\n    \"deskripsi\": \"http://link-to-file.com/file.pdf\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/saveberkas",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "saveberkas"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Delete Berkas",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"judul\": \"Hasil Lab Luar\",\n    \"deskripsi\": \"http://link-to-file.com/file.pdf\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/deleteberkas",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "deleteberkas"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Save Resume",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"diagnosa_utama\": \"Demam Berdarah\",\n    \"diagnosa_sekunder\": \"Tifus\",\n    \"jalannya_penyakit\": \"Demam 3 hari...\",\n    \"terapi\": \"Paracetamol 3x1\",\n    \"kondisi_pulang\": \"Hidup\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/saveresume",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "saveresume"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Save Laporan Operasi",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"tanggal\": \"2023-01-01\",\n    \"jam\": \"10:00:00\",\n    \"operator\": \"D001\",\n    \"laporan\": \"Operasi berjalan lancar\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/savelaporanoperasi",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "savelaporanoperasi"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Delete Laporan Operasi",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Api-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Username-Permission",
-                                "value": "{{username_permission}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "X-Password-Permission",
-                                "value": "{{password_permission}}",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"tanggal\": \"2023-01-01\",\n    \"jam\": \"10:00:00\",\n    \"operator\": \"D001\",\n    \"laporan\": \"Operasi berjalan lancar\"\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/api/igd/deletelaporanoperasi",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "api",
-                                "igd",
-                                "deletelaporanoperasi"
                             ]
                         }
                     }
