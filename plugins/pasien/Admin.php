@@ -1308,7 +1308,7 @@ class Admin extends AdminModule
             'orientation' => 'L'
         ]);
 
-        $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+        $mpdf->SetHTMLHeader($this->core->setPrintHeader(), '0', true);
         $mpdf->SetHTMLFooter($this->core->setPrintFooter());
 
         // ambil data
