@@ -1078,9 +1078,9 @@ class Admin extends AdminModule
     public function postCetak()
     {
       $this->db()->pdo()->exec("DELETE FROM `mlite_temporary`");
-      $cari = $_POST['cari'];
-      $tgl_awal = $_POST['tgl_awal'];
-      $tgl_akhir = $_POST['tgl_akhir'];
+      $cari = isset_or($_POST['cari'], '');
+      $tgl_awal = isset_or($_POST['tgl_awal'], date('Y-m-d'));
+      $tgl_akhir = isset_or($_POST['tgl_akhir'], date('Y-m-d'));
       $this->db()->pdo()->exec("INSERT INTO `mlite_temporary` (
         `temp1`,
         `temp2`,
@@ -1125,8 +1125,6 @@ class Admin extends AdminModule
       AND `tgl_daftar` BETWEEN '$tgl_awal' AND '$tgl_akhir'
       ");
 
-      $cetak = $this->db('mlite_temporary')->toArray();
-      return $this->draw('cetak.pasien.html', ['cetak' => $cetak]);
       exit();
     }
 
@@ -1303,24 +1301,39 @@ class Admin extends AdminModule
         redirect(url([ADMIN, 'pasien', 'settings']));
     }
 
-    public function getCetakMpdf()
+    public function getCetakPdf()
     {
-      $mpdf = new \Mpdf\Mpdf([
-        'mode' => 'utf-8',
-        'orientation' => 'L'
-      ]);
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'orientation' => 'L'
+        ]);
 
-      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
-      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
-            
-      $url = url(ADMIN.'/tmp/cetak.pasien.html');
-      $html = file_get_contents($url);
-      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
+        $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+        $mpdf->SetHTMLFooter($this->core->setPrintFooter());
 
-      // Output a PDF file directly to the browser
-      $mpdf->Output();
-      exit();      
+        // ambil data
+        $cetak = $this->db('mlite_temporary')->toArray();
+
+        // inject ke template
+        $this->tpl->set('cetak', $cetak);
+
+        // render template (PATH BENAR)
+        $html = $this->draw('cetak.pasien.html');
+
+        // CSS
+        $mpdf->WriteHTML(
+            $this->core->setPrintCss(),
+            \Mpdf\HTMLParserMode::HEADER_CSS
+        );
+
+        // BODY
+        $mpdf->WriteHTML(
+            $html,
+            \Mpdf\HTMLParserMode::HTML_BODY
+        );
+
+        $mpdf->Output();
+        exit;
     }
 
     public function getCetakRiwayatMpdf()
