@@ -116,7 +116,7 @@
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
   
   var currentPage = 1;
-  var baseUrl = '{?=url()?}/admin/api/pasien';
+  var baseUrl = '{?=url()?}/{?=ADMIN?}/api/pasien';
   var token = '{$token}';
   var canUpdate = '{$mlite_crud_permissions.can_update}' == 'true';
   var adminMode = '{$admin_mode}';
