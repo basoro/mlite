@@ -286,8 +286,18 @@ class Admin extends AdminModule
             $zipFile = BASE_DIR . '/tmp/latest.zip';
             $url = "https://github.com/basoro/mlite/archive/refs/heads/master.zip";
 
+            // Pastikan folder tmp ada
+            if (!is_dir(BASE_DIR . '/tmp')) {
+                mkdir(BASE_DIR . '/tmp', 0755, true);
+            }
+
             $ch = curl_init($url);
             $fp = fopen($zipFile, 'w+');
+
+            if ($fp === false) {
+                $this->tpl->set('error', "Gagal membuat file zip: $zipFile. Pastikan permissions folder benar.");
+                return $this->draw('update.html');
+            }
 
             curl_setopt_array($ch, [
                 CURLOPT_FILE            => $fp,
