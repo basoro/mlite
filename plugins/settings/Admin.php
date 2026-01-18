@@ -278,6 +278,115 @@ class Admin extends AdminModule
                 $this->settings('settings', 'update_changelog', $obj['body']);
                 $this->tpl->set('update_version', $obj['tag_name']);
             }
+        } elseif (isset($_POST['update_nightly'])) {
+            if (!class_exists("ZipArchive")) {
+                $this->tpl->set('error', "ZipArchive is required to update mLITE.");
+            }
+
+            $zipFile = BASE_DIR . '/tmp/latest.zip';
+            $url = "https://github.com/basoro/mlite/archive/refs/heads/master.zip";
+
+            $ch = curl_init($url);
+            $fp = fopen($zipFile, 'w+');
+
+            curl_setopt_array($ch, [
+                CURLOPT_FILE            => $fp,
+                CURLOPT_FOLLOWLOCATION  => true,
+                CURLOPT_FAILONERROR     => true,
+                CURLOPT_USERAGENT       => 'mlite-updater',
+                CURLOPT_TIMEOUT         => 300,
+            ]);
+
+            $ok  = curl_exec($ch);
+            $err = curl_error($ch);
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            curl_close($ch);
+            fclose($fp);
+
+            if (!$ok || $err || $http_code != 200) {
+                $this->tpl->set('error', "Download gagal: $err (HTTP $http_code)");
+                @unlink($zipFile);
+                return $this->draw('update.html');
+            }
+
+            define("UPGRADABLE", true);
+
+            // Making backup
+            $backup_date = date('YmdHis');
+            $this->rcopy(BASE_DIR.'/systems', BASE_DIR.'/backup/'.$backup_date.'/systems');
+            $this->rcopy(BASE_DIR.'/plugins', BASE_DIR.'/backup/'.$backup_date.'/plugins');
+            $this->rcopy(BASE_DIR.'/assets', BASE_DIR.'/backup/'.$backup_date.'/assets');
+            $this->rcopy(BASE_DIR.'/themes', BASE_DIR.'/backup/'.$backup_date.'/themes');
+            $this->rcopy(BASE_DIR.'/config.php', BASE_DIR.'/backup/'.$backup_date.'/config.php');
+            $this->rcopy(BASE_DIR.'/manifest.json', BASE_DIR.'/backup/'.$backup_date.'/manifest.json');
+
+            // Unzip latest update
+            $zip = new \ZipArchive;
+            if ($zip->open(BASE_DIR.'/tmp/latest.zip') === TRUE) {
+                // Extract to base tmp/update
+                $zip->extractTo(BASE_DIR.'/tmp/update');
+                $zip->close();
+            } else {
+                $this->tpl->set('error', "Gagal membuka file zip.");
+                @unlink(BASE_DIR.'/tmp/latest.zip');
+                return $this->draw('update.html');
+            }
+
+            // Detect extracted update root folder
+            $updateBase = BASE_DIR.'/tmp/update';
+            $extractedRoot = null;
+            
+            // For nightly build from github, it usually extracts to mlite-main
+            if (is_dir($updateBase.'/mlite-main')) {
+                $extractedRoot = $updateBase.'/mlite-main';
+            } else {
+                $dirs = glob($updateBase.'/mlite-*', GLOB_ONLYDIR);
+                if (!empty($dirs)) {
+                    $extractedRoot = $dirs[0];
+                }
+            }
+            
+            if (!$extractedRoot && is_dir($updateBase.'/systems')) {
+                $extractedRoot = $updateBase;
+            }
+
+            if (!$extractedRoot) {
+                $this->tpl->set('error', "Update extraction failed: 'mlite-*' folder not found.");
+                @unlink(BASE_DIR.'/tmp/latest.zip');
+                $this->rrmdir(BASE_DIR.'/tmp/update');
+                return $this->draw('update.html');
+            }
+
+            // Copy files using detected root
+            $this->rcopy($extractedRoot.'/systems', BASE_DIR.'/systems');
+            $this->rcopy($extractedRoot.'/plugins', BASE_DIR.'/plugins');
+            $this->rcopy($extractedRoot.'/assets', BASE_DIR.'/assets');
+            $this->rcopy($extractedRoot.'/themes', BASE_DIR.'/themes');
+
+            // Restore defines
+            $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');
+            $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/manifest.json', BASE_DIR.'/manifest.json');
+
+            // Run upgrade script
+            $version = $settings['version'];
+            $upgradeFile = $extractedRoot.'/systems/upgrade.php';
+            $new_version = $version;
+            if (is_file($upgradeFile)) {
+                $new_version = include($upgradeFile);
+            }
+
+            // Delete all unnecessary files
+            unlink(BASE_DIR.'/tmp/latest.zip');
+            $this->rrmdir(BASE_DIR.'/tmp/update');
+
+            $this->settings('settings', 'version', $new_version);
+            $this->settings('settings', 'update_check', time());
+
+            sleep(2);
+            $this->notify('success', 'Update Nightly Build berhasil.');
+            redirect(url([ADMIN, 'settings', 'updates']));
+
         } elseif (isset($_POST['update'])) {
             if (!class_exists("ZipArchive")) {
                 $this->tpl->set('error', "ZipArchive is required to update mLITE.");

@@ -59,6 +59,12 @@
                         <input type="submit" class="btn btn-primary" name="check" value="Cek Update" />
                     </form>
                 {/if}
+                <hr>
+                <h4>Nightly Build</h4>
+                <p class="text-warning">Update langsung dari repositori GitHub (branch main). Gunakan dengan resiko sendiri.</p>
+                <form method="post" onsubmit="return confirm('Apakah Anda yakin ingin melakukan update Nightly Build? Ini mungkin tidak stabil.');">
+                    <input type="submit" class="btn btn-danger" name="update_nightly" value="Update Nightly Build" />
+                </form>
             </div>
         </div>
     </div>
