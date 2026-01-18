@@ -2290,6 +2290,13 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function postGetRujukanInternal()
+    {
+        $rujukan = $this->db('mlite_rujukan_internal_poli')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+        echo json_encode($rujukan);
+        exit();
+    }
+
     public function postHapusrujukaninternal()
     {
         try {
