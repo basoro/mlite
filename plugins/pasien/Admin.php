@@ -1305,10 +1305,15 @@ class Admin extends AdminModule
     {
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',
-            'orientation' => 'L'
+            'orientation' => 'L', 
+            'setAutoTopMargin' => 'stretch'
         ]);
 
-        $mpdf->SetHTMLHeader($this->core->setPrintHeader(), '0', true);
+    // header khusus halaman pertama
+        $mpdf->DefHTMLHeaderByName(
+            'page-header',
+            $this->core->setPrintHeader()
+        );
         $mpdf->SetHTMLFooter($this->core->setPrintFooter());
 
         // ambil data

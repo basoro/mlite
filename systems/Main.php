@@ -551,6 +551,14 @@ abstract class Main
         * {
           font-family: arial, sans-serif;
         }
+        @page {
+            margin-top: 30mm;
+        }
+    
+        @page :first {
+            margin-top: 45mm;
+            header: page-header;
+        }        
         div, table {
           font-family: arial, sans-serif;
           border-collapse: collapse;
@@ -568,6 +576,7 @@ abstract class Main
         }
         .right {
             float: right;
+        }
         ';  
         return $css;
     }
