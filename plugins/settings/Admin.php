@@ -347,9 +347,9 @@ class Admin extends AdminModule
             $updateBase = BASE_DIR.'/tmp/update';
             $extractedRoot = null;
             
-            // For nightly build from github, it usually extracts to mlite-main
-            if (is_dir($updateBase.'/mlite-main')) {
-                $extractedRoot = $updateBase.'/mlite-main';
+            // For nightly build from github, it usually extracts to mlite-master
+            if (is_dir($updateBase.'/mlite-master')) {
+                $extractedRoot = $updateBase.'/mlite-master';
             } else {
                 $dirs = glob($updateBase.'/mlite-*', GLOB_ONLYDIR);
                 if (!empty($dirs)) {
