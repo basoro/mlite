@@ -853,9 +853,9 @@ class Admin extends AdminModule
         ->toArray();
 
       // Filter out racikan from non-racikan list
-      $rows = array_filter($rows, function($row) use ($racikan_nos) {
-          return !in_array($row['no_resep'], $racikan_nos);
-      });
+      // $rows = array_filter($rows, function($row) use ($racikan_nos) {
+      //     return !in_array($row['no_resep'], $racikan_nos);
+      // });
 
       $resep = [];
       $jumlah_total_resep = 0;
