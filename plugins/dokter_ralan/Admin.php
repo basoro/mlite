@@ -695,9 +695,9 @@ class Admin extends AdminModule
         ->group('resep_obat.kd_dokter')
         ->toArray();
       // Filter only records that do not have racikan
-      $rows = array_filter($rows, function($row) {
-        return $this->db('resep_dokter_racikan')->where('no_resep', $row['no_resep'])->count() == 0;
-      });
+      // $rows = array_filter($rows, function($row) {
+      //   return $this->db('resep_dokter_racikan')->where('no_resep', $row['no_resep'])->count() == 0;
+      // });
       $resep = [];
       $jumlah_total_resep = 0;
       foreach ($rows as $row) {
