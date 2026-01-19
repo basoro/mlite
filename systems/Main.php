@@ -556,7 +556,7 @@ abstract class Main
         }
     
         @page :first {
-            margin-top: 45mm;
+            margin-top: 5mm;
             header: page-header;
         }        
         div, table {

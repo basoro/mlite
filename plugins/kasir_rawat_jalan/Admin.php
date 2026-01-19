@@ -703,6 +703,8 @@ class Admin extends AdminModule
         $ingredients_map = $this->db('detail_obat_racikan')
             ->where('no_rawat', $header['no_rawat'])
             ->where('no_racik', $header['no_racik'])
+            ->where('tgl_perawatan', $header['tgl_perawatan'])
+            ->where('jam', $header['jam'])
             ->toArray();
 
         $total_racikan = 0;

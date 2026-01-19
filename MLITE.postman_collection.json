@@ -4106,6 +4106,204 @@
                         }
                     },
                     "response": []
+                },
+                {
+                    "name": "Validasi Resep",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/apotek_ralan/validasi/{{no_rawat}}?no_resep={{no_resep}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "apotek_ralan",
+                                "validasi",
+                                "{{no_rawat}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "no_resep",
+                                    "value": "{{no_resep}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Save Validasi",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"no_resep\": \"{{no_resep}}\",\n    \"jumlah\": {},\n    \"aturan_pakai\": {}\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/apotek_ralan/savevalidasi",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "apotek_ralan",
+                                "savevalidasi"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Simpan Obat Resep",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_resep\": \"{{no_resep}}\",\n    \"kode_brng\": \"{{kode_brng}}\",\n    \"jml\": \"10\",\n    \"aturan_pakai\": \"3x1\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/apotek_ralan/simpanobatresep",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "apotek_ralan",
+                                "simpanobatresep"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Simpan Racikan Resep",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_resep\": \"{{no_resep}}\",\n    \"no_racik\": \"1\",\n    \"nama_racik\": \"Racikan 1\",\n    \"kd_racik\": \"R01\",\n    \"jml_dr\": \"10\",\n    \"aturan_pakai\": \"3x1\",\n    \"keterangan\": \"-\",\n    \"items\": [\n        {\n            \"kode_brng\": \"B01\",\n            \"kandungan\": \"10mg\",\n            \"jml\": \"5\"\n        }\n    ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/apotek_ralan/simpanracikanresep",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "apotek_ralan",
+                                "simpanracikanresep"
+                            ]
+                        }
+                    },
+                    "response": []
                 }
             ]
         },
@@ -4170,6 +4368,204 @@
                                     "key": "tgl_akhir",
                                     "value": "{{tgl_akhir}}"
                                 }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Validasi Resep",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/apotek_ranap/validasi/{{no_rawat}}?no_resep={{no_resep}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "apotek_ranap",
+                                "validasi",
+                                "{{no_rawat}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "no_resep",
+                                    "value": "{{no_resep}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Save Validasi",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"no_resep\": \"{{no_resep}}\",\n    \"jumlah\": {},\n    \"aturan_pakai\": {}\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/apotek_ranap/savevalidasi",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "apotek_ranap",
+                                "savevalidasi"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Simpan Obat Resep",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_resep\": \"{{no_resep}}\",\n    \"kode_brng\": \"{{kode_brng}}\",\n    \"jml\": \"10\",\n    \"aturan_pakai\": \"3x1\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/apotek_ranap/simpanobatresep",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "apotek_ranap",
+                                "simpanobatresep"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Simpan Racikan Resep",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_resep\": \"{{no_resep}}\",\n    \"no_racik\": \"1\",\n    \"nama_racik\": \"Racikan 1\",\n    \"kd_racik\": \"R01\",\n    \"jml_dr\": \"10\",\n    \"aturan_pakai\": \"3x1\",\n    \"keterangan\": \"-\",\n    \"items\": [\n        {\n            \"kode_brng\": \"B01\",\n            \"kandungan\": \"10mg\",\n            \"jml\": \"5\"\n        }\n    ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/apotek_ranap/simpanracikanresep",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "apotek_ranap",
+                                "simpanracikanresep"
                             ]
                         }
                     },

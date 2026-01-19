@@ -817,10 +817,42 @@ class Admin extends AdminModule
         $tindakan[] = $row;
       }
 
-      $rows_pemberian_obat = $this->db('detail_pemberian_obat')
-      ->where('no_rawat', $_POST['no_rawat'])
-      ->where('detail_pemberian_obat.status', 'Ranap')
-      ->toArray();
+      // $rows_pemberian_obat = $this->db('detail_pemberian_obat')
+      // ->where('no_rawat', $_POST['no_rawat'])
+      // ->where('detail_pemberian_obat.status', 'Ranap')
+      // ->toArray();
+
+      // $detail_pemberian_obat = [];
+      // $jumlah_total_obat = 0;
+      // $jumlah_total_embalase = 0;
+      // $jumlah_total_tuslah = 0;
+      // $no_obat = 1;
+      // foreach ($rows_pemberian_obat as $row) {
+      //   $row['nomor'] = $no_obat++;
+      //   $databarang = $this->db('databarang')->where('kode_brng', $row['kode_brng'])->oneArray();
+      //   $row['nama_brng'] = $databarang['nama_brng'];
+      //   $jumlah_total_obat += floatval($row['total']);
+      //   $jumlah_total_embalase += floatval($row['embalase']);
+      //   $jumlah_total_tuslah += floatval($row['tuslah']);
+      //   $detail_pemberian_obat[] = $row;
+      // }
+
+      // Collect racikan timestamps to exclude from detail_pemberian_obat
+      $exclude_jams = [];
+      $racikan_jams = $this->db('detail_obat_racikan')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      foreach($racikan_jams as $rj) {
+          $exclude_jams[] = $rj['jam'];
+      }
+
+      $query_pemberian = $this->db('detail_pemberian_obat')
+        ->where('detail_pemberian_obat.no_rawat', $_POST['no_rawat'])
+        ->where('detail_pemberian_obat.status', 'Ranap');
+
+      if(!empty($exclude_jams)) {
+          $query_pemberian->notIn('jam', $exclude_jams);
+      }
+
+      $rows_pemberian_obat = $query_pemberian->toArray();
 
       $detail_pemberian_obat = [];
       $jumlah_total_obat = 0;
@@ -835,6 +867,85 @@ class Admin extends AdminModule
         $jumlah_total_embalase += floatval($row['embalase']);
         $jumlah_total_tuslah += floatval($row['tuslah']);
         $detail_pemberian_obat[] = $row;
+      }
+
+      // Fetch detail_obat_racikan linked with riwayat_barang_medis for quantity
+      $rows_obat_racikan = $this->db('obat_racikan')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->toArray();
+
+      foreach ($rows_obat_racikan as $header) {
+        $ingredients_map = $this->db('detail_obat_racikan')
+            ->where('no_rawat', $header['no_rawat'])
+            ->where('no_racik', $header['no_racik'])
+            ->where('tgl_perawatan', $header['tgl_perawatan'])
+            ->where('jam', $header['jam'])
+            ->toArray();
+
+        $total_racikan = 0;
+        $total_embalase_racikan = 0;
+        $total_tuslah_racikan = 0;
+        $ingredient_rows = [];
+
+        foreach ($ingredients_map as $map) {
+            $row = $this->db('detail_pemberian_obat')
+                ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+                ->where('detail_pemberian_obat.no_rawat', $map['no_rawat'])
+                ->where('detail_pemberian_obat.kode_brng', $map['kode_brng'])
+                ->where('detail_pemberian_obat.tgl_perawatan', $map['tgl_perawatan'])
+                ->where('detail_pemberian_obat.jam', $map['jam'])
+                ->where('detail_pemberian_obat.status', 'Ranap')
+                ->oneArray();
+
+            if ($row) {
+                $subtotal = $row['total'];
+                
+                $total_racikan += $subtotal;
+                $total_embalase_racikan += $row['embalase'];
+                $total_tuslah_racikan += $row['tuslah'];
+    
+                // Prepare ingredient row (hide prices)
+                $row['nomor'] = ''; 
+                $row['nama_brng'] = "&nbsp;&nbsp;&nbsp;&nbsp; - " . $row['nama_brng'];
+                $row['total'] = 0;
+                $row['embalase'] = 0;
+                $row['tuslah'] = 0;
+                $row['biaya_obat'] = 0;
+                $row['jml'] = 0;
+                
+                $ingredient_rows[] = $row;
+            }
+        }
+
+        $header_row = [];
+        $header_row['nomor'] = $no_obat++;
+        $header_row['nama_brng'] = ">> Racikan " . $header['no_racik'] . ": " . $header['nama_racik'] . " (" . $header['jml_dr'] . " Bungkus)";
+        $header_row['jml'] = $header['jml_dr'];
+        
+        // Calculate unit price for display: total / qty
+        if ($header['jml_dr'] > 0) {
+            $header_row['biaya_obat'] = $total_racikan / $header['jml_dr'];
+        } else {
+            $header_row['biaya_obat'] = $total_racikan;
+        }
+
+        $header_row['total'] = $total_racikan;
+        $header_row['embalase'] = $total_embalase_racikan;
+        $header_row['tuslah'] = $total_tuslah_racikan;
+        $header_row['no_rawat'] = $header['no_rawat'];
+        $header_row['tgl_perawatan'] = $header['tgl_perawatan'];
+        $header_row['jam'] = $header['jam'];
+        $header_row['kode_brng'] = '-'; 
+        
+        $jumlah_total_obat += $total_racikan;
+        $jumlah_total_embalase += $total_embalase_racikan;
+        $jumlah_total_tuslah += $total_tuslah_racikan;
+
+        $detail_pemberian_obat[] = $header_row;
+        
+        foreach ($ingredient_rows as $row) {
+            $detail_pemberian_obat[] = $row;
+        }
       }
 
       $rows_periksa_lab = $this->db('periksa_lab')
