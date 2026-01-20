@@ -252,6 +252,16 @@ class Admin extends AdminModule
             }
         }
 
+        if ($table == 'diagnosa_pasien') {
+            $q_count->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit');
+            $q_count->join('reg_periksa', 'reg_periksa.no_rawat = diagnosa_pasien.no_rawat');
+            if (isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])) {
+                $q_count->where('reg_periksa.tgl_registrasi', '>=', $_GET['tgl_awal']);
+                $q_count->where('reg_periksa.tgl_registrasi', '<=', $_GET['tgl_akhir']);
+            }
+        }
+
+
         if (!empty($_GET['s'])) {
             if ($table == 'riwayat_barang_medis') {
                 $q_count->like('riwayat_barang_medis.kode_brng', '%'.$_GET['s'].'%')
@@ -298,6 +308,22 @@ class Admin extends AdminModule
                 $q_data->where('riwayat_barang_medis.tanggal', '<=', $_GET['tgl_akhir']);
             }
         }
+
+        if ($table == 'diagnosa_pasien') {
+            $q_data->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit');
+            $q_data->join('reg_periksa', 'reg_periksa.no_rawat = diagnosa_pasien.no_rawat');
+            
+            if (isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])) {
+                $q_data->select('diagnosa_pasien.kd_penyakit, penyakit.nm_penyakit, COUNT(diagnosa_pasien.kd_penyakit) as jumlah');
+                $q_data->where('reg_periksa.tgl_registrasi', '>=', $_GET['tgl_awal']);
+                $q_data->where('reg_periksa.tgl_registrasi', '<=', $_GET['tgl_akhir']);
+                $q_data->group('diagnosa_pasien.kd_penyakit');
+                $q_data->desc('jumlah');
+            } else {
+                $q_data->select('diagnosa_pasien.*, penyakit.nm_penyakit');
+            }
+        }
+
 
         if (!empty($_GET['s'])) {
             if ($table == 'riwayat_barang_medis') {
