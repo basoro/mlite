@@ -337,22 +337,6 @@ class Admin extends AdminModule
             }
         }
 
-        if (!empty($_GET['s'])) {
-            if ($table == 'detail_pemberian_obat') {
-                $q_data->join('resep_dokter_racikan_detail', 'resep_dokter_racikan_detail.id = detail_pemberian_obat.id_resep_dokter_racikan_detail');
-                $q_data->join('resep_dokter_racikan', 'resep_dokter_racikan.id = resep_dokter_racikan_detail.id_resep_dokter_racikan');
-                $q_data->join('resep_obat', 'resep_obat.id = resep_dokter_racikan.id_resep_obat');
-                $q_data->join('databarang', 'databarang.kode_brng = resep_obat.kode_brng');
-                $q_data->like('riwayat_barang_medis.kode_brng', '%'.$_GET['s'].'%')
-                    ->orLike('databarang.nama_brng', '%'.$_GET['s'].'%')
-                    ->orLike('resep_obat.no_resep', '%'.$_GET['s'].'%')
-                    ->orLike('resep_obat.no_rawat', '%'.$_GET['s'].'%')
-                    ->orLike('bangsal.nm_bangsal', '%'.$_GET['s'].'%');
-            } elseif (!empty($_GET['col'])) {
-                $q_data->like($_GET['col'], '%'.$_GET['s'].'%');
-            }
-        }
-
         if (isset($_GET['status'])) {
             $q_data->where('status', $_GET['status']);
         }
