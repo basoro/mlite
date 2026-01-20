@@ -67,6 +67,8 @@ class Admin extends AdminModule
         if (!isset($_POST['cap'])) $_POST['cap'] = '';
 
         unset($_POST['save']);
+        unset($_POST['status']); // mlite_users table does not have status column
+        unset($_POST['password_confirmation']);
 
         if (!empty($_POST['password'])) {
             $_POST['password'] = password_hash($_POST['password'], PASSWORD_BCRYPT);
@@ -75,9 +77,17 @@ class Admin extends AdminModule
         }
 
         if (!$id) {    // new
-            $query = $this->db('mlite_users')->save($_POST);
+            try {
+                $query = $this->db('mlite_users')->save($_POST);
+            } catch (\Exception $e) {
+                return ['status' => 'error', 'message' => $e->getMessage()];
+            }
         } else {        // edit
-            $query = $this->db('mlite_users')->where('id', $id)->save($_POST);
+            try {
+                $query = $this->db('mlite_users')->where('id', $id)->save($_POST);
+            } catch (\Exception $e) {
+                return ['status' => 'error', 'message' => $e->getMessage()];
+            }
         }
 
         if ($query) {
