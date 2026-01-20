@@ -213,7 +213,7 @@ class Admin extends AdminModule
             'emergency_index', 'jabatan', 'jenjang_jabatan', 'kelompok_jabatan', 'pendidikan',
             'resiko_kerja', 'status_kerja', 'status_wp', 'metode_racik', 'ruang_ok', 'gudangbarang', 'riwayat_barang_medis', 
             'mlite_users', 'resep_obat', 'resep_dokter', 'resep_dokter_racikan', 'resep_dokter_racikan_detail', 
-            'diagnosa_pasien', 'prosedur_pasien'
+            'diagnosa_pasien', 'prosedur_pasien', 'mlite_modules'
         ];
         
         if (!in_array($table, $allowed_tables)) {
@@ -300,7 +300,7 @@ class Admin extends AdminModule
         }
 
         if ($table == 'riwayat_barang_medis') {
-            $q_data->select('riwayat_barang_medis.*, databarang.nama_brng, bangsal.nm_bangsal');
+            $q_data->select('riwayat_barang_medis.*, databarang.nama_brng, databarang.h_beli, bangsal.nm_bangsal');
             $q_data->join('databarang', 'databarang.kode_brng = riwayat_barang_medis.kode_brng');
             $q_data->join('bangsal', 'bangsal.kd_bangsal = riwayat_barang_medis.kd_bangsal');
             if (isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])) {
