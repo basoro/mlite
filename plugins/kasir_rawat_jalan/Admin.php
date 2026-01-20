@@ -192,6 +192,7 @@ class Admin extends AdminModule
                 'kode_brng' => $o['kode_brng'],
                 'tgl_peresepan' => $o['tgl_perawatan'],
                 'jam_peresepan' => $o['jam'],
+                'kd_bangsal' => $o['kd_bangsal'],
                 'type' => 'obat'
             ];
             $total_biaya += ($o['total'] + $o['embalase'] + $o['tuslah']);
@@ -1201,7 +1202,7 @@ class Admin extends AdminModule
             exit;
         }
 
-        // $payload['id_user'] = $this->core->getUserInfo('id', $username);
+        $payload['id_user'] = $this->db('mlite_users')->where('username', $username)->oneArray()['id'];
         $payload['kd_billing'] = 'RJ.'.date('d.m.Y.H.i.s');
         $payload['tgl_billing'] = $payload['tgl_bayar'] ?? date('Y-m-d');
         $payload['jam_billing'] = $payload['jam_bayar'] ?? date('H:i:s');
@@ -1419,16 +1420,18 @@ class Admin extends AdminModule
         // Cek apakah data sudah ada sebelumnya? (Mencegah duplikat jika no_rawat+kd_billing unik?)
         // kd_billing baru digenerate, jadi harusnya unik.
 
+        // echo json_encode(['status' => 'error', 'message' => json_encode($payload)]);
         try {
             $query = $this->db('mlite_billing')->save([
                 'kd_billing' => $payload['kd_billing'],
                 'no_rawat' => $payload['no_rawat'],
-                'jumlah_total' => $payload['total_bayar'],
+                'jumlah_total' => $payload['jumlah_harus_bayar'],
                 'potongan' => $payload['potongan'],
-                'jumlah_harus_bayar' => $payload['total_bayar'] - $payload['potongan'],
-                'jumlah_bayar' => $payload['total_bayar'],
+                'jumlah_harus_bayar' => $payload['jumlah_harus_bayar'] - $payload['potongan'],
+                'jumlah_bayar' => $payload['bayar'],
                 'tgl_billing' => $payload['tgl_billing'],
-                'jam_billing' => $payload['jam_billing']
+                'jam_billing' => $payload['jam_billing'], 
+                'id_user' => $payload['id_user'],
             ]);
             if($query) {
                 $this->db('reg_periksa')->where('no_rawat', $payload['no_rawat'])->update(['status_bayar' => 'Sudah Bayar']);
@@ -1444,96 +1447,361 @@ class Admin extends AdminModule
 
     public function apiHapusItem()
     {
-        $payload = json_decode(file_get_contents('php://input'), true);
-        $type = $payload['type'] ?? '';
-        
-        if ($type === 'tindakan') {
-            if($payload['provider'] == 'rawat_jl_dr') {
-                $this->db('rawat_jl_dr')
+        try {
+            $payload = json_decode(file_get_contents('php://input'), true);
+            $type = $payload['type'] ?? '';
+            
+            if ($type === 'tindakan') {
+                if($payload['provider'] == 'rawat_jl_dr') {
+                    $this->db('rawat_jl_dr')
+                    ->where('no_rawat', $payload['no_rawat'])
+                    ->where('kd_jenis_prw', $payload['kd_jenis_prw'])
+                    ->where('tgl_perawatan', $payload['tgl_perawatan'])
+                    ->where('jam_rawat', $payload['jam_rawat'])
+                    ->delete();
+                }
+                if($payload['provider'] == 'rawat_jl_pr') {
+                    $this->db('rawat_jl_pr')
+                    ->where('no_rawat', $payload['no_rawat'])
+                    ->where('kd_jenis_prw', $payload['kd_jenis_prw'])
+                    ->where('tgl_perawatan', $payload['tgl_perawatan'])
+                    ->where('jam_rawat', $payload['jam_rawat'])
+                    ->delete();
+                }
+                if($payload['provider'] == 'rawat_jl_drpr') {
+                    $this->db('rawat_jl_drpr')
+                    ->where('no_rawat', $payload['no_rawat'])
+                    ->where('kd_jenis_prw', $payload['kd_jenis_prw'])
+                    ->where('tgl_perawatan', $payload['tgl_perawatan'])
+                    ->where('jam_rawat', $payload['jam_rawat'])
+                    ->delete();
+                }
+            }
+            
+            if ($type === 'obat') {
+                $payload['jml'] = $payload['jml'] ?? $payload['jumlah'] ?? 0;
+                $kd_bangsal = $payload['kd_bangsal'] ?? $this->settings->get('farmasi.deporalan');
+                $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $payload['kode_brng'])->where('kd_bangsal', $kd_bangsal)->oneArray();
+
+                $this->db('gudangbarang')
+                    ->where('kode_brng', $payload['kode_brng'])
+                    ->where('kd_bangsal', $kd_bangsal)
+                    ->update([
+                        'stok' => $get_gudangbarang['stok'] + $payload['jml']
+                    ]);
+
+                $this->db('riwayat_barang_medis')
+                    ->save([
+                        'kode_brng' => $payload['kode_brng'],
+                        'stok_awal' => $get_gudangbarang['stok'],
+                        'masuk' => $payload['jml'],
+                        'keluar' => '0',
+                        'stok_akhir' => $get_gudangbarang['stok'] + $payload['jml'],
+                        'posisi' => 'Pemberian Obat',
+                        'tanggal' => $payload['tgl_peresepan'],
+                        'jam' => $payload['jam_peresepan'],
+                        'petugas' => $this->core->getUserInfo('fullname', null, true),
+                        'kd_bangsal' => $kd_bangsal,
+                        'status' => 'Hapus',
+                        'no_batch' => $get_gudangbarang['no_batch'],
+                        'no_faktur' => $get_gudangbarang['no_faktur'],
+                        'keterangan' => $payload['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']))
+                    ]);
+
+                $this->db('detail_pemberian_obat')
+                    ->where('tgl_perawatan', $payload['tgl_peresepan'])
+                    ->where('jam', $payload['jam_peresepan'])
+                    ->where('no_rawat', $payload['no_rawat'])
+                    ->where('kode_brng', $payload['kode_brng'])
+                    ->where('jml', $payload['jml'])
+                    ->where('status', 'Ralan')
+                    ->where('kd_bangsal', $kd_bangsal)
+                    ->delete();
+            }
+            
+            if ($type === 'lab') {
+                $this->db('periksa_lab')
                 ->where('no_rawat', $payload['no_rawat'])
                 ->where('kd_jenis_prw', $payload['kd_jenis_prw'])
-                ->where('tgl_perawatan', $payload['tgl_perawatan'])
-                ->where('jam_rawat', $payload['jam_rawat'])
-                ->delete();
-            }
-            if($payload['provider'] == 'rawat_jl_pr') {
-                $this->db('rawat_jl_pr')
-                ->where('no_rawat', $payload['no_rawat'])
-                ->where('kd_jenis_prw', $payload['kd_jenis_prw'])
-                ->where('tgl_perawatan', $payload['tgl_perawatan'])
-                ->where('jam_rawat', $payload['jam_rawat'])
-                ->delete();
-            }
-            if($payload['provider'] == 'rawat_jl_drpr') {
-                $this->db('rawat_jl_drpr')
-                ->where('no_rawat', $payload['no_rawat'])
-                ->where('kd_jenis_prw', $payload['kd_jenis_prw'])
-                ->where('tgl_perawatan', $payload['tgl_perawatan'])
-                ->where('jam_rawat', $payload['jam_rawat'])
-                ->delete();
-            }
-        }
-        
-        if ($type === 'obat') {
-            $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $payload['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
-
-            $this->db('gudangbarang')
-                ->where('kode_brng', $payload['kode_brng'])
-                ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
-                ->update([
-                    'stok' => $get_gudangbarang['stok'] + $payload['jml']
-                ]);
-
-            $this->db('riwayat_barang_medis')
-                ->save([
-                    'kode_brng' => $payload['kode_brng'],
-                    'stok_awal' => $get_gudangbarang['stok'],
-                    'masuk' => $payload['jml'],
-                    'keluar' => '0',
-                    'stok_akhir' => $get_gudangbarang['stok'] + $payload['jml'],
-                    'posisi' => 'Pemberian Obat',
-                    'tanggal' => $payload['tgl_peresepan'],
-                    'jam' => $payload['jam_peresepan'],
-                    'petugas' => $this->core->getUserInfo('fullname', null, true),
-                    'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
-                    'status' => 'Hapus',
-                    'no_batch' => $get_gudangbarang['no_batch'],
-                    'no_faktur' => $get_gudangbarang['no_faktur'],
-                    'keterangan' => $payload['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']))
-                ]);
-
-            $this->db('detail_pemberian_obat')
-                ->where('tgl_perawatan', $payload['tgl_peresepan'])
-                ->where('jam', $payload['jam_peresepan'])
-                ->where('no_rawat', $payload['no_rawat'])
-                ->where('kode_brng', $payload['kode_brng'])
-                ->where('jml', $payload['jml'])
+                ->where('tgl_periksa', $payload['tgl_perawatan'])
+                ->where('jam', $payload['jam_rawat'])
                 ->where('status', 'Ralan')
-                ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
                 ->delete();
+            }
+            
+            if ($type === 'rad') {
+                $this->db('periksa_radiologi')
+                ->where('no_rawat', $payload['no_rawat'])
+                ->where('kd_jenis_prw', $payload['kd_jenis_prw'])
+                ->where('tgl_periksa', $payload['tgl_perawatan'])
+                ->where('jam', $payload['jam_rawat'])
+                ->where('status', 'Ralan')
+                ->delete();
+            }
+
+            echo json_encode(['status' => 'success', 'message' => 'Item berhasil dihapus ' . json_encode($payload)]);
+
+        } catch (\Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
-        
-        if ($type === 'lab') {
-            $this->db('periksa_lab')
-            ->where('no_rawat', $payload['no_rawat'])
-            ->where('kd_jenis_prw', $payload['kd_jenis_prw'])
-            ->where('tgl_periksa', $payload['tgl_perawatan'])
-            ->where('jam', $payload['jam_rawat'])
-            ->where('status', 'Ralan')
-            ->delete();
+        exit;
+    }
+
+    public function apiSimpanItem()
+    {
+        $payload = json_decode(file_get_contents('php://input'), true);
+        $kat = $payload['kat'] ?? '';
+
+        try {
+            if($kat == 'tindakan') {
+                $jns_perawatan = $this->db('jns_perawatan')->where('kd_jenis_prw', $payload['kd_jenis_prw'])->oneArray();
+                if($payload['provider'] == 'rawat_jl_dr') {
+                    for ($i = 0; $i < $payload['jml_tindakan']; $i++) {
+                        $this->db('rawat_jl_dr')->save([
+                            'no_rawat' => $payload['no_rawat'],
+                            'kd_jenis_prw' => $payload['kd_jenis_prw'],
+                            'kd_dokter' => $payload['kode_provider'],
+                            'tgl_perawatan' => $payload['tgl_perawatan'],
+                            'jam_rawat' => date('H:i:s', strtotime($payload['jam_rawat']. ' +'.$i.'0 seconds')),
+                            'material' => $jns_perawatan['material'],
+                            'bhp' => $jns_perawatan['bhp'],
+                            'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
+                            'kso' => $jns_perawatan['kso'],
+                            'menejemen' => $jns_perawatan['menejemen'],
+                            'biaya_rawat' => $jns_perawatan['total_byrdr'],
+                            'stts_bayar' => 'Belum'
+                        ]);
+                    }
+                }
+                if($payload['provider'] == 'rawat_jl_pr') {
+                    for ($i = 0; $i < $payload['jml_tindakan']; $i++) {
+                        $this->db('rawat_jl_pr')->save([
+                            'no_rawat' => $payload['no_rawat'],
+                            'kd_jenis_prw' => $payload['kd_jenis_prw'],
+                            'nip' => $payload['kode_provider2'],
+                            'tgl_perawatan' => $payload['tgl_perawatan'],
+                            'jam_rawat' => date('H:i:s', strtotime($payload['jam_rawat']. ' +'.$i.'0 seconds')),
+                            'material' => $jns_perawatan['material'],
+                            'bhp' => $jns_perawatan['bhp'],
+                            'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
+                            'kso' => $jns_perawatan['kso'],
+                            'menejemen' => $jns_perawatan['menejemen'],
+                            'biaya_rawat' => $jns_perawatan['total_byrpr'],
+                            'stts_bayar' => 'Belum'
+                        ]);
+                    }
+                }
+                if($payload['provider'] == 'rawat_jl_drpr') {
+                    for ($i = 0; $i < $payload['jml_tindakan']; $i++) {
+                        $this->db('rawat_jl_drpr')->save([
+                            'no_rawat' => $payload['no_rawat'],
+                            'kd_jenis_prw' => $payload['kd_jenis_prw'],
+                            'kd_dokter' => $payload['kode_provider'],
+                            'nip' => $payload['kode_provider2'],
+                            'tgl_perawatan' => $payload['tgl_perawatan'],
+                            'jam_rawat' => date('H:i:s', strtotime($payload['jam_rawat']. ' +'.$i.'0 seconds')),
+                            'material' => $jns_perawatan['material'],
+                            'bhp' => $jns_perawatan['bhp'],
+                            'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
+                            'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
+                            'kso' => $jns_perawatan['kso'],
+                            'menejemen' => $jns_perawatan['menejemen'],
+                            'biaya_rawat' => $jns_perawatan['total_byrdrpr'],
+                            'stts_bayar' => 'Belum'
+                        ]);
+                    }
+                }
+            }
+
+            if($kat == 'obat') {
+                $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $payload['kd_jenis_prw'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
+                $get_databarang = $this->db('databarang')->where('kode_brng', $payload['kd_jenis_prw'])->oneArray();
+
+                $this->db('gudangbarang')
+                    ->where('kode_brng', $payload['kd_jenis_prw'])
+                    ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+                    ->update([
+                        'stok' => $get_gudangbarang['stok'] - $payload['jml']
+                    ]);
+
+                $this->db('riwayat_barang_medis')
+                    ->save([
+                        'kode_brng' => $payload['kd_jenis_prw'],
+                        'stok_awal' => $get_gudangbarang['stok'],
+                        'masuk' => '0',
+                        'keluar' => $payload['jml'],
+                        'stok_akhir' => $get_gudangbarang['stok'] - $payload['jml'],
+                        'posisi' => 'Pemberian Obat',
+                        'tanggal' => $payload['tgl_perawatan'],
+                        'jam' => $payload['jam_rawat'],
+                        'petugas' => $this->core->getUserInfo('fullname', null, true),
+                        'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+                        'status' => 'Simpan',
+                        'no_batch' => $get_gudangbarang['no_batch'],
+                        'no_faktur' => $get_gudangbarang['no_faktur'],
+                        'keterangan' => $payload['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']))
+                    ]);
+
+                $this->db('detail_pemberian_obat')
+                    ->save([
+                        'tgl_perawatan' => $payload['tgl_perawatan'],
+                        'jam' => $payload['jam_rawat'],
+                        'no_rawat' => $payload['no_rawat'],
+                        'kode_brng' => $payload['kd_jenis_prw'],
+                        'h_beli' => $get_databarang['h_beli'],
+                        'biaya_obat' => $payload['biaya'],
+                        'jml' => $payload['jml'],
+                        'embalase' => '0',
+                        'tuslah' => '0',
+                        'total' => $payload['biaya'] * $payload['jml'],
+                        'status' => 'Ralan',
+                        'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+                        'no_batch' => $get_gudangbarang['no_batch'],
+                        'no_faktur' => $get_gudangbarang['no_faktur']
+                    ]);
+
+                if (isset($payload['aturan_pakai'])) {
+                    $this->db('aturan_pakai')
+                    ->save([
+                        'tgl_perawatan' => $payload['tgl_perawatan'],
+                        'jam' => $payload['jam_rawat'],
+                        'no_rawat' => $payload['no_rawat'],
+                        'kode_brng' => $payload['kd_jenis_prw'],
+                        'aturan' => $payload['aturan_pakai']
+                    ]);
+                }
+            }
+
+            if($kat == 'racikan') {
+                $no_racik = $this->db('obat_racikan')->where('no_rawat', $payload['no_rawat'])->where('tgl_perawatan', $payload['tgl_perawatan'])->count();
+                $no_racik = $no_racik+1;
+                $this->db('obat_racikan')
+                  ->save([
+                    'tgl_perawatan' => $payload['tgl_perawatan'],
+                    'jam' => $payload['jam_rawat'],
+                    'no_rawat' => $payload['no_rawat'],
+                    'no_racik' => $no_racik,
+                    'nama_racik' => $payload['nama_racik'],
+                    'kd_racik' => $payload['kd_jenis_prw'],
+                    'jml_dr' => $payload['jml'],
+                    'aturan_pakai' => $payload['aturan_pakai'],
+                    'keterangan' => $payload['keterangan']
+                  ]);
+                
+                $items = $payload['items'] ?? [];
+                
+                foreach ($items as $item) {
+                  $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $item['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
+                  $kapasitas = $this->db('databarang')->where('kode_brng', $item['kode_brng'])->oneArray();
+                  
+                  // Calculate total quantity needed: (packets * content per packet) / capacity
+                  $jml = $payload['jml'] * $item['kandungan'];
+                  $jml = round(($jml / ($kapasitas['kapasitas'] > 0 ? $kapasitas['kapasitas'] : 1)), 1);
+
+                  $this->db('gudangbarang')
+                  ->where('kode_brng', $item['kode_brng'])
+                  ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+                  ->update([
+                    'stok' => $get_gudangbarang['stok'] - $jml
+                  ]);
+
+                  $this->db('riwayat_barang_medis')
+                    ->save([
+                      'kode_brng' => $item['kode_brng'],
+                      'stok_awal' => $get_gudangbarang['stok'],
+                      'masuk' => '0',
+                      'keluar' => $jml,
+                      'stok_akhir' => $get_gudangbarang['stok'] - $jml,
+                      'posisi' => 'Pemberian Obat',
+                      'tanggal' => $payload['tgl_perawatan'],
+                      'jam' => $payload['jam_rawat'],
+                      'petugas' => $this->core->getUserInfo('fullname', null, true),
+                      'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+                      'status' => 'Simpan',
+                      'no_batch' => $get_gudangbarang['no_batch'],
+                      'no_faktur' => $get_gudangbarang['no_faktur'],
+                      'keterangan' => $payload['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']))
+                    ]);
+
+                  $this->db('detail_pemberian_obat')
+                    ->save([
+                      'tgl_perawatan' => $payload['tgl_perawatan'],
+                      'jam' => $payload['jam_rawat'],
+                      'no_rawat' => $payload['no_rawat'],
+                      'kode_brng' => $item['kode_brng'],
+                      'h_beli' => $kapasitas['h_beli'],
+                      'biaya_obat' => $kapasitas['dasar'],
+                      'jml' => $jml,
+                      'embalase' => '0',
+                      'tuslah' => '0',
+                      'total' => $kapasitas['dasar'] * $jml,
+                      'status' => 'Ralan',
+                      'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+                      'no_batch' => $get_gudangbarang['no_batch'],
+                      'no_faktur' => $get_gudangbarang['no_faktur']
+                    ]);
+
+                  $this->db('detail_obat_racikan')
+                    ->save([
+                      'tgl_perawatan' => $payload['tgl_perawatan'],
+                      'jam' => $payload['jam_rawat'],
+                      'no_rawat' => $payload['no_rawat'],
+                      'no_racik' => $no_racik,
+                      'kode_brng' => $item['kode_brng']
+                    ]);          
+                }        
+            }
+
+            if($kat == 'laboratorium') {
+                $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $payload['kd_jenis_prw'])->oneArray();
+                $this->db('periksa_lab')
+                  ->save([
+                    'no_rawat' => $payload['no_rawat'],
+                    'nip' => $payload['kode_provider2'],
+                    'kd_jenis_prw' => $payload['kd_jenis_prw'],
+                    'tgl_periksa' => $payload['tgl_perawatan'],
+                    'jam' => $payload['jam_rawat'],
+                    'dokter_perujuk' => $payload['kode_provider'],
+                    'bagian_rs' => $jns_perawatan['bagian_rs'],
+                    'bhp' => $jns_perawatan['bhp'],
+                    'tarif_perujuk' => $jns_perawatan['tarif_perujuk'],
+                    'tarif_tindakan_dokter' => $jns_perawatan['tarif_tindakan_dokter'],
+                    'tarif_tindakan_petugas' => $jns_perawatan['tarif_tindakan_petugas'],
+                    'kso' => $jns_perawatan['kso'],
+                    'menejemen' => $jns_perawatan['menejemen'],
+                    'biaya' => $jns_perawatan['total_byr'],
+                    'kd_dokter' => $this->settings->get('settings.pj_laboratorium'),
+                    'status' => 'Ralan'
+                  ]);
+            }
+
+            if($kat == 'radiologi') {
+                $jns_perawatan = $this->db('jns_perawatan_radiologi')->where('kd_jenis_prw', $payload['kd_jenis_prw'])->oneArray();
+                $this->db('periksa_radiologi')
+                  ->save([
+                    'no_rawat' => $payload['no_rawat'],
+                    'nip' => $payload['kode_provider2'],
+                    'kd_jenis_prw' => $payload['kd_jenis_prw'],
+                    'tgl_periksa' => $payload['tgl_perawatan'],
+                    'jam' => $payload['jam_rawat'],
+                    'dokter_perujuk' => $payload['kode_provider'],
+                    'bagian_rs' => $jns_perawatan['bagian_rs'],
+                    'bhp' => $jns_perawatan['bhp'],
+                    'tarif_perujuk' => $jns_perawatan['tarif_perujuk'],
+                    'tarif_tindakan_dokter' => $jns_perawatan['tarif_tindakan_dokter'],
+                    'tarif_tindakan_petugas' => $jns_perawatan['tarif_tindakan_petugas'],
+                    'kso' => $jns_perawatan['kso'],
+                    'menejemen' => $jns_perawatan['menejemen'],
+                    'biaya' => $jns_perawatan['total_byr'],
+                    'kd_dokter' => $this->settings->get('settings.pj_radiologi'),
+                    'status' => 'Ralan'
+                  ]);
+            }
+
+            echo json_encode(['status' => 'success', 'message' => 'Item berhasil ditambahkan']);
+        } catch (\PDOException $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
-        
-        if ($type === 'rad') {
-            $this->db('periksa_radiologi')
-            ->where('no_rawat', $payload['no_rawat'])
-            ->where('kd_jenis_prw', $payload['kd_jenis_prw'])
-            ->where('tgl_periksa', $payload['tgl_perawatan'])
-            ->where('jam', $payload['jam_rawat'])
-            ->where('status', 'Ralan')
-            ->delete();
-        }
-        
-        echo json_encode(['status' => 'success']);
         exit;
     }
 

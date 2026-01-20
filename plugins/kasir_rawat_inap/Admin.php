@@ -193,7 +193,12 @@ class Admin extends AdminModule
                 'nama' => $o['nama_brng'],
                 'biaya' => $o['biaya_obat'],
                 'jumlah' => $o['jml'],
-                'subtotal' => $o['total'] + $o['embalase'] + $o['tuslah']
+                'subtotal' => $o['total'] + $o['embalase'] + $o['tuslah'],
+                'kode_brng' => $o['kode_brng'],
+                'tgl_peresepan' => $o['tgl_perawatan'],
+                'jam_peresepan' => $o['jam'],
+                'kd_bangsal' => $o['kd_bangsal'],
+                'type' => 'obat'
             ];
             $total_biaya += ($o['total'] + $o['embalase'] + $o['tuslah']);
         }
@@ -254,6 +259,61 @@ class Admin extends AdminModule
                 'total' => $total_biaya
             ]
         ]);
+        exit;
+    }
+
+    public function apiHapusItem()
+    {
+        try {
+            $payload = json_decode(file_get_contents('php://input'), true);
+            $type = $payload['type'] ?? '';
+
+            if ($type === 'obat') {
+                $payload['jml'] = $payload['jml'] ?? $payload['jumlah'] ?? 0;
+                $kd_bangsal = $payload['kd_bangsal'] ?? $this->settings->get('farmasi.deporanap');
+                $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $payload['kode_brng'])->where('kd_bangsal', $kd_bangsal)->oneArray();
+
+                $this->db('gudangbarang')
+                    ->where('kode_brng', $payload['kode_brng'])
+                    ->where('kd_bangsal', $kd_bangsal)
+                    ->update([
+                        'stok' => $get_gudangbarang['stok'] + $payload['jml']
+                    ]);
+
+                $this->db('riwayat_barang_medis')
+                    ->save([
+                        'kode_brng' => $payload['kode_brng'],
+                        'stok_awal' => $get_gudangbarang['stok'],
+                        'masuk' => $payload['jml'],
+                        'keluar' => '0',
+                        'stok_akhir' => $get_gudangbarang['stok'] + $payload['jml'],
+                        'posisi' => 'Pemberian Obat',
+                        'tanggal' => $payload['tgl_peresepan'],
+                        'jam' => $payload['jam_peresepan'],
+                        'petugas' => $this->core->getUserInfo('fullname', null, true),
+                        'kd_bangsal' => $kd_bangsal,
+                        'status' => 'Hapus',
+                        'no_batch' => $get_gudangbarang['no_batch'],
+                        'no_faktur' => $get_gudangbarang['no_faktur'],
+                        'keterangan' => $payload['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']))
+                    ]);
+
+                $this->db('detail_pemberian_obat')
+                    ->where('tgl_perawatan', $payload['tgl_peresepan'])
+                    ->where('jam', $payload['jam_peresepan'])
+                    ->where('no_rawat', $payload['no_rawat'])
+                    ->where('kode_brng', $payload['kode_brng'])
+                    ->where('jml', $payload['jml'])
+                    ->where('status', 'Ranap')
+                    ->where('kd_bangsal', $kd_bangsal)
+                    ->delete();
+            }
+
+            echo json_encode(['status' => 'success']);
+
+        } catch (\Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
         exit;
     }
 
