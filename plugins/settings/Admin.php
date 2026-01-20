@@ -886,6 +886,51 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function apiSettings()
+    {
+
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'settings')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        try {
+            $settings = $this->settings('settings');
+            $settings['themes'] = $this->_getThemes();
+            $settings['timezones'] = $this->_getTimezones();
+            
+            return ['status' => 'success', 'data' => $settings];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveSettings()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_write', 'settings')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            foreach ($input as $field => $value) {
+                if ($field == 'save') continue;
+                
+                $this->db('mlite_settings')
+                    ->where('module', 'settings')
+                    ->where('field', $field)
+                    ->save(['value' => $value]);
+            }
+            
+            return ['status' => 'success', 'message' => 'Pengaturan berhasil disimpan.'];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
     private function _addHeaderFiles()
     {
       $this->core->addCSS(url('assets/css/bootstrap-colorpicker.css'));

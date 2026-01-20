@@ -4775,6 +4775,139 @@
                     }
                 }
             ]
+        },
+        {
+            "name": "Users",
+            "item": [
+                {
+                    "name": "Save User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"testuser\",\n    \"fullname\": \"Test User\",\n    \"password\": \"password123\",\n    \"email\": \"test@example.com\",\n    \"role\": \"staff\",\n    \"cap\": \"ANG,APT\",\n    \"access\": \"pasien,rawat_jalan\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/users/save",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "api", "users", "save"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"id\": \"3\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/users/delete",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "api", "users", "delete"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Settings",
+            "item": [
+                {
+                    "name": "Get Settings",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/settings/settings",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "api", "settings", "settings"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Save Settings",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nama_instansi\": \"RS Baru\",\n    \"alamat\": \"Jl. Baru No. 1\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/settings/saveSettings",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "api", "settings", "saveSettings"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
         }
     ],
     "variable": [

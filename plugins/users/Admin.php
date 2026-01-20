@@ -28,6 +28,10 @@ class Admin extends AdminModule
 
     public function apiSave()
     {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_write', 'users')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
         $input = json_decode(file_get_contents('php://input'), true);
         if (!is_array($input)) $input = $_POST;
         
@@ -99,6 +103,10 @@ class Admin extends AdminModule
 
     public function apiDelete($id = null)
     {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_write', 'users')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
         if (!$id) {
              $input = json_decode(file_get_contents('php://input'), true);
              $id = isset($input['id']) ? $input['id'] : null;
