@@ -213,7 +213,7 @@ class Admin extends AdminModule
             'emergency_index', 'jabatan', 'jenjang_jabatan', 'kelompok_jabatan', 'pendidikan',
             'resiko_kerja', 'status_kerja', 'status_wp', 'metode_racik', 'ruang_ok', 'gudangbarang', 'riwayat_barang_medis', 
             'mlite_users', 'resep_obat', 'resep_dokter', 'resep_dokter_racikan', 'resep_dokter_racikan_detail', 
-            'diagnosa_pasien', 'prosedur_pasien', 'mlite_modules'
+            'diagnosa_pasien', 'prosedur_pasien', 'mlite_modules', 'mlite_settings'
         ];
         
         if (!in_array($table, $allowed_tables)) {
