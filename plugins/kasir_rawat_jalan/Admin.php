@@ -264,6 +264,36 @@ class Admin extends AdminModule
         exit;
     }
 
+    public function apiBilling($no_rawat)
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'kasir_rawat_jalan')) {
+             echo json_encode(['status' => 'error', 'message' => 'You do not have permission to access this resource']);
+             exit;
+        }
+        $no_rawat = revertNorawat($no_rawat);
+
+        $query = $this->db('mlite_billing')
+            ->where('no_rawat', $no_rawat)
+            ->like('kd_billing', 'RJ%');
+
+        if (isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])) {
+            $query->where('tgl_billing', '>=', $_GET['tgl_awal'])
+                  ->where('tgl_billing', '<=', $_GET['tgl_akhir']);
+        }
+
+        $billing = $query
+            ->desc('tgl_billing')
+            ->desc('jam_billing')
+            ->oneArray();
+
+        echo json_encode([
+            'status' => 'success',
+            'data' => $billing
+        ]);
+        exit;
+    }
+
     public function anyManage()
     {
         $tgl_kunjungan = date('Y-m-d');
