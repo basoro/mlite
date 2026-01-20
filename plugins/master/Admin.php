@@ -213,7 +213,7 @@ class Admin extends AdminModule
             'emergency_index', 'jabatan', 'jenjang_jabatan', 'kelompok_jabatan', 'pendidikan',
             'resiko_kerja', 'status_kerja', 'status_wp', 'metode_racik', 'ruang_ok', 'gudangbarang', 'riwayat_barang_medis', 
             'mlite_users', 'resep_obat', 'resep_dokter', 'resep_dokter_racikan', 'resep_dokter_racikan_detail', 
-            'diagnosa_pasien', 'prosedur_pasien', 'mlite_modules', 'mlite_settings'
+            'diagnosa_pasien', 'prosedur_pasien', 'mlite_modules', 'mlite_settings', 'detail_pemberian_obat'
         ];
         
         if (!in_array($table, $allowed_tables)) {
@@ -331,6 +331,22 @@ class Admin extends AdminModule
                     ->orLike('databarang.nama_brng', '%'.$_GET['s'].'%')
                     ->orLike('riwayat_barang_medis.no_batch', '%'.$_GET['s'].'%')
                     ->orLike('riwayat_barang_medis.no_faktur', '%'.$_GET['s'].'%')
+                    ->orLike('bangsal.nm_bangsal', '%'.$_GET['s'].'%');
+            } elseif (!empty($_GET['col'])) {
+                $q_data->like($_GET['col'], '%'.$_GET['s'].'%');
+            }
+        }
+
+        if (!empty($_GET['s'])) {
+            if ($table == 'detail_pemberian_obat') {
+                $q_data->join('resep_dokter_racikan_detail', 'resep_dokter_racikan_detail.id = detail_pemberian_obat.id_resep_dokter_racikan_detail');
+                $q_data->join('resep_dokter_racikan', 'resep_dokter_racikan.id = resep_dokter_racikan_detail.id_resep_dokter_racikan');
+                $q_data->join('resep_obat', 'resep_obat.id = resep_dokter_racikan.id_resep_obat');
+                $q_data->join('databarang', 'databarang.kode_brng = resep_obat.kode_brng');
+                $q_data->like('riwayat_barang_medis.kode_brng', '%'.$_GET['s'].'%')
+                    ->orLike('databarang.nama_brng', '%'.$_GET['s'].'%')
+                    ->orLike('resep_obat.no_resep', '%'.$_GET['s'].'%')
+                    ->orLike('resep_obat.no_rawat', '%'.$_GET['s'].'%')
                     ->orLike('bangsal.nm_bangsal', '%'.$_GET['s'].'%');
             } elseif (!empty($_GET['col'])) {
                 $q_data->like($_GET['col'], '%'.$_GET['s'].'%');
