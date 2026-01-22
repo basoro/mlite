@@ -2679,6 +2679,8 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       ->where('prioritas', '1')
       ->oneArray();
 
+    $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->where('no_rawat', $no_rawat)->oneArray();
+      
     if (!is_array($prosedur_pasien) || !isset($prosedur_pasien['kode']) || !isset($prosedur_pasien['deskripsi_panjang'])) {
       $resp = json_encode(['error' => 'Data tidak lengkap untuk Procedure', 'missing' => ['prosedur_pasien.kode' => 'missing', 'prosedur_pasien.deskripsi_panjang' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
       if ($render) {
@@ -2710,8 +2712,8 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       exit();
     }
     $id_encounter = $mlite_satu_sehat_response['id_encounter'];
-    $tgl_pulang = $mlite_billing['tgl_billing'];
-    $jam_pulang = $mlite_billing['jam_billing'];
+    $tgl_pulang = isset_or($mlite_billing['tgl_billing'], $pemeriksaan_ralan['tgl_perawatan']);
+    $jam_pulang = isset_or($mlite_billing['jam_billing'], $pemeriksaan_ralan['jam_rawat']);
 
     $kunjungan = 'Kunjungan';
     if ($status_lanjut == 'Ranap') {
@@ -6291,7 +6293,10 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $row['praktisi_id'] = (is_array($praktisi_id) && isset($praktisi_id['practitioner_id'])) ? $praktisi_id['practitioner_id'] : '';
 
       $mlite_billing = $this->db('mlite_billing')->where('no_rawat', $row['no_rawat'])->oneArray();
-      $row['tgl_pulang'] = isset_or($mlite_billing['tgl_billing'], '');
+      
+      $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->where('no_rawat', $row['no_rawat'])->oneArray();
+
+      $row['tgl_pulang'] = isset_or($mlite_billing['tgl_billing'], $pemeriksaan_ralan['tgl_perawatan']);
 
       if ($row['status_lanjut'] == 'Ranap') {
         $row['kd_kamar'] = $this->core->getKamarInapInfo('kd_kamar', $row['no_rawat']);
