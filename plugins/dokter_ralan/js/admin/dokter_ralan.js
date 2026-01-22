@@ -237,7 +237,6 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
       $('input:text[name=spo2]').val("");
       $('input:text[name=tgl_perawatan]').val("{?=date('Y-m-d')?}");
       $('input:text[name=tgl_registrasi]').val("{?=date('Y-m-d')?}");
-      //$('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");
       $.post(baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token, {
       } ,function(data) {
         $("#form_soap #soap_jam_rawat").val(data);

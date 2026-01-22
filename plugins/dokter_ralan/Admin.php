@@ -217,7 +217,7 @@ class Admin extends AdminModule
       if($_POST['kat'] == 'obat') {
 
         $no_resep = $this->core->setNoResep($_POST['tgl_perawatan']);
-        $cek_resep = $this->db('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
+        $cek_resep = $this->db('resep_obat')->join('resep_dokter', 'resep_obat.no_resep = resep_dokter.no_resep')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
 
         if(empty($cek_resep)) {
 
@@ -263,9 +263,7 @@ class Admin extends AdminModule
       if($_POST['kat'] == 'racikan') {
 
         $no_resep = $this->core->setNoResep($_POST['tgl_perawatan']);
-        $cek_resep = $this->db('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
-
-        $_POST['jam_rawat'] = date('H:i:s');
+        $cek_resep = $this->db('resep_obat')->join('resep_dokter_racikan', 'resep_obat.no_resep = resep_dokter_racikan.no_resep')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
 
         if(empty($cek_resep)) {
 
@@ -695,9 +693,9 @@ class Admin extends AdminModule
         ->group('resep_obat.kd_dokter')
         ->toArray();
       // Filter only records that do not have racikan
-      // $rows = array_filter($rows, function($row) {
-      //   return $this->db('resep_dokter_racikan')->where('no_resep', $row['no_resep'])->count() == 0;
-      // });
+      $rows = array_filter($rows, function($row) {
+        return $this->db('resep_dokter_racikan')->where('no_resep', $row['no_resep'])->count() == 0;
+      });
       $resep = [];
       $jumlah_total_resep = 0;
       foreach ($rows as $row) {
