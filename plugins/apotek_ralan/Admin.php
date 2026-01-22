@@ -1058,7 +1058,7 @@ class Admin extends AdminModule
           $detail_pemberian_obat[] = [
             'nama_brng' => $row['nama_racik'],
             'jml'       => $row['jml_dr'],
-            'aturan_pakai' => '',
+            'aturan_pakai' => $row['aturan_pakai'],
             'keterangan'   => ''
           ];
         }
