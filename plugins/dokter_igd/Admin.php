@@ -581,6 +581,7 @@ class Admin extends AdminModule
       $rows = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->where('no_rawat', $_POST['no_rawat'])
+        ->where('resep_obat.status', 'ralan')
         ->group('resep_obat.no_resep')
         ->group('resep_obat.no_rawat')
         ->group('resep_obat.kd_dokter')
