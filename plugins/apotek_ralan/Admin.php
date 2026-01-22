@@ -821,6 +821,18 @@ class Admin extends AdminModule
       $query->execute();
       $rows_pemberian_obat = $query->fetchAll();
 
+      // Filter out racikan from non-racikan list (detail_pemberian_obat)
+      $obat_racikan_items = $this->db('detail_obat_racikan')
+          ->select('kode_brng')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->toArray();
+      $obat_racikan_items = array_column($obat_racikan_items, 'kode_brng');
+
+      // Filter $rows_pemberian_obat agar tidak menampilkan barang yang sudah ada di racikan
+      $rows_pemberian_obat = array_filter($rows_pemberian_obat, function($row) use ($obat_racikan_items) {
+          return !in_array($row['kode_brng'], $obat_racikan_items);
+      });
+
       $detail_pemberian_obat = [];
       $jumlah_total_obat = 0;
       foreach ($rows_pemberian_obat as $row) {
