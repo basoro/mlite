@@ -118,7 +118,25 @@
         <tr class="item-row" data-nama_brng="{$data.nama_brng}" data-stok="{$data.stok}" data-jml="{$data.jml}">
           <td>{$data.nama_brng}</td>
           <td><input type="number" class="form-control input-sm jumlah_obat" data-kode_brng="{$data.kode_brng}" value="{$data.jml}" style="width: 100px;" {if: $value.tgl_perawatan !== '0000-00-00'}disabled{/if}></td>
-          <td>{$data.aturan_pakai} <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="{$data.kode_brng}" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="nonracikan"><i class="fa fa-print"></i></button></td>
+          <td style="white-space: nowrap;">
+            <input type="text"
+                  class="form-control input-sm aturan_pakai"
+                  style="width:200px; display:inline-block; vertical-align: middle;"
+                  data-kode_brng="{$data.kode_brng}"
+                  value="{$data.aturan_pakai}"
+                  {if: $value.tgl_perawatan !== '0000-00-00'}disabled{/if}>
+
+            <button type="button"
+                    class="btn btn-danger btn-xs cetak_etiket"
+                    style="display:inline-block; vertical-align: middle;"
+                    data-kode_brng="{$data.kode_brng}"
+                    data-no_rawat="{?=convertNoRawat($value.no_rawat)?}"
+                    data-tgl_peresepan="{$value.tgl_perawatan}"
+                    data-jam_peresepan="{$value.jam}"
+                    data-tipe="nonracikan">
+              <i class="fa fa-print"></i>
+            </button>
+          </td>
           <td><input type="text" class="form-control input-sm embalase" data-kode_brng="{$data.kode_brng}" value="{?= $this->core->settings->get('farmasi.embalase')?}" style="width: 80px;" {if: $value.tgl_perawatan !== '0000-00-00'}disabled{/if}></td>
           <td><input type="text" class="form-control input-sm tuslah" data-kode_brng="{$data.kode_brng}" value="{?= $this->core->settings->get('farmasi.tuslah')?}" style="width: 80px;" {if: $value.tgl_perawatan !== '0000-00-00'}disabled{/if}></td>
           <td>Rp. <span class="pull-right">{?= number_format(($data.ralan * $data.jml),2,',','.')?}</span></td>
@@ -172,7 +190,30 @@
       <tr>
         <td>{$value.nama_racik}</td>
         <td><input type="number" class="form-control input-sm jumlah_obat" data-kode_brng="{$value.kd_racik}" value="{$value.jml_dr}" style="width: 100px;" {if: $value.tgl_perawatan !== '0000-00-00'}disabled{/if}></td>
-        <td>{$value.aturan_pakai} <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="{$value.kd_racik}" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="racikan"><i class="fa fa-print"></i></button></td>
+        <td style="white-space: nowrap;">
+          <input
+            type="text"
+            class="form-control input-sm aturan_pakai"
+            data-kode_brng="{$value.kd_racik}"
+            value="{$value.aturan_pakai}"
+            style="width:200px; display:inline-block; vertical-align:middle;"
+            {if: $value.tgl_perawatan !== '0000-00-00'}disabled{/if}
+          >
+
+          <button
+            type="button"
+            class="btn btn-danger btn-xs cetak_etiket"
+            data-kode_brng="{$value.kd_racik}"
+            data-no_rawat="{?=convertNoRawat($value.no_rawat)?}"
+            data-tgl_peresepan="{$value.tgl_perawatan}"
+            data-jam_peresepan="{$value.jam}"
+            data-tipe="racikan"
+            style="vertical-align:middle;"
+            title="Cetak Etiket Racikan"
+          >
+            <i class="fa fa-print"></i>
+          </button>
+        </td>
         <td colspan="3">{$value.keterangan}</td>
       </tr>
       <tr>

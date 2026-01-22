@@ -16,7 +16,25 @@
       <tr>
         <td>{$value.nama_brng}</td>
         <td>{$value.jml}</td>
-        <td>{$value.aturan_pakai} <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="{$value.kode_brng}" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="nonracikan"><i class="fa fa-print"></i></button></td>
+        <td style="white-space: nowrap;">
+          <input type="text"
+                class="form-control input-sm aturan_pakai"
+                style="width:200px; display:inline-block; vertical-align: middle;"
+                data-kode_brng="{$data.kode_brng}"
+                value="{$data.aturan_pakai}"
+                {if: $value.tgl_perawatan !== '0000-00-00'}disabled{/if}>
+
+          <button type="button"
+                  class="btn btn-danger btn-xs cetak_etiket"
+                  style="display:inline-block; vertical-align: middle;"
+                  data-kode_brng="{$data.kode_brng}"
+                  data-no_rawat="{?=convertNoRawat($value.no_rawat)?}"
+                  data-tgl_peresepan="{$value.tgl_perawatan}"
+                  data-jam_peresepan="{$value.jam}"
+                  data-tipe="nonracikan">
+            <i class="fa fa-print"></i>
+          </button>
+        </td>
         <td>Rp. <span class="pull-right">{?= number_format(($value.biaya_obat * $value.jml),2,',','.')?}</span></td>
         <td colspan="2">
           <!--<button type="button" class="btn btn-danger btn-xs hapus_resep_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>-->
@@ -53,7 +71,30 @@
       <tr>
         <td>{if: isset($value.nama_racik)}{$value.nama_racik}{else}-{/if}</td>
         <td>{if: isset($value.jml_dr)}{$value.jml_dr}{else}-{/if}</td>
-        <td>{if: isset($value.aturan_pakai)}{$value.aturan_pakai}{else}-{/if} <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="{if: isset($value.kd_racik)}{$value.kd_racik}{else}{/if}" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{if: isset($value.tgl_perawatan)}{$value.tgl_perawatan}{else}{/if}" data-jam_peresepan="{if: isset($value.jam)}{$value.jam}{else}{/if}" data-tipe="racikan"><i class="fa fa-print"></i></button></td>
+        <td style="white-space: nowrap;">
+          <input
+            type="text"
+            class="form-control input-sm aturan_pakai"
+            data-kode_brng="{$value.kd_racik}"
+            value="{$value.aturan_pakai}"
+            style="width:200px; display:inline-block; vertical-align:middle;"
+            {if: $value.tgl_perawatan !== '0000-00-00'}disabled{/if}
+          >
+
+          <button
+            type="button"
+            class="btn btn-danger btn-xs cetak_etiket"
+            data-kode_brng="{$value.kd_racik}"
+            data-no_rawat="{?=convertNoRawat($value.no_rawat)?}"
+            data-tgl_peresepan="{$value.tgl_perawatan}"
+            data-jam_peresepan="{$value.jam}"
+            data-tipe="racikan"
+            style="vertical-align:middle;"
+            title="Cetak Etiket Racikan"
+          >
+            <i class="fa fa-print"></i>
+          </button>
+        </td>
         <td></td>
         <td colspan="2">
           <button type="button" class="btn btn-danger btn-xs hapus_obat_racikan" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-jml="{$value.jml_dr}" data-no_racik="{$value.no_racik}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Racikan</span></button>

@@ -1536,6 +1536,10 @@ class Admin extends AdminModule
                 }
                 
                 foreach ($racikan_unique as $racikan) {
+
+                    // Ambil aturan pakai dari input jika ada (prioritas), jika tidak gunakan dari database
+                    $aturan_pakai_racikan = isset($aturanPakaiData[$racikan['kd_racik']]) ? $aturanPakaiData[$racikan['kd_racik']] : $racikan['aturan_pakai'];
+
                     $this->db('obat_racikan')->save(
                         [
                             'tgl_perawatan' => $tgl_rawat,
@@ -1545,7 +1549,7 @@ class Admin extends AdminModule
                             'nama_racik' => $racikan['nama_racik'],
                             'kd_racik' => $racikan['kd_racik'],
                             'jml_dr' => $racikan['jml_dr'],
-                            'aturan_pakai' => $racikan['aturan_pakai'],
+                            'aturan_pakai' => $aturan_pakai_racikan,
                             'keterangan' => $racikan['keterangan']
                         ]
                     );
@@ -1562,11 +1566,16 @@ class Admin extends AdminModule
 
               $jumlah = isset($jumlahData[$item['kode_brng']]) ? $jumlahData[$item['kode_brng']] : $item['jml'];
               $kandungan = isset($kandunganData[$item['kode_brng']]) ? $kandunganData[$item['kode_brng']] : (isset($item['kandungan']) ? $item['kandungan'] : 0);
-              $aturan_pakai = isset($aturanPakaiData[$item['kode_brng']]) ? $aturanPakaiData[$item['kode_brng']] : (isset($item['aturan_pakai']) ? $item['aturan_pakai'] : '');
+
+              if (isset($aturanPakaiData[$item['kode_brng']])) {
+                  $aturan_pakai = $aturanPakaiData[$item['kode_brng']];
+              } else {
+                  $aturan_pakai = isset($item['aturan_pakai']) ? $item['aturan_pakai'] : '';
+              }
 
               if(isset($item['no_racik'])) {
                  $jumlah_racik = isset($item['jml_dr']) ? $item['jml_dr'] : (isset($jumlahData[$item['kode_brng']]) ? $jumlahData[$item['kode_brng']] : $item['jml']);
-                 $jumlah = isset($jumlahData[$item['kode_brng']]) ? $jumlahData[$item['kode_brng']] : $item['jml'];
+                 $jumlah = isset($jumlahData[$item['kode_brng']]) ? $jumlahData[$item['kode_brng']] : $item['jml'];             
               }
 
               $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $item['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))->oneArray();

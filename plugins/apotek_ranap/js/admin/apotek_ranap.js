@@ -511,6 +511,21 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
   var jumlahData = {};
   var kandunganData = {};
 
+  var aturanPakaiData = {};
+
+  // Proses header racikan untuk aturan pakai
+  var $racikanHeaderRow = $tbody.find('tr').has('.aturan_pakai');
+  $racikanHeaderRow.each(function() {
+      var $aturanInput = $(this).find('.aturan_pakai');
+      if ($aturanInput.length > 0) {
+          var kd_racik = $aturanInput.attr('data-kode_brng');
+          var aturan = $aturanInput.val();
+          if (kd_racik && aturan !== undefined) {
+              aturanPakaiData[kd_racik] = aturan;
+          }
+      }
+  });
+
   $rows.each(function() {
       var stok = parseFloat($(this).attr('data-stok'));
       // var jml = parseFloat($(this).attr('data-jml'));
@@ -521,6 +536,7 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
       var tuslahVal = $(this).find('.tuslah').val();
       var jumlahVal = $(this).find('.jumlah_obat').val();
       var kandunganVal = $(this).find('.kandungan_obat').val();
+      var aturanPakaiVal = $(this).find('.aturan_pakai').val();
 
       var jml = parseFloat(jumlahVal);
       var kandungan = parseFloat(kandunganVal);
@@ -542,6 +558,7 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
           if(tuslahVal !== undefined) tuslahData[kode_brng] = tuslahVal;
           if(jumlahVal !== undefined) jumlahData[kode_brng] = jml;
           if(kandunganVal !== undefined) kandunganData[kode_brng] = kandungan;
+          if(aturanPakaiVal !== undefined) aturanPakaiData[kode_brng] = aturanPakaiVal;
       }
 
       if (isNaN(stok)) stok = 0;
@@ -572,7 +589,8 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
         embalase: JSON.stringify(embalaseData),
         tuslah: JSON.stringify(tuslahData),
         jumlah: JSON.stringify(jumlahData),
-        kandungan: JSON.stringify(kandunganData)
+        kandungan: JSON.stringify(kandunganData),
+        aturan_pakai: JSON.stringify(aturanPakaiData)
       } ,function(data) {
         var url = baseURL + '/apotek_ranap/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
