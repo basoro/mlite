@@ -270,6 +270,12 @@ class Admin extends AdminModule
           ->toArray();
         $get_resep_dokter = array_merge($get_resep_dokter_nonracikan, $get_resep_dokter_racikan);
 
+        $embalaseData = isset($_POST['embalase']) ? json_decode($_POST['embalase'], true) : [];
+        $tuslahData = isset($_POST['tuslah']) ? json_decode($_POST['tuslah'], true) : [];
+        $jumlahData = isset($_POST['jumlah']) ? json_decode($_POST['jumlah'], true) : [];
+        $kandunganData = isset($_POST['kandungan']) ? json_decode($_POST['kandungan'], true) : [];
+        $aturanPakaiData = isset($_POST['aturan_pakai']) ? json_decode($_POST['aturan_pakai'], true) : [];
+
         if(!empty($get_resep_dokter_racikan)) {
             // Group by no_racik to avoid duplicate inserts
             $racikan_unique = [];
@@ -299,11 +305,6 @@ class Admin extends AdminModule
             }
         }
 
-        $embalaseData = isset($_POST['embalase']) ? json_decode($_POST['embalase'], true) : [];
-        $tuslahData = isset($_POST['tuslah']) ? json_decode($_POST['tuslah'], true) : [];
-        $jumlahData = isset($_POST['jumlah']) ? json_decode($_POST['jumlah'], true) : [];
-        $kandunganData = isset($_POST['kandungan']) ? json_decode($_POST['kandungan'], true) : [];
-        $aturanPakaiData = isset($_POST['aturan_pakai']) ? json_decode($_POST['aturan_pakai'], true) : [];
 
         foreach ($get_resep_dokter as $item) {
 
@@ -1166,7 +1167,7 @@ class Admin extends AdminModule
           $detail_pemberian_obat[] = [
             'nama_brng' => $row['nama_racik'],
             'jml'       => $row['jml_dr'],
-            'aturan_pakai' => '',
+            'aturan_pakai' => $row['aturan_pakai'],
             'keterangan'   => ''
           ];
         }
@@ -1453,6 +1454,12 @@ class Admin extends AdminModule
               ->toArray();
             $get_resep_dokter = array_merge($get_resep_dokter_nonracikan, $get_resep_dokter_racikan);
 
+            $embalaseData = isset($input['embalase']) ? (is_array($input['embalase']) ? $input['embalase'] : json_decode($input['embalase'], true)) : [];
+            $tuslahData = isset($input['tuslah']) ? (is_array($input['tuslah']) ? $input['tuslah'] : json_decode($input['tuslah'], true)) : [];
+            $jumlahData = isset($input['jumlah']) ? (is_array($input['jumlah']) ? $input['jumlah'] : json_decode($input['jumlah'], true)) : [];
+            $kandunganData = isset($input['kandungan']) ? (is_array($input['kandungan']) ? $input['kandungan'] : json_decode($input['kandungan'], true)) : [];
+            $aturanPakaiData = isset($input['aturan_pakai']) ? (is_array($input['aturan_pakai']) ? $input['aturan_pakai'] : json_decode($input['aturan_pakai'], true)) : [];
+
             if(!empty($get_resep_dokter_racikan)) {
                 $racikan_unique = [];
                 foreach ($get_resep_dokter_racikan as $row) {
@@ -1461,6 +1468,8 @@ class Admin extends AdminModule
                     }
                 }
                 
+                $aturan_pakai_racikan = isset($aturanPakaiData[$racikan['kd_racik']]) ? $aturanPakaiData[$racikan['kd_racik']] : $racikan['aturan_pakai'];
+
                 foreach ($racikan_unique as $racikan) {
                     $this->db('obat_racikan')->save(
                         [
@@ -1471,18 +1480,12 @@ class Admin extends AdminModule
                             'nama_racik' => $racikan['nama_racik'],
                             'kd_racik' => $racikan['kd_racik'],
                             'jml_dr' => $racikan['jml_dr'],
-                            'aturan_pakai' => $racikan['aturan_pakai'],
+                            'aturan_pakai' => $aturan_pakai_racikan,
                             'keterangan' => $racikan['keterangan']
                         ]
                     );
                 }
             }
-
-            $embalaseData = isset($input['embalase']) ? (is_array($input['embalase']) ? $input['embalase'] : json_decode($input['embalase'], true)) : [];
-            $tuslahData = isset($input['tuslah']) ? (is_array($input['tuslah']) ? $input['tuslah'] : json_decode($input['tuslah'], true)) : [];
-            $jumlahData = isset($input['jumlah']) ? (is_array($input['jumlah']) ? $input['jumlah'] : json_decode($input['jumlah'], true)) : [];
-            $kandunganData = isset($input['kandungan']) ? (is_array($input['kandungan']) ? $input['kandungan'] : json_decode($input['kandungan'], true)) : [];
-            $aturanPakaiData = isset($input['aturan_pakai']) ? (is_array($input['aturan_pakai']) ? $input['aturan_pakai'] : json_decode($input['aturan_pakai'], true)) : [];
 
             foreach ($get_resep_dokter as $item) {
 
