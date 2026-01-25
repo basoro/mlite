@@ -91,17 +91,12 @@ class Admin extends AdminModule
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
-                // $row['editURL'] = url([ADMIN, 'master', 'petugasedit', $row['nip']]);
-                // $row['delURL']  = url([ADMIN, 'master', 'petugasdelete', $row['nip']]);
-                // $row['restoreURL']  = url([ADMIN, 'master', 'petugasrestore', $row['nip']]);
-                // $row['viewURL'] = url([ADMIN, 'master', 'petugasview', $row['nip']]);
                 $this->assign['list'][] = $row;
             }
         }
 
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['addURL'] = url([ADMIN, 'presensi', 'jagaadd']);
-        // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
 
         return $this->draw('index.html', ['jamjaga' => $this->assign]);
     }
@@ -237,9 +232,6 @@ class Admin extends AdminModule
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
                 $row['editURL'] = url([ADMIN, 'presensi', 'jadwaledit', $row['id'], $bulan, $tahun]);
-                // $row['delURL']  = url([ADMIN, 'master', 'petugasdelete', $row['nip']]);
-                // $row['restoreURL']  = url([ADMIN, 'master', 'petugasrestore', $row['nip']]);
-                // $row['viewURL'] = url([ADMIN, 'master', 'petugasview', $row['nip']]);
                 $this->assign['list'][] = $row;
             }
         }
@@ -261,7 +253,6 @@ class Admin extends AdminModule
             '12' => 'DES',
         );
         $this->assign['showBulan'] = $month[$bulan];
-        // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
         $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
         $startYear = 2020;
         $currentYear = date('Y');
@@ -501,9 +492,6 @@ class Admin extends AdminModule
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
                 $row['editURL'] = url([ADMIN, 'presensi', 'jadwaltambahedit', $row['id'] , $bulan , $tahun]);
-                // $row['delURL']  = url([ADMIN, 'master', 'petugasdelete', $row['nip']]);
-                // $row['restoreURL']  = url([ADMIN, 'master', 'petugasrestore', $row['nip']]);
-                // $row['viewURL'] = url([ADMIN, 'master', 'petugasview', $row['nip']]);
                 $this->assign['list'][] = $row;
             }
         }
@@ -525,7 +513,6 @@ class Admin extends AdminModule
             '12' => 'DES',
         );
         $this->assign['showBulan'] = $month[$bulan];
-        // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
         $startYear = 2020;
         $currentYear = date('Y');
