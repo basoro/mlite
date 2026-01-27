@@ -76,6 +76,7 @@ class QueryWrapper
         static::$db = new \PDO($dsn, $user, $pass);
         static::$db->setAttribute(\PDO::ATTR_ERRMODE, static::$options['error_mode']);
     }
+    
     public static function close()
     {
         static::$db = null;
