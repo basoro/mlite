@@ -160,4 +160,4 @@ Untuk masuk ke panel administrasi, tambahkan `/admin/` di akhir URL.
 Ini harus diubah segera setelah login untuk alasan keamanan. Juga dapat mengganti nama direktori dengan panel administrasi.  (Anda perlu mengubahnya pada `config.php`)
 
 ## Demo
-Demo dan Info lebih lanjut di https://mlite.id
+Untuk Demo dan Info lebih lanjut di https://mlite.id
