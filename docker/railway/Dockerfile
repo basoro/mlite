@@ -94,7 +94,7 @@ COPY /docker/railway/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Define volumes for persistence
-# VOLUME ["/var/www/html/backups", "/var/www/html/uploads"]
+VOLUME ["/var/www/html/backups", "/var/www/html/uploads"]
 
 EXPOSE 80
 
