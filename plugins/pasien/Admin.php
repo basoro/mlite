@@ -778,6 +778,10 @@ class Admin extends AdminModule
             return ['status' => 'error', 'message' => 'no_rkm_medis required'];
         }
         
+        if (!$no_rawat && isset($_GET['no_rawat'])) {
+            $no_rawat = $_GET['no_rawat'];
+        }
+
         $data = $this->_getRiwayatData($no_rkm_medis, $no_rawat);
         if (!$data['pasien']) {
              return ['status' => 'error', 'message' => 'Pasien not found'];

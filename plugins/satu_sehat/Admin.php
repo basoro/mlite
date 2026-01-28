@@ -6296,7 +6296,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       
       $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->where('no_rawat', $row['no_rawat'])->oneArray();
 
-      $row['tgl_pulang'] = isset_or($mlite_billing['tgl_billing'], $pemeriksaan_ralan['tgl_perawatan']);
+      $row['tgl_pulang'] = isset_or($mlite_billing['tgl_billing'], isset_or($pemeriksaan_ralan['tgl_perawatan'], ''));
 
       if ($row['status_lanjut'] == 'Ranap') {
         $row['kd_kamar'] = $this->core->getKamarInapInfo('kd_kamar', $row['no_rawat']);

@@ -182,7 +182,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{baseUrl}}/admin/api/pasien/riwayatperawatan/{{no_rkm_medis}}/{{no_rawat}}",
+                            "raw": "{{baseUrl}}/admin/api/pasien/riwayatperawatan/{{no_rkm_medis}}?no_rawat={{no_rawat}}",
                             "host": [
                                 "{{baseUrl}}"
                             ],
@@ -191,8 +191,13 @@
                                 "api",
                                 "pasien",
                                 "riwayatperawatan",
-                                "{{no_rkm_medis}}",  
-                                "{{no_rawat}}"
+                                "{{no_rkm_medis}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "no_rawat",
+                                    "value": "{{no_rawat}}"
+                                }
                             ]
                         }
                     },
@@ -3871,6 +3876,484 @@
                             ]
                         }
                     }
+                }
+            ]
+        },
+        {
+            "name": "Vedika",
+            "item": [
+                {
+                    "name": "List Vedika",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/vedika/list?draw=1&start=0&length=10&tgl_awal=2025-01-01&tgl_akhir=2025-12-31&type=ralan",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "vedika",
+                                "list"
+                            ],
+                            "query": [
+                                {
+                                    "key": "draw",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "start",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "length",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "tgl_awal",
+                                    "value": "2025-01-01"
+                                },
+                                {
+                                    "key": "tgl_akhir",
+                                    "value": "2025-12-31"
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "ralan",
+                                    "description": "ralan / ranap"
+                                },
+                                {
+                                    "key": "search",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "List Vedika Lengkap",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/vedika/lengkap?draw=1&start=0&length=10&tgl_awal=2025-01-01&tgl_akhir=2025-12-31&type=ralan",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "vedika",
+                                "lengkap"
+                            ],
+                            "query": [
+                                {
+                                    "key": "draw",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "start",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "length",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "tgl_awal",
+                                    "value": "2025-01-01"
+                                },
+                                {
+                                    "key": "tgl_akhir",
+                                    "value": "2025-12-31"
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "ralan",
+                                    "description": "ralan / ranap"
+                                },
+                                {
+                                    "key": "search",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "List Vedika Pengajuan",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/vedika/pengajuan?draw=1&start=0&length=10&tgl_awal=2025-01-01&tgl_akhir=2025-12-31&type=ralan",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "vedika",
+                                "pengajuan"
+                            ],
+                            "query": [
+                                {
+                                    "key": "draw",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "start",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "length",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "tgl_awal",
+                                    "value": "2025-01-01"
+                                },
+                                {
+                                    "key": "tgl_akhir",
+                                    "value": "2025-12-31"
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "ralan",
+                                    "description": "ralan / ranap"
+                                },
+                                {
+                                    "key": "search",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "List Vedika Perbaikan",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/vedika/perbaikan?draw=1&start=0&length=10&tgl_awal=2025-01-01&tgl_akhir=2025-12-31&type=ralan",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "vedika",
+                                "perbaikan"
+                            ],
+                            "query": [
+                                {
+                                    "key": "draw",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "start",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "length",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "tgl_awal",
+                                    "value": "2025-01-01"
+                                },
+                                {
+                                    "key": "tgl_akhir",
+                                    "value": "2025-12-31"
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "ralan",
+                                    "description": "ralan / ranap"
+                                },
+                                {
+                                    "key": "search",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show Vedika",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/vedika/show/{{nosep}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "vedika",
+                                "show",
+                                "{{nosep}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Vedika",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nosep\": \"00001\",\n    \"no_rawat\": \"2023/01/01/000001\",\n    \"no_rkm_medis\": \"000001\",\n    \"catatan\": \"Berkas lengkap\",\n    \"status\": \"Verifikasi\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/vedika/create",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "vedika",
+                                "create"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Vedika",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"catatan\": \"Revisi berkas\",\n    \"status\": \"Pending\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/vedika/update/{{nosep}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "vedika",
+                                "update",
+                                "{{nosep}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Vedika",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/vedika/delete/{{nosep}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "vedika",
+                                "delete",
+                                "{{nosep}}"
+                            ]
+                        }
+                    },
+                    "response": []
                 }
             ]
         },

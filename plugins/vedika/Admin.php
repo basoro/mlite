@@ -42,6 +42,726 @@ class Admin extends AdminModule
     ];
   }
 
+  public function apiList()
+  {
+    $username = $this->core->checkAuth('GET');
+    if (!$this->core->checkPermission($username, 'can_read', 'vedika')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    $draw = $_GET['draw'] ?? 0;
+    $start = $_GET['start'] ?? 0;
+    $length = $_GET['length'] ?? 10;
+    $columnIndex = $_GET['order'][0]['column'] ?? 0;
+    $columnName = $_GET['columns'][$columnIndex]['data'] ?? 'tanggal';
+    $columnSortOrder = $_GET['order'][0]['dir'] ?? 'desc';
+    $searchValue = is_array($_GET['search'] ?? null) ? ($_GET['search']['value'] ?? '') : ($_GET['search'] ?? '');
+
+    $tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-d');
+    $tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-d');
+
+    $carabayar = str_replace(",","','", $this->settings->get('vedika.carabayar'));
+    $type = $_GET['type'] ?? 'ralan';
+
+    if ($type == 'ranap') {
+        $sql = "SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab, kamar_inap.tgl_keluar, kamar_inap.jam_keluar, kamar_inap.kd_kamar 
+            FROM reg_periksa, pasien, dokter, poliklinik, penjab, kamar_inap 
+            WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+            AND reg_periksa.no_rawat = kamar_inap.no_rawat 
+            AND reg_periksa.kd_dokter = dokter.kd_dokter 
+            AND reg_periksa.kd_poli = poliklinik.kd_poli 
+            AND reg_periksa.kd_pj = penjab.kd_pj 
+            AND penjab.kd_pj IN ('$carabayar') 
+            AND kamar_inap.tgl_keluar BETWEEN '$tgl_awal' AND '$tgl_akhir' 
+            AND reg_periksa.status_lanjut = 'Ranap'";
+    } else {
+        $sql = "SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+            FROM reg_periksa, pasien, dokter, poliklinik, penjab 
+            WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+            AND reg_periksa.kd_dokter = dokter.kd_dokter 
+            AND reg_periksa.kd_poli = poliklinik.kd_poli 
+            AND reg_periksa.kd_pj = penjab.kd_pj 
+            AND penjab.kd_pj IN ('$carabayar') 
+            AND reg_periksa.tgl_registrasi BETWEEN '$tgl_awal' AND '$tgl_akhir' 
+            AND reg_periksa.status_lanjut = 'Ralan' 
+            AND reg_periksa.no_rawat NOT IN (SELECT no_rawat FROM mlite_vedika)";
+    }
+
+    if (!empty($searchValue)) {
+      $sql .= " AND (reg_periksa.no_rkm_medis LIKE '%$searchValue%' OR reg_periksa.no_rawat LIKE '%$searchValue%' OR pasien.nm_pasien LIKE '%$searchValue%')";
+    }
+
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute();
+    $totalRecords = $stmt->rowCount();
+
+    // Order and Limit
+    //$sql .= " ORDER BY $columnName $columnSortOrder LIMIT $start, $length";
+    $sql .= " LIMIT $start, $length";
+
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute();
+    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    $data = [];
+    if (count($rows)) {
+      foreach ($rows as $row) {
+        $berkas_digital = $this->db('berkas_digital_perawatan')
+          ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
+          ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
+          ->asc('master_berkas_digital.nama')
+          ->toArray();
+
+        $row = htmlspecialchars_array($row);
+        $row['no_sep'] = $this->_getSEPInfo('no_sep', $row['no_rawat']);
+        $row['no_peserta'] = $this->_getSEPInfo('no_kartu', $row['no_rawat']);
+        $row['no_rujukan'] = $this->_getSEPInfo('no_rujukan', $row['no_rawat']);
+        $row['kd_penyakit'] = $this->_getDiagnosa('kd_penyakit', $row['no_rawat'], $row['status_lanjut']);
+        $row['nm_penyakit'] = $this->_getDiagnosa('nm_penyakit', $row['no_rawat'], $row['status_lanjut']);
+        $row['kode'] = $this->_getProsedur('kode', $row['no_rawat'], $row['status_lanjut']);
+        $row['deskripsi_panjang'] = $this->_getProsedur('deskripsi_panjang', $row['no_rawat'], $row['status_lanjut']);
+        $row['berkas_digital'] = $berkas_digital;
+        // $row['formSepURL'] = url([ADMIN, 'vedika', 'formsepvclaim', '?no_rawat=' . $row['no_rawat']]);
+        // $row['pdfURL'] = url([ADMIN, 'vedika', 'pdf', $this->convertNorawat($row['no_rawat'])]);
+        // $row['setstatusURL']  = url([ADMIN, 'vedika', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
+        $row['status_pengajuan'] = $this->db('mlite_vedika')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
+        // $row['berkasPasien'] = url([ADMIN, 'vedika', 'berkaspasien', $this->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
+        // $row['berkasPerawatan'] = url([ADMIN, 'vedika', 'berkasperawatan', $this->convertNorawat($row['no_rawat'])]);
+        if ($row['status_lanjut'] == 'Ranap') {
+          $_get_kamar_inap = $this->db('kamar_inap')->where('no_rawat', $row['no_rawat'])->limit(1)->desc('tgl_keluar')->toArray();
+          $row['tgl_registrasi'] = $_get_kamar_inap[0]['tgl_keluar'];
+          $row['jam_reg'] = $_get_kamar_inap[0]['jam_keluar'];
+          $get_kamar = $this->db('kamar')->where('kd_kamar', $_get_kamar_inap[0]['kd_kamar'])->oneArray();
+          $get_bangsal = $this->db('bangsal')->where('kd_bangsal', $get_kamar['kd_bangsal'])->oneArray();
+          $row['nm_poli'] = $get_bangsal['nm_bangsal'].'/'.$get_kamar['kd_kamar'];
+          $row['nm_dokter'] = $this->db('dpjp_ranap')
+            ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+            ->where('no_rawat', $row['no_rawat'])
+            ->toArray();
+        }
+        $data[] = $row;
+      }
+    }
+
+    return [
+      "status" => "success",
+      "data" => $data,
+      "meta" => [
+        "page" => floor($start / $length) + 1,
+        "per_page" => intval($length),
+        "total" => $totalRecords
+      ]
+    ];
+  }
+
+  public function apiShow($nosep = null)
+  {
+    $username = $this->core->checkAuth('GET');
+    if (!$this->core->checkPermission($username, 'can_read', 'vedika')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    if(!$nosep) {
+      return ['status' => 'error', 'message' => 'No SEP missing'];
+    }
+
+    $row = $this->db('bridging_sep')
+      ->join('reg_periksa', 'reg_periksa.no_rawat=bridging_sep.no_rawat')
+      ->where('bridging_sep.no_sep', $nosep)
+      ->oneArray();
+
+    if($row) {
+      $result = $this->_getRiwayatData($row['no_rkm_medis'], convertNorawat($row['no_rawat']));
+      return ['status' => 'success', 'data' => $result];
+    } else {
+      return ['status' => 'error', 'message' => 'Not found'];
+    }
+  }
+
+  public function apiCreate()
+  {
+    $username = $this->core->checkAuth('POST');
+    if (!$this->core->checkPermission($username, 'can_create', 'vedika')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input)) $input = $_POST;
+
+    if (empty($input['no_rkm_medis']) || empty($input['no_rawat']) || empty($input['nosep'])) {
+      return ['status' => 'error', 'message' => 'Data incomplete'];
+    }
+
+    $input['tanggal'] = date('Y-m-d');
+    $input['username'] = $this->core->getUserInfo('username', null, true);
+
+    $row = $this->db('reg_periksa')->where('no_rawat', $input['no_rawat'])->oneArray();
+    if(!$row) {
+      return ['status' => 'error', 'message' => 'No Rawat not found'];
+    }
+
+    try {
+      $this->db('mlite_vedika')->save([
+        'tanggal' => date('Y-m-d'),
+        'no_rkm_medis' => $input['no_rkm_medis'],
+        'no_rawat' => $input['no_rawat'],
+        'tgl_registrasi' => $row['tgl_registrasi'],
+        'nosep' => $input['nosep'],
+        'jenis' => $row['status_lanjut'],
+        'status' => $input['status'],
+        'username' => $input['username'],
+      ]);
+      
+      // Also save feedback/log if needed
+      if(isset($input['catatan'])) {
+          $this->db('mlite_vedika_feedback')->save([
+            'nosep' => $input['nosep'],
+            'tanggal' => date('Y-m-d'),
+            'catatan' => ($input['status'] ?? '') .' - '.$input['catatan'],
+            'username' => $input['username']
+          ]);
+      }
+
+      return ['status' => 'created', 'data' => $input];
+    } catch (\PDOException $e) {
+      return ['status' => 'error', 'message' => $e->getMessage()];
+    }
+  }
+
+  public function apiUpdate($nosep = null)
+  {
+    $username = $this->core->checkAuth('POST');
+    if (!$this->core->checkPermission($username, 'can_update', 'vedika')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    if(!$nosep) {
+      return ['status' => 'error', 'message' => 'No SEP missing'];
+    }
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input)) $input = $_POST;
+
+    try {
+      $this->db('mlite_vedika')->where('nosep', $nosep)->save([
+        'status' => $input['status'],
+        'username' => $this->core->getUserInfo('username', null, true) 
+      ]);
+      
+      if(isset($input['catatan']) && isset($input['status'])) {
+          $this->db('mlite_vedika_feedback')->save([
+            'nosep' => $nosep,
+            'tanggal' => date('Y-m-d'),
+            'catatan' => $input['status'].' - '.$input['catatan'],
+            'username' => $this->core->getUserInfo('username', null, true)
+          ]);
+      }
+      
+      return ['status' => 'updated', 'data' => $input];
+    } catch (\PDOException $e) {
+      return ['status' => 'error', 'message' => $e->getMessage()];
+    }
+  }
+
+  public function apiDelete($nosep = null)
+  {
+    $username = $this->core->checkAuth('DELETE');
+    if (!$this->core->checkPermission($username, 'can_delete', 'vedika')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    if(!$nosep) {
+      return ['status' => 'error', 'message' => 'No SEP missing'];
+    }
+
+    try {
+      $this->db('mlite_vedika')->where('nosep', $nosep)->delete();
+      return ['status' => 'deleted', 'nosep' => $nosep];
+    } catch (\PDOException $e) {
+      return ['status' => 'error', 'message' => $e->getMessage()];
+    }
+  }
+
+  public function apiLengkap()
+  {
+    $username = $this->core->checkAuth('GET');
+    if (!$this->core->checkPermission($username, 'can_read', 'vedika')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    $draw = $_GET['draw'] ?? 0;
+    $start = $_GET['start'] ?? 0;
+    $length = $_GET['length'] ?? 10;
+    $searchValue = is_array($_GET['search'] ?? null) ? ($_GET['search']['value'] ?? '') : ($_GET['search'] ?? '');
+
+    $tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-d');
+    $tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-d');
+
+    $type = $_GET['type'] ?? 'ralan';
+
+    if ($type == 'ranap') {
+        $sql = "SELECT mlite_vedika.*, reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab, kamar_inap.tgl_keluar, kamar_inap.jam_keluar, kamar_inap.kd_kamar 
+            FROM mlite_vedika 
+            JOIN reg_periksa ON mlite_vedika.no_rawat = reg_periksa.no_rawat
+            JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+            JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter 
+            JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+            JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+            JOIN kamar_inap ON reg_periksa.no_rawat = kamar_inap.no_rawat 
+            WHERE mlite_vedika.status = 'Lengkap' 
+            AND mlite_vedika.jenis = '1' 
+            AND (mlite_vedika.no_rkm_medis LIKE ? OR mlite_vedika.no_rawat LIKE ? OR mlite_vedika.nosep LIKE ?) 
+            AND kamar_inap.tgl_keluar BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+    } else {
+        $sql = "SELECT mlite_vedika.*, reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+            FROM mlite_vedika 
+            JOIN reg_periksa ON mlite_vedika.no_rawat = reg_periksa.no_rawat
+            JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+            JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter 
+            JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+            JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+            WHERE mlite_vedika.status = 'Lengkap' 
+            AND mlite_vedika.jenis = '2' 
+            AND (mlite_vedika.no_rkm_medis LIKE ? OR mlite_vedika.no_rawat LIKE ? OR mlite_vedika.nosep LIKE ?) 
+            AND mlite_vedika.tgl_registrasi BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+    }
+
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute(['%' . $searchValue . '%', '%' . $searchValue . '%', '%' . $searchValue . '%']);
+    $totalRecords = $stmt->rowCount();
+
+    $sql .= " ORDER BY mlite_vedika.nosep ASC LIMIT $start, $length";
+
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute(['%' . $searchValue . '%', '%' . $searchValue . '%', '%' . $searchValue . '%']);
+    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    return [
+      "status" => "success",
+      "data" => $rows,
+      "meta" => [
+        "page" => floor($start / $length) + 1,
+        "per_page" => intval($length),
+        "total" => $totalRecords
+      ]
+    ];
+  }
+
+  public function apiPengajuan()
+  {
+    $username = $this->core->checkAuth('GET');
+    if (!$this->core->checkPermission($username, 'can_read', 'vedika')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    $draw = $_GET['draw'] ?? 0;
+    $start = $_GET['start'] ?? 0;
+    $length = $_GET['length'] ?? 10;
+    $searchValue = is_array($_GET['search'] ?? null) ? ($_GET['search']['value'] ?? '') : ($_GET['search'] ?? '');
+
+    $tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-d');
+    $tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-d');
+
+    $type = $_GET['type'] ?? 'ralan';
+
+    if ($type == 'ranap') {
+        $sql = "SELECT mlite_vedika.*, reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab, kamar_inap.tgl_keluar, kamar_inap.jam_keluar, kamar_inap.kd_kamar 
+            FROM mlite_vedika 
+            JOIN reg_periksa ON mlite_vedika.no_rawat = reg_periksa.no_rawat
+            JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+            JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter 
+            JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+            JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+            JOIN kamar_inap ON reg_periksa.no_rawat = kamar_inap.no_rawat 
+            WHERE mlite_vedika.status = 'Pengajuan' 
+            AND mlite_vedika.jenis = '1' 
+            AND (mlite_vedika.no_rkm_medis LIKE ? OR mlite_vedika.no_rawat LIKE ? OR mlite_vedika.nosep LIKE ?) 
+            AND kamar_inap.tgl_keluar BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+    } else {
+        $sql = "SELECT mlite_vedika.*, reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+            FROM mlite_vedika 
+            JOIN reg_periksa ON mlite_vedika.no_rawat = reg_periksa.no_rawat
+            JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+            JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter 
+            JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+            JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+            WHERE mlite_vedika.status = 'Pengajuan' 
+            AND mlite_vedika.jenis = '2' 
+            AND (mlite_vedika.no_rkm_medis LIKE ? OR mlite_vedika.no_rawat LIKE ? OR mlite_vedika.nosep LIKE ?) 
+            AND mlite_vedika.tgl_registrasi BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+    }
+
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute(['%' . $searchValue . '%', '%' . $searchValue . '%', '%' . $searchValue . '%']);
+    $totalRecords = $stmt->rowCount();
+
+    $sql .= " ORDER BY mlite_vedika.nosep ASC LIMIT $start, $length";
+
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute(['%' . $searchValue . '%', '%' . $searchValue . '%', '%' . $searchValue . '%']);
+    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    return [
+      "status" => "success",
+      "data" => $rows,
+      "meta" => [
+        "page" => floor($start / $length) + 1,
+        "per_page" => intval($length),
+        "total" => $totalRecords
+      ]
+    ];
+  }
+
+  public function apiPerbaikan()
+  {
+    $username = $this->core->checkAuth('GET');
+    if (!$this->core->checkPermission($username, 'can_read', 'vedika')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    $draw = $_GET['draw'] ?? 0;
+    $start = $_GET['start'] ?? 0;
+    $length = $_GET['length'] ?? 10;
+    $searchValue = is_array($_GET['search'] ?? null) ? ($_GET['search']['value'] ?? '') : ($_GET['search'] ?? '');
+
+    $tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-d');
+    $tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-d');
+
+    $type = $_GET['type'] ?? 'ralan';
+
+    if ($type == 'ranap') {
+        $sql = "SELECT mlite_vedika.*, reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab, kamar_inap.tgl_keluar, kamar_inap.jam_keluar, kamar_inap.kd_kamar 
+            FROM mlite_vedika 
+            JOIN reg_periksa ON mlite_vedika.no_rawat = reg_periksa.no_rawat
+            JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+            JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter 
+            JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+            JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+            JOIN kamar_inap ON reg_periksa.no_rawat = kamar_inap.no_rawat 
+            WHERE mlite_vedika.status = 'Perbaiki' 
+            AND mlite_vedika.jenis = '1' 
+            AND (mlite_vedika.no_rkm_medis LIKE ? OR mlite_vedika.no_rawat LIKE ? OR mlite_vedika.nosep LIKE ?) 
+            AND kamar_inap.tgl_keluar BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+    } else {
+        $sql = "SELECT mlite_vedika.*, reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+            FROM mlite_vedika 
+            JOIN reg_periksa ON mlite_vedika.no_rawat = reg_periksa.no_rawat
+            JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+            JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter 
+            JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+            JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+            WHERE mlite_vedika.status = 'Perbaiki' 
+            AND mlite_vedika.jenis = '2' 
+            AND (mlite_vedika.no_rkm_medis LIKE ? OR mlite_vedika.no_rawat LIKE ? OR mlite_vedika.nosep LIKE ?) 
+            AND mlite_vedika.tgl_registrasi BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+    }
+
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute(['%' . $searchValue . '%', '%' . $searchValue . '%', '%' . $searchValue . '%']);
+    $totalRecords = $stmt->rowCount();
+
+    $sql .= " ORDER BY mlite_vedika.nosep ASC LIMIT $start, $length";
+
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute(['%' . $searchValue . '%', '%' . $searchValue . '%', '%' . $searchValue . '%']);
+    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    return [
+      "status" => "success",
+      "data" => $rows,
+      "meta" => [
+        "page" => floor($start / $length) + 1,
+        "per_page" => intval($length),
+        "total" => $totalRecords
+      ]
+    ];
+  }
+
+    private function _getRiwayatData($no_rkm_medis, $no_rawat = null)
+    {
+      $riwayat['settings'] = $this->settings('settings');
+      $riwayat['pasien'] = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+      $regQuery = $this->db('reg_periksa')
+          ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+          ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+          ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+          ->where('no_rkm_medis', $no_rkm_medis);
+
+      // 🔹 FILTER JIKA no_rawat DIISI
+      if ($no_rawat) {
+          $regQuery->where('reg_periksa.no_rawat', revertNorawat($no_rawat));
+      }
+
+      $reg_periksa = $regQuery
+          ->desc('tgl_registrasi')
+          ->toArray();
+
+      $riwayat['reg_periksa'] = [];
+      foreach ($reg_periksa as $row) {
+
+        $row['diagnosa_pasien'] = $this->db('diagnosa_pasien')
+          ->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')
+          ->where('no_rawat', $row['no_rawat'])
+          ->asc('prioritas')
+          ->toArray();
+        $row['prosedur_pasien'] = $this->db('prosedur_pasien')
+          ->join('icd9', 'icd9.kode=prosedur_pasien.kode')
+          ->where('no_rawat', $row['no_rawat'])
+          ->asc('prioritas')
+          ->toArray();
+        $row['pemeriksaan_ralan'] = $this->db('pemeriksaan_ralan')->where('no_rawat', $row['no_rawat'])->toArray();
+        $row['rawat_jl_dr'] = $this->db('rawat_jl_dr')
+          ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_jl_dr.kd_jenis_prw')
+          ->join('dokter', 'dokter.kd_dokter=rawat_jl_dr.kd_dokter')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tgl_perawatan')
+          ->desc('jam_rawat')
+          ->toArray();
+        $row['rawat_jl_pr'] = $this->db('rawat_jl_pr')
+          ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_jl_pr.kd_jenis_prw')
+          ->join('petugas', 'petugas.nip=rawat_jl_pr.nip')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tgl_perawatan')
+          ->desc('jam_rawat')
+          ->toArray();
+        $rawat_jl_drpr_data = $this->db('rawat_jl_drpr')
+          ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_jl_drpr.kd_jenis_prw')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tgl_perawatan')
+          ->desc('jam_rawat')
+          ->toArray();
+        $row['rawat_jl_drpr'] = [];
+        foreach ($rawat_jl_drpr_data as $drpr_item) {
+          $dokter = $this->db('dokter')->where('kd_dokter', $drpr_item['kd_dokter'])->oneArray();
+          $petugas = $this->db('petugas')->where('nip', $drpr_item['nip'])->oneArray();
+          $drpr_item['nm_dokter'] = $dokter['nm_dokter'] ?? '';
+          $drpr_item['nama'] = $petugas['nama'] ?? '';
+          $row['rawat_jl_drpr'][] = $drpr_item;
+        }
+        $row['pemeriksaan_ranap'] = [];
+        $row['rawat_inap_dr'] = [];
+        $row['rawat_inap_pr'] = [];
+        $row['rawat_inap_drpr'] = [];
+
+        $tableName = 'pemeriksaan_ranap';
+        if (DBDRIVER === 'sqlite') {
+            $stmt = $this->db()->pdo()->prepare(
+                "SELECT name 
+                FROM sqlite_master 
+                WHERE type='table' AND name = :table"
+            );
+            $stmt->execute(['table' => $tableName]);
+            $check_table = $stmt->fetch(\PDO::FETCH_ASSOC);
+        } else { // mysql / mariadb
+            $stmt = $this->db()->pdo()->prepare(
+                "SHOW TABLES LIKE :table"
+            );
+            $stmt->execute(['table' => $tableName]);
+            $check_table = $stmt->fetch(\PDO::FETCH_NUM);
+        }
+
+        if($check_table) {
+          $row['pemeriksaan_ranap'] = $this->db('pemeriksaan_ranap')
+            ->where('no_rawat', $row['no_rawat'])
+            ->desc('tgl_perawatan')
+          ->desc('jam_rawat')
+            ->toArray();
+          $row['rawat_inap_dr'] = $this->db('rawat_inap_dr')
+            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_dr.kd_jenis_prw')
+            ->join('dokter', 'dokter.kd_dokter=rawat_inap_dr.kd_dokter')
+            ->where('no_rawat', $row['no_rawat'])
+            ->desc('tgl_perawatan')
+          ->desc('jam_rawat')
+            ->toArray();
+          $row['rawat_inap_pr'] = $this->db('rawat_inap_pr')
+            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_pr.kd_jenis_prw')
+            ->join('petugas', 'petugas.nip=rawat_inap_pr.nip')
+            ->where('no_rawat', $row['no_rawat'])
+            ->desc('tgl_perawatan')
+             ->desc('jam_rawat')
+            ->toArray();
+          $rawat_inap_drpr_data = $this->db('rawat_inap_drpr')
+            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_drpr.kd_jenis_prw')
+            ->where('no_rawat', $row['no_rawat'])
+            ->desc('tgl_perawatan')
+            ->desc('jam_rawat')
+            ->toArray();
+          foreach ($rawat_inap_drpr_data as $inap_drpr_item) {
+            $dokter = $this->db('dokter')->where('kd_dokter', $inap_drpr_item['kd_dokter'])->oneArray();
+            $petugas = $this->db('petugas')->where('nip', $inap_drpr_item['nip'])->oneArray();
+            $inap_drpr_item['nm_dokter'] = $dokter['nm_dokter'] ?? '';
+            $inap_drpr_item['nama'] = $petugas['nama'] ?? '';
+            $row['rawat_inap_drpr'][] = $inap_drpr_item;
+          }
+        }
+
+        $rows_periksa_lab = $this->db('periksa_lab')
+          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tgl_periksa')
+          ->desc('jam')
+          ->toArray();
+
+        $row['periksa_lab'] = [];
+        foreach ($rows_periksa_lab as $value) {
+          $value['detail_periksa_lab'] = $this->db('detail_periksa_lab')
+            ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
+            ->where('detail_periksa_lab.no_rawat', $value['no_rawat'])
+            ->where('detail_periksa_lab.kd_jenis_prw', $value['kd_jenis_prw'])
+            ->where('tgl_periksa', $value['tgl_periksa'])
+            ->where('jam', $value['jam'])
+            ->toArray();
+          $row['periksa_lab'][] = $value;
+        }
+
+        $row['periksa_radiologi'] = [];
+        $radiologi_sessions = $this->db('periksa_radiologi')
+          ->select(['tgl_periksa', 'jam', 'nip', 'kd_jenis_prw'])
+          ->where('periksa_radiologi.no_rawat', $row['no_rawat'])
+          ->group('tgl_periksa')
+          ->group('jam')
+          ->group('nip')
+          ->group('kd_jenis_prw')
+          ->desc('tgl_periksa')
+            ->desc('jam')
+          ->toArray();
+
+        foreach ($radiologi_sessions as $radiologi_session) {
+          $radiologi_session['no_rawat'] = $row['no_rawat'];
+          $radiologi_session['pemeriksaan_radiologi'] = $this->db('periksa_radiologi')
+            ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+            ->where('no_rawat', $row['no_rawat'])
+            ->where('tgl_periksa', $radiologi_session['tgl_periksa'])
+            ->where('jam', $radiologi_session['jam'])
+            ->asc('periksa_radiologi.kd_jenis_prw')
+            ->toArray();
+          $radiologi_session['hasil_radiologi'] = $this->db('hasil_radiologi')
+            ->where('no_rawat', $row['no_rawat'])
+            ->where('tgl_periksa', $radiologi_session['tgl_periksa'])
+            ->where('jam', $radiologi_session['jam'])
+            ->toArray();
+          $radiologi_session['gambar_radiologi'] = $this->db('gambar_radiologi')
+            ->where('no_rawat', $row['no_rawat'])
+            ->where('tgl_periksa', $radiologi_session['tgl_periksa'])
+            ->where('jam', $radiologi_session['jam'])
+            ->toArray();
+          $row['periksa_radiologi'][] = $radiologi_session;
+        }
+
+        $pemberian_obat_sessions = $this->db('detail_pemberian_obat')
+          ->select(['tgl_perawatan', 'jam'])
+          ->where('no_rawat', $row['no_rawat'])
+          ->group('tgl_perawatan')
+          ->group('jam')
+          ->desc('tgl_perawatan')
+          ->desc('jam')
+          ->toArray();
+
+        $row['pemberian_obat'] = [];
+        foreach ($pemberian_obat_sessions as $obat_session) {
+          $obat_session['no_rawat'] = $row['no_rawat'];
+          $obat_session['data_pemberian_obat'] = $this->db('detail_pemberian_obat')
+            ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+            ->where('detail_pemberian_obat.no_rawat', $row['no_rawat'])
+            ->where('detail_pemberian_obat.tgl_perawatan', $obat_session['tgl_perawatan'])
+            ->where('detail_pemberian_obat.jam', $obat_session['jam'])
+            ->asc('detail_pemberian_obat.kode_brng')
+            ->toArray();
+          $row['pemberian_obat'][] = $obat_session;
+        }
+
+        $row['operasi'] = $this->db('operasi')
+          ->join('paket_operasi', 'paket_operasi.kode_paket=operasi.kode_paket')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tgl_operasi')
+          ->toArray();
+
+        $row['obat_operasi'] = $this->db('beri_obat_operasi')
+          ->join('obatbhp_ok', 'obatbhp_ok.kd_obat=beri_obat_operasi.kd_obat')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tanggal')
+          ->toArray();
+
+        $row['catatan_perawatan'] = $this->db('catatan_perawatan')->where('no_rawat', $row['no_rawat'])->oneArray();
+        $row['berkas_digital'] = $this->db('berkas_digital_perawatan')
+          ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
+          ->where('no_rawat', $row['no_rawat'])
+          ->toArray();
+
+        $row['penilaian_medis_ralan'] = $this->db('penilaian_medis_ralan')
+        ->join('dokter', 'dokter.kd_dokter=penilaian_medis_ralan.kd_dokter')
+        ->where('no_rawat', $row['no_rawat'])
+        ->toArray();
+
+        $row['penilaian_medis_igd'] = $this->db('penilaian_medis_igd')
+        ->join('dokter', 'dokter.kd_dokter=penilaian_medis_igd.kd_dokter')
+        ->where('no_rawat', $row['no_rawat'])
+        ->desc('tanggal')
+        ->toArray();
+
+        $row['penilaian_medis_ranap'] = $this->db('penilaian_medis_ranap')
+        ->join('dokter', 'dokter.kd_dokter=penilaian_medis_ranap.kd_dokter')
+        ->where('no_rawat', $row['no_rawat'])
+        ->desc('tanggal')
+        ->toArray();
+
+        $row['triase_igd'] = $this->db('mlite_triase_igd')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tgl_triase')
+          ->toArray();
+
+        $row['penilaian_keperawatan_igd'] = $this->db('penilaian_awal_keperawatan_igd')
+          ->join('petugas', 'petugas.nip=penilaian_awal_keperawatan_igd.nip')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tanggal')
+          ->toArray();
+
+        $row['penilaian_awal_keperawatan_ralan'] = $this->db('penilaian_awal_keperawatan_ralan')
+          ->join('petugas', 'petugas.nip=penilaian_awal_keperawatan_ralan.nip')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tanggal')
+          ->toArray();
+
+        $row['penilaian_awal_keperawatan_ranap'] = $this->db('penilaian_awal_keperawatan_ranap')
+          ->join('petugas', 'petugas.nip=penilaian_awal_keperawatan_ranap.nip1')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tanggal')
+          ->toArray();
+
+        $row['catatan_adime_gizi'] = $this->db('catatan_adime_gizi')
+          ->join('petugas', 'petugas.nip=catatan_adime_gizi.nip')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tanggal')
+          ->toArray();
+
+        $row['penilaian_ulang_nyeri'] = $this->db('penilaian_ulang_nyeri')
+          ->join('petugas', 'petugas.nip=penilaian_ulang_nyeri.nip')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tanggal')
+          ->toArray();
+
+        $row['resume_pasien'] = $this->db('resume_pasien')
+          ->join('dokter', 'dokter.kd_dokter=resume_pasien.kd_dokter')
+          ->where('no_rawat', $row['no_rawat'])
+          ->toArray();
+
+        $row['laporan_operasi'] = $this->db('laporan_operasi')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tanggal')
+          ->toArray();
+
+        $row['mlite_odontogram'] = $this->db('mlite_odontogram')
+          ->where('no_rkm_medis', $no_rkm_medis)
+          ->where('tgl_input', $row['tgl_registrasi'])
+          ->desc('tgl_input')
+          ->toArray();
+
+        $riwayat['reg_periksa'][] = $row;
+      }
+      
+      return $riwayat;
+    }
+
   public function getManage()
   {
     $this->_addHeaderFiles();
