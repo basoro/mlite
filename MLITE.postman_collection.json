@@ -5159,6 +5159,54 @@
                     }
                 },
                 {
+                    "name": "Billing (Rawat Jalan)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/kasir_rawat_jalan/billing/{{no_rawat}}?all=false",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "kasir_rawat_jalan",
+                                "billing",
+                                "{{no_rawat}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "all",
+                                    "value": "false",
+                                    "description": "true/false"
+                                }
+                            ]
+                        }
+                    }
+                },                
+                {
                     "name": "Billing List (Rawat Inap)",
                     "request": {
                         "method": "GET",
@@ -5253,6 +5301,54 @@
                                 "kasir_rawat_inap",
                                 "billingdetail",
                                 "2024/01/01/000001"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Billing (Rawat Inap)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/kasir_rawat_inap/billing/{{no_rawat}}?all=false",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "kasir_rawat_inap",
+                                "billing",
+                                "{{no_rawat}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "all",
+                                    "value": "false",
+                                    "description": "true/false"
+                                }
                             ]
                         }
                     }

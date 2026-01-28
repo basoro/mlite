@@ -35,12 +35,15 @@ class Admin extends AdminModule
         $tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-d');
         $tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-d');
 
-        $query = $this->db('reg_periksa')
+        $query = $this->db('mlite_billing')
+            ->join('reg_periksa', 'reg_periksa.no_rawat = mlite_billing.no_rawat')
             ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
-            ->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')
             ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
-            ->where('reg_periksa.tgl_registrasi', '>=', $tgl_awal)
-            ->where('reg_periksa.tgl_registrasi', '<=', $tgl_akhir);
+            ->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')
+            ->join('penjab', 'penjab.kd_pj = reg_periksa.kd_pj')
+            ->where('mlite_billing.tgl_billing', '>=', $tgl_awal)
+            ->where('mlite_billing.tgl_billing', '<=', $tgl_akhir)
+            ->like('mlite_billing.kd_billing', 'RJ%');
 
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -51,21 +54,21 @@ class Admin extends AdminModule
         }
 
         $total = $query->count();
-        $data = $query->select('reg_periksa.*')
+        $data = $query->select('mlite_billing.*')
+            ->select('reg_periksa.no_rkm_medis')
+            ->select('reg_periksa.status_bayar')
             ->select('pasien.nm_pasien')
-            ->select('pasien.no_rkm_medis')
-            ->select('dokter.nm_dokter')
             ->select('poliklinik.nm_poli')
+            ->select('dokter.nm_dokter')
+            ->select('penjab.png_jawab')
             ->offset($offset)
             ->limit($per_page)
-            ->desc('reg_periksa.tgl_registrasi')
-            ->desc('reg_periksa.jam_reg')
+            ->desc('mlite_billing.tgl_billing')
+            ->desc('mlite_billing.jam_billing')
             ->toArray();
 
         foreach ($data as &$row) {
-             $billing = $this->db('mlite_billing')->where('no_rawat', $row['no_rawat'])->like('kd_billing', 'RJ%')->oneArray();
-             $row['total_tagihan'] = $billing ? $billing['jumlah_harus_bayar'] : 0;
-             $row['status_bayar'] = $row['status_bayar']; 
+             $row['total_tagihan'] = $row['jumlah_harus_bayar'];
         }
 
         echo json_encode([
@@ -253,6 +256,7 @@ class Admin extends AdminModule
             $total_biaya += $t['besar_biaya'];
         }
 
+        header('Content-Type: application/json');
         echo json_encode([
             'status' => 'success',
             'data' => [
@@ -260,7 +264,7 @@ class Admin extends AdminModule
                 'details' => $details,
                 'total' => $total_biaya
             ]
-        ]);
+        ], JSON_PRETTY_PRINT);
         exit;
     }
 
@@ -272,6 +276,7 @@ class Admin extends AdminModule
              exit;
         }
         $no_rawat = revertNorawat($no_rawat);
+        $all = isset($_GET['all']) && $_GET['all'] == 'true';
 
         $query = $this->db('mlite_billing')
             ->where('no_rawat', $no_rawat)
@@ -282,11 +287,18 @@ class Admin extends AdminModule
                   ->where('tgl_billing', '<=', $_GET['tgl_akhir']);
         }
 
-        $billing = $query
-            ->desc('tgl_billing')
-            ->desc('jam_billing')
-            ->oneArray();
-
+        if ($all) {
+            $billing = $query
+                ->desc('tgl_billing')
+                ->desc('jam_billing')
+                ->toArray();
+        } else {
+            $billing = $query
+                ->desc('tgl_billing')
+                ->desc('jam_billing')
+                ->oneArray();
+        }
+        header('Content-Type: application/json');
         echo json_encode([
             'status' => 'success',
             'data' => $billing

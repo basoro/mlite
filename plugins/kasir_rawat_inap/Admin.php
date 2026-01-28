@@ -20,6 +20,45 @@ class Admin extends AdminModule
         ];
     }
 
+    public function apiBilling($no_rawat)
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'kasir_rawat_inap')) {
+             echo json_encode(['status' => 'error', 'message' => 'You do not have permission to access this resource']);
+             exit;
+        }
+        $no_rawat = revertNorawat($no_rawat);
+        $all = isset($_GET['all']) && $_GET['all'] == 'true';
+
+        $query = $this->db('mlite_billing')
+            ->where('no_rawat', $no_rawat)
+            ->like('kd_billing', 'RI%');
+
+        if (isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])) {
+            $query->where('tgl_billing', '>=', $_GET['tgl_awal'])
+                  ->where('tgl_billing', '<=', $_GET['tgl_akhir']);
+        }
+
+        if ($all) {
+            $billing = $query
+                ->desc('tgl_billing')
+                ->desc('jam_billing')
+                ->toArray();
+        } else {
+            $billing = $query
+                ->desc('tgl_billing')
+                ->desc('jam_billing')
+                ->oneArray();
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'data' => $billing
+        ], JSON_PRETTY_PRINT);
+        exit;
+    }
+
     public function apiBillingList()
     {
         $username = $this->core->checkAuth('GET');
@@ -35,13 +74,15 @@ class Admin extends AdminModule
         $tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-d');
         $tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-d');
 
-        $query = $this->db('kamar_inap')
-            ->join('reg_periksa', 'reg_periksa.no_rawat = kamar_inap.no_rawat')
+        $query = $this->db('mlite_billing')
+            ->join('reg_periksa', 'reg_periksa.no_rawat = mlite_billing.no_rawat')
             ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
-            ->join('kamar', 'kamar.kd_kamar = kamar_inap.kd_kamar')
-            ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
-            ->where('kamar_inap.tgl_masuk', '>=', $tgl_awal)
-            ->where('kamar_inap.tgl_masuk', '<=', $tgl_akhir);
+            ->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')
+            ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+            ->join('penjab', 'penjab.kd_pj = reg_periksa.kd_pj')
+            ->where('mlite_billing.tgl_billing', '>=', $tgl_awal)
+            ->where('mlite_billing.tgl_billing', '<=', $tgl_akhir)
+            ->like('mlite_billing.kd_billing', 'RI%');
 
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -52,21 +93,33 @@ class Admin extends AdminModule
         }
 
         $total = $query->count();
-        $data = $query->select('kamar_inap.*')
+        $data = $query->select('mlite_billing.*')
             ->select('reg_periksa.no_rkm_medis')
+            ->select('reg_periksa.status_bayar')
             ->select('pasien.nm_pasien')
-            ->select('kamar.kd_kamar')
-            ->select('bangsal.nm_bangsal')
+            ->select('dokter.nm_dokter')
+            ->select('poliklinik.nm_poli')
+            ->select('penjab.png_jawab')
             ->offset($offset)
             ->limit($per_page)
-            ->desc('kamar_inap.tgl_masuk')
-            ->desc('kamar_inap.jam_masuk')
+            ->desc('mlite_billing.tgl_billing')
+            ->desc('mlite_billing.jam_billing')
             ->toArray();
 
         foreach ($data as &$row) {
-             $billing = $this->db('mlite_billing')->where('no_rawat', $row['no_rawat'])->like('kd_billing', 'RI%')->oneArray();
-             $row['total_tagihan'] = $billing ? $billing['jumlah_harus_bayar'] : 0;
-             $row['status_bayar'] = $this->db('reg_periksa')->where('no_rawat', $row['no_rawat'])->oneArray()['status_bayar'] ?? '';
+             $row['total_tagihan'] = $row['jumlah_harus_bayar'];
+             
+             // Get Room Info if available
+             $kamar = $this->db('kamar_inap')
+                ->join('kamar', 'kamar.kd_kamar = kamar_inap.kd_kamar')
+                ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
+                ->where('no_rawat', $row['no_rawat'])
+                ->desc('tgl_masuk')
+                ->limit(1)
+                ->oneArray();
+             
+             $row['nm_bangsal'] = $kamar['nm_bangsal'] ?? '-';
+             $row['kd_kamar'] = $kamar['kd_kamar'] ?? '-';
         }
 
         echo json_encode([
@@ -250,6 +303,7 @@ class Admin extends AdminModule
             $total_biaya += $t['besar_biaya'];
         }
 
+        header('Content-Type: application/json');
         echo json_encode([
             'status' => 'success',
             'data' => [
@@ -258,7 +312,7 @@ class Admin extends AdminModule
                 'details' => $details,
                 'total' => $total_biaya
             ]
-        ]);
+        ], JSON_PRETTY_PRINT);
         exit;
     }
 
