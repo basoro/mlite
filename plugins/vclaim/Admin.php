@@ -2740,6 +2740,13 @@ class Admin extends AdminModule
     exit();
   }
 
+  public function getAproval_SEP($no_kartu)
+  {
+    $this->tpl->set('no_kartu', $no_kartu);
+    echo $this->draw('form.aproval.html');
+    exit();
+  }
+
   public function getSyncSepDisplay($no_kartu)
   {
     $bridging_sep = $this->db('bridging_sep')
@@ -2748,6 +2755,150 @@ class Admin extends AdminModule
     $this->tpl->set('bridging_sep', $this->tpl->noParse_array(htmlspecialchars_array($bridging_sep)));
     $this->tpl->set('no_kartu', $no_kartu);
     echo $this->draw('sync_sep.display.html');
+    exit();
+  }
+
+  public function getAprovalSepDisplay($bln_aproval, $tahun_aproval)
+  {
+    date_default_timezone_set('UTC');
+    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+    $key = $this->consid . $this->secretkey . $tStamp;
+
+    $url = $this->api_url . 'Sep/persetujuanSEP/list/bulan/' . $bln_aproval . '/tahun/' . $tahun_aproval;
+    $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+    $json = json_decode($output, true);
+    //echo json_encode($json);
+    $code = $json['metaData']['code'];
+    $message = $json['metaData']['message'];
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
+    } else {
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+    }
+    exit();
+  }
+
+  public function postSaveAprovalSEP()
+  {
+    $date = date('Y-m-d');
+    date_default_timezone_set('UTC');
+    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+    $key = $this->consid . $this->secretkey . $tStamp;
+
+    $request = [
+      'request' => [
+        't_sep' => [
+          'noKartu' => $_POST['noKartu'],
+          'tglSep' => $_POST['tglSep'],
+          'jnsPelayanan' => $_POST['jnsPelayanan'],
+          'jnsPengajuan' => $_POST['jnsPengajuan'], 
+          'keterangan' => $_POST['keterangan'], 
+          'user' => $this->core->getUserInfo('username', null, true)
+        ]
+      ]
+    ];
+
+    header('Content-type: text/html');
+    // echo json_encode($request);
+    $request = json_encode($request);
+
+    $url = $this->settings->get('settings.BpjsApiUrl') . 'Sep/pengajuanSEP';
+    $consid = $this->settings->get('settings.BpjsConsID');
+    $secretkey = $this->settings->get('settings.BpjsSecretKey');
+    $userkey = $this->settings->get('settings.BpjsUserKey');
+    $output = BpjsService::post($url, $request, $consid, $secretkey, $userkey, $tStamp);
+    $data = json_decode($output, true);
+    // echo $data;
+    print_r($output);
+    $code = $data['metaData']['code'];
+    $message = $data['metaData']['message'];
+    $stringDecrypt = stringDecrypt($key, $data['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+    }
+    if ($data != null) {
+      $data = '{
+          "metaData": {
+            "code": "' . $code . '",
+            "message": "' . $message . '"
+          },
+          "response": ' . $decompress . '}';
+      $data = json_decode($data, true);
+    } else {
+      $data = '{
+          "metaData": {
+            "code": "5000",
+            "message": "ERROR"
+          },
+          "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      $data = json_decode($data, true);
+    }
+    if ($code == 200) {
+      $request = [
+        'request' => [
+          't_sep' => [
+            'noKartu' => $_POST['noKartu'],
+            'tglSep' => $_POST['tglSep'],
+            'jnsPelayanan' => $_POST['jnsPelayanan'],
+            'keterangan' => $_POST['keterangan'], 
+            'user' => $this->core->getUserInfo('username', null, true)
+          ]
+        ]
+      ];
+
+      header('Content-type: text/html');
+      // echo json_encode($request);
+      $request = json_encode($request);
+
+      $url = $this->settings->get('settings.BpjsApiUrl') . 'Sep/aprovalSEP';
+      $consid = $this->settings->get('settings.BpjsConsID');
+      $secretkey = $this->settings->get('settings.BpjsSecretKey');
+      $userkey = $this->settings->get('settings.BpjsUserKey');
+      $output = BpjsService::post($url, $request, $consid, $secretkey, $userkey, $tStamp);
+      $data = json_decode($output, true);
+      // echo $data;
+      print_r($output);
+      $code = $data['metaData']['code'];
+      $message = $data['metaData']['message'];
+      $stringDecrypt = stringDecrypt($key, $data['response']);
+      $decompress = '""';
+      if (!empty($stringDecrypt)) {
+        $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      }
+      if ($data != null) {
+        $data = '{
+            "metaData": {
+              "code": "' . $code . '",
+              "message": "' . $message . '"
+            },
+            "response": ' . $decompress . '}';
+        $data = json_decode($data, true);
+      } else {
+        $data = '{
+            "metaData": {
+              "code": "5000",
+              "message": "ERROR"
+            },
+            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+        $data = json_decode($data, true);
+      }
+    }
     exit();
   }
 

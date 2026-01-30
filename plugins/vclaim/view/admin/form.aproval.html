@@ -1,0 +1,100 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Aproval SEP</h4>
+</div>
+<div class="modal-body">
+  <div class="row" id="form_aproval_sep">
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Tanggal SEP</label>
+            <input type="text" name="tglSep" id="aproval_tglSep" class="form-control tanggal" placeholder="Tanggal SEP" required value="" />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Alasan Aproval</label>
+            <input type="text" name="keterangan" id="aproval_keterangan" class="form-control" placeholder="Alasan Aproval" required value="" />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Jenis Pelayanan</label>
+            <select name="jnsPelayanan" id="aproval_jnsPelayanan" class="form-control" data-use-search="true">
+                <option value="2">Rawat Jalan</option>
+                <option value="1">Rawat Inap</option>
+            </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Jenis Pengajuan</label>
+            <select name="jnsPengajuan" id="aproval_jnsPengajuan" class="form-control">
+                <option value="1">Backdate</option>
+                <option value="2">Biometrik</option>
+            </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <input type="submit" class="btn btn-primary" id="simpan_aproval_sep" value="Aproval SEP" />
+          <button type="button" class="btn btn-primary" id="load_aproval_sep">Load</button>
+        </div>
+      </div>
+  </div>
+  <br><br>
+  <div id="aproval_sep_display">
+  </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script type="text/javascript">
+  $('select').selectator();
+  $('.tanggal').datetimepicker({
+    format: 'YYYY-MM-DD',
+    locale: 'id'
+  });
+</script>
+<script type="text/javascript">
+
+  $("#form_aproval_sep").on("click","#load_aproval_sep", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var tgl_aproval = $('#aproval_tglSep').val();
+    var bln_aproval = tgl_aproval.substring(5,7);
+    var tahun_aproval = tgl_aproval.substring(0,4);
+    event.preventDefault();
+    $("#aproval_sep_display").show().load(baseURL + '/vclaim/aprovalsepdisplay/' + bln_aproval + '/' + tahun_aproval + '?t=' + mlite.token);
+  });
+
+  $("#form_aproval_sep").on("click","#simpan_aproval_sep", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var tgl_aproval = $('#aproval_tglSep').val();
+    var bln_aproval = tgl_aproval.substring(5,7);
+    var tahun_aproval = tgl_aproval.substring(0,4);
+    event.preventDefault();
+    var noKartu          = '{$no_kartu}';
+    var tglSep           = $('#aproval_tglSep').val();
+    var keterangan     = $('#aproval_keterangan').val();
+    var jnsPelayanan    = $('#aproval_jnsPelayanan').val();
+    var jnsPengajuan      = $('#aproval_jnsPengajuan').val();
+
+    var url = baseURL + '/vclaim/saveaprovalsep?t=' + mlite.token;
+
+    $.post(url,{
+      noKartu: noKartu,
+      tglSep: tglSep,
+      keterangan: keterangan,
+      jnsPelayanan: jnsPelayanan,
+      jnsPengajuan: jnsPengajuan
+    } ,function(data) {
+        console.log(data);
+        $("#aproval_sep_display").show().load(baseURL + '/vclaim/aprovalsepdisplay/' + bln_aproval + '/' + tahun_aproval + '?t=' + mlite.token);
+        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data Aproval telah diajukan!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+    });
+
+  });
+
+</script>

@@ -15,7 +15,7 @@ class BpjsService
         return self::request2('POST', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
 
-    public static function postAplicare($url, $datafields = [], $consid, $secretkey, $user_key, $time_stamp)
+    public static function postAplicare($url, $datafields = [], $consid = '', $secretkey = '', $user_key = '', $time_stamp = '')
     {
         return self::requestAplicare('POST', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }

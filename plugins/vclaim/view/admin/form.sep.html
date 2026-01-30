@@ -511,6 +511,7 @@
               </ul>
             </div>
             <!--<button type="button" name="button" class="btn btn-warning" id="sync_sep">Sync SEP</button>-->
+            <button type="button" name="button" class="btn btn-warning" id="aproval_sep">Aproval</button>            
             <div class="btn-group">
               <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Antrian <span class="caret"></span></button>
               <ul class="dropdown-menu">
@@ -581,6 +582,25 @@
     var find_no_rawat = $('input:text[name=sep_no_rawat]').val();
     var no_rawat = find_no_rawat.replace(/\//g,'');
     var loadURL =  baseURL + '/vclaim/sync_sep/' + no_peserta + '/' + no_rawat + '?t=' + mlite.token;
+
+    var modal = $('#syncsepModal');
+    var modalContent = $('#syncsepModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
+<script type="text/javascript">
+  $("#form_sep").on("click","#aproval_sep", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_peserta = $('input:text[name=sep_no_kartu]').val();
+    var find_no_rawat = $('input:text[name=sep_no_rawat]').val();
+    var no_rawat = find_no_rawat.replace(/\//g,'');
+    var loadURL =  baseURL + '/vclaim/aproval_sep/' + no_peserta + '/' + no_rawat + '?t=' + mlite.token;
 
     var modal = $('#syncsepModal');
     var modalContent = $('#syncsepModal .modal-content');
