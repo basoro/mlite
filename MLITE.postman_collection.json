@@ -821,7 +821,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"kat\": \"tindakan\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_jenis_prw\": \"T001\",\n    \"provider\": \"rawat_jl_dr\",\n    \"kode_provider\": \"D00001\",\n    \"tgl_perawatan\": \"2025-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
+                            "raw": "{\n    \"kat\": \"tindakan\",\n    \"jml_tindakan\": \"1\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_jenis_prw\": \"T001\",\n    \"provider\": \"rawat_jl_dr\",\n    \"kode_provider\": \"D00001\",\n    \"tgl_perawatan\": \"2025-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
                         },
                         "url": {
                             "raw": "{{baseUrl}}/admin/api/rawat_jalan/savedetail",
@@ -2049,7 +2049,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"kat\": \"tindakan\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"tgl_perawatan\": \"2024-01-01\",\n    \"jam_rawat\": \"10:00:00\",\n    \"kd_jenis_prw\": \"T001\",\n    \"provider\": \"rawat_jl_dr\",\n    \"kode_provider\": \"D001\"\n}"
+                            "raw": "{\n    \"kat\": \"tindakan\",\n    \"jml_tindakan\": \"1\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"tgl_perawatan\": \"2024-01-01\",\n    \"jam_rawat\": \"10:00:00\",\n    \"kd_jenis_prw\": \"T001\",\n    \"provider\": \"rawat_jl_dr\",\n    \"kode_provider\": \"D001\"\n}"
                         },
                         "url": {
                             "raw": "{{baseUrl}}/admin/api/igd/savedetail",
@@ -3086,7 +3086,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"kat\": \"tindakan\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_jenis_prw\": \"T001\",\n    \"provider\": \"rawat_inap_dr\",\n    \"kode_provider\": \"D00001\",\n    \"tgl_perawatan\": \"2025-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
+                            "raw": "{\n    \"kat\": \"tindakan\",\n    \"jml_tindakan\": \"1\",\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_jenis_prw\": \"T001\",\n    \"provider\": \"rawat_inap_dr\",\n    \"kode_provider\": \"D00001\",\n    \"tgl_perawatan\": \"2025-01-01\",\n    \"jam_rawat\": \"10:00:00\"\n}"
                         },
                         "url": {
                             "raw": "{{baseUrl}}/admin/api/rawat_inap/savedetail",

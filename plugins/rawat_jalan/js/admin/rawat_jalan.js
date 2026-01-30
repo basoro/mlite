@@ -863,7 +863,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   aturan_pakai   : aturan_pakai,
   kat            : kat,
   jml            : jml, 
-  jml_tindakan   : jml_tindakan,
+  jml_tindakan   : jml_tindakan
   }, function(data) {
 
     // tampilkan data
