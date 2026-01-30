@@ -446,54 +446,60 @@ class Admin extends AdminModule
                 }
 
                 if($input['provider'] == 'rawat_jl_dr') {
-                    $this->db('rawat_jl_dr')->save([
-                        'no_rawat' => $input['no_rawat'],
-                        'kd_jenis_prw' => $input['kd_jenis_prw'],
-                        'kd_dokter' => $input['kode_provider'],
-                        'tgl_perawatan' => $input['tgl_perawatan'],
-                        'jam_rawat' => $input['jam_rawat'],
-                        'material' => $jns_perawatan['material'],
-                        'bhp' => $jns_perawatan['bhp'],
-                        'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
-                        'kso' => $jns_perawatan['kso'],
-                        'menejemen' => $jns_perawatan['menejemen'],
-                        'biaya_rawat' => $jns_perawatan['total_byrdr'],
-                        'stts_bayar' => 'Belum'
-                    ]);
+                    for ($i = 0; $i < $input['jml_tindakan']; $i++) {          
+                        $this->db('rawat_jl_dr')->save([
+                            'no_rawat' => $input['no_rawat'],
+                            'kd_jenis_prw' => $input['kd_jenis_prw'],
+                            'kd_dokter' => $input['kode_provider'],
+                            'tgl_perawatan' => $input['tgl_perawatan'],
+                            'jam_rawat' => date('H:i:s', strtotime($input['jam_rawat']. ' +'.$i.'0 seconds')),
+                            'material' => $jns_perawatan['material'],
+                            'bhp' => $jns_perawatan['bhp'],
+                            'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
+                            'kso' => $jns_perawatan['kso'],
+                            'menejemen' => $jns_perawatan['menejemen'],
+                            'biaya_rawat' => $jns_perawatan['total_byrdr'],
+                            'stts_bayar' => 'Belum'
+                        ]);
+                    }
                 }
                 if($input['provider'] == 'rawat_jl_pr') {
-                    $this->db('rawat_jl_pr')->save([
-                        'no_rawat' => $input['no_rawat'],
-                        'kd_jenis_prw' => $input['kd_jenis_prw'],
-                        'nip' => $input['kode_provider2'],
-                        'tgl_perawatan' => $input['tgl_perawatan'],
-                        'jam_rawat' => $input['jam_rawat'],
-                        'material' => $jns_perawatan['material'],
-                        'bhp' => $jns_perawatan['bhp'],
-                        'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
-                        'kso' => $jns_perawatan['kso'],
-                        'menejemen' => $jns_perawatan['menejemen'],
-                        'biaya_rawat' => $jns_perawatan['total_byrpr'],
-                        'stts_bayar' => 'Belum'
-                    ]);
+                    for ($i = 0; $i < $input['jml_tindakan']; $i++) {          
+                        $this->db('rawat_jl_pr')->save([
+                            'no_rawat' => $input['no_rawat'],
+                            'kd_jenis_prw' => $input['kd_jenis_prw'],
+                            'nip' => $input['kode_provider2'],
+                            'tgl_perawatan' => $input['tgl_perawatan'],
+                            'jam_rawat' => date('H:i:s', strtotime($input['jam_rawat']. ' +'.$i.'0 seconds')),
+                            'material' => $jns_perawatan['material'],
+                            'bhp' => $jns_perawatan['bhp'],
+                            'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
+                            'kso' => $jns_perawatan['kso'],
+                            'menejemen' => $jns_perawatan['menejemen'],
+                            'biaya_rawat' => $jns_perawatan['total_byrpr'],
+                            'stts_bayar' => 'Belum'
+                        ]);
+                    }
                 }
                 if($input['provider'] == 'rawat_jl_drpr') {
-                    $this->db('rawat_jl_drpr')->save([
-                        'no_rawat' => $input['no_rawat'],
-                        'kd_jenis_prw' => $input['kd_jenis_prw'],
-                        'kd_dokter' => $input['kode_provider'],
-                        'nip' => $input['kode_provider2'],
-                        'tgl_perawatan' => $input['tgl_perawatan'],
-                        'jam_rawat' => $input['jam_rawat'],
-                        'material' => $jns_perawatan['material'],
-                        'bhp' => $jns_perawatan['bhp'],
-                        'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
-                        'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
-                        'kso' => $jns_perawatan['kso'],
-                        'menejemen' => $jns_perawatan['menejemen'],
-                        'biaya_rawat' => $jns_perawatan['total_byrdrpr'],
-                        'stts_bayar' => 'Belum'
-                    ]);
+                    for ($i = 0; $i < $input['jml_tindakan']; $i++) {          
+                        $this->db('rawat_jl_drpr')->save([
+                            'no_rawat' => $input['no_rawat'],
+                            'kd_jenis_prw' => $input['kd_jenis_prw'],
+                            'kd_dokter' => $input['kode_provider'],
+                            'nip' => $input['kode_provider2'],
+                            'tgl_perawatan' => $input['tgl_perawatan'],
+                            'jam_rawat' => date('H:i:s', strtotime($input['jam_rawat']. ' +'.$i.'0 seconds')),
+                            'material' => $jns_perawatan['material'],
+                            'bhp' => $jns_perawatan['bhp'],
+                            'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
+                            'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
+                            'kso' => $jns_perawatan['kso'],
+                            'menejemen' => $jns_perawatan['menejemen'],
+                            'biaya_rawat' => $jns_perawatan['total_byrdrpr'],
+                            'stts_bayar' => 'Belum'
+                        ]);
+                    }
                 }
                 
                 return ['status' => 'success', 'message' => 'Detail saved'];
@@ -1797,54 +1803,60 @@ class Admin extends AdminModule
       if($_POST['kat'] == 'tindakan') {
         $jns_perawatan = $this->db('jns_perawatan')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
         if($_POST['provider'] == 'rawat_jl_dr') {
-          $this->db('rawat_jl_dr')->save([
-            'no_rawat' => $_POST['no_rawat'],
-            'kd_jenis_prw' => $_POST['kd_jenis_prw'],
-            'kd_dokter' => $_POST['kode_provider'],
-            'tgl_perawatan' => $_POST['tgl_perawatan'],
-            'jam_rawat' => $_POST['jam_rawat'],
-            'material' => $jns_perawatan['material'],
-            'bhp' => $jns_perawatan['bhp'],
-            'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
-            'kso' => $jns_perawatan['kso'],
-            'menejemen' => $jns_perawatan['menejemen'],
-            'biaya_rawat' => $jns_perawatan['total_byrdr'],
-            'stts_bayar' => 'Belum'
-          ]);
+          for ($i = 0; $i < $_POST['jml_tindakan']; $i++) {          
+            $this->db('rawat_jl_dr')->save([
+              'no_rawat' => $_POST['no_rawat'],
+              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+              'kd_dokter' => $_POST['kode_provider'],
+              'tgl_perawatan' => $_POST['tgl_perawatan'],
+              'jam_rawat' => date('H:i:s', strtotime($_POST['jam_rawat']. ' +'.$i.'0 seconds')),
+              'material' => $jns_perawatan['material'],
+              'bhp' => $jns_perawatan['bhp'],
+              'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
+              'kso' => $jns_perawatan['kso'],
+              'menejemen' => $jns_perawatan['menejemen'],
+              'biaya_rawat' => $jns_perawatan['total_byrdr'],
+              'stts_bayar' => 'Belum'
+            ]);
+          }
         }
         if($_POST['provider'] == 'rawat_jl_pr') {
-          $this->db('rawat_jl_pr')->save([
-            'no_rawat' => $_POST['no_rawat'],
-            'kd_jenis_prw' => $_POST['kd_jenis_prw'],
-            'nip' => $_POST['kode_provider2'],
-            'tgl_perawatan' => $_POST['tgl_perawatan'],
-            'jam_rawat' => $_POST['jam_rawat'],
-            'material' => $jns_perawatan['material'],
-            'bhp' => $jns_perawatan['bhp'],
-            'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
-            'kso' => $jns_perawatan['kso'],
-            'menejemen' => $jns_perawatan['menejemen'],
-            'biaya_rawat' => $jns_perawatan['total_byrpr'],
-            'stts_bayar' => 'Belum'
-          ]);
+          for ($i = 0; $i < $_POST['jml_tindakan']; $i++) {          
+            $this->db('rawat_jl_pr')->save([
+              'no_rawat' => $_POST['no_rawat'],
+              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+              'nip' => $_POST['kode_provider2'],
+              'tgl_perawatan' => $_POST['tgl_perawatan'],
+              'jam_rawat' => date('H:i:s', strtotime($_POST['jam_rawat']. ' +'.$i.'0 seconds')),
+              'material' => $jns_perawatan['material'],
+              'bhp' => $jns_perawatan['bhp'],
+              'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
+              'kso' => $jns_perawatan['kso'],
+              'menejemen' => $jns_perawatan['menejemen'],
+              'biaya_rawat' => $jns_perawatan['total_byrpr'],
+              'stts_bayar' => 'Belum'
+            ]);
+          }
         }
         if($_POST['provider'] == 'rawat_jl_drpr') {
-          $this->db('rawat_jl_drpr')->save([
-            'no_rawat' => $_POST['no_rawat'],
-            'kd_jenis_prw' => $_POST['kd_jenis_prw'],
-            'kd_dokter' => $_POST['kode_provider'],
-            'nip' => $_POST['kode_provider2'],
-            'tgl_perawatan' => $_POST['tgl_perawatan'],
-            'jam_rawat' => $_POST['jam_rawat'],
-            'material' => $jns_perawatan['material'],
-            'bhp' => $jns_perawatan['bhp'],
-            'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
-            'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
-            'kso' => $jns_perawatan['kso'],
-            'menejemen' => $jns_perawatan['menejemen'],
-            'biaya_rawat' => $jns_perawatan['total_byrdrpr'],
-            'stts_bayar' => 'Belum'
-          ]);
+          for ($i = 0; $i < $_POST['jml_tindakan']; $i++) {          
+            $this->db('rawat_jl_drpr')->save([
+              'no_rawat' => $_POST['no_rawat'],
+              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+              'kd_dokter' => $_POST['kode_provider'],
+              'nip' => $_POST['kode_provider2'],
+              'tgl_perawatan' => $_POST['tgl_perawatan'],
+              'jam_rawat' => date('H:i:s', strtotime($_POST['jam_rawat']. ' +'.$i.'0 seconds')),
+              'material' => $jns_perawatan['material'],
+              'bhp' => $jns_perawatan['bhp'],
+              'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
+              'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
+              'kso' => $jns_perawatan['kso'],
+              'menejemen' => $jns_perawatan['menejemen'],
+              'biaya_rawat' => $jns_perawatan['total_byrdrpr'],
+              'stts_bayar' => 'Belum'
+            ]);
+          }
         }
       }
       exit();

@@ -355,7 +355,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var kat             = $('input:hidden[name=kat]').val();
   var jml             = $('input:text[name=jml]').val();
   var jml_tindakan    = $('input:text[name=jml_tindakan]').val();
-  console.log(jml_tindakan);
+  // console.log(jml_tindakan);
   var url = baseURL + '/kasir_rawat_jalan/savedetail?t=' + mlite.token;
   $.post(url, {no_rawat : no_rawat,
   kd_jenis_prw   : kd_jenis_prw,
