@@ -1977,19 +1977,14 @@ class Admin extends AdminModule
 
       $result_ranap = [];
 
-      $check_table = $this->db()->pdo()->query("SHOW TABLES LIKE 'pemeriksaan_ranap'");
-      $check_table->execute();
-      $check_table = $check_table->fetch();
-      if($check_table) {
-        $rows_ranap = $this->db('pemeriksaan_ranap')
-          ->where('no_rawat', $_POST['no_rawat'])
-          ->toArray();
-        foreach ($rows_ranap as $row) {
-          $row['nomor'] = $i++;
-          $row['nama_petugas'] = $this->core->getPegawaiInfo('nama',$row['nip']);
-          $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen',$row['nip']));
-          $result_ranap[] = $row;
-        }
+      $rows_ranap = $this->db('pemeriksaan_ranap')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->toArray();
+      foreach ($rows_ranap as $row) {
+        $row['nomor'] = $i++;
+        $row['nama_petugas'] = $this->core->getPegawaiInfo('nama',$row['nip']);
+        $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen',$row['nip']));
+        $result_ranap[] = $row;
       }
 
       echo $this->draw('soap.html', ['pemeriksaan' => $result, 'pemeriksaan_ranap' => $result_ranap, 'diagnosa' => $diagnosa, 'prosedur' => $prosedur, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
@@ -3296,29 +3291,14 @@ class Admin extends AdminModule
                 }
             }
             
-            // Check if data_tb table exists
-            $tableExists = false;
             try {
-                $tableExists = $this->db()->pdo()->query("SHOW TABLES LIKE 'data_tb'")->rowCount() > 0;
-            } catch(\Exception $e) {
-                error_log('Error checking table existence: ' . $e->getMessage());
-            }
-            
-            if(!$tableExists) {
-                error_log('Table data_tb does not exist');
-                // Create default data without database query
-                $data_tb = $this->getDefaultDataTb($no_rawat);
-            } else {
-                // Try to get existing data
-                try {
-                    $data_tb = $this->db('data_tb')->where('no_rawat', $no_rawat)->oneArray();
-                    if(!$data_tb) {
-                        $data_tb = $this->getDefaultDataTb($no_rawat);
-                    }
-                } catch(\Exception $e) {
-                    error_log('Error querying data_tb: ' . $e->getMessage());
+                $data_tb = $this->db('data_tb')->where('no_rawat', $no_rawat)->oneArray();
+                if(!$data_tb) {
                     $data_tb = $this->getDefaultDataTb($no_rawat);
                 }
+            } catch(\Exception $e) {
+                error_log('Error querying data_tb: ' . $e->getMessage());
+                $data_tb = $this->getDefaultDataTb($no_rawat);
             }
             
             // Add patient data to data_tb array for template access

@@ -860,56 +860,37 @@ class Admin extends AdminModule
         $row['rawat_inap_pr'] = [];
         $row['rawat_inap_drpr'] = [];
 
-        $tableName = 'pemeriksaan_ranap';
-        if (DBDRIVER === 'sqlite') {
-            $stmt = $this->db()->pdo()->prepare(
-                "SELECT name 
-                FROM sqlite_master 
-                WHERE type='table' AND name = :table"
-            );
-            $stmt->execute(['table' => $tableName]);
-            $check_table = $stmt->fetch(\PDO::FETCH_ASSOC);
-        } else { // mysql / mariadb
-            $stmt = $this->db()->pdo()->prepare(
-                "SHOW TABLES LIKE :table"
-            );
-            $stmt->execute(['table' => $tableName]);
-            $check_table = $stmt->fetch(\PDO::FETCH_NUM);
-        }
-
-        if($check_table) {
-          $row['pemeriksaan_ranap'] = $this->db('pemeriksaan_ranap')
-            ->where('no_rawat', $row['no_rawat'])
-            ->desc('tgl_perawatan')
-          ->desc('jam_rawat')
-            ->toArray();
-          $row['rawat_inap_dr'] = $this->db('rawat_inap_dr')
-            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_dr.kd_jenis_prw')
-            ->join('dokter', 'dokter.kd_dokter=rawat_inap_dr.kd_dokter')
-            ->where('no_rawat', $row['no_rawat'])
-            ->desc('tgl_perawatan')
-          ->desc('jam_rawat')
-            ->toArray();
-          $row['rawat_inap_pr'] = $this->db('rawat_inap_pr')
-            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_pr.kd_jenis_prw')
-            ->join('petugas', 'petugas.nip=rawat_inap_pr.nip')
-            ->where('no_rawat', $row['no_rawat'])
-            ->desc('tgl_perawatan')
-             ->desc('jam_rawat')
-            ->toArray();
-          $rawat_inap_drpr_data = $this->db('rawat_inap_drpr')
-            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_drpr.kd_jenis_prw')
-            ->where('no_rawat', $row['no_rawat'])
-            ->desc('tgl_perawatan')
+        $row['pemeriksaan_ranap'] = $this->db('pemeriksaan_ranap')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tgl_perawatan')
+        ->desc('jam_rawat')
+          ->toArray();
+        $row['rawat_inap_dr'] = $this->db('rawat_inap_dr')
+          ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_dr.kd_jenis_prw')
+          ->join('dokter', 'dokter.kd_dokter=rawat_inap_dr.kd_dokter')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tgl_perawatan')
+        ->desc('jam_rawat')
+          ->toArray();
+        $row['rawat_inap_pr'] = $this->db('rawat_inap_pr')
+          ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_pr.kd_jenis_prw')
+          ->join('petugas', 'petugas.nip=rawat_inap_pr.nip')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tgl_perawatan')
             ->desc('jam_rawat')
-            ->toArray();
-          foreach ($rawat_inap_drpr_data as $inap_drpr_item) {
-            $dokter = $this->db('dokter')->where('kd_dokter', $inap_drpr_item['kd_dokter'])->oneArray();
-            $petugas = $this->db('petugas')->where('nip', $inap_drpr_item['nip'])->oneArray();
-            $inap_drpr_item['nm_dokter'] = $dokter['nm_dokter'] ?? '';
-            $inap_drpr_item['nama'] = $petugas['nama'] ?? '';
-            $row['rawat_inap_drpr'][] = $inap_drpr_item;
-          }
+          ->toArray();
+        $rawat_inap_drpr_data = $this->db('rawat_inap_drpr')
+          ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_drpr.kd_jenis_prw')
+          ->where('no_rawat', $row['no_rawat'])
+          ->desc('tgl_perawatan')
+          ->desc('jam_rawat')
+          ->toArray();
+        foreach ($rawat_inap_drpr_data as $inap_drpr_item) {
+          $dokter = $this->db('dokter')->where('kd_dokter', $inap_drpr_item['kd_dokter'])->oneArray();
+          $petugas = $this->db('petugas')->where('nip', $inap_drpr_item['nip'])->oneArray();
+          $inap_drpr_item['nm_dokter'] = $dokter['nm_dokter'] ?? '';
+          $inap_drpr_item['nama'] = $petugas['nama'] ?? '';
+          $row['rawat_inap_drpr'][] = $inap_drpr_item;
         }
 
         $rows_periksa_lab = $this->db('periksa_lab')

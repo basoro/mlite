@@ -688,23 +688,8 @@ class Site extends SiteModule
 
         $no_rawat = $this->revertNorawat($id);
 
-        $check_billing = $this->db()->pdo()->query("SHOW TABLES LIKE 'billing'");
-        $check_billing->execute();
-        $check_billing = $check_billing->fetch();
-
-        if($check_billing) {
-          $query = $this->db()->pdo()->prepare("select no,nm_perawatan,pemisah,if(biaya=0,'',biaya),if(jumlah=0,'',jumlah),if(tambahan=0,'',tambahan),if(totalbiaya=0,'',totalbiaya),totalbiaya from billing where no_rawat='$no_rawat'");
-          $query->execute();
-          $rows = $query->fetchAll();
-          $total = 0;
-          foreach ($rows as $key => $value) {
-            $total = $total + $value['7'];
-          }
-          $total = $total;
-        } else {
-          $rows = [];
-          $total = '';
-        }
+        $rows = [];
+        $total = '';
 
         $this->tpl->set('total', $total);
 

@@ -137,12 +137,7 @@ class Site extends SiteModule
 
               $query = $this->db('pasien')->save($_POST);
               if($query) {
-                $check_table = $this->db()->pdo()->query("SHOW TABLES LIKE 'set_no_rkm_medis'");
-                $check_table->execute();
-                $check_table = $check_table->fetch();
-                if($check_table) {
-                  $this->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
-                }
+                $this->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
 
                 $this->db('mlite_apamregister')->where('email', $_POST['email'])->delete();
 
