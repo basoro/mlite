@@ -2250,7 +2250,7 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("31","settings","admin_mode","complex"),
 ("32","settings","input_kasir","tidak"),
 ("33","settings","editor","wysiwyg"),
-("34","settings","version","6.0.0"),
+("34","settings","version","6.2.0"),
 ("35","settings","update_check",""),
 ("36","settings","update_changelog",""),
 ("37","settings","update_version","0"),

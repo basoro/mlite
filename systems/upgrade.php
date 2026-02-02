@@ -1710,10 +1710,14 @@ switch ($version) {
 
         $return = '6.0.0'; 
         break;
+
+    case '6.0.0':
+        $return = '6.2.0'; 
+        break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '6.0.0';
+        $return = '6.2.0';
     }
 
 return $return;
