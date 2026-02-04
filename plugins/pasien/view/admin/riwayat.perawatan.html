@@ -2301,6 +2301,29 @@
         </td>
       </tr>
       {/if}
+      {if: $value.rsgm_data}
+      <tr class="isi">
+        <td valign="top" width="20%">Data RSGM</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          {loop: $value.rsgm_data as $table_data}
+          <div style="margin-bottom: 10px; border: 1px solid #ddd; padding: 5px;">
+            <h5 style="margin: 0 0 5px 0; background: #eee; padding: 5px;">{?=ucwords(str_replace(['rsgm__', '_'], ['',' '], $key))?}</h5>
+            {loop: $table_data as $row_data}
+            <table width="100%" border="0" cellpadding="3px" cellspacing="0" class="tbl_form" style="margin-bottom: 5px;">
+                {loop: $row_data}
+                <tr>
+                    <td width="30%" valign="top" style="border-bottom: 1px solid #eee;"><strong>{?=ucwords(str_replace('_', ' ', $key))?}</strong></td>
+                    <td width="70%" valign="top" style="border-bottom: 1px solid #eee;">{$value}</td>
+                </tr>
+                {/loop}
+            </table>
+            {/loop}
+          </div>
+          {/loop}
+        </td>
+      </tr>
+      {/if}
     </table>
     <br>
     {/loop}

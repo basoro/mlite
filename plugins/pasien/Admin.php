@@ -1054,6 +1054,21 @@ class Admin extends AdminModule
           ->desc('tgl_input')
           ->toArray();
 
+        $rsgm_tables = [];
+        $row['rsgm_data'] = [];
+        if (DBDRIVER == 'mysql') {
+            $stmt = $this->db()->pdo()->query("SHOW TABLES LIKE 'rsgm__%'");
+            while ($r = $stmt->fetch(\PDO::FETCH_NUM)) {
+                $rsgm_tables[] = $r[0];
+            }
+            foreach ($rsgm_tables as $rsgm_table) {
+                $data = $this->db($rsgm_table)->where('no_rawat', $row['no_rawat'])->toArray();
+                if (!empty($data)) {
+                    $row['rsgm_data'][$rsgm_table] = $data;
+                }
+            }
+        }
+
         $riwayat['reg_periksa'][] = $row;
       }
       
