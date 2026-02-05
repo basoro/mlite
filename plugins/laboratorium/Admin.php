@@ -666,13 +666,14 @@ class Admin extends AdminModule
     {
       if($_POST['kat'] == 'laboratorium') {
         $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
-        $periksa_lab = $this->db('periksa_lab')
+        for ($i = 0; $i < $_POST['jml_tindakan']; $i++) {
+          $periksa_lab = $this->db('periksa_lab')
           ->save([
             'no_rawat' => $_POST['no_rawat'],
             'nip' => $this->core->getUserInfo('username', null, true),
             'kd_jenis_prw' => $_POST['kd_jenis_prw'],
             'tgl_periksa' => $_POST['tgl_perawatan'],
-            'jam' => $_POST['jam_rawat'],
+            'jam' => date('H:i:s', strtotime($_POST['jam_rawat']. ' +'.$i.'0 seconds')),
             'dokter_perujuk' => $_POST['kode_provider'],
             'bagian_rs' => $jns_perawatan['bagian_rs'],
             'bhp' => $jns_perawatan['bhp'],
@@ -682,18 +683,20 @@ class Admin extends AdminModule
             'kso' => $jns_perawatan['kso'],
             'menejemen' => $jns_perawatan['menejemen'],
             'biaya' => $jns_perawatan['total_byr'],
-            'kd_dokter' => $this->settings->get('settings.pj_laboratorium'),
+            'kd_dokter' => $this->settings->get('settings.pj_laboratorium'), 
             'status' => $_POST['status']
           ]);
+        }
         if($periksa_lab) {
           $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
           foreach ($template_laboratorium as $row) {
-            $this->db('detail_periksa_lab')
-              ->save([
+            for ($i = 0; $i < $_POST['jml_tindakan']; $i++) {
+              $this->db('detail_periksa_lab')
+                ->save([
                 'no_rawat' => $_POST['no_rawat'],
                 'kd_jenis_prw' => $_POST['kd_jenis_prw'],
                 'tgl_periksa' => $_POST['tgl_perawatan'],
-                'jam' => $_POST['jam_rawat'],
+                'jam' => date('H:i:s', strtotime($_POST['jam_rawat']. ' +'.$i.'0 seconds')),
                 'id_template' => $row['id_template'],
                 'nilai' => '',
                 'nilai_rujukan' => $row['nilai_rujukan_ld'],
@@ -710,7 +713,7 @@ class Admin extends AdminModule
           }
         }
       }
-
+    }
       exit();
     }
 
