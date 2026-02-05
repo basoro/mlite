@@ -847,12 +847,17 @@ class Admin extends AdminModule
       } else {
         $tgl_registrasi = date('Y-m-d');
       }
-
       $urut = $this->db('reg_periksa')
+          ->where('tgl_registrasi', $tgl_registrasi)
           ->nextRightNumber('no_rawat', 6);
 
-      $next_no_rawat = date('Y/m/d', strtotime($tgl_registrasi)).'/'.$urut;
+      $next_no_rawat =
+          date('Y/m/d', strtotime($tgl_registrasi)) .
+          '/' .
+          sprintf('%06d', $urut);
+
       echo $next_no_rawat;
+
       exit();
     }
 
