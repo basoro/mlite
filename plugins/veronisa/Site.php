@@ -411,13 +411,11 @@ class Site extends SiteModule
           ->where('stts', '<>', 'Batal')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
-        /*
-        $rujukan_internal = $this->db('rujukan_internal_poli')
-          ->join('poliklinik', 'poliklinik.kd_poli = rujukan_internal_poli.kd_poli')
-          ->join('dokter', 'dokter.kd_dokter = rujukan_internal_poli.kd_dokter')
+        $rujukan_internal = $this->db('mlite_rujukan_internal_poli')
+          ->join('poliklinik', 'poliklinik.kd_poli = mlite_rujukan_internal_poli.kd_poli')
+          ->join('dokter', 'dokter.kd_dokter = mlite_rujukan_internal_poli.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
-        */
         $rows_dpjp_ranap = $this->db('dpjp_ranap')
           ->join('dokter', 'dokter.kd_dokter = dpjp_ranap.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))
@@ -746,13 +744,11 @@ class Site extends SiteModule
           ->where('stts', '<>', 'Batal')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
-        /*
-        $rujukan_internal = $this->db('rujukan_internal_poli')
-          ->join('poliklinik', 'poliklinik.kd_poli = rujukan_internal_poli.kd_poli')
-          ->join('dokter', 'dokter.kd_dokter = rujukan_internal_poli.kd_dokter')
+        $rujukan_internal = $this->db('mlite_rujukan_internal_poli')
+          ->join('poliklinik', 'poliklinik.kd_poli = mlite_rujukan_internal_poli.kd_poli')
+          ->join('dokter', 'dokter.kd_dokter = mlite_rujukan_internal_poli.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
-        */
         $rows_dpjp_ranap = $this->db('dpjp_ranap')
           ->join('dokter', 'dokter.kd_dokter = dpjp_ranap.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))

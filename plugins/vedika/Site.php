@@ -744,9 +744,9 @@ class Site extends SiteModule
           ->where('stts', '<>', 'Batal')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
-        $rujukan_internal = $this->db('rujukan_internal_poli')
-          ->join('poliklinik', 'poliklinik.kd_poli = rujukan_internal_poli.kd_poli')
-          ->join('dokter', 'dokter.kd_dokter = rujukan_internal_poli.kd_dokter')
+        $rujukan_internal = $this->db('mlite_rujukan_internal_poli')
+          ->join('poliklinik', 'poliklinik.kd_poli = mlite_rujukan_internal_poli.kd_poli')
+          ->join('dokter', 'dokter.kd_dokter = mlite_rujukan_internal_poli.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
         $rows_dpjp_ranap = $this->db('dpjp_ranap')
@@ -906,14 +906,7 @@ class Site extends SiteModule
           ->toArray();
 
         $no_rawat = $this->revertNorawat($id);
-        $query = $this->db()->pdo()->prepare("select no,nm_perawatan,pemisah,if(biaya=0,'',biaya),if(jumlah=0,'',jumlah),if(tambahan=0,'',tambahan),if(totalbiaya=0,'',totalbiaya),totalbiaya from billing where no_rawat='$no_rawat'");
-        $query->execute();
-        $rows = $query->fetchAll();
-        $total=0;
-        foreach ($rows as $key => $value) {
-          $total = $total+$value['7'];
-        }
-        $total = $total;
+        $total = '0';
         $this->tpl->set('total', $total);
 
         $settings = $this->settings('settings');
@@ -950,9 +943,9 @@ class Site extends SiteModule
           ->where('stts', '<>', 'Batal')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
-        $rujukan_internal = $this->db('rujukan_internal_poli')
-          ->join('poliklinik', 'poliklinik.kd_poli = rujukan_internal_poli.kd_poli')
-          ->join('dokter', 'dokter.kd_dokter = rujukan_internal_poli.kd_dokter')
+        $rujukan_internal = $this->db('mlite_rujukan_internal_poli')
+          ->join('poliklinik', 'poliklinik.kd_poli = mlite_rujukan_internal_poli.kd_poli')
+          ->join('dokter', 'dokter.kd_dokter = mlite_rujukan_internal_poli.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
         $rows_dpjp_ranap = $this->db('dpjp_ranap')
@@ -1136,7 +1129,8 @@ class Site extends SiteModule
       $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $this->revertNorawat($id))->oneArray();
 
       // Convert the HTML string to a PDF using those parameters.  Note if you have a very long HTML string use POST rather than get.  See example #5
-      $result = file_get_contents("http://url2pdf.basoro.id/?apikey=" . urlencode($apikey) . "&url=" . urlencode($value));
+      // $result = file_get_contents("http://url2pdf.basoro.id/?apikey=" . urlencode($apikey) . "&url=" . urlencode($value));
+      $result = file_get_contents("http://url2pdf.mlite.id/url-to-pdf?url=" . urlencode($value));
 
       // Save to root folder in website
       //file_put_contents('mypdf-1.pdf', $result);

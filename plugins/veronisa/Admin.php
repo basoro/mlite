@@ -1677,13 +1677,11 @@ public function postHapusResepResponse()
       $row['nomor'] = $dpjp_i++;
       $dpjp_ranap[] = $row;
     }
-    /*
-    $rujukan_internal = $this->db('rujukan_internal_poli')
-      ->join('poliklinik', 'poliklinik.kd_poli = rujukan_internal_poli.kd_poli')
-      ->join('dokter', 'dokter.kd_dokter = rujukan_internal_poli.kd_dokter')
+    $rujukan_internal = $this->db('mlite_rujukan_internal_poli')
+      ->join('poliklinik', 'poliklinik.kd_poli = mlite_rujukan_internal_poli.kd_poli')
+      ->join('dokter', 'dokter.kd_dokter = mlite_rujukan_internal_poli.kd_dokter')
       ->where('no_rawat', $this->revertNorawat($id))
       ->oneArray();
-    */
     $diagnosa_pasien = $this->db('diagnosa_pasien')
       ->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')
       ->where('no_rawat', $this->revertNorawat($id))
