@@ -1409,7 +1409,7 @@ CREATE TABLE `mlite_antrian_loket` (
   `status` varchar(10) NOT NULL DEFAULT '0',
   `loket` varchar(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (`kd`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_antrian_referensi` (
@@ -1421,7 +1421,7 @@ CREATE TABLE `mlite_antrian_referensi` (
   `jenis_kunjungan` varchar(10) NOT NULL,
   `status_kirim` varchar(20) DEFAULT NULL,
   `keterangan` varchar(250) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_antrian_referensi_batal` (
@@ -1429,7 +1429,7 @@ CREATE TABLE `mlite_antrian_referensi_batal` (
   `nomor_referensi` varchar(50) NOT NULL,
   `kodebooking` varchar(100) NOT NULL,
   `keterangan` varchar(250) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_antrian_referensi_taskid` (
@@ -1439,7 +1439,7 @@ CREATE TABLE `mlite_antrian_referensi_taskid` (
   `waktu` varchar(50) NOT NULL,
   `status` varchar(20) DEFAULT NULL,
   `keterangan` varchar(250) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_apamregister` (
@@ -1562,7 +1562,7 @@ CREATE TABLE `mlite_billing` (
   `id_user` int NOT NULL,
   `keterangan` varchar(100) NOT NULL,
   PRIMARY KEY (`id_billing`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_bridging_pcare` (
@@ -1702,7 +1702,7 @@ CREATE TABLE `mlite_geolocation_presensi` (
   `longitude` varchar(200) NOT NULL,
   KEY `mlite_geolocation_presensi_ibfk_1` (`id`),
   CONSTRAINT `mlite_geolocation_presensi_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_idr_codes` (
@@ -1762,7 +1762,7 @@ CREATE TABLE `mlite_login_attempts` (
   `ip` text,
   `attempts` int NOT NULL,
   `expires` int NOT NULL DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_loinc_radiologi` (
@@ -1792,7 +1792,7 @@ CREATE TABLE `mlite_modules` (
   `dir` text,
   `sequence` text,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=36 DEFAULT CHARSET=latin1;
 INSERT INTO `mlite_modules` VALUES ("1","settings","9"),
 ("2","dashboard","0"),
 ("3","master","1"),
@@ -1980,7 +1980,7 @@ CREATE TABLE `mlite_penjualan` (
   `id_user` varchar(50) NOT NULL,
   `keterangan` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_penjualan_barang` (
@@ -2004,7 +2004,7 @@ CREATE TABLE `mlite_penjualan_billing` (
   `jam` time NOT NULL,
   `id_user` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_penjualan_detail` (
@@ -2019,7 +2019,7 @@ CREATE TABLE `mlite_penjualan_detail` (
   `jam` time NOT NULL,
   `id_user` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_query_logs` (
@@ -2064,7 +2064,7 @@ CREATE TABLE `mlite_remember_me` (
   `expiry` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `mlite_remember_me_ibfk_1` (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_rujukan_internal_poli` (
@@ -2216,7 +2216,7 @@ CREATE TABLE `mlite_settings` (
   `value` varchar(1000) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `module` (`module`,`field`)
-) ENGINE=MyISAM AUTO_INCREMENT=161 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=161 DEFAULT CHARSET=latin1;
 INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/logo.png"),
 ("2","settings","nama_instansi","mLITE Indonesia"),
 ("3","settings","alamat","Jl. Perintis Kemerdekaan 45"),
@@ -2376,12 +2376,11 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("157","settings","billing_obat","false"),
 ("158","settings","prefix_surat","RS"),
 ("159","farmasi","keterangan_etiket",""),
-("160","pcare","consumerUserKeyAntrol",""),
-("161","settings","set_nomor_surat","000"),
-("162","settings","password_expire","tidak"),
-("163","farmasi","embalase","0"),
-("164","farmasi","tuslah","0"),
-("165","settings","log_query","tidak");
+("160","settings","set_nomor_surat","000"),
+("161","settings","password_expire","tidak"),
+("162","farmasi","embalase","0"),
+("163","farmasi","tuslah","0"),
+("164","settings","log_query","tidak");
 
 
 CREATE TABLE `mlite_subrekening` (
@@ -2611,7 +2610,7 @@ CREATE TABLE `mlite_users` (
   `cap` varchar(100) DEFAULT '',
   `access` varchar(500) NOT NULL DEFAULT 'dashboard',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 INSERT INTO `mlite_users` VALUES ("1","admin","Administrator","Admin ganteng baik hati, suka menabung dan tidak sombong.","$2y$10$pgRnDiukCbiYVqsamMM3ROWViSRqbyCCL33N8.ykBKZx0dlplXe9i",NULL,NULL,NULL,"avatar6422cb573b50c.png","info@mlite.id","admin","","all"),
 ("2","DR001","dr. Ataaka Muhammad","-","$2y$10$kuf2BxvViduBpUTn.6Nxsug3AskH/PGvXTSlfCfJqK8Ayb9a0.vqC",NULL,NULL,NULL,"avatar643a104444515.png","info@mlite.id","admin","","all");
 
@@ -2622,7 +2621,7 @@ CREATE TABLE `mlite_users_vedika` (
   `password` text,
   `fullname` text,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_vedika` (
@@ -2639,7 +2638,7 @@ CREATE TABLE `mlite_vedika` (
   KEY `idx_vedika_status_jenis_tgl` (`status`,`jenis`,`tgl_registrasi`),
   KEY `idx_vedika_nosep` (`nosep`),
   KEY `idx_vedika_no_rkm_medis` (`no_rkm_medis`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_vedika_feedback` (
@@ -2649,7 +2648,7 @@ CREATE TABLE `mlite_vedika_feedback` (
   `catatan` text,
   `username` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_veronisa` (
@@ -2665,7 +2664,7 @@ CREATE TABLE `mlite_veronisa` (
   KEY `idx_no_rawat` (`no_rawat`),
   KEY `idx_status` (`status`),
   KEY `idx_nosep` (`nosep`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mlite_veronisa_feedback` (
@@ -2675,7 +2674,7 @@ CREATE TABLE `mlite_veronisa_feedback` (
   `catatan` text,
   `username` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `mutasi_berkas` (
