@@ -1196,21 +1196,10 @@ class Admin extends AdminModule
         $str = implode(',', $value_query);
         echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data<br>';
 
-        if (DBDRIVER === 'sqlite') {
-            $sql = "
-                INSERT INTO propinsi (kd_prop, nm_prop)
-                VALUES $str
-                ON CONFLICT(kd_prop)
-                DO UPDATE SET nm_prop = excluded.nm_prop
-            ";
-        } else {
-            $sql = "
-                INSERT INTO propinsi (kd_prop, nm_prop)
-                VALUES $str
-                ON DUPLICATE KEY UPDATE
-                  nm_prop = VALUES(nm_prop)
-            ";
-        }
+        $sql = "
+            REPLACE INTO propinsi (kd_prop, nm_prop)
+            VALUES $str
+        ";
 
         $result = $this->core->db()->pdo()->exec($sql);
 
@@ -1297,11 +1286,7 @@ class Admin extends AdminModule
       }
       $str = implode(",", $value_query);
       echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
-      if(DBDRIVER === 'sqlite') {
-        $result = $this->core->db()->pdo()->exec("INSERT INTO kabupaten (kd_kab, nm_kab) VALUES $str ON CONFLICT(kd_kab) DO UPDATE SET nm_kab = excluded.nm_kab");
-      } else {
-        $result = $this->core->db()->pdo()->exec("INSERT INTO kabupaten (kd_kab, nm_kab) VALUES $str ON DUPLICATE KEY UPDATE kd_kab=VALUES(kd_kab)");
-      }
+      $result = $this->core->db()->pdo()->exec("REPLACE INTO kabupaten (kd_kab, nm_kab) VALUES $str");
       if($result) {
         echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
       } else {
@@ -1405,21 +1390,10 @@ class Admin extends AdminModule
         $str = implode(',', $value_query);
         echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data<br>';
 
-        if (DBDRIVER === 'sqlite') {
-            $sql = "
-                INSERT INTO kecamatan (kd_kec, nm_kec)
-                VALUES $str
-                ON CONFLICT(kd_kec)
-                DO UPDATE SET nm_kec = excluded.nm_kec
-            ";
-        } else {
-            $sql = "
-                INSERT INTO kecamatan (kd_kec, nm_kec)
-                VALUES $str
-                ON DUPLICATE KEY UPDATE
-                  nm_kec = VALUES(nm_kec)
-            ";
-        }
+        $sql = "
+            REPLACE INTO kecamatan (kd_kec, nm_kec)
+            VALUES $str
+        ";
 
         try {
             $pdo->beginTransaction();
@@ -1497,31 +1471,37 @@ class Admin extends AdminModule
       }
 
       $lines = explode(PHP_EOL, $csvData);
-      $array = array();
-      foreach ($lines as $line) {
-          $delimiter = str_contains($line, ';') ? ';' : ',';
-          $array[] = str_getcsv($line, $delimiter, '"', '\\');  
+      $total_lines = count($lines);
+      $chunk_size = 500;
+      $chunks = array_chunk($lines, $chunk_size);
+      
+      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data...<br>';
+
+      foreach ($chunks as $chunk) {
+          $value_query = [];
+          foreach ($chunk as $line) {
+              if (empty(trim($line))) continue;
+              $delimiter = str_contains($line, ';') ? ';' : ',';
+              $data = str_getcsv($line, $delimiter, '"', '\\');
+              
+              if (isset($data[0]) && isset($data[2])) {
+                  $kode = trim($data[0]);
+                  $nama = trim($data[2]);
+                  
+                  $kode = addslashes($kode);
+                  $nama = addslashes($nama);
+                  
+                  $value_query[] = "('$kode','$nama')";
+              }
+          }
+
+          if (!empty($value_query)) {
+              $str = implode(",", $value_query);
+              $this->core->db()->pdo()->exec("REPLACE INTO kelurahan (kd_kel, nm_kel) VALUES $str");
+          }
       }
 
-      foreach ($array as $data){   
-        $kode = $data[0];
-        $nama = $data[2];
-        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."')";
-      }
-      $str = implode(",", $value_query);
-      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
-      if(DBDRIVER === 'sqlite') {
-        $result = $this->core->db()->pdo()->exec("INSERT INTO kelurahan (kd_kel, nm_kel) VALUES $str ON CONFLICT(kd_kel) DO UPDATE SET nm_kel = excluded.nm_kel");
-      } else {
-        $result = $this->core->db()->pdo()->exec("INSERT INTO kelurahan (kd_kel, nm_kel) VALUES $str ON DUPLICATE KEY UPDATE kd_kel=VALUES(kd_kel)");
-      } 
-      if($result) {
-        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
-      } else {
-        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
-        exit();
-      }
-
+      echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
       exit();
     }
 
@@ -2794,27 +2774,42 @@ class Admin extends AdminModule
       }
 
       $lines = explode(PHP_EOL, $csvData);
-      $array = array();
-      foreach ($lines as $line) {
-          $array[] = str_getcsv($line);
+      $total_lines = count($lines);
+      $chunk_size = 500;
+      $chunks = array_chunk($lines, $chunk_size);
+      
+      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data...<br>';
+
+      foreach ($chunks as $chunk) {
+          $value_query = [];
+          foreach ($chunk as $line) {
+              if (empty(trim($line))) continue;
+              $delimiter = str_contains($line, ';') ? ';' : ',';
+              $data = str_getcsv($line, $delimiter);
+              
+              if (isset($data[0])) {
+                  $kode = trim($data[0]);
+                  $nama = trim(isset($data[1]) ? $data[1] : '');
+                  $nama = str_replace('"', '', $nama);
+                  
+                  $kode = addslashes($kode);
+                  $nama = addslashes($nama);
+                  
+                  $value_query[] = "('$kode','$nama','','','-','Tidak Menular')";
+              }
+          }
+
+          if (!empty($value_query)) {
+              $str = implode(",", $value_query);
+              try {
+                  $this->core->db()->pdo()->exec("REPLACE INTO penyakit (kd_penyakit, nm_penyakit, ciri_ciri, keterangan, kd_ktg, status) VALUES $str");
+              } catch (\Exception $e) {
+                  echo '['.date('d-m-Y H:i:s').'][error] Gagal insert chunk: '.$e->getMessage().'<br>';
+              }
+          }
       }
 
-      foreach ($array as $data){   
-        $kode = $data[0];
-        $nama = isset_or($data[1], '');
-        $nama = str_replace('"','',$nama);
-        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."','','','-','Tidak Menular')";
-      }
-      $str = implode(",", $value_query);
-      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
-      $result = $this->core->db()->pdo()->exec("INSERT INTO penyakit (kd_penyakit, nm_penyakit, ciri_ciri, keterangan, kd_ktg, status) VALUES $str ON DUPLICATE KEY UPDATE kd_penyakit=VALUES(kd_penyakit)");
-      if($result) {
-        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
-      } else {
-        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
-        exit();
-      }
-      
+      echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
       exit();
     }
 
@@ -2878,26 +2873,41 @@ class Admin extends AdminModule
       }
 
       $lines = explode(PHP_EOL, $csvData);
-      $array = array();
-      foreach ($lines as $line) {
-          $array[] = str_getcsv($line);
+      $chunk_size = 500;
+      $chunks = array_chunk($lines, $chunk_size);
+      
+      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data...<br>';
+
+      foreach ($chunks as $chunk) {
+          $value_query = [];
+          foreach ($chunk as $line) {
+              if (empty(trim($line))) continue;
+              $delimiter = str_contains($line, ';') ? ';' : ',';
+              $data = str_getcsv($line, $delimiter);
+              
+              if (isset($data[0])) {
+                  $kode = trim($data[0]);
+                  $nama = trim(isset($data[1]) ? $data[1] : '');
+                  $nama = str_replace('"', '', $nama);
+                  
+                  $kode = addslashes($kode);
+                  $nama = addslashes($nama);
+                  
+                  $value_query[] = "('$kode','$nama','')";
+              }
+          }
+
+          if (!empty($value_query)) {
+              $str = implode(",", $value_query);
+              try {
+                  $this->core->db()->pdo()->exec("REPLACE INTO icd9 (kode, deskripsi_panjang, deskripsi_pendek) VALUES $str");
+              } catch (\Exception $e) {
+                  echo '['.date('d-m-Y H:i:s').'][error] Gagal insert chunk: '.$e->getMessage().'<br>';
+              }
+          }
       }
 
-      foreach ($array as $data){   
-        $kode = $data[0];
-        $nama = isset_or($data[1], '');
-        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."','')";
-      }
-      $str = implode(",", $value_query);
-      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
-      $result = $this->core->db()->pdo()->exec("INSERT INTO icd9 (kode, deskripsi_panjang, deskripsi_pendek) VALUES $str ON DUPLICATE KEY UPDATE kode=VALUES(kode)");
-      if($result) {
-        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
-      } else {
-        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
-        exit();
-      }
-      
+      echo '['.date('d-m-Y H:i:s').'][info] Impor selesai<br>';
       exit();
     }
 
