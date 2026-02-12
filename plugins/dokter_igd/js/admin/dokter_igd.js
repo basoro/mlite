@@ -342,15 +342,7 @@ $(document).ready(function() {
       $(this).focus();
     }
   });
-  
-  $(document).on('blur', 'input[name="gcs"]', function() {
-    var gcs = $(this).val();
-    if(gcs && !gcs.match(/^E\d+M\d+V\d+$/)) {
-      alert('Format GCS harus seperti: E4M6V5');
-      $(this).focus();
-    }
-  });
-  
+    
   // Handler untuk numeric input validation
   $(document).on('keypress', 'input[name="nadi"], input[name="rr"], input[name="suhu"], input[name="spo"], input[name="bb"], input[name="tb"]', function(e) {
     // Allow: backspace, delete, tab, escape, enter, decimal point
