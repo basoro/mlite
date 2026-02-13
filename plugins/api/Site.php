@@ -80,14 +80,14 @@ class Site extends SiteModule
               $results = array();
               //$_REQUEST['email'] = '000009';
               $email = trim($_REQUEST['email']);
-              $sql = "SELECT * FROM mlite_apamregister WHERE email = '$email'";
+              $sql = "SELECT * FROM mlite_apamregister WHERE email = ?";
               $query = $this->db()->pdo()->prepare($sql);
-              $query->execute();
+              $query->execute([$email]);
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results[0]);
+              echo json_encode(isset_or($results[0], []));
             break;
             case "saveregister":
 
@@ -137,7 +137,8 @@ class Site extends SiteModule
 
               $query = $this->db('pasien')->save($_POST);
               if($query) {
-                $this->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
+                $stmt = $this->db()->pdo()->prepare("UPDATE set_no_rkm_medis SET no_rkm_medis=?");
+                $stmt->execute([$_POST['no_rkm_medis']]);
 
                 $this->db('mlite_apamregister')->where('email', $_POST['email'])->delete();
 
@@ -154,9 +155,9 @@ class Site extends SiteModule
               $results = array();
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $sql = "SELECT * FROM mlite_notifications WHERE no_rkm_medis = '$no_rkm_medis' AND status = 'unread'";
+              $sql = "SELECT * FROM mlite_notifications WHERE no_rkm_medis = ? AND status = 'unread'";
               $query = $this->db()->pdo()->prepare($sql);
-              $query->execute();
+              $query->execute([$no_rkm_medis]);
               $result = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($result as $row) {
                 $row['state'] = 'valid';
@@ -186,9 +187,9 @@ class Site extends SiteModule
               //$_REQUEST['no_rkm_medis'] = '000009';
               $date = date('Y-m-d');
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $sql = "SELECT stts FROM reg_periksa WHERE tgl_registrasi = '$date' AND no_rkm_medis = '$no_rkm_medis' AND (stts = 'Belum' OR stts = 'Berkas Diterima')";
+              $sql = "SELECT stts FROM reg_periksa WHERE tgl_registrasi = ? AND no_rkm_medis = ? AND (stts = 'Belum' OR stts = 'Berkas Diterima')";
               $query = $this->db()->pdo()->prepare($sql);
-              $query->execute();
+              $query->execute([$date, $no_rkm_medis]);
               $result = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($result as $row) {
                 $results[] = $row;
@@ -219,9 +220,9 @@ class Site extends SiteModule
             case "booking":
               $results = array();
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $sql = "SELECT a.tanggal_booking, a.tanggal_periksa, a.no_reg, a.status, b.nm_poli, c.nm_dokter, d.png_jawab FROM booking_registrasi a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = '$no_rkm_medis' ORDER BY a.tanggal_periksa DESC";
+              $sql = "SELECT a.tanggal_booking, a.tanggal_periksa, a.no_reg, a.status, b.nm_poli, c.nm_dokter, d.png_jawab FROM booking_registrasi a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = ? ORDER BY a.tanggal_periksa DESC";
               $query = $this->db()->pdo()->prepare($sql);
-              $query->execute();
+              $query->execute([$no_rkm_medis]);
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
                 $results[] = $row;
@@ -237,9 +238,9 @@ class Site extends SiteModule
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $tanggal_periksa = trim($_REQUEST['tanggal_periksa']);
               $no_reg = trim($_REQUEST['no_reg']);
-              $sql = "SELECT a.tanggal_booking, a.tanggal_periksa, a.no_reg, a.status, b.nm_poli, c.nm_dokter, d.png_jawab FROM booking_registrasi a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.tanggal_periksa = '$tanggal_periksa' AND a.no_reg = '$no_reg'";
+              $sql = "SELECT a.tanggal_booking, a.tanggal_periksa, a.no_reg, a.status, b.nm_poli, c.nm_dokter, d.png_jawab FROM booking_registrasi a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = ? AND a.tanggal_periksa = ? AND a.no_reg = ?";
               $query = $this->db()->pdo()->prepare($sql);
-              $query->execute();
+              $query->execute([$no_rkm_medis, $tanggal_periksa, $no_reg]);
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
                 $results[] = $row;
@@ -266,8 +267,8 @@ class Site extends SiteModule
               }
               $results = array();
 
-              $hari = $this->db()->pdo()->prepare("SELECT DAYNAME('$getTanggal') AS dt");
-              $hari->execute();
+              $hari = $this->db()->pdo()->prepare("SELECT DAYNAME(?) AS dt");
+              $hari->execute([$getTanggal]);
               $hari = $hari->fetch(\PDO::FETCH_OBJ);
 
               $namahari = "";
@@ -287,8 +288,8 @@ class Site extends SiteModule
                   $namahari = "SABTU";
               }
 
-              $sql = $this->db()->pdo()->prepare("SELECT dokter.nm_dokter, dokter.jk, poliklinik.nm_poli, DATE_FORMAT(jadwal.jam_mulai, '%H:%i') AS jam_mulai, DATE_FORMAT(jadwal.jam_selesai, '%H:%i') AS jam_selesai, dokter.kd_dokter FROM jadwal INNER JOIN dokter INNER JOIN poliklinik on dokter.kd_dokter=jadwal.kd_dokter AND jadwal.kd_poli=poliklinik.kd_poli WHERE jadwal.hari_kerja='$namahari'");
-              $sql->execute();
+              $sql = $this->db()->pdo()->prepare("SELECT dokter.nm_dokter, dokter.jk, poliklinik.nm_poli, DATE_FORMAT(jadwal.jam_mulai, '%H:%i') AS jam_mulai, DATE_FORMAT(jadwal.jam_selesai, '%H:%i') AS jam_selesai, dokter.kd_dokter FROM jadwal INNER JOIN dokter INNER JOIN poliklinik on dokter.kd_dokter=jadwal.kd_dokter AND jadwal.kd_poli=poliklinik.kd_poli WHERE jadwal.hari_kerja=?");
+              $sql->execute([$namahari]);
               $result = $sql->fetchAll(\PDO::FETCH_ASSOC);
 
               if(!$result){
@@ -304,8 +305,8 @@ class Site extends SiteModule
             case "riwayat":
               $results = array();
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $query = $this->db()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.stts = 'Sudah' ORDER BY a.tgl_registrasi DESC");
-              $query->execute();
+              $query = $this->db()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = ? AND a.stts = 'Sudah' ORDER BY a.tgl_registrasi DESC");
+              $query->execute([$no_rkm_medis]);
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
                 $results[] = $row;
@@ -317,8 +318,8 @@ class Site extends SiteModule
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $tgl_registrasi = trim($_REQUEST['tgl_registrasi']);
               $no_reg = trim($_REQUEST['no_reg']);
-              $query = $this->db()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab, e.keluhan, e.pemeriksaan, GROUP_CONCAT(DISTINCT g.nm_penyakit SEPARATOR '<br>') AS nm_penyakit, GROUP_CONCAT(DISTINCT i.nama_brng SEPARATOR '<br>') AS nama_brng, GROUP_CONCAT(CONCAT_WS(':', k.pemeriksaan, j.nilai)SEPARATOR '<br>') AS pemeriksaan_lab, GROUP_CONCAT(CONCAT_WS(':', m.nm_perawatan, n.hasil)SEPARATOR '<br>') AS hasil_radiologi, GROUP_CONCAT(DISTINCT o.lokasi_gambar SEPARATOR '<br>') AS gambar_radiologi FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj LEFT JOIN pemeriksaan_ralan e ON a.no_rawat = e.no_rawat LEFT JOIN diagnosa_pasien f ON a.no_rawat = f.no_rawat LEFT JOIN penyakit g ON f.kd_penyakit = g.kd_penyakit LEFT JOIN detail_pemberian_obat h ON a.no_rawat = h.no_rawat LEFT JOIN databarang i ON h.kode_brng = i.kode_brng LEFT JOIN detail_periksa_lab j ON a.no_rawat = j.no_rawat LEFT JOIN template_laboratorium k ON j.id_template = k.id_template LEFT JOIN periksa_radiologi l ON a.no_rawat = l.no_rawat LEFT JOIN jns_perawatan_radiologi m ON l.kd_jenis_prw = m.kd_jenis_prw LEFT JOIN hasil_radiologi n ON a.no_rawat = n.no_rawat LEFT JOIN gambar_radiologi o ON a.no_rawat = o.no_rawat WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.tgl_registrasi = '$tgl_registrasi' AND a.no_reg = '$no_reg' GROUP BY a.no_rawat");
-              $query->execute();
+              $query = $this->db()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab, e.keluhan, e.pemeriksaan, GROUP_CONCAT(DISTINCT g.nm_penyakit SEPARATOR '<br>') AS nm_penyakit, GROUP_CONCAT(DISTINCT i.nama_brng SEPARATOR '<br>') AS nama_brng, GROUP_CONCAT(CONCAT_WS(':', k.pemeriksaan, j.nilai)SEPARATOR '<br>') AS pemeriksaan_lab, GROUP_CONCAT(CONCAT_WS(':', m.nm_perawatan, n.hasil)SEPARATOR '<br>') AS hasil_radiologi, GROUP_CONCAT(DISTINCT o.lokasi_gambar SEPARATOR '<br>') AS gambar_radiologi FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj LEFT JOIN pemeriksaan_ralan e ON a.no_rawat = e.no_rawat LEFT JOIN diagnosa_pasien f ON a.no_rawat = f.no_rawat LEFT JOIN penyakit g ON f.kd_penyakit = g.kd_penyakit LEFT JOIN detail_pemberian_obat h ON a.no_rawat = h.no_rawat LEFT JOIN databarang i ON h.kode_brng = i.kode_brng LEFT JOIN detail_periksa_lab j ON a.no_rawat = j.no_rawat LEFT JOIN template_laboratorium k ON j.id_template = k.id_template LEFT JOIN periksa_radiologi l ON a.no_rawat = l.no_rawat LEFT JOIN jns_perawatan_radiologi m ON l.kd_jenis_prw = m.kd_jenis_prw LEFT JOIN hasil_radiologi n ON a.no_rawat = n.no_rawat LEFT JOIN gambar_radiologi o ON a.no_rawat = o.no_rawat WHERE a.no_rkm_medis = ? AND a.tgl_registrasi = ? AND a.no_reg = ? GROUP BY a.no_rawat");
+              $query->execute([$no_rkm_medis, $tgl_registrasi, $no_reg]);
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
                 $results[] = $row;
@@ -328,8 +329,8 @@ class Site extends SiteModule
             case "riwayatranap":
               $results = array();
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $query = $this->db()->pdo()->prepare("SELECT reg_periksa.tgl_registrasi, reg_periksa.no_reg, dokter.nm_dokter, bangsal.nm_bangsal, penjab.png_jawab, reg_periksa.no_rawat FROM kamar_inap, reg_periksa, pasien, bangsal, kamar, penjab, dokter, dpjp_ranap WHERE kamar_inap.no_rawat = reg_periksa.no_rawat AND reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND kamar_inap.no_rawat = reg_periksa.no_rawat AND kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND reg_periksa.kd_pj = penjab.kd_pj AND dpjp_ranap.no_rawat = reg_periksa.no_rawat AND dpjp_ranap.kd_dokter = dokter.kd_dokter AND pasien.no_rkm_medis = '$no_rkm_medis' ORDER BY reg_periksa.tgl_registrasi DESC");
-              $query->execute();
+              $query = $this->db()->pdo()->prepare("SELECT reg_periksa.tgl_registrasi, reg_periksa.no_reg, dokter.nm_dokter, bangsal.nm_bangsal, penjab.png_jawab, reg_periksa.no_rawat FROM kamar_inap, reg_periksa, pasien, bangsal, kamar, penjab, dokter, dpjp_ranap WHERE kamar_inap.no_rawat = reg_periksa.no_rawat AND reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND kamar_inap.no_rawat = reg_periksa.no_rawat AND kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND reg_periksa.kd_pj = penjab.kd_pj AND dpjp_ranap.no_rawat = reg_periksa.no_rawat AND dpjp_ranap.kd_dokter = dokter.kd_dokter AND pasien.no_rkm_medis = ? ORDER BY reg_periksa.tgl_registrasi DESC");
+              $query->execute([$no_rkm_medis]);
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
                 $results[] = $row;
@@ -372,12 +373,12 @@ class Site extends SiteModule
                 LEFT JOIN jns_perawatan_radiologi o ON n.kd_jenis_prw = o.kd_jenis_prw
                 LEFT JOIN hasil_radiologi p ON a.no_rawat = p.no_rawat
                 LEFT JOIN gambar_radiologi q ON a.no_rawat = q.no_rawat
-                WHERE a.no_rkm_medis = '$no_rkm_medis'
-                AND a.tgl_registrasi = '$tgl_registrasi'
-                AND a.no_reg = '$no_reg'
+                WHERE a.no_rkm_medis = ?
+                AND a.tgl_registrasi = ?
+                AND a.no_reg = ?
                 GROUP BY a.no_rawat";
               $query = $this->db()->pdo()->prepare($sql);
-              $query->execute();
+              $query->execute([$no_rkm_medis, $tgl_registrasi, $no_reg]);
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
                 $results[] = $row;
@@ -388,8 +389,8 @@ class Site extends SiteModule
               $results = array();
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $query = $this->db()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab, e.kd_billing, e.jumlah_harus_bayar FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj INNER JOIN mlite_billing e ON a.no_rawat = e.no_rawat WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.stts = 'Sudah' ORDER BY e.tgl_billing, e.jam_billing DESC");
-              $query->execute();
+              $query = $this->db()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab, e.kd_billing, e.jumlah_harus_bayar FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj INNER JOIN mlite_billing e ON a.no_rawat = e.no_rawat WHERE a.no_rkm_medis = ? AND a.stts = 'Sudah' ORDER BY e.tgl_billing, e.jam_billing DESC");
+              $query->execute([$no_rkm_medis]);
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
                 $row['total_bayar'] = number_format($row['jumlah_harus_bayar'],2,',','.');
@@ -401,9 +402,9 @@ class Site extends SiteModule
               $results = array();
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $sql = "SELECT * FROM pasien WHERE no_rkm_medis = '$no_rkm_medis'";
+              $sql = "SELECT * FROM pasien WHERE no_rkm_medis = ?";
               $query = $this->db()->pdo()->prepare($sql);
-              $query->execute();
+              $query->execute([$no_rkm_medis]);
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
                 $personal_pasien = $this->db('personal_pasien')->where('no_rkm_medis', $row['no_rkm_medis'])->oneArray();
@@ -430,11 +431,12 @@ class Site extends SiteModule
                 'Sat' => 'SABTU'
               );
               $hari=$day[$tentukan_hari];
+              $hari_like = '%'.$hari.'%';
 
-              $sql = "SELECT a.kd_poli, b.nm_poli, DATE_FORMAT(a.jam_mulai, '%H:%i') AS jam_mulai, DATE_FORMAT(a.jam_selesai, '%H:%i') AS jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja LIKE '%$hari%' GROUP BY b.kd_poli";
+              $sql = "SELECT a.kd_poli, b.nm_poli, DATE_FORMAT(a.jam_mulai, '%H:%i') AS jam_mulai, DATE_FORMAT(a.jam_selesai, '%H:%i') AS jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja LIKE ? GROUP BY b.kd_poli";
 
               $query = $this->db()->pdo()->prepare($sql);
-              $query->execute();
+              $query->execute([$hari_like]);
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
                 $results[] = $row;
@@ -457,11 +459,12 @@ class Site extends SiteModule
                 'Sat' => 'SABTU'
               );
               $hari=$day[$tentukan_hari];
+              $hari_like = '%'.$hari.'%';
 
-              $sql = "SELECT a.kd_dokter, c.nm_dokter FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.kd_poli = '$kd_poli' AND a.hari_kerja LIKE '%$hari%'";
+              $sql = "SELECT a.kd_dokter, c.nm_dokter FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.kd_poli = ? AND a.hari_kerja LIKE ?";
 
               $query = $this->db()->pdo()->prepare($sql);
-              $query->execute();
+              $query->execute([$kd_poli, $hari_like]);
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
                 $results[] = $row;
@@ -578,9 +581,9 @@ class Site extends SiteModule
               $results = array();
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $date = date('Y-m-d');
-              $sql = "SELECT a.tanggal_booking, a.tanggal_periksa, a.no_reg, a.status, b.nm_poli, c.nm_dokter, d.png_jawab FROM booking_registrasi a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.tanggal_booking = '$date' AND a.jam_booking = (SELECT MAX(ax.jam_booking) FROM booking_registrasi ax WHERE ax.tanggal_booking = a.tanggal_booking) ORDER BY a.tanggal_booking ASC LIMIT 1";
+              $sql = "SELECT a.tanggal_booking, a.tanggal_periksa, a.no_reg, a.status, b.nm_poli, c.nm_dokter, d.png_jawab FROM booking_registrasi a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = ? AND a.tanggal_booking = ? AND a.jam_booking = (SELECT MAX(ax.jam_booking) FROM booking_registrasi ax WHERE ax.tanggal_booking = a.tanggal_booking) ORDER BY a.tanggal_booking ASC LIMIT 1";
               $query = $this->db()->pdo()->prepare($sql);
-              $query->execute();
+              $query->execute([$no_rkm_medis, $date]);
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
                 $results[] = $row;
@@ -593,13 +596,14 @@ class Site extends SiteModule
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $sql = "SELECT a.*, b.nm_pasien, b.jk FROM mlite_pengaduan a, pasien b WHERE a.no_rkm_medis = b.no_rkm_medis";
               if(in_array($no_rkm_medis, $petugas_array)) {
-                $sql .= "";
+                $sql .= " ORDER BY a.tanggal DESC";
+                $query = $this->db()->pdo()->prepare($sql);
+                $query->execute();
               } else {
-               $sql .= " AND a.no_rkm_medis = '$no_rkm_medis'";
+               $sql .= " AND a.no_rkm_medis = ? ORDER BY a.tanggal DESC";
+               $query = $this->db()->pdo()->prepare($sql);
+               $query->execute([$no_rkm_medis]);
               }
-              $sql .= " ORDER BY a.tanggal DESC";
-              $query = $this->db()->pdo()->prepare($sql);
-              $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
                 $results[] = $row;
@@ -610,8 +614,8 @@ class Site extends SiteModule
               $results = array();
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $pengaduan_id = trim($_REQUEST['pengaduan_id']);
-              $sql = $this->db()->pdo()->prepare("SELECT * FROM mlite_pengaduan_detail WHERE pengaduan_id = '$pengaduan_id'");
-              $sql->execute();
+              $sql = $this->db()->pdo()->prepare("SELECT * FROM mlite_pengaduan_detail WHERE pengaduan_id = ?");
+              $sql->execute([$pengaduan_id]);
               $result = $sql->fetchAll(\PDO::FETCH_ASSOC);
 
               if(!$result) {
@@ -797,8 +801,8 @@ class Site extends SiteModule
               }
               $results = array();
 
-              $hari = $this->db()->pdo()->prepare("SELECT DAYNAME('$getTanggal') AS dt");
-              $hari->execute();
+              $hari = $this->db()->pdo()->prepare("SELECT DAYNAME(?) AS dt");
+              $hari->execute([$getTanggal]);
               $hari = $hari->fetch(\PDO::FETCH_OBJ);
 
               $namahari = "";
@@ -818,8 +822,8 @@ class Site extends SiteModule
                   $namahari = "SABTU";
               }
 
-              $sql = $this->db()->pdo()->prepare("SELECT dokter.nm_dokter, dokter.jk, poliklinik.nm_poli, DATE_FORMAT(jadwal.jam_mulai, '%H:%i') AS jam_mulai, DATE_FORMAT(jadwal.jam_selesai, '%H:%i') AS jam_selesai, dokter.kd_dokter, poliklinik.kd_poli FROM jadwal INNER JOIN dokter INNER JOIN poliklinik on dokter.kd_dokter=jadwal.kd_dokter AND jadwal.kd_poli=poliklinik.kd_poli WHERE jadwal.hari_kerja='$namahari'");
-              $sql->execute();
+              $sql = $this->db()->pdo()->prepare("SELECT dokter.nm_dokter, dokter.jk, poliklinik.nm_poli, DATE_FORMAT(jadwal.jam_mulai, '%H:%i') AS jam_mulai, DATE_FORMAT(jadwal.jam_selesai, '%H:%i') AS jam_selesai, dokter.kd_dokter, poliklinik.kd_poli FROM jadwal INNER JOIN dokter INNER JOIN poliklinik on dokter.kd_dokter=jadwal.kd_dokter AND jadwal.kd_poli=poliklinik.kd_poli WHERE jadwal.hari_kerja=?");
+              $sql->execute([$namahari]);
               $result = $sql->fetchAll(\PDO::FETCH_ASSOC);
 
               if(!$result){
@@ -1043,9 +1047,9 @@ class Site extends SiteModule
               $results = array();
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $date = date('Y-m-d');
-              $sql = "SELECT a.tanggal_booking, a.tanggal_periksa, a.no_reg, a.status, b.nm_poli, c.nm_dokter, d.png_jawab, a.jam_booking FROM booking_registrasi a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.tanggal_booking = '$date' AND a.jam_booking = (SELECT MAX(ax.jam_booking) FROM booking_registrasi ax WHERE ax.tanggal_booking = a.tanggal_booking) ORDER BY a.tanggal_booking ASC LIMIT 1";
+              $sql = "SELECT a.tanggal_booking, a.tanggal_periksa, a.no_reg, a.status, b.nm_poli, c.nm_dokter, d.png_jawab, a.jam_booking FROM booking_registrasi a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = ? AND a.tanggal_booking = ? AND a.jam_booking = (SELECT MAX(ax.jam_booking) FROM booking_registrasi ax WHERE ax.tanggal_booking = a.tanggal_booking) ORDER BY a.tanggal_booking ASC LIMIT 1";
               $query = $this->db()->pdo()->prepare($sql);
-              $query->execute();
+              $query->execute([$no_rkm_medis, $date]);
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
                 $mlite_duitku = $this->db('mlite_duitku')->where('no_rkm_medis', $no_rkm_medis)->where('tanggal', $row['tanggal_booking'].' '.$row['jam_booking'])->oneArray();
