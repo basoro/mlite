@@ -9,9 +9,11 @@ try {
     header('Content-Type: text/html; charset=utf-8');
 
     // CORS Headers
-    header("Access-Control-Allow-Origin: *");
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
+    header("Access-Control-Allow-Origin: $origin");
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS, DELETE, PUT");
     header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Api-Key, X-Requested-With, X-Username-Permission, X-Password-Permission");
+    header("Access-Control-Allow-Credentials: true"); // Required for Cookies
 
     if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
         if (ob_get_level() > 0) ob_end_clean();
@@ -40,37 +42,117 @@ require_once('../systems/lib/Autoloader.php');
 $core = new Systems\Admin;
 
 // Register API routes available regardless of login state
-$core->router->set('api/login', function () use ($core) {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $apiUser = $core->checkAuth('POST');
-        $input = json_decode(file_get_contents('php://input'), true);
-        $username = $input['username'] ?? $_POST['username'] ?? '';
-        $password = $input['password'] ?? $_POST['password'] ?? '';
+$core->router->set('api/login', function () use ($core) { 
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') { 
+        $apiUser = $core->checkAuth('POST'); 
+        $input = json_decode(file_get_contents('php://input'), true); 
+        $username = $input['username'] ?? $_POST['username'] ?? ''; 
+        $password = $input['password'] ?? $_POST['password'] ?? ''; 
 
-        if ($apiUser !== $username && $apiUser !== 'admin') {
-             header('Content-Type: application/json');
-             http_response_code(401);
-             echo json_encode(['error' => 'API Key does not match the provided username']);
-             exit;
-        }
+        if ($apiUser !== $username && $apiUser !== 'admin') { 
+            header('Content-Type: application/json'); 
+            http_response_code(401); 
+            echo json_encode(['error' => 'API Key does not match the provided username']); 
+            exit; 
+        } 
 
-        $user = $core->db('mlite_users')->where('username', $username)->oneArray();
-        if ($user && password_verify($password, $user['password'])) {
-            $payload = [
+        $user = $core->db('mlite_users')->where('username', $username)->oneArray(); 
+        if ($user && password_verify($password, $user['password'])) { 
+            // Short-lived Access Token (e.g., 15 minutes)
+            $payload = [ 
+                'iss' => url(), 
+                'sub' => $user['id'], 
+                'username' => $user['username'],
+                'exp' => time() + (15 * 60) // 15 minutes expiration
+            ]; 
+            $token = \Systems\Lib\Jwt::encode($payload, JWT_SECRET); 
+            
+            // Long-lived Refresh Token (e.g., 7 days)
+            $refreshPayload = [
                 'iss' => url(),
                 'sub' => $user['id'],
-                'username' => $user['username']
+                'type' => 'refresh',
+                'exp' => time() + (7 * 24 * 60 * 60) // 7 days expiration
             ];
-            $token = \Systems\Lib\Jwt::encode($payload, JWT_SECRET);
-            header('Content-Type: application/json');
-            echo json_encode([
-                'token' => $token,
-                'fullname' => $user['fullname'] ?? $user['username']
+            $refreshToken = \Systems\Lib\Jwt::encode($refreshPayload, JWT_SECRET);
+
+            // Set HttpOnly Cookie
+            setcookie('refreshToken', $refreshToken, [
+                'expires' => time() + (7 * 24 * 60 * 60),
+                'path' => '/',
+                'domain' => '', // Set to your domain if needed
+                'secure' => true, // Ensure HTTPS is used
+                'httponly' => true,
+                'samesite' => 'Strict'
             ]);
-        } else {
+
+            header('Content-Type: application/json'); 
+            echo json_encode([ 
+                'token' => $token, 
+                'fullname' => $user['fullname'] ?? $user['username'] 
+            ]); 
+        } else { 
+            header('Content-Type: application/json'); 
+            http_response_code(401); 
+            echo json_encode(['error' => 'Invalid credentials']); 
+        } 
+        exit; 
+    } 
+}); 
+
+// NEW: api/refresh endpoint
+$core->router->set('api/refresh', function () use ($core) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $refreshToken = $_COOKIE['refreshToken'] ?? null;
+
+        if (!$refreshToken) {
             header('Content-Type: application/json');
             http_response_code(401);
-            echo json_encode(['error' => 'Invalid credentials']);
+            echo json_encode(['error' => 'No refresh token provided']);
+            exit;
+        }
+
+        try {
+            $payload = \Systems\Lib\Jwt::verify($refreshToken, JWT_SECRET);
+            
+            if (!$payload || ($payload['type'] ?? '') !== 'refresh') {
+                throw new Exception('Invalid token type');
+            }
+
+            // Verify user still exists and is active
+            $user = $core->db('mlite_users')->where('id', $payload['sub'])->oneArray();
+            if (!$user) {
+                throw new Exception('User not found');
+            }
+
+            // Generate new Access Token
+            $newPayload = [
+                'iss' => url(),
+                'sub' => $user['id'],
+                'username' => $user['username'],
+                'exp' => time() + (15 * 60) // 15 minutes expiration
+            ];
+            $newToken = \Systems\Lib\Jwt::encode($newPayload, JWT_SECRET);
+
+            header('Content-Type: application/json');
+            echo json_encode([
+                'token' => $newToken,
+                'fullname' => $user['fullname'] ?? $user['username']
+            ]);
+
+        } catch (Exception $e) {
+            // Clear invalid cookie
+            setcookie('refreshToken', '', [
+                'expires' => time() - 3600,
+                'path' => '/',
+                'secure' => true,
+                'httponly' => true,
+                'samesite' => 'Strict'
+            ]);
+            
+            header('Content-Type: application/json');
+            http_response_code(401);
+            echo json_encode(['error' => 'Invalid or expired refresh token']);
         }
         exit;
     }
