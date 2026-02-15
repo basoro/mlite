@@ -717,17 +717,24 @@ class QueryWrapper
         return false;
     }
 
+    /**
+     * Determine whether a column acts as an auto-id under SQLite.
+     * For non-SQLite drivers, we return true early since auto-id is handled by the driver (e.g., MySQL AUTO_INCREMENT).
+     */
     protected function isSqliteAutoId(string $column): bool
     {
-        $driver = static::$db->getAttribute(PDO::ATTR_DRIVER_NAME);
-        if ($driver !== 'sqlite') return true; // MySQL aman
+        $driver = $this->pdo()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+        if ($driver !== 'sqlite') return true; // non-sqlite: nothing special to check here
 
-        $stmt = static::$db->query("PRAGMA table_info({$this->table})");
-        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $col) {
+        // Quote the table identifier for SQLite PRAGMA to avoid issues with special chars
+        $table = str_replace('"', '""', (string) $this->table);
+        $stmt = $this->pdo()->query("PRAGMA table_info(\"{$table}\")");
+
+        foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $col) {
             if (
                 $col['name'] === $column &&
                 stripos($col['type'], 'INTEGER') !== false &&
-                (int)$col['pk'] === 1
+                (int) $col['pk'] === 1
             ) {
                 return true;
             }
