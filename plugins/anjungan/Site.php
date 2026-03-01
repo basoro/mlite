@@ -27,6 +27,9 @@ class Site extends SiteModule
 
     public function routes()
     {
+        // Auth or IP Restriction Check
+        $this->_checkAccess();
+
         $this->route('anjungan', 'getIndex');
         $this->route('anjungan/pasien', 'getDisplayAPM');
         $this->route('anjungan/loket', 'getDisplayAntrianLoket');
@@ -68,6 +71,59 @@ class Site extends SiteModule
         $this->route('anjungan/daftar/(:str)', 'getDaftarBPJS');
         $this->route('anjungan/jadwaloperasi', 'getDisplayJadwalOperasi');
         //$this->route('anjungan/daftar/baru/(:str)', 'getDaftarBPJS');
+    }
+
+    private function _checkAccess()
+    {
+        // 1. Check if user is logged in
+        if (isset($_SESSION['mlite_user'])) {
+            return true;
+        }
+
+        // 2. Check if IP is local/intranet
+        $clientIP = $_SERVER['REMOTE_ADDR'];
+        
+        // Define local/intranet ranges
+        // localhost, 127.0.0.1, ::1
+        // 10.0.0.0 - 10.255.255.255
+        // 172.16.0.0 - 172.31.255.255
+        // 192.168.0.0 - 192.168.255.255
+        
+        $isLocal = false;
+
+        // Check for IPv6 localhost
+        if ($clientIP === '::1') {
+            $isLocal = true;
+        }
+        
+        // Check for IPv4
+        $ipLong = ip2long($clientIP);
+
+        if ($ipLong !== false) {
+            // 127.0.0.0/8
+            if (($ipLong & 0xFF000000) === 0x7F000000) {
+                $isLocal = true;
+            }
+            // 10.0.0.0/8
+            elseif (($ipLong & 0xFF000000) === 0x0A000000) {
+                $isLocal = true;
+            }
+            // 172.16.0.0/12
+            elseif (($ipLong & 0xFFF00000) === 0xAC100000) {
+                $isLocal = true;
+            }
+            // 192.168.0.0/16
+            elseif (($ipLong & 0xFFFF0000) === 0xC0A80000) {
+                $isLocal = true;
+            }
+        }
+
+        if (!$isLocal) {
+            http_response_code(403);
+            die('Access Denied: Only accessible from local intranet or authenticated users.');
+        }
+
+        return true;
     }
 
     public function getIndex()

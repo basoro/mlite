@@ -1883,65 +1883,30 @@ class Admin extends AdminModule
         $status_bayar = $_GET['status_bayar'] ?? '';
 
         $user_id = $this->db('mlite_users')->where('username', $username)->oneArray()['id'];
-        $poliklinik = str_replace(",","','", (string)$this->core->getUserInfo('cap', $user_id, true));
         $igd = $this->settings('settings', 'igd');
 
-        // Base Query
-        if ($tgl_awal > date('Y-m-d')) {
-            $sql = "SELECT booking_registrasi.no_reg, booking_registrasi.jam_booking as jam_reg, 
-                booking_registrasi.no_rkm_medis, booking_registrasi.kd_poli, booking_registrasi.kd_dokter,
-                booking_registrasi.status as stts, 'Belum Bayar' as status_bayar, booking_registrasi.kd_pj,
-                pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab,
-                concat(date_format(booking_registrasi.tanggal_periksa, '%Y/%m/%d'), '/', lpad(booking_registrasi.no_reg, 6, '0')) as no_rawat 
-                FROM booking_registrasi 
-                JOIN pasien ON booking_registrasi.no_rkm_medis = pasien.no_rkm_medis 
-                JOIN dokter ON booking_registrasi.kd_dokter = dokter.kd_dokter 
-                JOIN poliklinik ON booking_registrasi.kd_poli = poliklinik.kd_poli 
-                JOIN penjab ON booking_registrasi.kd_pj = penjab.kd_pj 
-                WHERE booking_registrasi.kd_poli = '$igd' 
-                AND booking_registrasi.tanggal_periksa BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+        $sql = "SELECT reg_periksa.*, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                FROM reg_periksa 
+                JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter 
+                JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+                JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                WHERE reg_periksa.kd_poli = '$igd' 
+                AND reg_periksa.tgl_registrasi BETWEEN '$tgl_awal' AND '$tgl_akhir'";
 
-            if ($this->core->getUserInfo('role', $user_id, true) != 'admin') {
-                $sql .= " AND booking_registrasi.kd_poli IN ('$poliklinik')";
-            }
-            if($status_periksa == 'belum') {
-                $sql .= " AND booking_registrasi.status = 'Belum'";
-            }
-            if($status_periksa == 'selesai') {
-                $sql .= " AND booking_registrasi.status = 'Sudah'";
-            }
+        if($status_periksa == 'belum') {
+            $sql .= " AND reg_periksa.stts = 'Belum'";
+        }
+        if($status_periksa == 'selesai') {
+            $sql .= " AND reg_periksa.stts = 'Sudah'";
+        }
+        if($status_periksa == 'lunas') {
+            $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
+        }
 
-            // Search
-            if (!empty($searchValue)) {
-                $sql .= " AND (booking_registrasi.no_rkm_medis LIKE '%$searchValue%' OR pasien.nm_pasien LIKE '%$searchValue%' OR dokter.nm_dokter LIKE '%$searchValue%' OR poliklinik.nm_poli LIKE '%$searchValue%')";
-            }
-        } else {
-            $sql = "SELECT reg_periksa.*, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
-                    FROM reg_periksa 
-                    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
-                    JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter 
-                    JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
-                    JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
-                    WHERE reg_periksa.kd_poli = '$igd' 
-                    AND reg_periksa.tgl_registrasi BETWEEN '$tgl_awal' AND '$tgl_akhir'";
-
-            if ($this->core->getUserInfo('role', $user_id, true) != 'admin') {
-                $sql .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
-            }
-            if($status_periksa == 'belum') {
-                $sql .= " AND reg_periksa.stts = 'Belum'";
-            }
-            if($status_periksa == 'selesai') {
-                $sql .= " AND reg_periksa.stts = 'Sudah'";
-            }
-            if($status_periksa == 'lunas') {
-                $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
-            }
-
-            // Search
-            if (!empty($searchValue)) {
-                $sql .= " AND (reg_periksa.no_rawat LIKE '%$searchValue%' OR reg_periksa.no_rkm_medis LIKE '%$searchValue%' OR pasien.nm_pasien LIKE '%$searchValue%' OR dokter.nm_dokter LIKE '%$searchValue%' OR poliklinik.nm_poli LIKE '%$searchValue%')";
-            }
+        // Search
+        if (!empty($searchValue)) {
+            $sql .= " AND (reg_periksa.no_rawat LIKE '%$searchValue%' OR reg_periksa.no_rkm_medis LIKE '%$searchValue%' OR pasien.nm_pasien LIKE '%$searchValue%' OR dokter.nm_dokter LIKE '%$searchValue%' OR poliklinik.nm_poli LIKE '%$searchValue%')";
         }
 
         // Count Total (filtered)
