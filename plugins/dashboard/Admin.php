@@ -141,20 +141,27 @@ class Admin extends AdminModule
         $bulan = date('m');
         $tahun = date('Y');
         $hari = date('j');
-        $shift = $_GET['shift'];
+        $shift = $_GET['shift'] ?? '';
 
         $idpeg          = $this->db('barcode')->where('barcode', $barcode)->oneArray();
+        
+        if (!$idpeg) {
+          $this->notify('failure', 'ID Pegawai tidak ditemukan!');
+          echo 'ID Pegawai tidak ditemukan!';
+          exit();
+        }
+
         $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $shift)->oneArray();
 
-        $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h' . $hari, $jam_jaga['shift'])->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
-        $jadwal_tambahan = $this->db('jadwal_tambahan')->where('id', $idpeg['id'])->where('h' . $hari, $jam_jaga['shift'])->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
-        $isFullAbsen = $this->db('rekap_presensi')->where('id', $idpeg['id'])->where('shift', $jam_jaga['shift'])->like('jam_datang', date('Y-m-d') . '%')->oneArray();
+        $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h' . $hari, $jam_jaga['shift'] ?? '')->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
+        $jadwal_tambahan = $this->db('jadwal_tambahan')->where('id', $idpeg['id'])->where('h' . $hari, $jam_jaga['shift'] ?? '')->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
+        $isFullAbsen = $this->db('rekap_presensi')->where('id', $idpeg['id'])->where('shift', $jam_jaga['shift'] ?? '')->like('jam_datang', date('Y-m-d') . '%')->oneArray();
         $isAbsen = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
 
         $set_keterlambatan  = $this->db('set_keterlambatan')->oneArray();
-        $toleransi      = $set_keterlambatan['toleransi'];
-        $terlambat1     = $set_keterlambatan['terlambat1'];
-        $terlambat2     = $set_keterlambatan['terlambat2'];
+        $toleransi      = $set_keterlambatan['toleransi'] ?? 0;
+        $terlambat1     = $set_keterlambatan['terlambat1'] ?? 0;
+        $terlambat2     = $set_keterlambatan['terlambat2'] ?? 0;
 
         $toleransi      = (int)$toleransi;
         $terlambat1     = (int)$terlambat1;
@@ -166,22 +173,25 @@ class Admin extends AdminModule
               if ($jadwal_tambahan) {
                 if (empty($urlnya)) {
                   $this->notify('failure', 'Pilih shift dulu...!!!!');
+                  echo 'Pilih shift dulu...!!!!';
                 } else {
 
                   $status = 'Tepat Waktu';
+                  $jam_masuk = $jam_jaga['jam_masuk'] ?? '00:00:00';
 
-                  if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_jaga['jam_masuk'])) > ($toleransi * 60)) {
+                  if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_masuk)) > ($toleransi * 60)) {
                     $status = 'Terlambat Toleransi';
                   }
-                  if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_jaga['jam_masuk'])) > ($terlambat1 * 60)) {
+                  if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_masuk)) > ($terlambat1 * 60)) {
                     $status = 'Terlambat I';
                   }
-                  if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_jaga['jam_masuk'])) > ($terlambat2 * 60)) {
+                  if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_masuk)) > ($terlambat2 * 60)) {
                     $status = 'Terlambat II';
                   }
 
-                  if (strtotime(date('Y-m-d H:i:s')) - (date('Y-m-d') . $jam_jaga['jam_masuk']) > ($toleransi * 60)) {
-                    $awal  = new \DateTime(date('Y-m-d') . ' ' . $jam_jaga['jam_masuk']);
+                  $keterlambatan = '00:00:00';
+                  if (strtotime(date('Y-m-d H:i:s')) - (date('Y-m-d') . $jam_masuk) > ($toleransi * 60)) {
+                    $awal  = new \DateTime(date('Y-m-d') . ' ' . $jam_masuk);
                     $akhir = new \DateTime();
                     $diff = $akhir->diff($awal, true); // to make the difference to be always positive.
                     if ($awal > $akhir) {
@@ -204,31 +214,36 @@ class Admin extends AdminModule
                     ]);
 
                   if ($insert) {
-                    $this->notify('success', 'Presensi Masuk jam ' . $jam_jaga['jam_masuk'] . ' ' . $status . ' ' . $keterlambatan);
+                    $this->notify('success', 'Presensi Masuk jam ' . $jam_masuk . ' ' . $status . ' ' . $keterlambatan);
+                    echo 'Presensi Masuk jam ' . $jam_masuk . ' ' . $status . ' ' . $keterlambatan;
                   }
                 }
               } else {
                 $this->notify('failure', 'ID Pegawai atau jadwal shift tidak sesuai!');
+                echo 'ID Pegawai atau jadwal shift tidak sesuai!';
               }
             } else {
               if (empty($urlnya)) {
                 $this->notify('failure', 'Pilih shift dulu...!!!!');
+                echo 'Pilih shift dulu...!!!!';
               } else {
 
                 $status = 'Tepat Waktu';
+                $jam_masuk = $jam_jaga['jam_masuk'] ?? '00:00:00';
 
-                if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_jaga['jam_masuk'])) > ($toleransi * 60)) {
+                if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_masuk)) > ($toleransi * 60)) {
                   $status = 'Terlambat Toleransi';
                 }
-                if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_jaga['jam_masuk'])) > ($terlambat1 * 60)) {
+                if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_masuk)) > ($terlambat1 * 60)) {
                   $status = 'Terlambat I';
                 }
-                if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_jaga['jam_masuk'])) > ($terlambat2 * 60)) {
+                if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . $jam_masuk)) > ($terlambat2 * 60)) {
                   $status = 'Terlambat II';
                 }
 
-                if (strtotime(date('Y-m-d H:i:s')) - (date('Y-m-d') . $jam_jaga['jam_masuk']) > ($toleransi * 60)) {
-                  $awal  = new \DateTime(date('Y-m-d') . ' ' . $jam_jaga['jam_masuk']);
+                $keterlambatan = '00:00:00';
+                if (strtotime(date('Y-m-d H:i:s')) - (date('Y-m-d') . $jam_masuk) > ($toleransi * 60)) {
+                  $awal  = new \DateTime(date('Y-m-d') . ' ' . $jam_masuk);
                   $akhir = new \DateTime();
                   $diff = $akhir->diff($awal, true); // to make the difference to be always positive.
                   if ($awal > $akhir) {
@@ -251,17 +266,20 @@ class Admin extends AdminModule
                   ]);
 
                 if ($insert) {
-                  $this->notify('success', 'Presensi Masuk jam ' . $jam_jaga['jam_masuk'] . ' ' . $status . ' ' . $keterlambatan);
+                  $this->notify('success', 'Presensi Masuk jam ' . $jam_masuk . ' ' . $status . ' ' . $keterlambatan);
+                  echo 'Presensi Masuk jam ' . $jam_masuk . ' ' . $status . ' ' . $keterlambatan;
                 }
               }
             }
           } else {
-            if ($jam_jaga['shift'] != $isAbsen['shift']) {
+            if (($jam_jaga['shift'] ?? '') != $isAbsen['shift']) {
               $this->notify('failure', 'ID Pegawai atau jadwal shift tidak sesuai!');
+              echo 'ID Pegawai atau jadwal shift tidak sesuai!';
             } else {
               $jamDatang = substr($isAbsen['jam_datang'], 16);
               if ((strtotime(date('Y-m-d H:i')) - strtotime($jamDatang)) < 2 * 60) {
                 $this->notify('failure', 'Sabar ... Jangan pencet terus');
+                echo 'Sabar ... Jangan pencet terus';
               } else {
                 $status = $isAbsen['status'];
                 $dayShift = date('Y-m-d');
@@ -269,7 +287,8 @@ class Admin extends AdminModule
                   $dayShift = substr($isAbsen['jam_datang'], 10);
                   $dayShift = date('Y-m-d', strtotime($dayShift . ' +1 day'));
                 }
-                if ((strtotime(date('Y-m-d H:i:s')) - strtotime($dayShift . $jam_jaga['jam_pulang'])) < 0) {
+                $jam_pulang = $jam_jaga['jam_pulang'] ?? '00:00:00';
+                if ((strtotime(date('Y-m-d H:i:s')) - strtotime($dayShift . $jam_pulang)) < 0) {
                   $status = $isAbsen['status'] . ' & PSW';
                 }
 
@@ -302,6 +321,7 @@ class Admin extends AdminModule
                     ]);
                   if ($insert) {
                     $this->notify('success', 'Presensi pulang telah disimpan');
+                    echo 'Presensi pulang telah disimpan';
                     $this->db('temporary_presensi')->where('id', $isAbsen['id'])->delete();
                   }
                 }
@@ -310,6 +330,7 @@ class Admin extends AdminModule
           }
         } else {
           $this->notify('failure', 'Anda sudah presensi untuk tanggal ' . date('Y-m-d'));
+          echo 'Anda sudah presensi untuk tanggal ' . date('Y-m-d');
         }
       }
     }
