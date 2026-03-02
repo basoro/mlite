@@ -122,7 +122,99 @@ class Site extends SiteModule
 
         if (!$isLocal) {
             http_response_code(403);
-            die('Access Denied: Only accessible from local intranet or authenticated users.');
+            $logo = $this->settings->get('settings.logo');
+            $instansi = $this->settings->get('settings.nama_instansi');
+            $alamat = $this->settings->get('settings.alamat');
+            $ip = $_SERVER['REMOTE_ADDR'];
+            
+            $html = '<!DOCTYPE html>
+            <html>
+            <head>
+                <title>Access Denied - ' . htmlspecialchars($instansi) . '</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body {
+                        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                        background: #f0f2f5;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                        margin: 0;
+                    }
+                    .container {
+                        background: white;
+                        padding: 40px;
+                        border-radius: 12px;
+                        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                        text-align: center;
+                        max-width: 500px;
+                        width: 90%;
+                    }
+                    .logo {
+                        width: 80px;
+                        height: auto;
+                        margin-bottom: 20px;
+                    }
+                    h1 {
+                        color: #dc3545;
+                        font-size: 24px;
+                        margin-bottom: 10px;
+                    }
+                    p {
+                        color: #6c757d;
+                        line-height: 1.6;
+                        margin-bottom: 20px;
+                    }
+                    .ip-badge {
+                        background: #e9ecef;
+                        padding: 8px 16px;
+                        border-radius: 50px;
+                        font-family: monospace;
+                        font-weight: bold;
+                        color: #495057;
+                        display: inline-block;
+                        margin-bottom: 20px;
+                    }
+                    .footer {
+                        margin-top: 30px;
+                        font-size: 12px;
+                        color: #adb5bd;
+                        border-top: 1px solid #eee;
+                        padding-top: 20px;
+                    }
+                    .btn {
+                        display: inline-block;
+                        background: #0d6efd;
+                        color: white;
+                        padding: 10px 20px;
+                        text-decoration: none;
+                        border-radius: 6px;
+                        transition: background 0.3s;
+                    }
+                    .btn:hover {
+                        background: #0b5ed7;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    ' . ($logo ? '<img src="' . url($logo) . '" alt="Logo" class="logo">' : '') . '
+                    <h1>Akses Ditolak</h1>
+                    <div class="ip-badge">IP Anda: ' . htmlspecialchars($ip) . '</div>
+                    <p>
+                        Maaf, halaman Anjungan hanya dapat diakses melalui jaringan lokal (Intranet) Rumah Sakit atau oleh pengguna yang telah terautentikasi.
+                    </p>
+                    <a href="' . url(ADMIN.'/login') . '" class="btn">Login Disini</a>
+                    <div class="footer">
+                        &copy; ' . date('Y') . ' ' . htmlspecialchars($instansi) . '<br>
+                        ' . htmlspecialchars($alamat) . '
+                    </div>
+                </div>
+            </body>
+            </html>';
+            
+            die($html);
         }
 
         return true;
