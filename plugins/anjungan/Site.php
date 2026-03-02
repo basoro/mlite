@@ -27,6 +27,10 @@ class Site extends SiteModule
 
     public function routes()
     {
+        // Auth or IP Restriction Check
+        if (strpos($_SERVER['REQUEST_URI'], '/anjungan') !== false) {
+            $this->_checkAccess();
+        }
 
         $this->route('anjungan', 'getIndex');
         $this->route('anjungan/pasien', 'getDisplayAPM');
@@ -126,18 +130,12 @@ class Site extends SiteModule
 
     public function getIndex()
     {
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-
         echo $this->draw('index.html', ['test' => 'Opo iki']);
         exit();
     }
 
     public function getDisplayAPM()
     {
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $poliklinik = $this->db('poliklinik')->where('status', '1')->toArray();
@@ -180,8 +178,6 @@ class Site extends SiteModule
 
     public function getAksiLoket()
     {
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
       switch (isset($_GET['act'])) {
         case 'reseta':
           if (!isset($_GET['antrian'])){
@@ -411,9 +407,6 @@ class Site extends SiteModule
 
     public function getDisplayAntrianPoli()
     {
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $display = $this->_resultDisplayAntrianPoli();
@@ -541,9 +534,6 @@ class Site extends SiteModule
 
     public function getDisplayAntrianPoliKode()
     {
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $slug = parseURL();
@@ -604,9 +594,6 @@ class Site extends SiteModule
     /* Sumbangan Mbak Kiki Sagira RS Bhayangkara Makassar */
     public function getDisplayAntrianPoliKodex()
     {
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $slug = parseURL();
@@ -666,9 +653,6 @@ class Site extends SiteModule
 
     public function getDisplayAntrianPoliSatu()
     {
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $display = $this->_resultDisplayAntrianPoliKodeSatu();
@@ -802,9 +786,6 @@ class Site extends SiteModule
 
     public function getDisplayAntrianPoliDua()
     {
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $display = $this->_resultDisplayAntrianPoliKodeDua();
@@ -936,9 +917,6 @@ class Site extends SiteModule
 
     public function getDisplayAntrianPoliTiga()
     {
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $display = $this->_resultDisplayAntrianPoliKodeTiga();
@@ -1071,9 +1049,6 @@ class Site extends SiteModule
 
     public function getDisplayAntrianPoliDisplay()
     {
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $display = $this->_resultDisplayAntrianPoliKodeDisplay();
@@ -1212,9 +1187,6 @@ class Site extends SiteModule
 
     public function getDisplayAntrianLoket()
     {
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-
         $title = 'Display Antrian Loket';
         $logo  = $this->settings->get('settings.logo');
         $display = '';
@@ -1254,9 +1226,6 @@ class Site extends SiteModule
 
     public function getDisplayAntrianLoket2()
     {
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-
       $title = 'Display Antrian Loket';
       $logo  = $this->settings->get('settings.logo');
       $display = '';
@@ -1298,9 +1267,6 @@ class Site extends SiteModule
 
     public function getDisplayAntrianLaboratorium()
     {
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-
         $logo  = $this->settings->get('settings.logo');
         $title = 'Display Antrian Laboratorium';
         $display = $this->_resultDisplayAntrianLaboratorium();
@@ -1365,9 +1331,6 @@ class Site extends SiteModule
 
     public function getDisplayAntrianApotek()
     {
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-
         $logo  = $this->settings->get('settings.logo');
         $title = 'Display Antrian Apotek';
         $display = $this->_resultDisplayAntrianApotek();
@@ -1466,49 +1429,43 @@ class Site extends SiteModule
 
     public function getDisplayAntrianApotekAmbil()
     {
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
+          $logo  = $this->settings->get('settings.logo');
+          $title = 'Display Antrian Farmasi';
+          $display = '';
 
-        $logo  = $this->settings->get('settings.logo');
-        $title = 'Display Antrian Farmasi';
-        $display = '';
+          $_username = '';
+          if(isset($_SESSION['mlite_user'])) {
+            $_username = $this->core->getUserInfo('fullname', null, true);
+          }
+          $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+          $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
 
-        $_username = '';
-        if(isset($_SESSION['mlite_user'])) {
-          $_username = $this->core->getUserInfo('fullname', null, true);
-        }
-        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+          $content = $this->draw('display.antrian.apotek.ambil.html', [
+            'logo' => $logo,
+            'title' => $title,
+            'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
+            'username' => $username,
+            'vidio' => $this->settings->get('anjungan.vidio'),
+            'tanggal' => $tanggal,
+            'running_text' => $this->settings->get('anjungan.text_farmasi'),
+            'display' => $display
+          ]);
 
-        $content = $this->draw('display.antrian.apotek.ambil.html', [
-          'logo' => $logo,
-          'title' => $title,
-          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
-          'username' => $username,
-          'vidio' => $this->settings->get('anjungan.vidio'),
-          'tanggal' => $tanggal,
-          'running_text' => $this->settings->get('anjungan.text_farmasi'),
-          'display' => $display
-        ]);
+          $assign = [
+              'title' => $this->settings->get('settings.nama_instansi'),
+              'desc' => $this->settings->get('settings.alamat'),
+              'content' => $content
+          ];
 
-        $assign = [
-            'title' => $this->settings->get('settings.nama_instansi'),
-            'desc' => $this->settings->get('settings.alamat'),
-            'content' => $content
-        ];
+          $this->setTemplate("canvas.html");
 
-        $this->setTemplate("canvas.html");
-
-        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+          $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
 
           //exit();
     }
 
     public function getDisplayJadwalOperasi()
     {
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-
       $logo  = $this->settings->get('settings.logo');
       $title = 'Display Jadwal Operasi';
       $display = $this->_resultDisplayJadwalOperasi();
@@ -1599,9 +1556,6 @@ class Site extends SiteModule
 
     public function getPanggilAntrian()
     {
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-
       $res = [];
 
       $date = date('Y-m-d');
@@ -1656,9 +1610,6 @@ class Site extends SiteModule
 
     public function getPanggilSelesai()
     {
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-      
       if(!isset($_GET['id']) || $_GET['id'] == '') die(json_encode(array('status' => false)));
       $kode  = $_GET['id'];
       $query = $this->db('mlite_antrian_loket')->where('kd', $kode)->update('status', 2);
@@ -1680,10 +1631,6 @@ class Site extends SiteModule
 
     public function getSetPanggil()
     {
-
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-
       if(!isset($_GET['type']) || $_GET['type'] == '') die(json_encode(array('status' => false,'message' => 'Gagal Type')));
       $type = 'CS';
       if($_GET['type'] == 'loket') {
@@ -1714,10 +1661,6 @@ class Site extends SiteModule
 
     public function getSimpanNoRM()
     {
-
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-
       if(!isset($_GET['no_rkm_medis']) || $_GET['no_rkm_medis'] == '') die(json_encode(array('status' => false,'message' => 'Gagal! No RM Kosong')));
       if(!isset($_GET['type']) || $_GET['type'] == '') die(json_encode(array('status' => false,'message' => 'Gagal! Type antrian salah')));
       if(!isset($_GET['noantrian']) || $_GET['noantrian'] == '') die(json_encode(array('status' => false,'message' => 'Gagal! nomor antrian kosong')));
@@ -1770,9 +1713,6 @@ class Site extends SiteModule
 
     public function getAjax()
     {
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-
       $show = isset($_GET['show']) ? $_GET['show'] : "";
       switch($show){
        default:
@@ -2298,9 +2238,6 @@ class Site extends SiteModule
     public function getPresensi()
     {
 
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-      
       $title = 'Presensi Pegawai';
       $logo  = $this->settings->get('settings.logo');
       $wallpaper  = $this->settings->get('settings.wallpaper');
@@ -2334,9 +2271,6 @@ class Site extends SiteModule
     public function getGeolocation()
     {
 
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-
       $idpeg = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
 
       if(isset($_GET['lat'], $_GET['lng'])) {
@@ -2356,10 +2290,6 @@ class Site extends SiteModule
 
     public function getUpload()
     {
-
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-
       if ($photo = isset_or($_FILES['webcam']['tmp_name'], false)) {
           $img = new \Systems\Lib\Image;
           if ($img->load($photo)) {
@@ -2496,10 +2426,6 @@ class Site extends SiteModule
 
     public function getDisplayBed()
     {
-
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-
         $title = 'Display Bed Management';
         $logo  = $this->settings->get('settings.logo');
         $display = $this->_resultDisplayBed();
@@ -2578,10 +2504,6 @@ class Site extends SiteModule
 
     public function getSepMandiri()
     {
-
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-
         $title = 'Display SEP Mandiri';
         $logo  = $this->settings->get('settings.logo');
 
@@ -2617,10 +2539,6 @@ class Site extends SiteModule
 
     public function getSepMandiriCek()
     {
-
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-
       if(isset($_POST['cekrm']) && isset($_POST['no_rkm_medis']) && $_POST['no_rkm_medis'] !='') {
         $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
         redirect(url('anjungan/sep/'.$pasien['no_peserta'].'/'.$_POST['no_rkm_medis']));
@@ -2632,9 +2550,6 @@ class Site extends SiteModule
 
     public function getSepMandiriNokaNorm()
     {
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-
       $dateNow = date('Y-m-d');
       date_default_timezone_set('UTC');
       $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
@@ -2734,9 +2649,6 @@ class Site extends SiteModule
 
     public function getSepMandiriBikin()
     {
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-
       date_default_timezone_set('UTC');
       $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
       $key = $this->consid.$this->secretkey.$tStamp;
@@ -2903,9 +2815,6 @@ class Site extends SiteModule
 
     public function postSaveSEP()
     {
-        // Auth or IP Restriction Check
-        $this->_checkAccess();  
-
         date_default_timezone_set('UTC');
         $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
         $key = $this->consid.$this->secretkey.$tStamp;
@@ -3228,10 +3137,6 @@ class Site extends SiteModule
 
     public function getCetakSEP()
     {
-
-        // Auth or IP Restriction Check
-        $this->_checkAccess();
-        
         $slug = parseURL();
         $no_sep = $slug[3];
         $settings = $this->settings('settings');
@@ -3332,10 +3237,6 @@ class Site extends SiteModule
 
     public function getDisplayCheckin($referensi)
     {
-
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-      
       $title = 'Display Antrian Poliklinik';
       $logo  = $this->settings->get('settings.logo');
 
@@ -3464,10 +3365,6 @@ class Site extends SiteModule
 
     public function getDaftarBPJS($nik)
     {
-
-      // Auth or IP Restriction Check
-      $this->_checkAccess();
-      
       $title = 'Display Antrian Poliklinik';
       $logo  = $this->settings->get('settings.logo');
 

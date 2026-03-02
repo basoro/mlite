@@ -283,7 +283,7 @@
       switch (code) {
         case GeolocationPositionError.TIMEOUT:
           // Handle timeout.
-          alert('Koneksi Terputus')
+          alert('Gagal mendapatkan lokasi (Timeout). Pastikan GPS aktif dan sinyal bagus.')
           break;
         case GeolocationPositionError.PERMISSION_DENIED:
           // User denied the request.
@@ -295,7 +295,7 @@
           break;
       }
     },
-    {timeout: 5000 , maximumAge: 0});
+    {timeout: 10000 , maximumAge: 0});
   }
   {/if}
 
