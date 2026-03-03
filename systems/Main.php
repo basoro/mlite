@@ -94,8 +94,12 @@ abstract class Main
             mkdir(UPLOADS."/radiologi", 0777);
         }
         
-        copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
-        copy(THEMES.'/admin/img/wallpaper.jpg', UPLOADS.'/settings/wallpaper.jpg');
+        if (!file_exists(UPLOADS.'/settings/logo.png')) {
+            copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
+        }
+        if (!file_exists(UPLOADS.'/settings/wallpaper.jpg')) {
+            copy(THEMES.'/admin/img/wallpaper.jpg', UPLOADS.'/settings/wallpaper.jpg');
+        }
 
         $this->settings = new Settings($this);
         date_default_timezone_set($this->settings->get('settings.timezone'));
