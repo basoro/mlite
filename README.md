@@ -42,7 +42,7 @@ $ composer create-project basoro/mlite
 
 2. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
 
-3. Sesuaikan pengaturan di config.php
+3. Sesuaikan pengaturan di .env
 
 4. Buat database baru di MySQL/MariaDB dan import file `mlite_db.sql`
 
@@ -62,7 +62,7 @@ $ composer install
 
 4. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
 
-5. Sesuaikan pengaturan di config.php
+5. Sesuaikan pengaturan di .env
 
 6. Buat database baru di MySQL/MariaDB dan import file `mlite_db.sql` (tambahkan sql-mode = '' pada my.cnf atau jalankan perintah berikut)
 
@@ -80,7 +80,7 @@ $ sed -i "/user=mysql/a sql-mode = ''" /etc/my.cnf
 ```
 $ git clone https://github.com/basoro/mlite.git
 ```
-Sesuaikan port di bagian Nginx Service dan MySQL Service dari default ke port yang anda inginkan (atau biarkan defautl saja). 
+Sesuaikan environment variable di .env seperti port APP dan MySQL dari default ke port yang anda inginkan (atau biarkan defautl saja). 
 
 2. Jalankan perintah docker-compose
 ```
