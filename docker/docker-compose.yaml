@@ -1,0 +1,59 @@
+version: "3"
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    image: nginx:alpine
+    ports:
+      - ${APP_PORT}:80
+    networks:
+      - internal
+    volumes:
+      - ../:/var/www/html/
+      - ./logs/nginx:/var/log/nginx/
+    depends_on:
+      - php      
+  
+  php:
+    image: php:8.3-fpm-alpine
+    user: root
+    build:
+      context: .
+      dockerfile: php.Dockerfile
+    networks:
+      - internal
+    environment:
+      - DBDRIVER=${DB_DRIVER}
+      - MYSQLHOST=${DB_HOST}
+      - MYSQLPORT=${DB_PORT}
+      - MYSQLUSER=${DB_USERNAME}
+      - MYSQLPASSWORD=${DB_PASSWORD}
+      - MYSQLDATABASE=${DB_DATABASE}
+    volumes:
+      - ../:/var/www/html/
+    depends_on:
+      - mysql
+    command: sh -c "mkdir -p /var/www/html/uploads /var/www/html/tmp /var/www/html/admin/tmp && chmod -R 777 /var/www/html/uploads /var/www/html/tmp /var/www/html/admin/tmp && php-fpm"
+  
+  mysql:
+    image: mysql:8.0
+    restart: always 
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${DB_EXTERNAL_PORT}:3306
+    expose:
+      - 3306
+    networks:
+      - internal
+    volumes:
+      - ./mysql:/var/lib/mysql  
+      - ../mlite_db.sql:/docker-entrypoint-initdb.d/init.sql
+
+networks:
+  internal:
+    driver: bridge
