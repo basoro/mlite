@@ -2628,96 +2628,117 @@ class Admin extends AdminModule
 
   function getAddAntrian($no_rkm_medis, $no_rawat, $nomor_rujukan,  $jenis_kunjungan) {
 
-    $date = date('Y-m-d');
-    $time = date('H:i:s');
-    $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+    try {
+        if (empty($no_rkm_medis) || empty($no_rawat) || empty($nomor_rujukan) || empty($jenis_kunjungan)) {
+            throw new \Exception("Parameter tidak lengkap.");
+        }
 
-    $day = array(
-      'Sun' => 'AKHAD',
-      'Mon' => 'SENIN',
-      'Tue' => 'SELASA',
-      'Wed' => 'RABU',
-      'Thu' => 'KAMIS',
-      'Fri' => 'JUMAT',
-      'Sat' => 'SABTU'
-    );
-    $hari=$day[$tentukan_hari];
+        $date = date('Y-m-d');
+        $time = date('H:i:s');
+        $tentukan_hari=date('D',strtotime(date('Y-m-d')));
 
-    $reg_periksa = $this->db('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
-    $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
-    $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
-    $jadwaldokter = $this->db('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[$tentukan_hari];
 
-    $no_urut_reg = substr($reg_periksa['no_reg'], 0, 3);
-    $minutes = $no_urut_reg * 10;
-    $cek_kuota['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
+        $reg_periksa = $this->db('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+        if (!$reg_periksa) {
+            throw new \Exception("Data registrasi tidak ditemukan.");
+        }
 
-    $kodebooking = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($reg_periksa['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
+        $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
+        $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
+        $jadwaldokter = $this->db('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
 
-    $nomorreferensi = $nomor_rujukan;
+        if (!$maping_dokter_dpjpvclaim || !$maping_poli_bpjs || !$jadwaldokter) {
+            throw new \Exception("Data mapping dokter/poli atau jadwal tidak lengkap.");
+        }
 
-    $data = [
-        'kodebooking' => $kodebooking,
-        'jenispasien' => 'JKN',
-        'nomorkartu' => $this->core->getPasienInfo('no_peserta', $no_rkm_medis),
-        'nik' => $this->core->getPasienInfo('no_ktp', $no_rkm_medis),
-        'nohp' => $this->core->getPasienInfo('no_tlp', $no_rkm_medis),
-        'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
-        'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
-        'pasienbaru' => '0',
-        'norm' => $no_rkm_medis,
-        'tanggalperiksa' => $date,
-        'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
-        'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
-        'jampraktek' => substr($jadwaldokter['jam_mulai'],0,5).'-'.substr($jadwaldokter['jam_selesai'],0,5),
-        'jeniskunjungan' => $jenis_kunjungan,
-        'nomorreferensi' => $nomorreferensi,
-        'nomorantrean' => $maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
-        'angkaantrean' => $reg_periksa['no_reg'],
-        'estimasidilayani' => strtotime($reg_periksa['tgl_registrasi'].' '.$cek_kuota['jam_mulai']) * 1000,
-        'sisakuotajkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
-        'kuotajkn' => intval($jadwaldokter['kuota']),
-        'sisakuotanonjkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
-        'kuotanonjkn' => intval($jadwaldokter['kuota']),
-        'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
-    ];
-    $request = json_encode($data, JSON_PRETTY_PRINT);
-    $data = json_encode($data);
+        $no_urut_reg = substr($reg_periksa['no_reg'], 0, 3);
+        $minutes = $no_urut_reg * 10;
+        $cek_kuota['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
 
-    date_default_timezone_set('UTC');
-    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
-    $key = $this->settings->get('jkn_mobile.BpjsConsID') . $this->settings->get('jkn_mobile.BpjsSecretKey') . $tStamp;
+        $kodebooking = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($reg_periksa['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
 
-    $url = $this->settings->get('jkn_mobile.BpjsAntrianUrl').'antrean/add';
-    $output = BpjsService::post($url, $data, $this->settings->get('jkn_mobile.BpjsConsID'), $this->settings->get('jkn_mobile.BpjsSecretKey'), $this->settings->get('jkn_mobile.BpjsUserKey'), NULL);
-    $data = json_decode($output, true);
-    $response = json_encode($data, JSON_PRETTY_PRINT);
-    if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208) {
-      $this->db('mlite_antrian_referensi')->save([
-          'tanggal_periksa' => $date,
-          'no_rkm_medis' => $no_rkm_medis,
-          'nomor_kartu' => $this->core->getPasienInfo('no_peserta', $no_rkm_medis),
-          'nomor_referensi' => $nomorreferensi,
-          'kodebooking' => $kodebooking,
-          'jenis_kunjungan' => $jenis_kunjungan,
-          'status_kirim' => 'Sudah',
-          'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
-      ]);
-      $status = 'Antrian telah dikirim';
-    } else if ($data == null) {
-      $this->db('mlite_antrian_referensi')->save([
-        'tanggal_periksa' => $date,
-        'no_rkm_medis' => $no_rkm_medis,
-        'nomor_kartu' => $this->core->getPasienInfo('no_peserta', $no_rkm_medis),
-        'nomor_referensi' => $nomorreferensi,
-        'kodebooking' => $kodebooking,
-        'jenis_kunjungan' => $jenis_kunjungan,
-        'status_kirim' => 'Sudah',
-        'keterangan' => $data['metadata']['code'].' null : null '.$data['metadata']['message']
-      ]);
-      $status = 'Antrian telah dikirim';
-    } else {
-      $status = 'Gagal kirim antrian';
+        $nomorreferensi = $nomor_rujukan;
+
+        $data = [
+            'kodebooking' => $kodebooking,
+            'jenispasien' => 'JKN',
+            'nomorkartu' => $this->core->getPasienInfo('no_peserta', $no_rkm_medis),
+            'nik' => $this->core->getPasienInfo('no_ktp', $no_rkm_medis),
+            'nohp' => $this->core->getPasienInfo('no_tlp', $no_rkm_medis),
+            'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
+            'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
+            'pasienbaru' => '0',
+            'norm' => $no_rkm_medis,
+            'tanggalperiksa' => $date,
+            'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
+            'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
+            'jampraktek' => substr($jadwaldokter['jam_mulai'],0,5).'-'.substr($jadwaldokter['jam_selesai'],0,5),
+            'jeniskunjungan' => $jenis_kunjungan,
+            'nomorreferensi' => $nomorreferensi,
+            'nomorantrean' => $maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
+            'angkaantrean' => $reg_periksa['no_reg'],
+            'estimasidilayani' => strtotime($reg_periksa['tgl_registrasi'].' '.$cek_kuota['jam_mulai']) * 1000,
+            'sisakuotajkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+            'kuotajkn' => intval($jadwaldokter['kuota']),
+            'sisakuotanonjkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+            'kuotanonjkn' => intval($jadwaldokter['kuota']),
+            'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
+        ];
+        $request = json_encode($data, JSON_PRETTY_PRINT);
+        $data = json_encode($data);
+
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->settings->get('jkn_mobile.BpjsConsID') . $this->settings->get('jkn_mobile.BpjsSecretKey') . $tStamp;
+
+        $url = $this->settings->get('jkn_mobile.BpjsAntrianUrl').'antrean/add';
+        $output = BpjsService::post($url, $data, $this->settings->get('jkn_mobile.BpjsConsID'), $this->settings->get('jkn_mobile.BpjsSecretKey'), $this->settings->get('jkn_mobile.BpjsUserKey'), NULL);
+        $data = json_decode($output, true);
+        $response = json_encode($data, JSON_PRETTY_PRINT);
+        
+        if(isset($data['metadata']['code']) && ($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208)) {
+          $this->db('mlite_antrian_referensi')->save([
+              'tanggal_periksa' => $date,
+              'no_rkm_medis' => $no_rkm_medis,
+              'nomor_kartu' => $this->core->getPasienInfo('no_peserta', $no_rkm_medis),
+              'nomor_referensi' => $nomorreferensi,
+              'kodebooking' => $kodebooking,
+              'jenis_kunjungan' => $jenis_kunjungan,
+              'status_kirim' => 'Sudah',
+              'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
+          ]);
+          $status = 'Antrian telah dikirim';
+        } else if ($data == null) {
+          // Log null response but consider as sent? Maybe should be 'Gagal'
+          $this->db('mlite_antrian_referensi')->save([
+            'tanggal_periksa' => $date,
+            'no_rkm_medis' => $no_rkm_medis,
+            'nomor_kartu' => $this->core->getPasienInfo('no_peserta', $no_rkm_medis),
+            'nomor_referensi' => $nomorreferensi,
+            'kodebooking' => $kodebooking,
+            'jenis_kunjungan' => $jenis_kunjungan,
+            'status_kirim' => 'Sudah',
+            'keterangan' => 'Response null'
+          ]);
+          $status = 'Antrian telah dikirim (Response Null)';
+        } else {
+          $status = 'Gagal kirim antrian: ' . (isset($data['metadata']['message']) ? $data['metadata']['message'] : 'Unknown error');
+        }
+
+    } catch (\Exception $e) {
+        $status = 'Error: ' . $e->getMessage();
+        $request = isset($request) ? $request : '';
+        $response = isset($response) ? $response : json_encode(['error' => $e->getMessage()]);
     }
 
     echo $this->draw('add.antrian.html', ['request' => $request, 'response' => $response, 'status' => $status]);
@@ -2767,28 +2788,28 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Sep/persetujuanSEP/list/bulan/' . $bln_aproval . '/tahun/' . $tahun_aproval;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
-    $code = $json['metaData']['code'];
-    $message = $json['metaData']['message'];
-    $stringDecrypt = stringDecrypt($key, $json['response']);
-    $decompress = '""';
-    if (!empty($stringDecrypt)) {
-      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
-    }
-    if ($json != null) {
-      echo '{
-          	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
-          	},
-          	"response": ' . $decompress . '}';
+    
+    if ($json && isset($json['metaData'])) {
+        $code = $json['metaData']['code'];
+        $message = $json['metaData']['message'];
+        $stringDecrypt = stringDecrypt($key, $json['response']);
+        $decompress = '""';
+        if (!empty($stringDecrypt)) {
+          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+        }
+        echo '{
+            "metaData": {
+                "code": "' . $code . '",
+                "message": "' . $message . '"
+            },
+            "response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+        echo '{
+            "metaData": {
+                "code": "5000",
+                "message": "ERROR"
+            },
+            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -2825,29 +2846,31 @@ class Admin extends AdminModule
     $data = json_decode($output, true);
     // echo $data;
     print_r($output);
-    $code = $data['metaData']['code'];
-    $message = $data['metaData']['message'];
-    $stringDecrypt = stringDecrypt($key, $data['response']);
-    $decompress = '""';
-    if (!empty($stringDecrypt)) {
-      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
-    }
-    if ($data != null) {
-      $data = '{
-          "metaData": {
-            "code": "' . $code . '",
-            "message": "' . $message . '"
-          },
-          "response": ' . $decompress . '}';
-      $data = json_decode($data, true);
+    
+    if ($data && isset($data['metaData'])) {
+        $code = $data['metaData']['code'];
+        $message = $data['metaData']['message'];
+        $stringDecrypt = stringDecrypt($key, $data['response']);
+        $decompress = '""';
+        if (!empty($stringDecrypt)) {
+          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+        }
+        $data = '{
+            "metaData": {
+              "code": "' . $code . '",
+              "message": "' . $message . '"
+            },
+            "response": ' . $decompress . '}';
+        $data = json_decode($data, true);
     } else {
-      $data = '{
-          "metaData": {
-            "code": "5000",
-            "message": "ERROR"
-          },
-          "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      $data = json_decode($data, true);
+        $code = "5000"; // Default error code
+        $data = '{
+            "metaData": {
+              "code": "5000",
+              "message": "ERROR"
+            },
+            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+        $data = json_decode($data, true);
     }
     if ($code == 200) {
       $request = [
@@ -2874,29 +2897,30 @@ class Admin extends AdminModule
       $data = json_decode($output, true);
       // echo $data;
       print_r($output);
-      $code = $data['metaData']['code'];
-      $message = $data['metaData']['message'];
-      $stringDecrypt = stringDecrypt($key, $data['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
-      }
-      if ($data != null) {
-        $data = '{
-            "metaData": {
-              "code": "' . $code . '",
-              "message": "' . $message . '"
-            },
-            "response": ' . $decompress . '}';
-        $data = json_decode($data, true);
+      
+      if ($data && isset($data['metaData'])) {
+          $code = $data['metaData']['code'];
+          $message = $data['metaData']['message'];
+          $stringDecrypt = stringDecrypt($key, $data['response']);
+          $decompress = '""';
+          if (!empty($stringDecrypt)) {
+            $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+          }
+          $data = '{
+              "metaData": {
+                "code": "' . $code . '",
+                "message": "' . $message . '"
+              },
+              "response": ' . $decompress . '}';
+          $data = json_decode($data, true);
       } else {
-        $data = '{
-            "metaData": {
-              "code": "5000",
-              "message": "ERROR"
-            },
-            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-        $data = json_decode($data, true);
+          $data = '{
+              "metaData": {
+                "code": "5000",
+                "message": "ERROR"
+              },
+              "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+          $data = json_decode($data, true);
       }
     }
     exit();
@@ -3080,7 +3104,7 @@ class Admin extends AdminModule
       ->where('bridging_sep.no_kartu', $no_kartu)
       ->toArray();
     $sep = $this->db('bridging_sep')->where('no_kartu',$no_kartu)->desc('tglsep')->oneArray();
-    $this->tpl->set('no_sep',$sep['no_sep']);
+    $this->tpl->set('no_sep', isset($sep['no_sep']) ? $sep['no_sep'] : '');
     $this->tpl->set('kontrol', $this->tpl->noParse_array(htmlspecialchars_array($bridging_surat_kontrol_bpjs)));
     $this->tpl->set('maping_dokter_dpjpvclaim', $this->tpl->noParse_array(htmlspecialchars_array($maping_dokter_dpjpvclaim)));
     $this->tpl->set('maping_poli_bpjs', $this->tpl->noParse_array(htmlspecialchars_array($maping_poli_bpjs)));
@@ -3346,9 +3370,9 @@ class Admin extends AdminModule
     $alamat = $this->core->getPasienInfo('alamat', $reg);
     $this->tpl->set('no_kartu', $no_kartu);
     $this->tpl->set('alamat', $alamat);
-    $this->tpl->set('no_sep', $rujuk_keluar['no_sep']);
-    $this->tpl->set('kddpjp', $rujuk_keluar['kddpjp']);
-    $this->tpl->set('nmdpjp', $rujuk_keluar['nmdpdjp']);
+    $this->tpl->set('no_sep', isset($rujuk_keluar['no_sep']) ? $rujuk_keluar['no_sep'] : '');
+    $this->tpl->set('kddpjp', isset($rujuk_keluar['kddpjp']) ? $rujuk_keluar['kddpjp'] : '');
+    $this->tpl->set('nmdpjp', isset($rujuk_keluar['nmdpdjp']) ? $rujuk_keluar['nmdpdjp'] : '');
     echo $this->draw('srb.html');
     exit();
   }

@@ -282,7 +282,8 @@ function bersih(){
   $('input:text[name=pekerjaan]').val("");
   $('input:text[name=no_ktp]').val("");
   $('textarea[name=alamat]').val("");
-  $('input:text[name=telepon]').val("");
+  $('input:text[name=no_tlp]').val("");
+  $('input:text[name=no_peserta]').val("");
   $('#tgl_daftar').val("");
   $('#email').val("");
   $('select').selectator('destroy');

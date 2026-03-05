@@ -5,102 +5,100 @@
 </div>
 <div class="modal-body">
   <div id="form_rujuk">
-    <div class="col-md-12">
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <div class="row clearfix">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label>Nomor SEP</label>
-                <input type="text" name="no_sep" id="no_sep" class="form-control" />
-                <input type="text" style="display: none;" name="no_surkon" id="no_surkon" class="form-control" />
-              </div>
-            </div>
-            <div class="col-md-12">
-              <div class="form-group">
-                <label>Catatan Rujuk</label>
-                <input type="text" name="catatan" id="catatan" class="form-control" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="" class="">Poli Rujukan</label>
-                <input type="text" name="sep_spesialis_nama" id="sep_spesialis_nama_rujuk" class="form-control" value="">
-                <ul class="list-group" id="poliListRujuk" style="z-index:1000;position:absolute;width:100%;"></ul>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="" class="">Kode</label>
-                <input type="text" name="sep_spesialis_kode" id="sep_spesialis_kode_rujuk" class="form-control" value="">
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Tipe Rujukan</label>
-                <select class="form-control" name="tipe_rujuk" id="tipe_rujuk" data-use-search="true">
-                  <option value="0. Penuh">Penuh</option>
-                  <option value="1. Partial">Partial</option>
-                  <option value="2. Rujuk Balik">Balik PRB</option>
-                </select>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Jenis Rujukan</label>
-                <select class="form-control" name="jns_rujuk" id="jns_rujuk" data-use-search="true">
-                  <option value="1">Rawat Inap</option>
-                  <option value="2" selected>Rawat Jalan</option>
-                </select>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Tanggal Rujukan</label>
-                <input type="text" name="tanggal_rujukan" id="tanggal_rujukan" class="form-control tanggal"
-                  value="{?=date('Y-m-d')?}" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Tanggal Rencana Rujukan</label>
-                <input type="text" name="tanggal_datang" id="tanggal_datang" class="form-control tanggal" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="" class="">PPK Rujukan</label>
-                <input type="text" name="sep_asal_rujukan_nama" id="sep_asal_rujukan_nama_rujuk" class="form-control"
-                  value="">
-                <ul class="list-group" id="faskesListRujuk" style="z-index:1000;position:absolute;width:100%;"></ul>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="" class="">Kode</label>
-                <input type="text" name="sep_asal_rujukan_kode" id="sep_asal_rujukan_kode_rujuk" class="form-control"
-                  value="">
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="" class="">Diagnosa</label>
-                <input type="text" name="sep_diagnosa_nama" id="sep_diagnosa_nama_rujuk" class="form-control" value="">
-                <ul class="list-group" id="diagnosaListRujuk" style="z-index:1000;position:absolute;width:100%;"></ul>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="" class="">Kode</label>
-                <input type="text" name="sep_diagnosa_kode" id="sep_diagnosa_kode_rujuk" class="form-control" value="">
-              </div>
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="row clearfix">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Nomor SEP</label>
+              <input type="text" name="no_sep" id="no_sep" class="form-control" />
+              <input type="text" style="display: none;" name="no_surkon" id="no_surkon" class="form-control" />
             </div>
           </div>
-          <div class="row clearfix">
-            <div class="col-md-12">
-              <button type="button" class="btn btn-primary" id="simpan_rujuk">Simpan</button>
-              <button type="button" class="btn btn-danger" id="hapus_rujuk">Hapus</button>
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Catatan Rujuk</label>
+              <input type="text" name="catatan" id="catatan" class="form-control" />
             </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="" class="">Poli Rujukan</label>
+              <input type="text" name="sep_spesialis_nama" id="sep_spesialis_nama_rujuk" class="form-control" value="">
+              <ul class="list-group" id="poliListRujuk" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="" class="">Kode</label>
+              <input type="text" name="sep_spesialis_kode" id="sep_spesialis_kode_rujuk" class="form-control" value="">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Tipe Rujukan</label>
+              <select class="form-control" name="tipe_rujuk" id="tipe_rujuk" data-use-search="true">
+                <option value="0. Penuh">Penuh</option>
+                <option value="1. Partial">Partial</option>
+                <option value="2. Rujuk Balik">Balik PRB</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Jenis Rujukan</label>
+              <select class="form-control" name="jns_rujuk" id="jns_rujuk" data-use-search="true">
+                <option value="1">Rawat Inap</option>
+                <option value="2" selected>Rawat Jalan</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Tanggal Rujukan</label>
+              <input type="text" name="tanggal_rujukan" id="tanggal_rujukan" class="form-control tanggal"
+                value="{?=date('Y-m-d')?}" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Tanggal Rencana Rujukan</label>
+              <input type="text" name="tanggal_datang" id="tanggal_datang" class="form-control tanggal" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="" class="">PPK Rujukan</label>
+              <input type="text" name="sep_asal_rujukan_nama" id="sep_asal_rujukan_nama_rujuk" class="form-control"
+                value="">
+              <ul class="list-group" id="faskesListRujuk" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="" class="">Kode</label>
+              <input type="text" name="sep_asal_rujukan_kode" id="sep_asal_rujukan_kode_rujuk" class="form-control"
+                value="">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="" class="">Diagnosa</label>
+              <input type="text" name="sep_diagnosa_nama" id="sep_diagnosa_nama_rujuk" class="form-control" value="">
+              <ul class="list-group" id="diagnosaListRujuk" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="" class="">Kode</label>
+              <input type="text" name="sep_diagnosa_kode" id="sep_diagnosa_kode_rujuk" class="form-control" value="">
+            </div>
+          </div>
+        </div>
+        <div class="row clearfix">
+          <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="simpan_rujuk">Simpan</button>
+            <button type="button" class="btn btn-danger" id="hapus_rujuk">Hapus</button>
           </div>
         </div>
       </div>

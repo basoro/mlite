@@ -5,119 +5,117 @@
 </div>
 <div class="modal-body">
   <div id="form_srb">
-    <div class="col-md-12">
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <div class="row clearfix">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Nomor SEP</label>
-                <input type="text" name="no_sep" id="no_sep" class="form-control" value="{?=isset_or($no_sep)?}" />
-                <input type="text" style="display: none;" name="no_surkon" id="no_surkon" class="form-control" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="" class="">No Peserta</label>
-                <input type="text" name="no_peserta" id="no_peserta" class="form-control"
-                  value="{?=isset_or($no_kartu)?}">
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Keterangan</label>
-                <input type="text" name="keterangan" id="keterangan" class="form-control" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Saran</label>
-                <input type="text" name="saran" id="saran" class="form-control" />
-              </div>
-            </div>
-            <div class="col-md-12">
-              <div class="form-group">
-                <label>Alamat</label>
-                <input type="text" name="alamat" id="alamat" class="form-control" value="{?=isset_or($alamat)?}" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Email</label>
-                <input type="text" name="email" id="email" class="form-control" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Tanggal SRB</label>
-                <input type="text" name="tanggal_srb" id="tanggal_srb" class="form-control tanggal"
-                  value="{?=date('Y-m-d')?}" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="" class="">Kode DPJP</label>
-                <input type="text" name="dpjp" id="dpjp" class="form-control"
-                  value="{?=isset_or($kddpjp)?}">
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="" class="">Nama DPJP</label>
-                <input type="text" name="nm_dpjp" id="nm_dpjp" class="form-control"
-                  value="{?=isset_or($nmdpjp)?}">
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="" class="">Diagnosa</label>
-                <input type="text" name="sep_diagnosa_nama_srb" id="sep_diagnosa_nama_srb" class="form-control" value="">
-                <ul class="list-group" id="diagnosaListSrb" style="z-index:1000;position:absolute;width:100%;"></ul>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="" class="">Kode</label>
-                <input type="text" name="sep_diagnosa_kode_srb" id="sep_diagnosa_kode_srb" class="form-control" value="">
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-group">
-                <label for="" class="">Obat</label>
-                <input type="text" name="sep_nama_obat" id="sep_nama_obat" class="form-control" value="">
-                <ul class="list-group" id="ListObat" style="z-index:1000;position:absolute;width:100%;"></ul>
-              </div>
-            </div>
-            <div class="col-md-2">
-              <div class="form-group">
-                <label for="" class="">Kode</label>
-                <input type="text" name="sep_kode_obat" id="sep_kode_obat" class="form-control" value="">
-              </div>
-            </div>
-            <div class="col-md-2">
-              <div class="form-group">
-                <label for="" class="">Jumlah</label>
-                <input type="text" name="jumlah_obat" id="jumlah_obat" class="form-control" value="">
-              </div>
-            </div>
-            <div class="col-md-2">
-              <div class="form-group">
-                <label for="" class="">Signa 1</label>
-                <input type="text" name="signa1" id="signa1" class="form-control" value="">
-              </div>
-            </div>
-            <div class="col-md-2">
-              <div class="form-group">
-                <label for="" class="">Signa 2</label>
-                <input type="text" name="signa2" id="signa2" class="form-control" value="">
-              </div>
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="row clearfix">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Nomor SEP</label>
+              <input type="text" name="no_sep" id="no_sep" class="form-control" value="{?=isset_or($no_sep)?}" />
+              <input type="text" style="display: none;" name="no_surkon" id="no_surkon" class="form-control" />
             </div>
           </div>
-          <div class="row clearfix">
-            <div class="col-md-12">
-              <button type="button" class="btn btn-primary" id="simpan_srb">Simpan</button>
-              <button type="button" class="btn btn-danger" id="hapus_rujuk">Hapus</button>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="" class="">No Peserta</label>
+              <input type="text" name="no_peserta" id="no_peserta" class="form-control"
+                value="{?=isset_or($no_kartu)?}">
             </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Keterangan</label>
+              <input type="text" name="keterangan" id="keterangan" class="form-control" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Saran</label>
+              <input type="text" name="saran" id="saran" class="form-control" />
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Alamat</label>
+              <input type="text" name="alamat" id="alamat" class="form-control" value="{?=isset_or($alamat)?}" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="text" name="email" id="email" class="form-control" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Tanggal SRB</label>
+              <input type="text" name="tanggal_srb" id="tanggal_srb" class="form-control tanggal"
+                value="{?=date('Y-m-d')?}" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="" class="">Kode DPJP</label>
+              <input type="text" name="dpjp" id="dpjp" class="form-control"
+                value="{?=isset_or($kddpjp)?}">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="" class="">Nama DPJP</label>
+              <input type="text" name="nm_dpjp" id="nm_dpjp" class="form-control"
+                value="{?=isset_or($nmdpjp)?}">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="" class="">Diagnosa</label>
+              <input type="text" name="sep_diagnosa_nama_srb" id="sep_diagnosa_nama_srb" class="form-control" value="">
+              <ul class="list-group" id="diagnosaListSrb" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="" class="">Kode</label>
+              <input type="text" name="sep_diagnosa_kode_srb" id="sep_diagnosa_kode_srb" class="form-control" value="">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="" class="">Obat</label>
+              <input type="text" name="sep_nama_obat" id="sep_nama_obat" class="form-control" value="">
+              <ul class="list-group" id="ListObat" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label for="" class="">Kode</label>
+              <input type="text" name="sep_kode_obat" id="sep_kode_obat" class="form-control" value="">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label for="" class="">Jumlah</label>
+              <input type="text" name="jumlah_obat" id="jumlah_obat" class="form-control" value="">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label for="" class="">Signa 1</label>
+              <input type="text" name="signa1" id="signa1" class="form-control" value="">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label for="" class="">Signa 2</label>
+              <input type="text" name="signa2" id="signa2" class="form-control" value="">
+            </div>
+          </div>
+        </div>
+        <div class="row clearfix">
+          <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="simpan_srb">Simpan</button>
+            <button type="button" class="btn btn-danger" id="hapus_rujuk">Hapus</button>
           </div>
         </div>
       </div>

@@ -77,6 +77,43 @@ class Admin extends AdminModule
         return $this->draw('wsbpjs.html', ['readme' => $readme]);
     }
 
+    public function postWsRequest()
+    {
+        $endpoint = $_POST['endpoint'];
+        $method = $_POST['method'];
+        $data = $_POST['data'] ?? null;
+
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid . $this->secretkey . $tStamp;
+
+        $url = $this->bpjsurl . $endpoint;
+
+        $output = '';
+        if ($method == 'GET') {
+            $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        } elseif ($method == 'POST') {
+             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        } elseif ($method == 'PUT') {
+             $output = BpjsService::put($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        } elseif ($method == 'DELETE') {
+             $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        }
+
+        $json = json_decode($output, true);
+
+        if (isset($json['response']) && !is_array($json['response'])) {
+             $stringDecrypt = stringDecrypt($key, $json['response']);
+             $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent($stringDecrypt);
+             if ($decompress) {
+                 $json['response'] = json_decode($decompress, true);
+             }
+        }
+
+        echo json_encode($json);
+        exit();
+    }
+
     public function getRefPoliFinger()
     {
         date_default_timezone_set('UTC');
@@ -1147,8 +1184,18 @@ class Admin extends AdminModule
 
     public function postSaveSettings()
     {
-        $_POST['jkn_mobile']['display'] = implode(',', $_POST['jkn_mobile']['display']);
-        $_POST['jkn_mobile']['exclude_taskid'] = implode(',', $_POST['jkn_mobile']['exclude_taskid']);
+        if (isset($_POST['jkn_mobile']['display']) && is_array($_POST['jkn_mobile']['display'])) {
+            $_POST['jkn_mobile']['display'] = implode(',', $_POST['jkn_mobile']['display']);
+        } else {
+            $_POST['jkn_mobile']['display'] = '';
+        }
+        
+        if (isset($_POST['jkn_mobile']['exclude_taskid']) && is_array($_POST['jkn_mobile']['exclude_taskid'])) {
+            $_POST['jkn_mobile']['exclude_taskid'] = implode(',', $_POST['jkn_mobile']['exclude_taskid']);
+        } else {
+            $_POST['jkn_mobile']['exclude_taskid'] = '';
+        }
+
         foreach ($_POST['jkn_mobile'] as $key => $val) {
             $this->settings('jkn_mobile', $key, $val);
         }

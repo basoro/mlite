@@ -63,7 +63,31 @@
     var bln_aproval = tgl_aproval.substring(5,7);
     var tahun_aproval = tgl_aproval.substring(0,4);
     event.preventDefault();
-    $("#aproval_sep_display").show().load(baseURL + '/vclaim/aprovalsepdisplay/' + bln_aproval + '/' + tahun_aproval + '?t=' + mlite.token);
+    // alert(bln_aproval + '/' + tahun_aproval);
+    $.get(baseURL + '/vclaim/aprovalsepdisplay/' + bln_aproval + '/' + tahun_aproval + '?t=' + mlite.token, function(data) {
+        var json = JSON.parse(data);
+        if (json.metaData.code == "200" && json.response && json.response.list) {
+            var html = '<div class="table-responsive">';
+            html += '<table class="table table-bordered table-striped table-hover">';
+            html += '<thead><tr><th>No Kartu</th><th>Nama</th><th>Tgl SEP</th><th>Jenis Pelayanan</th><th>Persetujuan</th><th>Status</th></tr></thead>';
+            html += '<tbody>';
+            $.each(json.response.list, function(index, item) {
+                html += '<tr>';
+                html += '<td>' + item.noKartu + '</td>';
+                html += '<td>' + item.nama + '</td>';
+                html += '<td>' + item.tglsep + '</td>';
+                html += '<td>' + item.jnspelayanan + '</td>';
+                html += '<td>' + item.persetujuan + '</td>';
+                html += '<td>' + item.status + '</td>';
+                html += '</tr>';
+            });
+            html += '</tbody></table>';
+            html += '</div>';
+            $("#aproval_sep_display").html(html).show();
+        } else {
+            $("#aproval_sep_display").html('<div class="alert alert-warning">Tidak ada data ditemukan atau terjadi kesalahan.</div>').show();
+        }
+    });
   });
 
   $("#form_aproval_sep").on("click","#simpan_aproval_sep", function(event){

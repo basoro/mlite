@@ -5,49 +5,47 @@
 <div class="modal-body">
 
   <div id="form_spri">
-    <div class="col-md-12">
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <div class="row clearfix">
-              <div class="col-md-6">
-                  <div class="form-group">
-                      <label>Dokter</label>
-                      <select class="form-control" name="dokter" id="dokter" data-use-search="true">
-                        {loop: $maping_dokter_dpjpvclaim}
-                        <option value="{?=isset_or($value.kd_dokter_bpjs)?}">{?=isset_or($value.nm_dokter_bpjs)?}</option>
-                        {/loop}
-                      </select>
-                  </div>
-              </div>
-              <div class="col-md-6">
-                  <div class="form-group">
-                      <label>Poli/Unit</label>
-                      <select class="form-control" name="poli" id="poli" data-use-search="true">
-                        {loop: $maping_poli_bpjs}
-                        <option value="{?=isset_or($value.kd_poli_bpjs)?}">{?=isset_or($value.nm_poli_bpjs)?}</option>
-                        {/loop}
-                      </select>
-                  </div>
-              </div>
-              <div class="col-md-6">
-                  <div class="form-group">
-                      <label>Tanggal Surat</label>
-                      <input type="text" name="tanggal_rujukan" id="tanggal_rujukan" class="form-control tanggal" value="{?=date('Y-m-d')?}" />
-                  </div>
-              </div>
-              <div class="col-md-6">
-                  <div class="form-group">
-                      <label>Tanggal Kontrol</label>
-                      <input type="text" name="tanggal_datang" id="tanggal_datang" class="form-control tanggal" />
-                  </div>
-              </div>
-          </div>
-          <div class="row clearfix">
-              <div class="col-md-12">
-                  <button type="button" class="btn btn-primary" id="simpan_spri">Simpan</button>
-                  <button type="button" class="btn btn-primary" id="load_spri">Load</button>
-              </div>
-          </div>
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="row clearfix">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Dokter</label>
+                    <select class="form-control" name="dokter" id="dokter" data-use-search="true">
+                      {loop: $maping_dokter_dpjpvclaim}
+                      <option value="{?=isset_or($value.kd_dokter_bpjs)?}">{?=isset_or($value.nm_dokter_bpjs)?}</option>
+                      {/loop}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Poli/Unit</label>
+                    <select class="form-control" name="poli" id="poli" data-use-search="true">
+                      {loop: $maping_poli_bpjs}
+                      <option value="{?=isset_or($value.kd_poli_bpjs)?}">{?=isset_or($value.nm_poli_bpjs)?}</option>
+                      {/loop}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Tanggal Surat</label>
+                    <input type="text" name="tanggal_rujukan" id="tanggal_rujukan" class="form-control tanggal" value="{?=date('Y-m-d')?}" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Tanggal Kontrol</label>
+                    <input type="text" name="tanggal_datang" id="tanggal_datang" class="form-control tanggal" />
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary" id="simpan_spri">Simpan</button>
+                <button type="button" class="btn btn-primary" id="load_spri">Load</button>
+            </div>
         </div>
       </div>
     </div>

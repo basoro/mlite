@@ -228,26 +228,84 @@ if ($core->loginCheck()) {
     );
     
     if ($isAjaxRequest) {
+        $error = 'Database connection failed';
         $message = 'Please check database configuration and ensure MySQL server is running';
+        $debug = [];
+
         if ($e->getCode() == 23000) {
             $message = $e->getMessage();
         }
 
-        // Return JSON error response for AJAX requests
-        header('Content-Type: application/json');
-        echo json_encode([
-            'error' => 'Database connection failed',
-            'message' => $message
-        ]);
+        if (defined('DEV_MODE') && DEV_MODE) {
+            $error = 'System Error';
+            $message = $e->getMessage();
+            $debug = [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => explode("\n", $e->getTraceAsString())
+            ];
+        }
+
+        // Return HTML error response for AJAX requests (e.g. for modal content or alerts)
+        header('Content-Type: text/html');
+        $debug_html = '';
+        if (!empty($debug)) {
+            $debug_html .= '<hr>';
+            $debug_html .= '<small><strong>File:</strong> ' . htmlspecialchars($debug['file']) . ' on line ' . $debug['line'] . '</small>';
+            $debug_html .= '<div style="max-height: 150px; overflow: auto; margin-top: 5px; background: #f8f9fa; padding: 5px; border: 1px solid #ddd;">';
+            $debug_html .= '<pre style="font-size: 10px; margin: 0;">' . htmlspecialchars(implode("\n", $debug['trace'])) . '</pre>';
+            $debug_html .= '</div>';
+        }
+
+        echo '<div class="alert alert-danger alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4>' . htmlspecialchars($error) . '</h4>
+            <p>' . htmlspecialchars($message) . '</p>
+            ' . $debug_html . '
+        </div>';
     } else {
         
         // Return HTML error for regular requests
-        if (DEV_MODE) {
-            echo '<h1>Error</h1><pre>' . htmlspecialchars($e->getMessage()) . '</pre>';
-            echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
-        } else {
-            echo '<h1>System Error</h1><p>Please contact administrator.</p>';
+        $title = 'System Error';
+        $content = '<p>Please contact administrator.</p>';
+        $debug_info = '';
+
+        if (defined('DEV_MODE') && DEV_MODE) {
+            $title = 'Developer Error';
+            $content = '<div class="alert alert-danger"><strong>Error:</strong> ' . htmlspecialchars($e->getMessage()) . '</div>';
+            $debug_info = '<div class="debug-box">';
+            $debug_info .= '<p><strong>File:</strong> ' . htmlspecialchars($e->getFile()) . ' on line ' . $e->getLine() . '</p>';
+            $debug_info .= '<h4>Stack Trace:</h4>';
+            $debug_info .= '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
+            $debug_info .= '</div>';
         }
+
+        echo '<!DOCTYPE html>
+        <html>
+        <head>
+            <title>' . $title . '</title>
+            <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8f9fa; color: #333; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+                .container { background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 800px; width: 90%; }
+                h1 { color: #dc3545; margin-top: 0; font-size: 24px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+                .alert { padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px; }
+                .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+                .debug-box { background: #f8f9fa; padding: 15px; border-radius: 4px; border: 1px solid #ddd; margin-top: 20px; font-size: 14px; overflow-x: auto; }
+                pre { background: #2d2d2d; color: #ccc; padding: 15px; border-radius: 4px; overflow: auto; font-size: 12px; line-height: 1.5; }
+                p { line-height: 1.6; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>' . $title . '</h1>
+                ' . $content . '
+                ' . $debug_info . '
+                <div style="margin-top: 20px; text-align: center; color: #666; font-size: 12px;">
+                    <p>mLITE Healthcare System &copy; ' . date('Y') . '</p>
+                </div>
+            </div>
+        </body>
+        </html>';
     }
 }
 

@@ -101,7 +101,7 @@ class Admin extends AdminModule
               'status' => 'Simpan',
               'no_batch' => '0',
               'no_faktur' => '0',
-              'keterangan' => '1111'
+              'keterangan' => '-'
             ]);
             if($query) {
               $query2 = $this->db('gudangbarang')
