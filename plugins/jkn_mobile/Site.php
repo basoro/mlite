@@ -419,7 +419,7 @@ class Site extends SiteModule
                                   'nomor_kartu' => $decode['nomorkartu'],
                                   'nomor_referensi' => $decode['nomorreferensi'],
                                   'kodebooking' => $kodebooking,
-                                  'jenis_kunjungan' => $decode['jeniskunjungan'],
+                                  'jenis_kunjungan' => isset($decode['jeniskunjungan']) ? $decode['jeniskunjungan'] : 1, // Default to 1 (Rujukan FKTP) if missing
                                   'status_kirim' => 'Belum',
                                   'keterangan' => ''
                               ]);

@@ -326,7 +326,8 @@ class Admin extends AdminModule
 
     public function getJadwalDokter()
     {
-        $poli = $this->db('maping_poli_bpjs')->select('kd_poli_bpjs')->group('kd_poli_bpjs')->toArray();
+        $this->getCssCard();
+        $poli = $this->db('maping_poli_bpjs')->toArray();
         return $this->draw('jadwaldokter.html',['poli'=>$poli]);
     }
 
@@ -342,17 +343,25 @@ class Admin extends AdminModule
         $url = $this->bpjsurl . 'jadwaldokter/kodepoli/'.$kodepoli.'/tanggal/'.$tanggal;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
-        $code = $json['metadata']['code'];
-        $message = $json['metadata']['message'];
-        $stringDecrypt = stringDecrypt($key, $json['response']);
-        $decompress = '""';
-        if (!empty($stringDecrypt)) {
-          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+        
+        if (isset($json['metadata']['code'])) {
+             $code = $json['metadata']['code'];
+             $message = $json['metadata']['message'];
+             
+             if ($code == '200' && isset($json['response'])) {
+                 $stringDecrypt = stringDecrypt($key, $json['response']);
+                 $decompress = '';
+                 if (!empty($stringDecrypt)) {
+                     $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+                 }
+                 $response = json_decode($decompress, true);
+             } else {
+                 $response = []; // Empty array if not found or error
+             }
+        } else {
+             $response = []; // Empty array if invalid response
         }
-        if ($json['metadata']['code'] == '200') {
-            $response = $decompress;
-        }
-        $response = json_decode($response, true);
+        
         echo json_encode($response);
         exit();
     }

@@ -154,11 +154,17 @@ $('#waModal').on('show.bs.modal', function(e) {
         if(data.indexOf(timeout) != -1) {
             alert('Timeout!!! Gagal mengirim pesan.');
         } else {
-            var jsonResponse = JSON.parse(data);
-            if(jsonResponse["status"] == true) {
-              alert('Sukses mengirim pesan.');
-            } else {
-            alert('Gagal mengirim pesan.\n' + jsonResponse["msg"]);
+            try {
+                var jsonResponse = JSON.parse(data);
+                if(jsonResponse["status"] == true) {
+                  alert('Sukses mengirim pesan.');
+                } else {
+                  alert('Gagal mengirim pesan.\n' + jsonResponse["msg"]);
+                }
+            } catch (e) {
+                console.error("Error parsing JSON:", e);
+                console.log("Raw response:", data);
+                alert('Gagal mengirim pesan. Respon server tidak valid.');
             }
         }
       }

@@ -310,6 +310,18 @@ abstract class Main
                $enumStr = str_replace("'", "", $enumStr);
                return array_map('trim', explode(',', $enumStr));
           }
+          
+          // Fallback for common enums if not found in CHECK constraint
+          if ($table_name === 'jadwal' && $column_name === 'hari_kerja') {
+              return ['AKHAD', 'SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU'];
+          }
+          if ($table_name === 'paket_operasi' && $column_name === 'kategori') {
+              return ['Kebidanan', 'Operasi'];
+          }
+          if ($table_name === 'paket_operasi' && $column_name === 'kelas') {
+              return ['Kelas 1', 'Kelas 2', 'Kelas 3', 'Kelas Utama', 'Kelas VIP', 'Kelas VVIP'];
+          }
+
           return [];
       } else {
           $result = $this->db()->pdo()->prepare("SHOW COLUMNS FROM $table_name LIKE '$column_name'");

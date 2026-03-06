@@ -236,20 +236,61 @@ public function postSaveSettingsApam()
 
     public function postKirimWA()
     {
+        // Clean output buffer to remove any prior echoes/warnings
+        if (ob_get_length()) ob_clean();
+        
+        header('Content-Type: application/json');
+        
         $waapitoken = $this->settings->get('wagateway.token');
         $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
         $waapiserver = $this->settings->get('wagateway.server');
+        
+        if (empty($waapitoken) || empty($waapiserver)) {
+             echo json_encode(['status' => false, 'msg' => 'WA Gateway belum dikonfigurasi']);
+             exit();
+        }
+
         $url = $waapiserver."/wagateway/kirimpesan";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=text&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS, http_build_query([
+            'type' => 'text',
+            'sender' => $waapiphonenumber,
+            'number' => $_POST['number'] ?? '',
+            'message' => $_POST['message'] ?? '',
+            'api_key' => $waapitoken
+        ]));
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+        curl_setopt($curlHandle, CURLOPT_TIMEOUT, 30);
         curl_setopt($curlHandle, CURLOPT_POST, 1);
         curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+        
         $response = curl_exec($curlHandle);
+        
+        if (curl_errno($curlHandle)) {
+            $error_msg = curl_error($curlHandle);
+            curl_close($curlHandle);
+            echo json_encode(['status' => false, 'msg' => 'Curl Error: ' . $error_msg]);
+            exit();
+        }
+        
         curl_close($curlHandle);
+        
+        // Check if response is empty
+        if (empty($response)) {
+             echo json_encode(['status' => false, 'msg' => 'Empty response from WA Gateway']);
+             exit();
+        }
+
+        // Validate if response is JSON, if not return error
+        $json = json_decode($response, true);
+        if ($json === null && json_last_error() !== JSON_ERROR_NONE) {
+             // Try to return the raw response or a generic error
+             echo json_encode(['status' => false, 'msg' => 'Invalid response from WA Gateway: ' . substr(strip_tags($response), 0, 100)]);
+             exit();
+        }
+
         echo $response;
         exit();
     }
