@@ -761,27 +761,28 @@ class Admin extends AdminModule
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
     //echo json_encode($json);
-    $code = $json['metaData']['code'];
-    $message = $json['metaData']['message'];
-    $stringDecrypt = stringDecrypt($key, $json['response']);
-    $decompress = '""';
-    if (!empty($stringDecrypt)) {
-      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
-    }
-    if ($json != null) {
-      echo '{
-          	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
-          	},
-          	"response": ' . $decompress . '}';
+    
+    if ($json && isset($json['metaData'])) {
+        $code = $json['metaData']['code'];
+        $message = $json['metaData']['message'];
+        $stringDecrypt = stringDecrypt($key, $json['response']);
+        $decompress = '""';
+        if (!empty($stringDecrypt)) {
+          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+        }
+        echo '{
+            "metaData": {
+                "code": "' . $code . '",
+                "message": "' . $message . '"
+            },
+            "response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+        echo '{
+            "metaData": {
+                "code": "5000",
+                "message": "ERROR"
+            },
+            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }

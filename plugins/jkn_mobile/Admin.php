@@ -28,6 +28,7 @@ class Admin extends AdminModule
         return [
             'Kelola' => 'manage',
             'WS BPJS' => 'wsbpjs',
+            'WS RS' => 'wsrs',
             'Katalog' => 'index',
             'Mapping Poliklinik' => 'mappingpoli',
             'Add Mapping Poliklinik' => 'addmappingpoli',
@@ -47,6 +48,7 @@ class Admin extends AdminModule
       $sub_modules = [
         ['name' => 'Katalog', 'url' => url([ADMIN, 'jkn_mobile', 'index']), 'icon' => 'tasks', 'desc' => 'Index JKN Mobile'],
         ['name' => 'WS BPJS', 'url' => url([ADMIN, 'jkn_mobile', 'wsbpjs']), 'icon' => 'tasks', 'desc' => 'WS BPJS JKN Mobile'],
+        ['name' => 'WS RS', 'url' => url([ADMIN, 'jkn_mobile', 'wsrs']), 'icon' => 'tasks', 'desc' => 'WS RS JKN Mobile'],
         ['name' => 'Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile', 'mappingpoli']), 'icon' => 'tasks', 'desc' => 'Mapping Poliklinik JKN Mobile'],
         ['name' => 'Add Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile', 'addmappingpoli']), 'icon' => 'tasks', 'desc' => 'Add mapping poliklinik JKN Mobile'],
         ['name' => 'Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile', 'mappingdokter']), 'icon' => 'tasks', 'desc' => 'Mapping Dokter JKN Mobile'],
@@ -75,6 +77,23 @@ class Admin extends AdminModule
         $readme_file = MODULES . '/jkn_mobile/Help.md';
         $readme =  $parsedown->text($this->tpl->noParse(file_get_contents($readme_file)));
         return $this->draw('wsbpjs.html', ['readme' => $readme]);
+    }
+
+    public function getWSRS()
+    {
+        $this->getCssCard();
+        $referensi_poli = $this->db('maping_poli_bpjs')->toArray();
+        $referensi_dokter = $this->db('maping_dokter_dpjpvclaim')->toArray();
+        return $this->draw('wsrs.html', [
+            'referensi_poli' => $referensi_poli,
+            'referensi_dokter' => $referensi_dokter,
+            'header_username' => $this->settings->get('jkn_mobile.header_username'),
+            'header_password' => $this->settings->get('jkn_mobile.header_password'),
+            'x_username' => $this->settings->get('jkn_mobile.x_username'),
+            'x_password' => $this->settings->get('jkn_mobile.x_password'),
+            'header_token' => $this->settings->get('jkn_mobile.header_token'),
+            'token' => $this->settings->get('jkn_mobile.token')
+        ]);
     }
 
     public function postWsRequest()
