@@ -960,6 +960,35 @@ class Admin extends AdminModule
     exit();
   }
 
+  public function getEncounterById($encounter_id, $type)
+  {
+    if($type == '') {
+      $type = 'ClinicalImpression';
+    }
+    $curl = curl_init();
+      
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $this->fhirurl . '/' . $type . '?encounter=' . $encounter_id,
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->getAccessToken()),
+      CURLOPT_CUSTOMREQUEST => 'GET',
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+
+    $result = json_decode($response, true);
+
+    echo $result['entry'][0]['resource']['id'] ?? null;    
+    exit();
+  }
+
   public function getEncounterBundle($no_rawat, $param = '')
   {
 
