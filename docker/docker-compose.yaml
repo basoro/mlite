@@ -32,10 +32,12 @@ services:
       - MYSQLDATABASE=${DB_DATABASE}
     volumes:
       - ../:/var/www/html/
+      - ../backups:/var/www/html/backups
+      - ../uploads:/var/www/html/uploads
     depends_on:
       - mysql
-    command: sh -c "mkdir -p /var/www/html/uploads /var/www/html/tmp /var/www/html/admin/tmp && chmod -R 777 /var/www/html/uploads /var/www/html/tmp /var/www/html/admin/tmp && php-fpm"
-  
+    command: sh -c "mkdir -p /var/www/html/backups /var/www/html/uploads /var/www/html/tmp /var/www/html/admin/tmp && chmod -R 777 /var/www/html/backups /var/www/html/uploads /var/www/html/tmp /var/www/html/admin/tmp && php-fpm"
+    
   mysql:
     image: mysql:8.0
     restart: always 
