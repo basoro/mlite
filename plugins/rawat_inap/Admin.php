@@ -2149,7 +2149,7 @@ class Admin extends AdminModule
         $tgl_akhir = $_GET['tgl_akhir'] ?? null;
         $status_pulang = $_GET['status_pulang'] ?? '-';
 
-        $sql = "SELECT kamar_inap.*, reg_periksa.no_rkm_medis, pasien.nm_pasien, kamar.kd_kamar, bangsal.nm_bangsal, dokter.nm_dokter 
+        $sql = "SELECT kamar_inap.*, reg_periksa.no_rkm_medis, reg_periksa.umurdaftar, reg_periksa.status_bayar, pasien.nm_pasien, pasien.jk, kamar.kd_kamar, bangsal.nm_bangsal, dokter.nm_dokter, penjab.png_jawab 
                 FROM kamar_inap 
                 JOIN reg_periksa ON kamar_inap.no_rawat = reg_periksa.no_rawat
                 JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis
@@ -2157,6 +2157,7 @@ class Admin extends AdminModule
                 JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal
                 JOIN dpjp_ranap ON kamar_inap.no_rawat = dpjp_ranap.no_rawat
                 JOIN dokter ON dpjp_ranap.kd_dokter = dokter.kd_dokter
+                JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj
                 WHERE 1=1";
         
 
