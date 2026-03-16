@@ -2323,6 +2323,38 @@ class Site extends SiteModule
               echo json_encode($data);
           }
         break;
+        // FOR DISPLAY
+        case "laboratorium-display":
+          $rows = $this->_resultDisplayAntrianLaboratorium();  
+          foreach ($rows as $row) {      
+           
+            echo '<li style="padding:10px;">'
+               .  '<button type="button" class="btn btn-lg btn-warning">' . $row['no_reg'] . '</button>' . 'Nama: ' . $row['nm_pasien'] . ', No. RM: ' . $row['no_rkm_medis'] . '  <span class="pull-right">Status: <b {if: $row.stts == "Sudah"}style="color:red;"{/if}>' . $row['stts'] . '</b></span><br>'
+               . '</li>'; 
+          }
+        break;
+        case "bed-display":
+          $rows = $this->_resultDisplayBed();
+          foreach ($rows as $row) {      
+            echo '<tr>'
+               .  '<td width="30%">' . $row['nm_bangsal'] . '</td>'
+               .  '<td width="20%">' . $row['kelas'] . '</td>'
+               .  '<td>'
+               .  'Jumlah Kosong : ' . $row['kosong']['jumlah'] . ' | Jumlah Terisi : ' . $row['isi']['jumlah']
+               .  '</td>'
+               . '</tr>';
+          }
+        break;
+        case "operasi-display":
+          $rows = $this->_resultDisplayJadwalOperasi();
+          foreach ($rows as $row) {
+            echo '<li style="padding:10px;">'
+               .  'Nama: ' . $row['nm_pasien'] . ', No. RM: ' . $row['no_rkm_medis'] . '<span class="pull-right">Status: <b {if: $row.status == "Selesai"}style="color:red;"{/if}>' . $row['status'] . '</b></span><br>'
+               . '[ Operator : ' . $row['namadok'] . ' ] [ Rujukan Dari : '
+               . '{if: $row.kd_poli == "IGDK"}' . $row['kamar.namabangsal'] . '{elseif: $row.kd_poli == "U0027"}' . $row['kamar.namabangsal'] . '{else}' . $row['namapoli'] . '{/if} ]<br>' 
+               . '</li>';
+          }
+        break;
       }
       exit();
     }
