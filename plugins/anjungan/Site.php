@@ -1505,9 +1505,9 @@ class Site extends SiteModule
           if($resep_obat['tgl_perawatan'] != '0000-00-00' && $resep_obat['jam'] != '00:00:00') {
             $row['status_resep'] = 'Disiapkan';
           }
-          if($resep_obat['tgl_penyerahan'] != '0000-00-00' && $resep_obat['jam_penyerahan'] != '00:00:00') {
-            $row['status_resep'] = 'Diserahkan';
-          }
+          // if($resep_obat['tgl_penyerahan'] != '0000-00-00' && $resep_obat['jam_penyerahan'] != '00:00:00') {
+          //   $row['status_resep'] = 'Diserahkan';
+          // }
 
           if(!empty($resep_dokter_racikan)) {
             $row['jenis_resep'] = 'Racikan';
@@ -2324,6 +2324,14 @@ class Site extends SiteModule
           }
         break;
         // FOR DISPLAY
+        case "apotek-display":
+          $rows = $this->_resultDisplayAntrianApotek();  
+          foreach ($rows as $row) {      
+            echo '<li style="padding:10px;">'
+               .  '<span class="noantrian"><b>'. $row['noantrian'] . '</b></span> '. $row['nm_pasien'] . ' - ' . $row['no_rkm_medis'] . ' Resep: ' . $row['jenis_resep'] . ' <span class="pull-right">Status: <b {if: $row.status_resep == "Disiapkan"}style="color:red;"{/if} {if: $row.status_resep == "Diserahkan"}style="color:green;"{/if}>' . $row['status_resep'] . '</b></span><br>'
+               . '</li>'; 
+          }
+        break;
         case "laboratorium-display":
           $rows = $this->_resultDisplayAntrianLaboratorium();  
           foreach ($rows as $row) {      
