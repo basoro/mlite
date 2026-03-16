@@ -379,4 +379,130 @@ class Admin extends AdminModule
     exit();
   }
 
+  public function apiStats()
+  {
+    header('Content-Type: application/json');
+    date_default_timezone_set($this->settings->get('settings.timezone'));
+    
+    $username = $this->core->checkAuth('GET'); 
+    if (!$this->core->checkPermission($username, 'can_read', 'dashboard')) { 
+        echo json_encode(['status' => 'error', 'message' => 'Invalid User Permission Credentials']);
+        exit;
+    } 
+    
+    // Validasi apakah user adalah dokter
+    $dokter = $this->db('dokter')->where('kd_dokter', $username)->oneArray();
+    if (!$dokter) {
+        echo json_encode(['status' => 'error', 'message' => 'Akses ditolak. User bukan dokter. ' . $username]);
+        exit;
+    }
+    
+    $kd_dokter = $dokter['kd_dokter'];
+    $today = date('Y-m-d');
+    $firstDayOfMonth = date('Y-m-01');
+    $lastDayOfMonth = date('Y-m-t');
+
+    // 1. Total Pasien (Unik)
+    $stmt = $this->db()->pdo()->prepare("SELECT count(DISTINCT no_rkm_medis) FROM reg_periksa WHERE kd_dokter = ? AND stts != 'Batal'");
+    $stmt->execute([$kd_dokter]);
+    $total_pasien = $stmt->fetchColumn();
+
+    // 2. Bulan Ini (Kunjungan)
+    $bulan_ini = $this->db('reg_periksa')
+        ->where('kd_dokter', $kd_dokter)
+        ->where('tgl_registrasi', '>=', $firstDayOfMonth)
+        ->where('tgl_registrasi', '<=', $lastDayOfMonth)
+        ->where('stts', '!=', 'Batal')
+        ->count();
+
+    // 3. Poli Bulan Ini (Total kunjungan di poli tempat dokter praktek bulan ini - akumulasi)
+    $polis_month = $this->db('reg_periksa')
+        ->select('kd_poli')
+        ->where('kd_dokter', $kd_dokter)
+        ->where('tgl_registrasi', '>=', $firstDayOfMonth)
+        ->where('tgl_registrasi', '<=', $lastDayOfMonth)
+        ->where('stts', '!=', 'Batal')
+        ->group('kd_poli')
+        ->toArray();
+    
+    $poli_bulan_ini = 0;
+    if($polis_month) {
+        $kd_polis = array_column($polis_month, 'kd_poli');
+        $placeholders = implode(',', array_fill(0, count($kd_polis), '?'));
+        $stmt = $this->db()->pdo()->prepare("SELECT count(no_rawat) FROM reg_periksa WHERE kd_poli IN ($placeholders) AND tgl_registrasi BETWEEN ? AND ? AND stts != 'Batal'");
+        $params = array_merge($kd_polis, [$firstDayOfMonth, $lastDayOfMonth]);
+        $stmt->execute($params);
+        $poli_bulan_ini = $stmt->fetchColumn();
+    }
+
+    // 4. Poli Hari Ini
+    $polis_today = $this->db('reg_periksa')
+        ->select('kd_poli')
+        ->where('kd_dokter', $kd_dokter)
+        ->where('tgl_registrasi', $today)
+        ->where('stts', '!=', 'Batal')
+        ->group('kd_poli')
+        ->toArray();
+
+    $poli_hari_ini = 0;
+    if($polis_today) {
+        $kd_polis = array_column($polis_today, 'kd_poli');
+        $placeholders = implode(',', array_fill(0, count($kd_polis), '?'));
+        $stmt = $this->db()->pdo()->prepare("SELECT count(no_rawat) FROM reg_periksa WHERE kd_poli IN ($placeholders) AND tgl_registrasi = ? AND stts != 'Batal'");
+        $params = array_merge($kd_polis, [$today]);
+        $stmt->execute($params);
+        $poli_hari_ini = $stmt->fetchColumn();
+    }
+
+    // 5. Chart Poliklinik Hari Ini
+    $chart_data = $this->db('reg_periksa')
+        ->select(['reg_periksa.kd_poli', 'count(reg_periksa.no_rawat) as jumlah', 'poliklinik.nm_poli'])
+        ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+        ->where('reg_periksa.kd_dokter', $kd_dokter)
+        ->where('reg_periksa.tgl_registrasi', $today)
+        ->where('reg_periksa.stts', '!=', 'Batal')
+        ->group('reg_periksa.kd_poli')
+        ->toArray();
+    
+    $chart_labels = array_column($chart_data, 'nm_poli');
+    $chart_values = array_column($chart_data, 'jumlah');
+
+    // 6. Pasien Paling Aktif (Top 10)
+    $pasien_aktif = $this->db('reg_periksa')
+        ->select(['pasien.nm_pasien', 'count(reg_periksa.no_rawat) as jumlah'])
+        ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+        ->where('reg_periksa.kd_dokter', $kd_dokter)
+        ->where('reg_periksa.stts', '!=', 'Batal')
+        ->group('reg_periksa.no_rkm_medis')
+        ->desc('jumlah')
+        ->limit(10)
+        ->toArray();
+
+    // 7. Antrian 10 Pasien Terakhir
+    $antrian_terakhir = $this->db('reg_periksa')
+        ->select(['pasien.nm_pasien', 'reg_periksa.stts', 'reg_periksa.no_reg', 'reg_periksa.jam_reg'])
+        ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+        ->where('reg_periksa.kd_dokter', $kd_dokter)
+        ->where('reg_periksa.tgl_registrasi', $today)
+        ->desc('reg_periksa.jam_reg')
+        ->limit(10)
+        ->toArray();
+
+    echo json_encode([
+        'status' => 'success',
+        'data' => [
+            'total_pasien' => $total_pasien,
+            'bulan_ini' => $bulan_ini,
+            'poli_bulan_ini' => $poli_bulan_ini,
+            'poli_hari_ini' => $poli_hari_ini,
+            'chart' => [
+                'labels' => $chart_labels,
+                'values' => $chart_values
+            ],
+            'pasien_aktif' => $pasien_aktif,
+            'antrian_terakhir' => $antrian_terakhir
+        ]
+    ]);
+  }
+
 }
