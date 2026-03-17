@@ -2979,6 +2979,7 @@ class Site extends SiteModule
           $cek_kuota['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
 
           $kodebooking = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($reg_periksa['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
+          $tlp = substr($pasien['no_tlp'], 0, 13);
           $jenisKunjungan = '1';
           $nomorreferensi = $_POST['norujukan'];
           if(isset($_POST['tujuanKunj']) == '2') {
@@ -2990,7 +2991,7 @@ class Site extends SiteModule
               'jenispasien' => 'JKN',
               'nomorkartu' => $pasien['no_peserta'],
               'nik' => $pasien['no_ktp'],
-              'nohp' => $pasien['no_tlp'],
+              'nohp' => $tlp, 
               'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
               'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
               'pasienbaru' => '0',
