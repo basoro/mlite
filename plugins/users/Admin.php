@@ -172,6 +172,7 @@ class Admin extends AdminModule
           $this->assign['cap'] = $this->_getInfoCap();
         }
         $this->assign['avatarURL'] = url(MODULES.'/users/img/default.png');
+        $this->assign['usersForCopy'] = $this->_getUsersForCopy();
 
         return $this->draw('form.html', ['users' => $this->assign]);
     }
@@ -196,6 +197,7 @@ class Admin extends AdminModule
               $this->assign['cap'] = $this->_getInfoCap(isset($user['cap']) ? $user['cap'] : null);
             }
             $this->assign['avatarURL'] = url(UPLOADS.'/users/'.(isset($user['avatar']) ? $user['avatar'] : 'default.png'));
+            $this->assign['usersForCopy'] = $this->_getUsersForCopy();
 
             return $this->draw('form.html', ['users' => $this->assign]);
         } else {
@@ -438,6 +440,24 @@ class Admin extends AdminModule
               $this->assign['user'][] = $row;
           }
         }
+    }
+
+    /**
+     * Get users with access for copy functionality
+     * @return array
+     */
+    private function _getUsersForCopy() {
+        $users = $this->db('mlite_users')
+            ->select('id, username, fullname, access')
+            ->where('id', '!=', 1) // Exclude admin user
+            ->toArray();
+        
+        // Filter out empty or null access
+        $filteredUsers = array_filter($users, function($user) {
+            return !empty($user['access']) && $user['access'] !== 'dashboard';
+        });
+        
+        return array_values($filteredUsers);
     }
 
     /**
