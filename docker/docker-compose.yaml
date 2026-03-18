@@ -5,8 +5,8 @@ services:
       context: .
       dockerfile: nginx.Dockerfile
     image: nginx:alpine
-    ports:
-      - ${APP_PORT}:80
+    # ports:
+    #   - ${APP_PORT}:80 # gunakan jika ingin mengakses nginx dari luar container
     networks:
       - internal
     volumes:
@@ -47,8 +47,8 @@ services:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - ${DB_EXTERNAL_PORT}:3306
+    # ports:
+    #   - ${DB_EXTERNAL_PORT}:3306 #gunakan jika ingin mengakses mysql dari luar container
     expose:
       - 3306
     networks:
