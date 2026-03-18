@@ -46,13 +46,7 @@
         <td>
           <marquee direction="up" scrollamount="3" height="700">
             <div id="list_lab" style="font-size: 24px; font-weight:bold;">
-              <ul class="list-unstyled">
-                {loop: $display}
-                <li style="padding:10px;">
-                  <button type="button" class="btn btn-lg btn-warning">{?=isset_or($value.no_reg)?}</button> Nama: {?=isset_or($value.nm_pasien)?}, No. RM: {?=isset_or($value.no_rkm_medis)?}  <span class="pull-right">Status: <b {if: $value.stts == 'Sudah'}style="color:red;"{/if}>{?=isset_or($value.stts)?}</b></span><br>
-                </li>
-                {/loop}
-              </ul>
+              <ul class="list-unstyled" id="list_lab"></ul>
             </div>
           </marquee>
         </td>
@@ -74,3 +68,14 @@
 </footer>
 </body>
 </html>
+<script>
+  $(document).ready(function(){
+    loadLaboratorium();
+  }); 
+  function loadLaboratorium() {
+  $.get('{?=url()?}/anjungan/ajax?show=laboratorium-display', function(html){
+    $("#list_lab").html(html);    
+    
+  });
+}
+</script>

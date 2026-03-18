@@ -45,17 +45,7 @@
       <tr>
         <td>
             <div id="list_lab" style="font-size: 20px; font-weight:bold;">
-              <ul class="list-unstyled">
-                {loop: $display}
-                <li style="padding:10px;">
-                  Nama: {?=isset_or($value.nm_pasien)?}, No. RM: {?=isset_or($value.no_rkm_medis)?}  <span class="pull-right">Status: <b {if: $value.status == 'Selesai'}style="color:red;"{/if}>{?=isset_or($value.status)?}</b></span><br>
-                  [ Operator : {?=isset_or($value.namadok)?} ] [ Rujukan Dari :
-                  {if: $value.kd_poli == 'IGDK'}{?=isset_or($value.kamar.namabangsal)?}
-                    {elseif: $value.kd_poli == 'U0027'}{?=isset_or($value.kamar.namabangsal)?}
-                    {else} {?=isset_or($value.namapoli)?}{/if} ]<br>
-                </li>
-                {/loop}
-              </ul>
+              <ul class="list-unstyled" id="list_operasi"></ul>
             </div>
         </td>
       </tr>
@@ -76,3 +66,14 @@
 </footer>
 </body>
 </html>
+<script>
+  $(document).ready(function(){
+    loadOperasi();
+  }); 
+  function loadOperasi() {
+  $.get('{?=url()?}/anjungan/ajax?show=operasi-display', function(html){
+    $("#list_operasi").html(html);  
+    
+  });
+}
+</script> 

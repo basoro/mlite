@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="refresh" content="180">
+    <!-- <meta http-equiv="refresh" content="180"> -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
@@ -78,17 +78,10 @@
         <td>
           <marquee direction="up" scrollamount="3" height="700">
             <div id="list_lab" style="font-size: 24px; font-weight:bold;">
-              <ul class="list-unstyled">
-                {if: $display}
-                {loop: $display}
-                <li style="padding:10px;">
-                  <span class="noantrian"><b>{?=isset_or($value.noantrian)?}</b></span> {?=isset_or($value.nm_pasien)?} - [{?=isset_or($value.no_rkm_medis)?}], Resep: {?=isset_or($value.jenis_resep)?} <span class="pull-right">Status: <b {if: $value.status_resep == 'Disiapkan'}style="color:red;"{/if} {if: $value.status_resep == 'Diserahkan'}style="color:green;"{/if}>{?=isset_or($value.status_resep)?}</b></span><br>
-                </li>
-                {/loop}
-                {else}
-                <center><b style="color:white;">Belum ada data antrian!</b></center>
-                {/if}
-              </ul>
+              <ul class="list-unstyled" id="list_apotek"></ul>
+              {if: !$display}
+              <center><b style="color:white;">Belum ada data antrian!</b></center>
+              {/if}
             </div>
           </marquee>
         </td>
@@ -108,6 +101,17 @@
     <p><i class="fa fa-fw fa-calendar"></i> <span>{?=isset_or($tanggal)?}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
   </div>
 </footer>
+<script>
+  $(document).ready(function(){
+    loadApotek();
+  }); 
+  function loadApotek() {
+  $.get('{?=url()?}/anjungan/ajax?show=apotek-display', function(html){
+    $("#list_apotek").html(html);     
+    
+  });
+}
+</script>
 {if: isset($_GET['status']) && $_GET['status'] == '1'}
 <script>
 $(document).ready(function(){

@@ -73,13 +73,31 @@
                   </div>
                   {/if}
     	            <div class="form-group">
-    	                <label>Akses</label>
-    	                <select name="access[]" multiple class="form-control" data-keep-open="true" data-use-search="true" data-use-dimmer="false" data-options-height="126px" {if: isset_or($users.form.id, 0) == 1}disabled{/if} required>
-    	                	{loop: $users.modules}
-    	                	<option value="{?=isset_or($value.dir)?}" data-font="<i class='fa fa-{?=isset_or($value.icon)?}'></i>" {?=isset_or($value.attr)?}>{?=isset_or($value.name)?}</option>
-    	                	{/loop}
-    	                </select>
-    	            </div>
+                      <label>Akses</label>
+                        <button type="button" id="btnToggleCopyAccess" class="btn btn-success badge">
+                            <i class="fa fa-copy"></i> Copy Akses
+                        </button>
+                              <select name="access[]" id="accessSelect" multiple class="form-control" data-keep-open="true" data-use-search="true" data-use-dimmer="false" data-options-height="126px" {if: isset_or($users.form.id, 0) == 1}disabled{/if} required>
+                                  {loop: $users.modules}
+                                  <option value="{$value.dir}" data-font="<i class='fa fa-{$value.icon}'></i>" {$value.attr}>{$value.name}</option>
+                                  {/loop}
+                              </select>
+                              <br>                                        
+                              <div id="copyAccessForm" style="display: none; margin-top: 15px;">
+                                  <h5><strong>Copy Akses dari Pengguna Lain</strong></h5>
+                                  <!-- <small class="text-muted">Pilih pengguna yang sudah ada untuk menyalin pengaturan aksesnya.</small> -->
+                                  <select id="copyAccessFromUser" class="form-control" data-use-search="true">
+                                      <option value="">-- Pilih Pengguna untuk Disalin Aksesnya --</option>
+                                      {loop: $users.usersForCopy}
+                                          <option value="{$value.id}" data-access="{$value.access}">{$value.fullname} ({$value.username})</option>
+                                      {/loop}
+                                  </select>
+                                  <br>
+                                  <button type="button" id="btnCopyAccess" class="btn btn-info btn-sm" disabled>
+                                      <i class="fa fa-copy"></i> Salin Akses
+                                  </button>
+                              </div>
+                          </div>
     	            <div class="form-group">
     	                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
     	            </div>
@@ -106,4 +124,51 @@
 		$(this).remove();
 		return false;
 	})
+
+	// Tombol copy akses
+    $('#btnToggleCopyAccess').on('click', function() {
+        var copyForm = $('#copyAccessForm');
+        var button = $(this);
+        
+        if (copyForm.is(':visible')) {
+            copyForm.slideUp();
+            button.html('<i class="fa fa-copy"></i> Copy Akses');
+            button.removeClass('btn-warning').addClass('btn-success');
+        } else {
+            copyForm.slideDown();
+            button.html('<i class="fa fa-times"></i> Tutup Copy Akses');
+            button.removeClass('btn-success').addClass('btn-warning');
+        }
+    });
+
+	// Enable/disable Tombol Salin Akses
+    $('#copyAccessFromUser').on('change', function() {
+        var selectedValue = $(this).val();
+        $('#btnCopyAccess').prop('disabled', !selectedValue);
+    });
+
+	// Copy access from selected user
+    $('#btnCopyAccess').on('click', function() {
+        var selectedOption = $('#copyAccessFromUser option:selected');
+        var access = selectedOption.data('access');
+        
+        if(access) {
+            $('#accessSelect option').prop('selected', false);
+            
+            // Check if access is 'all' - select all available modules
+            if(access.trim() === 'all') {
+                $('#accessSelect option').prop('selected', true);
+            } else {
+                // Normal case - select specific modules
+                var accessArray = access.split(',');
+                $.each(accessArray, function(index, value) {
+                    $('#accessSelect option[value="' + value.trim() + '"]').prop('selected', true);
+                });
+            }
+            
+            $('#accessSelect').trigger('change');
+            
+            //alert('Akses berhasil disalin dari pengguna: ' + selectedOption.text());
+        }
+    });
 </script>

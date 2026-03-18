@@ -2323,6 +2323,46 @@ class Site extends SiteModule
               echo json_encode($data);
           }
         break;
+        // FOR DISPLAY
+        case "apotek-display":
+          $rows = $this->_resultDisplayAntrianApotek();  
+          foreach ($rows as $row) {      
+            echo '<li style="padding:10px;">'
+               .  '<span class="noantrian"><b>'. $row['noantrian'] . '</b></span> '. $row['nm_pasien'] . ' - ' . $row['no_rkm_medis'] . ' Resep: ' . $row['jenis_resep'] . ' <span class="pull-right">Status: <b {if: $row.status_resep == "Disiapkan"}style="color:red;"{/if} {if: $row.status_resep == "Diserahkan"}style="color:green;"{/if}>' . $row['status_resep'] . '</b></span><br>'
+               . '</li>'; 
+          }
+        break;
+        case "laboratorium-display":
+          $rows = $this->_resultDisplayAntrianLaboratorium();  
+          foreach ($rows as $row) {      
+           
+            echo '<li style="padding:10px;">'
+               .  '<button type="button" class="btn btn-lg btn-warning">' . $row['no_reg'] . '</button>' . 'Nama: ' . $row['nm_pasien'] . ', No. RM: ' . $row['no_rkm_medis'] . '  <span class="pull-right">Status: <b {if: $row.stts == "Sudah"}style="color:red;"{/if}>' . $row['stts'] . '</b></span><br>'
+               . '</li>'; 
+          }
+        break;
+        case "bed-display":
+          $rows = $this->_resultDisplayBed();
+          foreach ($rows as $row) {      
+            echo '<tr>'
+               .  '<td width="30%">' . $row['nm_bangsal'] . '</td>'
+               .  '<td width="20%">' . $row['kelas'] . '</td>'
+               .  '<td>'
+               .  'Jumlah Kosong : ' . $row['kosong']['jumlah'] . ' | Jumlah Terisi : ' . $row['isi']['jumlah']
+               .  '</td>'
+               . '</tr>';
+          }
+        break;
+        case "operasi-display":
+          $rows = $this->_resultDisplayJadwalOperasi();
+          foreach ($rows as $row) {
+            echo '<li style="padding:10px;">'
+               .  'Nama: ' . $row['nm_pasien'] . ', No. RM: ' . $row['no_rkm_medis'] . '<span class="pull-right">Status: <b {if: $row.status == "Selesai"}style="color:red;"{/if}>' . $row['status'] . '</b></span><br>'
+               . '[ Operator : ' . $row['namadok'] . ' ] [ Rujukan Dari : '
+               . '{if: $row.kd_poli == "IGDK"}' . $row['kamar.namabangsal'] . '{elseif: $row.kd_poli == "U0027"}' . $row['kamar.namabangsal'] . '{else}' . $row['namapoli'] . '{/if} ]<br>' 
+               . '</li>';
+          }
+        break;
       }
       exit();
     }
@@ -2939,6 +2979,7 @@ class Site extends SiteModule
           $cek_kuota['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
 
           $kodebooking = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($reg_periksa['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
+          $tlp = substr($pasien['no_tlp'], 0, 13);
           $jenisKunjungan = '1';
           $nomorreferensi = $_POST['norujukan'];
           if(isset($_POST['tujuanKunj']) == '2') {
@@ -2950,7 +2991,7 @@ class Site extends SiteModule
               'jenispasien' => 'JKN',
               'nomorkartu' => $pasien['no_peserta'],
               'nik' => $pasien['no_ktp'],
-              'nohp' => $pasien['no_tlp'],
+              'nohp' => $tlp, 
               'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
               'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
               'pasienbaru' => '0',
