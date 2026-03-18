@@ -7,12 +7,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>{?=isset_or($title)?} - {?=isset_or($settings.nama_instansi)?}</title>
+    <title>{$title} - {$settings.nama_instansi}</title>
     <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
     <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
     <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
     <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+    <!-- Fallback untuk testing standalone -->
+    <script>
+        if (typeof jQuery === 'undefined') {
+            document.write('<script src="https://code.jquery.com/jquery-3.6.0.min.js"><\/script>');
+        }
+    </script>
     <style media="screen">
       body {
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -35,18 +41,91 @@
       footer a, footer a:hover {
         color: #fff;
       }
+      .label {
+        display: inline;
+        padding: .2em .6em .3em;
+        font-size: 75%;
+        font-weight: 700;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: .25em;
+      }
+      .label-warning {
+        background-color: #f0ad4e;
+      }
+      .label-info {
+        background-color: #5bc0de;
+      }
+      .label-success {
+        background-color: #5cb85c;
+      }
+      .label-danger {
+        background-color: #d9534f;
+      }
+      
+      /* Audio Controls */
+      .audio-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .audio-toggle {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+      
+      .audio-toggle:hover {
+        background: #218838;
+      }
+      
+      .audio-toggle.disabled {
+        background: #6c757d;
+      }
+      
+      .audio-status {
+        font-size: 12px;
+        color: #fff;
+      }
+      
+      /* Notification Popup */
+      .notification-popup {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        z-index: 9999;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+      }
+      
+      .notification-popup.show {
+        transform: translateX(0);
+      }
     </style>
 </head>
 <body>
 <div class="container-fluid">
-  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{?=isset_or($logo)?}" alt="" width="60px"> Antrian Laboratorium {?=isset_or($settings.nama_instansi)?}</h1>
+  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Antrian Laboratorium {$settings.nama_instansi}</h1>
   <table class="table table-bordered text-primary">
     <tbody class="bg-primary">
       <tr>
         <td>
           <marquee direction="up" scrollamount="3" height="700">
             <div id="list_lab" style="font-size: 24px; font-weight:bold;">
-              <ul class="list-unstyled" id="list_lab"></ul>
+              <ul class="list-unstyled" id="laboratoriumList"></ul>
             </div>
           </marquee>
         </td>
@@ -54,28 +133,192 @@
     </tbody>
   </table>
   <div class="row" style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
-    <h3 class="display-6"><marquee>{?=isset_or($running_text)?}</marquee></h3>
+    <h3 class="display-6"><marquee>{$running_text}</marquee></h3>
   </div>
 </div>
 <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
   <div class="canvas">
-    <p class="pull-right">
-      Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
-      {?=isset_or($powered)?}.
-    </p>
-    <p><i class="fa fa-fw fa-calendar"></i> <span>{?=isset_or($tanggal)?}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
+    <div class="row">
+      <div class="col-md-4">
+        <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span></p>
+      </div>
+      <div class="col-md-4 text-center">
+        <button id="audioToggle" class="btn btn-sm btn-danger" onclick="toggleAudio()">
+          <i class="fa fa-volume-off"></i> Matikan Audio
+        </button>
+        <span id="audioStatus" class="text-success">
+          <i class="fa fa-volume-up text-success"></i> Audio Aktif
+        </span>
+      </div>
+      <div class="col-md-4 text-right">
+        <p class="pull-right">
+          Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
+          {$powered}.
+        </p>
+        <p><i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
+      </div>
+    </div>
   </div>
 </footer>
+
+<script>
+  /* =====================================================
+     VARIABEL GLOBAL
+  ===================================================== */
+  let previousQueueData = [];
+  let isFirstLoad = true;
+  let audioEnabled = true;
+  
+  /* =====================================================
+     SETUP AUDIO
+  ===================================================== */
+  const labAudio = new Audio('{?=url()?}/plugins/anjungan/suara/lab.mp3');
+  labAudio.volume = 1.0;
+  labAudio.preload = "auto";
+  
+  labAudio.addEventListener("error", function(){
+     console.log("ERROR: mp3 tidak ditemukan atau path salah");
+  });
+  labAudio.addEventListener("canplaythrough", function(){
+     console.log("lab.mp3 siap diputar");
+  });
+  
+  /* =====================================================
+     AMBIL LIST ANTRIAN SAJA (BENAR)
+  ===================================================== */
+  function loadLaboratoriumList(callback = null){
+      $.get('{?=url()?}/anjungan/ajax?show=laboratorium_display', function(html){
+          $("#laboratoriumList").html(html);
+  
+          if(callback){
+              callback(html);
+          }
+      });
+  }
+  
+  /* =====================================================
+     PARSE DATA HTML HASIL AJAX
+  ===================================================== */
+  function parseQueue(html){
+      const temp = $("<div>").html(html);
+      const items = [];
+  
+      temp.find("li").each(function(){
+          const text = $(this).text().trim();
+          const orderMatch = text.match(/No Order\s*:\s*(\S+)/i);
+  
+          if(orderMatch){
+              items.push(orderMatch[1]);
+          }
+      });
+  
+      return items;
+  }
+  
+  /* =====================================================
+     CEK DATA BARU
+  ===================================================== */
+  function detectNewRequests(newData){
+      if(isFirstLoad){
+          previousQueueData = newData;
+          isFirstLoad = false;
+          return false;
+      }
+  
+      if(newData.length > previousQueueData.length){
+          return true;
+      }
+  
+      for(let x of newData){
+          if(!previousQueueData.includes(x)){
+              return true;
+          }
+      }
+  
+      return false;
+  }
+  
+  /* =====================================================
+     PUTAR AUDIO
+  ===================================================== */
+  function playNotification(){
+      if(!audioEnabled){
+          console.log("Audio dimatikan");
+          return;
+      }
+  
+      labAudio.currentTime = 0;
+  
+      labAudio.play()
+          .then(()=> console.log("Audio DIPUTAR"))
+          .catch(err => console.log("Audio gagal diputar:", err));
+  
+      showPopup();
+  }
+  
+  /* POPUP NOTIF */
+  function showPopup(){
+      const el = $(`
+          <div style="
+              position:fixed;top:20px;right:20px;
+              background:#28a745;color:#fff;
+              padding:15px 20px;border-radius:5px;
+              z-index:9999;font-size:18px;font-weight:bold;
+              box-shadow:0 4px 8px rgba(0,0,0,0.3);
+          ">
+          <i class="fa fa-bell"></i> Permintaan LAB Baru Masuk!
+          </div>
+      `);
+  
+      $("body").append(el);
+      setTimeout(()=> el.fadeOut(500, ()=>el.remove()), 2500);
+  }
+  
+  /* =====================================================
+     FUNGSI TOGGLE AUDIO
+  ===================================================== */
+  function toggleAudio(){
+      audioEnabled = !audioEnabled;
+  
+      if(audioEnabled){
+          $("#audioToggle").html('<i class="fa fa-volume-off"></i> Matikan Audio')
+              .removeClass("btn-warning").addClass("btn-danger");
+          $("#audioStatus").html('<i class="fa fa-volume-up text-success"></i> Audio Aktif');
+      } else {
+          $("#audioToggle").html('<i class="fa fa-volume-up"></i> Aktifkan Audio')
+              .removeClass("btn-danger").addClass("btn-warning");
+          $("#audioStatus").html('<i class="fa fa-volume-off text-danger"></i> Audio Nonaktif');
+      }
+  }
+  
+  /* =====================================================
+     MAIN LOOP
+  ===================================================== */
+  $(function(){
+  
+      // LOAD PERTAMA
+      loadLaboratoriumList(function(html){
+          previousQueueData = parseQueue(html);
+          console.log("First load:", previousQueueData);
+      });
+  
+      // CEK SETIAP 5 DETIK
+      setInterval(function(){
+          loadLaboratoriumList(function(html){
+              const newData = parseQueue(html);
+  
+              if(detectNewRequests(newData)){
+                  console.log("ADA PERMINTAAN BARU!");
+                  playNotification();
+              }
+  
+              previousQueueData = newData;
+          });
+  
+      }, 5000);
+  
+  });
+  </script>
+  
 </body>
 </html>
-<script>
-  $(document).ready(function(){
-    loadLaboratorium();
-  }); 
-  function loadLaboratorium() {
-  $.get('{?=url()?}/anjungan/ajax?show=laboratorium-display', function(html){
-    $("#list_lab").html(html);    
-    
-  });
-}
-</script>
