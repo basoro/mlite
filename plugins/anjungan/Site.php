@@ -1395,31 +1395,47 @@ class Site extends SiteModule
         //exit();
     }
 
-    public function _resultDisplayAntrianLaboratorium()
-    {
-        $date = date('Y-m-d');
-        $tentukan_hari=date('D',strtotime(date('Y-m-d')));
-        $day = array(
-          'Sun' => 'AKHAD',
-          'Mon' => 'SENIN',
-          'Tue' => 'SELASA',
-          'Wed' => 'RABU',
-          'Thu' => 'KAMIS',
-          'Fri' => 'JUMAT',
-          'Sat' => 'SABTU'
-        );
-        $hari=$day[$tentukan_hari];
+  public function _resultDisplayAntrianLaboratorium()
+  {
+    $date_start = date('Y-m-d', strtotime('-1 month')); 
+    $date = date('Y-m-d');
 
-        $poliklinik = $this->settings('settings', 'laboratorium');
-        $rows = $this->db('reg_periksa')
-          ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-          ->where('tgl_registrasi', date('Y-m-d'))
-          ->where('kd_poli', $poliklinik)
-          ->asc('no_reg')
-          ->toArray();
-
-        return $rows;
+    $rows = $this->db('permintaan_lab')
+      ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
+      ->join('reg_periksa', 'reg_periksa.no_rawat=permintaan_lab.no_rawat')
+      ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->join('permintaan_pemeriksaan_lab', 'permintaan_pemeriksaan_lab.noorder=permintaan_lab.noorder')
+      ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
+      ->where('permintaan_lab.tgl_hasil', '0000:00:00')
+      ->where('permintaan_lab.tgl_permintaan', '>=', $date_start)
+      ->where('permintaan_lab.tgl_permintaan', '<=', $date)
+      ->group('permintaan_lab.noorder')
+      ->desc('permintaan_lab.tgl_permintaan')
+      ->toArray();
+    
+    $filteredRows = [];
+    foreach ($rows as $row) {
+      
+      // Tentukan status untuk data yang akan ditampilkan
+      if ($row['tgl_sampel'] == '0000-00-00' && $row['jam_sampel'] == '00:00:00') {
+        $row['status_antrian'] = 'Menunggu';
+        $row['status_class'] = 'label-warning';
+      } elseif ($row['tgl_sampel'] != '0000-00-00' && $row['jam_sampel'] != '00:00:00') {
+        $row['status_antrian'] = 'Diproses';
+        $row['status_class'] = 'label-success';
+      } else {
+        $row['status_antrian'] = 'Diproses';
+        $row['status_class'] = 'label-warning';
+      }
+      
+      $filteredRows[] = $row;
     }
+    
+    $rows = $filteredRows;
+    
+    return $rows;
+  }
 
     public function getDisplayAntrianApotek()
     {
