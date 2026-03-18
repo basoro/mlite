@@ -114,6 +114,23 @@
       .notification-popup.show {
         transform: translateX(0);
       }
+
+    .scroll-container {
+      height: 700px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .scroll-container ul {
+      position: absolute;
+      width: 100%;
+      animation: scrollUp 20s linear infinite;
+    }
+    
+    @keyframes scrollUp {
+      0% { top: 100%; }
+      100% { top: -100%; }
+    }        
     </style>
 </head>
 <body>
@@ -123,11 +140,9 @@
     <tbody class="bg-primary">
       <tr>
         <td>
-          <marquee direction="up" scrollamount="3" height="700">
-            <div id="list_lab" style="font-size: 24px; font-weight:bold;">
+            <div class="scroll-container">
               <ul class="list-unstyled" id="laboratoriumList"></ul>
             </div>
-          </marquee>
         </td>
       </tr>
     </tbody>
@@ -187,15 +202,23 @@
      AMBIL LIST ANTRIAN SAJA (BENAR)
   ===================================================== */
   function loadLaboratoriumList(callback = null){
-      $.get('{?=url()?}/anjungan/ajax?show=laboratorium_display', function(html){
-          $("#laboratoriumList").html(html);
-  
-          if(callback){
-              callback(html);
-          }
-      });
-  }
-  
+    $.get('{?=url()?}/anjungan/ajax?show=laboratorium_display', function(html){
+
+        const marquee = $("marquee");
+
+        marquee.stop(); // stop dulu
+
+        $("#laboratoriumList").html(html);
+        resetAnimation();
+
+        // trigger ulang animasi
+        marquee[0].start();
+
+        if(callback){
+            callback(html);
+        }
+    });
+  }  
   /* =====================================================
      PARSE DATA HTML HASIL AJAX
   ===================================================== */
@@ -318,6 +341,14 @@
       }, 5000);
   
   });
+
+  function resetAnimation(){
+    const el = document.querySelector(".scroll-container ul");
+    el.style.animation = "none";
+    el.offsetHeight; // trigger reflow
+    el.style.animation = null;
+  }
+    
   </script>
   
 </body>
