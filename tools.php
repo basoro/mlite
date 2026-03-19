@@ -19,8 +19,14 @@ if (DBDRIVER === 'sqlite' && !file_exists(__DIR__ . '/systems/data/mlite.sdb') &
 if (isset($_GET['action']) && $_GET['action'] == 'migrate') {
     ini_set('memory_limit', '1G');
 
-    $inputFile = 'mlite_db.sql';
-    $outputFile = 'systems/data/mlite.sdb';
+    $inputFile = __DIR__ . '/mlite_db.sql';
+    $outputDir = __DIR__ . '/systems/data';
+    $outputFile = $outputDir . '/mlite.sdb';
+
+    // Ensure directory exists and is writable
+    if (!is_dir($outputDir)) {
+        mkdir($outputDir, 0777, true);
+    }
 
     if (file_exists($outputFile)) {
         unlink($outputFile);
@@ -56,7 +62,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'migrate') {
             processInsert($pdo, $statement);
         }
     }
-    echo "Migration completed.\n";
+    
+    // Redirect ke index.php setelah selesai
+    header('Location: /index.php');
     exit;
 }
 
