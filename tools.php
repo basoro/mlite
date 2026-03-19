@@ -6,6 +6,13 @@
  * Usage: PHP_CLI_SERVER_WORKERS=8 php -S localhost:8000 tools.php
  */
 
+require_once __DIR__ . '/config.php';
+
+if (DBDRIVER === 'sqlite' && !file_exists(__DIR__ . '/systems/data/mlite.sdb') && (!isset($_GET['action']) || $_GET['action'] !== 'migrate')) {
+    header('Location: /tools.php?action=migrate');
+    exit;
+}
+
 if (isset($_GET['action']) && $_GET['action'] == 'migrate') {
     ini_set('memory_limit', '1G');
 

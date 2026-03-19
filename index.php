@@ -10,6 +10,11 @@ if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROT
 define('BASE_DIR', __DIR__);
 require_once('config.php');
 
+if (DBDRIVER === 'sqlite' && !file_exists(BASE_DIR . '/systems/data/mlite.sdb')) {
+    header('Location: /tools.php?action=migrate');
+    exit;
+}
+
 // Error reporting configuration
 if (DEV_MODE) {
     error_reporting(E_ALL);

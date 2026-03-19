@@ -26,6 +26,11 @@ try {
     define('BASE_DIR', __DIR__.'/..');
     require_once('../config.php');
 
+    if (DBDRIVER === 'sqlite' && !file_exists(BASE_DIR . '/systems/data/mlite.sdb')) {
+        header('Location: /tools.php?action=migrate');
+        exit;
+    }
+
     if (DEV_MODE) {
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
