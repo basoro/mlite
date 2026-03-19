@@ -27,6 +27,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'migrate') {
     if (!is_dir($outputDir)) {
         mkdir($outputDir, 0777, true);
     }
+    // Paksa permission ke 777 agar PHP bisa menulis file di dalamnya
+    chmod($outputDir, 0777);
 
     if (file_exists($outputFile)) {
         unlink($outputFile);
@@ -73,7 +75,7 @@ function processCreateTable($pdo, $sql) {
     if (!preg_match('/CREATE TABLE `?(\w+)`?/i', $sql, $matches)) return;
     $tableName = $matches[1];
     
-    echo "Processing table: $tableName\n";
+    // echo "Processing table: $tableName\n"; // Hapus echo agar tidak mengganggu header redirect
 
     // Extract body
     if (!preg_match('/\((.*)\)[^\)]*$/s', $sql, $matches)) return;
@@ -182,14 +184,14 @@ function processCreateTable($pdo, $sql) {
     try {
         $pdo->exec($createSql);
     } catch (PDOException $e) {
-        echo "Failed to create table $tableName: " . $e->getMessage() . "\n";
+        // echo "Failed to create table $tableName: " . $e->getMessage() . "\n";
     }
 
     foreach ($indexes as $idxSql) {
         try {
             $pdo->exec($idxSql);
         } catch (PDOException $e) {
-            echo "Failed to create index: " . $e->getMessage() . "\n";
+            // echo "Failed to create index: " . $e->getMessage() . "\n";
         }
     }
 }
@@ -229,7 +231,7 @@ function processInsert($pdo, $sql) {
     try {
         $pdo->exec($sql);
     } catch (PDOException $e) {
-        echo "Failed insert: " . $e->getMessage() . "\n";
+        // echo "Failed insert: " . $e->getMessage() . "\n";
     }
 }
 
