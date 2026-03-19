@@ -46,7 +46,7 @@ if (DBDRIVER == 'sqlite') {
     $db_host = '';
     $db_user = '';
     $db_pass = '';
-    $db_name = BASE_DIR . '/mlite.sdb';
+    $db_name = BASE_DIR . '/systems/data/mlite.sdb';
     $db_port = '';
 } else {
     $db_host = env('MYSQLHOST') ?: 'mysql';
@@ -63,7 +63,7 @@ define('DBPASS', $db_pass);
 define('DBNAME', $db_name);
 
 // URL Webapps
-define('WEBAPPS_URL', 'http://mlite.loc/uploads'); // Sesuaikan http://mlite.loc dengan domain atau IP Address server
+define('WEBAPPS_URL', 'http://localhost:8000/uploads'); // Sesuaikan http://mlite.loc dengan domain atau IP Address server
 define('WEBAPPS_PATH', BASE_DIR . '/uploads');
 
 // Multi APP
