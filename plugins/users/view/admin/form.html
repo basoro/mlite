@@ -77,30 +77,29 @@
                         <button type="button" id="btnToggleCopyAccess" class="btn btn-success badge">
                             <i class="fa fa-copy"></i> Copy Akses
                         </button>
-                              <select name="access[]" id="accessSelect" multiple class="form-control" data-keep-open="true" data-use-search="true" data-use-dimmer="false" data-options-height="126px" {if: isset_or($users.form.id, 0) == 1}disabled{/if} required>
-                                  {loop: $users.modules}
-                                  <option value="{$value.dir}" data-font="<i class='fa fa-{$value.icon}'></i>" {$value.attr}>{$value.name}</option>
-                                  {/loop}
-                              </select>
-                              <br>                                        
-                              <div id="copyAccessForm" style="display: none; margin-top: 15px;">
-                                  <h5><strong>Copy Akses dari Pengguna Lain</strong></h5>
-                                  <!-- <small class="text-muted">Pilih pengguna yang sudah ada untuk menyalin pengaturan aksesnya.</small> -->
-                                  <div class="input-group">
-                                      <select id="copyAccessFromUser" class="form-control" data-use-search="true">
-                                          <option value="">-- Pilih Pengguna untuk Disalin Aksesnya --</option>
-                                          {loop: $users.usersForCopy}
-                                              <option value="{$value.id}" data-access="{$value.access}">{$value.fullname} ({$value.username})</option>
-                                          {/loop}
-                                      </select>
-                                      <span class="input-group-btn">
-                                          <button type="button" id="btnCopyAccess" class="btn btn-info" disabled>
-                                              <i class="fa fa-copy"></i> Salin Akses
-                                          </button>
-                                      </span>
-                                  </div>
-                              </div>
-                          </div>
+                        <div id="copyAccessForm" style="display: none; margin-top: 15px; margin-bottom: 15px;">
+                            <h5><strong>Copy Akses dari Pengguna Lain</strong></h5>
+                            <!-- <small class="text-muted">Pilih pengguna yang sudah ada untuk menyalin pengaturan aksesnya.</small> -->
+                            <div class="input-group">
+                                <select id="copyAccessFromUser" class="form-control" data-use-search="true">
+                                    <option value="">-- Pilih Pengguna untuk Disalin Aksesnya --</option>
+                                    {loop: $users.usersForCopy}
+                                        <option value="{$value.id}" data-access="{$value.access}">{$value.fullname} ({$value.username})</option>
+                                    {/loop}
+                                </select>
+                                <span class="input-group-btn">
+                                    <button type="button" id="btnCopyAccess" class="btn btn-info" disabled>
+                                        <i class="fa fa-copy"></i> Salin Akses
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        <select name="access[]" id="accessSelect" multiple class="form-control" data-keep-open="true" data-use-search="true" data-use-dimmer="false" data-options-height="126px" {if: isset_or($users.form.id, 0) == 1}disabled{/if} required>
+                            {loop: $users.modules}
+                            <option value="{$value.dir}" data-font="<i class='fa fa-{$value.icon}'></i>" {$value.attr}>{$value.name}</option>
+                            {/loop}
+                        </select>
+                    </div>
     	            <div class="form-group">
     	                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
     	            </div>
