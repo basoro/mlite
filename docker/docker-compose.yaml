@@ -34,14 +34,14 @@ services:
       - ../:/var/www/html/
       - ../backups:/var/www/html/backups
       - ../uploads:/var/www/html/uploads
-    depends_on:
-      - mysql
     command: sh -c "mkdir -p /var/www/html/backups /var/www/html/uploads /var/www/html/tmp /var/www/html/admin/tmp && chmod -R 777 /var/www/html/backups /var/www/html/uploads /var/www/html/tmp /var/www/html/admin/tmp && php-fpm"
     
   mysql:
     image: mysql:8.0
     command: --sql-mode=""
     restart: always 
+    profiles:
+      - mysql_enabled
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
