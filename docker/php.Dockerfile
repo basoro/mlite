@@ -15,6 +15,8 @@ RUN apk add --no-cache --virtual build-essentials \
     docker-php-ext-install gd && \
     docker-php-ext-install mysqli && \
     docker-php-ext-install pdo_mysql && \
+    apk add --no-cache sqlite-dev && \
+    docker-php-ext-install pdo_sqlite && \
     docker-php-ext-install intl && \
     docker-php-ext-install opcache && \
     docker-php-ext-install exif && \
