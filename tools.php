@@ -27,8 +27,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'migrate') {
     if (!is_dir($outputDir)) {
         mkdir($outputDir, 0777, true);
     }
-    // Paksa permission ke 777 agar PHP bisa menulis file di dalamnya
-    chmod($outputDir, 0777);
+    // Paksa permission ke 777 agar PHP bisa menulis file di dalamnya (suppress warning jika tidak ada hak chown)
+    @chmod($outputDir, 0777);
 
     if (file_exists($outputFile)) {
         unlink($outputFile);
