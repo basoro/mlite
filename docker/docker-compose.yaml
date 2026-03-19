@@ -64,3 +64,9 @@ services:
 networks:
   internal:
     driver: bridge
+
+volumes:
+  php_backups:
+  php_uploads:
+  php_systems_data:
+  mysql_data:
