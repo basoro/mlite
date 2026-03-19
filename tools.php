@@ -30,12 +30,20 @@ if (isset($_GET['action']) && $_GET['action'] == 'migrate') {
     // Paksa permission ke 777 agar PHP bisa menulis file di dalamnya (suppress warning jika tidak ada hak chown)
     @chmod($outputDir, 0777);
 
+    // Cek apakah PHP bisa menulis ke folder tersebut
+    if (!is_writable($outputDir)) {
+        die("Error: Folder '$outputDir' tidak writable. Silakan ubah permission folder ini agar PHP dapat membuat file database SQLite. (Contoh: jalankan 'chmod 777 $outputDir' atau 'chown -R www-data:www-data $outputDir' dari terminal host/container).");
+    }
+
     if (file_exists($outputFile)) {
         unlink($outputFile);
     }
 
     $pdo = new PDO("sqlite:$outputFile");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Pastikan permission file database yang baru dibuat bisa ditulis oleh PHP/www-data
+    @chmod($outputFile, 0666);
 
     // Optimization
     $pdo->exec("PRAGMA synchronous = OFF");
@@ -65,8 +73,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'migrate') {
         }
     }
     
-    // Redirect ke index.php setelah selesai
-    header('Location: /index.php');
+    // Redirect ke root setelah selesai
+    header('Location: /');
     exit;
 }
 
