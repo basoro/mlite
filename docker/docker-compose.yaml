@@ -38,7 +38,7 @@ services:
       - php_backups:/var/www/html/backups 
       - php_uploads:/var/www/html/uploads 
       - php_systems_data:/var/www/html/systems/data 
-    command: sh -c "mkdir -p /var/www/html/backups /var/www/html/uploads /var/www/html/systems/data /var/www/html/tmp /var/www/html/admin/tmp && chown -R nginx:nginx /var/www/html/backups /var/www/html/uploads /var/www/html/systems/data /var/www/html/tmp /var/www/html/admin/tmp && chmod -R 777 /var/www/html/backups /var/www/html/uploads /var/www/html/systems/data /var/www/html/tmp /var/www/html/admin/tmp && php-fpm"
+    command: sh -c "mkdir -p /var/www/html/backups /var/www/html/uploads /var/www/html/systems/data /var/www/html/tmp /var/www/html/admin/tmp && chmod -R 777 /var/www/html/backups /var/www/html/uploads /var/www/html/systems/data /var/www/html/tmp /var/www/html/admin/tmp && php-fpm"
   
   mysql:
     image: mysql:8.0
