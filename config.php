@@ -49,7 +49,7 @@ if (DBDRIVER == 'sqlite') {
     $db_name = BASE_DIR . '/systems/data/mlite.sdb';
     $db_port = '';
 } else {
-    $db_host = env('MYSQLHOST') ?: 'mysql';
+    $db_host = env('MYSQLHOST') ?: 'localhost';
     $db_user = env('MYSQLUSER') ?: 'root';
     $db_pass = env('MYSQLPASSWORD') ?: '';
     $db_name = env('MYSQLDATABASE') ?: 'mlite';
