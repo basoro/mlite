@@ -11,6 +11,9 @@ services:
       - internal
     volumes:
       - ../:/var/www/html/
+      - php_backups:/var/www/html/backups 
+      - php_uploads:/var/www/html/uploads
+      - php_systems_data:/var/www/html/systems/data
       - ./logs/nginx:/var/log/nginx/
     depends_on:
       - php      
@@ -32,10 +35,11 @@ services:
       - MYSQLDATABASE=${DB_DATABASE}
     volumes:
       - ../:/var/www/html/
-      - ../backups:/var/www/html/backups
-      - ../uploads:/var/www/html/uploads
-    command: sh -c "mkdir -p /var/www/html/backups /var/www/html/uploads /var/www/html/tmp /var/www/html/admin/tmp && chmod -R 777 /var/www/html/backups /var/www/html/uploads /var/www/html/tmp /var/www/html/admin/tmp && php-fpm"
-    
+      - php_backups:/var/www/html/backups 
+      - php_uploads:/var/www/html/uploads 
+      - php_systems_data:/var/www/html/systems/data 
+    command: sh -c "mkdir -p /var/www/html/backups /var/www/html/uploads /var/www/html/systems/data /var/www/html/tmp /var/www/html/admin/tmp && chmod -R 777 /var/www/html/backups /var/www/html/uploads /var/www/html/systems/data /var/www/html/tmp /var/www/html/admin/tmp && php-fpm"
+  
   mysql:
     image: mysql:8.0
     command: --sql-mode=""
@@ -54,7 +58,7 @@ services:
     networks:
       - internal
     volumes:
-      - ./mysql:/var/lib/mysql  
+      - mysql_data:/var/lib/mysql  
       - ../mlite_db.sql:/docker-entrypoint-initdb.d/init.sql
 
 networks:

@@ -10,7 +10,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'migrate') {
     ini_set('memory_limit', '1G');
 
     $inputFile = 'mlite_db.sql';
-    $outputFile = 'mlite.sdb';
+    $outputFile = 'systems/data/mlite.sdb';
 
     if (file_exists($outputFile)) {
         unlink($outputFile);
