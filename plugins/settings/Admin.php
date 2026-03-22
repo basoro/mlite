@@ -785,31 +785,31 @@ class Admin extends AdminModule
 
     public function anyCekDaftar()
     {
-        if(isset($_POST['request_code'])) {
-        $url = "https://mlite.id/datars/aktif";
-        // SSRF protection: validate that the URL is strictly the intended public endpoint
-        if ($url === "https://mlite.id/datars/aktif") {
-            $curlHandle = curl_init();
-            curl_setopt($curlHandle, CURLOPT_URL, $url);
-            curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
-            curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
-            curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
-            curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"email=".$_POST['email']);
-        curl_setopt($curlHandle, CURLOPT_HEADER, 0);
-        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
-            curl_setopt($curlHandle, CURLOPT_POST, 1);
-            curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
-            $response = curl_exec($curlHandle);
-            curl_close($curlHandle);
-            $response = json_decode($response, true);
-            if($response['status'] == 'error') {
-              $this->notify('failure', 'Request kode validasi pendaftaran aplikasi tidak bisa dilakukan. Silahkan simpan dulu pengaturan aplikasi anda. Atau pastikan email request sama dengan email di pengaturan aplikasi.');
-            } else {
-              $this->notify('success', 'Request kode validasi pendaftaran aplikasi sukses. Silahkan cek inbox email / spam folder yang anda daftarkan.');
+        if (isset($_POST['request_code'])) {
+            $url = "https://mlite.id/datars/aktif";
+            // SSRF protection: validate that the URL is strictly the intended public endpoint
+            if ($url === "https://mlite.id/datars/aktif") {
+                $curlHandle = curl_init();
+                curl_setopt($curlHandle, CURLOPT_URL, $url);
+                curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+                curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+                curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
+                curl_setopt($curlHandle, CURLOPT_POSTFIELDS, "email=" . $_POST['email']);
+                curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+                curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($curlHandle, CURLOPT_TIMEOUT, 30);
+                curl_setopt($curlHandle, CURLOPT_POST, 1);
+                curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
+                $response = curl_exec($curlHandle);
+                curl_close($curlHandle);
+                $response = json_decode($response, true);
+                if ($response['status'] == 'error') {
+                    $this->notify('failure', 'Request kode validasi pendaftaran aplikasi tidak bisa dilakukan. Silahkan simpan dulu pengaturan aplikasi anda. Atau pastikan email request sama dengan email di pengaturan aplikasi.');
+                } else {
+                    $this->notify('success', 'Request kode validasi pendaftaran aplikasi sukses. Silahkan cek inbox email / spam folder yang anda daftarkan.');
+                }
             }
         }
-      }
       return $this->draw('cek.daftar.html');
     }
 

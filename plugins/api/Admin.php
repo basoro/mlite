@@ -332,7 +332,14 @@ public function postSaveSettingsApam()
         curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
         curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
         curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=image&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['file']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS, http_build_query([
+            'type' => 'image',
+            'sender' => $waapiphonenumber,
+            'number' => $_POST['number'] ?? '',
+            'message' => $_POST['message'] ?? '',
+            'url' => $_POST['file'] ?? '',
+            'api_key' => $waapitoken
+        ]));
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
@@ -359,7 +366,14 @@ public function postSaveSettingsApam()
         curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
         curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
         curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=document&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['file']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS, http_build_query([
+            'type' => 'document',
+            'sender' => $waapiphonenumber,
+            'number' => $_POST['number'] ?? '',
+            'message' => $_POST['message'] ?? '',
+            'url' => $_POST['file'] ?? '',
+            'api_key' => $waapitoken
+        ]));
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);

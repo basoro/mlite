@@ -252,26 +252,37 @@ class Admin extends AdminModule
                     $this->settings->get('orthanc.username') . ":" . 
                     $this->settings->get('orthanc.password')
                 );
-                $context = stream_context_create([
-                    "http" => [
-                        "header" => "Authorization: Basic $auth"
-                    ]
+                
+                // Use cURL for better security controls
+                $curlHandle = curl_init();
+                curl_setopt($curlHandle, CURLOPT_URL, $url);
+                curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP);
+                curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP);
+                curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
+                curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($curlHandle, CURLOPT_HTTPHEADER, [
+                    "Authorization: Basic $auth"
                 ]);
+                $image_data = curl_exec($curlHandle);
+                curl_close($curlHandle);
 
-                $image_data = file_get_contents($url, false, $context);
-                $filename = time() . '.png';
-                $new_image_path = WEBAPPS_PATH . '/radiologi/pages/upload/' . $filename;
+                if ($image_data !== false) {
+                    $filename = time() . '.png';
+                    $new_image_path = WEBAPPS_PATH . '/radiologi/pages/upload/' . $filename;
 
-                file_put_contents($new_image_path, $image_data);
+                    file_put_contents($new_image_path, $image_data);
 
-                $message = 'Hasil PACS telah disimpan ke server SIMRS';
+                    $message = 'Hasil PACS telah disimpan ke server SIMRS';
 
-                $result = $this->db('gambar_radiologi')->save([
-                    'no_rawat'      => $_POST['no_rawat'],
-                    'tgl_periksa'   => $_POST['tgl_periksa'],
-                    'jam'           => $_POST['jam_periksa'],
-                    'lokasi_gambar' => 'pages/upload/' . $filename
-                ]);
+                    $result = $this->db('gambar_radiologi')->save([
+                        'no_rawat'      => $_POST['no_rawat'],
+                        'tgl_periksa'   => $_POST['tgl_periksa'],
+                        'jam'           => $_POST['jam_periksa'],
+                        'lokasi_gambar' => 'pages/upload/' . $filename
+                    ]);
+                } else {
+                    $message = 'Gagal mengambil gambar PACS';
+                }
             } else {
                 $message = 'Invalid Url';
             }
