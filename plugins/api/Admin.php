@@ -249,6 +249,24 @@ public function postSaveSettingsApam()
     }
     /* End Settings Farmasi Section */
 
+    private function isSafeUrl($url) {
+        $parsed = parse_url($url);
+        if (!$parsed || !isset($parsed['scheme']) || strtolower($parsed['scheme']) !== 'https') {
+            return false;
+        }
+        $host = $parsed['host'] ?? '';
+        $ips = gethostbynamel($host);
+        if (!$ips) {
+            return false;
+        }
+        foreach ($ips as $ip) {
+            if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public function postKirimWA()
     {
         // Clean output buffer to remove any prior echoes/warnings
@@ -266,7 +284,7 @@ public function postSaveSettingsApam()
         }
 
         $url = $waapiserver."/wagateway/kirimpesan";
-        if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('/^https:\/\//i', $url)) {
+        if (!$this->isSafeUrl($url)) {
              echo json_encode(['status' => false, 'msg' => 'Invalid or insecure WA Gateway URL']);
              exit();
         }
@@ -323,7 +341,7 @@ public function postSaveSettingsApam()
         $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
         $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimgambar";
-        if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('/^https:\/\//i', $url)) {
+        if (!$this->isSafeUrl($url)) {
              echo json_encode(['status' => false, 'msg' => 'Invalid or insecure WA Gateway URL']);
              exit();
         }
@@ -357,7 +375,7 @@ public function postSaveSettingsApam()
         $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
         $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimfile";
-        if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('/^https:\/\//i', $url)) {
+        if (!$this->isSafeUrl($url)) {
              echo json_encode(['status' => false, 'msg' => 'Invalid or insecure WA Gateway URL']);
              exit();
         }

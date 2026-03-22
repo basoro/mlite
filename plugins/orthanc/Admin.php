@@ -47,6 +47,39 @@ class Admin extends AdminModule
         redirect(url([ADMIN, 'orthanc', 'manage']));
     }
 
+    private function isSafeUrl($url, $allow_local = false) {
+        $parsed = parse_url($url);
+        
+        // Always require http or https
+        if (!$parsed || !isset($parsed['scheme']) || !in_array(strtolower($parsed['scheme']), ['http', 'https'])) {
+            return false;
+        }
+        
+        // If not explicitly allowing local, enforce HTTPS only
+        if (!$allow_local && strtolower($parsed['scheme']) !== 'https') {
+            return false;
+        }
+
+        $host = $parsed['host'] ?? '';
+        $ips = gethostbynamel($host);
+        
+        if (!$ips) {
+            return false;
+        }
+        
+        foreach ($ips as $ip) {
+            // Check if IP is private/reserved
+            $is_private = !filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+            
+            // If it's private and we don't allow local, reject it
+            if ($is_private && !$allow_local) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
     public function postTestOpenai()
     {
       $orthanc['ai_api_key'] = $_POST['api_key'];
@@ -59,10 +92,7 @@ class Admin extends AdminModule
 
       if($result) {
         // SSRF protection: validate ai_api_url is a public https URL
-        $url_parts = parse_url($orthanc['ai_api_url']);
-        if (!filter_var($orthanc['ai_api_url'], FILTER_VALIDATE_URL) || 
-            !isset($url_parts['scheme']) || 
-            strtolower($url_parts['scheme']) !== 'https') {
+        if (!$this->isSafeUrl($orthanc['ai_api_url'])) {
              $output = array('message' => 'error', 'code' => '400', 'desc' => 'Invalid or insecure API URL');
              echo json_encode(htmlspecialchars_array($output));
              exit();
@@ -233,15 +263,12 @@ class Admin extends AdminModule
 
             // --- Validasi URL ---
             $valid = false;
-            if (filter_var($url, FILTER_VALIDATE_URL)) {
+            if ($this->isSafeUrl($url, true)) { // Allow local IP/HTTP for Orthanc Server
                 $parts = parse_url($url);
-                // Require HTTP/HTTPS, but strictly validate host to prevent SSRF if this is external
-                // Assuming orthanc server is the only allowed host
                 $orthanc_server = $this->settings->get('orthanc.server');
                 $orthanc_parts = parse_url($orthanc_server);
                 
-                if (isset($parts['scheme']) && in_array(strtolower($parts['scheme']), ['http','https']) &&
-                    isset($parts['host']) && isset($orthanc_parts['host']) && 
+                if (isset($parts['host']) && isset($orthanc_parts['host']) && 
                     strtolower($parts['host']) === strtolower($orthanc_parts['host'])) {
                     $valid = true;
                 }

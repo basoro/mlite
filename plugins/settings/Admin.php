@@ -103,6 +103,24 @@ class Admin extends AdminModule
         return $this->draw('general.html');
     }
 
+    private function isSafeUrl($url) {
+        $parsed = parse_url($url);
+        if (!$parsed || !isset($parsed['scheme']) || strtolower($parsed['scheme']) !== 'https') {
+            return false;
+        }
+        $host = $parsed['host'] ?? '';
+        $ips = gethostbynamel($host);
+        if (!$ips) {
+            return false;
+        }
+        foreach ($ips as $ip) {
+            if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public function postSaveGeneral()
     {
         unset($_POST['save']);
@@ -160,7 +178,7 @@ class Admin extends AdminModule
 
             $url = "https://mlite.id/datars/save";
             // SSRF protection: validate that the URL is strictly the intended public endpoint
-            if ($url === "https://mlite.id/datars/save") {
+            if ($url === "https://mlite.id/datars/save" && $this->isSafeUrl($url)) {
                 $curlHandle = curl_init();
                 curl_setopt($curlHandle, CURLOPT_URL, $url);
                 curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
@@ -788,7 +806,7 @@ class Admin extends AdminModule
         if (isset($_POST['request_code'])) {
             $url = "https://mlite.id/datars/aktif";
             // SSRF protection: validate that the URL is strictly the intended public endpoint
-            if ($url === "https://mlite.id/datars/aktif") {
+            if ($url === "https://mlite.id/datars/aktif" && $this->isSafeUrl($url)) {
                 $curlHandle = curl_init();
                 curl_setopt($curlHandle, CURLOPT_URL, $url);
                 curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);

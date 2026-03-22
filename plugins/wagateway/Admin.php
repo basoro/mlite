@@ -44,6 +44,24 @@ class Admin extends AdminModule
       return $this->draw('settings.html', ['wagateway' => $wagateway]);
     }
 
+    private function isSafeUrl($url) {
+        $parsed = parse_url($url);
+        if (!$parsed || !isset($parsed['scheme']) || strtolower($parsed['scheme']) !== 'https') {
+            return false;
+        }
+        $host = $parsed['host'] ?? '';
+        $ips = gethostbynamel($host);
+        if (!$ips) {
+            return false;
+        }
+        foreach ($ips as $ip) {
+            if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public function postSaveSettings()
     {
         foreach ($_POST['wagateway'] as $key => $val) {
@@ -56,7 +74,7 @@ class Admin extends AdminModule
 
         $url = "https://mlite.id/wagateway/activated";
         // SSRF protection: validate that the URL is strictly the intended public endpoint
-        if ($url === "https://mlite.id/wagateway/activated") {
+        if ($url === "https://mlite.id/wagateway/activated" && $this->isSafeUrl($url)) {
             $curlHandle = curl_init();
             curl_setopt($curlHandle, CURLOPT_URL, $url);
             curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
@@ -83,7 +101,7 @@ class Admin extends AdminModule
         $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
         $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimpesan";
-        if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('/^https:\/\//i', $url)) {
+        if (!$this->isSafeUrl($url)) {
             $this->notify('failure', 'Invalid or insecure WA Gateway URL');
             return $this->draw('send.message.html');
         }
@@ -123,7 +141,7 @@ class Admin extends AdminModule
         $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
         $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimgambar";
-        if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('/^https:\/\//i', $url)) {
+        if (!$this->isSafeUrl($url)) {
             $this->notify('failure', 'Invalid or insecure WA Gateway URL');
             return $this->draw('send.image.html');
         }
@@ -164,7 +182,7 @@ class Admin extends AdminModule
         $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
         $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimfile";
-        if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('/^https:\/\//i', $url)) {
+        if (!$this->isSafeUrl($url)) {
             $this->notify('failure', 'Invalid or insecure WA Gateway URL');
             return $this->draw('send.file.html');
         }
