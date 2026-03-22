@@ -33,8 +33,12 @@ class Admin extends AdminModule
         $search_text = $_POST['search_text_mlite_query_logs'] ?? '';
 
         $searchQuery = "";
-        if (!empty($search_text)) {
-            $searchQuery .= " AND (" . $search_field . " LIKE :search_text) ";
+        $allowedColumns = ['id','sql_text','bindings','created_at','error_message','username'];
+        if (!in_array($columnName, $allowedColumns)) {
+            $columnName = 'id';
+        }
+        if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
+            $searchQuery .= " AND (`" . $search_field . "` LIKE :search_text) ";
         }
 
         $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS allcount FROM mlite_query_logs");
@@ -43,16 +47,18 @@ class Admin extends AdminModule
         $totalRecords = $records['allcount'];
 
         $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS allcount FROM mlite_query_logs WHERE 1=1 $searchQuery");
-        if (!empty($search_text)) {
+        if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
             $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
         }
         $stmt->execute();
         $records = $stmt->fetch();
         $totalRecordwithFilter = $records['allcount'];
 
-        $sql = "SELECT * FROM mlite_query_logs WHERE 1=1 $searchQuery ORDER BY $columnName $columnSortOrder LIMIT $row1, $rowperpage";
+        $sql = "SELECT * FROM mlite_query_logs WHERE 1=1 $searchQuery ORDER BY `$columnName` $columnSortOrder LIMIT :row1, :rowperpage";
         $stmt = $this->db()->pdo()->prepare($sql);
-        if (!empty($search_text)) {
+        $stmt->bindValue(':row1', intval($row1), \PDO::PARAM_INT);
+        $stmt->bindValue(':rowperpage', intval($rowperpage), \PDO::PARAM_INT);
+        if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
             $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
         }
         $stmt->execute();
@@ -116,13 +122,14 @@ $username = $_POST['username'];
                 $search_text = $_POST['search_text_mlite_query_logs'] ?? '';
 
                 $searchQuery = "";
-                if (!empty($search_text)) {
-                    $searchQuery .= " AND (" . $search_field . " LIKE :search_text) ";
+                $allowedColumns = ['id','sql_text','bindings','created_at','error_message','username'];
+                if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
+                    $searchQuery .= " AND (`" . $search_field . "` LIKE :search_text) ";
                 }
 
                 $stmt = $this->db()->pdo()->prepare("SELECT * FROM mlite_query_logs WHERE 1=1 $searchQuery");
 
-                if (!empty($search_text)) {
+                if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
                     $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
                 }
 

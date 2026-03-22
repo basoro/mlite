@@ -829,8 +829,8 @@ class Admin extends AdminModule
         $resep_racikan[] = $row;
       }
 
-      $query = $this->db()->pdo()->prepare("SELECT * FROM detail_pemberian_obat WHERE no_rawat = '{$_POST['no_rawat']}' AND status = 'Ralan'");
-      $query->execute();
+      $query = $this->db()->pdo()->prepare("SELECT * FROM detail_pemberian_obat WHERE no_rawat = ? AND status = 'Ralan'");
+      $query->execute([$_POST['no_rawat']]);
       $rows_pemberian_obat = $query->fetchAll();
 
       // Filter out racikan from non-racikan list (detail_pemberian_obat)
@@ -862,8 +862,8 @@ class Admin extends AdminModule
         $detail_pemberian_obat[] = $row;
       }
 
-      $query2 = $this->db()->pdo()->prepare("SELECT obat_racikan.* FROM obat_racikan WHERE obat_racikan.no_rawat = '{$_POST['no_rawat']}'");
-      $query2->execute();
+      $query2 = $this->db()->pdo()->prepare("SELECT obat_racikan.* FROM obat_racikan WHERE obat_racikan.no_rawat = ?");
+      $query2->execute([$_POST['no_rawat']]);
       $rows_pemberian_obat2 = $query2->fetchAll();
 
       $detail_pemberian_obat2 = [];

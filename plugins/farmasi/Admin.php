@@ -421,9 +421,9 @@ class Admin extends AdminModule
           $nomilebih = $lebih * $h_beli[$count];
         }
 
-        $query2 = "INSERT INTO `opname` (`kode_brng`, `h_beli`, `tanggal`, `stok`, `real`, `selisih`, `nomihilang`, `lebih`, `nomilebih`, `keterangan`, `kd_bangsal`, `no_batch`, `no_faktur`) VALUES ('$kode_brng[$count]', '$h_beli[$count]', '$tanggal[$count]', '$real[$count]', '$stok[$count]', '$selisih', '$nomihilang', '$lebih', '$nomilebih', '$keterangan[$count]', '$kd_bangsal[$count]', '$no_batch[$count]', '$no_faktur[$count]')";
+        $query2 = "INSERT INTO `opname` (`kode_brng`, `h_beli`, `tanggal`, `stok`, `real`, `selisih`, `nomihilang`, `lebih`, `nomilebih`, `keterangan`, `kd_bangsal`, `no_batch`, `no_faktur`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $opname2 = $this->db()->pdo()->prepare($query2);
-        $opname2->execute();
+        $opname2->execute([$kode_brng[$count], $h_beli[$count], $tanggal[$count], $real[$count], $stok[$count], $selisih, $nomihilang, $lebih, $nomilebih, $keterangan[$count], $kd_bangsal[$count], $no_batch[$count], $no_faktur[$count]]);
 
         if ($opname2->errorInfo()[2] == ''){
           $query = "UPDATE gudangbarang SET stok=?, no_batch=?, no_faktur=? WHERE kode_brng=? AND kd_bangsal=?";
@@ -519,11 +519,15 @@ class Admin extends AdminModule
         $tgl_akhir = isset_or($_POST['tgl_akhir'], date('Y-m-d'));
 
         $searchQuery = " ";
+        $params = [];
         if($search_text_detail_pemberian_obat != ''){
-            $searchQuery .= " and (".$search_field_detail_pemberian_obat." like '%".$search_text_detail_pemberian_obat."%' ) ";
+            $searchQuery .= " and (".$search_field_detail_pemberian_obat." like ? ) ";
+            $params[] = "%".$search_text_detail_pemberian_obat."%";
         }
 
-        $searchQuery .= " and (tgl_perawatan between '".$tgl_awal."' and '".$tgl_akhir."') ";
+        $searchQuery .= " and (tgl_perawatan between ? and ?) ";
+        $params[] = $tgl_awal;
+        $params[] = $tgl_akhir;
 
         ## Total number of records without filtering
         $sel = $this->db()->pdo()->prepare("select count(*) as allcount from detail_pemberian_obat");
@@ -533,13 +537,13 @@ class Admin extends AdminModule
 
         ## Total number of records with filtering
         $sel = $this->db()->pdo()->prepare("select count(*) as allcount from detail_pemberian_obat WHERE 1 ".$searchQuery);
-        $sel->execute();
+        $sel->execute($params);
         $records = $sel->fetch();
         $totalRecordwithFilter = $records['allcount'];
 
         ## Fetch records
-        $sel = $this->db()->pdo()->prepare("select * from detail_pemberian_obat WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row1.",".$rowperpage);
-        $sel->execute();
+        $sel = $this->db()->pdo()->prepare("select * from detail_pemberian_obat WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".intval($row1).",".intval($rowperpage));
+        $sel->execute($params);
         $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
 
         $data = array();
@@ -615,11 +619,15 @@ class Admin extends AdminModule
         $tgl_akhir = isset_or($_POST['tgl_akhir'], date('Y-m-d'));
 
         $searchQuery = " ";
+        $params = [];
         if($search_text_riwayat_barang_medis != ''){
-            $searchQuery .= " and (".$search_field_riwayat_barang_medis." like '%".$search_text_riwayat_barang_medis."%' ) ";
+            $searchQuery .= " and (".$search_field_riwayat_barang_medis." like ? ) ";
+            $params[] = "%".$search_text_riwayat_barang_medis."%";
         }
 
-        $searchQuery .= " and (tanggal between '".$tgl_awal."' and '".$tgl_akhir."') ";
+        $searchQuery .= " and (tanggal between ? and ?) ";
+        $params[] = $tgl_awal;
+        $params[] = $tgl_akhir;
 
         ## Total number of records without filtering
         $sel = $this->db()->pdo()->prepare("select count(*) as allcount from riwayat_barang_medis");
@@ -629,13 +637,13 @@ class Admin extends AdminModule
 
         ## Total number of records with filtering
         $sel = $this->db()->pdo()->prepare("select count(*) as allcount from riwayat_barang_medis WHERE 1 ".$searchQuery);
-        $sel->execute();
+        $sel->execute($params);
         $records = $sel->fetch();
         $totalRecordwithFilter = $records['allcount'];
 
         ## Fetch records
-        $sel = $this->db()->pdo()->prepare("select * from riwayat_barang_medis WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row1.",".$rowperpage);
-        $sel->execute();
+        $sel = $this->db()->pdo()->prepare("select * from riwayat_barang_medis WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".intval($row1).",".intval($rowperpage));
+        $sel->execute($params);
         $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
 
         $data = array();

@@ -165,8 +165,14 @@ class JnsPerawatanLab
         $search_text = $_POST['search_text_jns_perawatan_lab'] ?? '';
 
         $searchQuery = "";
-        if (!empty($search_text)) {
-            $searchQuery .= " AND (" . $search_field . " LIKE :search_text) ";
+        $allowedColumns = ['kd_jenis_prw','nm_perawatan','bagian_rs','bhp','tarif_perujuk','tarif_tindakan_dokter','tarif_tindakan_petugas','kso','menejemen','total_byr','kd_pj','status','kelas','kategori'];
+        
+        if (!in_array($columnName, $allowedColumns)) {
+            $columnName = 'kd_jenis_prw';
+        }
+
+        if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
+            $searchQuery .= " AND (`" . $search_field . "` LIKE :search_text) ";
         }
 
         $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS allcount FROM jns_perawatan_lab");
@@ -182,9 +188,11 @@ class JnsPerawatanLab
         $records = $stmt->fetch();
         $totalRecordwithFilter = $records['allcount'];
 
-        $sql = "SELECT * FROM jns_perawatan_lab WHERE 1=1 $searchQuery ORDER BY $columnName $columnSortOrder LIMIT $row1, $rowperpage";
+        $sql = "SELECT * FROM jns_perawatan_lab WHERE 1=1 $searchQuery ORDER BY `$columnName` $columnSortOrder LIMIT :row1, :rowperpage";
         $stmt = $this->db()->pdo()->prepare($sql);
-        if (!empty($search_text)) {
+        $stmt->bindValue(':row1', intval($row1), \PDO::PARAM_INT);
+        $stmt->bindValue(':rowperpage', intval($rowperpage), \PDO::PARAM_INT);
+        if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
             $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
         }
         $stmt->execute();

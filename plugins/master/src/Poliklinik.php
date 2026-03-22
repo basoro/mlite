@@ -131,15 +131,20 @@ class Poliklinik
     
         $searchQuery = "";
         $params = [];
+        
+        $allowedColumns = ['kd_poli','nm_poli','registrasi','registrasilama','status'];
+        if (!in_array($columnName, $allowedColumns)) {
+            $columnName = 'kd_poli';
+        }
     
         // ✅ Periksa dengan isset + !== '' agar '0' tidak dianggap kosong
-        if (isset($search_text) && $search_text !== '') {
+        if (isset($search_text) && $search_text !== '' && in_array($search_field, $allowedColumns)) {
             if ($search_field === 'status') {
                 // untuk field status yang tipenya integer atau tinyint
-                $searchQuery .= " AND $search_field = :search_text ";
+                $searchQuery .= " AND `$search_field` = :search_text ";
                 $params[':search_text'] = (int)$search_text; // convert ke integer
             } else {
-                $searchQuery .= " AND $search_field LIKE :search_text ";
+                $searchQuery .= " AND `$search_field` LIKE :search_text ";
                 $params[':search_text'] = "%$search_text%";
             }
         }
@@ -157,9 +162,14 @@ class Poliklinik
         $totalRecordwithFilter = $records['allcount'];
     
         // Data paginated
-        $sql = "SELECT * FROM poliklinik WHERE 1=1 $searchQuery ORDER BY $columnName $columnSortOrder LIMIT $row1, $rowperpage";
+        $sql = "SELECT * FROM poliklinik WHERE 1=1 $searchQuery ORDER BY `$columnName` $columnSortOrder LIMIT :row1, :rowperpage";
         $stmt = $this->core->db()->pdo()->prepare($sql);
-        $stmt->execute($params);
+        $stmt->bindValue(':row1', intval($row1), \PDO::PARAM_INT);
+        $stmt->bindValue(':rowperpage', intval($rowperpage), \PDO::PARAM_INT);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->execute();
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
     
         $data = [];
@@ -252,13 +262,15 @@ class Poliklinik
               $searchQuery = "";
               $params = [];
               
+              $allowedColumns = ['kd_poli','nm_poli','registrasi','registrasilama','status'];
+
               // Periksa apakah search_text diset dan tidak kosong secara literal
-              if (isset($search_text) && $search_text !== '') {
+              if (isset($search_text) && $search_text !== '' && in_array($search_field, $allowedColumns)) {
                   if ($search_field === 'status') {
-                      $searchQuery .= " AND $search_field = :search_text ";
+                      $searchQuery .= " AND `$search_field` = :search_text ";
                       $params[':search_text'] = (int)$search_text; // casting ke int untuk status (TINYINT)
                   } else {
-                      $searchQuery .= " AND $search_field LIKE :search_text ";
+                      $searchQuery .= " AND `$search_field` LIKE :search_text ";
                       $params[':search_text'] = "%$search_text%";
                   }
               }

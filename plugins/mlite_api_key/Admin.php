@@ -36,8 +36,12 @@ class Admin extends AdminModule
         $search_text = $_POST['search_text_mlite_api_key'] ?? '';
 
         $searchQuery = "";
-        if (!empty($search_text)) {
-            $searchQuery .= " AND (" . $search_field . " LIKE :search_text) ";
+        $allowedColumns = ['id','api_key','username','method','ip_range','exp_time'];
+        if (!in_array($columnName, $allowedColumns)) {
+            $columnName = 'id';
+        }
+        if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
+            $searchQuery .= " AND (`" . $search_field . "` LIKE :search_text) ";
         }
 
         $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS allcount FROM mlite_api_key");
@@ -46,16 +50,18 @@ class Admin extends AdminModule
         $totalRecords = $records['allcount'];
 
         $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS allcount FROM mlite_api_key WHERE 1=1 $searchQuery");
-        if (!empty($search_text)) {
+        if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
             $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
         }
         $stmt->execute();
         $records = $stmt->fetch();
         $totalRecordwithFilter = $records['allcount'];
 
-        $sql = "SELECT * FROM mlite_api_key WHERE 1=1 $searchQuery ORDER BY $columnName $columnSortOrder LIMIT $row1, $rowperpage";
+        $sql = "SELECT * FROM mlite_api_key WHERE 1=1 $searchQuery ORDER BY `$columnName` $columnSortOrder LIMIT :row1, :rowperpage";
         $stmt = $this->db()->pdo()->prepare($sql);
-        if (!empty($search_text)) {
+        $stmt->bindValue(':row1', intval($row1), \PDO::PARAM_INT);
+        $stmt->bindValue(':rowperpage', intval($rowperpage), \PDO::PARAM_INT);
+        if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
             $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
         }
         $stmt->execute();
@@ -135,11 +141,11 @@ $exp_time = $_POST['exp_time'];
             } elseif ($act == 'del') {
                 $id= $_POST['id'];
 
-                $sql = "DELETE FROM mlite_api_key WHERE id='$id'";
-                $binds = [];
+                $sql = "DELETE FROM mlite_api_key WHERE id=?";
+                $binds = [$id];
 
                 $stmt = $this->db()->pdo()->prepare($sql);
-                $stmt->execute();
+                $stmt->execute($binds);
 
                 if($this->settings->get('settings.log_query') == 'ya') {
                     \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
@@ -156,13 +162,14 @@ $exp_time = $_POST['exp_time'];
                 $search_text = $_POST['search_text_mlite_api_key'] ?? '';
 
                 $searchQuery = "";
-                if (!empty($search_text)) {
-                    $searchQuery .= " AND (" . $search_field . " LIKE :search_text) ";
+                $allowedColumns = ['id','api_key','username','method','ip_range','exp_time'];
+                if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
+                    $searchQuery .= " AND (`" . $search_field . "` LIKE :search_text) ";
                 }
 
                 $stmt = $this->db()->pdo()->prepare("SELECT * FROM mlite_api_key WHERE 1=1 $searchQuery");
 
-                if (!empty($search_text)) {
+                if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
                     $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
                 }
 

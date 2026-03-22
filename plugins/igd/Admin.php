@@ -1707,7 +1707,7 @@ class Admin extends AdminModule
                 $fields = array_keys($data_to_save);
                 $set_clause = [];
                 foreach($fields as $field) {
-                    $set_clause[] = "{$field} = :{$field}";
+                    $set_clause[] = "`{$field}` = :{$field}";
                 }
                 $sql = "UPDATE mlite_triase_igd SET " . implode(', ', $set_clause) . " WHERE id_triase = :id_triase";
                 
@@ -1731,7 +1731,7 @@ class Admin extends AdminModule
                 // Build INSERT query manually to avoid framework interference
                 $fields = array_keys($data_to_save);
                 $placeholders = ':' . implode(', :', $fields);
-                $sql = "INSERT INTO mlite_triase_igd (" . implode(', ', $fields) . ") VALUES (" . $placeholders . ")";
+                $sql = "INSERT INTO mlite_triase_igd (" . implode(', ', array_map(function($f){return "`$f`";}, $fields)) . ") VALUES (" . $placeholders . ")";
                 
                 error_log('DEBUG: Direct SQL: ' . $sql);
                 error_log('DEBUG: SQL Data: ' . print_r($data_to_save, true));

@@ -324,8 +324,9 @@ class Admin extends AdminModule
 
     public function anyPasien()
     {
-      $cari = $_POST['cari'];
-      if(isset($_POST['cari'])) {
+      $cari = $_POST['cari'] ?? '';
+      $pasien = [];
+      if(!empty($cari)) {
         $sql = "SELECT
             reg_periksa.no_rkm_medis,
             reg_periksa.no_rawat,
@@ -336,11 +337,11 @@ class Admin extends AdminModule
           WHERE
             reg_periksa.no_rkm_medis=pasien.no_rkm_medis
           AND
-            reg_periksa.no_rawat = '$cari'
+            reg_periksa.no_rawat = ?
           LIMIT 10";
 
         $stmt = $this->db()->pdo()->prepare($sql);
-        $stmt->execute();
+        $stmt->execute([$cari]);
         $pasien = $stmt->fetchAll();
 
       }

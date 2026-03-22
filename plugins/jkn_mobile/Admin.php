@@ -375,9 +375,9 @@ class Admin extends AdminModule
         $date = $_POST['periode_antrol'];
       $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile.exclude_taskid'));
       $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis
-      FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
+      FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi=? AND reg_periksa.kd_poli NOT IN (?)
       ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg)");
-      $query->execute();
+      $query->execute([$date, $exclude_taskid]);
       $query = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
       $rows = [];
@@ -1141,8 +1141,8 @@ class Admin extends AdminModule
       $date = date('Y-m');
       if(isset($_POST['periode_antrol']) && $_POST['periode_antrol'] !='')
         $date = $_POST['periode_antrol'];
-      $query = $this->db()->pdo()->prepare("SELECT COUNT(*) as jumlah, keterangan FROM mlite_antrian_referensi WHERE tanggal_periksa LIKE '$date%' GROUP BY keterangan");
-      $query->execute();
+      $query = $this->db()->pdo()->prepare("SELECT COUNT(*) as jumlah, keterangan FROM mlite_antrian_referensi WHERE tanggal_periksa LIKE ? GROUP BY keterangan");
+      $query->execute([$date.'%']);
       $query = $query->fetchAll(\PDO::FETCH_ASSOC);
 
       $rows = [];
@@ -1311,9 +1311,9 @@ class Admin extends AdminModule
           } else {
             $tanggal = date('Y-m-d');
           }
-        $sql = "SELECT * FROM bridging_sep WHERE tglsep = '$tanggal' AND jnspelayanan = '2' AND kdpolitujuan NOT IN ('IGD','HDL')";
+        $sql = "SELECT * FROM bridging_sep WHERE tglsep = ? AND jnspelayanan = '2' AND kdpolitujuan NOT IN ('IGD','HDL')";
         $query = $this->db()->pdo()->prepare($sql);
-        $query->execute();
+        $query->execute([$tanggal]);
         $sep_terbit = $query->fetchAll();
         $jml_sep = 1;
         $jml_antrol = 1;

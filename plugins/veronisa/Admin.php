@@ -2241,8 +2241,15 @@ public function postHapusResepResponse()
     $this->assign['totalRecords'] = $totalRecords;
 
     $offset = $pagination->offset();
-    $query = $this->db()->pdo()->prepare("SELECT * FROM mlite_apotek_online_log WHERE (no_rawat LIKE ? OR noresep LIKE ? OR user LIKE ?) AND DATE(tanggal_kirim) BETWEEN ? AND ? ORDER BY tanggal_kirim DESC LIMIT $perpage OFFSET $offset");
-    $query->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%', $start_date, $end_date]);
+    $query = $this->db()->pdo()->prepare("SELECT * FROM mlite_apotek_online_log WHERE (no_rawat LIKE ? OR noresep LIKE ? OR user LIKE ?) AND DATE(tanggal_kirim) BETWEEN ? AND ? ORDER BY tanggal_kirim DESC LIMIT :limit OFFSET :offset");
+    $query->bindValue(1, '%' . $phrase . '%', \PDO::PARAM_STR);
+    $query->bindValue(2, '%' . $phrase . '%', \PDO::PARAM_STR);
+    $query->bindValue(3, '%' . $phrase . '%', \PDO::PARAM_STR);
+    $query->bindValue(4, $start_date, \PDO::PARAM_STR);
+    $query->bindValue(5, $end_date, \PDO::PARAM_STR);
+    $query->bindValue(':limit', (int)$perpage, \PDO::PARAM_INT);
+    $query->bindValue(':offset', (int)$offset, \PDO::PARAM_INT);
+    $query->execute();
     $rows = $query->fetchAll();
 
     $this->assign['list'] = [];

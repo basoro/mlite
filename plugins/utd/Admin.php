@@ -112,7 +112,7 @@ class Admin extends AdminModule
   {
     $this->db()->pdo()->exec("DELETE FROM `mlite_temporary`");
     $cari = $_POST['cari'];
-    $this->db()->pdo()->exec("INSERT INTO `mlite_temporary` (
+    $stmt = $this->db()->pdo()->prepare("INSERT INTO `mlite_temporary` (
       `temp1`,
       `temp2`,
       `temp3`,
@@ -130,8 +130,9 @@ class Admin extends AdminModule
     )
     SELECT *
     FROM `utd_pendonor`
-    WHERE (`no_pendonor` LIKE '%$cari%' OR `nama` LIKE '%$cari%' OR `alamat` LIKE '%$cari%')
+    WHERE (`no_pendonor` LIKE :cari OR `nama` LIKE :cari OR `alamat` LIKE :cari)
     ");
+    $stmt->execute([':cari' => "%$cari%"]);
     exit();
   }
 

@@ -1731,12 +1731,12 @@ class Admin extends AdminModule
             
             if ($httpCode === 200) {
                 // Log the deletion for audit purposes
-                error_log('Orthanc Study Deleted: ' . $studyId . ' by user: ' . ($_SESSION['username'] ?? 'unknown'));
+                error_log('Orthanc Study Deleted: ' . htmlspecialchars($studyId) . ' by user: ' . htmlspecialchars($_SESSION['username'] ?? 'unknown'));
                 
                 echo json_encode([
                     'success' => true,
                     'message' => 'Study deleted successfully from Orthanc server',
-                    'studyId' => $studyId
+                    'studyId' => htmlspecialchars($studyId)
                 ]);
             } else {
                 $errorMessage = $this->getHttpErrorMessage($httpCode, $deleteResp);
