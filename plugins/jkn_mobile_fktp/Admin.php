@@ -237,14 +237,14 @@ class Admin extends AdminModule
             $mappingpoli['kd_poli_pcare'] = htmlspecialchars($mappingpoli['kd_poli_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $mappingpoli['nm_poli_pcare'] = htmlspecialchars($mappingpoli['nm_poli_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         }
-        echo $this->draw('mappingpoli.form.html', ['poliklinik' => htmlspecialchars_array($poli)klinik, 'mappingpoli' => $mappingpoli]);
+        echo $this->draw('mappingpoli.form.html', ['poliklinik' => htmlspecialchars_array($poliklinik), 'mappingpoli' => $mappingpoli]);
       } else {
         $mappingpoli = [
           'kd_poli_rs' => '',
           'kd_poli_pcare' => '',
           'nm_poli_pcare' => ''
         ];
-        echo $this->draw('mappingpoli.form.html', ['poliklinik' => htmlspecialchars_array($poli)klinik, 'mappingpoli' => $mappingpoli]);
+        echo $this->draw('mappingpoli.form.html', ['poliklinik' => htmlspecialchars_array($poliklinik), 'mappingpoli' => $mappingpoli]);
       }
       exit();
     }

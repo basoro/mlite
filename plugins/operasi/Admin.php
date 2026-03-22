@@ -512,7 +512,7 @@ class Admin extends AdminModule
       $obatoperasi = $this->db('obatbhp_ok')
         ->join('kodesatuan', 'kodesatuan.kode_sat=obatbhp_ok.kode_sat')
         ->toArray();
-      return $this->draw('obatoperasi.html', ['obatoperasi' => htmlspecialchars_array($obat)operasi, 'satuan' => $satuan]);
+      return $this->draw('obatoperasi.html', ['obatoperasi' => htmlspecialchars_array($obatoperasi), 'satuan' => $satuan]);
     }
 
     public function postSaveObatOperasi()

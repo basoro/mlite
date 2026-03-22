@@ -2133,7 +2133,7 @@ class Admin extends AdminModule
                             'p_jawab' => $pasien['namakeluarga'] ?? '-',
                             'almt_pj' => $pasien['alamatpj'] ?? '-',
                             'hubunganpj' => $pasien['keluarga'] ?? '-',
-                            'biaya_reg' => htmlspecialchars_array($poli)klinik['registrasi'],
+                            'biaya_reg' => $poliklinik['registrasi'],
                             'stts' => 'Belum',
                             'status_lanjut' => 'Ralan',
                             'kd_pj' => $booking['kd_pj'],

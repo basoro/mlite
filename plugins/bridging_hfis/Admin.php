@@ -104,9 +104,9 @@ class Admin extends AdminModule
               ]);
             } else {
               $this->db('jadwal')->save([
-                'kd_dokter' => htmlspecialchars_array($dokter)rs['kd_dokter'],
+                'kd_dokter' => $dokterrs['kd_dokter'],
                 'hari_kerja' => $namahari,
-                'kd_poli' => htmlspecialchars_array($poli)rs['kd_poli'],
+                'kd_poli' => $polirs['kd_poli'],
                 'jam_mulai' => $value['buka'],
                 'jam_selesai' => $value['tutup'],
                 'kuota' => $value['kuota'],

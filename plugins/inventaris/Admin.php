@@ -177,7 +177,7 @@ class Admin extends AdminModule
       ->oneArray();
     $perbaikan = url([ADMIN,'inventaris','perbaikan', $no_permintaan]);
     $perbaikanhapus = url([ADMIN,'inventaris','perbaikanhapus', $no_permintaan]);
-    return $this->draw('data.permintaan.perbaikan.detail.html', ['permintaan_perbaikan_inventaris' => $permintaan_perbaikan_inventaris, 'perbaikandetail' => htmlspecialchars_array($perbaikan)detail, 'perbaikan' => htmlspecialchars_array($perbaikan), 'perbaikanhapus' => htmlspecialchars_array($perbaikan)hapus]);
+    return $this->draw('data.permintaan.perbaikan.detail.html', ['permintaan_perbaikan_inventaris' => $permintaan_perbaikan_inventaris, 'perbaikandetail' => htmlspecialchars_array($perbaikandetail), 'perbaikan' => htmlspecialchars_array($perbaikan), 'perbaikanhapus' => htmlspecialchars_array($perbaikanhapus)]);
   }
 
   public function postPermintaanPerbaikanSimpan($no_permintaan = null)
