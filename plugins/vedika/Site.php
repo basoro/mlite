@@ -1123,7 +1123,6 @@ class Site extends SiteModule
 
     public function getDownloadPDF($id)
     {
-      $apikey = 'c811af07-d551-40ec-8e87-9abbf03abe16';
       $value = url().'/veda/createpdf/'.$id; // can aso be a url, starting with http..
 
       $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $this->revertNorawat($id))->oneArray();
