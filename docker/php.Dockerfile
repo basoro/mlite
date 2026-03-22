@@ -26,5 +26,8 @@ RUN apk add --no-cache --virtual build-essentials \
     docker-php-ext-install pcntl && \
     apk del build-essentials && rm -rf /usr/src/php*
 
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
 WORKDIR /var/www/html
  
