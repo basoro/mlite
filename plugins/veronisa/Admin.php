@@ -773,7 +773,7 @@ public function postHapusResepResponse()
             // Simpan ke file debug untuk setiap obat
             file_put_contents("debug_kirim_obat_{$index}.json", json_encode([
               'url' => $url_obat,
-              'payload' => htmlspecialchars_array($obat)_data,
+              'payload' => htmlspecialchars_array($obat_data),
               'response' => $json_obat
             ], JSON_PRETTY_PRINT));
 
@@ -783,7 +783,7 @@ public function postHapusResepResponse()
               $obat_errors[] = [
                 'index' => $index,
                 'message' => $json_obat['metaData']['message'],
-                'data' => htmlspecialchars_array($obat)_data
+                'data' => htmlspecialchars_array($obat_data)
               ];
             }
 
@@ -798,7 +798,7 @@ public function postHapusResepResponse()
             $obat_errors[] = [
               'index' => $index,
               'message' => htmlspecialchars($ex->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-              'data' => htmlspecialchars_array($obat)_data ?? $obat
+              'data' => htmlspecialchars_array($obat_data) ?? $obat
             ];
           }
         }
@@ -832,7 +832,7 @@ public function postHapusResepResponse()
                 // Simpan ke file debug untuk setiap detail racikan
                 file_put_contents("debug_kirim_obat_racikan_{$index}_{$detail_index}.json", json_encode([
                   'url' => $url_racikan,
-                  'payload' => htmlspecialchars_array($racikan)_data,
+                  'payload' => htmlspecialchars_array($racikan_data),
                   'response' => $json_racikan
                 ], JSON_PRETTY_PRINT));
 
@@ -842,7 +842,7 @@ public function postHapusResepResponse()
                   $obat_errors[] = [
                     'index' => "racikan_{$index}_detail_{$detail_index}",
                     'message' => $json_racikan['metaData']['message'],
-                    'data' => htmlspecialchars_array($racikan)_data
+                    'data' => htmlspecialchars_array($racikan_data)
                   ];
                 }
 
@@ -857,7 +857,7 @@ public function postHapusResepResponse()
                 $obat_errors[] = [
                   'index' => "racikan_{$index}_detail_{$detail_index}",
                   'message' => $ex->getMessage(),
-                  'data' => htmlspecialchars_array($racikan)_data ?? $detail
+                  'data' => htmlspecialchars_array($racikan_data) ?? $detail
                 ];
               }
             }
@@ -883,8 +883,8 @@ public function postHapusResepResponse()
           'decompressed' => $decompress ?? '',
           'final_response' => $response ?? []
         ],
-        'obat_responses' => htmlspecialchars_array($obat)_responses,
-        'obat_errors' => htmlspecialchars_array($obat)_errors,
+        'obat_responses' => htmlspecialchars_array($obat_responses),
+        'obat_errors' => htmlspecialchars_array($obat_errors),
         'success_summary' => [
           'resep_success' => isset($json_resep['metaData']) && $json_resep['metaData']['code'] === '200',
           'obat_success_count' => count(array_filter($obat_responses, function($resp) {
@@ -914,7 +914,7 @@ public function postHapusResepResponse()
         'success' => true,
         'message' => 'Data berhasil dikirim ke Apotek Online BPJS',
         'resep_response' => $json_resep,
-        'obat_responses' => htmlspecialchars_array($obat)_responses
+        'obat_responses' => htmlspecialchars_array($obat_responses)
       ]);
 
     } catch (\Exception $e) {

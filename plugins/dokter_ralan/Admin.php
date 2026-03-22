@@ -1810,19 +1810,19 @@ class Admin extends AdminModule
             'tata' => '',
             'konsulrujuk' => '',
             // Add dokter info for join compatibility
-            'nm_dokter' => htmlspecialchars_array($dokter)_info['nm_dokter'] ?? '',
-            'jk' => htmlspecialchars_array($dokter)_info['jk'] ?? '',
-            'tmp_lahir' => htmlspecialchars_array($dokter)_info['tmp_lahir'] ?? '',
-            'tgl_lahir' => htmlspecialchars_array($dokter)_info['tgl_lahir'] ?? '',
-            'gol_drh' => htmlspecialchars_array($dokter)_info['gol_drh'] ?? '',
-            'agama' => htmlspecialchars_array($dokter)_info['agama'] ?? '',
-            'almt_tgl' => htmlspecialchars_array($dokter)_info['almt_tgl'] ?? '',
-            'no_telp' => htmlspecialchars_array($dokter)_info['no_telp'] ?? '',
-            'stts_nikah' => htmlspecialchars_array($dokter)_info['stts_nikah'] ?? '',
-            'kd_sps' => htmlspecialchars_array($dokter)_info['kd_sps'] ?? '',
-            'alumni' => htmlspecialchars_array($dokter)_info['alumni'] ?? '',
-            'no_ijn_praktek' => htmlspecialchars_array($dokter)_info['no_ijn_praktek'] ?? '',
-            'status' => htmlspecialchars_array($dokter)_info['status'] ?? ''
+            'nm_dokter' => htmlspecialchars_array($dokter_info)['nm_dokter'] ?? '',
+            'jk' => htmlspecialchars_array($dokter_info)['jk'] ?? '',
+            'tmp_lahir' => htmlspecialchars_array($dokter_info)['tmp_lahir'] ?? '',
+            'tgl_lahir' => htmlspecialchars_array($dokter_info)['tgl_lahir'] ?? '',
+            'gol_drh' => htmlspecialchars_array($dokter_info)['gol_drh'] ?? '',
+            'agama' => htmlspecialchars_array($dokter_info)['agama'] ?? '',
+            'almt_tgl' => htmlspecialchars_array($dokter_info)['almt_tgl'] ?? '',
+            'no_telp' => htmlspecialchars_array($dokter_info)['no_telp'] ?? '',
+            'stts_nikah' => htmlspecialchars_array($dokter_info)['stts_nikah'] ?? '',
+            'kd_sps' => htmlspecialchars_array($dokter_info)['kd_sps'] ?? '',
+            'alumni' => htmlspecialchars_array($dokter_info)['alumni'] ?? '',
+            'no_ijn_praktek' => htmlspecialchars_array($dokter_info)['no_ijn_praktek'] ?? '',
+            'status' => htmlspecialchars_array($dokter_info)['status'] ?? ''
           ];
         }
       }

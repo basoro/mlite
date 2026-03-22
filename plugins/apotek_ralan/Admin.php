@@ -898,7 +898,7 @@ class Admin extends AdminModule
         $detail_pemberian_obat2[] = $row;
       }
 
-      echo $this->draw('rincian.html', ['jumlah_total_resep' => $jumlah_total_resep, 'jumlah_total_obat' => $jumlah_total_obat, 'jumlah_total_obat2' => $jumlah_total_obat2, 'resep' => htmlspecialchars_array($resep), 'resep_racikan' => htmlspecialchars_array($resep_racikan), 'jumlah_total_resep_racikan' => $jumlah_total_resep_racikan, 'detail_pemberian_obat' => htmlspecialchars_array($detail_pemberian_obat), 'detail_pemberian_obat_racikan' => htmlspecialchars_array($detail_pemberian_obat)2, 'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
+      echo $this->draw('rincian.html', ['jumlah_total_resep' => $jumlah_total_resep, 'jumlah_total_obat' => $jumlah_total_obat, 'jumlah_total_obat2' => $jumlah_total_obat2, 'resep' => htmlspecialchars_array($resep), 'resep_racikan' => htmlspecialchars_array($resep_racikan), 'jumlah_total_resep_racikan' => $jumlah_total_resep_racikan, 'detail_pemberian_obat' => htmlspecialchars_array($detail_pemberian_obat), 'detail_pemberian_obat_racikan' => htmlspecialchars_array($detail_pemberian_obat2), 'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
       exit();
     }
 
@@ -1407,7 +1407,7 @@ class Admin extends AdminModule
             'status' => 'success',
             'data' => [
                 'pemberian_obat' => htmlspecialchars_array($detail_pemberian_obat),
-                'obat_racikan' => htmlspecialchars_array($obat)_racikan
+                'obat_racikan' => htmlspecialchars_array($obat_racikan)
             ]
         ];
     }

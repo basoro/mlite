@@ -3292,14 +3292,14 @@ class Admin extends AdminModule
   public function getUbahDiagnosa($status_lanjut, $no_rawat)
   {
     $diagnosa_pasien = $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')->where('diagnosa_pasien.no_rawat', revertNoRawat($no_rawat))->where('diagnosa_pasien.status', $status_lanjut)->asc('prioritas')->toArray();
-    echo $this->draw('ubah.diagnosa.html', ['no_rawat' => revertNoRawat($no_rawat), 'diagnosa_pasien' => htmlspecialchars_array($diagnosa)_pasien, 'status_lanjut' => $status_lanjut]);
+    echo $this->draw('ubah.diagnosa.html', ['no_rawat' => revertNoRawat($no_rawat), 'diagnosa_pasien' => htmlspecialchars_array($diagnosa_pasien), 'status_lanjut' => $status_lanjut]);
     exit();
   }
 
   public function getDisplayDiagnosa($status_lanjut, $no_rawat)
   {
     $diagnosa_pasien = $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')->where('diagnosa_pasien.no_rawat', revertNoRawat($no_rawat))->where('diagnosa_pasien.status', $status_lanjut)->asc('prioritas')->toArray();
-    echo $this->draw('display.diagnosa.html', ['no_rawat' => revertNoRawat($no_rawat), 'diagnosa_pasien' => htmlspecialchars_array($diagnosa)_pasien, 'status_lanjut' => $status_lanjut]);
+    echo $this->draw('display.diagnosa.html', ['no_rawat' => revertNoRawat($no_rawat), 'diagnosa_pasien' => htmlspecialchars_array($diagnosa_pasien), 'status_lanjut' => $status_lanjut]);
     exit();
   }
 
@@ -3313,14 +3313,14 @@ class Admin extends AdminModule
   public function getUbahProsedur($status_lanjut, $no_rawat)
   {
     $prosedur_pasien = $this->db('prosedur_pasien')->join('icd9', 'icd9.kode = prosedur_pasien.kode')->where('prosedur_pasien.no_rawat', revertNoRawat($no_rawat))->where('prosedur_pasien.status', $status_lanjut)->asc('prioritas')->toArray();
-    echo $this->draw('ubah.prosedur.html', ['no_rawat' => revertNoRawat($no_rawat), 'prosedur_pasien' => htmlspecialchars_array($prosedur)_pasien, 'status_lanjut' => $status_lanjut]);
+    echo $this->draw('ubah.prosedur.html', ['no_rawat' => revertNoRawat($no_rawat), 'prosedur_pasien' => htmlspecialchars_array($prosedur_pasien), 'status_lanjut' => $status_lanjut]);
     exit();
   }
 
   public function getDisplayProsedur($status_lanjut, $no_rawat)
   {
     $prosedur_pasien = $this->db('prosedur_pasien')->join('icd9', 'icd9.kode = prosedur_pasien.kode')->where('prosedur_pasien.no_rawat', revertNoRawat($no_rawat))->where('prosedur_pasien.status', $status_lanjut)->asc('prioritas')->toArray();
-    echo $this->draw('display.prosedur.html', ['no_rawat' => revertNoRawat($no_rawat), 'prosedur_pasien' => htmlspecialchars_array($prosedur)_pasien, 'status_lanjut' => $status_lanjut]);
+    echo $this->draw('display.prosedur.html', ['no_rawat' => revertNoRawat($no_rawat), 'prosedur_pasien' => htmlspecialchars_array($prosedur_pasien), 'status_lanjut' => $status_lanjut]);
     exit();
   }
 

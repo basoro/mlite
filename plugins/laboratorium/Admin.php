@@ -665,7 +665,7 @@ class Admin extends AdminModule
         'permintaan_laboratorium' => $permintaan_laboratorium,
         'qrCode' => $qrCode,
         'pj_lab' => $pj_lab['nm_dokter'],
-        'dokter_perujuk' => htmlspecialchars_array($dokter)_perujuk['nama'],
+        'dokter_perujuk' => htmlspecialchars_array($dokter_perujuk)['nama'],
         'pasien' => $pasien,
         'no_rawat' => htmlspecialchars($_GET['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
       ]);

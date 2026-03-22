@@ -546,7 +546,7 @@ class Admin extends AdminModule
             'jumlah_total_radiologi' => $jumlah_total_radiologi,
             'qrCode' => $qrCode,
             'pj_radiologi' => $pj_radiologi['nm_dokter'],
-            'dokter_perujuk' => htmlspecialchars_array($dokter)_perujuk['nama'],
+            'dokter_perujuk' => htmlspecialchars_array($dokter_perujuk)['nama'],
             'pasien' => $pasien,
             'filename' => $filename,
             'no_rawat' => htmlspecialchars($_GET['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
