@@ -1898,8 +1898,14 @@ class Admin extends AdminModule
                 JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter 
                 JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
                 JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
-                WHERE reg_periksa.kd_poli = '$igd' 
-                AND reg_periksa.tgl_registrasi BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+                WHERE reg_periksa.kd_poli = :igd 
+                AND reg_periksa.tgl_registrasi BETWEEN :tgl_awal AND :tgl_akhir";
+
+        $params = [
+            ':igd' => $igd,
+            ':tgl_awal' => $tgl_awal,
+            ':tgl_akhir' => $tgl_akhir
+        ];
 
         if($status_periksa == 'belum') {
             $sql .= " AND reg_periksa.stts = 'Belum'";
@@ -1913,19 +1919,20 @@ class Admin extends AdminModule
 
         // Search
         if (!empty($searchValue)) {
-            $sql .= " AND (reg_periksa.no_rawat LIKE '%$searchValue%' OR reg_periksa.no_rkm_medis LIKE '%$searchValue%' OR pasien.nm_pasien LIKE '%$searchValue%' OR dokter.nm_dokter LIKE '%$searchValue%' OR poliklinik.nm_poli LIKE '%$searchValue%')";
+            $sql .= " AND (reg_periksa.no_rawat LIKE :search OR reg_periksa.no_rkm_medis LIKE :search OR pasien.nm_pasien LIKE :search OR dokter.nm_dokter LIKE :search OR poliklinik.nm_poli LIKE :search)";
+            $params[':search'] = "%$searchValue%";
         }
 
         // Count Total (filtered)
         $stmt = $this->db()->pdo()->prepare($sql);
-        $stmt->execute();
+        $stmt->execute($params);
         $totalRecords = $stmt->rowCount();
 
         // Order and Limit
-        $sql .= " ORDER BY $columnName $columnSortOrder LIMIT $start, $length";
+        $sql .= " ORDER BY $columnName $columnSortOrder LIMIT ".(int)$start.", ".(int)$length;
 
         $stmt = $this->db()->pdo()->prepare($sql);
-        $stmt->execute();
+        $stmt->execute($params);
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         $data = [];
