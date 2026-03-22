@@ -137,7 +137,7 @@ class Admin extends AdminModule
     public function getUninstall($dir)
     {
         // Ensure BASIC_MODULES unserialize returns an array
-        $basicModules = unserialize(BASIC_MODULES);
+        $basicModules = unserialize(BASIC_MODULES, ['allowed_classes' => false]);
         if (!is_array($basicModules)) {
             $basicModules = [];
         }
@@ -172,7 +172,7 @@ class Admin extends AdminModule
         }
 
         // Ensure BASIC_MODULES unserialize returns an array
-        $basicModules = unserialize(BASIC_MODULES);
+        $basicModules = unserialize(BASIC_MODULES, ['allowed_classes' => false]);
         if (!is_array($basicModules)) {
             $basicModules = [];
         }
@@ -306,7 +306,7 @@ class Admin extends AdminModule
                 $other['installed'] = $type == 'active' ? true : false;
                 
                 // Ensure BASIC_MODULES unserialize returns an array
-                $basicModules = unserialize(BASIC_MODULES);
+                $basicModules = unserialize(BASIC_MODULES, ['allowed_classes' => false]);
                 if (!is_array($basicModules)) {
                     $basicModules = [];
                 }
