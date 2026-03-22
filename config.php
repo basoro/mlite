@@ -86,7 +86,7 @@ define('UPLOADS', BASE_DIR . '/uploads');
 define('FILE_LOCK', false);
 
 // Basic modules
-define('BASIC_MODULES', serialize([
+define('BASIC_MODULES', json_encode([
     9 => 'settings',
     0 => 'dashboard',
     1 => 'master',

@@ -136,8 +136,8 @@ class Admin extends AdminModule
 
     public function getUninstall($dir)
     {
-        // Ensure BASIC_MODULES unserialize returns an array
-        $basicModules = unserialize(BASIC_MODULES, ['allowed_classes' => false]);
+        // Ensure BASIC_MODULES json_decode returns an array
+        $basicModules = json_decode(BASIC_MODULES, true);
         if (!is_array($basicModules)) {
             $basicModules = [];
         }
@@ -171,8 +171,8 @@ class Admin extends AdminModule
              redirect(url([ADMIN, 'modules', 'manage', 'inactive']));
         }
 
-        // Ensure BASIC_MODULES unserialize returns an array
-        $basicModules = unserialize(BASIC_MODULES, ['allowed_classes' => false]);
+        // Ensure BASIC_MODULES json_decode returns an array
+        $basicModules = json_decode(BASIC_MODULES, true);
         if (!is_array($basicModules)) {
             $basicModules = [];
         }
@@ -305,8 +305,8 @@ class Admin extends AdminModule
 
                 $other['installed'] = $type == 'active' ? true : false;
                 
-                // Ensure BASIC_MODULES unserialize returns an array
-                $basicModules = unserialize(BASIC_MODULES, ['allowed_classes' => false]);
+                // Ensure BASIC_MODULES json_decode returns an array
+                $basicModules = json_decode(BASIC_MODULES, true);
                 if (!is_array($basicModules)) {
                     $basicModules = [];
                 }
