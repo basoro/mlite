@@ -555,7 +555,7 @@ class Admin extends AdminModule
         $totalRecordwithFilter = $records['allcount'];
 
         ## Fetch records
-        $sel = $this->db()->pdo()->prepare("select * from detail_pemberian_obat WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".intval($row1).",".intval($rowperpage));
+        $sel = $this->db()->pdo()->prepare("select * from detail_pemberian_obat WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".(int)$row1.",".(int)$rowperpage);
         $sel->execute($params);
         $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -668,7 +668,7 @@ class Admin extends AdminModule
         $totalRecordwithFilter = $records['allcount'];
 
         ## Fetch records
-        $sel = $this->db()->pdo()->prepare("select * from riwayat_barang_medis WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".intval($row1).",".intval($rowperpage));
+        $sel = $this->db()->pdo()->prepare("select * from riwayat_barang_medis WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".(int)$row1.",".(int)$rowperpage);
         $sel->execute($params);
         $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
 

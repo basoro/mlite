@@ -567,7 +567,7 @@ class Site extends SiteModule
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($ch, CURLOPT_TIMEOUT,30);
                     curl_setopt($ch, CURLOPT_POST, 1);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
                     $response = curl_exec($ch);
                     curl_close($ch);
                   }
@@ -999,7 +999,7 @@ class Site extends SiteModule
                       'Content-Type: application/json',
                       'Content-Length: ' . strlen($params_string))
                   );
-                  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+                  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 
                   //execute post
                   $request = curl_exec($ch);
@@ -1032,7 +1032,7 @@ class Site extends SiteModule
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($ch, CURLOPT_TIMEOUT,30);
                     curl_setopt($ch, CURLOPT_POST, 1);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
                     $response = curl_exec($ch);
                     curl_close($ch);
                   }

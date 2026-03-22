@@ -55,12 +55,10 @@ class Admin extends AdminModule
         }
         $stmt->execute();
         $records = $stmt->fetch();
-        $totalRecordwithFilter = $records['allcount'];
+        $totalRecordwithFilter = $records['allcount'] ?? 0;
 
-        $sql = "SELECT * FROM mlite_query_logs WHERE 1=1 $searchQuery ORDER BY `$columnName` $columnSortOrder LIMIT :row1, :rowperpage";
+        $sql = "SELECT * FROM mlite_query_logs WHERE 1=1 $searchQuery ORDER BY `$columnName` $columnSortOrder LIMIT ".(int)$row1.", ".(int)$rowperpage;
         $stmt = $this->db()->pdo()->prepare($sql);
-        $stmt->bindValue(':row1', intval($row1), \PDO::PARAM_INT);
-        $stmt->bindValue(':rowperpage', intval($rowperpage), \PDO::PARAM_INT);
         if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
             $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
         }

@@ -498,9 +498,23 @@ class Admin extends AdminModule
 
     public function getDownloadBerkasDigital()
     {
-      $file = explode('/', $_GET['lokasi_file']);
-      $file_name = $file['2'];
-      $file_url = WEBAPPS_URL.'/berkasrawat/' . $_GET['lokasi_file'];
+      $file_path_param = $_GET['lokasi_file'];
+      
+      // Basic validation to prevent directory traversal
+      if (strpos($file_path_param, '..') !== false || strpos($file_path_param, '/') !== false || strpos($file_path_param, '\\') !== false) {
+          echo 'Akses ditolak.';
+          exit();
+      }
+      
+      $file_name = $file_path_param;
+      $file_url = WEBAPPS_URL.'/berkasrawat/' . $file_name;
+      
+      // Validate that the file exists and is within the allowed directory
+      $real_path = realpath(UPLOADS.'/berkasrawat/' . $file_name);
+      if ($real_path === false || strpos($real_path, realpath(UPLOADS.'/berkasrawat/')) !== 0) {
+          echo 'File tidak ditemukan.';
+          exit();
+      }
       
       // Configure.
       header('Content-Type: application/octet-stream');
@@ -508,7 +522,7 @@ class Admin extends AdminModule
       header("Content-disposition: attachment; filename=\"".$file_name."\"");
       
       // Actual download.
-      readfile($file_url);
+      readfile($real_path);
 
       exit();
     }

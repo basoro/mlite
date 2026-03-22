@@ -184,7 +184,7 @@ class JnsPerawatanLab
         $totalRecords = $records['allcount'];
 
         $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS allcount FROM jns_perawatan_lab WHERE 1=1 $searchQuery");
-        if (!empty($search_text)) {
+        if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
             $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
         }
         $stmt->execute();

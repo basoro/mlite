@@ -266,8 +266,15 @@ public function postSaveSettingsApam()
         }
 
         $url = $waapiserver."/wagateway/kirimpesan";
+        if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('/^https:\/\//i', $url)) {
+             echo json_encode(['status' => false, 'msg' => 'Invalid or insecure WA Gateway URL']);
+             exit();
+        }
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
+        curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($curlHandle, CURLOPT_POSTFIELDS, http_build_query([
             'type' => 'text',
             'sender' => $waapiphonenumber,
@@ -279,7 +286,7 @@ public function postSaveSettingsApam()
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT, 30);
         curl_setopt($curlHandle, CURLOPT_POST, 1);
-        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
         
         $response = curl_exec($curlHandle);
         
@@ -316,14 +323,21 @@ public function postSaveSettingsApam()
         $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
         $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimgambar";
+        if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('/^https:\/\//i', $url)) {
+             echo json_encode(['status' => false, 'msg' => 'Invalid or insecure WA Gateway URL']);
+             exit();
+        }
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
+        curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=image&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['file']."&api_key=".$waapitoken);
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
         curl_setopt($curlHandle, CURLOPT_POST, 1);
-        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
         echo $response;
@@ -336,14 +350,21 @@ public function postSaveSettingsApam()
         $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
         $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimfile";
+        if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('/^https:\/\//i', $url)) {
+             echo json_encode(['status' => false, 'msg' => 'Invalid or insecure WA Gateway URL']);
+             exit();
+        }
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
+        curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=document&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['file']."&api_key=".$waapitoken);
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
         curl_setopt($curlHandle, CURLOPT_POST, 1);
-        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
         echo $response;

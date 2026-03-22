@@ -165,10 +165,8 @@ class Poliklinik
         $totalRecordwithFilter = $records['allcount'];
     
         // Data paginated
-        $sql = "SELECT * FROM poliklinik WHERE 1=1 $searchQuery ORDER BY `$columnName` $columnSortOrder LIMIT :row1, :rowperpage";
+        $sql = "SELECT * FROM poliklinik WHERE 1=1 $searchQuery ORDER BY `$columnName` $columnSortOrder LIMIT ".(int)$row1.", ".(int)$rowperpage;
         $stmt = $this->core->db()->pdo()->prepare($sql);
-        $stmt->bindValue(':row1', intval($row1), \PDO::PARAM_INT);
-        $stmt->bindValue(':rowperpage', intval($rowperpage), \PDO::PARAM_INT);
         foreach ($params as $key => $val) {
             $stmt->bindValue($key, $val);
         }
@@ -329,11 +327,10 @@ class Poliklinik
             $datasets = json_encode(array_column($datasets, "COUNT($column)"));
         }
 
-        $database = DBNAME;
         $nama_table = 'poliklinik';
 
-        $stmt = $this->core->db()->pdo()->prepare("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME=?");
-        $stmt->execute([$database, $nama_table]);
+        $stmt = $this->core->db()->pdo()->prepare("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=?");
+        $stmt->execute([$nama_table]);
         $result = $stmt->fetchAll();
 
         return [

@@ -58,12 +58,10 @@ class Admin extends AdminModule
         }
         $stmt->execute();
         $records = $stmt->fetch();
-        $totalRecordwithFilter = $records['allcount'];
+        $totalRecordwithFilter = $records['allcount'] ?? 0;
 
-        $sql = "SELECT * FROM mlite_api_key WHERE 1=1 $searchQuery ORDER BY `$columnName` $columnSortOrder LIMIT :row1, :rowperpage";
+        $sql = "SELECT * FROM mlite_api_key WHERE 1=1 $searchQuery ORDER BY `$columnName` $columnSortOrder LIMIT ".(int)$row1.", ".(int)$rowperpage;
         $stmt = $this->db()->pdo()->prepare($sql);
-        $stmt->bindValue(':row1', intval($row1), \PDO::PARAM_INT);
-        $stmt->bindValue(':rowperpage', intval($rowperpage), \PDO::PARAM_INT);
         if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
             $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
         }
@@ -235,8 +233,8 @@ $exp_time = $_POST['exp_time'];
         $database = DBNAME;
         $nama_table = 'mlite_api_key';
 
-        $stmt = $this->db()->pdo()->prepare("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME=?");
-        $stmt->execute([$database, $nama_table]);
+        $stmt = $this->db()->pdo()->prepare("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=?");
+        $stmt->execute([$nama_table]);
         $result = $stmt->fetchAll();
 
         echo $this->draw('chart.html', ['type' => $type, 'column' => htmlspecialchars_array($result), 'labels' => $labels, 'datasets' => $datasets, 'slug' => $slug]);

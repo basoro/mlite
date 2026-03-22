@@ -1731,7 +1731,11 @@ class Admin extends AdminModule
                 // Build INSERT query manually to avoid framework interference
                 $fields = array_keys($data_to_save);
                 $placeholders = ':' . implode(', :', $fields);
-                $sql = "INSERT INTO mlite_triase_igd (" . implode(', ', array_map(function($f){return "`$f`";}, $fields)) . ") VALUES (" . $placeholders . ")";
+                $escaped_fields = [];
+                foreach ($fields as $f) {
+                    $escaped_fields[] = "`$f`";
+                }
+                $sql = "INSERT INTO mlite_triase_igd (" . implode(', ', $escaped_fields) . ") VALUES (" . $placeholders . ")";
                 
                 error_log('DEBUG: Direct SQL: ' . $sql);
                 error_log('DEBUG: SQL Data: ' . print_r($data_to_save, true));

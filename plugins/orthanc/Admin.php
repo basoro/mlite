@@ -58,8 +58,21 @@ class Admin extends AdminModule
       }
 
       if($result) {
+        // SSRF protection: validate ai_api_url is a public https URL
+        $url_parts = parse_url($orthanc['ai_api_url']);
+        if (!filter_var($orthanc['ai_api_url'], FILTER_VALIDATE_URL) || 
+            !isset($url_parts['scheme']) || 
+            strtolower($url_parts['scheme']) !== 'https') {
+             $output = array('message' => 'error', 'code' => '400', 'desc' => 'Invalid or insecure API URL');
+             echo json_encode(htmlspecialchars_array($output));
+             exit();
+        }
+
         $curl = curl_init();
         curl_setopt ($curl, CURLOPT_URL, $orthanc['ai_api_url']);
+        curl_setopt($curl, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curl, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
           'Content-Type: application/json',
           'Authorization: Bearer ' . $orthanc['ai_api_key']
@@ -221,20 +234,15 @@ class Admin extends AdminModule
             // --- Validasi URL ---
             $valid = false;
             if (filter_var($url, FILTER_VALIDATE_URL)) {
-                $valid = true;
-            } else {
-                // Fallback validasi Docker container host
                 $parts = parse_url($url);
-                if (
-                    $parts &&
-                    !empty($parts['scheme']) &&
-                    in_array($parts['scheme'], ['http','https'], true) &&
-                    !empty($parts['host']) &&
-                    (
-                        preg_match('/^[a-zA-Z0-9\-_]+$/', $parts['host']) || 
-                        filter_var($parts['host'], FILTER_VALIDATE_IP)
-                    )
-                ) {
+                // Require HTTP/HTTPS, but strictly validate host to prevent SSRF if this is external
+                // Assuming orthanc server is the only allowed host
+                $orthanc_server = $this->settings->get('orthanc.server');
+                $orthanc_parts = parse_url($orthanc_server);
+                
+                if (isset($parts['scheme']) && in_array(strtolower($parts['scheme']), ['http','https']) &&
+                    isset($parts['host']) && isset($orthanc_parts['host']) && 
+                    strtolower($parts['host']) === strtolower($orthanc_parts['host'])) {
                     $valid = true;
                 }
             }
@@ -670,7 +678,7 @@ class Admin extends AdminModule
         curl_setopt($curl, CURLOPT_USERPWD, $orthanc['username'].":".$orthanc['password']);
         curl_setopt($curl, CURLOPT_TIMEOUT, 10);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         
         $resp = curl_exec($curl);
@@ -801,7 +809,7 @@ class Admin extends AdminModule
         curl_setopt($curl, CURLOPT_USERPWD, $orthanc['username'].":".$orthanc['password']);
         curl_setopt($curl, CURLOPT_TIMEOUT, 30);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         
         // Apply additional options
@@ -1203,7 +1211,7 @@ class Admin extends AdminModule
         curl_setopt($curl, CURLOPT_FILE, $fp);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($curl, CURLOPT_TIMEOUT, 300);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         
         $result = curl_exec($curl);
@@ -1891,7 +1899,7 @@ Instruksi format:
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $apiKey
             ]);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
             $response = curl_exec($ch);
