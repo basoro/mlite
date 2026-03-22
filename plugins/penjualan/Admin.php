@@ -269,6 +269,7 @@ class Admin extends AdminModule
         $total_tagihan = 0;
         foreach($rows as $row) {
             $total_tagihan += $row['harga_total'];
+            $row['nama_barang'] = htmlspecialchars($row['nama_barang'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $form_rincian_penjualan[] = $row;
         }
         echo $this->draw('form.rincian.penjualan.html', ['form_rincian_penjualan' => $form_rincian_penjualan, 'total_tagihan' => $total_tagihan]);

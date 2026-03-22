@@ -71,6 +71,7 @@ class Admin extends AdminModule
              $row['total_tagihan'] = $row['jumlah_harus_bayar'];
         }
 
+        header('Content-Type: application/json');
         echo json_encode([
             'status' => 'success',
             'data' => $data,
@@ -905,7 +906,7 @@ class Admin extends AdminModule
         'jumlah_total_radiologi' => $jumlah_total_radiologi,
         'jumlah_total_operasi' => $jumlah_total_operasi,
         'jumlah_total_obat_operasi' => $jumlah_total_obat_operasi,
-        'no_rawat' => $_POST['no_rawat']
+        'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
       ]);
       exit();
     }
@@ -966,7 +967,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["aturan"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["aturan"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;
@@ -986,7 +987,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["kd_dokter"].': '.$row["nm_dokter"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["kd_dokter"].': '.$row["nm_dokter"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;
@@ -1006,7 +1007,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["nip"].': '.$row["nama"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["nip"].': '.$row["nama"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;

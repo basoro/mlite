@@ -555,9 +555,9 @@ public function postHapusResepResponse()
         ], JSON_PRETTY_PRINT));
 
         // Jika ada error saat hapus obat, catat tapi lanjutkan
-        if ($json_hapus_obat['metaData']['code'] !== '200') {
-          error_log('Gagal hapus obat ' . $obat['kode_brng'] . ': ' . $json_hapus_obat['metaData']['message']);
-        }
+      if ($json_hapus_obat['metaData']['code'] !== '200') {
+        error_log('Gagal hapus obat ' . htmlspecialchars($obat['kode_brng'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . ': ' . htmlspecialchars($json_hapus_obat['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
+      }
       }
 
       // Setelah hapus semua obat, baru hapus resep
@@ -567,7 +567,7 @@ public function postHapusResepResponse()
 
       // Cek response dari BPJS
       if ($json_hapus['metaData']['code'] !== '200') {
-        throw new \Exception('Gagal menghapus resep di BPJS: ' . $json_hapus['metaData']['message']);
+        throw new \Exception('Gagal menghapus resep di BPJS: ' . htmlspecialchars($json_hapus['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
       }
 
       // Hapus data dari tabel mlite_apotek_online_resep_response_log setelah berhasil hapus di BPJS
@@ -612,7 +612,7 @@ public function postHapusResepResponse()
       
       echo json_encode([
         'success' => false,
-        'message' => $e->getMessage(),
+        'message' => htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
         'debug_info' => [
           'file' => $e->getFile(),
           'line' => $e->getLine(),
@@ -626,7 +626,7 @@ public function postHapusResepResponse()
       
       echo json_encode([
         'success' => false,
-        'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage(),
+        'message' => 'Terjadi kesalahan sistem: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
         'debug_info' => [
           'file' => $e->getFile(),
           'line' => $e->getLine(),
@@ -712,7 +712,7 @@ public function postHapusResepResponse()
       ], JSON_PRETTY_PRINT));
 
       if ($json_resep['metaData']['code'] !== '200') {
-        throw new \Exception('Gagal mengirim data resep: ' . $json_resep['metaData']['message']);
+        throw new \Exception('Gagal mengirim data resep: ' . htmlspecialchars($json_resep['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
       }
 
       // Simpan respons resep ke tabel khusus
@@ -721,8 +721,8 @@ public function postHapusResepResponse()
         $message = $json_resep['metaData']['message'];
         $raw_response = '{
                 "metaData": {
-                  "code": "' . $code . '",
-                  "message": "' . $message . '"
+                  "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+                  "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
                 },
                 "response": ' . $decompress . '}';
                       
@@ -793,11 +793,11 @@ public function postHapusResepResponse()
               'data' => $obat ?? []
             ], JSON_PRETTY_PRINT));
 
-            $obat_responses[] = ['metaData' => ['code' => '500', 'message' => $ex->getMessage()]];
+            $obat_responses[] = ['metaData' => ['code' => '500', 'message' => htmlspecialchars($ex->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]];
 
             $obat_errors[] = [
               'index' => $index,
-              'message' => $ex->getMessage(),
+              'message' => htmlspecialchars($ex->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
               'data' => $obat_data ?? $obat
             ];
           }
@@ -960,7 +960,7 @@ public function postHapusResepResponse()
           'noresep' => $_POST['NORESEP'] ?? '',
           'tanggal_kirim' => date('Y-m-d H:i:s'),
           'status' => 'error',
-          'response_resep' => $e->getMessage(),
+          'response_resep' => htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
           'response_obat' => '',
           'request' => json_encode($error_request_data),
           'user' => $this->core->getUserInfo('username', null, true)
@@ -969,13 +969,13 @@ public function postHapusResepResponse()
       
       echo json_encode([
         'success' => false,
-        'message' => $e->getMessage()
+        'message' => htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
       ]);
     } catch (\Error $e) {
       ob_clean();
       echo json_encode([
         'success' => false,
-        'message' => 'Fatal error: ' . $e->getMessage()
+        'message' => 'Fatal error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
       ]);
     }
 
@@ -1137,8 +1137,8 @@ public function postHapusResepResponse()
             
             echo json_encode([
                 'metaData' => [
-                    'code' => $code,
-                    'message' => $message
+                    'code' => htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                    'message' => htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ],
                 'response' => json_decode($decompress, true),
                 'request_info' => [
@@ -1161,7 +1161,7 @@ public function postHapusResepResponse()
         echo json_encode([
             'metaData' => [
                 'code' => '5000',
-                'message' => 'Error: ' . $e->getMessage()
+                'message' => 'Error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ],
             'response' => 'Terjadi kesalahan saat menghubungi server BPJS'
         ]);
@@ -1270,7 +1270,7 @@ public function postHapusResepResponse()
         echo json_encode([
             'metaData' => [
                 'code' => '5000',
-                'message' => 'Error: ' . $e->getMessage()
+                'message' => 'Error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ],
             'response' => 'Terjadi kesalahan saat menghubungi server BPJS',
             'debug' => [
@@ -1317,8 +1317,8 @@ public function postHapusResepResponse()
     if ($data != null) {
       $data = '{
           "metaData": {
-            "code": "' . $code . '",
-            "message": "' . $message . '"
+            "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+            "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           },
           "response": ' . $decompress . '}';
       $data = json_decode($data, true);
@@ -1365,8 +1365,8 @@ public function postHapusResepResponse()
       if ($data_rujukan != null) {
         $data_rujukan = '{
             "metaData": {
-              "code": "' . $code . '",
-              "message": "' . $message . '"
+              "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+              "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
             },
             "response": ' . $decompress . '}';
         $data_rujukan = json_decode($data_rujukan, true);
@@ -2062,7 +2062,7 @@ public function postHapusResepResponse()
       ob_clean();
       echo json_encode([
         'status' => 'error',
-        'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage(),
+        'message' => 'Terjadi kesalahan sistem: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
         'debug' => [
           'file' => $e->getFile(),
           'line' => $e->getLine(),
@@ -2210,7 +2210,7 @@ public function postHapusResepResponse()
       error_log('Error in postCariSep: ' . $e->getMessage());
       echo json_encode([
         'success' => false,
-        'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+        'message' => 'Terjadi kesalahan sistem: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
       ]);
       exit();
     }
@@ -2378,7 +2378,7 @@ public function postHapusResepResponse()
                 // Jika API gagal, jangan hapus log lokal
                 echo json_encode([
                   'success' => false,
-                  'message' => 'Gagal menghapus resep dari sistem BPJS: ' . $api_message
+                  'message' => 'Gagal menghapus resep dari sistem BPJS: ' . htmlspecialchars($api_message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
                 exit();
               } else {
@@ -2389,7 +2389,7 @@ public function postHapusResepResponse()
               $api_message = 'Data tidak lengkap untuk menghapus resep dari API BPJS';
               echo json_encode([
                 'success' => false,
-                'message' => $api_message
+                'message' => htmlspecialchars($api_message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
               ]);
               exit();
             }
@@ -2398,7 +2398,7 @@ public function postHapusResepResponse()
             $api_message = 'Data request tidak valid untuk menghapus resep dari API BPJS';
             echo json_encode([
               'success' => false,
-              'message' => $api_message
+              'message' => htmlspecialchars($api_message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ]);
             exit();
           }
@@ -2407,7 +2407,7 @@ public function postHapusResepResponse()
           error_log('Error saat hapus resep dari API: ' . $e->getMessage());
           echo json_encode([
             'success' => false,
-            'message' => 'Terjadi kesalahan saat menghapus resep dari sistem BPJS: ' . $e->getMessage()
+            'message' => 'Terjadi kesalahan saat menghapus resep dari sistem BPJS: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
           ]);
           exit();
         }
@@ -2423,7 +2423,7 @@ public function postHapusResepResponse()
         }
         echo json_encode([
           'success' => true,
-          'message' => $message
+          'message' => htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
         ]);
       } else {
         echo json_encode([
@@ -2436,7 +2436,7 @@ public function postHapusResepResponse()
       error_log('Error in postHapusLogApotikOnline: ' . $e->getMessage());
       echo json_encode([
         'success' => false,
-        'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+        'message' => 'Terjadi kesalahan sistem: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
       ]);
     }
     exit();

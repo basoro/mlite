@@ -44,7 +44,7 @@ class Site extends SiteModule
                 $data['state'] = 'retensi';
               } else if($pasien) {
                 $data['state'] = 'valid';
-                $data['no_rkm_medis'] = $pasien['no_rkm_medis'];
+                $data['no_rkm_medis'] = htmlspecialchars($pasien['no_rkm_medis'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
               } else  { 
                 $data['state'] = 'invalid';
               }
@@ -67,7 +67,7 @@ class Site extends SiteModule
               } else if($pasien) {
                 $rand = mt_rand(100000, 999999);
                 $data['state'] = 'valid';
-                $data['email'] = $email;
+                $data['email'] = htmlspecialchars($email, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
                 $data['kode_validasi'] = $rand;
                 $data['time_wait'] = time();
                 $this->sendRegisterEmail($email, $nama_lengkap, $rand);
@@ -720,13 +720,13 @@ class Site extends SiteModule
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $hitung = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('no_rkm_medis', $no_rkm_medis)->oneArray();
-              echo $hitung['count'];
+              echo htmlspecialchars($hitung['count'] ?? '0', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             break;
             case "hitungranap":
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $hitung = $this->db('kamar_inap')->select(['count' => 'COUNT(DISTINCT kamar_inap.no_rawat)'])->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
-              echo $hitung['count'];
+              echo htmlspecialchars($hitung['count'] ?? '0', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             break;
             case "layananunggulan":
               $data[] = array_column($this->db('mlite_settings')->where('module', 'website')->toArray(), 'value', 'field');
@@ -1154,7 +1154,7 @@ class Site extends SiteModule
               $query = $this->db('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
               if($query) {
                 $data['status'] = 'Success';
-                $data['msg'] = $lokasi_file;
+                $data['msg'] = htmlspecialchars($lokasi_file, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
                 echo json_encode($data);
               }
           }

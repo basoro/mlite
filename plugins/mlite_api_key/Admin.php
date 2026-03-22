@@ -70,12 +70,12 @@ class Admin extends AdminModule
         $data = [];
         foreach ($result as $row) {
             $data[] = [
-                'id'=>$row['id'],
-'api_key'=>$row['api_key'],
-'username'=>$row['username'],
-'method'=>$row['method'],
-'ip_range'=>$row['ip_range'],
-'exp_time'=>$row['exp_time']
+                'id'=>htmlspecialchars($row['id'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+'api_key'=>htmlspecialchars($row['api_key'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+'username'=>htmlspecialchars($row['username'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+'method'=>htmlspecialchars($row['method'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+'ip_range'=>htmlspecialchars($row['ip_range'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+'exp_time'=>htmlspecialchars($row['exp_time'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
 
             ];
         }

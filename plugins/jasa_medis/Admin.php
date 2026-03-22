@@ -179,6 +179,7 @@ class Admin extends AdminModule
             $this->assign['grandtotal'] = 0;
             $this->assign['dokter'] = [];
             foreach($dokter as $row) {
+                $row['nm_dokter'] = htmlspecialchars($row['nm_dokter'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
                 $tgl_perawatan = $this->db('rawat_jl_dr')
                     ->select(['tgl_perawatan'])
                     ->where('kd_dokter', $row['kd_dokter'])
@@ -202,7 +203,8 @@ class Admin extends AdminModule
                         ->where('kd_dokter', $row['kd_dokter'])
                         ->toArray();
                     $row2['subtotal'] = 0;
-                    foreach($row2['detail'] as $row3) {
+                    foreach($row2['detail'] as &$row3) {
+                        $row3['nm_perawatan'] = htmlspecialchars($row3['nm_perawatan'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
                         $row2['subtotal'] += $row3['tarif_tindakandr'];
                     }
                     $row['total'] += $row2['subtotal'];
@@ -234,6 +236,7 @@ class Admin extends AdminModule
             $this->assign['grandtotal'] = 0;
             $this->assign['petugas'] = [];
             foreach($reg_periksa as $row) {
+                $row['nama'] = htmlspecialchars($row['nama'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
                 $tgl_perawatan = $this->db('rawat_jl_pr')
                     ->select(['tgl_perawatan'])
                     ->where('nip', $row['nip'])
@@ -257,7 +260,8 @@ class Admin extends AdminModule
                         ->where('nip', $row['nip'])
                         ->toArray();
                     $row2['subtotal'] = 0;
-                    foreach($row2['detail'] as $row3) {
+                    foreach($row2['detail'] as &$row3) {
+                        $row3['nm_perawatan'] = htmlspecialchars($row3['nm_perawatan'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
                         $row2['subtotal'] += $row3['tarif_tindakanpr'];
                     }
                     $row['total'] += $row2['subtotal'];

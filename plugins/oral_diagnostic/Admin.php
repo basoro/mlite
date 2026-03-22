@@ -165,6 +165,7 @@ class Admin extends AdminModule
       $this->assign['tgl_registrasi']= date('Y-m-d');
       $this->assign['jam_reg']= date('H:i:s');
       if (isset($_POST['no_rawat'])){
+        $no_rawat = htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $this->assign['mlite_pendaftaran_oral_diagnostic'] = $this->db('mlite_pendaftaran_oral_diagnostic')
           ->select('pasien.no_rkm_medis')
           ->select('pasien.nm_pasien')
@@ -182,7 +183,7 @@ class Admin extends AdminModule
           ->join('poliklinik', 'poliklinik.kd_poli=mlite_pendaftaran_oral_diagnostic.kd_poli')
           ->join('dokter', 'dokter.kd_dokter=mlite_pendaftaran_oral_diagnostic.kd_dokter')
           ->join('penjab', 'penjab.kd_pj=mlite_pendaftaran_oral_diagnostic.kd_pj')
-          ->where('no_rawat', $_POST['no_rawat'])
+          ->where('no_rawat', $no_rawat)
           ->oneArray();
         echo $this->draw('form.html', [
           'rawat_jalan' => $this->assign
@@ -227,8 +228,9 @@ class Admin extends AdminModule
     public function anyStatusDaftar()
     {
       if(isset($_POST['no_rkm_medis'])) {
+        $no_rkm_medis = htmlspecialchars($_POST['no_rkm_medis'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $rawat = $this->db('reg_periksa')
-          ->where('no_rkm_medis', $_POST['no_rkm_medis'])
+          ->where('no_rkm_medis', $no_rkm_medis)
           ->where('status_bayar', 'Belum Bayar')
           ->limit(1)
           ->oneArray();
@@ -240,7 +242,7 @@ class Admin extends AdminModule
             }
             $bg_status = 'has-error';
           } else {
-            $result = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+            $result = $this->db('reg_periksa')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
             if(!empty($result['no_rawat'])) {
               $stts_daftar = 'Lama';
               $bg_status = 'has-info';
@@ -253,10 +255,11 @@ class Admin extends AdminModule
           }
         echo $this->draw('stts.daftar.html', ['stts_daftar' => $stts_daftar, 'stts_daftar_hidden' => $stts_daftar_hidden, 'bg_status' =>$bg_status]);
       } else {
+        $no_rawat = htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $rawat = $this->db('reg_periksa')
-          ->where('no_rawat', $_POST['no_rawat'])
+          ->where('no_rawat', $no_rawat)
           ->oneArray();
-        echo $this->draw('stts.daftar.html', ['stts_daftar' => $rawat['stts_daftar']]);
+        echo $this->draw('stts.daftar.html', ['stts_daftar' => htmlspecialchars($rawat['stts_daftar'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
       }
       exit();
     }
@@ -319,7 +322,7 @@ class Admin extends AdminModule
         echo json_encode($data);
       } else {
         $data['status'] = 'error';
-        $data['msg'] = $query->errorInfo()['2'];
+        $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         echo json_encode($data);
       }
 
@@ -352,9 +355,10 @@ class Admin extends AdminModule
     public function anyPasien()
     {
       if(isset($_POST['cari'])) {
+        $cari = htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $pasien = $this->db('pasien')
-          ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
-          ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
+          ->like('no_rkm_medis', '%'.$cari.'%')
+          ->orLike('nm_pasien', '%'.$cari.'%')
           ->asc('no_rkm_medis')
           ->limit(5)
           ->toArray();
@@ -372,7 +376,7 @@ class Admin extends AdminModule
         ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
         ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
         ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
-        ->where('no_rawat', $_GET['no_rawat'])
+        ->where('no_rawat', htmlspecialchars($_GET['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'))
         ->oneArray();
       echo $this->draw('antrian.html', ['rawat_jalan' => $rawat_jalan]);
       exit();
@@ -597,7 +601,7 @@ class Admin extends AdminModule
         }
         $resep[] = $row;
       }
-      echo $this->draw('rincian.html', ['rawat_jl_dr' => $rawat_jl_dr, 'rawat_jl_pr' => $rawat_jl_pr, 'rawat_jl_drpr' => $rawat_jl_drpr, 'jumlah_total' => $jumlah_total, 'jumlah_total_resep' => $jumlah_total_resep, 'resep' =>$resep, 'no_rawat' => $_POST['no_rawat']]);
+      echo $this->draw('rincian.html', ['rawat_jl_dr' => $rawat_jl_dr, 'rawat_jl_pr' => $rawat_jl_pr, 'rawat_jl_drpr' => $rawat_jl_drpr, 'jumlah_total' => $jumlah_total, 'jumlah_total_resep' => $jumlah_total_resep, 'resep' =>$resep, 'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
       exit();
     }
 
@@ -723,7 +727,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["aturan"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["aturan"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;
@@ -804,7 +808,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["kd_dokter"].': '.$row["nm_dokter"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["kd_dokter"].': '.$row["nm_dokter"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;
@@ -824,7 +828,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["nip"].': '.$row["nama"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["nip"].': '.$row["nama"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;
@@ -919,7 +923,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["kd_penyakit"].': '.$row["nm_penyakit"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["kd_penyakit"].': '.$row["nm_penyakit"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         } else {
           $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
@@ -954,7 +958,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["kode"].': '.$row["deskripsi_panjang"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["kode"].': '.$row["deskripsi_panjang"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         } else {
           $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
@@ -1090,7 +1094,7 @@ class Admin extends AdminModule
         echo json_encode($data);
       } else {
         $data['status'] = 'error';
-        $data['msg'] = $query->errorInfo()['2'];
+        $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         echo json_encode($data);
       }
 
@@ -1124,7 +1128,7 @@ class Admin extends AdminModule
         echo json_encode($data);
       } else {
         $data['status'] = 'error';
-        $data['msg'] = $query->errorInfo()['2'];
+        $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         echo json_encode($data);
       }
 
@@ -1159,7 +1163,7 @@ class Admin extends AdminModule
         echo json_encode($data);
       } else {
         $data['status'] = 'error';
-        $data['msg'] = $query->errorInfo()['2'];
+        $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         echo json_encode($data);
       }
 
@@ -1390,14 +1394,14 @@ class Admin extends AdminModule
                 error_log('Validation failed for field: ' . $field . ', value: "' . $value . '"');
                 echo json_encode([
                     'status' => 'error', 
-                    'message' => 'Field ' . $field . ' harus diisi',
-                    'field' => $field,
-                    'value' => $value,
-                    'trimmed_value' => $trimmed_value,
+                    'message' => 'Field ' . htmlspecialchars($field, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . ' harus diisi',
+                    'field' => htmlspecialchars($field, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                    'value' => htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                    'trimmed_value' => htmlspecialchars($trimmed_value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
                     'debug_info' => [
                         'isset' => isset($_POST[$field]),
-                        'original_value' => $value,
-                        'trimmed_value' => $trimmed_value,
+                        'original_value' => htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                        'trimmed_value' => htmlspecialchars($trimmed_value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
                         'is_empty' => empty($trimmed_value)
                     ]
                 ]);

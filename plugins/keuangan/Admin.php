@@ -578,8 +578,8 @@ class Admin extends AdminModule
       
       $data = [
         'settings' => $settings,
-        'tgl_awal' => $tgl_awal,
-        'tgl_akhir' => $tgl_akhir,
+        'tgl_awal' => htmlspecialchars($tgl_awal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+        'tgl_akhir' => htmlspecialchars($tgl_akhir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
         'aktiva_lancar' => $aktiva_lancar,
         'aktiva_tetap' => $aktiva_tetap,
         'hutang_lancar' => $hutang_lancar,

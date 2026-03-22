@@ -161,10 +161,11 @@ class Admin extends AdminModule
       $this->assign['petugas'] = $this->db('petugas')->toArray();
       $this->assign['no_rawat'] = '';
       if (isset($_POST['no_rawat'])){
+        $no_rawat = htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $this->assign['operasi'] = $this->db('operasi')
           ->join('reg_periksa', 'reg_periksa.no_rawat=operasi.no_rawat')
           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-          ->where('operasi.no_rawat', $_POST['no_rawat'])
+          ->where('operasi.no_rawat', $no_rawat)
           ->oneArray();
         echo $this->draw('form.html', [
           'operasi' => $this->assign
@@ -324,7 +325,7 @@ class Admin extends AdminModule
 
     public function anyPasien()
     {
-      $cari = $_POST['cari'] ?? '';
+      $cari = htmlspecialchars($_POST['cari'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
       $pasien = [];
       if(!empty($cari)) {
         $sql = "SELECT
@@ -366,7 +367,7 @@ class Admin extends AdminModule
 
       echo $this->draw('rincian.html', [
         'beri_obat_operasi' => $beri_obat_operasi,
-        'no_rawat' => $_POST['no_rawat']
+        'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
       ]);
       exit();
     }
@@ -374,7 +375,7 @@ class Admin extends AdminModule
     public function anyObat()
     {
       $obat = $this->db('obatbhp_ok')
-        ->like('nm_obat', '%'.$_POST['obat'].'%')
+        ->like('nm_obat', '%'.htmlspecialchars($_POST['obat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
         ->limit(10)
         ->toArray();
       echo $this->draw('obat.html', ['obat' => $obat]);

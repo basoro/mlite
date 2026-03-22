@@ -406,7 +406,7 @@ class Admin extends AdminModule
     ];
 
     $data = json_encode($data);
-    //echo $data;
+    //// echo $data;
 
     $url = $this->api_url . 'kunjungan';
     $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
@@ -482,7 +482,7 @@ class Admin extends AdminModule
     ];
 
     $data = json_encode($data);
-    //echo $data;
+    //// echo $data;
 
     $url = $this->api_url . 'kunjungan';
     $output = PcareService::put($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
@@ -793,7 +793,7 @@ class Admin extends AdminModule
     ];
 
     $data = json_encode($data);
-    //echo $data;
+    //// echo $data;
 
     $url = $this->api_url . 'pendaftaran';
     $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
@@ -1275,7 +1275,7 @@ class Admin extends AdminModule
       ];
 
       $data = json_encode($data);
-      //echo $data;
+      //// echo $data;
 
       $url = $this->api_url . 'tindakan';
       $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
@@ -1324,7 +1324,7 @@ class Admin extends AdminModule
       ];
 
       $data = json_encode($data);
-      //echo $data;
+      //// echo $data;
 
       $url = $this->api_url . 'tindakan';
       $output = PcareService::put($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
@@ -1458,7 +1458,7 @@ class Admin extends AdminModule
       ];
 
       $data = json_encode($data);
-      echo $data;
+      // echo $data;
 
       $url = $this->api_url . 'obat/kunjungan';
       $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
@@ -2068,13 +2068,13 @@ class Admin extends AdminModule
               "message": "' . $message . '"
             },
             "response": ' . $decompress . '}';
-          // echo $data;
+          // // echo $data;
           $data = json_decode($data, true);
           $noUrut = $data['response']['message'];
-          echo $noUrut;
+          echo htmlspecialchars($noUrut, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         } else {
             //echo json_encode($json);
-            echo $message;
+            echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         }        
       } else {
           echo '{
@@ -2128,7 +2128,7 @@ class Admin extends AdminModule
       ];
 
       $data = json_encode($data);
-      echo $data;
+      // echo $data;
 
       date_default_timezone_set('UTC');
       $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
@@ -2154,13 +2154,13 @@ class Admin extends AdminModule
               "message": "' . $message . '"
             },
             "response": ' . $decompress . '}';
-          // echo $data;
+          // // echo $data;
           $data = json_decode($data, true);
           $noKunjungan = $data['response'][0]['message'];
-          echo $noKunjungan;
+          echo htmlspecialchars($noKunjungan, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         } else {
             //echo json_encode($json);
-            echo $message;
+            echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         }
 
       } else {
@@ -2247,14 +2247,14 @@ class Admin extends AdminModule
               "message": "' . $message . '"
             },
             "response": ' . $decompress . '}';
-          // echo $data;
+          // // echo $data;
           $data = json_decode($data, true);
           $noKunjungan = $data['response'][0]['message'];
-          echo $noKunjungan;
+          echo htmlspecialchars($noKunjungan, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         } else {
             //echo json_encode($json);
             // echo $data_test;
-            echo $message;
+            echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         }
 
       } else {
@@ -2338,13 +2338,13 @@ class Admin extends AdminModule
               "message": "' . $message . '"
             },
             "response": ' . $decompress . '}';
-          // echo $data;
+          // // echo $data;
           $data = json_decode($data, true);
           $noKunjungan = $data['response'][0]['message'];
-          echo $noKunjungan;
+          echo htmlspecialchars($noKunjungan, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         } else {
             //echo json_encode($json);
-            echo $message;
+            echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         }
           
       } else {
@@ -2533,7 +2533,7 @@ class Admin extends AdminModule
       $message = $json['metaData']['message'];
       if ($json != null) {
         //echo json_encode($json);
-        echo $message;
+        echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
       } else {
           echo '{
               "metaData": {
@@ -2606,7 +2606,7 @@ class Admin extends AdminModule
       $message = $json['metaData']['message'];
       if ($json != null) {
         //echo json_encode($json);
-        echo $message;
+        echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
       } else {
           echo '{
               "metaData": {
@@ -2677,7 +2677,7 @@ class Admin extends AdminModule
       $message = $json['metaData']['message'];
       if ($json != null) {
         //echo json_encode($json);
-        echo $message;
+        echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
       } else {
           echo '{
               "metaData": {

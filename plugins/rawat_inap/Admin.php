@@ -215,6 +215,7 @@ class Admin extends AdminModule
       $this->assign['stts_pulang'] = ['Sehat','Rujuk','APS','+','Meninggal','Sembuh','Membaik','Pulang Paksa','-','Pindah Kamar','Status Belum Lengkap','Atas Persetujuan Dokter','Atas Permintaan Sendiri','Lain-lain'];
       $this->assign['no_rawat'] = '';
       if (isset($_POST['no_rawat'])){
+        $no_rawat = htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $this->assign['kamar_inap'] = $this->db('kamar_inap')
           ->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')
           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
@@ -222,7 +223,7 @@ class Admin extends AdminModule
           ->join('dpjp_ranap', 'dpjp_ranap.no_rawat=kamar_inap.no_rawat')
           ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
           ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
-          ->where('kamar_inap.no_rawat', $_POST['no_rawat'])
+          ->where('kamar_inap.no_rawat', $no_rawat)
           ->oneArray();
         echo $this->draw('form.html', [
           'rawat_inap' => $this->assign
@@ -254,8 +255,9 @@ class Admin extends AdminModule
     public function anyStatusDaftar()
     {
       if(isset($_POST['no_rkm_medis'])) {
+        $no_rkm_medis = htmlspecialchars($_POST['no_rkm_medis'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $rawat = $this->db('reg_periksa')
-          ->where('no_rkm_medis', $_POST['no_rkm_medis'])
+          ->where('no_rkm_medis', $no_rkm_medis)
           ->where('status_bayar', 'Belum Bayar')
           ->limit(1)
           ->oneArray();
@@ -263,7 +265,7 @@ class Admin extends AdminModule
             $stts_daftar ="Transaki tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
             $bg_status = 'text-danger';
           } else {
-            $result = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+            $result = $this->db('reg_periksa')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
             if(!empty($result['no_rawat'])) {
               $stts_daftar = 'Lama';
               $bg_status = 'text-info';
@@ -274,10 +276,11 @@ class Admin extends AdminModule
           }
         echo $this->draw('stts.daftar.html', ['stts_daftar' => $stts_daftar, 'stts_daftar_hidden' => $stts_daftar, 'bg_status' => $bg_status]);
       } else {
+        $no_rawat = htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $rawat = $this->db('reg_periksa')
-          ->where('no_rawat', $_POST['no_rawat'])
+          ->where('no_rawat', $no_rawat)
           ->oneArray();
-        echo $this->draw('stts.daftar.html', ['stts_daftar' => $rawat['stts_daftar'], 'stts_daftar_hidden' => $rawat['stts_daftar'], 'bg_status' => 'text-info']);
+        echo $this->draw('stts.daftar.html', ['stts_daftar' => htmlspecialchars($rawat['stts_daftar'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), 'stts_daftar_hidden' => htmlspecialchars($rawat['stts_daftar'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), 'bg_status' => 'text-info']);
       }
       exit();
     }
@@ -390,7 +393,7 @@ class Admin extends AdminModule
         ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
         ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
         ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
-        ->where('no_rawat', $_GET['no_rawat'])
+        ->where('no_rawat', htmlspecialchars($_GET['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'))
         ->oneArray();
       echo $this->draw('antrian.html', ['rawat_inap' => $rawat_inap]);
       exit();
@@ -615,7 +618,7 @@ class Admin extends AdminModule
         }
         $resep[] = $row;
       }
-      echo $this->draw('rincian.html', ['rawat_inap_dr' => $rawat_inap_dr, 'rawat_inap_pr' => $rawat_inap_pr, 'rawat_inap_drpr' => $rawat_inap_drpr, 'jumlah_total' => $jumlah_total, 'jumlah_total_resep' => $jumlah_total_resep, 'resep' =>$resep, 'no_rawat' => $_POST['no_rawat']]);
+      echo $this->draw('rincian.html', ['rawat_inap_dr' => $rawat_inap_dr, 'rawat_inap_pr' => $rawat_inap_pr, 'rawat_inap_drpr' => $rawat_inap_drpr, 'jumlah_total' => $jumlah_total, 'jumlah_total_resep' => $jumlah_total_resep, 'resep' =>$resep, 'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
       exit();
     }
 

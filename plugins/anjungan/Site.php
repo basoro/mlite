@@ -2518,7 +2518,7 @@ class Site extends SiteModule
                             ]);
 
                           if($insert) {
-                            echo "Presensi Masuk jam ".$jam_masuk." ".$status." ".$keterlambatan." telah disimpan";
+                            echo htmlspecialchars("Presensi Masuk jam ".$jam_masuk." ".$status." ".$keterlambatan." telah disimpan", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
                           }
                       }
                   }elseif($cek){
@@ -2559,7 +2559,7 @@ class Site extends SiteModule
                             ]);
                           if($insert) {
                               $this->db('temporary_presensi')->where('id', $cek['id'])->delete();
-                              echo "Presensi Masuk jam ".$presensi['jam_datang']." ".$presensi['status']." ".$presensi['keterlambatan']." telah disimpan";
+                              echo htmlspecialchars("Presensi Masuk jam ".$presensi['jam_datang']." ".$presensi['status']." ".$presensi['keterlambatan']." telah disimpan", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
                           }
                       }
                   }
@@ -3277,7 +3277,7 @@ class Site extends SiteModule
 
         } else {
 
-          echo $data['metaData']['message'];
+          echo htmlspecialchars($data['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
         }
         exit();

@@ -658,7 +658,7 @@ class Admin extends AdminModule
         if ($configError) {
             echo json_encode([
                 'success' => false,
-                'message' => $configError
+                'message' => htmlspecialchars($configError, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ]);
             exit();
         }
@@ -700,7 +700,7 @@ class Admin extends AdminModule
             $errorMessage = $this->getHttpErrorMessage($httpCode, $resp);
             echo json_encode([
                 'success' => false,
-                'message' => 'Server error: ' . $errorMessage['message'],
+                'message' => htmlspecialchars('Server error: ' . $errorMessage['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
                 'troubleshooting' => $errorMessage['troubleshooting']
             ]);
         }
@@ -858,7 +858,7 @@ class Admin extends AdminModule
         
         if ($curlErrno !== 0) {
             http_response_code(500);
-            echo json_encode(['error' => 'Connection failed: ' . $curlError]);
+            echo json_encode(['error' => 'Connection failed: ' . htmlspecialchars($curlError, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
             exit();
         }
         
@@ -891,6 +891,7 @@ class Admin extends AdminModule
 
     public function postGetstudydetails()
     {
+        header('Content-Type: application/json');
         // Validate token
         if (!isset($_POST['token']) || $_POST['token'] !== $_SESSION['token']) {
             echo json_encode([
@@ -942,7 +943,7 @@ class Admin extends AdminModule
                 $errorMessage = $this->getCurlErrorMessage($curlErrno, $curlError);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Connection failed: ' . $errorMessage['message']
+                    'message' => htmlspecialchars('Connection failed: ' . $errorMessage['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
                 exit();
             }
@@ -970,7 +971,7 @@ class Admin extends AdminModule
                 $errorMessage = $this->getHttpErrorMessage($httpCode, $resp);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Server error: ' . $errorMessage['message']
+                    'message' => htmlspecialchars('Server error: ' . $errorMessage['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
             }
             
@@ -982,7 +983,7 @@ class Admin extends AdminModule
             header('Content-Type: application/json');
             echo json_encode([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
+                'message' => htmlspecialchars('Error: ' . $e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ]);
         }
         
@@ -991,6 +992,7 @@ class Admin extends AdminModule
     
     public function postModifystudytags()
     {
+        header('Content-Type: application/json');
         // Validate token
         if (!isset($_POST['token']) || $_POST['token'] !== $_SESSION['token']) {
             echo json_encode([
@@ -1130,7 +1132,7 @@ class Admin extends AdminModule
                 $errorMessage = $this->getCurlErrorMessage($curlErrno, $curlError);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Connection failed: ' . $errorMessage['message']
+                    'message' => htmlspecialchars('Connection failed: ' . $errorMessage['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
                 exit();
             }
@@ -1162,7 +1164,7 @@ class Admin extends AdminModule
                 $errorMessage = $this->getHttpErrorMessage($httpCode, $resp);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Modification failed: ' . $errorMessage['message']
+                    'message' => htmlspecialchars('Modification failed: ' . $errorMessage['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
             }
             
@@ -1171,7 +1173,7 @@ class Admin extends AdminModule
             header('Content-Type: application/json');
             echo json_encode([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage(),
+                'message' => htmlspecialchars('Error: ' . $e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
                 'debug' => [
                     'exception_trace' => $e->getTraceAsString()
                 ]
@@ -1314,7 +1316,7 @@ class Admin extends AdminModule
                 $errorMessage = $this->getCurlErrorMessage($curlErrno, $curlError);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Connection failed: ' . $errorMessage['message']
+                    'message' => htmlspecialchars('Connection failed: ' . $errorMessage['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
                 exit();
             }
@@ -1351,7 +1353,7 @@ class Admin extends AdminModule
                 header('Content-Type: application/json');
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Download failed: ' . $errorMessage['message']
+                    'message' => htmlspecialchars('Download failed: ' . $errorMessage['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
                 exit();
             }
@@ -1380,14 +1382,14 @@ class Admin extends AdminModule
                 header('Content-Type: application/json');
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Download failed: ' . $errorMessage['message']
+                    'message' => htmlspecialchars('Download failed: ' . $errorMessage['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
             }
             
         } catch (\Exception $e) {
             echo json_encode([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
+                'message' => htmlspecialchars('Error: ' . $e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ]);
         }
         
@@ -1452,7 +1454,7 @@ class Admin extends AdminModule
                 header('Content-Type: application/json');
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Connection failed: ' . $errorMessage['message']
+                    'message' => htmlspecialchars('Connection failed: ' . $errorMessage['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
                 exit();
             }
@@ -1515,7 +1517,7 @@ class Admin extends AdminModule
                 header('Content-Type: application/json');
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Download failed: ' . $errorMessage['message'],
+                    'message' => htmlspecialchars('Download failed: ' . $errorMessage['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
                     'debug' => [
                         'curl_errno' => $curlErrno,
                         'curl_error' => $curlError,
@@ -1630,7 +1632,7 @@ class Admin extends AdminModule
         } catch (\Exception $e) {
             echo json_encode([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
+                'message' => htmlspecialchars('Error: ' . $e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ]);
         }
         
@@ -1691,7 +1693,7 @@ class Admin extends AdminModule
                 $errorMessage = $this->getCurlErrorMessage($curlErrno, $curlError);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Connection failed: ' . $errorMessage['message']
+                    'message' => htmlspecialchars('Connection failed: ' . $errorMessage['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
                 exit();
             }
@@ -1724,7 +1726,7 @@ class Admin extends AdminModule
                 $errorMessage = $this->getCurlErrorMessage($curlErrno, $curlError);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Delete operation failed: ' . $errorMessage['message']
+                    'message' => htmlspecialchars('Delete operation failed: ' . $errorMessage['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
                 exit();
             }
@@ -1742,7 +1744,7 @@ class Admin extends AdminModule
                 $errorMessage = $this->getHttpErrorMessage($httpCode, $deleteResp);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Delete failed: ' . $errorMessage['message'],
+                    'message' => htmlspecialchars('Delete failed: ' . $errorMessage['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
                     'httpCode' => $httpCode
                 ]);
             }
@@ -1751,7 +1753,7 @@ class Admin extends AdminModule
             error_log('Orthanc Delete Study Error: ' . $e->getMessage());
             echo json_encode([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
+                'message' => htmlspecialchars('Error: ' . $e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ]);
         }
         
@@ -1901,7 +1903,7 @@ Instruksi format:
             if ($curlErrno !== 0) {
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Connection failed: ' . $curlError
+                    'message' => htmlspecialchars('Connection failed: ' . $curlError, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
                 exit();
             }
@@ -1930,7 +1932,7 @@ Instruksi format:
         } catch (\Exception $e) {
             echo json_encode([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
+                'message' => htmlspecialchars('Error: ' . $e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ]);
         }
 

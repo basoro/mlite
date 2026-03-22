@@ -61,6 +61,9 @@ class Admin extends AdminModule
     {
         if (isset($_POST['id'])){
           $return['form'] = $this->db('mlite_notifications')->where('id', $_POST['id'])->oneArray();
+          if ($return['form']) {
+              $return['form'] = htmlspecialchars_array($return['form']);
+          }
         } else {
           $return['form'] = [
             'id' => '',
@@ -88,15 +91,19 @@ class Admin extends AdminModule
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('mlite_notifications')
+        $raw_list = $this->db('mlite_notifications')
           ->join('pasien', 'pasien.no_rkm_medis=mlite_notifications.no_rkm_medis')
           ->desc('id')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
+        $return['list'] = [];
+        foreach($raw_list as $r) {
+            $return['list'][] = htmlspecialchars_array($r);
+        }
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('mlite_notifications')
+          $raw_list = $this->db('mlite_notifications')
             ->join('pasien', 'pasien.no_rkm_medis=mlite_notifications.no_rkm_medis')
             ->like('id', '%'.$_POST['cari'].'%')
             ->orLike('judul', '%'.$_POST['cari'].'%')
@@ -104,18 +111,26 @@ class Admin extends AdminModule
             ->offset(0)
             ->limit($perpage)
             ->toArray();
+          $return['list'] = [];
+          foreach($raw_list as $r) {
+              $return['list'][] = htmlspecialchars_array($r);
+          }
           $jumlah_data = count($return['list']);
           $jml_halaman = ceil($jumlah_data / $offset);
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('mlite_notifications')
+          $raw_list = $this->db('mlite_notifications')
             ->join('pasien', 'pasien.no_rkm_medis=mlite_notifications.no_rkm_medis')
             ->desc('id')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
-          $return['halaman'] = $_POST['halaman'];
+          $return['list'] = [];
+          foreach($raw_list as $r) {
+              $return['list'][] = htmlspecialchars_array($r);
+          }
+          $return['halaman'] = (int)$_POST['halaman'];
         }
 
         echo $this->draw('notifikasi.display.html', ['notifikasi' => $return]);

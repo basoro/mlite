@@ -175,11 +175,11 @@ class Poliklinik
         $data = [];
         foreach ($result as $row) {
             $data[] = [
-                'kd_poli'        => $row['kd_poli'],
-                'nm_poli'        => $row['nm_poli'],
-                'registrasi'     => $row['registrasi'],
-                'registrasilama' => $row['registrasilama'],
-                'status'         => $row['status']
+                'kd_poli'        => htmlspecialchars($row['kd_poli'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'nm_poli'        => htmlspecialchars($row['nm_poli'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'registrasi'     => htmlspecialchars($row['registrasi'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'registrasilama' => htmlspecialchars($row['registrasilama'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'status'         => htmlspecialchars($row['status'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ];
         }
     

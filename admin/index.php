@@ -72,7 +72,7 @@ $core->router->set('api/login', function () use ($core) {
             header('Content-Type: application/json');
             echo json_encode([
                 'token' => $token,
-                'fullname' => $user['fullname'] ?? $user['username']
+                'fullname' => htmlspecialchars($user['fullname'] ?? $user['username'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ]);
         } else {
             header('Content-Type: application/json');

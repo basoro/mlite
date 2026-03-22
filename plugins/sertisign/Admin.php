@@ -490,9 +490,9 @@ public function getDataWebhook($return = false)
     $limit  = isset($_GET['limit']) ? (int) $_GET['limit'] : 20;
     $offset = isset($_GET['offset']) ? (int) $_GET['offset'] : 0;
 
-    $draw   = intval($_GET['draw'] ?? 1);
-    $start  = intval($_GET['start'] ?? 0);
-    $length = intval($_GET['length'] ?? 10);
+    $draw   = intval(htmlspecialchars($_GET['draw'] ?? 1, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
+    $start  = intval(htmlspecialchars($_GET['start'] ?? 0, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
+    $length = intval(htmlspecialchars($_GET['length'] ?? 10, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
         
     $db = $this->db('mlite_sertisign_webhook');
 

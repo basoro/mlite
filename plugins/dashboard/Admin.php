@@ -214,8 +214,8 @@ class Admin extends AdminModule
                     ]);
 
                   if ($insert) {
-                    $this->notify('success', 'Presensi Masuk jam ' . $jam_masuk . ' ' . $status . ' ' . $keterlambatan);
-                    echo 'Presensi Masuk jam ' . $jam_masuk . ' ' . $status . ' ' . $keterlambatan;
+                    $this->notify('success', 'Presensi Masuk jam ' . htmlspecialchars($jam_masuk . ' ' . $status . ' ' . $keterlambatan, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
+                    echo htmlspecialchars('Presensi Masuk jam ' . $jam_masuk . ' ' . $status . ' ' . $keterlambatan, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
                   }
                 }
               } else {
@@ -266,8 +266,8 @@ class Admin extends AdminModule
                   ]);
 
                 if ($insert) {
-                  $this->notify('success', 'Presensi Masuk jam ' . $jam_masuk . ' ' . $status . ' ' . $keterlambatan);
-                  echo 'Presensi Masuk jam ' . $jam_masuk . ' ' . $status . ' ' . $keterlambatan;
+                  $this->notify('success', 'Presensi Masuk jam ' . htmlspecialchars($jam_masuk . ' ' . $status . ' ' . $keterlambatan, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
+                  echo htmlspecialchars('Presensi Masuk jam ' . $jam_masuk . ' ' . $status . ' ' . $keterlambatan, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
                 }
               }
             }

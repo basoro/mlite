@@ -50,7 +50,7 @@ class Admin extends AdminModule
         $status_periksa = '';
         $status_bayar = '';
         $status_pulang = '';
-        $type = isset_or($_POST['status']);
+        $type = htmlspecialchars(isset_or($_POST['status']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
         if(isset($_POST['periode_rawat_jalan'])) {
           $tgl_kunjungan = $_POST['periode_rawat_jalan'];
@@ -252,12 +252,13 @@ class Admin extends AdminModule
       $this->assign['tgl_registrasi']= date('Y-m-d');
       $this->assign['jam_reg']= date('H:i:s');
       if (isset($_POST['no_rawat'])){
+        $no_rawat = htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $this->assign['reg_periksa'] = $this->db('reg_periksa')
           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
           ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
           ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
           ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
-          ->where('no_rawat', $_POST['no_rawat'])
+          ->where('no_rawat', $no_rawat)
           ->oneArray();
         echo $this->draw('form.html', [
           'rawat_jalan' => $this->assign,
@@ -306,8 +307,9 @@ class Admin extends AdminModule
     public function anyStatusDaftar()
     {
       if(isset($_POST['no_rkm_medis'])) {
+        $no_rkm_medis = htmlspecialchars($_POST['no_rkm_medis'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $rawat = $this->db('reg_periksa')
-          ->where('no_rkm_medis', $_POST['no_rkm_medis'])
+          ->where('no_rkm_medis', $no_rkm_medis)
           ->where('status_bayar', 'Belum Bayar')
           ->limit(1)
           ->oneArray();
@@ -319,7 +321,7 @@ class Admin extends AdminModule
             }
             $bg_status = 'text-danger';
           } else {
-            $result = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+            $result = $this->db('reg_periksa')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
             if($result >= 1) {
               $stts_daftar = 'Lama';
               $bg_status = 'text-info';
@@ -332,12 +334,13 @@ class Admin extends AdminModule
           }
         echo $this->draw('stts.daftar.html', ['stts_daftar' => $stts_daftar, 'stts_daftar_hidden' => $stts_daftar_hidden, 'bg_status' =>$bg_status]);
       } else {
+        $no_rawat = htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $rawat = $this->db('reg_periksa')
-          ->where('no_rawat', $_POST['no_rawat'])
+          ->where('no_rawat', $no_rawat)
           ->oneArray();
         echo $this->draw('stts.daftar.html', [
-          'stts_daftar' => $rawat['stts_daftar'],
-          'stts_daftar_hidden' => $rawat['stts_daftar'],
+          'stts_daftar' => htmlspecialchars($rawat['stts_daftar'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+          'stts_daftar_hidden' => htmlspecialchars($rawat['stts_daftar'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
           'bg_status' => ''
         ]);
       }
@@ -398,10 +401,12 @@ class Admin extends AdminModule
 
     public function anyPasien()
     {
+      $pasien = [];
       if(isset($_POST['cari'])) {
+        $cari = htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $pasien = $this->db('pasien')
-          ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
-          ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
+          ->like('no_rkm_medis', '%'.$cari.'%')
+          ->orLike('nm_pasien', '%'.$cari.'%')
           ->asc('no_rkm_medis')
           ->limit(5)
           ->toArray();
@@ -414,12 +419,13 @@ class Admin extends AdminModule
     {
       $settings = $this->settings('settings');
       $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+      $no_rawat = htmlspecialchars($_GET['no_rawat'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
       $rawat_jalan = $this->db('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
         ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
         ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
         ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
-        ->where('no_rawat', $_GET['no_rawat'])
+        ->where('no_rawat', $no_rawat)
         ->oneArray();
       echo $this->draw('antrian.html', ['rawat_jalan' => $rawat_jalan]);
       exit();
@@ -661,7 +667,7 @@ class Admin extends AdminModule
         'pj_lab' => $pj_lab['nm_dokter'],
         'dokter_perujuk' => $dokter_perujuk['nama'],
         'pasien' => $pasien,
-        'no_rawat' => $_GET['no_rawat']
+        'no_rawat' => htmlspecialchars($_GET['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
       ]);
       exit();
     }
@@ -844,7 +850,7 @@ class Admin extends AdminModule
       $pasien = $this->db('pasien')->where('no_rkm_medis', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))->oneArray();
       $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray();
       
-      echo $this->draw('rincian.html', ['periksa_lab' => $periksa_lab, 'no_rawat' => $_POST['no_rawat'], 'laboratorium' => $laboratorium, 'pasien' => $pasien, 'reg_periksa' => $reg_periksa]);
+      echo $this->draw('rincian.html', ['periksa_lab' => $periksa_lab, 'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), 'laboratorium' => $laboratorium, 'pasien' => $pasien, 'reg_periksa' => $reg_periksa]);
       exit();
     }
 
@@ -961,7 +967,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["kd_dokter"].': '.$row["nm_dokter"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["kd_dokter"].': '.$row["nm_dokter"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;
@@ -981,7 +987,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["nip"].': '.$row["nama"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["nip"].': '.$row["nama"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;

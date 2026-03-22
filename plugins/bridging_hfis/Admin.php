@@ -166,8 +166,8 @@ class Admin extends AdminModule
     if ($json['metadata']['code'] == '200') {
       $response = $decompress;
     }
-    $response = json_decode($response, true);
-    echo json_encode($response);
+    $response = json_decode($response ?? '""', true);
+    echo json_encode(htmlspecialchars_array($response));
     exit();
   }
 
@@ -196,7 +196,7 @@ class Admin extends AdminModule
       $jadwal['nm_dokter'] = $this->core->getDokterInfo('nm_dokter', $jadwal['kd_dokter']);
       $jadwal['nm_poli'] = $this->core->getPoliklinikInfo('nm_poli', $jadwal['kd_poli']);
       $jadwal['code'] = '200';
-      echo json_encode($jadwal);
+      echo json_encode(htmlspecialchars_array($jadwal));
     } else {
       $notif = ['code' => '404'];
       echo json_encode($notif);

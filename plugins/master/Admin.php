@@ -996,7 +996,7 @@ class Admin extends AdminModule
         echo json_encode($data);
       } else {
         $data['status'] = 'error';
-        $data['msg'] = $query->errorInfo()['2'];
+        $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         echo json_encode($data);
       }
       exit();

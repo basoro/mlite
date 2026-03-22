@@ -558,14 +558,14 @@ class Admin extends AdminModule
             
           header('Content-Type: application/json');
           echo json_encode([
-            'kode_brng' => $kode_brng,
-            'nama_brng' => $get_databarang['nama_brng'] ?? 'Nama Obat Tidak Ditemukan',
-            'jml' => $jml,
-            'kandungan' => $kandungan,
-            'kapasitas' => $kapasitas,
+            'kode_brng' => htmlspecialchars($kode_brng, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+            'nama_brng' => htmlspecialchars($get_databarang['nama_brng'] ?? 'Nama Obat Tidak Ditemukan', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+            'jml' => htmlspecialchars($jml, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+            'kandungan' => htmlspecialchars($kandungan, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+            'kapasitas' => htmlspecialchars($kapasitas, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'ralan' => isset($get_databarang['dasar']) ? $get_databarang['dasar'] : 0,
-            'embalase' => $embalase,
-            'tuslah' => $tuslah
+            'embalase' => htmlspecialchars($embalase, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+            'tuslah' => htmlspecialchars($tuslah, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
           ]);
           exit();
       } else {
@@ -632,11 +632,11 @@ class Admin extends AdminModule
             'aturan' => $_POST['aturan_pakai']
           ]);
 
-        $get_databarang['jml'] = $_POST['jml'];
-        $get_databarang['aturan_pakai'] = $_POST['aturan_pakai'];
+        $get_databarang['jml'] = htmlspecialchars($_POST['jml'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $get_databarang['aturan_pakai'] = htmlspecialchars($_POST['aturan_pakai'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $get_databarang['ralan'] = ($get_databarang['dasar'] * $_POST['jml']) + $embalase + $tuslah;
-        $get_databarang['embalase'] = $embalase;
-        $get_databarang['tuslah'] = $tuslah;
+        $get_databarang['embalase'] = htmlspecialchars($embalase, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $get_databarang['tuslah'] = htmlspecialchars($tuslah, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         echo json_encode($get_databarang);
       }
       exit();
@@ -1001,7 +1001,7 @@ class Admin extends AdminModule
         $detail_pemberian_obat2[] = $row;
       }
 
-      echo $this->draw('rincian.html', ['jumlah_total_resep' => $jumlah_total_resep, 'jumlah_total_obat' => $jumlah_total_obat, 'jumlah_total_obat2' => $jumlah_total_obat2, 'resep' =>$resep, 'resep_racikan' => $resep_racikan, 'jumlah_total_resep_racikan' => $jumlah_total_resep_racikan, 'detail_pemberian_obat' => $detail_pemberian_obat, 'detail_pemberian_obat_racikan' => $detail_pemberian_obat2, 'no_rawat' => $_POST['no_rawat']]);
+      echo $this->draw('rincian.html', ['jumlah_total_resep' => $jumlah_total_resep, 'jumlah_total_obat' => $jumlah_total_obat, 'jumlah_total_obat2' => $jumlah_total_obat2, 'resep' =>$resep, 'resep_racikan' => $resep_racikan, 'jumlah_total_resep_racikan' => $jumlah_total_resep_racikan, 'detail_pemberian_obat' => $detail_pemberian_obat, 'detail_pemberian_obat_racikan' => $detail_pemberian_obat2, 'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
       exit();
     }
 
@@ -1068,7 +1068,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["aturan"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["aturan"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;
@@ -1088,7 +1088,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["kd_dokter"].': '.$row["nm_dokter"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["kd_dokter"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').': '.htmlspecialchars($row["nm_dokter"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;
@@ -1108,7 +1108,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["nip"].': '.$row["nama"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["nip"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').': '.htmlspecialchars($row["nama"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;

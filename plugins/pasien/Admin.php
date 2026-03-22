@@ -88,7 +88,7 @@ class Admin extends AdminModule
           'waapitoken' => $this->settings->get('wagateway.token'),
           'waapiphonenumber' => $this->settings->get('wagateway.phonenumber'),
           'admin_mode' => $this->settings->get('settings.admin_mode'),
-          'urlUploadPhoto' => url([ADMIN,'pasien','uploadphoto',$_POST['no_rkm_medis']]),
+          'urlUploadPhoto' => url([ADMIN,'pasien','uploadphoto',htmlspecialchars($_POST['no_rkm_medis'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]),
           'cek_pcare' => $cek_pcare,
           'usernamePcare' => $usernamePcare,
           'mlite_crud_permissions' => $this->core->loadCrudPermissions('pasien')
@@ -224,7 +224,7 @@ class Admin extends AdminModule
           echo json_encode($data);
         } else {
           $data['status'] = 'error';
-          $data['msg'] = $query->errorInfo()['2'];
+          $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
           echo json_encode($data);
         }
   
@@ -245,7 +245,7 @@ class Admin extends AdminModule
           echo json_encode($data);
         } else {
           $data['status'] = 'error';
-          $data['msg'] = $query->errorInfo()['2'];
+          $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
           echo json_encode($data);
         }
   

@@ -351,8 +351,8 @@ class Admin extends AdminModule
         
         echo $this->draw('cetak_pdf_penyakit_ralan.html', [
             'laporan' => $query,
-            'tgl_awal' => $tgl_awal,
-            'tgl_akhir' => $tgl_akhir,
+            'tgl_awal' => htmlspecialchars($tgl_awal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+            'tgl_akhir' => htmlspecialchars($tgl_akhir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'settings' => $settings
         ]);
         exit();
@@ -383,8 +383,8 @@ class Admin extends AdminModule
         
         echo $this->draw('cetak_pdf_penyakit_ranap.html', [
             'laporan' => $query,
-            'tgl_awal' => $tgl_awal,
-            'tgl_akhir' => $tgl_akhir,
+            'tgl_awal' => htmlspecialchars($tgl_awal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+            'tgl_akhir' => htmlspecialchars($tgl_akhir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'settings' => $settings
         ]);
         exit();

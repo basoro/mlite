@@ -458,14 +458,14 @@ class Admin extends AdminModule
           $data = array(
             'status' => 'success', 
             'msg' => $this->db('databarang')->select('nama_brng')->where('kode_brng', $kode_brng[$count])->oneArray()['nama_brng'], 
-            'info' => json_encode($opname2->errorInfo()[2])
+            'info' => htmlspecialchars(json_encode($opname2->errorInfo()[2]), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
           );
 
         } else {
           $data = array(
             'status' => 'error', 
             'msg' => $this->db('databarang')->select('nama_brng')->where('kode_brng', $kode_brng[$count])->oneArray()['nama_brng'], 
-            'info' => json_encode($opname2->errorInfo()[2])
+            'info' => htmlspecialchars(json_encode($opname2->errorInfo()[2]), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
           );
         }
         echo json_encode($data);   
@@ -575,7 +575,7 @@ class Admin extends AdminModule
 
         ## Response
         $response = array(
-            "draw" => intval($draw),
+            "draw" => intval(htmlspecialchars($_POST['draw'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordwithFilter,
             "aaData" => $data
@@ -672,7 +672,7 @@ class Admin extends AdminModule
 
         ## Response
         $response = array(
-            "draw" => intval($draw),
+            "draw" => intval(htmlspecialchars($_POST['draw'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordwithFilter,
             "aaData" => $data
@@ -790,18 +790,18 @@ class Admin extends AdminModule
             // Response JSON
             // -------------------------
             $response = [
-                "draw" => intval($draw),
+                "draw" => intval(htmlspecialchars($draw ?? $_POST['draw'] ?? 1, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')),
                 "recordsTotal" => intval($totalRecords),
                 "recordsFiltered" => intval($totalRecordwithFilter),
                 "data" => $data
             ];
         } catch (\Exception $e) {
             $response = [
-                "draw" => intval($_POST['draw'] ?? 1),
+                "draw" => intval(htmlspecialchars($_POST['draw'] ?? 1, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')),
                 "recordsTotal" => 0,
                 "recordsFiltered" => 0,
                 "data" => [],
-                "error" => $e->getMessage()
+                "error" => htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ];
         }
 

@@ -201,8 +201,8 @@ class JnsPerawatanLab
         $data = [];
         foreach ($result as $row) {
             $data[] = [
-                'kd_jenis_prw'=>$row['kd_jenis_prw'],
-                'nm_perawatan'=>$row['nm_perawatan'],
+                'kd_jenis_prw'=>htmlspecialchars($row['kd_jenis_prw'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'nm_perawatan'=>htmlspecialchars($row['nm_perawatan'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
                 'bagian_rs'=>$row['bagian_rs'],
                 'bhp'=>$row['bhp'],
                 'tarif_perujuk'=>$row['tarif_perujuk'],
@@ -211,10 +211,10 @@ class JnsPerawatanLab
                 'kso'=>$row['kso'],
                 'menejemen'=>$row['menejemen'],
                 'total_byr'=>$row['total_byr'],
-                'kd_pj'=>$row['kd_pj'],
-                'status'=>$row['status'],
-                'kelas'=>$row['kelas'],
-                'kategori'=>$row['kategori']
+                'kd_pj'=>htmlspecialchars($row['kd_pj'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'status'=>htmlspecialchars($row['status'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'kelas'=>htmlspecialchars($row['kelas'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'kategori'=>htmlspecialchars($row['kategori'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ];
         }
 

@@ -190,8 +190,8 @@ class Admin extends AdminModule
       if ($data != null) {
         $data = '{
             	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
+            		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+            		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
             	},
             	"response": ' . $decompress . '}';
 
@@ -341,7 +341,7 @@ class Admin extends AdminModule
       }
     } else {
 
-      echo $data['metaData']['message'];
+      echo htmlspecialchars($data['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     exit();
@@ -377,9 +377,9 @@ class Admin extends AdminModule
       $hapus_sep = $this->db('bridging_sep')->where('no_sep', $_POST['no_sep'])->delete();
       $hapus_sep_internal = $this->db('bridging_sep_internal')->where('no_sep', $_POST['no_sep'])->delete();
       $hapus_prb = $this->db('bpjs_prb')->where('no_sep', $_POST['no_sep'])->delete();
-      echo $data['metaData']['message'] . '!! Menghapus data SEP dengan nomor ' . $_POST['no_sep'] . '....';
+      echo htmlspecialchars($data['metaData']['message'] . '!! Menghapus data SEP dengan nomor ' . $_POST['no_sep'] . '....', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     } else {
-      echo $data['metaData']['message'];
+      echo htmlspecialchars($data['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -550,8 +550,8 @@ class Admin extends AdminModule
     if ($data != null) {
       $data = '{
           "metaData": {
-            "code": "' . $code . '",
-            "message": "' . $message . '"
+            "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+            "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           },
           "response": ' . $decompress . '}';
       $data = json_decode($data, true);
@@ -598,8 +598,8 @@ class Admin extends AdminModule
       if ($data_rujukan != null) {
         $data_rujukan = '{
             "metaData": {
-              "code": "' . $code . '",
-              "message": "' . $message . '"
+              "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+              "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
             },
             "response": ' . $decompress . '}';
         $data_rujukan = json_decode($data_rujukan, true);
@@ -734,8 +734,8 @@ class Admin extends AdminModule
     if ($json != null) {
       $json = '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
       $this->tpl->set('rujukan', json_encode($json, JSON_PRETTY_PRINT));
@@ -772,8 +772,8 @@ class Admin extends AdminModule
         }
         echo '{
             "metaData": {
-                "code": "' . $code . '",
-                "message": "' . $message . '"
+                "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+                "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
             },
             "response": ' . $decompress . '}';
     } else {
@@ -807,8 +807,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -842,8 +842,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -878,8 +878,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -913,8 +913,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -947,8 +947,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -982,8 +982,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1017,8 +1017,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1052,8 +1052,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1087,8 +1087,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1122,8 +1122,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1157,8 +1157,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1194,8 +1194,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1231,8 +1231,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1283,8 +1283,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $data . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1319,8 +1319,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1354,8 +1354,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1389,8 +1389,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1424,8 +1424,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1459,8 +1459,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           "metaData": {
-            "code": "' . $code . '",
-            "message": "' . $message . '"
+            "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+            "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           },
           "response": ' . $decompress . '}';
     } else {
@@ -1494,8 +1494,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
         	"metaData": {
-        		"code": "' . $code . '",
-        		"message": "' . $message . '"
+        		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+        		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
         	},
         	"response": ' . $decompress . '}';
     } else {
@@ -1598,8 +1598,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1644,8 +1644,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1690,8 +1690,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1725,8 +1725,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1760,8 +1760,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1794,8 +1794,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1828,8 +1828,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1863,8 +1863,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1912,8 +1912,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1947,8 +1947,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1982,8 +1982,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -2017,8 +2017,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -2052,8 +2052,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -2093,8 +2093,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
             "response": ' . $decompress . '}';
     } else {
@@ -2134,8 +2134,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -2175,8 +2175,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
 
@@ -2256,8 +2256,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -2291,8 +2291,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -2326,8 +2326,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -2361,8 +2361,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -2396,8 +2396,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -2431,8 +2431,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -2466,8 +2466,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -2501,8 +2501,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -2536,8 +2536,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -2622,7 +2622,7 @@ class Admin extends AdminModule
         'no_sep' => '-'
       ]);
     } else {
-      echo $data['metaData']['message'];
+      echo htmlspecialchars($data['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -2800,8 +2800,8 @@ class Admin extends AdminModule
         }
         echo '{
             "metaData": {
-                "code": "' . $code . '",
-                "message": "' . $message . '"
+                "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+                "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
             },
             "response": ' . $decompress . '}';
     } else {
@@ -2858,8 +2858,8 @@ class Admin extends AdminModule
         }
         $data = '{
             "metaData": {
-              "code": "' . $code . '",
-              "message": "' . $message . '"
+              "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+              "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
             },
             "response": ' . $decompress . '}';
         $data = json_decode($data, true);
@@ -2909,8 +2909,8 @@ class Admin extends AdminModule
           }
           $data = '{
               "metaData": {
-                "code": "' . $code . '",
-                "message": "' . $message . '"
+                "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+                "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
               },
               "response": ' . $decompress . '}';
           $data = json_decode($data, true);
@@ -2952,8 +2952,8 @@ class Admin extends AdminModule
     if ($data != null) {
       $data = '{
           "metaData": {
-            "code": "' . $code . '",
-            "message": "' . $message . '"
+            "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+            "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           },
           "response": ' . $decompress . '}';
       $data = json_decode($data, true);
@@ -2985,8 +2985,8 @@ class Admin extends AdminModule
     if ($data_rujukan != null) {
       $data_rujukan = '{
           "metaData": {
-            "code": "' . $code . '",
-            "message": "' . $message . '"
+            "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+            "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           },
           "response": ' . $decompress . '}';
       $data_rujukan = json_decode($data_rujukan, true);
@@ -3264,7 +3264,7 @@ class Admin extends AdminModule
         }
       }
     } else {
-      echo $data['metaData']['message'];
+      echo htmlspecialchars($data['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -3355,7 +3355,7 @@ class Admin extends AdminModule
         echo 'Sukses Simpan';
       }
     } else {
-      echo $data['metaData']['code'] . ' ' . $data['metaData']['message'];
+      echo htmlspecialchars($data['metaData']['code'] . ' ' . $data['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -3423,7 +3423,7 @@ class Admin extends AdminModule
 
 
     $data = json_encode($data);
-    echo $data;
+    echo htmlspecialchars($data, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     $url = $this->api_url . 'PRB/insert';
     $output = BpjsService::$method($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $data = json_decode($output, true);
@@ -3435,7 +3435,7 @@ class Admin extends AdminModule
       $decompress = '""';
       $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       $spri = json_decode($decompress, true);
-      echo $spri['noSRB'];
+      echo htmlspecialchars($spri['noSRB'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
       $bridging_srb_bpjs = $this->db('bridging_srb_bpjs')->save([
         'no_sep' => $_POST['no_sep'],
@@ -3461,7 +3461,7 @@ class Admin extends AdminModule
         'signa2' => $_POST['signa2'],
       ]);
     } else {
-      echo $data['metaData']['code'] . ' ' . $data['metaData']['message'];
+      echo htmlspecialchars($data['metaData']['code'] . ' ' . $data['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -3488,8 +3488,8 @@ class Admin extends AdminModule
     if ($json != null) {
       echo '{
           	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
+          		"code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+          		"message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -3537,7 +3537,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Rujukan/2.0/insert';
     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    echo json_encode($json);
+    echo htmlspecialchars(json_encode($json), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);

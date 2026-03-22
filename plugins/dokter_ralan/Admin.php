@@ -558,7 +558,7 @@ class Admin extends AdminModule
           ->toArray();
       }
 
-      echo $this->draw('copyresep.display.html', ['copy_resep' => $return, 'copy_resep_racikan' => $racikan]);
+      echo $this->draw('copyresep.display.html', ['copy_resep' => $return, 'copy_resep_racikan' => $racikan, 'no_resep' => htmlspecialchars($_POST['no_resep'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
       exit();
     }
 
@@ -853,7 +853,7 @@ class Admin extends AdminModule
         'jumlah_total_resep_racikan' => $jumlah_total_resep_racikan,
         //'jumlah_total_lab' => $jumlah_total_lab,
         'jumlah_total_rad' => $jumlah_total_rad,
-        'no_rawat' => $_POST['no_rawat']
+        'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
       ]);
       exit();
     }
@@ -933,7 +933,7 @@ class Admin extends AdminModule
         'data_resep' => $data_resep,
         'jumlah_total_resep' => $jumlah_total_resep,
         'jumlah_total_resep_racikan' => $jumlah_total_resep_racikan,
-        'no_rawat' => $_POST['no_rawat']
+        'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
       ]);
       exit();
     }
@@ -1278,7 +1278,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["aturan"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["aturan"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;
@@ -1298,7 +1298,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["kd_dokter"].': '.$row["nm_dokter"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["kd_dokter"].': '.$row["nm_dokter"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;
@@ -1318,7 +1318,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["nip"].': '.$row["nama"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["nip"].': '.$row["nama"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;
@@ -2095,7 +2095,7 @@ class Admin extends AdminModule
         echo json_encode($data);
       } else {
         $data['status'] = 'error';
-        $data['msg'] = $query->errorInfo()['2'];
+        $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         echo json_encode($data);
       }
 
@@ -2132,7 +2132,7 @@ class Admin extends AdminModule
         echo json_encode($data);
       } else {
         $data['status'] = 'error';
-        $data['msg'] = $query->errorInfo()['2'];
+        $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         echo json_encode($data);
       }
 
@@ -2170,7 +2170,7 @@ class Admin extends AdminModule
         echo json_encode($data);
       } else {
         $data['status'] = 'error';
-        $data['msg'] = $query->errorInfo()['2'];
+        $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         echo json_encode($data);
       }
 
@@ -2201,7 +2201,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["kd_penyakit"].': '.$row["nm_penyakit"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["kd_penyakit"].': '.$row["nm_penyakit"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         } else {
           $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
@@ -2236,7 +2236,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["kode"].': '.$row["deskripsi_panjang"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["kode"].': '.$row["deskripsi_panjang"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         } else {
           $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
@@ -2301,6 +2301,9 @@ class Admin extends AdminModule
     public function postGetRujukanInternal()
     {
         $rujukan = $this->db('mlite_rujukan_internal_poli')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+        if ($rujukan) {
+            $rujukan['isi_rujukan'] = htmlspecialchars($rujukan['isi_rujukan'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        }
         echo json_encode($rujukan);
         exit();
     }

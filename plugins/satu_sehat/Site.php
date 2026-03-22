@@ -79,7 +79,7 @@ class Site extends SiteModule
         }
 
         if ($no_rawat === null || $ttv === null) {
-            echo json_encode(['error' => 'parameter kosong', 'no_rawat' => $no_rawat, 'ttv' => $ttv]);
+            echo json_encode(['error' => 'parameter kosong', 'no_rawat' => htmlspecialchars($no_rawat, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), 'ttv' => htmlspecialchars($ttv, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
             exit();
         }
         $admin = new \Plugins\Satu_Sehat\Admin($this->core);
@@ -300,8 +300,8 @@ class Site extends SiteModule
         $list = [];
         foreach ($rows as $r) {
             $list[] = [
-                'display' => $r['no_rawat'],
-                'url' => str_replace('/', '', $r['no_rawat'])
+                'display' => htmlspecialchars($r['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'url' => str_replace('/', '', htmlspecialchars($r['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'))
             ];
         }
         $encBase = '/satu-sehat/encounter/';
@@ -334,8 +334,8 @@ class Site extends SiteModule
 
         <body>
 
-        <form method="get" action="/satu-sehat/forward-tanggal" style="margin-bottom:12px"><label>Tanggal : </label> <input type="date" name="tanggal" value="' . htmlspecialchars($tanggal, ENT_QUOTES) . '" /> <button type="submit">Proses</button></form>
-        <h3>Proses tanggal ' . $tanggal . '</h3>
+        <form method="get" action="/satu-sehat/forward-tanggal" style="margin-bottom:12px"><label>Tanggal : </label> <input type="date" name="tanggal" value="' . htmlspecialchars($tanggal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '" /> <button type="submit">Proses</button></form>
+        <h3>Proses tanggal ' . htmlspecialchars($tanggal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</h3>
 
         <div id="log"></div>
 
@@ -556,8 +556,8 @@ class Site extends SiteModule
         $list = [];
         if ($no_rawat !== '') {
             $list[] = [
-                'display' => $no_rawat,
-                'url' => str_replace('/', '', $no_rawat)
+                'display' => htmlspecialchars($no_rawat, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'url' => str_replace('/', '', htmlspecialchars($no_rawat, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'))
             ];
         }
 
@@ -591,7 +591,7 @@ class Site extends SiteModule
 
         <body>
 
-        <h3>Proses no_rawat ' . $no_rawat . '</h3>
+        <h3>Proses no_rawat ' . htmlspecialchars($no_rawat, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</h3>
 
         <div id="log"></div>
 

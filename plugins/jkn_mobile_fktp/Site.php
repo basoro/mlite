@@ -1432,7 +1432,7 @@ class Site extends SiteModule
                     $pasien = $this->db('pasien')->where('no_peserta', $decode['nomorkartu'])->oneArray();
                     $response = array(
                         'response' => array(
-                            'norm' => $_POST['no_rkm_medis']
+                            'norm' => htmlspecialchars($_POST['no_rkm_medis'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                         ),
                         'metadata' => array(
                             'message' => 'Pasien berhasil mendapatkan nomor RM, silahkan lanjutkan ke booking.',

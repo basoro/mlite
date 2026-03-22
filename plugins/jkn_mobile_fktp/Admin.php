@@ -219,7 +219,7 @@ class Admin extends AdminModule
 
         echo $this->draw('mappingpoli.display.html', [
           'mappingpoli' => $mappingpoli,
-          'halaman' => $halaman,
+          'halaman' => htmlspecialchars($halaman, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
           'jumlah_data' => $jumlah_data,
           'jml_halaman' => $jml_halaman
         ]);
@@ -232,6 +232,11 @@ class Admin extends AdminModule
       $poliklinik = $this->db('poliklinik')->toArray();
       if (isset($_POST['kd_poli_rs'])){
         $mappingpoli = $this->db('maping_poliklinik_pcare')->where('kd_poli_rs', $_POST['kd_poli_rs'])->oneArray();
+        if ($mappingpoli) {
+            $mappingpoli['kd_poli_rs'] = htmlspecialchars($mappingpoli['kd_poli_rs'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $mappingpoli['kd_poli_pcare'] = htmlspecialchars($mappingpoli['kd_poli_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $mappingpoli['nm_poli_pcare'] = htmlspecialchars($mappingpoli['nm_poli_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        }
         echo $this->draw('mappingpoli.form.html', ['poliklinik' => $poliklinik, 'mappingpoli' => $mappingpoli]);
       } else {
         $mappingpoli = [
@@ -344,7 +349,7 @@ class Admin extends AdminModule
 
         echo $this->draw('mappingdokter.display.html', [
           'mappingdokter' => $mappingdokter,
-          'halaman' => $halaman,
+          'halaman' => htmlspecialchars($halaman, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
           'jumlah_data' => $jumlah_data,
           'jml_halaman' => $jml_halaman
         ]);
@@ -357,6 +362,11 @@ class Admin extends AdminModule
       $dokter = $this->db('dokter')->toArray();
       if (isset($_POST['kd_dokter'])){
         $mappingdokter = $this->db('maping_dokter_pcare')->where('kd_dokter', $_POST['kd_dokter'])->oneArray();
+        if ($mappingdokter) {
+            $mappingdokter['kd_dokter'] = htmlspecialchars($mappingdokter['kd_dokter'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $mappingdokter['kd_dokter_pcare'] = htmlspecialchars($mappingdokter['kd_dokter_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $mappingdokter['nm_dokter_pcare'] = htmlspecialchars($mappingdokter['nm_dokter_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        }
         echo $this->draw('mappingdokter.form.html', ['dokter' => $dokter, 'mappingdokter' => $mappingdokter]);
       } else {
         $mappingdokter = [

@@ -68,12 +68,12 @@ class Admin extends AdminModule
         foreach ($result as $row) {
             $nama = $this->core->getPegawaiInfo('nama', $row['username']);
             $data[] = [
-                'id'=>$row['id'],
-'sql_text'=>$row['sql_text'],
-'bindings'=>$row['bindings'],
-'created_at'=>$row['created_at'],
-'error_message'=>$row['error_message'],
-'username'=>isset_or($nama, 'Tidak Diketahui')
+                'id'=>htmlspecialchars($row['id'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+'sql_text'=>htmlspecialchars($row['sql_text'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+'bindings'=>htmlspecialchars($row['bindings'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+'created_at'=>htmlspecialchars($row['created_at'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+'error_message'=>htmlspecialchars($row['error_message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+'username'=>htmlspecialchars(isset_or($nama, 'Tidak Diketahui'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
 
             ];
         }
