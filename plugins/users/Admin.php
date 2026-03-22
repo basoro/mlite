@@ -23,7 +23,7 @@ class Admin extends AdminModule
         ['name' => 'Data Pengguna', 'url' => url([ADMIN, 'users', 'manage']), 'icon' => 'users', 'desc' => 'Data pengguna'],
         ['name' => 'Tambah Baru', 'url' => url([ADMIN, 'users', 'add']), 'icon' => 'user-plus', 'desc' => 'Tambah pengguna baru'],
       ];
-      return $this->draw('index.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('index.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function apiSave()
@@ -174,7 +174,7 @@ class Admin extends AdminModule
         $this->assign['avatarURL'] = url(MODULES.'/users/img/default.png');
         $this->assign['usersForCopy'] = $this->_getUsersForCopy();
 
-        return $this->draw('form.html', ['users' => $this->assign]);
+        return $this->draw('form.html', ['users' => htmlspecialchars_array($this->assign)]);
     }
 
     /**
@@ -199,7 +199,7 @@ class Admin extends AdminModule
             $this->assign['avatarURL'] = url(UPLOADS.'/users/'.(isset($user['avatar']) ? $user['avatar'] : 'default.png'));
             $this->assign['usersForCopy'] = $this->_getUsersForCopy();
 
-            return $this->draw('form.html', ['users' => $this->assign]);
+            return $this->draw('form.html', ['users' => htmlspecialchars_array($this->assign)]);
         } else {
             redirect(url([ADMIN, 'users', 'manage']));
         }

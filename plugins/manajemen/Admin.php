@@ -2172,7 +2172,7 @@ class Admin extends AdminModule
     {
         $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
         $this->assign['manajemen'] = htmlspecialchars_array($this->settings('manajemen'));
-        return $this->draw('settings.html', ['settings' => $this->assign]);
+        return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postSaveSettings()

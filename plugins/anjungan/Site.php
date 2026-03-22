@@ -2121,7 +2121,7 @@ class Site extends SiteModule
                   $data['status'] = 'err';
                   $data['result'] = '';
               }
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
           }
         break;
 
@@ -2138,7 +2138,7 @@ class Site extends SiteModule
                   $data['status'] = 'err';
                   $data['result'] = '';
               }
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
           }
         break;
 
@@ -2148,7 +2148,7 @@ class Site extends SiteModule
               if($this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->where('tgl_registrasi', $_POST['tgl_registrasi'])->oneArray()) {
                 $data['status'] = 'exist';
                 $data['result'] = '';
-                echo json_encode($data);
+                echo json_encode(htmlspecialchars_array($data));
               } else {
                 $tanggal = $_POST['tgl_registrasi'];
                 $tentukan_hari = date('D',strtotime($tanggal));
@@ -2170,7 +2170,7 @@ class Site extends SiteModule
                     $data['status'] = 'err';
                     $data['result'] = '';
                 }
-                echo json_encode($data);
+                echo json_encode(htmlspecialchars_array($data));
               }
           }
         break;
@@ -2216,7 +2216,7 @@ class Site extends SiteModule
                     $data['status'] = 'err';
                     $data['result'] = '';
                 }
-                echo json_encode($data);
+                echo json_encode(htmlspecialchars_array($data));
               }
           }
         break;
@@ -2232,7 +2232,7 @@ class Site extends SiteModule
                   $data['status'] = 'err';
                   $data['result'] = '';
               }
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
           }
         break;
         case "get-namadokter":
@@ -2247,7 +2247,7 @@ class Site extends SiteModule
                   $data['status'] = 'err';
                   $data['result'] = '';
               }
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
           }
         break;
         case "post-registrasi":
@@ -2336,7 +2336,7 @@ class Site extends SiteModule
                   $data['status'] = 'err';
                   $data['result'] = '';
               }
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
           }
         break;
         // FOR DISPLAY
@@ -2738,7 +2738,7 @@ class Site extends SiteModule
                 $url = $this->api_url . '/SEP/FingerPrint/Peserta/' . $slug[2] . '/TglPelayanan/'.$dateNow.'';
                 $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
                 $json = json_decode($output, true);
-                //echo json_encode($json);
+                //echo json_encode(htmlspecialchars_array($json));
                 $code = $json['metaData']['code'];
                 $message = $json['metaData']['message'];
                 $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -3541,7 +3541,7 @@ class Site extends SiteModule
         $url = $this->api_url . 'Peserta/nik/' . $nik . '/tglSEP/' . $tglPelayananSEP;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
-        //echo json_encode($json);
+        //echo json_encode(htmlspecialchars_array($json));
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
         $stringDecrypt = stringDecrypt($key, $json['response']);

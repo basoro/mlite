@@ -29,7 +29,7 @@ class Icd9
         ->limit(10)
         ->toArray();
 
-      return $return;
+      return htmlspecialchars_array($return);
 
     }
 
@@ -45,7 +45,7 @@ class Icd9
           ];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function anyDisplay()
@@ -68,9 +68,9 @@ class Icd9
 
         if(isset($_POST['cari'])) {
           $return['list'] = $this->db('icd9')
-            ->like('kode', '%'.$_POST['cari'].'%')
-            ->orLike('deskripsi_panjang', '%'.$_POST['cari'].'%')
-            ->orLike('deskripsi_pendek', '%'.$_POST['cari'].'%')
+            ->like('kode', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
+            ->orLike('deskripsi_panjang', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
+            ->orLike('deskripsi_pendek', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
             ->desc('kode')
             ->offset(0)
             ->limit($perpage)
@@ -88,7 +88,7 @@ class Icd9
           $return['halaman'] = $_POST['halaman'];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function postSave()

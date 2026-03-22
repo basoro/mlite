@@ -46,7 +46,7 @@ class Admin extends AdminModule
     $icare['userkey'] = $this->settings->get('icare.userkey');
     $icare['usernameICare'] = $this->settings->get('icare.usernameICare');
     $icare['passwordICare'] = $this->settings->get('icare.passwordICare');
-    return $this->draw('manage.html', ['icare' => $icare]);
+    return $this->draw('manage.html', ['icare' => htmlspecialchars_array($icare)]);
   }
 
   public function postSaveSettings()
@@ -103,7 +103,7 @@ class Admin extends AdminModule
     } else {
       $message = $json['metaData']['message'];
     }
-    echo $this->draw('riwayat.html', ['url' => $riwayat['url'], 'message' => $message]);
+    echo $this->draw('riwayat.html', ['url' => htmlspecialchars_array($riwayat['url']), 'message' => htmlspecialchars_array($message)]);
     exit();
   }
 

@@ -50,7 +50,7 @@ class Admin extends AdminModule
           'halaman' => $halaman,
           'jumlah_data' => $jumlah_data,
           'jml_halaman' => $jml_halaman,
-          'cek_vclaim' => $cek_vclaim,
+          'cek_vclaim' => htmlspecialchars_array($cek_vclaim),
           'cek_pcare' => $cek_pcare,
           'offset' => $offset,
           'admin_mode' => $this->settings->get('settings.admin_mode'),
@@ -78,20 +78,20 @@ class Admin extends AdminModule
         $pasien['kecamatan'] = $this->db('kecamatan')->where('kd_kec', $pasien['kd_kec'])->oneArray();
         $pasien['kelurahan'] = $this->db('kelurahan')->where('kd_kel', $pasien['kd_kel'])->oneArray();
         echo $this->draw('form.html', [
-          'pasien' => $pasien,
-          'penjab' => $penjab,
-          'stts_nikah' => $stts_nikah,
-          'agama' => $agama,
-          'pnd' => $pnd,
-          'keluarga' => $keluarga,
-          'no_rkm_medis_baru' => $this->core->setNoRM(),
-          'waapitoken' => $this->settings->get('wagateway.token'),
-          'waapiphonenumber' => $this->settings->get('wagateway.phonenumber'),
-          'admin_mode' => $this->settings->get('settings.admin_mode'),
+          'pasien' => htmlspecialchars_array($pasien),
+          'penjab' => htmlspecialchars_array($penjab),
+          'stts_nikah' => htmlspecialchars_array($stts_nikah),
+          'agama' => htmlspecialchars_array($agama),
+          'pnd' => htmlspecialchars_array($pnd),
+          'keluarga' => htmlspecialchars_array($keluarga),
+          'no_rkm_medis_baru' => htmlspecialchars($this->core->setNoRM(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+          'waapitoken' => htmlspecialchars($this->settings->get('wagateway.token'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+          'waapiphonenumber' => htmlspecialchars($this->settings->get('wagateway.phonenumber'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+          'admin_mode' => htmlspecialchars($this->settings->get('settings.admin_mode'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
           'urlUploadPhoto' => url([ADMIN,'pasien','uploadphoto',htmlspecialchars($_POST['no_rkm_medis'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]),
-          'cek_pcare' => $cek_pcare,
-          'usernamePcare' => $usernamePcare,
-          'mlite_crud_permissions' => $this->core->loadCrudPermissions('pasien')
+          'cek_pcare' => htmlspecialchars_array($cek_pcare ?: []),
+          'usernamePcare' => htmlspecialchars($usernamePcare, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+          'mlite_crud_permissions' => htmlspecialchars_array($this->core->loadCrudPermissions('pasien'))
         ]);
       } else {
         $pasien = [
@@ -221,11 +221,11 @@ class Admin extends AdminModule
             $this->db()->pdo()->prepare("UPDATE set_no_rkm_medis SET no_rkm_medis=?")->execute([$_POST['no_rkm_medis']]);
           }
           $data['status'] = 'success';
-          echo json_encode($data);
+          echo json_encode(htmlspecialchars_array($data));
         } else {
           $data['status'] = 'error';
           $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-          echo json_encode($data);
+          echo json_encode(htmlspecialchars_array($data));
         }
   
       } else {
@@ -242,11 +242,11 @@ class Admin extends AdminModule
 
         if($query) {
           $data['status'] = 'success';
-          echo json_encode($data);
+          echo json_encode(htmlspecialchars_array($data));
         } else {
           $data['status'] = 'error';
           $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-          echo json_encode($data);
+          echo json_encode(htmlspecialchars_array($data));
         }
   
       }
@@ -419,7 +419,7 @@ class Admin extends AdminModule
         ->toArray();
       }
       $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
-      return $this->draw('folder.html', ['pasien' => $pasien, 'reg_periksa' => $reg_periksa, 'berkas_digital_perawatan' => $berkas_digital_perawatan, 'master_berkas_digital' => $master_berkas_digital]);
+      return $this->draw('folder.html', ['pasien' => $pasien, 'reg_periksa' => $reg_periksa, 'berkas_digital_perawatan' => $berkas_digital_perawatan, 'master_berkas_digital' => htmlspecialchars_array($master_berkas_digital)]);
     }
 
     public function postSaveBerkasDigital()
@@ -475,7 +475,7 @@ class Admin extends AdminModule
         if($uploaded) {
             $query = $this->db('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
             if($query) {
-              echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$lokasi_file.'" width="150" />';
+              echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.htmlspecialchars($lokasi_file, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'" width="150" />';
             }          
         } else {
           echo 'Upload gagal';
@@ -1289,7 +1289,7 @@ class Admin extends AdminModule
         header('Content-type: text/javascript');
         $this->assign['websocket'] = $this->settings->get('settings.websocket');
         $this->assign['websocket_proxy'] = $this->settings->get('settings.websocket_proxy');
-        echo $this->draw(MODULES.'/pasien/js/admin/pasien.js', ['mlite' => $this->assign]);
+        echo $this->draw(MODULES.'/pasien/js/admin/pasien.js', ['mlite' => htmlspecialchars_array($this->assign)]);
         exit();
     }
 
@@ -1611,7 +1611,7 @@ class Admin extends AdminModule
         } catch (\PDOException $e) {
             $message = $e->getMessage();
             $message = preg_replace('/`[^`]+`\./', '', $message);
-            return ['status' => 'error', 'message' => $message];
+            return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
         }
     }
 
@@ -1665,7 +1665,7 @@ class Admin extends AdminModule
         } catch (\Throwable $e) {
             $message = $e->getMessage();
             $message = preg_replace('/`[^`]+`\./', '', $message);
-            return ['status' => 'error', 'message' => $message];
+            return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
         }
     }
 

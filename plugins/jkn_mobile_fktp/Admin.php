@@ -56,7 +56,7 @@ class Admin extends AdminModule
         ['name' => 'Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile_fktp', 'mappingdokter']), 'icon' => 'cube', 'desc' => 'Mapping dokter pcare'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'jkn_mobile_fktp', 'settings']), 'icon' => 'cube', 'desc' => 'Pengaturan antrian pcare'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getIndex()
@@ -109,7 +109,7 @@ class Admin extends AdminModule
         $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
         $this->assign['poliklinik'] = $this->_getPoliklinik($mergedSettings['display']);
         $this->assign['jkn_mobile_fktp'] = htmlspecialchars_array($mergedSettings);
-        return $this->draw('settings.html', ['settings' => $this->assign]);
+        return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
     }
 
     private function _getPoliklinik($kd_poli = null)
@@ -237,14 +237,14 @@ class Admin extends AdminModule
             $mappingpoli['kd_poli_pcare'] = htmlspecialchars($mappingpoli['kd_poli_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $mappingpoli['nm_poli_pcare'] = htmlspecialchars($mappingpoli['nm_poli_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         }
-        echo $this->draw('mappingpoli.form.html', ['poliklinik' => $poliklinik, 'mappingpoli' => $mappingpoli]);
+        echo $this->draw('mappingpoli.form.html', ['poliklinik' => htmlspecialchars_array($poli)klinik, 'mappingpoli' => $mappingpoli]);
       } else {
         $mappingpoli = [
           'kd_poli_rs' => '',
           'kd_poli_pcare' => '',
           'nm_poli_pcare' => ''
         ];
-        echo $this->draw('mappingpoli.form.html', ['poliklinik' => $poliklinik, 'mappingpoli' => $mappingpoli]);
+        echo $this->draw('mappingpoli.form.html', ['poliklinik' => htmlspecialchars_array($poli)klinik, 'mappingpoli' => $mappingpoli]);
       }
       exit();
     }
@@ -367,14 +367,14 @@ class Admin extends AdminModule
             $mappingdokter['kd_dokter_pcare'] = htmlspecialchars($mappingdokter['kd_dokter_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $mappingdokter['nm_dokter_pcare'] = htmlspecialchars($mappingdokter['nm_dokter_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         }
-        echo $this->draw('mappingdokter.form.html', ['dokter' => $dokter, 'mappingdokter' => $mappingdokter]);
+        echo $this->draw('mappingdokter.form.html', ['dokter' => htmlspecialchars_array($dokter), 'mappingdokter' => $mappingdokter]);
       } else {
         $mappingdokter = [
           'kd_dokter' => '',
           'kd_dokter_pcare' => '',
           'nm_dokter_pcare' => ''
         ];
-        echo $this->draw('mappingdokter.form.html', ['dokter' => $dokter, 'mappingdokter' => $mappingdokter]);
+        echo $this->draw('mappingdokter.form.html', ['dokter' => htmlspecialchars_array($dokter), 'mappingdokter' => $mappingdokter]);
       }
       exit();
     }
@@ -486,7 +486,7 @@ class Admin extends AdminModule
         $url = $this->api_url_antrol.'antrean/add';
         $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKeyAntrol, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
         $json = json_decode($output, true);
-        // echo json_encode($json);
+        // echo json_encode(htmlspecialchars_array($json));
   
         $code = $json['metadata']['code'];
         $message = $json['metadata']['message'];
@@ -506,7 +506,7 @@ class Admin extends AdminModule
           ];
       
           header('Content-Type: application/json');
-          echo json_encode($output, JSON_UNESCAPED_UNICODE);
+          echo json_encode(htmlspecialchars_array($output), JSON_UNESCAPED_UNICODE);
         } else {
           $output = [
               "metaData" => [
@@ -517,7 +517,7 @@ class Admin extends AdminModule
           ];
       
           header('Content-Type: application/json');
-          echo json_encode($output, JSON_UNESCAPED_UNICODE);
+          echo json_encode(htmlspecialchars_array($output), JSON_UNESCAPED_UNICODE);
         }
   
         exit();
@@ -554,7 +554,7 @@ class Admin extends AdminModule
         $url = $this->api_url_antrol.'antrean/panggil';
         $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
         $json = json_decode($output, true);
-        // echo json_encode($json);
+        // echo json_encode(htmlspecialchars_array($json));
   
         $code = $json['metadata']['code'];
         $message = $json['metadata']['message'];
@@ -611,7 +611,7 @@ class Admin extends AdminModule
         $url = $this->api_url_antrol.'antrean/batal';
         $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
         $json = json_decode($output, true);
-        // echo json_encode($json);
+        // echo json_encode(htmlspecialchars_array($json));
   
         $code = $json['metadata']['code'];
         $message = $json['metadata']['message'];
@@ -748,7 +748,7 @@ class Admin extends AdminModule
 
           }
 
-          echo json_encode($datatable);
+          echo json_encode(htmlspecialchars_array($datatable));
 
           break;
 

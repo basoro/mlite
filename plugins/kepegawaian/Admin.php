@@ -22,7 +22,7 @@ class Admin extends AdminModule
         ['name' => 'Data Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'index']), 'icon' => 'group', 'desc' => 'Data Pegawai'],
         ['name' => 'Add Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'add']), 'icon' => 'group', 'desc' => 'Tambah Data Pegawai'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getIndex($page = 1)
@@ -45,7 +45,7 @@ class Admin extends AdminModule
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['printURL'] = url([ADMIN, 'kepegawaian', 'print']);
 
-        return $this->draw('index.html', ['pegawai' => $this->assign]);
+        return $this->draw('index.html', ['pegawai' => htmlspecialchars_array($this->assign)]);
 
     }
 
@@ -110,7 +110,7 @@ class Admin extends AdminModule
 
         $this->assign['fotoURL'] = url(MODULES.'/kepegawaian/img/default.png');
 
-        return $this->draw('form.html', ['pegawai' => $this->assign]);
+        return $this->draw('form.html', ['pegawai' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getEdit($id)
@@ -137,7 +137,7 @@ class Admin extends AdminModule
 
             $this->assign['fotoURL'] = WEBAPPS_URL.'/penggajian/'.$row['photo'];
 
-            return $this->draw('form.html', ['pegawai' => $this->assign]);
+            return $this->draw('form.html', ['pegawai' => htmlspecialchars_array($this->assign)]);
         } else {
             redirect(url([ADMIN, 'kepegawaian', 'index']));
         }
@@ -159,7 +159,7 @@ class Admin extends AdminModule
               $this->assign['fotoURL'] = WEBAPPS_URL.'/penggajian/'.$row['photo'];
             }
 
-            return $this->draw('view.html', ['kepegawaian' => $this->assign]);
+            return $this->draw('view.html', ['kepegawaian' => htmlspecialchars_array($this->assign)]);
         } else {
             redirect(url([ADMIN, 'kepegawaian', 'index']));
         }

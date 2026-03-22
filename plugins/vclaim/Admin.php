@@ -267,7 +267,7 @@ class Admin extends AdminModule
               'prb' => $_POST['prolanis_prb']
             ]);
           }
-          echo htmlspecialchars($_POST['sep_no_sep']);
+          echo htmlspecialchars($_POST['sep_no_sep'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         } else {
           $simpan_sep = $this->db('bridging_sep_internal')->save([
             'no_sep' => $_POST['sep_no_sep'],
@@ -408,7 +408,7 @@ class Admin extends AdminModule
 
     $poliklinik = $this->db('poliklinik')->toArray();
     $dokter = $this->db('dokter')->toArray();
-    echo $this->draw('cetak.sep.html', ['data_sep' => $data_sep, 'poliklinik' => $poliklinik, 'dokter' => $dokter]);
+    echo $this->draw('cetak.sep.html', ['data_sep' => htmlspecialchars_array($data_sep), 'poliklinik' => htmlspecialchars_array($poliklinik), 'dokter' => htmlspecialchars_array($dokter)]);
     exit();
   }
 
@@ -431,7 +431,7 @@ class Admin extends AdminModule
     $potensi_prb = $this->db('bpjs_prb')->where('no_sep', $no_sep)->oneArray();
     $data_sep['potensi_prb'] = $potensi_prb['prb'];
 
-    echo $this->draw('cetak.sep.internal.html', ['data_sep' => $data_sep]);
+    echo $this->draw('cetak.sep.internal.html', ['data_sep' => htmlspecialchars_array($data_sep)]);
     exit();
   }
 
@@ -444,7 +444,7 @@ class Admin extends AdminModule
     ->where('bridging_sep.no_sep', $no_sep)->oneArray();
     $obat_srb = $this->db('bridging_srb_bpjs_obat')->where('no_srb',$data_sep['no_srb'])->toArray();
 
-    echo $this->draw('cetak.srb.html', ['data_sep' => $data_sep,'obat_srb'=>$obat_srb]);
+    echo $this->draw('cetak.srb.html', ['data_sep' => htmlspecialchars_array($data_sep),'obat_srb'=>htmlspecialchars_array($obat_srb)]);
     exit();
   }
 
@@ -556,20 +556,20 @@ class Admin extends AdminModule
           "response": ' . $decompress . '}';
       $data = json_decode($data, true);
     } else {
-      $data = '{
-          "metaData": {
-            "code": "5000",
-            "message": "ERROR"
-          },
-          "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      $data = json_decode($data, true);
+        $code = "5000"; // Default error code
+        $data = [
+            "metaData" => [
+              "code" => "5000",
+              "message" => "ERROR"
+            ],
+            "response" => "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."];
     }
 
     $jenis_pelayanan = '2';
     if ($data['response']['jnsPelayanan'] == 'Rawat Inap') {
       $jenis_pelayanan = '1';
     }
-    // echo json_encode($data);
+    // echo json_encode(htmlspecialchars_array($data));
     $data_rujukan = [];
     $no_telp = "00000000";
     if ($data['response']['noRujukan'] == "") {
@@ -596,22 +596,21 @@ class Admin extends AdminModule
         $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       }
       if ($data_rujukan != null) {
-        $data_rujukan = '{
-            "metaData": {
-              "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
-              "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
-            },
-            "response": ' . $decompress . '}';
-        $data_rujukan = json_decode($data_rujukan, true);
-      } else {
-        $data_rujukan = '{
-            "metaData": {
-              "code": "5000",
-              "message": "ERROR"
-            },
-            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-        $data_rujukan = json_decode($data_rujukan, true);
-      }
+      $data_rujukan = '{
+          "metaData": {
+            "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+            "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
+          },
+          "response": ' . $decompress . '}';
+      $data_rujukan = json_decode($data_rujukan, true);
+    } else {
+      $data_rujukan = [
+          "metaData" => [
+            "code" => "5000",
+            "message" => "ERROR"
+          ],
+          "response" => "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."];
+    }
 
       // echo json_encode($data_rujukan);
       $no_telp = $data_rujukan['response']['rujukan']['peserta']['mr']['noTelepon'];
@@ -723,7 +722,7 @@ class Admin extends AdminModule
     $url = $this->api_url . '' . $url;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -741,12 +740,7 @@ class Admin extends AdminModule
       $this->tpl->set('rujukan', json_encode($json, JSON_PRETTY_PRINT));
       echo $this->tpl->draw(MODULES . '/vclaim/view/admin/rujukan.modal.html', true);
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -760,7 +754,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/diagnosa/' . $keyword;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     
     if ($json && isset($json['metaData'])) {
         $code = $json['metaData']['code'];
@@ -777,12 +771,7 @@ class Admin extends AdminModule
             },
             "response": ' . $decompress . '}';
     } else {
-        echo '{
-            "metaData": {
-                "code": "5000",
-                "message": "ERROR"
-            },
-            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+        echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -796,7 +785,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/diagnosaprb';
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -812,12 +801,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -831,7 +815,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/obatprb/' . $keyword;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -847,12 +831,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -867,7 +846,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/poli/' . $keyword;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -883,12 +862,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -902,7 +876,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/faskes/' . $kd_faskes . '/' . $jns_faskes;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -918,12 +892,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -936,7 +905,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/dokter/pelayanan/' . $jnsPelayanan . '/tglPelayanan/' . $tglPelayanan . '/Spesialis/' . $spesialis;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -952,12 +921,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -971,7 +935,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/propinsi';
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -987,12 +951,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1006,7 +965,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/kabupaten/propinsi/' . $kdPropinsi;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1022,12 +981,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1041,7 +995,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/kecamatan/kabupaten/' . $kdKabupaten;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1057,12 +1011,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1076,7 +1025,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/procedure/' . $keyword;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1092,12 +1041,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1111,7 +1055,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/kelasrawat';
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1127,12 +1071,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1146,7 +1085,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/dokter/' . $keyword;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1162,12 +1101,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     exit();
@@ -1183,7 +1117,7 @@ class Admin extends AdminModule
     $url = $this->api_url . '/SEP/FingerPrint/Peserta/' . $keyword . '/TglPelayanan/'.$dateNow.'';
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1199,12 +1133,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     exit();
@@ -1220,7 +1149,7 @@ class Admin extends AdminModule
     $url = $this->api_url . '/SEP/FingerPrint/Peserta/' . $keyword . '/TglPelayanan/'.$dateNow.'';
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1236,12 +1165,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     exit();
@@ -1272,7 +1196,7 @@ class Admin extends AdminModule
     $url = $this->api_url . '/Sep/aprovalSEP';
     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1288,14 +1212,8 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
-
     exit();
   }
 
@@ -1308,7 +1226,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/spesialistik';
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1324,12 +1242,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1343,7 +1256,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/ruangrawat';
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1359,12 +1272,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1378,7 +1286,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/carakeluar';
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1394,12 +1302,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1413,7 +1316,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'referensi/pascapulang';
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1429,12 +1332,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1448,7 +1346,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Peserta/nokartu/' . $noKartu . '/tglSEP/' . $tglPelayananSEP;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1464,12 +1362,7 @@ class Admin extends AdminModule
           },
           "response": ' . $decompress . '}';
     } else {
-      echo '{
-          "metaData": {
-            "code": "5000",
-            "message": "ERROR"
-          },
-          "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1483,7 +1376,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Peserta/nik/' . $nik . '/tglSEP/' . $tglPelayananSEP;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1499,12 +1392,7 @@ class Admin extends AdminModule
         	},
         	"response": ' . $decompress . '}';
     } else {
-      echo '{
-        	"metaData": {
-        		"code": "5000",
-        		"message": "ERROR"
-        	},
-        	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1574,7 +1462,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'SEP/2.0/insert';
     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    echo json_encode($json);
+    echo json_encode(htmlspecialchars_array($json));
     exit();
   }
 
@@ -1587,7 +1475,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'SEP/2.0/Update';
     $output = BpjsService::put($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1633,7 +1521,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'SEP/2.0/delete';
     $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1649,12 +1537,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1679,7 +1562,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'RencanaKontrol/Delete';
     $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1695,12 +1578,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($data['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1714,7 +1592,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'SEP/' . $keyword;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1730,12 +1608,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($data['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1749,7 +1622,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'sep/JasaRaharja/Suplesi/' . $noKartu . '/tglPelayanan/' . $tglPelayanan;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1765,12 +1638,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1783,7 +1651,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Sep/pengajuanSEP';
     $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1799,12 +1667,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1817,7 +1680,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Sep/aprovalSEP';
     $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1852,7 +1715,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Sep/updtglplg';
     $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey,  $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1901,7 +1764,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Sep/2.0/updtglplg';
     $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey,  $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1917,12 +1780,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1936,7 +1794,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'sep/cbg/' . $keyword;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1952,12 +1810,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1971,7 +1824,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Rujukan/insert';
     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -1987,12 +1840,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -2006,7 +1854,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Rujukan/update';
     $output = BpjsService::put($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -2022,12 +1870,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -2041,7 +1884,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Rujukan/delete';
     $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -2057,12 +1900,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -2081,7 +1919,7 @@ class Admin extends AdminModule
     $url = $this->api_url . '' . $url;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $jsonresponse = $json['response'];
@@ -2098,12 +1936,7 @@ class Admin extends AdminModule
           	},
             "response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -2123,7 +1956,7 @@ class Admin extends AdminModule
     $url = $this->api_url . '' . $url;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -2163,7 +1996,7 @@ class Admin extends AdminModule
     $url = $this->api_url . '' . $url;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
@@ -2183,32 +2016,17 @@ class Admin extends AdminModule
       $noKunjungan = [];
       $i = 1;
       foreach ($json['response']['rujukan'] as $key => $value) {
-        //$keyword = $value['noKunjungan'];
-        /*if ($searchBy == 'RS') {
-                $url = 'Rujukan/RS/'.$keyword;
-            } else {
-                $url = 'Rujukan/'.$keyword;
-            }
-            $url = $this->api_url.''.$url;
-            $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
-            $json = json_decode($output, true);
-            echo json_encode($json);*/
         $row['Nomor'] = $i++;
-        $row['noKunjungan'] = '<a href="' . url([ADMIN, 'vclaim', 'caribynorujukanmodal', $searchBy, $value['noKunjungan']]) . '" data-toggle="modal" data-target="#rujukanModal">' . $value['noKunjungan'] . '</a>';
-        $row['Poliklinik'] = '[' . $value['poliRujukan']['kode'] . '] ' . $value['poliRujukan']['nama'];
-        $row['Diagnosa'] = '[' . $value['diagnosa']['kode'] . '] ' . $value['diagnosa']['nama'];
-        $row['Perujuk'] = '[' . $value['provPerujuk']['kode'] . '] ' . $value['provPerujuk']['nama'];
-        $row['Tanggal'] = $value['tglKunjungan'];
+        $row['noKunjungan'] = '<a href="' . url([ADMIN, 'vclaim', 'caribynorujukanmodal', htmlspecialchars($searchBy, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), htmlspecialchars($value['noKunjungan'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]) . '" data-toggle="modal" data-target="#rujukanModal">' . htmlspecialchars($value['noKunjungan'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</a>';
+        $row['Poliklinik'] = '[' . htmlspecialchars($value['poliRujukan']['kode'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '] ' . htmlspecialchars($value['poliRujukan']['nama'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $row['Diagnosa'] = '[' . htmlspecialchars($value['diagnosa']['kode'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '] ' . htmlspecialchars($value['diagnosa']['nama'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $row['Perujuk'] = '[' . htmlspecialchars($value['provPerujuk']['kode'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '] ' . htmlspecialchars($value['provPerujuk']['nama'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $row['Tanggal'] = htmlspecialchars($value['tglKunjungan'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $noKunjungan[] = $row;
       }
-      echo json_encode($noKunjungan);
+      echo json_encode(htmlspecialchars_array($noKunjungan));
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -2240,7 +2058,7 @@ class Admin extends AdminModule
           $url = $this->api_url.''.$url;
           $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
           $json = json_decode($output, true);
-          //echo json_encode($json);
+          //echo json_encode(htmlspecialchars_array($json));
           $row['noRujukan'] = $value['noKunjungan'];
           $listRujukan[] = $row;
         }
@@ -2261,12 +2079,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -2280,7 +2093,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'LPK/insert';
     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -2296,12 +2109,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -2315,7 +2123,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'LPK/update';
     $output = BpjsService::put($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -2331,12 +2139,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -2350,7 +2153,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'LPK/delete';
     $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -2366,12 +2169,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -2385,7 +2183,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'LPK/TglMasuk/' . $tglMasuk . '/JnsPelayanan/' . $jnsPelayanan;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -2420,7 +2218,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Monitoring/Kunjungan/Tanggal/' . $tglSep . '/JnsPelayanan/' . $jnsPelayanan;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -2455,7 +2253,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Monitoring/Klaim/Tanggal/' . $tglPulang . '/JnsPelayanan/' . $jnsPelayanan . '/Status/' . $statusKlaim;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -2471,12 +2269,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -2490,7 +2283,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'monitoring/HistoriPelayanan/NoKartu/' . $noKartu . '/tglMulai/' . $tglAwal . '/tglAkhir/' . $tglAkhir;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    // echo json_encode($json);
+    // echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -2506,12 +2299,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -2525,7 +2313,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'monitoring/JasaRaharja/tglMulai/' . $tglMulai . '/tglAkhir/' . $tglAkhir;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -2541,12 +2329,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -2560,8 +2343,8 @@ class Admin extends AdminModule
     $this->tpl->set('spri', $this->tpl->noParse_array(htmlspecialchars_array($bridging_surat_pri_bpjs)));
     $this->tpl->set('maping_dokter_dpjpvclaim', $this->tpl->noParse_array(htmlspecialchars_array($maping_dokter_dpjpvclaim)));
     $this->tpl->set('maping_poli_bpjs', $this->tpl->noParse_array(htmlspecialchars_array($maping_poli_bpjs)));
-    $this->tpl->set('no_kartu', $no_kartu);
-    $this->tpl->set('no_rawat', revertNorawat($no_rawat));
+    $this->tpl->set('no_kartu', htmlspecialchars($no_kartu, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
+    $this->tpl->set('no_rawat', htmlspecialchars(revertNorawat($no_rawat), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
     echo $this->draw('spri.html');
     exit();
   }
@@ -2742,7 +2525,7 @@ class Admin extends AdminModule
         $response = isset($response) ? $response : json_encode(['error' => $e->getMessage()]);
     }
 
-    echo $this->draw('add.antrian.html', ['request' => $request, 'response' => $response, 'status' => $status]);
+    echo $this->draw('add.antrian.html', ['request' => htmlspecialchars($request, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), 'response' => htmlspecialchars($response, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), 'status' => htmlspecialchars($status, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
     exit();
   }
 
@@ -2805,12 +2588,7 @@ class Admin extends AdminModule
             },
             "response": ' . $decompress . '}';
     } else {
-        echo '{
-            "metaData": {
-                "code": "5000",
-                "message": "ERROR"
-            },
-            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+        echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -2846,7 +2624,7 @@ class Admin extends AdminModule
     $output = BpjsService::post($url, $request, $consid, $secretkey, $userkey, $tStamp);
     $data = json_decode($output, true);
     // echo $data;
-    print_r($output);
+    print_r(htmlspecialchars($output, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
     
     if ($data && isset($data['metaData'])) {
         $code = $data['metaData']['code'];
@@ -2865,13 +2643,12 @@ class Admin extends AdminModule
         $data = json_decode($data, true);
     } else {
         $code = "5000"; // Default error code
-        $data = '{
-            "metaData": {
-              "code": "5000",
-              "message": "ERROR"
-            },
-            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-        $data = json_decode($data, true);
+        $data = [
+            "metaData" => [
+              "code" => "5000",
+              "message" => "ERROR"
+            ],
+            "response" => "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."];
     }
     if ($code == 200) {
       $request = [
@@ -2897,7 +2674,7 @@ class Admin extends AdminModule
       $output = BpjsService::post($url, $request, $consid, $secretkey, $userkey, $tStamp);
       $data = json_decode($output, true);
       // echo $data;
-      print_r($output);
+      print_r(htmlspecialchars($output, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
       
       if ($data && isset($data['metaData'])) {
           $code = $data['metaData']['code'];
@@ -2915,13 +2692,12 @@ class Admin extends AdminModule
               "response": ' . $decompress . '}';
           $data = json_decode($data, true);
       } else {
-          $data = '{
-              "metaData": {
-                "code": "5000",
-                "message": "ERROR"
-              },
-              "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-          $data = json_decode($data, true);
+          $data = [
+              "metaData" => [
+                "code" => "5000",
+                "message" => "ERROR"
+              ],
+              "response" => "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."];
       }
     }
     exit();
@@ -2958,13 +2734,12 @@ class Admin extends AdminModule
           "response": ' . $decompress . '}';
       $data = json_decode($data, true);
     } else {
-      $data = '{
-          "metaData": {
-            "code": "5000",
-            "message": "ERROR"
-          },
-          "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      $data = json_decode($data, true);
+      $data = [
+          "metaData" => [
+            "code" => "5000",
+            "message" => "ERROR"
+          ],
+          "response" => "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."];
     }
 
     $url_rujukan = $this->settings->get('settings.BpjsApiUrl') . 'Rujukan/' . $data['response']['noRujukan'];
@@ -2991,13 +2766,12 @@ class Admin extends AdminModule
           "response": ' . $decompress . '}';
       $data_rujukan = json_decode($data_rujukan, true);
     } else {
-      $data_rujukan = '{
-          "metaData": {
-            "code": "5000",
-            "message": "ERROR"
-          },
-          "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      $data_rujukan = json_decode($data_rujukan, true);
+      $data_rujukan = [
+          "metaData" => [
+            "code" => "5000",
+            "message" => "ERROR"
+          ],
+          "response" => "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."];
     }
 
     $no_telp = $data_rujukan['response']['rujukan']['peserta']['mr']['noTelepon'];
@@ -3477,7 +3251,7 @@ class Admin extends AdminModule
     $url = $this->api_url . '/RencanaKontrol/ListRencanaKontrol/Bulan/'.$bulan.'/Tahun/'.$tahun.'/Nokartu/'.$no_kartu.'/filter/2';
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -3493,12 +3267,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -3507,7 +3276,7 @@ class Admin extends AdminModule
   {
     $bridging_sep = $this->db('bridging_sep')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
     $dirujuk = $this->db('bridging_rujukan_bpjs')->where('no_sep', $bridging_sep['no_sep'])->toArray();
-    echo $this->draw('dirujuk.html', ['bridging_sep' => isset_or($bridging_sep, ''), 'dirujuk' => $dirujuk]);
+    echo $this->draw('dirujuk.html', ['bridging_sep' => htmlspecialchars_array(isset_or($bridging_sep, [])), 'dirujuk' => htmlspecialchars_array($dirujuk)]);
     exit();
   }
 
@@ -3537,7 +3306,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Rujukan/2.0/insert';
     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    echo htmlspecialchars(json_encode($json), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    echo json_encode(htmlspecialchars_array($json));
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -3570,12 +3339,7 @@ class Admin extends AdminModule
 
       }
     } else {
-      echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -3583,7 +3347,7 @@ class Admin extends AdminModule
   public function getDirujukTampil($noSep)
   {
     $bridging_rujukan_bpjs = $this->db('bridging_rujukan_bpjs')->where('no_sep', $noSep)->toArray();
-    echo $this->draw('dirujuk.tampil.html', ['dirujuk' => $bridging_rujukan_bpjs]);
+    echo $this->draw('dirujuk.tampil.html', ['dirujuk' => htmlspecialchars_array($bridging_rujukan_bpjs)]);
     exit();
   }
 
@@ -3591,7 +3355,7 @@ class Admin extends AdminModule
   {
       $this->_addHeaderFiles();
       $poliklinik = $this->db('poliklinik')->where('status','1')->toArray();
-      return $this->draw('mappingpoli.html', ['row' => $this->db('maping_poli_bpjs')->toArray(), 'poliklinik' => $poliklinik]);
+      return $this->draw('mappingpoli.html', ['row' => htmlspecialchars_array($this->db('maping_poli_bpjs')->toArray()), 'poliklinik' => htmlspecialchars_array($poliklinik)]);
   }
 
   public function postPoliklinik_Save()
@@ -3630,7 +3394,7 @@ class Admin extends AdminModule
   {
       $this->_addHeaderFiles();
       $dokter = $this->db('dokter')->where('status','1')->toArray();
-      return $this->draw('mappingdokter.html', ['row' => $this->db('maping_dokter_dpjpvclaim')->toArray(), 'dokter' => $dokter]);
+      return $this->draw('mappingdokter.html', ['row' => htmlspecialchars_array($this->db('maping_dokter_dpjpvclaim')->toArray()), 'dokter' => htmlspecialchars_array($dokter)]);
   }
 
   public function postDokter_Save()

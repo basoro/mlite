@@ -383,7 +383,7 @@ class Admin extends AdminModule
         } catch (\Exception $e) {
             $message = $e->getMessage();
             $message = preg_replace('/`[^`]+`\./', '', $message);
-            return ['status' => 'error', 'message' => $message];
+            return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
         }
     }
 
@@ -417,7 +417,7 @@ class Admin extends AdminModule
         } catch (\Exception $e) {
             $message = $e->getMessage();
             $message = preg_replace('/`[^`]+`\./', '', $message);
-            return ['status' => 'error', 'message' => $message];
+            return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
         }
     }
 
@@ -494,7 +494,7 @@ class Admin extends AdminModule
         ['name' => 'Metode Racik', 'url' => url([ADMIN, 'master', 'metoderacik']), 'icon' => 'cubes', 'desc' => 'Master metode racik'],
         ['name' => 'Ruang OK', 'url' => url([ADMIN, 'master', 'ruangok']), 'icon' => 'cubes', 'desc' => 'Master ruang OK'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     /* Start Dokter Section */
@@ -792,11 +792,11 @@ class Admin extends AdminModule
       
       if($query) {
         $data['status'] = 'success';
-        echo json_encode($data);
+        echo json_encode(htmlspecialchars_array($data));
       } else {
         $data['status'] = 'error';
         $data['msg'] = $query->errorInfo()['2'];
-        echo json_encode($data);
+        echo json_encode(htmlspecialchars_array($data));
       }
 
       exit();
@@ -993,11 +993,11 @@ class Admin extends AdminModule
       $query = $this->db('template_laboratorium')->where('id_template', $_POST['id_template'])->delete();
       if($query == 1) {
         $data['status'] = 'success';
-        echo json_encode($data);
+        echo json_encode(htmlspecialchars_array($data));
       } else {
         $data['status'] = 'error';
         $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        echo json_encode($data);
+        echo json_encode(htmlspecialchars_array($data));
       }
       exit();
     }

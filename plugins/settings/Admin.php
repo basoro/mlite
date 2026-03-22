@@ -37,7 +37,7 @@ class Admin extends AdminModule
         ['name' => 'Pembaruan Sistem', 'url' => url([ADMIN, 'settings', 'updates']), 'icon' => 'cubes', 'desc' => 'Pembaruan sistem'],
         ['name' => 'Backup & Restore', 'url' => url([ADMIN, 'settings', 'backuprestore']), 'icon' => 'database', 'desc' => 'Backup dan restore database'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getGeneral()
@@ -814,7 +814,7 @@ class Admin extends AdminModule
 
         $backup_files = glob('../backups/*.sql.gz');
         // $backup_files = pathinfo($backup_files);
-        return $this->draw('backup.restore.html', ['databases' => $result, 'files' => $backup_files]);
+        return $this->draw('backup.restore.html', ['databases' => htmlspecialchars_array($result), 'files' => $backup_files]);
     }
 
     public function getBackupDatabase()

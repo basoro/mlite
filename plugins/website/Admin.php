@@ -28,7 +28,7 @@ class Admin extends AdminModule
         ['name' => 'Pengaturan Berita', 'url' => url([ADMIN, 'website', 'settingsnews']), 'icon' => 'pencil-square', 'desc' => 'Pengaturan berita'],
         ['name' => 'Pengaturan Website', 'url' => url([ADMIN, 'website', 'settingswebsite']), 'icon' => 'pencil-square', 'desc' => 'Pengaturan website'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function anyManageNews($page = 1)
@@ -103,7 +103,7 @@ class Admin extends AdminModule
             }
         }
 
-        return $this->draw('manage.news.html', ['news' => $this->assign]);
+        return $this->draw('manage.news.html', ['news' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getAddNews()
@@ -149,7 +149,7 @@ class Admin extends AdminModule
 
             $this->assign['title'] = (!empty($news['title'])) ? 'Sunting Artikel' : 'Tambah baru';
 
-            return $this->draw('form.html', ['news' => $this->assign]);
+            return $this->draw('form.html', ['news' => htmlspecialchars_array($this->assign)]);
         } else {
             redirect(url([ADMIN, 'website', 'managenews']));
         }
@@ -352,7 +352,7 @@ class Admin extends AdminModule
     {
         $this->assign['title'] = 'Pengaturan Website';
         $this->assign['website'] = htmlspecialchars_array($this->settings('website'));
-        return $this->draw('settings.website.html', ['settings' => $this->assign]);
+        return $this->draw('settings.website.html', ['settings' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postSaveSettingsWebsite()

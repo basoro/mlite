@@ -52,7 +52,7 @@ class Admin extends AdminModule
       ->where('tgl_pinjam', '<=', $date_end)
       ->toArray();
 
-    return $this->draw('manage.html', ['tgl_awal' => $date_start, 'tgl_akhir' => $date_end, 'aset' => $aset, 'pemeliharaan' => $pemeliharaan, 'perbaikan' => $perbaikan, 'peminjaman' => $peminjaman]);
+    return $this->draw('manage.html', ['tgl_awal' => $date_start, 'tgl_akhir' => $date_end, 'aset' => htmlspecialchars_array($aset), 'pemeliharaan' => htmlspecialchars_array($pemeliharaan), 'perbaikan' => htmlspecialchars_array($perbaikan), 'peminjaman' => htmlspecialchars_array($peminjaman)]);
   }
 
   public function getDataAset()
@@ -104,7 +104,7 @@ class Admin extends AdminModule
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
       ->join('pegawai', 'pegawai.nik=pemeliharaan_inventaris.nip')
       ->toArray();
-    return $this->draw('data.pemeliharaan.html', ['pemeliharaan' => $pemeliharaan]);
+    return $this->draw('data.pemeliharaan.html', ['pemeliharaan' => htmlspecialchars_array($pemeliharaan)]);
   }
 
   public function getPermintaanPerbaikan()
@@ -127,7 +127,7 @@ class Admin extends AdminModule
       $row['hapus'] = url([ADMIN,'inventaris','permintaanperbaikanhapus',$row['no_permintaan']]);
       $perbaikan[] = $row;
     }
-    return $this->draw('data.permintaan.perbaikan.html', ['perbaikan' => $perbaikan]);
+    return $this->draw('data.permintaan.perbaikan.html', ['perbaikan' => htmlspecialchars_array($perbaikan)]);
   }
 
   public function getPermintaanPerbaikanBaru()
@@ -148,7 +148,7 @@ class Admin extends AdminModule
     $this->assign['pegawai'] = $this->db('pegawai')
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
-    return $this->draw('form.permintaan.perbaikan.html', ['permintaanperbaikan' => $this->assign]);
+    return $this->draw('form.permintaan.perbaikan.html', ['permintaanperbaikan' => htmlspecialchars_array($this->assign)]);
   }
 
   public function getPermintaanPerbaikanUbah($no_permintaan)
@@ -162,7 +162,7 @@ class Admin extends AdminModule
     $this->assign['pegawai'] = $this->db('pegawai')
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
-    return $this->draw('form.permintaan.perbaikan.html', ['permintaanperbaikan' => $this->assign]);
+    return $this->draw('form.permintaan.perbaikan.html', ['permintaanperbaikan' => htmlspecialchars_array($this->assign)]);
   }
 
   public function getPermintaanPerbaikanDetail($no_permintaan)
@@ -177,7 +177,7 @@ class Admin extends AdminModule
       ->oneArray();
     $perbaikan = url([ADMIN,'inventaris','perbaikan', $no_permintaan]);
     $perbaikanhapus = url([ADMIN,'inventaris','perbaikanhapus', $no_permintaan]);
-    return $this->draw('data.permintaan.perbaikan.detail.html', ['permintaan_perbaikan_inventaris' => $permintaan_perbaikan_inventaris, 'perbaikandetail' => $perbaikandetail, 'perbaikan' => $perbaikan, 'perbaikanhapus' => $perbaikanhapus]);
+    return $this->draw('data.permintaan.perbaikan.detail.html', ['permintaan_perbaikan_inventaris' => $permintaan_perbaikan_inventaris, 'perbaikandetail' => htmlspecialchars_array($perbaikan)detail, 'perbaikan' => htmlspecialchars_array($perbaikan), 'perbaikanhapus' => htmlspecialchars_array($perbaikan)hapus]);
   }
 
   public function postPermintaanPerbaikanSimpan($no_permintaan = null)
@@ -248,7 +248,7 @@ class Admin extends AdminModule
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
 
-    return $this->draw('form.perbaikan.html', ['perbaikan' => $this->assign]);
+    return $this->draw('form.perbaikan.html', ['perbaikan' => htmlspecialchars_array($this->assign)]);
   }
 
   public function postPerbaikanSimpan($no_permintaan = null)
@@ -329,7 +329,7 @@ class Admin extends AdminModule
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
 
-    return $this->draw('form.pemeliharaan.html', ['pemeliharaan' => $this->assign]);
+    return $this->draw('form.pemeliharaan.html', ['pemeliharaan' => htmlspecialchars_array($this->assign)]);
   }
 
   public function postPemeliharaanSimpan($no_inventaris = null)

@@ -85,7 +85,7 @@ class Site extends SiteModule
       );
       http_response_code(200);
     }
-    echo json_encode($response,true);
+    echo json_encode(htmlspecialchars_array($response),true);
     exit();
   }
 
@@ -138,7 +138,7 @@ class Site extends SiteModule
       );
       http_response_code(200);
     }
-    echo json_encode($response,true);
+    echo json_encode(htmlspecialchars_array($response),true);
     exit();
   }
 
@@ -205,7 +205,7 @@ class Site extends SiteModule
         http_response_code(200);
       }
     }
-    echo json_encode($response,true);
+    echo json_encode(htmlspecialchars_array($response),true);
     exit();
   }
 
@@ -257,7 +257,7 @@ class Site extends SiteModule
       );
       http_response_code(200);
     }
-    echo json_encode($response,true);
+    echo json_encode(htmlspecialchars_array($response),true);
     exit();
   }
 
@@ -324,7 +324,7 @@ class Site extends SiteModule
         http_response_code(200);
       }
     }
-    echo json_encode($response,true);
+    echo json_encode(htmlspecialchars_array($response),true);
     exit();
   }
 }

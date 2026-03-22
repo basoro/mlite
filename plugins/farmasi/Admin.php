@@ -31,7 +31,7 @@ class Admin extends AdminModule
         ['name' => 'Riwayat Barang Medis', 'url' => url([ADMIN, 'farmasi', 'riwayatbarangmedis']), 'icon' => 'medkit', 'desc' => 'Riwayat pergerakan barang medis'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'farmasi', 'settings']), 'icon' => 'medkit', 'desc' => 'Pengaturan farmasi dan depo'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getMutasi($status = '1')
@@ -40,7 +40,7 @@ class Admin extends AdminModule
         $databarang['title'] = 'Kelola Mutasi Obat';
         $databarang['bangsal']  = $this->db('bangsal')->toArray();
         $databarang['list'] = $this->_databarangList($status);
-        return $this->draw('mutasi.html', ['databarang' => $databarang, 'tab' => $status]);
+        return $this->draw('mutasi.html', ['databarang' => htmlspecialchars_array($databarang), 'tab' => $status]);
     }
 
     private function _databarangList($status)
@@ -468,7 +468,7 @@ class Admin extends AdminModule
             'info' => htmlspecialchars(json_encode($opname2->errorInfo()[2]), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
           );
         }
-        echo json_encode($data);   
+        echo json_encode(htmlspecialchars_array($data));   
 
       }
       exit();
@@ -480,7 +480,7 @@ class Admin extends AdminModule
         $this->assign['title'] = 'Pengaturan Modul Farmasi';
         $this->assign['bangsal'] = $this->db('bangsal')->toArray();
         $this->assign['farmasi'] = htmlspecialchars_array($this->settings('farmasi'));
-        return $this->draw('settings.html', ['settings' => $this->assign]);
+        return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postSaveSettings()
@@ -588,13 +588,13 @@ class Admin extends AdminModule
 
         ## Response
         $response = array(
-            "draw" => intval(htmlspecialchars($_POST['draw'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')),
+            "draw" => intval(htmlspecialchars($_POST['draw'] ?? 0, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordwithFilter,
             "aaData" => $data
         );
 
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
         exit();
     }
 
@@ -698,13 +698,13 @@ class Admin extends AdminModule
 
         ## Response
         $response = array(
-            "draw" => intval(htmlspecialchars($_POST['draw'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')),
+            "draw" => intval(htmlspecialchars($_POST['draw'] ?? 0, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordwithFilter,
             "aaData" => $data
         );
 
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
         exit();
     }
 
@@ -832,7 +832,7 @@ class Admin extends AdminModule
         }
 
         header('Content-Type: application/json');
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
         exit();
     }
 

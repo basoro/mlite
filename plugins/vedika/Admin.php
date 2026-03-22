@@ -181,7 +181,7 @@ class Admin extends AdminModule
 
     if($row) {
       $result = $this->_getRiwayatData($row['no_rkm_medis'], convertNorawat($row['no_rawat']));
-      return ['status' => 'success', 'data' => $result];
+      return ['status' => 'success', 'data' => htmlspecialchars_array($result)];
     } else {
       return ['status' => 'error', 'message' => 'Not found'];
     }
@@ -980,7 +980,7 @@ class Admin extends AdminModule
       ['name' => 'User Vedika', 'url' => url([ADMIN, 'vedika', 'users']), 'icon' => 'code', 'desc' => 'User Vedika'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'vedika', 'settings']), 'icon' => 'code', 'desc' => 'Pengaturan Vedika'],
     ];
-    return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'stats' => $stats, 'periode' => $date]);
+    return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules), 'stats' => $stats, 'periode' => $date]);
   }
 
   public function Chart()
@@ -1241,7 +1241,7 @@ class Admin extends AdminModule
     $this->assign['searchUrl'] =  url([ADMIN, 'vedika', 'index', $type, $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
     $this->assign['ralanUrl'] =  url([ADMIN, 'vedika', 'index', 'ralan', $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
     $this->assign['ranapUrl'] =  url([ADMIN, 'vedika', 'index', 'ranap', $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
-    return $this->draw('index.html', ['tab' => $type, 'vedika' => $this->assign]);
+    return $this->draw('index.html', ['tab' => $type, 'vedika' => htmlspecialchars_array($this->assign)]);
   }
 
   public function anyLengkap($type = 'ralan', $page = 1)
@@ -1471,7 +1471,7 @@ class Admin extends AdminModule
     $this->assign['searchUrl'] =  url([ADMIN, 'vedika', 'lengkap', $type, $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
     $this->assign['ralanUrl'] =  url([ADMIN, 'vedika', 'lengkap', 'ralan', $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
     $this->assign['ranapUrl'] =  url([ADMIN, 'vedika', 'lengkap', 'ranap', $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
-    return $this->draw('lengkap.html', ['tab' => $type, 'vedika' => $this->assign]);
+    return $this->draw('lengkap.html', ['tab' => $type, 'vedika' => htmlspecialchars_array($this->assign)]);
   }
 
   public function anyPengajuan($type = 'ralan', $page = 1)
@@ -1700,7 +1700,7 @@ class Admin extends AdminModule
     $this->assign['searchUrl'] =  url([ADMIN, 'vedika', 'pengajuan', $type, $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
     $this->assign['ralanUrl'] =  url([ADMIN, 'vedika', 'pengajuan', 'ralan', $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
     $this->assign['ranapUrl'] =  url([ADMIN, 'vedika', 'pengajuan', 'ranap', $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
-    return $this->draw('pengajuan.html', ['tab' => $type, 'vedika' => $this->assign]);
+    return $this->draw('pengajuan.html', ['tab' => $type, 'vedika' => htmlspecialchars_array($this->assign)]);
   }
 
   public function getLengkapExcel()
@@ -2045,7 +2045,7 @@ class Admin extends AdminModule
     $this->assign['searchUrl'] =  url([ADMIN, 'vedika', 'perbaikan', $type, $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
     $this->assign['ralanUrl'] =  url([ADMIN, 'vedika', 'perbaikan', 'ralan', $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
     $this->assign['ranapUrl'] =  url([ADMIN, 'vedika', 'perbaikan', 'ranap', $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
-    return $this->draw('perbaikan.html', ['tab' => $type, 'vedika' => $this->assign]);
+    return $this->draw('perbaikan.html', ['tab' => $type, 'vedika' => htmlspecialchars_array($this->assign)]);
   }
 
   public function getFormSEPVClaim()
@@ -2133,7 +2133,7 @@ class Admin extends AdminModule
     if ($data['response']['jnsPelayanan'] == 'Rawat Inap') {
       $jenis_pelayanan = '1';
     }
-    // echo json_encode($data);
+    // echo json_encode(htmlspecialchars_array($data));
     $data_rujukan = [];
     $no_telp = "00000000";
     if ($data['response']['noRujukan'] == "") {
@@ -2841,7 +2841,7 @@ class Admin extends AdminModule
     $this->assign['vedika'] = htmlspecialchars_array($this->settings('vedika'));
     $this->assign['penjab'] = $this->_getPenjab($this->settings->get('vedika.carabayar'));
     $this->assign['master_berkas_digital'] = $this->db('master_berkas_digital')->toArray();
-    return $this->draw('settings.html', ['settings' => $this->assign]);
+    return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
   }
 
   public function postSaveSettings()
@@ -2861,7 +2861,7 @@ class Admin extends AdminModule
     $this->assign['vedika'] = htmlspecialchars_array($this->settings('vedika'));
     $this->assign['penjab'] = $this->_getPenjab($this->settings->get('vedika.carabayar'));
     $this->assign['kategori_perawatan'] = $this->db('kategori_perawatan')->toArray();
-    return $this->draw('mapping.inacbgs.html', ['settings' => $this->assign]);
+    return $this->draw('mapping.inacbgs.html', ['settings' => htmlspecialchars_array($this->assign)]);
   }
 
   public function postSaveMappingInacbgs()
@@ -2878,7 +2878,7 @@ class Admin extends AdminModule
     $this->_addHeaderFiles();
     $this->assign['title'] = 'Pengaturan Modul Vedika';
     $this->assign['vedika'] = htmlspecialchars_array($this->settings('vedika'));
-    return $this->draw('bridging.eklaim.html', ['settings' => $this->assign]);
+    return $this->draw('bridging.eklaim.html', ['settings' => htmlspecialchars_array($this->assign)]);
   }
 
   public function postSaveBridgingEklaim()
@@ -2903,13 +2903,13 @@ class Admin extends AdminModule
   public function getUserAdd()
   {
     $this->assign['form'] = ['username' => '', 'fullname' => '', 'password' => ''];
-    return $this->draw('user.form.html', ['users' => $this->assign]);
+    return $this->draw('user.form.html', ['users' => htmlspecialchars_array($this->assign)]);
   }
 
   public function getUserEdit($id)
   {
     $this->assign['form'] = $this->db('mlite_users_vedika')->where('id', $id)->oneArray();
-    return $this->draw('user.form.html', ['users' => $this->assign]);
+    return $this->draw('user.form.html', ['users' => htmlspecialchars_array($this->assign)]);
   }
 
   public function postUserSave($id = null)
@@ -3292,14 +3292,14 @@ class Admin extends AdminModule
   public function getUbahDiagnosa($status_lanjut, $no_rawat)
   {
     $diagnosa_pasien = $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')->where('diagnosa_pasien.no_rawat', revertNoRawat($no_rawat))->where('diagnosa_pasien.status', $status_lanjut)->asc('prioritas')->toArray();
-    echo $this->draw('ubah.diagnosa.html', ['no_rawat' => revertNoRawat($no_rawat), 'diagnosa_pasien' => $diagnosa_pasien, 'status_lanjut' => $status_lanjut]);
+    echo $this->draw('ubah.diagnosa.html', ['no_rawat' => revertNoRawat($no_rawat), 'diagnosa_pasien' => htmlspecialchars_array($diagnosa)_pasien, 'status_lanjut' => $status_lanjut]);
     exit();
   }
 
   public function getDisplayDiagnosa($status_lanjut, $no_rawat)
   {
     $diagnosa_pasien = $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')->where('diagnosa_pasien.no_rawat', revertNoRawat($no_rawat))->where('diagnosa_pasien.status', $status_lanjut)->asc('prioritas')->toArray();
-    echo $this->draw('display.diagnosa.html', ['no_rawat' => revertNoRawat($no_rawat), 'diagnosa_pasien' => $diagnosa_pasien, 'status_lanjut' => $status_lanjut]);
+    echo $this->draw('display.diagnosa.html', ['no_rawat' => revertNoRawat($no_rawat), 'diagnosa_pasien' => htmlspecialchars_array($diagnosa)_pasien, 'status_lanjut' => $status_lanjut]);
     exit();
   }
 
@@ -3313,14 +3313,14 @@ class Admin extends AdminModule
   public function getUbahProsedur($status_lanjut, $no_rawat)
   {
     $prosedur_pasien = $this->db('prosedur_pasien')->join('icd9', 'icd9.kode = prosedur_pasien.kode')->where('prosedur_pasien.no_rawat', revertNoRawat($no_rawat))->where('prosedur_pasien.status', $status_lanjut)->asc('prioritas')->toArray();
-    echo $this->draw('ubah.prosedur.html', ['no_rawat' => revertNoRawat($no_rawat), 'prosedur_pasien' => $prosedur_pasien, 'status_lanjut' => $status_lanjut]);
+    echo $this->draw('ubah.prosedur.html', ['no_rawat' => revertNoRawat($no_rawat), 'prosedur_pasien' => htmlspecialchars_array($prosedur)_pasien, 'status_lanjut' => $status_lanjut]);
     exit();
   }
 
   public function getDisplayProsedur($status_lanjut, $no_rawat)
   {
     $prosedur_pasien = $this->db('prosedur_pasien')->join('icd9', 'icd9.kode = prosedur_pasien.kode')->where('prosedur_pasien.no_rawat', revertNoRawat($no_rawat))->where('prosedur_pasien.status', $status_lanjut)->asc('prioritas')->toArray();
-    echo $this->draw('display.prosedur.html', ['no_rawat' => revertNoRawat($no_rawat), 'prosedur_pasien' => $prosedur_pasien, 'status_lanjut' => $status_lanjut]);
+    echo $this->draw('display.prosedur.html', ['no_rawat' => revertNoRawat($no_rawat), 'prosedur_pasien' => htmlspecialchars_array($prosedur)_pasien, 'status_lanjut' => $status_lanjut]);
     exit();
   }
 
@@ -3931,7 +3931,7 @@ class Admin extends AdminModule
     $get_claim_data = [];
     if($msg && isset($msg['metadata']['message']) && $msg['metadata']['message']=="Ok"){
       $get_claim_data = $msg;
-      //echo json_encode($msg, true);
+      //echo json_encode(htmlspecialchars_array($msg), true);
     }
 
     $adl = [];
@@ -3967,7 +3967,7 @@ class Admin extends AdminModule
       'biaya_add_payment_pct' => $total_biaya_add_payment_pct,
       'get_claim_data' => $get_claim_data,
       'penyakit' => $penyakit,
-      'prosedur' => $prosedur,
+      'prosedur' => htmlspecialchars_array($prosedur),
       'adl' => $adl,
       'hide_input_data' => $hide_input_data
     ]);
@@ -4208,7 +4208,7 @@ class Admin extends AdminModule
             'count' => count($results)
         ];
         
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
         
     } catch(\PDOException $e) {
         error_log("Database error: " . $e->getMessage());
@@ -4279,7 +4279,7 @@ class Admin extends AdminModule
             'count' => count($results)
         ];
         
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
         
     } catch(\PDOException $e) {
         error_log("Database error: " . $e->getMessage());
@@ -4351,7 +4351,7 @@ class Admin extends AdminModule
             'count' => count($results)
         ];
         
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
         
     } catch(\PDOException $e) {
         error_log("Database error: " . $e->getMessage());
@@ -4378,7 +4378,7 @@ class Admin extends AdminModule
       ->join('penyakit', 'diagnosa_pasien.kd_penyakit = penyakit.kd_penyakit')
       ->where('no_rawat', $no_rawat)
       ->toArray();
-    echo json_encode($diagnosis);
+    echo json_encode(htmlspecialchars_array($diagnosis));
     exit();
   }
 
@@ -4389,7 +4389,7 @@ class Admin extends AdminModule
       ->join('icd9', 'prosedur_pasien.kode = icd9.kode')
       ->where('no_rawat', $no_rawat)
       ->toArray();
-    echo json_encode($procedure);
+    echo json_encode(htmlspecialchars_array($procedure));
     exit();
   }
 
@@ -4455,7 +4455,7 @@ class Admin extends AdminModule
               $pdf = base64_decode($msg['data']);
               file_put_contents(WEBAPPS_PATH.'/berkasrawat/pages/upload/'.$no_rawat.'_'.$imgTime,$pdf);
           } else {
-            echo json_encode($msg, true);
+            echo json_encode(htmlspecialchars_array($msg), true);
           }
 
           $image = WEBAPPS_PATH.'/berkasrawat/pages/upload/' . $no_rawat . '_' . $imgTime;
@@ -4635,7 +4635,7 @@ class Admin extends AdminModule
           'created_at' => date('Y-m-d H:i:s'),
           'username' => $this->core->getUserInfo('username')
       ]);
-      echo json_encode($msg);
+      echo json_encode(htmlspecialchars_array($msg));
       exit();
   }
 
@@ -4658,7 +4658,7 @@ class Admin extends AdminModule
           'created_at' => date('Y-m-d H:i:s'),
           'username' => $this->core->getUserInfo('username')
       ]);
-      echo json_encode($msg);
+      echo json_encode(htmlspecialchars_array($msg));
       exit();
   }
 
@@ -4681,7 +4681,7 @@ class Admin extends AdminModule
           'created_at' => date('Y-m-d H:i:s'),
           'username' => $this->core->getUserInfo('username')
       ]);
-      echo json_encode($msg);
+      echo json_encode(htmlspecialchars_array($msg));
       exit();
   }
   
@@ -4893,7 +4893,7 @@ class Admin extends AdminModule
             $this->GroupingDRG($nomor_sep);
           }
       } else {
-        echo json_encode($msg);
+        echo json_encode(htmlspecialchars_array($msg));
       }
   }
 
@@ -4984,7 +4984,7 @@ class Admin extends AdminModule
           'username' => $this->core->getUserInfo('username')
       ]);
       // echo "\n<br>Respon Grouping DRG : ".$msg['metadata']['message'];
-      echo json_encode($msg);
+      echo json_encode(htmlspecialchars_array($msg));
       $pesan="Gagal";
       if($msg['metadata']['message']=="Ok"){
           $pesan=$msg['metadata']['message'];
@@ -5011,7 +5011,7 @@ class Admin extends AdminModule
                   }';
       $msg= $this->Request($request);
       // echo "\n<br>Respon Final DRG : ".$msg['metadata']['message'];
-      echo json_encode($msg);
+      echo json_encode(htmlspecialchars_array($msg));
       $pesan="Gagal";
       $this->db('mlite_eklaim_logs')->save([
           'nomor_sep' => $nomor_sep,
@@ -5049,7 +5049,7 @@ class Admin extends AdminModule
         'username' => $this->core->getUserInfo('username')
       ]);
     }
-    echo json_encode($msg);
+    echo json_encode(htmlspecialchars_array($msg));
     exit();
   }
 
@@ -5088,7 +5088,7 @@ class Admin extends AdminModule
         'username' => $this->core->getUserInfo('username')
       ]);
     }
-    echo json_encode($msg);
+    echo json_encode(htmlspecialchars_array($msg));
     exit();
   }
 
@@ -5127,7 +5127,7 @@ class Admin extends AdminModule
         'username' => $this->core->getUserInfo('username')
       ]);
     }
-    echo json_encode($msg);
+    echo json_encode(htmlspecialchars_array($msg));
     exit();
   }   
 
@@ -5179,7 +5179,7 @@ class Admin extends AdminModule
         
         echo json_encode([
             'success' => true,
-            'data' => $result,
+            'data' => htmlspecialchars_array($result),
             'message' => 'INACBG codes checked successfully'
         ]);
         
@@ -5302,7 +5302,7 @@ class Admin extends AdminModule
           'created_at' => date('Y-m-d H:i:s'),
           'username' => $this->core->getUserInfo('username')
       ]);
-      echo json_encode($msg);
+      echo json_encode(htmlspecialchars_array($msg));
       exit();
   }
 
@@ -5331,7 +5331,7 @@ class Admin extends AdminModule
           'created_at' => date('Y-m-d H:i:s'),
           'username' => $this->core->getUserInfo('username')
       ]);
-      echo json_encode($msg);
+      echo json_encode(htmlspecialchars_array($msg));
       exit();
   }  
   
@@ -5354,7 +5354,7 @@ class Admin extends AdminModule
           'created_at' => date('Y-m-d H:i:s'),
           'username' => $this->core->getUserInfo('username')
       ]);
-      echo json_encode($msg);
+      echo json_encode(htmlspecialchars_array($msg));
       exit();
   }
 
@@ -5377,7 +5377,7 @@ class Admin extends AdminModule
           'created_at' => date('Y-m-d H:i:s'),
           'username' => $this->core->getUserInfo('username')
       ]);
-      echo json_encode($msg);
+      echo json_encode(htmlspecialchars_array($msg));
       exit();
   }
 
@@ -5402,7 +5402,7 @@ class Admin extends AdminModule
           'created_at' => date('Y-m-d H:i:s'),
           'username' => $this->core->getUserInfo('username')
       ]);
-      echo json_encode($msg);
+      echo json_encode(htmlspecialchars_array($msg));
       exit();
   }
 
@@ -5426,7 +5426,7 @@ class Admin extends AdminModule
           'created_at' => date('Y-m-d H:i:s'),
           'username' => $this->core->getUserInfo('username')
       ]);
-      echo json_encode($msg);
+      echo json_encode(htmlspecialchars_array($msg));
       exit();
   }
 
@@ -5450,7 +5450,7 @@ class Admin extends AdminModule
           'created_at' => date('Y-m-d H:i:s'),
           'username' => $this->core->getUserInfo('username')
       ]);
-      echo json_encode($msg);
+      echo json_encode(htmlspecialchars_array($msg));
       exit();
   }
 
@@ -5714,7 +5714,7 @@ class Admin extends AdminModule
         'data' => $results
     ];
     
-    echo json_encode($response);
+    echo json_encode(htmlspecialchars_array($response));
 
     exit();    
   }
@@ -5837,7 +5837,7 @@ class Admin extends AdminModule
     }
     
     header('Content-Type: application/json');
-    echo json_encode($data);
+    echo json_encode(htmlspecialchars_array($data));
     exit();
   }
 
@@ -5956,7 +5956,7 @@ class Admin extends AdminModule
     }
     
     header('Content-Type: application/json');
-    echo json_encode($data);
+    echo json_encode(htmlspecialchars_array($data));
     exit();
   }
 

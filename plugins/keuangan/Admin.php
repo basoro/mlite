@@ -43,7 +43,7 @@ class Admin extends AdminModule
         ['name' => 'Neraca Keuangan', 'url' => url([ADMIN, 'keuangan', 'neraca']), 'icon' => 'money', 'desc' => 'Neraca Keuangan'],
         ['name' => 'Pengaturan Keuangan', 'url' => url([ADMIN, 'keuangan', 'settings']), 'icon' => 'money', 'desc' => 'Pengaduan Modul Keuangan'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     /* Start Bahasa Section */
@@ -613,7 +613,7 @@ class Admin extends AdminModule
         $this->assign['keuangan'] = htmlspecialchars_array($this->settings('keuangan'));
         $akunkegiatan = $this->db('mlite_settings')->where('module', 'keuangan')->where('field', '<>', 'jurnal_kasir')->toArray();
         $akunrekening = $this->db('mlite_rekening')->toArray();
-        return $this->draw('settings.html', ['settings' => $this->assign, 'akunkegiatan' => $akunkegiatan, 'akunrekening' => $akunrekening]);
+        return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign), 'akunkegiatan' => $akunkegiatan, 'akunrekening' => $akunrekening]);
     }
 
     public function postSaveSettings()

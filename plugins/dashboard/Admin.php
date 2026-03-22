@@ -70,7 +70,7 @@ class Admin extends AdminModule
   {
     $this->core->addCSS(url(MODULES . '/dashboard/css/admin/dashboard.css?v={$mlite.version}'));
     $this->core->addJS(url(MODULES . '/dashboard/js/admin/dashboard.js?v={$mlite.version}'), 'footer');
-    echo $this->draw('dashboard.html', ['modules' => $this->_modulesList()]);
+    return $this->draw('dashboard.html', ['modules' => htmlspecialchars_array($this->_modulesList())]);
     exit();
   }
 
@@ -493,8 +493,8 @@ class Admin extends AdminModule
         'data' => [
             'total_pasien' => $total_pasien,
             'bulan_ini' => $bulan_ini,
-            'poli_bulan_ini' => $poli_bulan_ini,
-            'poli_hari_ini' => $poli_hari_ini,
+            'poli_bulan_ini' => htmlspecialchars_array($poli)_bulan_ini,
+            'poli_hari_ini' => htmlspecialchars_array($poli)_hari_ini,
             'chart' => [
                 'labels' => $chart_labels,
                 'values' => $chart_values

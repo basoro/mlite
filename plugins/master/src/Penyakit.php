@@ -30,7 +30,7 @@ class Penyakit
         ->limit(10)
         ->toArray();
 
-      return $return;
+      return htmlspecialchars_array($return);
 
     }
 
@@ -51,7 +51,7 @@ class Penyakit
 
         $return['kategori_penyakit'] = $this->db('kategori_penyakit')->toArray();
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function anyDisplay()
@@ -76,11 +76,11 @@ class Penyakit
         if(isset($_POST['cari'])) {
           $return['list'] = $this->db('penyakit')
             ->join('kategori_penyakit', 'kategori_penyakit.kd_ktg=penyakit.kd_ktg')
-            ->like('kd_penyakit', '%'.$_POST['cari'].'%')
-            ->orLike('nm_penyakit', '%'.$_POST['cari'].'%')
-            ->orLike('ciri_ciri', '%'.$_POST['cari'].'%')
-            ->orLike('keterangan', '%'.$_POST['cari'].'%')
-            ->orLike('status', '%'.$_POST['cari'].'%')
+            ->like('kd_penyakit', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
+            ->orLike('nm_penyakit', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
+            ->orLike('ciri_ciri', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
+            ->orLike('keterangan', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
+            ->orLike('status', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
             ->desc('kd_penyakit')
             ->offset(0)
             ->limit($perpage)
@@ -99,7 +99,7 @@ class Penyakit
           $return['halaman'] = $_POST['halaman'];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function postSave()

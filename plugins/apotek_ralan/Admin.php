@@ -31,7 +31,7 @@ class Admin extends AdminModule
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa);
-        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        return $this->draw('manage.html', ['rawat_jalan' => htmlspecialchars_array($this->assign), 'cek_vclaim' => htmlspecialchars_array($cek_vclaim)]);
     }
 
     public function anyDisplay()
@@ -51,7 +51,7 @@ class Admin extends AdminModule
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa);
-        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        echo $this->draw('display.html', ['rawat_jalan' => htmlspecialchars_array($this->assign), 'cek_vclaim' => htmlspecialchars_array($cek_vclaim)]);
         exit();
     }
 
@@ -297,12 +297,12 @@ class Admin extends AdminModule
                         'tgl_perawatan' => $tgl_rawat,
                         'jam' => $jam_rawat,
                         'no_rawat' => $_POST['no_rawat'],
-                        'no_racik' => $racikan['no_racik'],
-                        'nama_racik' => $racikan['nama_racik'],
-                        'kd_racik' => $racikan['kd_racik'],
-                        'jml_dr' => $racikan['jml_dr'],
+                        'no_racik' => htmlspecialchars_array($racikan)['no_racik'],
+                        'nama_racik' => htmlspecialchars_array($racikan)['nama_racik'],
+                        'kd_racik' => htmlspecialchars_array($racikan)['kd_racik'],
+                        'jml_dr' => htmlspecialchars_array($racikan)['jml_dr'],
                         'aturan_pakai' => $aturan_pakai_racikan,
-                        'keterangan' => $racikan['keterangan']
+                        'keterangan' => htmlspecialchars_array($racikan)['keterangan']
                     ]
                 );
             }
@@ -898,7 +898,7 @@ class Admin extends AdminModule
         $detail_pemberian_obat2[] = $row;
       }
 
-      echo $this->draw('rincian.html', ['jumlah_total_resep' => $jumlah_total_resep, 'jumlah_total_obat' => $jumlah_total_obat, 'jumlah_total_obat2' => $jumlah_total_obat2, 'resep' =>$resep, 'resep_racikan' => $resep_racikan, 'jumlah_total_resep_racikan' => $jumlah_total_resep_racikan, 'detail_pemberian_obat' => $detail_pemberian_obat, 'detail_pemberian_obat_racikan' => $detail_pemberian_obat2, 'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
+      echo $this->draw('rincian.html', ['jumlah_total_resep' => $jumlah_total_resep, 'jumlah_total_obat' => $jumlah_total_obat, 'jumlah_total_obat2' => $jumlah_total_obat2, 'resep' => htmlspecialchars_array($resep), 'resep_racikan' => htmlspecialchars_array($resep_racikan), 'jumlah_total_resep_racikan' => $jumlah_total_resep_racikan, 'detail_pemberian_obat' => htmlspecialchars_array($detail_pemberian_obat), 'detail_pemberian_obat_racikan' => htmlspecialchars_array($detail_pemberian_obat)2, 'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
       exit();
     }
 
@@ -908,10 +908,10 @@ class Admin extends AdminModule
         ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
         ->where('status', '1')
         ->where('gudangbarang.kd_bangsal', $this->settings->get('farmasi.deporalan'))
-        ->like('databarang.nama_brng', '%'.$_POST['obat'].'%')
+        ->like('databarang.nama_brng', '%'.htmlspecialchars($_POST['obat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
         ->limit(10)
         ->toArray();
-      echo $this->draw('obat.html', ['obat' => $obat]);
+      echo $this->draw('obat.html', ['obat' => htmlspecialchars_array($obat)]);
       exit();
     }
 
@@ -941,7 +941,7 @@ class Admin extends AdminModule
                 'ralan'  => $row['ralan']
             );
           }
-          echo json_encode($array, true);
+          echo json_encode(htmlspecialchars_array($array), true);
           break;
         }
         exit();
@@ -950,9 +950,9 @@ class Admin extends AdminModule
     public function anyRacikan()
     {
       $racikan = $this->db('metode_racik')
-        ->like('nm_racik', '%'.$_POST['racikan'].'%')
+        ->like('nm_racik', '%'.htmlspecialchars($_POST['racikan'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
         ->toArray();
-      echo $this->draw('racikan.html', ['racikan' => $racikan]);
+      echo $this->draw('racikan.html', ['racikan' => htmlspecialchars_array($racikan)]);
       exit();
     }
 
@@ -1081,7 +1081,7 @@ class Admin extends AdminModule
         'tanggal'  => $tanggal,
         'settings' => $this->settings('settings'),
         'farmasi'  => $this->settings('farmasi'),
-        'detail'   => $detail_pemberian_obat
+        'detail'   => htmlspecialchars_array($detail_pemberian_obat)
       ]);
 
       // ==== PDF LABEL ====
@@ -1192,7 +1192,7 @@ class Admin extends AdminModule
         'alamat'   => $alamat,
         'tanggal'  => $tanggal,
         'settings' => $this->settings('settings'),
-        'detail'   => $detail_pemberian_obat
+        'detail'   => htmlspecialchars_array($detail_pemberian_obat)
       ]);
 
       /* ================= PDF ================= */
@@ -1224,7 +1224,7 @@ class Admin extends AdminModule
         header('Content-type: text/javascript');
         $this->assign['websocket'] = $this->settings->get('settings.websocket');
         $this->assign['websocket_proxy'] = $this->settings->get('settings.websocket_proxy');
-        echo $this->draw(MODULES.'/apotek_ralan/js/admin/apotek_ralan.js', ['mlite' => $this->assign]);
+        echo $this->draw(MODULES.'/apotek_ralan/js/admin/apotek_ralan.js', ['mlite' => htmlspecialchars_array($this->assign)]);
         exit();
     }
 
@@ -1370,7 +1370,7 @@ class Admin extends AdminModule
                 return [
                     'status' => 'success',
                     'patient' => $patient_info,
-                    'data' => $resep_racikan
+                    'data' => htmlspecialchars_array($resep_racikan)
                 ];
             } else {
                 return ['status' => 'error', 'message' => 'Category not supported: ' . $kategori];
@@ -1406,8 +1406,8 @@ class Admin extends AdminModule
         return [
             'status' => 'success',
             'data' => [
-                'pemberian_obat' => $detail_pemberian_obat,
-                'obat_racikan' => $obat_racikan
+                'pemberian_obat' => htmlspecialchars_array($detail_pemberian_obat),
+                'obat_racikan' => htmlspecialchars_array($obat)_racikan
             ]
         ];
     }
@@ -1479,12 +1479,12 @@ class Admin extends AdminModule
                             'tgl_perawatan' => $tgl_rawat,
                             'jam' => $jam_rawat,
                             'no_rawat' => $no_rawat,
-                            'no_racik' => $racikan['no_racik'],
-                            'nama_racik' => $racikan['nama_racik'],
-                            'kd_racik' => $racikan['kd_racik'],
-                            'jml_dr' => $racikan['jml_dr'],
+                            'no_racik' => htmlspecialchars_array($racikan)['no_racik'],
+                            'nama_racik' => htmlspecialchars_array($racikan)['nama_racik'],
+                            'kd_racik' => htmlspecialchars_array($racikan)['kd_racik'],
+                            'jml_dr' => htmlspecialchars_array($racikan)['jml_dr'],
                             'aturan_pakai' => $aturan_pakai_racikan,
-                            'keterangan' => $racikan['keterangan']
+                            'keterangan' => htmlspecialchars_array($racikan)['keterangan']
                         ]
                     );
                 }

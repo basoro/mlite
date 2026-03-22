@@ -222,10 +222,10 @@ class JnsPerawatanLab
         }
 
         echo json_encode([
-            "draw" => intval($draw),
+            "draw" => intval(htmlspecialchars($draw, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordwithFilter,
-            "aaData" => $data
+            "aaData" => htmlspecialchars_array($data)
         ]);
         exit();
     }

@@ -29,7 +29,7 @@ class KategoriPenyakit
         ->limit(10)
         ->toArray();
 
-      return $return;
+      return htmlspecialchars_array($return);
 
     }
 
@@ -45,7 +45,7 @@ class KategoriPenyakit
           ];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function anyDisplay()
@@ -68,9 +68,9 @@ class KategoriPenyakit
 
         if(isset($_POST['cari'])) {
           $return['list'] = $this->db('kategori_penyakit')
-            ->like('kd_ktg', '%'.$_POST['cari'].'%')
-            ->orLike('nm_kategori', '%'.$_POST['cari'].'%')
-	     ->orLike('ciri_umum', '%'.$_POST['cari'].'%')
+            ->like('kd_ktg', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
+            ->orLike('nm_kategori', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
+	     ->orLike('ciri_umum', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
             ->desc('kd_ktg')
             ->offset(0)
             ->limit($perpage)
@@ -88,7 +88,7 @@ class KategoriPenyakit
           $return['halaman'] = $_POST['halaman'];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function postSave()

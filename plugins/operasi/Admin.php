@@ -30,7 +30,7 @@ class Admin extends AdminModule
         ['name' => 'Obat Operasi', 'url' => url([ADMIN, 'operasi', 'obatoperasi']), 'icon' => 'cubes', 'desc' => 'Data obat operasi'],
         ['name' => 'Laporan Operasi', 'url' => url([ADMIN, 'operasi', 'laporanoperasi']), 'icon' => 'cubes', 'desc' => 'Data laporan operasi'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function anyPasienOperasi()
@@ -47,7 +47,7 @@ class Admin extends AdminModule
       $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
       $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
       $this->_Display($tgl_masuk, $tgl_masuk_akhir);
-      return $this->draw('pasienoperasi.html', ['operasi' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital]);
+      return $this->draw('pasienoperasi.html', ['operasi' => htmlspecialchars_array($this->assign), 'cek_vclaim' => htmlspecialchars_array($cek_vclaim), 'master_berkas_digital' => htmlspecialchars_array($master_berkas_digital)]);
     }
 
     public function anyDisplay()
@@ -64,7 +64,7 @@ class Admin extends AdminModule
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
         $this->_Display($tgl_masuk, $tgl_masuk_akhir);
-        echo $this->draw('display.html', ['operasi' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital]);
+        echo $this->draw('display.html', ['operasi' => htmlspecialchars_array($this->assign), 'cek_vclaim' => htmlspecialchars_array($cek_vclaim), 'master_berkas_digital' => htmlspecialchars_array($master_berkas_digital)]);
         exit();
     }
 
@@ -346,7 +346,7 @@ class Admin extends AdminModule
         $pasien = $stmt->fetchAll();
 
       }
-      echo $this->draw('pasien.html', ['pasien' => $pasien]);
+      echo $this->draw('pasien.html', ['pasien' => htmlspecialchars_array($pasien)]);
       exit();
     }
 
@@ -378,7 +378,7 @@ class Admin extends AdminModule
         ->like('nm_obat', '%'.htmlspecialchars($_POST['obat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
         ->limit(10)
         ->toArray();
-      echo $this->draw('obat.html', ['obat' => $obat]);
+      echo $this->draw('obat.html', ['obat' => htmlspecialchars_array($obat)]);
       exit();
     }
 
@@ -430,7 +430,7 @@ class Admin extends AdminModule
         $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat']));
         $booking_operasi[] = $row;
       }
-      return $this->draw('bookingoperasi.html', ['bookingoperasi' => $booking_operasi, 'status' => $status, 'dokter' => $dokter, 'ruang_ok' => $ruang_ok, 'paket_operasi' => $paket_operasi]);
+      return $this->draw('bookingoperasi.html', ['bookingoperasi' => $booking_operasi, 'status' => $status, 'dokter' => htmlspecialchars_array($dokter), 'ruang_ok' => $ruang_ok, 'paket_operasi' => $paket_operasi]);
     }
 
     public function postSaveBookingOperasi()
@@ -512,7 +512,7 @@ class Admin extends AdminModule
       $obatoperasi = $this->db('obatbhp_ok')
         ->join('kodesatuan', 'kodesatuan.kode_sat=obatbhp_ok.kode_sat')
         ->toArray();
-      return $this->draw('obatoperasi.html', ['obatoperasi' => $obatoperasi, 'satuan' => $satuan]);
+      return $this->draw('obatoperasi.html', ['obatoperasi' => htmlspecialchars_array($obat)operasi, 'satuan' => $satuan]);
     }
 
     public function postSaveObatOperasi()

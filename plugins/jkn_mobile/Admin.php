@@ -62,7 +62,7 @@ class Admin extends AdminModule
         ['name' => 'Dashboard Antrol Local BPJS', 'url' => url([ADMIN, 'jkn_mobile', 'antrollocal']), 'icon' => 'tasks', 'desc' => 'Antrian Online Local BPJS'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'jkn_mobile', 'settings']), 'icon' => 'tasks', 'desc' => 'Pengaturan JKN Mobile'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getIndex()
@@ -129,7 +129,7 @@ class Admin extends AdminModule
              }
         }
 
-        echo json_encode($json);
+        echo json_encode(htmlspecialchars_array($json));
         exit();
     }
 
@@ -172,7 +172,7 @@ class Admin extends AdminModule
         $url = $this->bpjsurl.'ref/poli';
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
-        //echo json_encode($json);
+        //echo json_encode(htmlspecialchars_array($json));
         $code = $json['metadata']['code'];
         $message = $json['metadata']['message'];
         $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -208,7 +208,7 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $this->assign['poliklinik'] = $this->db('poliklinik')->where('status','1')->toArray();
-        return $this->draw('form.mappingpoli.html', ['row' => $this->assign]);
+        return $this->draw('form.mappingpoli.html', ['row' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postPoliklinik_Save()
@@ -252,7 +252,7 @@ class Admin extends AdminModule
         $url = $this->bpjsurl.'ref/dokter';
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
-        //echo json_encode($json);
+        //echo json_encode(htmlspecialchars_array($json));
         $code = $json['metadata']['code'];
         $message = $json['metadata']['message'];
         $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -289,7 +289,7 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $this->assign['dokter'] = $this->db('dokter')->where('status','1')->toArray();
-        return $this->draw('form.mappingdokter.html', ['row' => $this->assign]);
+        return $this->draw('form.mappingdokter.html', ['row' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postDokter_Save()
@@ -362,7 +362,7 @@ class Admin extends AdminModule
              $response = []; // Empty array if invalid response
         }
         
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
         exit();
     }
 
@@ -797,7 +797,7 @@ class Admin extends AdminModule
             'nomor_referensi' =>  $nomorreferensi,
             'kode_booking' => $kodebooking
         ];
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
         $this->db('mlite_antrian_referensi')->save([
             'tanggal_periksa' => $reg_periksa['tgl_registrasi'],
             'no_rkm_medis' => $reg_periksa['no_rkm_medis'],
@@ -855,7 +855,7 @@ class Admin extends AdminModule
         $output1 = BpjsService::post($url, $data1, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json1 = json_decode($output1, true);
         echo 'Response:<br>';
-        echo json_encode($json1);
+        echo json_encode(htmlspecialchars_array($json1));
         if(isset($json1['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -891,7 +891,7 @@ class Admin extends AdminModule
         $output1 = BpjsService::post($url, $data1, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json1 = json_decode($output1, true);
         echo 'Response:<br>';
-        echo json_encode($json1);
+        echo json_encode(htmlspecialchars_array($json1));
         if(isset($json1['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -926,7 +926,7 @@ class Admin extends AdminModule
         $output2 = BpjsService::post($url, $data2, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json2 = json_decode($output2, true);
         echo 'Response:<br>';
-        echo json_encode($json2);
+        echo json_encode(htmlspecialchars_array($json2));
         if(isset($json2['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -961,7 +961,7 @@ class Admin extends AdminModule
         $output3 = BpjsService::post($url, $data3, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json3 = json_decode($output3, true);
         echo 'Response:<br>';
-        echo json_encode($json3);
+        echo json_encode(htmlspecialchars_array($json3));
         if(isset($json3['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -996,7 +996,7 @@ class Admin extends AdminModule
         $output4 = BpjsService::post($url, $data4, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json4 = json_decode($output4, true);
         echo 'Response:<br>';
-        echo json_encode($json4);
+        echo json_encode(htmlspecialchars_array($json4));
         if(isset($json4['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -1041,7 +1041,7 @@ class Admin extends AdminModule
         $output5 = BpjsService::post($url, $data5, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json5 = json_decode($output5, true);
         echo 'Response:<br>';
-        echo json_encode($json5);
+        echo json_encode(htmlspecialchars_array($json5));
         if(isset($json5['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -1076,7 +1076,7 @@ class Admin extends AdminModule
         $output6 = BpjsService::post($url, $data6, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json6 = json_decode($output6, true);
         echo 'Response:<br>';
-        echo json_encode($json6);
+        echo json_encode(htmlspecialchars_array($json6));
         if(isset($json6['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -1111,7 +1111,7 @@ class Admin extends AdminModule
         $output7 = BpjsService::post($url, $data7, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json7 = json_decode($output7, true);
         echo 'Response:<br>';
-        echo json_encode($json7);
+        echo json_encode(htmlspecialchars_array($json7));
         if(isset($json7['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -1207,7 +1207,7 @@ class Admin extends AdminModule
         $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
 
         $this->assign['jkn_mobile'] = htmlspecialchars_array($this->settings('jkn_mobile'));
-        return $this->draw('settings.html', ['settings' => $this->assign]);
+        return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postSaveSettings()
@@ -1286,7 +1286,7 @@ class Admin extends AdminModule
             }
             $this->assign['list'] = $response;
 
-            echo $this->draw('antrol.display.html', ['row' => $this->assign]);
+            echo $this->draw('antrol.display.html', ['row' => htmlspecialchars_array($this->assign)]);
         } else {
             $url = $depanUrlTanggal . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/server';
             $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
@@ -1297,7 +1297,7 @@ class Admin extends AdminModule
             }
             $this->assign['list'] = $response;
 
-            return $this->draw('antrol.html', ['row' => $this->assign]);
+            return $this->draw('antrol.html', ['row' => htmlspecialchars_array($this->assign)]);
         }
         exit();
     }
@@ -1481,10 +1481,10 @@ class Admin extends AdminModule
           $data = $data->fetchAll();
 
           // create json format
-          $datatable['draw']            = isset($_GET['draw']) ? $_GET['draw'] : 1;
-          $datatable['recordsTotal']    = $totaldata;
-          $datatable['recordsFiltered'] = $totaldata;
-          $datatable['data']            = array();
+          $datatable['draw']            = isset($_GET['draw']) ? intval(htmlspecialchars($_GET['draw'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')) : 1;
+        $datatable['recordsTotal']    = $totaldata;
+        $datatable['recordsFiltered'] = $totaldata;
+        $datatable['data']            = array();
 
           foreach ($data as $row) {
 
@@ -1495,7 +1495,7 @@ class Admin extends AdminModule
 
           }
 
-          echo json_encode($datatable);
+          echo json_encode(htmlspecialchars_array($datatable));
 
           break;
 

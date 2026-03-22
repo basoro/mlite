@@ -48,7 +48,7 @@ class Admin extends AdminModule
       ['name' => 'Monitoring Data Klaim', 'url' => url([ADMIN, 'veronisa', 'monitoringdataklaim']), 'icon' => 'bar-chart', 'desc' => 'Monitoring Data Klaim veronisa'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'veronisa', 'settings']), 'icon' => 'cog', 'desc' => 'Pengaturan veronisa']
     ];
-    return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+    return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
   }
 
   public function anyIndex($page = 1)
@@ -217,7 +217,7 @@ class Admin extends AdminModule
 
     if (!$rows) {
       $this->assign['list'] = [];
-      return $this->draw('index.html', ['veronisa' => $this->assign]);
+      return $this->draw('index.html', ['veronisa' => htmlspecialchars_array($this->assign)]);
     }
 
     // === Optimasi: kumpulkan semua no_rawat ===
@@ -280,7 +280,7 @@ class Admin extends AdminModule
     $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
 
     $this->assign['searchUrl'] =  url([ADMIN, 'veronisa', 'index', $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
-    return $this->draw('index.html', ['veronisa' => $this->assign]);
+    return $this->draw('index.html', ['veronisa' => htmlspecialchars_array($this->assign)]);
   }
 
   public function postHapusVeronisa()
@@ -340,38 +340,38 @@ class Admin extends AdminModule
 
   public function getReferensi()
   {
-    return $this->draw('referensi.html', ['veronisa' => $this->assign]);
+    return $this->draw('referensi.html', ['veronisa' => htmlspecialchars_array($this->assign)]);
   }
   
   public function getObat()
   {
-    return $this->draw('obat.html', ['veronisa' => $this->assign]);
+    return $this->draw('obat.html', ['veronisa' => htmlspecialchars_array($this->assign)]);
   }
 
   public function getPelayananObat()
   {
-    return $this->draw('pelayananobat.html', ['veronisa' => $this->assign]);
+    return $this->draw('pelayananobat.html', ['veronisa' => htmlspecialchars_array($this->assign)]);
   }
 
   public function getResep()
   {
-    return $this->draw('resep.html', ['veronisa' => $this->assign]);
+    return $this->draw('resep.html', ['veronisa' => htmlspecialchars_array($this->assign)]);
   }
 
   public function getCariSEP()
   {
-    return $this->draw('carisep.html', ['veronisa' => $this->assign]);
+    return $this->draw('carisep.html', ['veronisa' => htmlspecialchars_array($this->assign)]);
   }
 
   public function getMonitoringKlaim()
   {
-    return $this->draw('monitoringklaim.html', ['veronisa' => $this->assign]);
+    return $this->draw('monitoringklaim.html', ['veronisa' => htmlspecialchars_array($this->assign)]);
   }
 
   public function getMonitoringDataKlaim()
   {
     $this->_addHeaderFiles();
-    return $this->draw('monitoringdataklaim.html', ['veronisa' => $this->assign]);
+    return $this->draw('monitoringdataklaim.html', ['veronisa' => htmlspecialchars_array($this->assign)]);
   }
 
   public function getKirimApotikOnline($no_rawat)
@@ -470,7 +470,7 @@ class Admin extends AdminModule
     $this->assign['user'] = $this->core->getUserInfo('username', $_SESSION['mlite_user']);
     $this->assign['kd_dokter'] = isset_or($obat_data['0']['kd_dokter'], '');
     
-    echo $this->draw('kirimapotikonline.html', ['veronisa' => $this->assign]);
+    echo $this->draw('kirimapotikonline.html', ['veronisa' => htmlspecialchars_array($this->assign)]);
     exit();
   }
 
@@ -527,11 +527,11 @@ public function postHapusResepResponse()
       $hapus_obat_responses = [];
       
       // Hapus setiap pelayanan obat terlebih dahulu
-      foreach ($obat_resep as $index => $obat) {
+      foreach ($obat_resep as $index => htmlspecialchars_array($obat)) {
         $hapus_obat_data = [
           'nosepapotek' => $resep_data['no_apotik'] ?? '',
           'noresep' => $resep_data['no_resep'] ?? '',
-          'kodeobat' => $obat['kd_obat_bpjs'] ?? '',
+          'kodeobat' => htmlspecialchars_array($obat)['kd_obat_bpjs'] ?? '',
           'tipeobat' => 'N' // Default tipe obat Non-Racikan
         ];
 
@@ -540,9 +540,9 @@ public function postHapusResepResponse()
         $json_hapus_obat = json_decode($output_hapus_obat, true);
         
         $hapus_obat_responses[] = [
-          'kode_obat' => $obat['kode_brng'],
-          'nama_obat' => $obat['nama_brng'] ?? 'Unknown',
-          'kd_obat_bpjs' => $obat['kd_obat_bpjs'] ?? '',
+          'kode_obat' => htmlspecialchars_array($obat)['kode_brng'],
+          'nama_obat' => htmlspecialchars_array($obat)['nama_brng'] ?? 'Unknown',
+          'kd_obat_bpjs' => htmlspecialchars_array($obat)['kd_obat_bpjs'] ?? '',
           'response' => $json_hapus_obat
         ];
 
@@ -550,7 +550,7 @@ public function postHapusResepResponse()
         file_put_contents("debug_hapus_obat_{$index}.json", json_encode([
           'nosepapotek' => $resep_data['no_sep_kunjungan'] ?? '',
           'noresep' => $resep_data['no_resep'] ?? '',
-          'kodeobat' => $obat['kd_obat_bpjs'] ?? '',
+          'kodeobat' => htmlspecialchars_array($obat)['kd_obat_bpjs'] ?? '',
           'tipeobat' => 'N' // Default tipe obat Non-Racikan
         ], JSON_PRETTY_PRINT));
 
@@ -752,18 +752,18 @@ public function postHapusResepResponse()
       $obat_errors = [];
 
       if (isset($_POST['obat']) && is_array($_POST['obat']) && $response['noApotik'] !='') {
-        foreach ($_POST['obat'] as $index => $obat) {
+        foreach ($_POST['obat'] as $index => htmlspecialchars_array($obat)) {
           try {
             $obat_data = [
               'NOSJP' => $response['noApotik'],
               'NORESEP' => $response['noResep'],
-              'KDOBT' => $obat['KDOBT'],
-              'NMOBAT' => $obat['NMOBAT'],
+              'KDOBT' => htmlspecialchars_array($obat)['KDOBT'],
+              'NMOBAT' => htmlspecialchars_array($obat)['NMOBAT'],
               'SIGNA1OBT' => (int)$obat['SIGNA1OBT'],
               'SIGNA2OBT' => (int)$obat['SIGNA2OBT'],
               'JMLOBT' => (int)$obat['JMLOBT'],
               'JHO' => (int)$obat['JHO'],
-              'CatKhsObt' => $obat['CatKhsObt'] ?? ''
+              'CatKhsObt' => htmlspecialchars_array($obat)['CatKhsObt'] ?? ''
             ];
             $url_obat = $this->api_url . 'obatnonracikan/v3/insert';
 
@@ -773,7 +773,7 @@ public function postHapusResepResponse()
             // Simpan ke file debug untuk setiap obat
             file_put_contents("debug_kirim_obat_{$index}.json", json_encode([
               'url' => $url_obat,
-              'payload' => $obat_data,
+              'payload' => htmlspecialchars_array($obat)_data,
               'response' => $json_obat
             ], JSON_PRETTY_PRINT));
 
@@ -783,14 +783,14 @@ public function postHapusResepResponse()
               $obat_errors[] = [
                 'index' => $index,
                 'message' => $json_obat['metaData']['message'],
-                'data' => $obat_data
+                'data' => htmlspecialchars_array($obat)_data
               ];
             }
 
           } catch (\Exception $ex) {
             file_put_contents("debug_kirim_obat_{$index}.json", json_encode([
               'error' => $ex->getMessage(),
-              'data' => $obat ?? []
+              'data' => htmlspecialchars_array($obat) ?? []
             ], JSON_PRETTY_PRINT));
 
             $obat_responses[] = ['metaData' => ['code' => '500', 'message' => htmlspecialchars($ex->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]];
@@ -798,7 +798,7 @@ public function postHapusResepResponse()
             $obat_errors[] = [
               'index' => $index,
               'message' => htmlspecialchars($ex->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-              'data' => $obat_data ?? $obat
+              'data' => htmlspecialchars_array($obat)_data ?? $obat
             ];
           }
         }
@@ -806,7 +806,7 @@ public function postHapusResepResponse()
 
       // === Kirim Racikan
       if (isset($_POST['racikan']) && is_array($_POST['racikan']) && $response['noApotik'] !='') {
-        foreach ($_POST['racikan'] as $index => $racikan) {
+        foreach ($_POST['racikan'] as $index => htmlspecialchars_array($racikan)) {
           // Process each detail item in racikan
           if (isset($racikan['detail']) && is_array($racikan['detail'])) {
             foreach ($racikan['detail'] as $detail_index => $detail) {
@@ -814,7 +814,7 @@ public function postHapusResepResponse()
                 $racikan_data = [
                   'NOSJP' => $response['noApotik'],
                   'NORESEP' => $response['noResep'],
-                  'JNSROBT' => $racikan['JNSROBT'],
+                  'JNSROBT' => htmlspecialchars_array($racikan)['JNSROBT'],
                   'KDOBT' => $detail['kd_obat_bpjs'] ?? $detail['kode_brng'] ?? '',
                   'NMOBAT' => $detail['nama_obat_bpjs'] ?? $detail['nama_brng'] ?? '',
                   'SIGNA1OBT' => (int)$racikan['SIGNA1RACIKAN'],
@@ -822,7 +822,7 @@ public function postHapusResepResponse()
                   'PERMINTAAN' => (int)$detail['jml'],
                   'JMLOBT' => (int)$racikan['JMLRACIKAN'],
                   'JHO' => (int)$racikan['JHORACIKAN'],
-                  'CatKhsObt' => $racikan['CatKhsObt'] ?? ''
+                  'CatKhsObt' => htmlspecialchars_array($racikan)['CatKhsObt'] ?? ''
                 ];
                 $url_racikan = $this->api_url . 'obatracikan/v3/insert';
 
@@ -832,7 +832,7 @@ public function postHapusResepResponse()
                 // Simpan ke file debug untuk setiap detail racikan
                 file_put_contents("debug_kirim_obat_racikan_{$index}_{$detail_index}.json", json_encode([
                   'url' => $url_racikan,
-                  'payload' => $racikan_data,
+                  'payload' => htmlspecialchars_array($racikan)_data,
                   'response' => $json_racikan
                 ], JSON_PRETTY_PRINT));
 
@@ -842,7 +842,7 @@ public function postHapusResepResponse()
                   $obat_errors[] = [
                     'index' => "racikan_{$index}_detail_{$detail_index}",
                     'message' => $json_racikan['metaData']['message'],
-                    'data' => $racikan_data
+                    'data' => htmlspecialchars_array($racikan)_data
                   ];
                 }
 
@@ -857,7 +857,7 @@ public function postHapusResepResponse()
                 $obat_errors[] = [
                   'index' => "racikan_{$index}_detail_{$detail_index}",
                   'message' => $ex->getMessage(),
-                  'data' => $racikan_data ?? $detail
+                  'data' => htmlspecialchars_array($racikan)_data ?? $detail
                 ];
               }
             }
@@ -883,8 +883,8 @@ public function postHapusResepResponse()
           'decompressed' => $decompress ?? '',
           'final_response' => $response ?? []
         ],
-        'obat_responses' => $obat_responses,
-        'obat_errors' => $obat_errors,
+        'obat_responses' => htmlspecialchars_array($obat)_responses,
+        'obat_errors' => htmlspecialchars_array($obat)_errors,
         'success_summary' => [
           'resep_success' => isset($json_resep['metaData']) && $json_resep['metaData']['code'] === '200',
           'obat_success_count' => count(array_filter($obat_responses, function($resp) {
@@ -914,7 +914,7 @@ public function postHapusResepResponse()
         'success' => true,
         'message' => 'Data berhasil dikirim ke Apotek Online BPJS',
         'resep_response' => $json_resep,
-        'obat_responses' => $obat_responses
+        'obat_responses' => htmlspecialchars_array($obat)_responses
       ]);
 
     } catch (\Exception $e) {
@@ -1336,7 +1336,7 @@ public function postHapusResepResponse()
     if ($data['response']['jnsPelayanan'] == 'Rawat Inap') {
       $jenis_pelayanan = '1';
     }
-    // echo json_encode($data);
+    // echo json_encode(htmlspecialchars_array($data));
     $data_rujukan = [];
     $no_telp = "00000000";
     if ($data['response']['noRujukan'] == "") {
@@ -1901,7 +1901,7 @@ public function postHapusResepResponse()
     $this->assign['title'] = 'Pengaturan Modul veronisa';
     $this->assign['veronisa'] = htmlspecialchars_array($this->settings('veronisa'));
     $this->assign['master_berkas_digital'] = $this->db('master_berkas_digital')->toArray();
-    return $this->draw('settings.html', ['settings' => $this->assign]);
+    return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
   }
 
   public function postSaveSettings()
@@ -2261,7 +2261,7 @@ public function postHapusResepResponse()
     }
 
     $this->assign['searchUrl'] = url([ADMIN, 'veronisa', 'logapotikonline', $page]);
-    return $this->draw('logapotikonline.html', ['log_apotek' => $this->assign]);
+    return $this->draw('logapotikonline.html', ['log_apotek' => htmlspecialchars_array($this->assign)]);
   }
 
   public function postHapusLogApotikOnline()

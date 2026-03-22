@@ -28,7 +28,7 @@ class Admin extends AdminModule
           ['name' => 'Send Image', 'url' => url([ADMIN, 'wagateway', 'sendimage']), 'icon' => 'cubes', 'desc' => 'Send Image Test'],
           ['name' => 'Settings', 'url' => url([ADMIN, 'wagateway', 'settings']), 'icon' => 'cubes', 'desc' => 'Settings WA Getaway'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'waapiserver' => $waapiserver, 'waapiphonenumber' => $waapiphonenumber]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules), 'waapiserver' => $waapiserver, 'waapiphonenumber' => $waapiphonenumber]);
     }
 
     public function getWebHook()
@@ -88,7 +88,7 @@ class Admin extends AdminModule
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
         $response = json_decode($response, true);
-        if($response['status'] == 'true') {
+        if(isset($response['status']) && $response['status'] == 'true') {
           $this->notify('success', 'Sukses mengirim pesan');
         } else {
           $this->notify('failure', 'Gagal mengirim pesan');
@@ -115,7 +115,7 @@ class Admin extends AdminModule
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
         $response = json_decode($response, true);
-        if($response['status'] == 'true') {
+        if(isset($response['status']) && $response['status'] == 'true') {
           $this->notify('success', 'Sukses mengirim gambar');
         } else {
           $this->notify('failure', 'Gagal mengirim gambar');
@@ -142,7 +142,7 @@ class Admin extends AdminModule
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
         $response = json_decode($response, true);
-        if($response['status'] == 'true') {
+        if(isset($response['status']) && $response['status'] == 'true') {
           $this->notify('success', 'Sukses mengirim dokumen');
         } else {
           $this->notify('failure', 'Gagal mengirim dokumen');

@@ -24,7 +24,7 @@ class Admin extends AdminModule
         ['name' => 'TTE Invisible', 'url' => url([ADMIN, 'sertisign', 'signinginvisible']), 'icon' => 'database', 'desc' => 'TTE Invisible'],  
         ['name' => 'Settings', 'url' => url([ADMIN, 'sertisign', 'settings']), 'icon' => 'clipboard', 'desc' => 'Settings'],
         ];
-        return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+        return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getSigningInvisible()
@@ -535,7 +535,7 @@ public function getDataWebhook($return = false)
     }
 
     header('Content-Type: application/json');
-    echo json_encode($result);
+    echo json_encode(htmlspecialchars_array($result));
     exit;
 }
 
@@ -545,7 +545,7 @@ public function getTampilWebhook()
     $this->core->addJS(url('assets/jscripts/datatables.min.js'));
 
     $result = $this->getDataWebhook(true); // 🔥 ambil array, bukan JSON
-    return $this->draw('tampil.webhook.html', ['data' => $result]);
+    return $this->draw('tampil.webhook.html', ['data' => htmlspecialchars_array($result)]);
 }
 
 

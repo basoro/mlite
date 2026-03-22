@@ -22,7 +22,7 @@ class Admin extends AdminModule
             ['name' => 'Jasa Medis', 'url' => url([ADMIN, 'jasa_medis', 'dokter']), 'icon' => 'user-md', 'desc' => 'Laporan remunerasi jasa medis dokter'],
             ['name' => 'Jasa Paramedis', 'url' => url([ADMIN, 'jasa_medis', 'perawat']), 'icon' => 'user', 'desc' => 'Laporan remunerasi jasa paramedis perawat'],
         ];
-        return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+        return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getDokter(){
@@ -81,8 +81,8 @@ class Admin extends AdminModule
         }
         
         return $this->draw('dokter.html', [
-            'jasa_medis' => $this->assign, 
-            'dokter' => $dokter,
+            'jasa_medis' => htmlspecialchars_array($this->assign), 
+            'dokter' => htmlspecialchars_array($dokter),
             'tgl_awal' => $tgl_awal,
             'tgl_akhir' => $tgl_akhir,
             'search' => $search
@@ -145,7 +145,7 @@ class Admin extends AdminModule
         }
         
         return $this->draw('perawat.html', [
-            'jasa_medis' => $this->assign, 
+            'jasa_medis' => htmlspecialchars_array($this->assign), 
             'petugas' => $petugas,
             'tgl_awal' => $tgl_awal,
             'tgl_akhir' => $tgl_akhir,
@@ -215,7 +215,7 @@ class Admin extends AdminModule
                 $this->assign['dokter'][] = $row;
             }
 
-            echo json_encode($this->assign);
+            echo json_encode(htmlspecialchars_array($this->assign));
         }
 
         if ($act=="lihat_perawat") {
@@ -272,7 +272,7 @@ class Admin extends AdminModule
                 $this->assign['petugas'][] = $row;
             }
 
-            echo json_encode($this->assign);
+            echo json_encode(htmlspecialchars_array($this->assign));
         }
         exit();
     }

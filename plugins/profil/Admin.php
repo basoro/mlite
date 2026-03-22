@@ -54,7 +54,7 @@ class Admin extends AdminModule
         if (!empty($cek_profil['photo'])) {
             $fotoURL = WEBAPPS_URL . '/penggajian/' . $cek_profil['photo'];
         }
-        return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'profil' => $profil, 'tanggal' => $tanggal, 'presensi' => $presensi, 'absensi' => $absensi, 'fotoURL' => $fotoURL]);
+        return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules), 'profil' => $profil, 'tanggal' => $tanggal, 'presensi' => $presensi, 'absensi' => $absensi, 'fotoURL' => $fotoURL]);
     }
 
     public function getBiodata()
@@ -74,7 +74,7 @@ class Admin extends AdminModule
 
         $this->assign['fotoURL'] = url(WEBAPPS_PATH . '/penggajian/' . ($row['photo'] ?? ''));
 
-        return $this->draw('biodata.html', ['biodata' => $this->assign]);
+        return $this->draw('biodata.html', ['biodata' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postBiodataSave($id = null)
@@ -233,7 +233,7 @@ class Admin extends AdminModule
         // $this->assign['addURL'] = url([ADMIN, 'presensi', 'jadwaladd']);
         // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
 
-        return $this->draw('jadwal.manage.html', ['jadwal' => $this->assign, 'array_hari' => $array_hari, 'array_bulan' => $array_bulan]);
+        return $this->draw('jadwal.manage.html', ['jadwal' => htmlspecialchars_array($this->assign), 'array_hari' => $array_hari, 'array_bulan' => $array_bulan]);
     }
 
     public function getRekap_Presensi($page = 1)
@@ -367,7 +367,7 @@ class Admin extends AdminModule
         $this->assign['getBulan'] = $bulan;
         $this->assign['getUser'] = $username;
         $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-        return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
+        return $this->draw('rekap_presensi.html', ['rekap' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getGoogleMap($id, $tanggal)
@@ -456,7 +456,7 @@ class Admin extends AdminModule
             }
         }
 
-        return $this->draw('presensi.html', ['presensi' => $this->assign]);
+        return $this->draw('presensi.html', ['presensi' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getGanti_Pass()
@@ -466,7 +466,7 @@ class Admin extends AdminModule
         $this->assign['username'] = $username;
         $this->assign['title'] = 'Ganti Password';
 
-        return $this->draw('ganti_pass.html', ['ganti_pass' => $this->assign]);
+        return $this->draw('ganti_pass.html', ['ganti_pass' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postGanti_Save($id = null)

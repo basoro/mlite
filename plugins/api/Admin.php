@@ -26,7 +26,7 @@ class Admin extends AdminModule
         ['name' => 'Payment Duitku', 'url' => url([ADMIN, 'api', 'paymentduitku']), 'icon' => 'database', 'desc' => 'Pengaturan e-Payment API'],
         ['name' => 'Pengaturan API Key', 'url' => url([ADMIN, 'api', 'settingskey']), 'icon' => 'database', 'desc' => 'Pengaturan API Key'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getNotifikasi()
@@ -75,7 +75,7 @@ class Admin extends AdminModule
           ];
         }
 
-        echo $this->draw('notifikasi.form.html', ['notifikasi' => $return]);
+        echo $this->draw('notifikasi.form.html', ['notifikasi' => htmlspecialchars_array($return)]);
         exit();
     }
 
@@ -133,7 +133,7 @@ class Admin extends AdminModule
           $return['halaman'] = (int)$_POST['halaman'];
         }
 
-        echo $this->draw('notifikasi.display.html', ['notifikasi' => $return]);
+        echo $this->draw('notifikasi.display.html', ['notifikasi' => htmlspecialchars_array($return)]);
         exit();
     }
 
@@ -166,7 +166,7 @@ class Admin extends AdminModule
         $this->assign['title'] = 'Pengaturan Modul API';
         $this->assign['api'] = htmlspecialchars_array($this->settings('api'));
         $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
-        return $this->draw('settings.apam.html', ['settings' => $this->assign]);
+        return $this->draw('settings.apam.html', ['settings' => htmlspecialchars_array($this->assign)]);
     }
 
 public function postSaveSettingsApam()
@@ -236,7 +236,7 @@ public function postSaveSettingsApam()
     {
         $this->assign['title'] = 'Pengaturan Modul API Key';
         $this->assign['api'] = htmlspecialchars_array($this->settings('api'));
-        return $this->draw('settings.key.html', ['settings' => $this->assign]);
+        return $this->draw('settings.key.html', ['settings' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postSaveSettingsKey()

@@ -54,7 +54,7 @@ class Admin extends AdminModule
                 ['name' => 'Jadwal Tambahan', 'url' => url([ADMIN, 'presensi', 'jadwal_tambahan']), 'icon' => 'cubes', 'desc' => 'Jadwal Tambahan Pegawai']
             ];
         }
-        return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+        return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getJamJaga($page = 1)
@@ -97,7 +97,7 @@ class Admin extends AdminModule
 
         $this->assign['addURL'] = url([ADMIN, 'presensi', 'jagaadd']);
 
-        return $this->draw('jam_jaga.html', ['jamjaga' => $this->assign]);
+        return $this->draw('jam_jaga.html', ['jamjaga' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getJagaAdd()
@@ -120,7 +120,7 @@ class Admin extends AdminModule
         $this->assign['shift'] = $this->db('jam_masuk')->toArray();
         $this->assign['addURL'] = url([ADMIN, 'presensi', 'jagaadd']);
 
-        return $this->draw('jagaadd.form.html', ['jagaadd' => $this->assign]);
+        return $this->draw('jagaadd.form.html', ['jagaadd' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postJagaSave($id = null)
@@ -278,7 +278,7 @@ class Admin extends AdminModule
             $tahun[] = (string)$i;
         }
         $this->assign['tahun'] = $tahun;
-        return $this->draw('jadwal.manage.html', ['jadwal' => $this->assign]);
+        return $this->draw('jadwal.manage.html', ['jadwal' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getJadwalAdd()
@@ -352,7 +352,7 @@ class Admin extends AdminModule
         //$this->assign['tahun'] = date('Y');
         $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
 
-        return $this->draw('jadwal.form.html', ['jadwal' => $this->assign]);
+        return $this->draw('jadwal.form.html', ['jadwal' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getJadwalEdit($id = null, $bulan = null, $tahun = null)
@@ -396,7 +396,7 @@ class Admin extends AdminModule
             //$this->assign['tahun'] = $tahun;
             $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
 
-            return $this->draw('jadwal.form.html', ['jadwal' => $this->assign]);
+            return $this->draw('jadwal.form.html', ['jadwal' => htmlspecialchars_array($this->assign)]);
         } else {
             redirect(url([ADMIN, 'presensi', 'jadwal']));
         }
@@ -538,7 +538,7 @@ class Admin extends AdminModule
             $tahun[] = (string)$i;
         }
         $this->assign['tahun'] = $tahun;
-        return $this->draw('jadwal_tambah.manage.html', ['jadwal_tambah' => $this->assign]);
+        return $this->draw('jadwal_tambah.manage.html', ['jadwal_tambah' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getJadwalTambahAdd()
@@ -611,7 +611,7 @@ class Admin extends AdminModule
         $this->assign['tahun'] = $tahun;
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
 
-        return $this->draw('jadwal_tambah.form.html', ['jadwal' => $this->assign]);
+        return $this->draw('jadwal_tambah.form.html', ['jadwal' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getJadwalTambahEdit($id = null, $bulan = null, $tahun = null)
@@ -652,7 +652,7 @@ class Admin extends AdminModule
             $this->assign['tahun'] = $tahun;
             $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
 
-            return $this->draw('jadwal_tambah.form.html', ['jadwal' => $this->assign]);
+            return $this->draw('jadwal_tambah.form.html', ['jadwal' => htmlspecialchars_array($this->assign)]);
         } else {
             redirect(url([ADMIN,'presensi','jadwal_tambahan']));
         }
@@ -1484,7 +1484,7 @@ class Admin extends AdminModule
         $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
         $this->assign['tanggal'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31');
         $this->assign['bidang'] = $this->db('bidang')->toArray();
-        return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
+        return $this->draw('rekap_presensi.html', ['rekap' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getGoogleMap($id, $tanggal)
@@ -1592,10 +1592,10 @@ class Admin extends AdminModule
                 $this->assign['list'][] = $row;
             }
         }
-        $this->assign['bidang'] = $this->db('bidang')->toArray();
-        $this->assign['dep'] = $this->db('departemen')->toArray();
+        $this->assign['bidang'] = htmlspecialchars_array($this->db('bidang')->toArray());
+        $this->assign['dep'] = htmlspecialchars_array($this->db('departemen')->toArray());
 
-        return $this->draw('presensi.html', ['presensi' => $this->assign]);
+        return $this->draw('presensi.html', ['presensi' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getPresensiPulang($id)
@@ -1687,7 +1687,7 @@ class Admin extends AdminModule
 
         $this->assign['addURL'] = url([ADMIN, 'presensi', 'barcodeadd']);
 
-        return $this->draw('barcode.manage.html', ['barcode' => $this->assign]);
+        return $this->draw('barcode.manage.html', ['barcode' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getBarcodeAdd()
@@ -1711,7 +1711,7 @@ class Admin extends AdminModule
             ])
             ->toArray();
 
-        return $this->draw('barcode.form.html', ['barcode' => $this->assign]);
+        return $this->draw('barcode.form.html', ['barcode' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getBarcodeEdit($id)
@@ -1729,7 +1729,7 @@ class Admin extends AdminModule
                 ])
                 ->toArray();
 
-            return $this->draw('barcode.form.html', ['barcode' => $this->assign]);
+            return $this->draw('barcode.form.html', ['barcode' => htmlspecialchars_array($this->assign)]);
         } else {
             redirect(url([ADMIN, 'presensi', 'barcode']));
         }
@@ -1818,7 +1818,7 @@ class Admin extends AdminModule
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['addURL'] = url([ADMIN, 'presensi', 'jammasukadd']);
 
-        return $this->draw('jam_masuk.manage.html', ['jam_masuk' => $this->assign]);
+        return $this->draw('jam_masuk.manage.html', ['jam_masuk' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getJamMasukAdd()
@@ -1844,7 +1844,7 @@ class Admin extends AdminModule
             'Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10'
         ];
 
-        return $this->draw('jam_masuk.form.html', ['jam_masuk' => $this->assign]);
+        return $this->draw('jam_masuk.form.html', ['jam_masuk' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getJamMasukEdit($shift)
@@ -1863,7 +1863,7 @@ class Admin extends AdminModule
                 'Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10'
             ];
 
-            return $this->draw('jam_masuk.form.html', ['jam_masuk' => $this->assign]);
+            return $this->draw('jam_masuk.form.html', ['jam_masuk' => htmlspecialchars_array($this->assign)]);
         } else {
             redirect(url([ADMIN, 'presensi', 'jam_masuk']));
         }
@@ -1920,7 +1920,7 @@ class Admin extends AdminModule
       $this->_addHeaderFiles();
       $this->assign['title'] = 'Pengaturan Presensi';
       $this->assign['presensi'] = htmlspecialchars_array($this->settings('presensi'));
-      return $this->draw('settings.html', ['settings' => $this->assign]);
+      return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postSaveSettings()

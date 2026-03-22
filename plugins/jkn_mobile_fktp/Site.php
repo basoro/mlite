@@ -209,11 +209,11 @@ class Site extends SiteModule
                     exit();
                 } else {
                     $send_data['state'] = 'success';
-                    echo json_encode($send_data);
+                    echo json_encode(htmlspecialchars_array($send_data));
                 }
               } else {
                 $send_data['state'] = 'error';
-                echo json_encode($send_data);
+                echo json_encode(htmlspecialchars_array($send_data));
               }
             break;
             default:
@@ -303,7 +303,7 @@ class Site extends SiteModule
         $url = $this->api_url_antrol.'antrean/add';
         $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
         $json = json_decode($output, true);
-        // echo json_encode($json);
+        // echo json_encode(htmlspecialchars_array($json));
   
         $code = isset_or($json['metadata']['code'], '5000');
         $message = isset_or($json['metadata']['message'], 'ERROR');
@@ -331,7 +331,7 @@ class Site extends SiteModule
                 ],
                 "response" => $responseData
             ];
-            echo json_encode($response);
+            echo json_encode(htmlspecialchars_array($response));
         } else {
             $response = [
                 "state" => "error", 
@@ -341,7 +341,7 @@ class Site extends SiteModule
                 ],
                 "response" => "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."
             ];
-            echo json_encode($response);
+            echo json_encode(htmlspecialchars_array($response));
         }
   
         exit();
@@ -376,7 +376,7 @@ class Site extends SiteModule
                 )
             );
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getAntrean()
@@ -752,7 +752,7 @@ class Site extends SiteModule
                 )
             );
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getStatusAntrean()
@@ -854,7 +854,7 @@ class Site extends SiteModule
                 )
             );
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getSisaAntrean()
@@ -944,7 +944,7 @@ class Site extends SiteModule
               )
           );
       }
-      echo json_encode($response);
+      echo json_encode(htmlspecialchars_array($response));
 
     }
 
@@ -1034,7 +1034,7 @@ class Site extends SiteModule
                 )
             );
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getPeserta()
@@ -1458,7 +1458,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     private function _setUmur($tanggal)

@@ -35,7 +35,7 @@ class Admin extends AdminModule
             ['name' => 'Surat Sehat', 'url' => url([ADMIN, 'surat', 'sehat']), 'icon' => 'heart', 'desc' => 'Kelola Surat Sehat'],
         ];
         
-        return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+        return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     // SURAT RUJUKAN METHODS
@@ -78,7 +78,7 @@ class Admin extends AdminModule
         $this->assign['searchURL'] = url([ADMIN, 'surat', 'rujukan']);
         $this->assign['addURL'] = url([ADMIN, 'surat', 'rujukanadd']);
         $this->assign['phrase'] = $phrase;
-        return $this->draw('rujukan.manage.html', ['rujukan' => $this->assign]);
+        return $this->draw('rujukan.manage.html', ['rujukan' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getRujukanAdd()
@@ -110,7 +110,7 @@ class Admin extends AdminModule
             ];
         }
 
-        return $this->draw('rujukan.form.html', ['rujukan' => $this->assign]);
+        return $this->draw('rujukan.form.html', ['rujukan' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getRujukanEdit($id)
@@ -119,7 +119,7 @@ class Admin extends AdminModule
         $row = $this->db('mlite_surat_rujukan')->where('id', $id)->oneArray();
         if (!empty($row)) {
             $this->assign['form'] = $row;
-            return $this->draw('rujukan.form.html', ['rujukan' => $this->assign]);
+            return $this->draw('rujukan.form.html', ['rujukan' => htmlspecialchars_array($this->assign)]);
         } else {
             redirect(url([ADMIN, 'surat', 'rujukan']));
         }
@@ -229,7 +229,7 @@ class Admin extends AdminModule
         $this->assign['searchURL'] = url([ADMIN, 'surat', 'sakit']);
         $this->assign['addURL'] = url([ADMIN, 'surat', 'sakitadd']);
         $this->assign['phrase'] = $phrase;
-        return $this->draw('sakit.manage.html', ['sakit' => $this->assign]);
+        return $this->draw('sakit.manage.html', ['sakit' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getSakitAdd()
@@ -259,7 +259,7 @@ class Admin extends AdminModule
             ];
         }
 
-        return $this->draw('sakit.form.html', ['sakit' => $this->assign]);
+        return $this->draw('sakit.form.html', ['sakit' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getSakitEdit($id)
@@ -268,7 +268,7 @@ class Admin extends AdminModule
         $row = $this->db('mlite_surat_sakit')->where('id', $id)->oneArray();
         if (!empty($row)) {
             $this->assign['form'] = $row;
-            return $this->draw('sakit.form.html', ['sakit' => $this->assign]);
+            return $this->draw('sakit.form.html', ['sakit' => htmlspecialchars_array($this->assign)]);
         } else {
             redirect(url([ADMIN, 'surat', 'sakit']));
         }
@@ -378,7 +378,7 @@ class Admin extends AdminModule
         $this->assign['searchURL'] = url([ADMIN, 'surat', 'sehat']);
         $this->assign['addURL'] = url([ADMIN, 'surat', 'sehatadd']);
         $this->assign['phrase'] = $phrase;
-        return $this->draw('sehat.manage.html', ['sehat' => $this->assign]);
+        return $this->draw('sehat.manage.html', ['sehat' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getSehatAdd()
@@ -409,7 +409,7 @@ class Admin extends AdminModule
             ];
         }
 
-        return $this->draw('sehat.form.html', ['sehat' => $this->assign]);
+        return $this->draw('sehat.form.html', ['sehat' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getSehatEdit($id)
@@ -418,7 +418,7 @@ class Admin extends AdminModule
         $row = $this->db('mlite_surat_sehat')->where('id', $id)->oneArray();
         if (!empty($row)) {
             $this->assign['form'] = $row;
-            return $this->draw('sehat.form.html', ['sehat' => $this->assign]);
+            return $this->draw('sehat.form.html', ['sehat' => htmlspecialchars_array($this->assign)]);
         } else {
             redirect(url([ADMIN, 'surat', 'sehat']));
         }
@@ -500,7 +500,7 @@ class Admin extends AdminModule
             'kepala_surat' => $this->settings->get('surat.kepala_surat', ''),
             'footer_surat' => $this->settings->get('surat.footer_surat', '')
         ];
-        return $this->draw('settings.html', ['settings' => $this->assign]);
+        return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postSettingsSave()

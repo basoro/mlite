@@ -96,7 +96,7 @@ class Admin extends AdminModule
       ['name' => 'Verifikasi KYC', 'url' => url([ADMIN, 'satu_sehat', 'kyc']), 'icon' => 'heart', 'desc' => 'Verifikasi KYC satu sehat'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'satu_sehat', 'settings']), 'icon' => 'heart', 'desc' => 'Pengaturan satu sehat'],
     ];
-    return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+    return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
   }
 
   public function getToken()
@@ -3196,7 +3196,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     }
     $id_encounter = $mlite_satu_sehat_response['id_encounter'];
     
-    foreach ($row['medications'] as $i => $obat) {
+    foreach ($row['medications'] as $i => htmlspecialchars_array($obat)) {
       $medReqId = $this->gen_uuid();
       $medId = $obat['no_resep'] . '' . $obat['kode_brng'];
       $medUuid = "urn:uuid:" . $this->gen_uuid();
@@ -3543,7 +3543,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
 
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
 
-      foreach ($row['medications'] as $i => $obat) {
+      foreach ($row['medications'] as $i => htmlspecialchars_array($obat)) {
         $medReqId = $this->gen_uuid();
         $medId = $obat['no_resep'] . '' . $obat['kode_brng'];
         $medUuid = "urn:uuid:" . $this->gen_uuid();
@@ -3727,7 +3727,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
       $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $this->core->getSettings('satu_sehat', 'farmasi'))->oneArray();
 
-      foreach ($row['medications'] as $i => $obat) {
+      foreach ($row['medications'] as $i => htmlspecialchars_array($obat)) {
         $medReqId = $this->gen_uuid();
         $medId = $obat['no_resep'] . '' . $obat['kode_brng'];
         $medUuid = "urn:uuid:" . $this->gen_uuid();
@@ -3916,7 +3916,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
       $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $this->core->getSettings('satu_sehat', 'farmasi'))->oneArray();
 
-      foreach ($row['medications'] as $i => $obat) {
+      foreach ($row['medications'] as $i => htmlspecialchars_array($obat)) {
         $medReqId = $this->gen_uuid();
         $medId = $obat['no_resep'] . '' . $obat['kode_brng'];
         $medUuid = "urn:uuid:" . $this->gen_uuid();
@@ -4831,7 +4831,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
         CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => $radiologi,
+        CURLOPT_POSTFIELDS => htmlspecialchars_array($radiologi),
       ));
 
       $response = curl_exec($curl);
@@ -4940,7 +4940,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
         CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => $radiologi,
+        CURLOPT_POSTFIELDS => htmlspecialchars_array($radiologi),
       ));
 
       $response = curl_exec($curl);
@@ -5070,7 +5070,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
         CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => $radiologi,
+        CURLOPT_POSTFIELDS => htmlspecialchars_array($radiologi),
       ));
 
       $response = curl_exec($curl);
@@ -5214,7 +5214,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
         CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => $radiologi,
+        CURLOPT_POSTFIELDS => htmlspecialchars_array($radiologi),
       ));
 
       $response = curl_exec($curl);
@@ -5752,7 +5752,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
       $value['nama'] = $nama;
       $satu_sehat[] = $value;
     }
-    return $this->draw('departemen.html', ['departemen' => $this->db('departemen')->toArray(), 'poli' => $poli, 'satu_sehat_departemen' => $satu_sehat]);
+    return $this->draw('departemen.html', ['departemen' => $this->db('departemen')->toArray(), 'poli' => htmlspecialchars_array($poli), 'satu_sehat_departemen' => $satu_sehat]);
   }
 
   public function getLokasi()
@@ -5865,7 +5865,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     $apoteker = $this->db('pegawai')->where('stts_aktif', 'AKTIF')->where('bidang', $apotek_setting)->toArray();
     $lab = $this->db('pegawai')->where('stts_aktif', 'AKTIF')->where('bidang', $lab_setting)->toArray();
     $lab_apoteker = array_merge($lab,$apoteker);
-    return $this->draw('mapping.praktisi.html', ['mapping_praktisi' => $unique, 'dokter' => $dokter, 'apoteker' => $lab_apoteker]);
+    return $this->draw('mapping.praktisi.html', ['mapping_praktisi' => $unique, 'dokter' => htmlspecialchars_array($dokter), 'apoteker' => $lab_apoteker]);
   }
 
   public function postSaveMappingPraktisi()
@@ -5989,7 +5989,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     $this->_addHeaderFiles();
     $databarang = $this->db('databarang')->where('status', '1')->toArray();
     $mapping_obat = $this->db('mlite_satu_sehat_mapping_obat')->toArray();
-    return $this->draw('mapping.obat.html', ['databarang' => $databarang, 'mapping_obat_satu_sehat' => $mapping_obat]);
+    return $this->draw('mapping.obat.html', ['databarang' => htmlspecialchars_array($databarang), 'mapping_obat_satu_sehat' => $mapping_obat]);
   }
 
   public function getMappingObatSearch()

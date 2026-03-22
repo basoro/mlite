@@ -16,13 +16,13 @@ class Admin extends AdminModule
     public function getManage()
     {
         $signatures = $this->db('esignatures')->desc('id')->limit(50)->toArray();
-        return $this->draw('manage.html', ['signatures' => $signatures]);
+        return $this->draw('manage.html', ['signatures' => htmlspecialchars_array($signatures)]);
     }
 
     public function getSettings()
     {
         $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
-        return $this->draw('settings.html', ['settings' => $this->settings('esignature'), 'master_berkas_digital' => $master_berkas_digital]);
+        return $this->draw('settings.html', ['settings' => $this->settings('esignature'), 'master_berkas_digital' => htmlspecialchars_array($master_berkas_digital)]);
     }
 
     public function postSettings()

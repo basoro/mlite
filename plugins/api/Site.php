@@ -48,7 +48,7 @@ class Site extends SiteModule
               } else  { 
                 $data['state'] = 'invalid';
               }
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
             break;
             case "register":
               $nama_lengkap = trim($_REQUEST['nama_lengkap']);
@@ -74,7 +74,7 @@ class Site extends SiteModule
               } else {
                 $data['state'] = 'invalid';
               }
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
             break;
             case "postregister":
               $results = array();
@@ -97,17 +97,17 @@ class Site extends SiteModule
                   ->nextRightNumber('no_rkm_medis', 6);
               $no_rkm_medis = sprintf('%06d', $next_no_rkm_medis);
 
-              $_POST['nm_pasien'] = trim($_REQUEST['nm_pasien']);
-              $_POST['email'] = trim($_REQUEST['email']);
-              $_POST['no_ktp'] = trim($_REQUEST['no_ktp']);
-              $_POST['no_tlp'] = trim($_REQUEST['no_tlp']);
+              $_POST['nm_pasien'] = htmlspecialchars(trim($_REQUEST['nm_pasien']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+              $_POST['email'] = htmlspecialchars(trim($_REQUEST['email']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+              $_POST['no_ktp'] = htmlspecialchars(trim($_REQUEST['no_ktp']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+              $_POST['no_tlp'] = htmlspecialchars(trim($_REQUEST['no_tlp']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
               $_POST['no_rkm_medis'] = $no_rkm_medis;
-              $_POST['jk'] = trim($_REQUEST['jk']);
+              $_POST['jk'] = htmlspecialchars(trim($_REQUEST['jk']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
               $_POST['tmp_lahir'] = '-';
-              $_POST['tgl_lahir'] = trim($_REQUEST['tgl_lahir']);
+              $_POST['tgl_lahir'] = htmlspecialchars(trim($_REQUEST['tgl_lahir']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
               $_POST['nm_ibu'] = '-';
-              $_POST['alamat'] = trim($_REQUEST['alamat']);
+              $_POST['alamat'] = htmlspecialchars(trim($_REQUEST['alamat']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
               $_POST['gol_darah'] = '-';
               $_POST['pekerjaan'] = '-';
               $_POST['stts_nikah'] = 'JOMBLO';
@@ -149,7 +149,7 @@ class Site extends SiteModule
                 $data['state'] = 'invalid';
               }
 
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
             break;
             case "notifikasi":
               $results = array();
@@ -163,7 +163,7 @@ class Site extends SiteModule
                 $row['state'] = 'valid';
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "notifikasilist":
               $results = array();
@@ -176,7 +176,7 @@ class Site extends SiteModule
               foreach ($result as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "tandaisudahdibaca":
               $id = trim($_REQUEST['id']);
@@ -197,25 +197,25 @@ class Site extends SiteModule
 
               if(!$result) {
                 $data['state'] = 'invalid';
-                echo json_encode($data);
+                echo json_encode(htmlspecialchars_array($data));
               } else {
                 if($results[0]["stts"] == 'Belum') {
                   $data['state'] = 'notifbooking';
                   $data['stts'] = $this->settings->get('api.apam_status_daftar');
-                  echo json_encode($data);
+                  echo json_encode(htmlspecialchars_array($data));
                 } else if($results[0]["stts"] == 'Berkas Diterima') {
                     $data['state'] = 'notifberkas';
                     $data['stts'] = $this->settings->get('api.apam_status_dilayani');
-                    echo json_encode($data);
+                    echo json_encode(htmlspecialchars_array($data));
                 } else {
                   $data['state'] = 'invalid';
-                  echo json_encode($data);
+                  echo json_encode(htmlspecialchars_array($data));
                 }
               }
             break;
             case "antrian":
               $data['state'] = 'valid';
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
             break;
             case "booking":
               $results = array();
@@ -227,11 +227,11 @@ class Site extends SiteModule
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "lastbooking":
               $data['state'] = 'valid';
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
             break;
             case "bookingdetail":
               $results = array();
@@ -245,7 +245,7 @@ class Site extends SiteModule
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "kamar":
               $results = array();
@@ -255,7 +255,7 @@ class Site extends SiteModule
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "dokter":
               $tanggal = @$_REQUEST['tanggal'];
@@ -294,12 +294,12 @@ class Site extends SiteModule
 
               if(!$result){
                 $send_data['state'] = 'notfound';
-                echo json_encode($send_data);
+                echo json_encode(htmlspecialchars_array($send_data));
               } else {
                 foreach ($result as $row) {
                   $results[] = $row;
                 }
-                echo json_encode($results);
+                echo json_encode(htmlspecialchars_array($results));
               }
             break;
             case "riwayat":
@@ -311,7 +311,7 @@ class Site extends SiteModule
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "riwayatdetail":
               $results = array();
@@ -324,7 +324,7 @@ class Site extends SiteModule
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "riwayatranap":
               $results = array();
@@ -335,7 +335,7 @@ class Site extends SiteModule
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "riwayatranapdetail":
               $results = array();
@@ -383,7 +383,7 @@ class Site extends SiteModule
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "billing":
               $results = array();
@@ -396,7 +396,7 @@ class Site extends SiteModule
                 $row['total_bayar'] = number_format($row['jumlah_harus_bayar'],2,',','.');
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "profil":
               $results = array();
@@ -441,7 +441,7 @@ class Site extends SiteModule
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "jadwaldokter":
               $results = array();
@@ -469,7 +469,7 @@ class Site extends SiteModule
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "carabayar":
               $results = array();
@@ -480,7 +480,7 @@ class Site extends SiteModule
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "daftar":
               $send_data = array();
@@ -519,7 +519,7 @@ class Site extends SiteModule
 
               if($curr_count > $online) {
                 $send_data['state'] = 'limit';
-                echo json_encode($send_data);
+                echo json_encode(htmlspecialchars_array($send_data));
               }
               else if(!$check) {
                   $mysql_date = date( 'Y-m-d' );
@@ -553,7 +553,7 @@ class Site extends SiteModule
                   $this->db('booking_registrasi')->save($_POST);
 
                   $send_data['state'] = 'success';
-                  echo json_encode($send_data);
+                  echo json_encode(htmlspecialchars_array($send_data));
 
                   $get_pasien = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
                   $get_poliklinik = $this->db('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
@@ -574,7 +574,7 @@ class Site extends SiteModule
               }
               else{
                   $send_data['state'] = 'duplication';
-                  echo json_encode($send_data);
+                  echo json_encode(htmlspecialchars_array($send_data));
               }
             break;
             case "sukses":
@@ -588,7 +588,7 @@ class Site extends SiteModule
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results, JSON_PRETTY_PRINT);
+              echo json_encode(htmlspecialchars_array($results), JSON_PRETTY_PRINT);
             break;
             case "pengaduan":
               $results = array();
@@ -608,7 +608,7 @@ class Site extends SiteModule
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "pengaduandetail":
               $results = array();
@@ -620,14 +620,14 @@ class Site extends SiteModule
 
               if(!$result) {
                 $data['state'] = 'invalid';
-                echo json_encode($data);
+                echo json_encode(htmlspecialchars_array($data));
               } else {
                 foreach ($result as $row) {
                   $pasien = $this->db('pasien')->where('no_rkm_medis', $row['no_rkm_medis'])->oneArray();
                   $row['nama'] = $pasien['nm_pasien'];
                   $results[] = $row;
                 }
-                echo json_encode($results);
+                echo json_encode(htmlspecialchars_array($results));
               }
             break;
             case "simpanpengaduan":
@@ -648,7 +648,7 @@ class Site extends SiteModule
               $this->db('mlite_pengaduan')->save($_POST);
 
               $send_data['state'] = 'success';
-              echo json_encode($send_data);
+              echo json_encode(htmlspecialchars_array($send_data));
             break;
             case "simpanpengaduandetail":
               $send_data = array();
@@ -664,11 +664,11 @@ class Site extends SiteModule
               $this->db('mlite_pengaduan_detail')->save($_POST);
 
               $send_data['state'] = 'success';
-              echo json_encode($send_data);
+              echo json_encode(htmlspecialchars_array($send_data));
             break;
             case "cekrujukan":
               $data['state'] = 'valid';
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
             break;
             case "rawatjalan":
               $results = array();
@@ -680,7 +680,7 @@ class Site extends SiteModule
                 $row['registrasi'] = number_format($row['registrasi'],2,',','.');
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "rawatinap":
               $results = array();
@@ -692,7 +692,7 @@ class Site extends SiteModule
                 $row['trf_kamar'] = number_format($row['trf_kamar'],2,',','.');
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "laboratorium":
               $results = array();
@@ -703,7 +703,7 @@ class Site extends SiteModule
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "radiologi":
               $results = array();
@@ -714,7 +714,7 @@ class Site extends SiteModule
               foreach ($rows as $row) {
                 $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "hitungralan":
               //$_REQUEST['no_rkm_medis'] = '000009';
@@ -730,7 +730,7 @@ class Site extends SiteModule
             break;
             case "layananunggulan":
               $data[] = array_column($this->db('mlite_settings')->where('module', 'website')->toArray(), 'value', 'field');
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
             break;
             case "lastnews":
               $limit = $this->settings->get('website.latestPostsCount');
@@ -755,7 +755,7 @@ class Site extends SiteModule
                   $row['tanggal'] = getDayIndonesia(date('Y-m-d', date($row['published_at']))).', '.dateIndonesia(date('Y-m-d', date($row['published_at'])));
                   $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "news":
               $results = [];
@@ -778,7 +778,7 @@ class Site extends SiteModule
                   $row['tanggal'] = getDayIndonesia(date('Y-m-d', date($row['published_at']))).', '.dateIndonesia(date('Y-m-d', date($row['published_at'])));
                   $results[] = $row;
               }
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "newsdetail":
               $id = trim($_REQUEST['id']);
@@ -789,7 +789,7 @@ class Site extends SiteModule
                       ->oneArray();
               $rows['tanggal'] = getDayIndonesia(date('Y-m-d', date($rows['published_at']))).', '.dateIndonesia(date('Y-m-d', date($rows['published_at'])));
               $results[] = $rows;
-              echo json_encode($results);
+              echo json_encode(htmlspecialchars_array($results));
             break;
             case "telemedicine":
               $tanggal = @$_REQUEST['tanggal'];
@@ -828,13 +828,13 @@ class Site extends SiteModule
 
               if(!$result){
                 $send_data['state'] = 'notfound';
-                echo json_encode($send_data);
+                echo json_encode(htmlspecialchars_array($send_data));
               } else {
                 foreach ($result as $row) {
                   $row['biaya'] = $this->settings->get('api.duitku_paymentAmount');
                   $results[] = $row;
                 }
-                echo json_encode($results);
+                echo json_encode(htmlspecialchars_array($results));
               }
             break;
             case "duitku_callback":
@@ -906,7 +906,7 @@ class Site extends SiteModule
 
               if($curr_count > $online) {
                 $send_data['state'] = 'limit';
-                echo json_encode($send_data);
+                echo json_encode(htmlspecialchars_array($send_data));
               }
               else if(!$check) {
                   $mysql_date = date( 'Y-m-d' );
@@ -939,7 +939,7 @@ class Site extends SiteModule
                   $this->db('booking_registrasi')->save($_POST);
 
                   $send_data['state'] = 'success';
-                  echo json_encode($send_data);
+                  echo json_encode(htmlspecialchars_array($send_data));
 
 
                   $pasien = $this->db('pasien')->where('no_rkm_medis', $_REQUEST['no_rkm_medis'])->oneArray();
@@ -1040,7 +1040,7 @@ class Site extends SiteModule
               }
               else{
                   $send_data['state'] = 'duplication';
-                  echo json_encode($send_data);
+                  echo json_encode(htmlspecialchars_array($send_data));
               }
             break;
             case "telemedicinesukses":
@@ -1056,7 +1056,7 @@ class Site extends SiteModule
                 $row['paymentUrl'] = $mlite_duitku['paymentUrl'];
                 $results[] = $row;
               }
-              echo json_encode($results, JSON_PRETTY_PRINT);
+              echo json_encode(htmlspecialchars_array($results), JSON_PRETTY_PRINT);
             break;
             case "simpanretensirekammedik":
               $send_data = array();
@@ -1072,7 +1072,7 @@ class Site extends SiteModule
               } else {
                 $data['state'] = 'error';
               }
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
             break;
             default:
               echo 'Default';
@@ -1155,7 +1155,7 @@ class Site extends SiteModule
               if($query) {
                 $data['status'] = 'Success';
                 $data['msg'] = htmlspecialchars($lokasi_file, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-                echo json_encode($data);
+                echo json_encode(htmlspecialchars_array($data));
               }
           }
 

@@ -31,7 +31,7 @@ class Admin extends AdminModule
         // ['name' => 'Laporan', 'url' => url([ADMIN, 'penjualan', 'laporan']), 'icon' => 'money', 'desc' => 'Laporan Penjualan'],
         // ['name' => 'Pengaturan', 'url' => url([ADMIN, 'penjualan', 'settings']), 'icon' => 'money', 'desc' => 'Pengaturan Penjualan']
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getIndex()
@@ -101,7 +101,7 @@ class Admin extends AdminModule
         ])
         ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
         ->toArray();        
-        return $this->draw('barang.html', ['barang' => $this->db('mlite_penjualan_barang')->toArray(), 'obat' => $obat]);
+        return $this->draw('barang.html', ['barang' => $this->db('mlite_penjualan_barang')->toArray(), 'obat' => htmlspecialchars_array($obat)]);
     }
 
     public function postSaveBarang()
@@ -272,7 +272,7 @@ class Admin extends AdminModule
             $row['nama_barang'] = htmlspecialchars($row['nama_barang'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $form_rincian_penjualan[] = $row;
         }
-        echo $this->draw('form.rincian.penjualan.html', ['form_rincian_penjualan' => $form_rincian_penjualan, 'total_tagihan' => $total_tagihan]);
+        echo $this->draw('form.rincian.penjualan.html', ['form_rincian_penjualan' => htmlspecialchars_array($form_rincian_penjualan), 'total_tagihan' => $total_tagihan]);
         exit();
     }
 

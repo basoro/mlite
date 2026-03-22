@@ -155,7 +155,7 @@ class Site extends SiteModule
                 )
             );
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getAmbilAntrian()
@@ -451,7 +451,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getStatusAntrian()
@@ -633,7 +633,7 @@ class Site extends SiteModule
                 )
             );
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getAmbilAntrianFarmasi()
@@ -768,7 +768,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getStatusAntrianFarmasi()
@@ -916,7 +916,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getSisaAntrian()
@@ -1057,7 +1057,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getBatalAntrian()
@@ -1192,7 +1192,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getPasienBaru()
@@ -1618,7 +1618,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getPasienCheckIn()
@@ -1963,7 +1963,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getOperasiRS()
@@ -2066,7 +2066,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getOperasiPasien()
@@ -2169,7 +2169,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function _getJadwal($kodepoli, $tanggal)
@@ -2192,17 +2192,12 @@ class Site extends SiteModule
         if($json != null) {
           echo '{
                   "metaData": {
-                      "code": "'.$code.'",
-                      "message": "'.$message.'"
+                      "code": "'.htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'",
+                      "message": "'.htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'"
                   },
                   "response": '.$decompress.'}';
         } else {
-          echo '{
-                  "metaData": {
-                      "code": "5000",
-                      "message": "ERROR"
-                  },
-                  "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+          echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         }
         exit();
     }
@@ -2251,7 +2246,7 @@ class Site extends SiteModule
         $url = $this->bpjsurl.'updatejadwaldokter';
         $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json = json_decode($output, true);
-        echo json_encode($json);
+        echo json_encode(htmlspecialchars_array($json));
         exit();
     }
 
@@ -2426,7 +2421,7 @@ class Site extends SiteModule
             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
             $data = json_decode($output, true);
             echo 'Response:<br>';
-            echo json_encode($data)." ";
+            echo json_encode(htmlspecialchars_array($data))." ";
             echo $data['metadata']['code'];
             if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208){
 
@@ -2479,12 +2474,12 @@ class Site extends SiteModule
                   'kodebooking' => $kodebooking,
                   'jenis_kunjungan' => $jeniskunjungan,
                   'status_kirim' => 'Sudah',
-                  'keterangan' => $data['metadata']['message']
+                  'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
                 } else {
                   $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
                   'status_kirim' => 'Sudah',
-                  'keterangan' => $data['metadata']['message']
+                  'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                   ]);
                 }
               }
@@ -2497,12 +2492,12 @@ class Site extends SiteModule
                   'kodebooking' => $kodebooking,
                   'jenis_kunjungan' => $jeniskunjungan,
                   'status_kirim' => 'Sudah',
-                  'keterangan' => $data['metadata']['message']
+                  'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
                 } else {
                   $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
                     'status_kirim' => 'Sudah',
-                    'keterangan' => $data['metadata']['message']
+                    'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                   ]);
                 }
               }
@@ -2517,12 +2512,12 @@ class Site extends SiteModule
                     'kodebooking' => $kodebooking,
                     'jenis_kunjungan' => $jeniskunjungan,
                     'status_kirim' => 'Gagal',
-                    'keterangan' => $data['metadata']['message']
+                    'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                   ]);
                 } else {
                   $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
                     'status_kirim' => 'Gagal',
-                    'keterangan' => $data['metadata']['message']
+                    'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                   ]);
                 }
               }
@@ -2535,12 +2530,12 @@ class Site extends SiteModule
                     'kodebooking' => $kodebooking,
                     'jenis_kunjungan' => $jeniskunjungan,
                     'status_kirim' => 'Gagal',
-                    'keterangan' => $data['metadata']['message']
+                    'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                   ]);
                 } else {
                   $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
                     'status_kirim' => 'Gagal',
-                    'keterangan' => $data['metadata']['message']
+                    'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                   ]);
                 }
               }
@@ -2720,14 +2715,14 @@ class Site extends SiteModule
                 $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                 $data = json_decode($output, true);
                 echo 'Response:<br>';
-                echo json_encode($data)." ";
+                echo json_encode(htmlspecialchars_array($data))." ";
                 echo $data['metadata']['code'];
                 if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208){
                   if($jenispasien == 'JKN') {
                     
                       $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
                           'status_kirim' => 'Sudah',
-                          'keterangan' => $data['metadata']['message']
+                          'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     
                   }
@@ -2745,7 +2740,7 @@ class Site extends SiteModule
                     
                       $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
                           'status_kirim' => 'Gagal',
-                          'keterangan' => $data['metadata']['message']
+                          'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     
                   }
@@ -2807,7 +2802,7 @@ class Site extends SiteModule
             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
             $json = json_decode($output, true);
             echo 'Response:<br>';
-            echo json_encode($json);
+            echo json_encode(htmlspecialchars_array($json));
 
             echo '<br>-------------------------------------<br><br>';
         }
@@ -2876,7 +2871,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -2885,7 +2880,7 @@ class Site extends SiteModule
                         'taskid' => 1,
                         'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time']) * 1000,
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -2921,7 +2916,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -2930,7 +2925,7 @@ class Site extends SiteModule
                         'taskid' => 2,
                         'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['end_time']) * 1000,
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -2966,7 +2961,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -2975,7 +2970,7 @@ class Site extends SiteModule
                         'taskid' => 3,
                         'waktu' => strtotime($mutasi_berkas['dikirim']) * 1000,
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3011,7 +3006,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -3020,7 +3015,7 @@ class Site extends SiteModule
                         'taskid' => 4,
                         'waktu' => strtotime($mutasi_berkas['diterima']) * 1000,
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3063,7 +3058,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -3072,7 +3067,7 @@ class Site extends SiteModule
                         'taskid' => 5,
                         'waktu' => strtotime($pemeriksaan_ralan['datajam']) * 1000,
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3114,7 +3109,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -3123,7 +3118,7 @@ class Site extends SiteModule
                         'taskid' => 6,
                         'waktu' => strtotime($resep_obat['datajam']) * 1000,
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3165,7 +3160,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -3174,7 +3169,7 @@ class Site extends SiteModule
                         'taskid' => 7,
                         'waktu' => strtotime($resep_obat['datajam']) * 1000,
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3208,7 +3203,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -3494,18 +3489,18 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)
                     ->save([
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     } else {
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)
                     ->save([
                         'status' => 'Gagal',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3534,18 +3529,18 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 2)
                     ->save([
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     } else {
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 2)
                     ->save([
                         'status' => 'Gagal',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3574,18 +3569,18 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 3)
                     ->save([
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     } else {
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 3)
                     ->save([
                         'status' => 'Gagal',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3614,18 +3609,18 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 4)
                     ->save([
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     } else {
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 4)
                     ->save([
                         'status' => 'Gagal',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3653,18 +3648,18 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 5)
                     ->save([
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     } else {
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 5)
                     ->save([
                         'status' => 'Gagal',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3693,18 +3688,18 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 6)
                     ->save([
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     } else {
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 6)
                     ->save([
                         'status' => 'Gagal',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3731,18 +3726,18 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 7)
                     ->save([
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     } else {
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 7)
                     ->save([
                         'status' => 'Gagal',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3786,7 +3781,7 @@ class Site extends SiteModule
         $url = $this->bpjsurl.'dashboard/waktutunggu/bulan/'.$slug[3].'/tahun/'.$slug[4].'/waktu/'.$slug[5];
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json = json_decode($output, true);
-        echo json_encode($json);
+        echo json_encode(htmlspecialchars_array($json));
         exit();
     }
 
@@ -3796,7 +3791,7 @@ class Site extends SiteModule
         $url = $this->bpjsurl.'dashboard/waktutunggu/tanggal/'.$slug[3].'/waktu/'.$slug[4];
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json = json_decode($output, true);
-        echo json_encode($json);
+        echo json_encode(htmlspecialchars_array($json));
         exit();
     }
 

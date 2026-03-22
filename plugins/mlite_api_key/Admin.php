@@ -84,10 +84,10 @@ class Admin extends AdminModule
         }
 
         echo json_encode([
-            "draw" => intval($draw),
+            "draw" => intval(htmlspecialchars($draw, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordwithFilter,
-            "aaData" => $data
+            "aaData" => htmlspecialchars_array($data)
         ]);
         exit();
     }
@@ -191,7 +191,7 @@ $exp_time = $_POST['exp_time'];
                     ];
                 }
 
-                echo json_encode($data);
+                echo json_encode(htmlspecialchars_array($data));
             }
         } catch (\PDOException $e) {
             if($this->settings->get('settings.log_query') == 'ya') {            
@@ -239,7 +239,7 @@ $exp_time = $_POST['exp_time'];
         $stmt->execute([$database, $nama_table]);
         $result = $stmt->fetchAll();
 
-        echo $this->draw('chart.html', ['type' => $type, 'column' => $result, 'labels' => $labels, 'datasets' => $datasets, 'slug' => $slug]);
+        echo $this->draw('chart.html', ['type' => $type, 'column' => htmlspecialchars_array($result), 'labels' => $labels, 'datasets' => $datasets, 'slug' => $slug]);
         exit();
     }
 
