@@ -527,11 +527,11 @@ public function postHapusResepResponse()
       $hapus_obat_responses = [];
       
       // Hapus setiap pelayanan obat terlebih dahulu
-      foreach ($obat_resep as $index => htmlspecialchars_array($obat)) {
+      foreach ($obat_resep as $index => $obat) {
         $hapus_obat_data = [
           'nosepapotek' => $resep_data['no_apotik'] ?? '',
           'noresep' => $resep_data['no_resep'] ?? '',
-          'kodeobat' => htmlspecialchars_array($obat)['kd_obat_bpjs'] ?? '',
+          'kodeobat' => $obat['kd_obat_bpjs'] ?? '',
           'tipeobat' => 'N' // Default tipe obat Non-Racikan
         ];
 
@@ -540,9 +540,9 @@ public function postHapusResepResponse()
         $json_hapus_obat = json_decode($output_hapus_obat, true);
         
         $hapus_obat_responses[] = [
-          'kode_obat' => htmlspecialchars_array($obat)['kode_brng'],
-          'nama_obat' => htmlspecialchars_array($obat)['nama_brng'] ?? 'Unknown',
-          'kd_obat_bpjs' => htmlspecialchars_array($obat)['kd_obat_bpjs'] ?? '',
+          'kode_obat' => $obat['kode_brng'],
+          'nama_obat' => $obat['nama_brng'] ?? 'Unknown',
+          'kd_obat_bpjs' => $obat['kd_obat_bpjs'] ?? '',
           'response' => $json_hapus_obat
         ];
 
@@ -550,7 +550,7 @@ public function postHapusResepResponse()
         file_put_contents("debug_hapus_obat_{$index}.json", json_encode([
           'nosepapotek' => $resep_data['no_sep_kunjungan'] ?? '',
           'noresep' => $resep_data['no_resep'] ?? '',
-          'kodeobat' => htmlspecialchars_array($obat)['kd_obat_bpjs'] ?? '',
+          'kodeobat' => $obat['kd_obat_bpjs'] ?? '',
           'tipeobat' => 'N' // Default tipe obat Non-Racikan
         ], JSON_PRETTY_PRINT));
 
@@ -752,18 +752,18 @@ public function postHapusResepResponse()
       $obat_errors = [];
 
       if (isset($_POST['obat']) && is_array($_POST['obat']) && $response['noApotik'] !='') {
-        foreach ($_POST['obat'] as $index => htmlspecialchars_array($obat)) {
+        foreach ($_POST['obat'] as $index => $obat) {
           try {
             $obat_data = [
               'NOSJP' => $response['noApotik'],
               'NORESEP' => $response['noResep'],
-              'KDOBT' => htmlspecialchars_array($obat)['KDOBT'],
-              'NMOBAT' => htmlspecialchars_array($obat)['NMOBAT'],
+              'KDOBT' => $obat['KDOBT'],
+              'NMOBAT' => $obat['NMOBAT'],
               'SIGNA1OBT' => (int)$obat['SIGNA1OBT'],
               'SIGNA2OBT' => (int)$obat['SIGNA2OBT'],
               'JMLOBT' => (int)$obat['JMLOBT'],
               'JHO' => (int)$obat['JHO'],
-              'CatKhsObt' => htmlspecialchars_array($obat)['CatKhsObt'] ?? ''
+              'CatKhsObt' => $obat['CatKhsObt'] ?? ''
             ];
             $url_obat = $this->api_url . 'obatnonracikan/v3/insert';
 
@@ -790,7 +790,7 @@ public function postHapusResepResponse()
           } catch (\Exception $ex) {
             file_put_contents("debug_kirim_obat_{$index}.json", json_encode([
               'error' => $ex->getMessage(),
-              'data' => htmlspecialchars_array($obat) ?? []
+              'data' => $obat ?? []
             ], JSON_PRETTY_PRINT));
 
             $obat_responses[] = ['metaData' => ['code' => '500', 'message' => htmlspecialchars($ex->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]];
@@ -798,7 +798,7 @@ public function postHapusResepResponse()
             $obat_errors[] = [
               'index' => $index,
               'message' => htmlspecialchars($ex->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-              'data' => htmlspecialchars_array($obat_data) ?? $obat
+              'data' => $obat_data ?? $obat
             ];
           }
         }
@@ -806,7 +806,7 @@ public function postHapusResepResponse()
 
       // === Kirim Racikan
       if (isset($_POST['racikan']) && is_array($_POST['racikan']) && $response['noApotik'] !='') {
-        foreach ($_POST['racikan'] as $index => htmlspecialchars_array($racikan)) {
+        foreach ($_POST['racikan'] as $index => $racikan) {
           // Process each detail item in racikan
           if (isset($racikan['detail']) && is_array($racikan['detail'])) {
             foreach ($racikan['detail'] as $detail_index => $detail) {
@@ -814,7 +814,7 @@ public function postHapusResepResponse()
                 $racikan_data = [
                   'NOSJP' => $response['noApotik'],
                   'NORESEP' => $response['noResep'],
-                  'JNSROBT' => htmlspecialchars_array($racikan)['JNSROBT'],
+                  'JNSROBT' => $racikan['JNSROBT'],
                   'KDOBT' => $detail['kd_obat_bpjs'] ?? $detail['kode_brng'] ?? '',
                   'NMOBAT' => $detail['nama_obat_bpjs'] ?? $detail['nama_brng'] ?? '',
                   'SIGNA1OBT' => (int)$racikan['SIGNA1RACIKAN'],
@@ -822,7 +822,7 @@ public function postHapusResepResponse()
                   'PERMINTAAN' => (int)$detail['jml'],
                   'JMLOBT' => (int)$racikan['JMLRACIKAN'],
                   'JHO' => (int)$racikan['JHORACIKAN'],
-                  'CatKhsObt' => htmlspecialchars_array($racikan)['CatKhsObt'] ?? ''
+                  'CatKhsObt' => $racikan['CatKhsObt'] ?? ''
                 ];
                 $url_racikan = $this->api_url . 'obatracikan/v3/insert';
 
@@ -832,7 +832,7 @@ public function postHapusResepResponse()
                 // Simpan ke file debug untuk setiap detail racikan
                 file_put_contents("debug_kirim_obat_racikan_{$index}_{$detail_index}.json", json_encode([
                   'url' => $url_racikan,
-                  'payload' => htmlspecialchars_array($racikan_data),
+                  'payload' => $racikan_data,
                   'response' => $json_racikan
                 ], JSON_PRETTY_PRINT));
 
@@ -842,7 +842,7 @@ public function postHapusResepResponse()
                   $obat_errors[] = [
                     'index' => "racikan_{$index}_detail_{$detail_index}",
                     'message' => $json_racikan['metaData']['message'],
-                    'data' => htmlspecialchars_array($racikan_data)
+                    'data' => $racikan_data
                   ];
                 }
 
@@ -857,7 +857,7 @@ public function postHapusResepResponse()
                 $obat_errors[] = [
                   'index' => "racikan_{$index}_detail_{$detail_index}",
                   'message' => $ex->getMessage(),
-                  'data' => htmlspecialchars_array($racikan_data) ?? $detail
+                  'data' => $racikan_data ?? $detail
                 ];
               }
             }
@@ -883,8 +883,8 @@ public function postHapusResepResponse()
           'decompressed' => $decompress ?? '',
           'final_response' => $response ?? []
         ],
-        'obat_responses' => htmlspecialchars_array($obat_responses),
-        'obat_errors' => htmlspecialchars_array($obat_errors),
+        'obat_responses' => $obat_responses,
+        'obat_errors' => $obat_errors,
         'success_summary' => [
           'resep_success' => isset($json_resep['metaData']) && $json_resep['metaData']['code'] === '200',
           'obat_success_count' => count(array_filter($obat_responses, function($resp) {
@@ -914,7 +914,7 @@ public function postHapusResepResponse()
         'success' => true,
         'message' => 'Data berhasil dikirim ke Apotek Online BPJS',
         'resep_response' => $json_resep,
-        'obat_responses' => htmlspecialchars_array($obat_responses)
+        'obat_responses' => $obat_responses
       ]);
 
     } catch (\Exception $e) {
