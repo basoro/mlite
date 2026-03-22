@@ -1874,7 +1874,10 @@ class Admin extends AdminModule
         $length = $_GET['length'] ?? 10;
         $columnIndex = $_GET['order'][0]['column'] ?? 0;
         $columnName = $_GET['columns'][$columnIndex]['data'] ?? 'no_reg';
-        $columnSortOrder = $_GET['order'][0]['dir'] ?? 'asc';
+        $columnSortOrder = strtolower($_GET['order'][0]['dir'] ?? 'asc');
+    if (!in_array($columnSortOrder, ['asc', 'desc'])) {
+        $columnSortOrder = 'asc';
+    }
         $searchValue = is_array($_GET['search'] ?? null) ? ($_GET['search']['value'] ?? '') : ($_GET['search'] ?? '');
 
         $tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-d');

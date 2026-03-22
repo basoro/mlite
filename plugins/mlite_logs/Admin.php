@@ -26,7 +26,10 @@ class Admin extends AdminModule
         $rowperpage = $_POST['length'] ?? 10;
         $columnIndex = $_POST['order'][0]['column'] ?? 0;
         $columnName = $_POST['columns'][$columnIndex]['data'] ?? 'username';
-        $columnSortOrder = $_POST['order'][0]['dir'] ?? 'asc';
+        $columnSortOrder = strtolower($_POST['order'][0]['dir'] ?? 'asc');
+        if (!in_array($columnSortOrder, ['asc', 'desc'])) {
+            $columnSortOrder = 'asc';
+        }
         $searchValue = $_POST['search']['value'] ?? '';
 
         $search_field = $_POST['search_field_mlite_query_logs'] ?? '';

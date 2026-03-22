@@ -515,6 +515,19 @@ class Admin extends AdminModule
         $search_field_detail_pemberian_obat= $_POST['search_field_detail_pemberian_obat'];
         $search_text_detail_pemberian_obat = $_POST['search_text_detail_pemberian_obat'];
 
+        $allowed_fields = ['no_rawat', 'kode_brng', 'tgl_perawatan', 'jam', 'kd_bangsal', 'no_batch', 'no_faktur'];
+        if (!in_array($search_field_detail_pemberian_obat, $allowed_fields)) {
+            $search_field_detail_pemberian_obat = 'no_rawat';
+        }
+
+        $allowed_sort = ['asc', 'desc'];
+        if (!in_array(strtolower($columnSortOrder), $allowed_sort)) {
+            $columnSortOrder = 'asc';
+        }
+        if (!in_array($columnName, $allowed_fields)) {
+            $columnName = 'no_rawat';
+        }
+
         $tgl_awal = isset_or($_POST['tgl_awal'], date('Y-m-d'));
         $tgl_akhir = isset_or($_POST['tgl_akhir'], date('Y-m-d'));
 
@@ -614,6 +627,19 @@ class Admin extends AdminModule
         ## Custom Field value
         $search_field_riwayat_barang_medis= $_POST['search_field_riwayat_barang_medis'];
         $search_text_riwayat_barang_medis = $_POST['search_text_riwayat_barang_medis'];
+
+        $allowed_fields = ['kode_brng', 'stok_awal', 'masuk', 'keluar', 'stok_akhir', 'posisi', 'tanggal', 'jam', 'petugas', 'kd_bangsal', 'status', 'no_batch', 'no_faktur', 'keterangan'];
+        if (!in_array($search_field_riwayat_barang_medis, $allowed_fields)) {
+            $search_field_riwayat_barang_medis = 'kode_brng';
+        }
+
+        $allowed_sort = ['asc', 'desc'];
+        if (!in_array(strtolower($columnSortOrder), $allowed_sort)) {
+            $columnSortOrder = 'asc';
+        }
+        if (!in_array($columnName, $allowed_fields)) {
+            $columnName = 'kode_brng';
+        }
 
         $tgl_awal = isset_or($_POST['tgl_awal'], date('Y-m-d'));
         $tgl_akhir = isset_or($_POST['tgl_akhir'], date('Y-m-d'));

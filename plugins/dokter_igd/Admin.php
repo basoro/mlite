@@ -1955,7 +1955,11 @@ class Admin extends AdminModule
                 // Insert data baru
                 $fields = array_keys($data_to_save);
                 $placeholders = ':' . implode(', :', $fields);
-                $sql = "INSERT INTO mlite_triase_igd (" . implode(', ', array_map(function($f){return "`$f`";}, $fields)) . ") VALUES (" . $placeholders . ")";
+                $escaped_fields = [];
+                foreach ($fields as $f) {
+                    $escaped_fields[] = "`$f`";
+                }
+                $sql = "INSERT INTO mlite_triase_igd (" . implode(', ', $escaped_fields) . ") VALUES (" . $placeholders . ")";
                 
                 $stmt = $this->db()->pdo()->prepare($sql);
                 $query = $stmt->execute($data_to_save);

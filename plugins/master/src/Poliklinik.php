@@ -123,7 +123,10 @@ class Poliklinik
         $rowperpage = $_POST['length'] ?? 10;
         $columnIndex = $_POST['order'][0]['column'] ?? 0;
         $columnName = $_POST['columns'][$columnIndex]['data'] ?? 'kd_poli';
-        $columnSortOrder = $_POST['order'][0]['dir'] ?? 'asc';
+        $columnSortOrder = strtolower($_POST['order'][0]['dir'] ?? 'asc');
+        if (!in_array($columnSortOrder, ['asc', 'desc'])) {
+            $columnSortOrder = 'asc';
+        }
         $searchValue = $_POST['search']['value'] ?? '';
     
         $search_field = $_POST['search_field_poliklinik'] ?? '';
@@ -240,10 +243,10 @@ class Poliklinik
 
             } elseif ($act == 'del') {
                 $kd_poli= $_POST['kd_poli'];
-                $binds = [];
-                $sql = "DELETE FROM poliklinik WHERE kd_poli='$kd_poli'";
+                $binds = [$kd_poli];
+                $sql = "DELETE FROM poliklinik WHERE kd_poli=?";
                 $stmt = $this->core->db()->pdo()->prepare($sql);
-                $stmt->execute();
+                $stmt->execute($binds);
 
                 if($this->core->settings->get('settings.log_query') == 'ya') {
                   \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);

@@ -63,6 +63,8 @@ class Admin extends AdminModule
     $carabayar = str_replace(",","','", $this->settings->get('vedika.carabayar'));
     $type = $_GET['type'] ?? 'ralan';
 
+    $params = [];
+
     if ($type == 'ranap') {
         $sql = "SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab, kamar_inap.tgl_keluar, kamar_inap.jam_keluar, kamar_inap.kd_kamar 
             FROM reg_periksa, pasien, dokter, poliklinik, penjab, kamar_inap 
@@ -72,8 +74,10 @@ class Admin extends AdminModule
             AND reg_periksa.kd_poli = poliklinik.kd_poli 
             AND reg_periksa.kd_pj = penjab.kd_pj 
             AND penjab.kd_pj IN ('$carabayar') 
-            AND kamar_inap.tgl_keluar BETWEEN '$tgl_awal' AND '$tgl_akhir' 
+            AND kamar_inap.tgl_keluar BETWEEN :tgl_awal AND :tgl_akhir 
             AND reg_periksa.status_lanjut = 'Ranap'";
+        $params[':tgl_awal'] = $tgl_awal;
+        $params[':tgl_akhir'] = $tgl_akhir;
     } else {
         $sql = "SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
             FROM reg_periksa, pasien, dokter, poliklinik, penjab 
@@ -82,25 +86,30 @@ class Admin extends AdminModule
             AND reg_periksa.kd_poli = poliklinik.kd_poli 
             AND reg_periksa.kd_pj = penjab.kd_pj 
             AND penjab.kd_pj IN ('$carabayar') 
-            AND reg_periksa.tgl_registrasi BETWEEN '$tgl_awal' AND '$tgl_akhir' 
+            AND reg_periksa.tgl_registrasi BETWEEN :tgl_awal AND :tgl_akhir 
             AND reg_periksa.status_lanjut = 'Ralan' 
             AND reg_periksa.no_rawat NOT IN (SELECT no_rawat FROM mlite_vedika)";
+        $params[':tgl_awal'] = $tgl_awal;
+        $params[':tgl_akhir'] = $tgl_akhir;
     }
 
     if (!empty($searchValue)) {
-      $sql .= " AND (reg_periksa.no_rkm_medis LIKE '%$searchValue%' OR reg_periksa.no_rawat LIKE '%$searchValue%' OR pasien.nm_pasien LIKE '%$searchValue%')";
+      $sql .= " AND (reg_periksa.no_rkm_medis LIKE :search1 OR reg_periksa.no_rawat LIKE :search2 OR pasien.nm_pasien LIKE :search3)";
+      $params[':search1'] = "%$searchValue%";
+      $params[':search2'] = "%$searchValue%";
+      $params[':search3'] = "%$searchValue%";
     }
 
     $stmt = $this->db()->pdo()->prepare($sql);
-    $stmt->execute();
+    $stmt->execute($params);
     $totalRecords = $stmt->rowCount();
 
     // Order and Limit
     //$sql .= " ORDER BY $columnName $columnSortOrder LIMIT $start, $length";
-    $sql .= " LIMIT $start, $length";
+    $sql .= " LIMIT " . intval($start) . ", " . intval($length);
 
     $stmt = $this->db()->pdo()->prepare($sql);
-    $stmt->execute();
+    $stmt->execute($params);
     $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     $data = [];

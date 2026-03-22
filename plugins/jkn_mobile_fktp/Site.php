@@ -581,8 +581,12 @@ class Site extends SiteModule
             elseif (!empty($decode['nomorkartu']) && !empty($decode['nik']) && !empty($decode['kodepoli']) && !empty($decode['tanggalperiksa'])) {
                 $data_pasien = $this->db('pasien')->where('no_peserta', $decode['nomorkartu'])->oneArray();
                 $poli = $this->db('maping_poliklinik_pcare')->where('kd_poli_pcare', $decode['kodepoli'])->oneArray();
-                $cek_kouta = $this->db()->pdo()->prepare("SELECT jadwal.kuota - (SELECT COUNT(reg_periksa.tgl_registrasi) FROM reg_periksa WHERE reg_periksa.tgl_registrasi='$decode[tanggalperiksa]' AND reg_periksa.kd_dokter=jadwal.kd_dokter) as sisa_kouta, jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai as jam_mulai, poliklinik.nm_poli, dokter.nm_dokter FROM jadwal INNER JOIN maping_poliklinik_pcare ON maping_poliklinik_pcare.kd_poli_rs=jadwal.kd_poli INNER JOIN poliklinik ON poliklinik.kd_poli=jadwal.kd_poli INNER JOIN dokter ON dokter.kd_dokter=jadwal.kd_dokter WHERE jadwal.hari_kerja='$hari' AND maping_poliklinik_pcare.kd_poli_pcare='$decode[kodepoli]' GROUP BY jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai, jadwal.kuota, poliklinik.nm_poli, dokter.nm_dokter HAVING sisa_kouta > 0 ORDER BY sisa_kouta DESC LIMIT 1");
-                $cek_kouta->execute();
+                $cek_kouta = $this->db()->pdo()->prepare("SELECT jadwal.kuota - (SELECT COUNT(reg_periksa.tgl_registrasi) FROM reg_periksa WHERE reg_periksa.tgl_registrasi=:tanggalperiksa AND reg_periksa.kd_dokter=jadwal.kd_dokter) as sisa_kouta, jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai as jam_mulai, poliklinik.nm_poli, dokter.nm_dokter FROM jadwal INNER JOIN maping_poliklinik_pcare ON maping_poliklinik_pcare.kd_poli_rs=jadwal.kd_poli INNER JOIN poliklinik ON poliklinik.kd_poli=jadwal.kd_poli INNER JOIN dokter ON dokter.kd_dokter=jadwal.kd_dokter WHERE jadwal.hari_kerja=:hari AND maping_poliklinik_pcare.kd_poli_pcare=:kodepoli GROUP BY jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai, jadwal.kuota, poliklinik.nm_poli, dokter.nm_dokter HAVING sisa_kouta > 0 ORDER BY sisa_kouta DESC LIMIT 1");
+                $cek_kouta->execute([
+                    ':tanggalperiksa' => $decode['tanggalperiksa'],
+                    ':hari' => $hari,
+                    ':kodepoli' => $decode['kodepoli']
+                ]);
                 $cek_kouta = $cek_kouta->fetch();
 
                 $cek_pendaftaran = $this->db('reg_periksa')->where('no_rkm_medis', $data_pasien['no_rkm_medis'])->where('tgl_registrasi', date('Y-m-d'))->oneArray();
@@ -607,8 +611,11 @@ class Site extends SiteModule
                                 
                 elseif (!empty($cek_kouta['sisa_kouta']) && $cek_kouta['sisa_kouta'] > 0) {
                     if ($data_pasien['no_ktp'] != '') {
-                        $no_reg_akhir = $this->db()->pdo()->prepare("SELECT max(no_reg) FROM reg_periksa WHERE kd_poli='$poli[kd_poli_rs]' and tgl_registrasi='$decode[tanggalperiksa]'");
-                        $no_reg_akhir->execute();
+                        $no_reg_akhir = $this->db()->pdo()->prepare("SELECT max(no_reg) FROM reg_periksa WHERE kd_poli=:kd_poli and tgl_registrasi=:tanggalperiksa");
+                        $no_reg_akhir->execute([
+                            ':kd_poli' => $poli['kd_poli_rs'],
+                            ':tanggalperiksa' => $decode['tanggalperiksa']
+                        ]);
                         $no_reg_akhir = $no_reg_akhir->fetch();
                         if(empty($no_reg_akhir[0])) {
                           $no_reg_akhir[0] = '000';

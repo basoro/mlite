@@ -59,9 +59,13 @@ class Site extends SiteModule
     } else if ($header[$this->settings->get('afm.x_header_token')] == $this->settings->get('afm.afm_token')){
       $cari = isset_or($decode['nomor_kartu'],'');
       $field = isset_or($decode['kolom'], 'no_rkm_medis');
-      $sql = "SELECT no_peserta , no_rkm_medis , no_ktp , no_tlp FROM pasien WHERE " . $field . " = '" . $cari . "'";
+      $allowed_fields = ['no_rkm_medis', 'no_peserta', 'no_ktp', 'no_tlp'];
+      if (!in_array($field, $allowed_fields)) {
+          $field = 'no_rkm_medis';
+      }
+      $sql = "SELECT no_peserta , no_rkm_medis , no_ktp , no_tlp FROM pasien WHERE `" . $field . "` = :cari";
       $query = $this->db()->pdo()->prepare($sql);
-      $query->execute();
+      $query->execute([':cari' => $cari]);
       $cek_bookings = $query->fetch();
       if (!is_array($cek_bookings)) {
         $cek_bookings = [];
