@@ -488,7 +488,7 @@ class Admin extends AdminModule
         ->limit(10)
         ->toArray();
 
-    echo json_encode([
+    return [
         'status' => 'success',
         'data' => [
             'total_pasien' => $total_pasien,
@@ -502,7 +502,7 @@ class Admin extends AdminModule
             'pasien_aktif' => $pasien_aktif,
             'antrian_terakhir' => $antrian_terakhir
         ]
-    ]);
+    ];
   }
 
 }
