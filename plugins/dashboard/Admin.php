@@ -493,8 +493,8 @@ class Admin extends AdminModule
         'data' => [
             'total_pasien' => $total_pasien,
             'bulan_ini' => $bulan_ini,
-            'poli_bulan_ini' => htmlspecialchars_array($poli_bulan_ini),
-            'poli_hari_ini' => htmlspecialchars_array($poli_hari_ini),
+            'poli_bulan_ini' => $poli_bulan_ini,
+            'poli_hari_ini' => $poli_hari_ini,
             'chart' => [
                 'labels' => $chart_labels,
                 'values' => $chart_values
