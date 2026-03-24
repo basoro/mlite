@@ -7,6 +7,7 @@
             <div class="panel-body">
                 <p>Modul untuk pengelolaan data Medical Record Bundle sesuai standar BPJS E-Medical Records.</p>
                 <form action="{?=url([ADMIN, 'bpjs_emr', 'bundle'])?}" method="GET" class="form-inline margin-bottom-20">
+                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
                     <div class="form-group">
                         <input type="text" name="start_date" class="form-control datepicker" value="{$start_date}" placeholder="Tanggal Awal">
                     </div>
@@ -26,8 +27,10 @@
                                 <th>No. Rawat</th>
                                 <th>No. RM</th>
                                 <th>Nama Pasien</th>
+                                <th>Jenis Pelayanan</th>
                                 <th>Tgl Registrasi</th>
                                 <th>Dokter</th>
+                                <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -39,8 +42,18 @@
                                     <td>{$value.no_rawat}</td>
                                     <td>{$value.nomr}</td>
                                     <td>{$value.nm_pasien}</td>
+                                    <td>{if: $value.jnspelayanan == '1'}Rawat Inap{else}Rawat Jalan{/if}</td>
                                     <td>{$value.tgl_registrasi} {$value.jam_reg}</td>
                                     <td>{$value.nm_dokter}</td>
+                                    <td>
+                                        {if: $value.status_kirim == 'Sukses'}
+                                            <button class="btn btn-xs btn-success btn-view-log" data-sep="{$value.no_sep}">Sukses</button>
+                                        {elseif: $value.status_kirim == 'Gagal'}
+                                            <button class="btn btn-xs btn-danger btn-view-log" data-sep="{$value.no_sep}">Gagal</button>
+                                        {else}
+                                            <span class="label label-warning">Belum</span>
+                                        {/if}
+                                    </td>
                                     <td>
                                         <button class="btn btn-sm btn-success btn-send-bundle" data-sep="{$value.no_sep}" data-rawat="{$value.no_rawat}">Kirim ke BPJS</button>
                                     </td>
@@ -48,7 +61,7 @@
                                 {/loop}
                             {else}
                                 <tr>
-                                    <td colspan="7" class="text-center">Belum ada data SEP yang diproses.</td>
+                                    <td colspan="8" class="text-center">Belum ada data SEP yang diproses.</td>
                                 </tr>
                             {/if}
                         </tbody>
@@ -60,29 +73,39 @@
     </div>
 </article>
 
-<!-- Modal for Response -->
+<!-- Modal Response BPJS -->
 <div class="modal fade" id="responseModal" tabindex="-1" role="dialog" aria-labelledby="responseModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="-button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="responseModalLabel">Respon Pengiriman EMR Bundle</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="responseModalLabel">Log Pengiriman MR Bundle</h4>
       </div>
       <div class="modal-body">
+        <div id="logHistoryContainer" style="margin-bottom: 15px; display: none;">
+                        <label>Pilih Riwayat Pengiriman:</label>
+                        <select id="logHistorySelect" class="form-control">
+                            <!-- Options akan diisi via JS -->
+                        </select>
+                    </div>
+
+        <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#payloadTab" aria-controls="payloadTab" role="tab" data-toggle="tab">Payload JSON</a></li>
-            <li role="presentation"><a href="#payloadEncryptedTab" aria-controls="payloadEncryptedTab" role="tab" data-toggle="tab">Payload Encrypted</a></li>
-            <li role="presentation"><a href="#responseTab" aria-controls="responseTab" role="tab" data-toggle="tab">Respon BPJS</a></li>
+            <li role="presentation" class="active"><a href="#payload" aria-controls="payload" role="tab" data-toggle="tab">Payload JSON</a></li>
+            <li role="presentation"><a href="#payloadEncrypted" aria-controls="payloadEncrypted" role="tab" data-toggle="tab">Payload Encrypted</a></li>
+            <li role="presentation"><a href="#response" aria-controls="response" role="tab" data-toggle="tab">Response BPJS</a></li>
         </ul>
+
+        <!-- Tab panes -->
         <div class="tab-content" style="margin-top: 15px;">
-            <div role="tabpanel" class="tab-pane active" id="payloadTab">
-                <pre id="payloadContent" style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; max-height: 400px; overflow-y: auto;"></pre>
+            <div role="tabpanel" class="tab-pane active" id="payload">
+                <pre><code id="payloadContent" style="white-space: pre-wrap;"></code></pre>
             </div>
-            <div role="tabpanel" class="tab-pane" id="payloadEncryptedTab">
-                <pre id="payloadEncryptedContent" style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; max-height: 400px; overflow-y: auto;"></pre>
+            <div role="tabpanel" class="tab-pane" id="payloadEncrypted">
+                <pre><code id="payloadEncryptedContent" style="white-space: pre-wrap; word-break: break-all;"></code></pre>
             </div>
-            <div role="tabpanel" class="tab-pane" id="responseTab">
-                <pre id="responseContent" style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; max-height: 400px; overflow-y: auto;"></pre>
+            <div role="tabpanel" class="tab-pane" id="response">
+                <pre><code id="responseContent" style="white-space: pre-wrap;"></code></pre>
             </div>
         </div>
       </div>
@@ -113,11 +136,21 @@ $(document).ready(function() {
             type: 'POST',
             data: {
                 no_sep: no_sep,
-                no_rawat: no_rawat
+                no_rawat: no_rawat,
+                t: "{?=$_SESSION['token']?}"
             },
             dataType: 'json',
             success: function(res) {
                 btn.html(originalText).prop('disabled', false);
+                
+                // Hide dropdown container when sending new bundle
+                $('#logHistoryContainer').hide();
+                var select = $('#logHistorySelect');
+                if (select.data('selectator')) {
+                    select.selectator('destroy');
+                }
+                select.empty();
+
                 if (res.status === 'success') {
                     // Display payload and response in modal
                     $('#payloadContent').text(res.payload);
@@ -144,5 +177,119 @@ $(document).ready(function() {
             }
         });
     });
+    // Event handler for viewing log
+    $('.btn-view-log').click(function() {
+        var no_sep = $(this).data('sep');
+        var btn = $(this);
+        var originalText = btn.html();
+        var allLogsData = []; // Store logs data globally for this modal instance
+
+        btn.html('<i class="fa fa-spinner fa-spin"></i>');
+        btn.prop('disabled', true);
+
+        $.ajax({
+            url: "{?=url([ADMIN, 'bpjs_emr', 'log'])?}",
+            type: "GET",
+            data: {
+                no_sep: no_sep,
+                t: "{?=$_SESSION['token']?}"
+            },
+            dataType: "json",
+            success: function(response) {
+                btn.html(originalText);
+                btn.prop('disabled', false);
+
+                if (response.status === 'success' && response.data.length > 0) {
+                    allLogsData = response.data;
+                    console.log(allLogsData);
+                    // Reset dropdown
+                    var select = $('#logHistorySelect');
+                    if (select.data('selectator')) {
+                        select.selectator('destroy');
+                    }
+                    select.empty();
+                    
+                    // Populate dropdown
+                    $.each(allLogsData, function(index, log) {
+                        var statusLabel = log.status === 'Sukses' ? '✅ Sukses' : '❌ Gagal';
+                        var optionText = log.created_at + ' - ' + statusLabel;
+                        select.append(new Option(optionText, index));
+                    });
+
+                    // Show container if more than 1 log
+                    if (allLogsData.length > 1) {
+                        $('#logHistoryContainer').show();
+                    } else {
+                        $('#logHistoryContainer').hide();
+                    }
+
+                    // Function to display specific log
+                    var displayLog = function(index) {
+                        var log = allLogsData[index];
+                        var formattedPayload = "Tidak ada data";
+                        var formattedResponse = "Tidak ada data";
+                        var formattedEncrypted = "Tidak ada data";
+
+                        try {
+                            formattedPayload = JSON.stringify(JSON.parse(log.payload_json), null, 4);
+                        } catch (e) {
+                            formattedPayload = log.payload_json;
+                        }
+
+                        try {
+                            formattedResponse = JSON.stringify(JSON.parse(log.response), null, 4);
+                        } catch (e) {
+                            formattedResponse = log.response;
+                        }
+                        
+                        try {
+                            // Untuk log lama, properti ini mungkin tidak ada
+                            var encryptedStr = log.payload_encrypted ? log.payload_encrypted : log.payloadEncrypted;
+                            if (encryptedStr) {
+                                formattedEncrypted = JSON.stringify(JSON.parse(encryptedStr), null, 4);
+                            } else {
+                                formattedEncrypted = "Tidak ada data";
+                            }
+                        } catch (e) {
+                            formattedEncrypted = log.payload_encrypted ? log.payload_encrypted : log.payloadEncrypted;
+                        }
+
+                        $('#payloadContent').text(formattedPayload);
+                        $('#payloadEncryptedContent').text(formattedEncrypted);
+                        $('#responseContent').text(formattedResponse);
+                    };
+
+                    // Handle dropdown change
+                    select.off('change').on('change', function() {
+                        displayLog($(this).val());
+                    });
+
+                    // Display first log initially
+                    displayLog(0);
+
+                    // Re-init selectator if it exists in the system
+                    if (typeof $.fn.selectator !== 'undefined') {
+                        select.selectator({
+                            useSearch: true
+                        });
+                    }
+
+                    // Menyesuaikan judul modal
+                    $('#responseModalLabel').text('Log Pengiriman MR Bundle - ' + no_sep);
+
+                    $('#responseModal').modal('show');
+                } else {
+                    alert('Data log tidak ditemukan.');
+                }
+            },
+            error: function(xhr, status, error) {
+                btn.html(originalText);
+                btn.prop('disabled', false);
+                alert('Terjadi kesalahan koneksi saat mengambil data log.');
+                console.error(xhr.responseText);
+            }
+        });
+    });
+
 });
 </script>

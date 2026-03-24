@@ -36,7 +36,8 @@ class Admin extends AdminModule
         $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d');
         $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
 
-        $query = "SELECT b.*, p.nm_pasien, r.kd_dokter, d.nm_dokter, r.tgl_registrasi, r.jam_reg 
+        $query = "SELECT b.*, p.nm_pasien, r.kd_dokter, d.nm_dokter, r.tgl_registrasi, r.jam_reg,
+                         (SELECT status FROM mlite_bpjs_emr_logs WHERE mlite_bpjs_emr_logs.no_sep = b.no_sep ORDER BY id DESC LIMIT 1) as status_kirim
                   FROM bridging_sep b
                   JOIN reg_periksa r ON b.no_rawat = r.no_rawat
                   JOIN pasien p ON b.nomr = p.no_rkm_medis
@@ -1393,12 +1394,55 @@ class Admin extends AdminModule
         // Kirim Payload ke BPJS menggunakan method internal
         $result = $this->sendMR($no_sep, $jnsPelayanan, $bulan, $tahun, $json_payload, $consid, $secretkey, $userkey, $koders, $baseurl);
         
+        $status_kirim = 'Gagal';
+        $response_bpjs = json_decode($result['response'], true);
+        if ($response_bpjs && isset($response_bpjs['metaData']['code']) && $response_bpjs['metaData']['code'] == '200') {
+            $status_kirim = 'Sukses';
+        }
+        
+        // Simpan log ke tabel mlite_bpjs_emr_logs
+        $this->db('mlite_bpjs_emr_logs')->save([
+            'no_sep' => $no_sep,
+            'no_rawat' => $no_rawat,
+            'payload_json' => $json_payload,
+            'payload_encrypted' => $result['encryptedBody'],
+            'response' => $result['response'],
+            'status' => $status_kirim,
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+        
         echo json_encode([
             'status' => 'success',
             'payload' => $json_payload,
             'payloadEncrypted' => $result['encryptedBody'],
             'response' => $result['response']
         ]);
+        exit;
+    }
+
+    public function getLog()
+    {
+        header('Content-Type: application/json');
+        $no_sep = $_GET['no_sep'] ?? '';
+        
+        if (empty($no_sep)) {
+            echo json_encode(['status' => 'error', 'message' => 'No SEP tidak valid.']);
+            exit;
+        }
+
+        $logs = $this->db('mlite_bpjs_emr_logs')
+            ->where('no_sep', $no_sep)
+            ->desc('id')
+            ->toArray();
+
+        if (!empty($logs)) {
+            echo json_encode([
+                'status' => 'success',
+                'data' => $logs
+            ]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Data log tidak ditemukan.']);
+        }
         exit;
     }
 
