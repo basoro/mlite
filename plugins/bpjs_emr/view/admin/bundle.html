@@ -1,0 +1,148 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{$title}</h3>
+            </div>
+            <div class="panel-body">
+                <p>Modul untuk pengelolaan data Medical Record Bundle sesuai standar BPJS E-Medical Records.</p>
+                <form action="{?=url([ADMIN, 'bpjs_emr', 'bundle'])?}" method="GET" class="form-inline margin-bottom-20">
+                    <div class="form-group">
+                        <input type="text" name="start_date" class="form-control datepicker" value="{$start_date}" placeholder="Tanggal Awal">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="end_date" class="form-control datepicker" value="{$end_date}" placeholder="Tanggal Akhir">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="s" class="form-control" value="{$s}" placeholder="Cari No SEP/Rawat/RM/Nama">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cari</button>
+                </form>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>No. SEP</th>
+                                <th>No. Rawat</th>
+                                <th>No. RM</th>
+                                <th>Nama Pasien</th>
+                                <th>Tgl Registrasi</th>
+                                <th>Dokter</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {if: !empty($bundle_list)}
+                                {loop: $bundle_list}
+                                <tr>
+                                    <td>{$value.no_sep}</td>
+                                    <td>{$value.no_rawat}</td>
+                                    <td>{$value.nomr}</td>
+                                    <td>{$value.nm_pasien}</td>
+                                    <td>{$value.tgl_registrasi} {$value.jam_reg}</td>
+                                    <td>{$value.nm_dokter}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-success btn-send-bundle" data-sep="{$value.no_sep}" data-rawat="{$value.no_rawat}">Kirim ke BPJS</button>
+                                    </td>
+                                </tr>
+                                {/loop}
+                            {else}
+                                <tr>
+                                    <td colspan="7" class="text-center">Belum ada data SEP yang diproses.</td>
+                                </tr>
+                            {/if}
+                        </tbody>
+                    </table>
+                </div>
+                {$pagination}
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- Modal for Response -->
+<div class="modal fade" id="responseModal" tabindex="-1" role="dialog" aria-labelledby="responseModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="-button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="responseModalLabel">Respon Pengiriman EMR Bundle</h4>
+      </div>
+      <div class="modal-body">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#payloadTab" aria-controls="payloadTab" role="tab" data-toggle="tab">Payload JSON</a></li>
+            <li role="presentation"><a href="#payloadEncryptedTab" aria-controls="payloadEncryptedTab" role="tab" data-toggle="tab">Payload Encrypted</a></li>
+            <li role="presentation"><a href="#responseTab" aria-controls="responseTab" role="tab" data-toggle="tab">Respon BPJS</a></li>
+        </ul>
+        <div class="tab-content" style="margin-top: 15px;">
+            <div role="tabpanel" class="tab-pane active" id="payloadTab">
+                <pre id="payloadContent" style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; max-height: 400px; overflow-y: auto;"></pre>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="payloadEncryptedTab">
+                <pre id="payloadEncryptedContent" style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; max-height: 400px; overflow-y: auto;"></pre>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="responseTab">
+                <pre id="responseContent" style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; max-height: 400px; overflow-y: auto;"></pre>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('.datepicker').datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: 'id'
+    });
+
+    $('.btn-send-bundle').on('click', function() {
+        var btn = $(this);
+        var originalText = btn.html();
+        var no_sep = btn.data('sep');
+        var no_rawat = btn.data('rawat');
+
+        btn.html('<i class="fa fa-spinner fa-spin"></i> Mengirim...').prop('disabled', true);
+
+        $.ajax({
+            url: "{?=url([ADMIN, 'bpjs_emr', 'sendBundle'])?}",
+            type: 'POST',
+            data: {
+                no_sep: no_sep,
+                no_rawat: no_rawat
+            },
+            dataType: 'json',
+            success: function(res) {
+                btn.html(originalText).prop('disabled', false);
+                if (res.status === 'success') {
+                    // Display payload and response in modal
+                    $('#payloadContent').text(res.payload);
+                    $('#payloadEncryptedContent').text(res.payloadEncrypted);
+                    
+                    // Format response JSON if it's a string
+                    try {
+                        var jsonObj = JSON.parse(res.response);
+                        $('#responseContent').text(JSON.stringify(jsonObj, null, 2));
+                    } catch (e) {
+                        $('#responseContent').text(res.response);
+                    }
+                    
+                    $('#responseModal').modal('show');
+                } else {
+                    alert('Error: ' + res.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                btn.html(originalText).prop('disabled', false);
+                console.error("AJAX Error:", status, error);
+                console.error("Response Text:", xhr.responseText);
+                alert('Terjadi kesalahan koneksi saat mengirim data. Cek console log (F12) untuk detailnya.');
+            }
+        });
+    });
+});
+</script>

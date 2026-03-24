@@ -1,0 +1,42 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Pengaturan Bridging BPJS E-Medical Records</h3>
+            </div>
+            <div class="panel-body">
+                <form action="{?=url([ADMIN, 'bpjs_emr', 'saveSettings'])?}" method="POST">
+                    <div class="form-group">
+                        <label>Cons ID BPJS</label>
+                        <input type="text" name="settings[consid]" class="form-control" value="{$settings.consid}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Secret Key</label>
+                        <input type="text" name="settings[secretkey]" class="form-control" value="{$settings.secretkey}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>User Key</label>
+                        <input type="text" name="settings[userkey]" class="form-control" value="{$settings.userkey}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kode RS</label>
+                        <input type="text" name="settings[koders]" class="form-control" value="{$settings.koders}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kode Kemkes</label>
+                        <input type="text" name="settings[kode_kemkes]" class="form-control" value="{$settings.kode_kemkes}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kodepos</label>
+                        <input type="text" name="settings[kodepos]" class="form-control" value="{$settings.kodepos}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Base URL API EMR BPJS</label>
+                        <input type="text" name="settings[baseurl]" class="form-control" value="{$settings.baseurl}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</article>
