@@ -19,7 +19,7 @@ return [
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('bpjs_emr', 'baseurl', 'https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev')");
     
     // Create mlite_bpjs_emr_logs table based on DB driver
-    if ($core->db()->driver == 'mysql') {
+    if (DBDRIVER == 'mysql') {
       $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_logs` (
         `id` int(11) NOT NULL AUTO_INCREMENT,
         `no_sep` varchar(50) DEFAULT NULL,
