@@ -278,7 +278,7 @@ class Admin extends AdminModule
               $stts_daftar_hidden = $stts_daftar;
             }
           }
-        echo $this->draw('stts.daftar.html', ['stts_daftar' => htmlspecialchars_array($stts_daftar), 'stts_daftar_hidden' => htmlspecialchars_array($stts_daftar_hidden), 'bg_status' => htmlspecialchars_array($bg_status)]);
+        echo $this->draw('stts.daftar.html', ['stts_daftar' => htmlspecialchars($stts_daftar), 'stts_daftar_hidden' => htmlspecialchars($stts_daftar_hidden), 'bg_status' => htmlspecialchars($bg_status)]);
       } else {
         $rawat = $this->db('reg_periksa')
           ->where('no_rawat', $_POST['no_rawat'])

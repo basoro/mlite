@@ -70,7 +70,7 @@ class Admin extends AdminModule
   {
     $this->core->addCSS(url(MODULES . '/dashboard/css/admin/dashboard.css?v={$mlite.version}'));
     $this->core->addJS(url(MODULES . '/dashboard/js/admin/dashboard.js?v={$mlite.version}'), 'footer');
-    return $this->draw('dashboard.html', ['modules' => htmlspecialchars_array($this->_modulesList())]);
+    echo $this->draw('dashboard.html', ['modules' => htmlspecialchars_array($this->_modulesList())]);
     exit();
   }
 

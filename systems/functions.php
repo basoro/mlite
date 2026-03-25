@@ -58,8 +58,11 @@ function htmlspecialchars_array(array $array)
     foreach ($array as $key => $value) {
         if (is_array($value)) {
             $array[$key] = htmlspecialchars_array($value);
+        } elseif ($value instanceof Closure) {
+            // Abaikan Closure, jangan panggil htmlspecialchars
+            continue;
         } else {
-            $array[$key] = htmlspecialchars($value ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $array[$key] = htmlspecialchars((string)($value ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         }
     }
 

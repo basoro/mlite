@@ -132,7 +132,7 @@
         <div class="m-t-xl">
           <button type="button" name="button" class="btn btn-primary" id="simpan_soap"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
           <span class="{if: $admin_mode == 'simple'}hidden{/if}">
-          <button type="button" name="button" class="btn btn-danger" id="buka_icd10dan9"><i class="fa fa-download"></i><span class="hidden-xs"> ICD 10 & 9</span></button>
+          <button type="button" name="button" class="btn btn-danger" id="buka_icd10dan9"><i class="fa fa-download"></i><span class="hidden-xs"> SNOMED CT & ICD</span></button>
           </span>
           <button type="button" name="button" class="btn btn-info" id="eresep"><i class="fa fa-medkit"></i><span class="hidden-xs"> E-Resep</span></button>
           <button type="button" name="button" class="btn btn-info" id="buka_riwayat"><i class="fa fa-file-o"></i><span class="hidden-xs"> Riwayat</span></button>
@@ -149,6 +149,25 @@
       <div class="panel panel-default">
         <div class="panel-body">
           <div class="form-group">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group snomed">
+                  <label for="">SNOMED CT</label>
+                  <button id="filter" class="btn btn-default">
+                      <span id="kode_snomed">kode</span>
+                  </button>
+                  <div class="input-group" style="position: relative;">
+                    <input type="text" name="snomed" id="snomed" class="form-control" />
+                    <ul class="list-group" id="snomedList" style="z-index:1000;position:absolute;width:100%;top: 100%; left: 0"></ul>
+                    <span class="input-group-btn">
+                      <button id="simpan_snomed" class="btn btn-primary btn-block">
+                          <span class="glyphicon glyphicon-plus simpan_snomed"></span>
+                      </button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group icd10">
@@ -340,6 +359,39 @@
        $('#icd10List').fadeOut();
   });
 </script>
+<script>
+  $('#snomed').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: "{?=url([ADMIN, 'dokter_ralan', 'snomed'])?}",
+                 method:"POST",
+                 data:{query:query},
+                 success:function(data)
+                 {
+                      $('#snomedList').fadeIn();
+                      $('#snomedList').html(data);
+                      console.log(data);
+                 }
+            });
+       }
+       $('#snomedList').fadeIn();
+  });
+  $('#snomedList').on('click', 'li', function(){
+       $('#snomed').val($(this).text().split(': ')[1]);
+       $('#kode_snomed').text($(this).text().split(': ')[0]);
+       var kode_snomed = $('#kode_snomed').val();
+       $('#snomedList').fadeOut();
+       
+       // Trigger ICD-10 search based on selected SNOMED term
+       var snomed_term = $('#snomed').val();
+       if(snomed_term != '') {
+           $('#icd10').val(snomed_term);
+           $('#icd10').trigger('keyup');
+       }
+  });
+</script>
 <script type="text/javascript">
   // tombol simpan diklik
   $("#form_soap").on("click", "#simpan_icd9", function(event){
@@ -393,6 +445,48 @@
       //bersih();
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data ICD 10 (Diagnosa) pasien telah disimpan!"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+    });
+  });
+</script>
+<script type="text/javascript">
+  // tombol simpan diklik
+  $("#form_soap").on("click", "#simpan_snomed", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $('input:text[name=no_rawat]').val();
+    var kd_penyakit = $('#kode_icd10').text(); // Mengambil kode ICD10 yang dipilih sebagai relasi
+    var snomed_term = $('input:text[name=snomed]').val();
+    var snomed_concept_id = $('#kode_snomed').text();
+    var status_penyakit = 'Baru'; // Default atau ambil dari form jika ada
+
+    if(kd_penyakit == 'kode' || kd_penyakit == '') {
+        alert('Silahkan pilih Diagnosa (ICD 10) terlebih dahulu sebelum menyimpan SNOMED CT!');
+        return false;
+    }
+
+    if(snomed_concept_id == 'kode' || snomed_concept_id == '') {
+        alert('Silahkan pilih data SNOMED CT terlebih dahulu!');
+        return false;
+    }
+
+    var url = baseURL + '/dokter_ralan/savesnomed?t=' + mlite.token;
+
+    $.post(url,{
+      no_rawat: no_rawat,
+      kd_penyakit: kd_penyakit,
+      snomed_concept_id: snomed_concept_id,
+      snomed_term: snomed_term,
+      status_penyakit: status_penyakit
+    } ,function(data) {
+      // Membersihkan form SNOMED setelah disimpan
+      $('input:text[name=snomed]').val('');
+      $('#kode_snomed').text('kode');
+      
+      $("#display_icd").show().load(baseURL + '/dokter_ralan/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
+      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "Data SNOMED CT pasien telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
       "</div>").show();
     });

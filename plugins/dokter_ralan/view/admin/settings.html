@@ -17,6 +17,21 @@
                              </label>
                          </div>
                     </div>
+                    <hr>
+                    <h4>Pengaturan API SNOMED CT <span class="small">(By Dody Naftali)</span></h4>
+                    <div class="form-group">
+                        <label>Base URL API SNOMED</label>
+                        <input type="text" name="dokter_ralan[snomed_api_url]" class="form-control" value="{?=isset_or($settings.dokter_ralan.snomed_api_url)?}" placeholder="https://kodemedis.thing.my.id">
+                        <small class="help-block">URL dasar untuk mengakses API Kodemedis SNOMED CT.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Username API SNOMED</label>
+                        <input type="password" name="dokter_ralan[snomed_username]" class="form-control" value="{?=isset_or($settings.dokter_ralan.snomed_username)?}" placeholder="Email akun kodemedis">
+                    </div>
+                    <div class="form-group">
+                        <label>Password API SNOMED</label>
+                        <input type="password" name="dokter_ralan[snomed_password]" class="form-control" value="{?=isset_or($settings.dokter_ralan.snomed_password)?}" placeholder="Password akun kodemedis">
+                    </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>
             </div>

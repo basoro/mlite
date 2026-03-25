@@ -1006,6 +1006,10 @@ class Admin extends AdminModule
          $row['nama'] = $icd10['nm_penyakit'];
          $diagnosa[] = $row;
        }
+       
+       $snomed = $this->db('mlite_mapping_snomed_icd')
+         ->where('no_rawat', $_POST['no_rawat'])
+         ->toArray();
 
       $i = 1;
       $row['nama_petugas'] = '';
@@ -1034,7 +1038,14 @@ class Admin extends AdminModule
         }
       }
 
-      echo $this->draw('soap.html', ['pemeriksaan' => htmlspecialchars_array($result), 'pemeriksaan_ranap' => htmlspecialchars_array($result_ranap), 'diagnosa' => htmlspecialchars_array($diagnosa), 'prosedur' => htmlspecialchars_array($prosedur), 'admin_mode' => $this->settings->get('settings.admin_mode')]);
+      echo $this->draw('soap.html', [
+          'pemeriksaan' => htmlspecialchars_array($result), 
+          'pemeriksaan_ranap' => htmlspecialchars_array($result_ranap), 
+          'diagnosa' => htmlspecialchars_array($diagnosa), 
+          'prosedur' => htmlspecialchars_array($prosedur), 
+          'snomed' => htmlspecialchars_array($snomed),
+          'admin_mode' => $this->settings->get('settings.admin_mode')
+      ]);
       exit();
     }
 
@@ -2185,6 +2196,21 @@ class Admin extends AdminModule
       exit();
     }  
 
+    public function postSaveSnomed()
+    {
+      if(isset($_POST['no_rawat']) && isset($_POST['kd_penyakit']) && isset($_POST['snomed_concept_id'])) {
+          $data = [
+              'no_rawat' => $_POST['no_rawat'],
+              'kd_penyakit' => $_POST['kd_penyakit'],
+              'snomed_concept_id' => $_POST['snomed_concept_id'],
+              'snomed_term' => $_POST['snomed_term'],
+              'status_penyakit' => isset($_POST['status_penyakit']) ? $_POST['status_penyakit'] : 'Baru'
+          ];
+          $this->db('mlite_mapping_snomed_icd')->save($data);
+      }
+      exit();
+    }
+
     public function postHapusICD10()
     {
       $this->db('diagnosa_pasien')->where('no_rawat', $_POST['no_rawat'])->where('prioritas', $_POST['prioritas'])->delete();
@@ -2226,6 +2252,18 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postHapusSnomed()
+    {
+      if(isset($_POST['no_rawat']) && isset($_POST['kd_penyakit']) && isset($_POST['snomed_concept_id'])) {
+          $this->db('mlite_mapping_snomed_icd')
+              ->where('no_rawat', $_POST['no_rawat'])
+              ->where('kd_penyakit', $_POST['kd_penyakit'])
+              ->where('snomed_concept_id', $_POST['snomed_concept_id'])
+              ->delete();
+      }
+      exit();
+    }
+
     public function postICD9()
     {
   
@@ -2246,6 +2284,96 @@ class Admin extends AdminModule
   
       exit();
   
+    }
+
+    public function postSnomed()
+    {
+      if(isset($_POST["query"])){
+        $output = '';
+        $query = $_POST["query"];
+        
+        $snomed_api_url = $this->settings->get('dokter_ralan.snomed_api_url');
+        $snomed_username = $this->settings->get('dokter_ralan.snomed_username');
+        $snomed_password = $this->settings->get('dokter_ralan.snomed_password');
+
+        if (empty($snomed_api_url) || empty($snomed_username) || empty($snomed_password)) {
+            echo '<li class="list-group-item link-class text-danger">Konfigurasi SNOMED CT belum diatur di Pengaturan.</li>';
+            exit();
+        }
+
+        // 1. Request Login API to get Token
+        $curl_login = curl_init();
+        curl_setopt_array($curl_login, array(
+          CURLOPT_URL => rtrim($snomed_api_url, '/') . '/api/v1/auth/login',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS => json_encode([
+            "username" => $snomed_username,
+            "password" => $snomed_password,
+            "captchaToken" => ""
+          ]),
+          CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json'
+          ),
+        ));
+
+        $response_login = curl_exec($curl_login);
+        curl_close($curl_login);
+        $data_login = json_decode($response_login, true);
+        
+        $token = '';
+        if (isset($data_login['token'])) {
+            $token = $data_login['token'];
+        }
+
+        if (!empty($token)) {
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+              CURLOPT_URL => rtrim($snomed_api_url, '/') . '/api/v1/snomed/semantic-search',
+              CURLOPT_RETURNTRANSFER => true,
+              CURLOPT_ENCODING => '',
+              CURLOPT_MAXREDIRS => 10,
+              CURLOPT_TIMEOUT => 0,
+              CURLOPT_FOLLOWLOCATION => true,
+              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+              CURLOPT_CUSTOMREQUEST => 'POST',
+              CURLOPT_POSTFIELDS => json_encode([
+                "text" => $query,
+                "semantic_tag" => ["disorder"]
+              ]),
+              CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $token
+              ),
+            ));
+
+            $response = curl_exec($curl);
+            curl_close($curl);
+            
+            $data = json_decode($response, true);
+            
+            if(!empty($data['results']) && is_array($data['results'])){
+              $count = 0;
+              foreach ($data['results'] as $row) {
+                if ($count >= 10) break;
+                $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["concept_id"].': '.$row["term"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
+                $count++;
+              }
+            } else {
+              $output .= '<li class="list-group-item link-class">Tidak ada yang cocok.</li>';
+            }
+        } else {
+            $output .= '<li class="list-group-item link-class text-danger">Gagal mendapatkan token autentikasi. Periksa username/password SNOMED.</li>';
+        }
+        echo $output;
+      }
+      exit();
     }
 
     public function getDisplayICD()
@@ -2272,8 +2400,16 @@ class Admin extends AdminModule
         $row_diagnosa['nama'] = $icd10['nm_penyakit'];
         $diagnosa[] = $row_diagnosa;
       }
-  
-      echo $this->draw('display.icd.html', ['diagnosa' => htmlspecialchars_array($diagnosa), 'prosedur' => htmlspecialchars_array($prosedur)]);
+      
+      $snomeds = $this->db('mlite_mapping_snomed_icd')
+        ->where('no_rawat', $no_rawat)
+        ->toArray();
+
+      echo $this->draw('display.icd.html', [
+          'diagnosa' => htmlspecialchars_array($diagnosa), 
+          'prosedur' => htmlspecialchars_array($prosedur),
+          'snomed' => htmlspecialchars_array($snomeds)
+      ]);
       exit();
     }
 
