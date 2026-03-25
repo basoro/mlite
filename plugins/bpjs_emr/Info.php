@@ -16,7 +16,7 @@ return [
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('bpjs_emr', 'koders', '')");
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('bpjs_emr', 'kode_kemkes', '')");
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('bpjs_emr', 'kodepos', '')");
-    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('bpjs_emr', 'baseurl', 'https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev')");
+    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('bpjs_emr', 'baseurl', 'https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev/')");
     
     // Create mlite_bpjs_emr_logs table based on DB driver
     if (DBDRIVER == 'mysql') {
