@@ -18,6 +18,594 @@ class Admin extends AdminModule
         ];
     }
 
+    public function apiList()
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'laboratorium')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $draw = $_GET['draw'] ?? 0;
+        $start = $_GET['start'] ?? 0;
+        $length = $_GET['length'] ?? 10;
+        $columnIndex = $_GET['order'][0]['column'] ?? 0;
+        $columnName = $_GET['columns'][$columnIndex]['data'] ?? 'no_rawat';
+        $columnSortOrder = strtolower($_GET['order'][0]['dir'] ?? 'asc');
+
+        $allowedColumns = ['no_reg', 'jam_reg', 'no_rkm_medis', 'kd_poli', 'kd_dokter', 'stts', 'status_bayar', 'kd_pj', 'nm_pasien', 'nm_dokter', 'nm_poli', 'png_jawab', 'no_rawat'];
+        if (!in_array($columnName, $allowedColumns)) {
+            $columnName = 'no_rawat';
+        }
+        if (!in_array($columnSortOrder, ['asc', 'desc'])) {
+            $columnSortOrder = 'asc';
+        }
+
+        $searchValue = is_array($_GET['search'] ?? null) ? ($_GET['search']['value'] ?? '') : ($_GET['search'] ?? '');
+
+        $tgl_kunjungan = $_GET['tgl_awal'] ?? date('Y-m-d');
+        $tgl_kunjungan_akhir = $_GET['tgl_akhir'] ?? date('Y-m-d');
+        $status_periksa = $_GET['status_periksa'] ?? '';
+        $type = $_GET['type'] ?? 'ralan';
+        $status_bayar = $_GET['status_bayar'] ?? '';
+
+        $params = [];
+        if ($type == 'permintaan') {
+            $sql = "SELECT permintaan_lab.*, reg_periksa.no_rkm_medis, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                    FROM permintaan_lab 
+                    JOIN reg_periksa ON permintaan_lab.no_rawat = reg_periksa.no_rawat 
+                    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                    JOIN dokter ON permintaan_lab.dokter_perujuk = dokter.kd_dokter 
+                    JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+                    JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                    WHERE permintaan_lab.tgl_permintaan BETWEEN ? AND ?";
+            $params[] = $tgl_kunjungan;
+            $params[] = $tgl_kunjungan_akhir;
+
+            if ($status_periksa != '') {
+                $sql .= " AND permintaan_lab.status = ?";
+                $params[] = ucfirst(strtolower($status_periksa)); 
+            }
+        } elseif($type == 'ranap') {
+            $sql = "SELECT kamar_inap.*, reg_periksa.*, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                    FROM kamar_inap 
+                    JOIN reg_periksa ON kamar_inap.no_rawat = reg_periksa.no_rawat 
+                    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                    JOIN kamar ON kamar_inap.kd_kamar = kamar.kd_kamar 
+                    JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal 
+                    JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                    LEFT JOIN dpjp_ranap ON dpjp_ranap.no_rawat = kamar_inap.no_rawat 
+                    LEFT JOIN dokter ON dokter.kd_dokter = dpjp_ranap.kd_dokter 
+                    LEFT JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli
+                    WHERE 1=1";
+
+            if($status_periksa == '') {
+                $sql .= " AND kamar_inap.stts_pulang = '-'";
+            }
+            if($status_periksa == 'belum') {
+                $sql .= " AND kamar_inap.stts_pulang = '-' AND kamar_inap.tgl_masuk BETWEEN ? AND ?";
+                $params[] = $tgl_kunjungan;
+                $params[] = $tgl_kunjungan_akhir;
+            }
+            if($status_periksa == 'selesai') {
+                $sql .= " AND kamar_inap.stts_pulang != '-' AND kamar_inap.tgl_masuk BETWEEN ? AND ?";
+                $params[] = $tgl_kunjungan;
+                $params[] = $tgl_kunjungan_akhir;
+            }
+            if($status_periksa == 'lunas') {
+                $sql .= " AND kamar_inap.stts_pulang != '-' AND kamar_inap.tgl_keluar BETWEEN ? AND ?";
+                $params[] = $tgl_kunjungan;
+                $params[] = $tgl_kunjungan_akhir;
+            }
+        } else {
+            $sql = "SELECT reg_periksa.*, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                    FROM reg_periksa 
+                    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                    JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter 
+                    JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+                    JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                    WHERE reg_periksa.tgl_registrasi BETWEEN ? AND ?";
+            $params[] = $tgl_kunjungan;
+            $params[] = $tgl_kunjungan_akhir;
+
+            if($status_periksa == 'belum') {
+                $sql .= " AND reg_periksa.stts = 'Belum'";
+            }
+            if($status_periksa == 'selesai') {
+                $sql .= " AND reg_periksa.stts = 'Sudah'";
+            }
+            if($status_periksa == 'lunas') {
+                $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
+            }
+        }
+
+        if (!empty($searchValue)) {
+            $sql .= " AND (reg_periksa.no_rawat LIKE ? OR reg_periksa.no_rkm_medis LIKE ? OR pasien.nm_pasien LIKE ? OR dokter.nm_dokter LIKE ?)";
+            $params[] = "%$searchValue%";
+            $params[] = "%$searchValue%";
+            $params[] = "%$searchValue%";
+            $params[] = "%$searchValue%";
+        }
+
+        $stmt = $this->db()->pdo()->prepare($sql);
+        $stmt->execute($params);
+        $totalRecords = $stmt->rowCount();
+
+        $sql .= " ORDER BY $columnName $columnSortOrder LIMIT $start, $length";
+
+        $stmt = $this->db()->pdo()->prepare($sql);
+        $stmt->execute($params);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        foreach ($rows as &$row) {
+            foreach ($row as $key => $value) {
+                if (is_string($value)) {
+                    $row[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+                }
+            }
+            if ($type == 'ranap') {
+                 $dpjp_ranap = $this->db('dpjp_ranap')
+                     ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+                     ->where('no_rawat', $row['no_rawat'])
+                     ->toArray();
+                 $row['dokter'] = htmlspecialchars_array($dpjp_ranap);
+            }
+        }
+        unset($row);
+
+        return [
+            "status" => "success",
+            "data" => $rows,
+            "meta" => [
+                "page" => floor($start / $length) + 1,
+                "per_page" => intval($length),
+                "total" => $totalRecords
+            ]
+        ];
+    }
+
+    public function apiShow($no_rawat = null)
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'laboratorium')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        if(!$no_rawat) {
+             return ['status' => 'error', 'message' => 'No rawat missing'];
+        }
+        $no_rawat = revertNoRawat($no_rawat);
+        $row = $this->db('reg_periksa')
+            ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+            ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+            ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+            ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+            ->where('no_rawat', $no_rawat)
+            ->oneArray();
+            
+        if($row) {
+            return ['status' => 'success', 'data' => htmlspecialchars_array($row)];
+        } else {
+            return ['status' => 'error', 'message' => 'Not found'];
+        }
+    }
+
+    public function apiSave()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'laboratorium')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        if (empty($input['no_rkm_medis'])) {
+            return ['status' => 'error', 'message' => 'Data incomplete'];
+        }
+
+        $input['tgl_registrasi'] = $input['tgl_registrasi'] ?? date('Y-m-d');
+        $input['jam_reg'] = $input['jam_reg'] ?? date('H:i:s');
+        $input['kd_dokter'] = $input['kd_dokter'] ?? $this->settings->get('settings.pj_laboratorium');
+
+        try {
+            if (!$this->db('reg_periksa')->where('no_rawat', $input['no_rawat'])->oneArray()) {
+                $input['status_lanjut'] = 'Ralan';
+                $input['stts'] = 'Belum';
+                $input['status_bayar'] = 'Belum Bayar';
+                $input['p_jawab'] = $input['p_jawab'] ?? '-';
+                $input['almt_pj'] = $input['almt_pj'] ?? '-';
+                $input['hubunganpj'] = $input['hubunganpj'] ?? '-';
+
+                $poliklinik = $this->db('poliklinik')->where('kd_poli', $this->settings('settings', 'laboratorium'))->oneArray();
+                $input['biaya_reg'] = $poliklinik['registrasi'];
+
+                $pasien = $this->db('pasien')->where('no_rkm_medis', $input['no_rkm_medis'])->oneArray();
+
+                $birthDate = new \DateTime($pasien['tgl_lahir']);
+                $today = new \DateTime("today");
+                $umur_daftar = "0";
+                $status_umur = 'Hr';
+                if ($birthDate < $today) {
+                    $y = $today->diff($birthDate)->y;
+                    $m = $today->diff($birthDate)->m;
+                    $d = $today->diff($birthDate)->d;
+                    $umur_daftar = $d;
+                    $status_umur = "Hr";
+                    if($y !='0'){
+                        $umur_daftar = $y;
+                        $status_umur = "Th";
+                    }
+                    if($y =='0' && $m !='0'){
+                        $umur_daftar = $m;
+                        $status_umur = "Bl";
+                    }
+                }
+
+                $input['umurdaftar'] = $umur_daftar;
+                $input['sttsumur'] = $status_umur;
+                $input['status_poli'] = 'Lama';
+                $input['kd_poli'] = $this->settings('settings', 'laboratorium');
+
+                unset($input['kat']);
+                $this->db('reg_periksa')->save($input);
+                return ['status' => 'created', 'data' => htmlspecialchars_array($input)];
+            } else {
+                $updateData = [];
+                if(isset($input['kd_dokter'])) $updateData['kd_dokter'] = $input['kd_dokter'];
+                if(isset($input['kd_pj'])) $updateData['kd_pj'] = $input['kd_pj'];
+                
+                $this->db('reg_periksa')->where('no_rawat', $input['no_rawat'])->update($updateData);
+                return ['status' => 'updated', 'data' => htmlspecialchars_array($updateData)];
+            }
+        } catch (\PDOException $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+        }
+    }
+
+    public function apiUpdate($no_rawat = null)
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_update', 'laboratorium')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        if(!$no_rawat) {
+             return ['status' => 'error', 'message' => 'No rawat missing'];
+        }
+        
+        $no_rawat = revertNoRawat($no_rawat);
+        
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('reg_periksa')->where('no_rawat', $no_rawat)->update($input);
+            return ['status' => 'updated', 'data' => htmlspecialchars_array($input)];
+        } catch (\PDOException $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+        }
+    }
+
+    public function apiDelete($no_rawat = null)
+    {
+        $username = $this->core->checkAuth('DELETE');
+        if (!$this->core->checkPermission($username, 'can_delete', 'laboratorium')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        if(!$no_rawat) {
+             return ['status' => 'error', 'message' => 'No rawat missing'];
+        }
+        $no_rawat = revertNoRawat($no_rawat);
+
+        if(!$this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray()) {
+            return ['status' => 'error', 'message' => 'No rawat not found'];
+        }
+
+        try {
+            $this->db('reg_periksa')->where('no_rawat', $no_rawat)->delete();
+            return ['status' => 'deleted', 'no_rawat' => $no_rawat];
+        } catch (\PDOException $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+        }
+    }
+
+    public function apiSaveDetail()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'laboratorium')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+        
+        if (empty($input['kat']) || empty($input['no_rawat']) || empty($input['kd_jenis_prw'])) {
+            return ['status' => 'error', 'message' => 'Data incomplete'];
+        }
+
+        try {
+            if($input['kat'] == 'laboratorium') {
+                $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $input['kd_jenis_prw'])->oneArray();
+                for ($i = 0; $i < $input['jml_tindakan']; $i++) {
+                    $periksa_lab = $this->db('periksa_lab')
+                    ->save([
+                        'no_rawat' => $input['no_rawat'],
+                        'nip' => $input['nip'] ?? $this->core->getUserInfo('username', null, true),
+                        'kd_jenis_prw' => $input['kd_jenis_prw'],
+                        'tgl_periksa' => $input['tgl_perawatan'],
+                        'jam' => date('H:i:s', strtotime($input['jam_rawat']. ' +'.$i.'0 seconds')),
+                        'dokter_perujuk' => $input['kode_provider'],
+                        'bagian_rs' => $jns_perawatan['bagian_rs'],
+                        'bhp' => $jns_perawatan['bhp'],
+                        'tarif_perujuk' => $jns_perawatan['tarif_perujuk'],
+                        'tarif_tindakan_dokter' => $jns_perawatan['tarif_tindakan_dokter'],
+                        'tarif_tindakan_petugas' => $jns_perawatan['tarif_tindakan_petugas'],
+                        'kso' => $jns_perawatan['kso'],
+                        'menejemen' => $jns_perawatan['menejemen'],
+                        'biaya' => $jns_perawatan['total_byr'],
+                        'kd_dokter' => $input['kd_dokter'] ?? $this->settings->get('settings.pj_laboratorium'), 
+                        'status' => $input['status']
+                    ]);
+                }
+                if(isset($periksa_lab) && $periksa_lab) {
+                    $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $input['kd_jenis_prw'])->toArray();
+                    foreach ($template_laboratorium as $row) {
+                        for ($i = 0; $i < $input['jml_tindakan']; $i++) {
+                            $this->db('detail_periksa_lab')
+                                ->save([
+                                'no_rawat' => $input['no_rawat'],
+                                'kd_jenis_prw' => $input['kd_jenis_prw'],
+                                'tgl_periksa' => $input['tgl_perawatan'],
+                                'jam' => date('H:i:s', strtotime($input['jam_rawat']. ' +'.$i.'0 seconds')),
+                                'id_template' => $row['id_template'],
+                                'nilai' => '',
+                                'nilai_rujukan' => $row['nilai_rujukan_ld'],
+                                'keterangan' => '',
+                                'bagian_rs' => $row['bagian_rs'],
+                                'bhp' => $row['bhp'],
+                                'bagian_perujuk' => $row['bagian_perujuk'],
+                                'bagian_dokter' => $row['bagian_dokter'],
+                                'bagian_laborat' => $row['bagian_laborat'],
+                                'kso' => $row['kso'],
+                                'menejemen' => $row['menejemen'],
+                                'biaya_item' => $row['biaya_item']
+                            ]);
+                        }
+                    }
+                }
+                return ['status' => 'success', 'message' => 'Detail saved'];
+            } else {
+                return ['status' => 'error', 'message' => 'Category not supported'];
+            }
+        } catch (\PDOException $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+        }
+    }
+
+    public function apiDeleteDetail()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_delete', 'laboratorium')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        if (empty($input['no_rawat']) || empty($input['kd_jenis_prw']) || empty($input['tgl_perawatan']) || empty($input['jam_rawat'])) {
+            return ['status' => 'error', 'message' => 'Data incomplete'];
+        }
+
+        try {
+            $this->db('periksa_lab')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('kd_jenis_prw', $input['kd_jenis_prw'])
+                ->where('tgl_periksa', $input['tgl_perawatan'])
+                ->where('jam', $input['jam_rawat'])
+                ->where('status', 'Ralan')
+                ->delete();
+            
+            $this->db('detail_periksa_lab')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('kd_jenis_prw', $input['kd_jenis_prw'])
+                ->where('tgl_periksa', $input['tgl_perawatan'])
+                ->where('jam', $input['jam_rawat'])
+                ->delete();
+
+            return ['status' => 'success', 'message' => 'Detail deleted'];
+        } catch (\PDOException $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+        }
+    }
+
+    public function apiSaveValidasi()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'laboratorium')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        if (empty($input['no_rawat']) || empty($input['noorder']) || empty($input['tgl_permintaan']) || empty($input['jam_permintaan'])) {
+            return ['status' => 'error', 'message' => 'Data incomplete'];
+        }
+
+        try {
+            $permintaan_lab = $this->db('permintaan_lab')->where('no_rawat', $input['no_rawat'])->where('noorder', $input['noorder'])->oneArray();
+            $this->db('permintaan_lab')->where('no_rawat', $input['no_rawat'])->where('noorder', $input['noorder'])->save(['tgl_sampel' => date('Y-m-d'), 'jam_sampel' => date('H:i:s')]);
+            $permintaan_pemeriksaan_lab = $this->db('permintaan_pemeriksaan_lab')->where('noorder', $input['noorder'])->toArray();
+            
+            foreach ($permintaan_pemeriksaan_lab as $row) {
+                $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+                $this->db('periksa_lab')
+                    ->save([
+                        'no_rawat' => $input['no_rawat'],
+                        'nip' => $this->core->getUserInfo('username', null, true),
+                        'kd_jenis_prw' => $row['kd_jenis_prw'],
+                        'tgl_periksa' => $input['tgl_permintaan'],
+                        'jam' => $input['jam_permintaan'],
+                        'dokter_perujuk' => $permintaan_lab['dokter_perujuk'],
+                        'bagian_rs' => $jns_perawatan['bagian_rs'],
+                        'bhp' => $jns_perawatan['bhp'],
+                        'tarif_perujuk' => $jns_perawatan['tarif_perujuk'],
+                        'tarif_tindakan_dokter' => $jns_perawatan['tarif_tindakan_dokter'],
+                        'tarif_tindakan_petugas' => $jns_perawatan['tarif_tindakan_petugas'],
+                        'kso' => $jns_perawatan['kso'],
+                        'menejemen' => $jns_perawatan['menejemen'],
+                        'biaya' => $jns_perawatan['total_byr'],
+                        'kd_dokter' => $this->settings->get('settings.pj_laboratorium'),
+                        'status' => $input['status'] ?? 'Ralan',
+                        'kategori' => 'PK'
+                    ]);
+                
+                $permintaan_detail_permintaan_lab = $this->db('permintaan_detail_permintaan_lab')->where('noorder', $input['noorder'])->where('kd_jenis_prw', $row['kd_jenis_prw'])->toArray();
+                foreach ($permintaan_detail_permintaan_lab as $row2) {
+                    $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $row2['kd_jenis_prw'])->where('id_template', $row2['id_template'])->oneArray();
+                    $this->db('detail_periksa_lab')
+                        ->save([
+                            'no_rawat' => $input['no_rawat'],
+                            'kd_jenis_prw' => $row2['kd_jenis_prw'],
+                            'tgl_periksa' => $input['tgl_permintaan'],
+                            'jam' => $input['jam_permintaan'],
+                            'id_template' => $row2['id_template'],
+                            'nilai' => '',
+                            'nilai_rujukan' => $template_laboratorium['nilai_rujukan_ld'],
+                            'keterangan' => '',
+                            'bagian_rs' => $template_laboratorium['bagian_rs'],
+                            'bhp' => $template_laboratorium['bhp'],
+                            'bagian_perujuk' => $template_laboratorium['bagian_perujuk'],
+                            'bagian_dokter' => $template_laboratorium['bagian_dokter'],
+                            'bagian_laborat' => $template_laboratorium['bagian_laborat'],
+                            'kso' => $template_laboratorium['kso'],
+                            'menejemen' => $template_laboratorium['menejemen'],
+                            'biaya_item' => $template_laboratorium['biaya_item']
+                        ]);
+                }
+            }
+            return ['status' => 'success', 'message' => 'Permintaan validated'];
+        } catch (\PDOException $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+        }
+    }
+
+    public function apiShowDetail($no_rawat = null)
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_read', 'laboratorium')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        if(!$no_rawat) {
+             return ['status' => 'error', 'message' => 'No rawat missing'];
+        }
+        $no_rawat = revertNorawat($no_rawat);
+
+        $pasien = $this->db('reg_periksa')
+            ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+            ->where('no_rawat', $no_rawat)
+            ->oneArray();
+
+        $patient_info = [
+            'nm_pasien' => $pasien['nm_pasien'] ?? '',
+            'no_rkm_medis' => $pasien['no_rkm_medis'] ?? ''
+        ];
+
+        try {
+            $periksa_lab = $this->db('periksa_lab')
+                ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw = periksa_lab.kd_jenis_prw')
+                ->join('petugas', 'petugas.nip = periksa_lab.nip')
+                ->where('no_rawat', $no_rawat)
+                ->toArray();
+
+            return [
+                'status' => 'success',
+                'patient' => $patient_info,
+                'data' => [
+                    'periksa_lab' => htmlspecialchars_array($periksa_lab)
+                ]
+            ];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveNilai()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_update', 'laboratorium')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $hasil = $this->db('detail_periksa_lab')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('tgl_periksa', $input['tgl_periksa'])
+                ->where('jam', $input['jam'])
+                ->where('id_template', $input['id_template'])
+                ->save([
+                    'nilai' => $input['value']
+                ]);
+                
+            if($hasil) {
+                $this->db('permintaan_lab')
+                    ->where('no_rawat', $input['no_rawat'])
+                    ->where('tgl_permintaan', $input['tgl_periksa'])
+                    ->where('jam_permintaan', $input['jam'])
+                    ->save([
+                        'tgl_hasil' => date('Y-m-d'),
+                        'jam_hasil' => date('H:i:s')
+                    ]);
+                return ['status' => 'success', 'message' => 'Nilai saved'];
+            }
+            return ['status' => 'error', 'message' => 'Failed to save nilai'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveKeterangan()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_update', 'laboratorium')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            $this->db('detail_periksa_lab')
+                ->where('no_rawat', $input['no_rawat'])
+                ->where('tgl_periksa', $input['tgl_periksa'])
+                ->where('jam', $input['jam'])
+                ->where('id_template', $input['id_template'])
+                ->save([
+                    'keterangan' => $input['value']
+                ]);
+            return ['status' => 'success', 'message' => 'Keterangan saved'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
     public function anyManage($type = "ralan")
     {
         $tgl_kunjungan = date('Y-m-d');
@@ -104,7 +692,23 @@ class Admin extends AdminModule
           $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
         }
 
-        if($type == 'ranap') {
+        if ($type == 'permintaan') {
+            $sql = "SELECT permintaan_lab.*, reg_periksa.no_rkm_medis, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                    FROM permintaan_lab 
+                    JOIN reg_periksa ON permintaan_lab.no_rawat = reg_periksa.no_rawat 
+                    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                    JOIN dokter ON permintaan_lab.dokter_perujuk = dokter.kd_dokter 
+                    JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+                    JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                    WHERE permintaan_lab.tgl_permintaan BETWEEN ? AND ?";
+            $params[] = $tgl_kunjungan;
+            $params[] = $tgl_kunjungan_akhir;
+
+            if ($status_periksa != '') {
+                $sql .= " AND permintaan_lab.status = ?";
+                $params[] = ucfirst(strtolower($status_periksa)); 
+            }
+        } elseif($type == 'ranap') {
           $sql = "SELECT
               kamar_inap.*,
               reg_periksa.*,
@@ -174,7 +778,23 @@ class Admin extends AdminModule
             ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
             ->where('no_rawat', $_POST['no_rawat'])
             ->oneArray();
-          if($type == 'ranap') {
+          if ($type == 'permintaan') {
+            $sql = "SELECT permintaan_lab.*, reg_periksa.no_rkm_medis, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                    FROM permintaan_lab 
+                    JOIN reg_periksa ON permintaan_lab.no_rawat = reg_periksa.no_rawat 
+                    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                    JOIN dokter ON permintaan_lab.dokter_perujuk = dokter.kd_dokter 
+                    JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+                    JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                    WHERE permintaan_lab.tgl_permintaan BETWEEN ? AND ?";
+            $params[] = $tgl_kunjungan;
+            $params[] = $tgl_kunjungan_akhir;
+
+            if ($status_periksa != '') {
+                $sql .= " AND permintaan_lab.status = ?";
+                $params[] = ucfirst(strtolower($status_periksa)); 
+            }
+        } elseif($type == 'ranap') {
             $this->assign['kamar_inap'] = $this->db('kamar_inap')
               ->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')
               ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
@@ -215,7 +835,23 @@ class Admin extends AdminModule
             'no_tlp' => '',
             'pekerjaan' => ''
           ];
-          if($type == 'ranap') {
+          if ($type == 'permintaan') {
+            $sql = "SELECT permintaan_lab.*, reg_periksa.no_rkm_medis, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                    FROM permintaan_lab 
+                    JOIN reg_periksa ON permintaan_lab.no_rawat = reg_periksa.no_rawat 
+                    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                    JOIN dokter ON permintaan_lab.dokter_perujuk = dokter.kd_dokter 
+                    JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+                    JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                    WHERE permintaan_lab.tgl_permintaan BETWEEN ? AND ?";
+            $params[] = $tgl_kunjungan;
+            $params[] = $tgl_kunjungan_akhir;
+
+            if ($status_periksa != '') {
+                $sql .= " AND permintaan_lab.status = ?";
+                $params[] = ucfirst(strtolower($status_periksa)); 
+            }
+        } elseif($type == 'ranap') {
             $this->assign['reg_periksa'] = [
               'tgl_masuk' => date('Y-m-d'),
               'jam_masuk' => date('H:i:s'),
