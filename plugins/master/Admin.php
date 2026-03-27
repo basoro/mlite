@@ -205,7 +205,7 @@ class Admin extends AdminModule
         // Whitelist allowed tables
         $allowed_tables = [
             'dokter', 'petugas', 'poliklinik', 'bangsal', 'kamar', 'databarang',
-            'jns_perawatan', 'jns_perawatan_inap', 'jns_perawatan_lab', 'jns_perawatan_radiologi',
+            'jns_perawatan', 'jns_perawatan_inap', 'jns_perawatan_lab', 'template_laboratorium', 'jns_perawatan_radiologi',
             'bahasa', 'propinsi', 'kabupaten', 'kecamatan', 'kelurahan', 'cacat_fisik', 'suku_bangsa',
             'perusahaan_pasien', 'penjab', 'golongan_barang', 'industri_farmasi', 'jenis', 'kategori_barang',
             'kategori_penyakit', 'penyakit', 'icd9', 'kategori_perawatan', 'kode_satuan',
