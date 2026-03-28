@@ -4,54 +4,32 @@
     padding: 5px;
   }
 </style>
-<h4>SNOMED CT, ICD 10 dan ICD 9</h4>
+<h4>ICD 10 dan ICD 9</h4>
 <div class="table-responsive no-margin">
   <table class="table table-bordered no-padding icd" width="100%">
-    <tr class="isi">
-      <td valign="top" width="200px">SNOMED CT</td>
-      <td valign="top" width="1px" align="center">:</td>
-      <td valign="top">
-        <table width="100%" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
-           <tr align="center">
-             <td valign="top" width="100px" bgcolor="#eee">ICD 10</td>
-             <td valign="top" width="120px" bgcolor="#eee">Concept ID</td>
-             <td valign="top" bgcolor="#eee">Term</td>
-             <td valign="top" width="10px" bgcolor="#eee">Aksi</td>
-           </tr>
-           {loop: $snomed}
-           <tr>
-             <td valign="top" width="100px">{?=isset_or($value.kd_penyakit)?}</td>
-             <td valign="top" width="120px">{?=isset_or($value.snomed_concept_id)?}</td>
-             <td valign="top">{?=isset_or($value.snomed_term)?}</td>
-             <td valign="top" width="10px">
-               <button type="button" name="button" class="btn btn-danger btn-xs hapus_snomed" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-kd_penyakit="{?=isset_or($value.kd_penyakit)?}" data-snomed_concept_id="{?=isset_or($value.snomed_concept_id)?}"><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
-             </td>
-           </tr>
-           {/loop}
-        </table>
-      </td>
-    </tr>
     <tr class="isi">
       <td valign="top" width="200px">Diagnosa/Penyakit/ICD 10</td>
       <td valign="top" width="1px" align="center">:</td>
       <td valign="top">
         <table width="100%" align="center" cellpadding="3px" cellspacing="0" class="icd">
-           <tr align="center">
-             <td valign="top" width="100px" bgcolor="#eee">Kode</td>
-             <td valign="top" bgcolor="#eee">Nama Penyakit</td>
-             <td valign="top" width="10px" bgcolor="#eee">Prioritas</td>
-             <td valign="top" width="10px" bgcolor="#eee">Aksi</td>
-           </tr>
-           {loop: $diagnosa}
-           <tr>
-             <td valign="top" width="100px">{?=isset_or($value.kd_penyakit)?}</td>
-             <td valign="top">{?=isset_or($value.nama)?}</td>
-             <td valign="top" width="10px">{?=isset_or($value.prioritas)?}</td>
-             <td valign="top" width="10px">
-               <button type="button" name="button" class="btn btn-danger btn-xs hapus_icd10" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-prioritas="{?=isset_or($value.prioritas)?}"><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
-             </td>
-           </tr>
-           {/loop}
+          <tr align="center">
+            <td valign="top" width="100px" bgcolor="#eee">Kode</td>
+            <td valign="top" bgcolor="#eee">Nama Penyakit</td>
+            <td valign="top" width="10px" bgcolor="#eee">Prioritas</td>
+            <td valign="top" width="10px" bgcolor="#eee">Aksi</td>
+          </tr>
+          {loop: $diagnosa}
+          <tr>
+            <td valign="top" width="100px">{?=isset_or($value.kd_penyakit)?}</td>
+            <td valign="top">{?=isset_or($value.nama)?}</td>
+            <td valign="top" width="10px">{?=isset_or($value.prioritas)?}</td>
+            <td valign="top" width="10px">
+              <button type="button" name="button" class="btn btn-danger btn-xs hapus_icd10"
+                data-no_rawat="{?=isset_or($value.no_rawat)?}" data-prioritas="{?=isset_or($value.prioritas)?}"><span
+                  class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
+            </td>
+          </tr>
+          {/loop}
         </table>
       </td>
     </tr>
@@ -60,22 +38,24 @@
       <td valign="top" width="1px" align="center">:</td>
       <td valign="top">
         <table width="100%" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
-           <tr align="center">
-             <td valign="top" width="100px" bgcolor="#eee">Kode</td>
-             <td valign="top" bgcolor="#eee">Nama Tindakan</td>
-             <td valign="top" width="10px" bgcolor="#eee">Prioritas</td>
-             <td valign="top" width="10px" bgcolor="#eee">Aksi</td>
-           </tr>
-           {loop: $prosedur}
-           <tr>
-             <td valign="top" width="100px">{?=isset_or($value.kode)?}</td>
-             <td valign="top">{?=isset_or($value.nama)?}</td>
-             <td valign="top" width="10px">{?=isset_or($value.prioritas)?}</td>
-             <td valign="top" width="10px">
-               <button type="button" name="button" class="btn btn-danger btn-xs hapus_icd9" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-prioritas="{?=isset_or($value.prioritas)?}"><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
-             </td>
-           </tr>
-           {/loop}
+          <tr align="center">
+            <td valign="top" width="100px" bgcolor="#eee">Kode</td>
+            <td valign="top" bgcolor="#eee">Nama Tindakan</td>
+            <td valign="top" width="10px" bgcolor="#eee">Prioritas</td>
+            <td valign="top" width="10px" bgcolor="#eee">Aksi</td>
+          </tr>
+          {loop: $prosedur}
+          <tr>
+            <td valign="top" width="100px">{?=isset_or($value.kode)?}</td>
+            <td valign="top">{?=isset_or($value.nama)?}</td>
+            <td valign="top" width="10px">{?=isset_or($value.prioritas)?}</td>
+            <td valign="top" width="10px">
+              <button type="button" name="button" class="btn btn-danger btn-xs hapus_icd9"
+                data-no_rawat="{?=isset_or($value.no_rawat)?}" data-prioritas="{?=isset_or($value.prioritas)?}"><span
+                  class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
+            </td>
+          </tr>
+          {/loop}
         </table>
       </td>
     </tr>
@@ -86,7 +66,7 @@
 </script>
 <script type="text/javascript">
   // ketika tombol hapus ditekan
-  $("#display_icd").on("click",".hapus_icd10", function(event){
+  $("#display_icd").on("click", ".hapus_icd10", function (event) {
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var url = baseURL + '/dokter_ralan/hapusicd10?t=' + mlite.token;
@@ -96,18 +76,18 @@
     $.post(url, {
       no_rawat: no_rawat,
       prioritas: prioritas
-    } ,function(data) {
+    }, function (data) {
       $("#display_icd").show().load(baseURL + '/dokter_ralan/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
-      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data rincian ICD 10 telah dihapus!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
+      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+        "Data rincian ICD 10 telah dihapus!" +
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+        "</div>").show();
     });
   });
 </script>
 <script type="text/javascript">
   // ketika tombol hapus ditekan
-  $("#display_icd").on("click",".hapus_icd9", function(event){
+  $("#display_icd").on("click", ".hapus_icd9", function (event) {
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var url = baseURL + '/dokter_ralan/hapusicd9?t=' + mlite.token;
@@ -118,35 +98,12 @@
     $.post(url, {
       no_rawat: no_rawat,
       prioritas: prioritas
-    } ,function(data) {
+    }, function (data) {
       $("#display_icd").show().load(baseURL + '/dokter_ralan/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
-      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data rincian ICD 9 telah dihapus!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
-    });
-  });
-</script>
-<script type="text/javascript">
-  // ketika tombol hapus ditekan
-  $("#display_icd").on("click",".hapus_snomed", function(event){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var url = baseURL + '/dokter_ralan/hapussnomed?t=' + mlite.token;
-    var no_rawat = $(this).attr("data-no_rawat");
-    var kd_penyakit = $(this).attr("data-kd_penyakit");
-    var snomed_concept_id = $(this).attr("data-snomed_concept_id");
-
-    $.post(url, {
-      no_rawat: no_rawat,
-      kd_penyakit: kd_penyakit,
-      snomed_concept_id: snomed_concept_id
-    } ,function(data) {
-      $("#display_icd").show().load(baseURL + '/dokter_ralan/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
-      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data SNOMED CT pasien telah dihapus!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
+      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+        "Data rincian ICD 9 telah dihapus!" +
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+        "</div>").show();
     });
   });
 </script>

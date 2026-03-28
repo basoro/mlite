@@ -2,30 +2,33 @@
   <div class="col-md-3">
     <div class="panel panel-default">
       <div class="panel-body">
-          <div class="form-group">
-            <label for="tanggal">Tanggal</label>
-            <input type="text" id="soap_tgl_perawatan" name="tgl_perawatan" class="form-control tanggal" value="{?=date('Y-m-d')?}">
-          </div>
-          <div class="form-group">
-            <label for="jam">Jam</label>
-            <input type="text" id="soap_jam_rawat" name="jam_rawat" class="form-control jam" value="{?=date('H:i:s')?}">
-          </div>
-          <div class="form-group">
-            <label for="id_pendaftaran">Id Rawat</label>
-            <input type="text" id="soap_no_rawat" name="no_rawat" placeholder="ID Pendaftaran" class="form-control" value="" readonly>
-          </div>
-          <div class="form-group">
-            <label for="id_pasien">Nomor RM</label>
-            <input type="text" name="no_rkm_medis" id="no_rkm_medis" class="form-control" placeholder="Nomor Rekam Medik" value="" readonly>
-          </div>
-          <div class="form-group">
-            <label for="nama_pasien">Nama Pasien</label>
-            <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="" readonly>
-          </div>
-          <div class="form-group">
-            <label for="nama_pasien">Umur</label>
-            <input type="text" name="umur" class="form-control" placeholder="Umur pasien" value="" readonly>
-          </div>
+        <div class="form-group">
+          <label for="tanggal">Tanggal</label>
+          <input type="text" id="soap_tgl_perawatan" name="tgl_perawatan" class="form-control tanggal"
+            value="{?=date('Y-m-d')?}">
+        </div>
+        <div class="form-group">
+          <label for="jam">Jam</label>
+          <input type="text" id="soap_jam_rawat" name="jam_rawat" class="form-control jam" value="{?=date('H:i:s')?}">
+        </div>
+        <div class="form-group">
+          <label for="id_pendaftaran">Id Rawat</label>
+          <input type="text" id="soap_no_rawat" name="no_rawat" placeholder="ID Pendaftaran" class="form-control"
+            value="" readonly>
+        </div>
+        <div class="form-group">
+          <label for="id_pasien">Nomor RM</label>
+          <input type="text" name="no_rkm_medis" id="no_rkm_medis" class="form-control" placeholder="Nomor Rekam Medik"
+            value="" readonly>
+        </div>
+        <div class="form-group">
+          <label for="nama_pasien">Nama Pasien</label>
+          <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="" readonly>
+        </div>
+        <div class="form-group">
+          <label for="nama_pasien">Umur</label>
+          <input type="text" name="umur" class="form-control" placeholder="Umur pasien" value="" readonly>
+        </div>
       </div>
     </div>
   </div>
@@ -130,17 +133,25 @@
           </div>
         </div>
         <div class="m-t-xl">
-          <button type="button" name="button" class="btn btn-primary" id="simpan_soap"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+          <button type="button" name="button" class="btn btn-primary" id="simpan_soap"><i class="fa fa-save"></i><span
+              class="hidden-xs"> Simpan</span></button>
           <span class="{if: $admin_mode == 'simple'}hidden{/if}">
-          <button type="button" name="button" class="btn btn-danger" id="buka_icd10dan9"><i class="fa fa-download"></i><span class="hidden-xs"> SNOMED CT & ICD</span></button>
+            <button type="button" name="button" class="btn btn-danger" id="buka_icd10dan9"><i
+                class="fa fa-download"></i><span class="hidden-xs"> ICD 10 & 9</span></button>
           </span>
-          <button type="button" name="button" class="btn btn-info" id="eresep"><i class="fa fa-medkit"></i><span class="hidden-xs"> E-Resep</span></button>
-          <button type="button" name="button" class="btn btn-info" id="buka_riwayat"><i class="fa fa-file-o"></i><span class="hidden-xs"> Riwayat</span></button>
-          <button type="button" name="button" class="btn btn-success" id="selesai_soap"><i class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+          <button type="button" name="button" class="btn btn-info" id="eresep"><i class="fa fa-medkit"></i><span
+              class="hidden-xs"> E-Resep</span></button>
+          <button type="button" name="button" class="btn btn-info" id="buka_riwayat"><i class="fa fa-file-o"></i><span
+              class="hidden-xs"> Riwayat</span></button>
+          <button type="button" name="button" class="btn btn-success" id="selesai_soap"><i class="fa fa-check"></i><span
+              class="hidden-xs"> Selesai</span></button>
           <span class="pull-right">
-            <a href="#" class="btn btn-info" id="odontogram"><i class="fa fa-bell"></i><span class="hidden-xs"> Odontogram</span></a>
-            <a href="#" class="btn btn-warning resume"><i class="fa fa-file-text"></i><span class="hidden-xs"> Resume</span></a>
-            <a href="#" class="btn btn-warning assesment"><i class="fa fa-file-text"></i><span class="hidden-xs"> Assesment</span></a>
+            <a href="#" class="btn btn-info" id="odontogram"><i class="fa fa-bell"></i><span class="hidden-xs">
+                Odontogram</span></a>
+            <a href="#" class="btn btn-warning resume"><i class="fa fa-file-text"></i><span class="hidden-xs">
+                Resume</span></a>
+            <a href="#" class="btn btn-warning assesment"><i class="fa fa-file-text"></i><span class="hidden-xs">
+                Assesment</span></a>
           </span>
         </div>
       </div>
@@ -150,30 +161,11 @@
         <div class="panel-body">
           <div class="form-group">
             <div class="row">
-              <div class="col-sm-12">
-                <div class="form-group snomed">
-                  <label for="">SNOMED CT</label>
-                  <button id="filter" class="btn btn-default">
-                      <span id="kode_snomed">kode</span>
-                  </button>
-                  <div class="input-group" style="position: relative;">
-                    <input type="text" name="snomed" id="snomed" class="form-control" />
-                    <ul class="list-group" id="snomedList" style="z-index:1000;position:absolute;width:100%;top: 100%; left: 0"></ul>
-                    <span class="input-group-btn">
-                      <button id="simpan_snomed" class="btn btn-primary btn-block">
-                          <span class="glyphicon glyphicon-plus simpan_snomed"></span>
-                      </button>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
               <div class="col-sm-6">
                 <div class="form-group icd10">
                   <label for="">Diagnosa (ICD 10)</label>
                   <button id="filter" class="btn btn-default">
-                      <span id="kode_icd10">kode</span>
+                    <span id="kode_icd10">kode</span>
                   </button>
                   <div class="btn-group">
                     <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
@@ -194,10 +186,11 @@
                   <div class="input-group" style="position: relative;">
                     <input type="text" name="icd10" id="icd10" class="form-control" />
                     <input type="hidden" name="status" class="form-control" value="Ralan" />
-                    <ul class="list-group" id="icd10List" style="z-index:1000;position:absolute;width:100%;top: 100%; left: 0"></ul>
+                    <ul class="list-group" id="icd10List"
+                      style="z-index:1000;position:absolute;width:100%;top: 100%; left: 0"></ul>
                     <span class="input-group-btn">
                       <button id="simpan_icd10" class="btn btn-primary btn-block">
-                          <span class="glyphicon glyphicon-plus simpan_icd10"></span>
+                        <span class="glyphicon glyphicon-plus simpan_icd10"></span>
                       </button>
                     </span>
                   </div>
@@ -207,32 +200,33 @@
                 <div class="form-group icd9">
                   <label for="">Prosedur (ICD 9)</label>
                   <button id="filter" class="btn btn-default">
-                      <span id="kode_icd9">kode</span>
+                    <span id="kode_icd9">kode</span>
                   </button>
                   <div class="btn-group">
-                      <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                          <span data-bind="label" id="prioritas_icd9"></span> <span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu" role="menu" style="min-width:0px;">
-                          <li><a>1</a></li>
-                          <li><a>2</a></li>
-                          <li><a>3</a></li>
-                          <li><a>4</a></li>
-                          <li><a>5</a></li>
-                          <li><a>6</a></li>
-                          <li><a>7</a></li>
-                          <li><a>8</a></li>
-                          <li><a>9</a></li>
-                      </ul>
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                      <span data-bind="label" id="prioritas_icd9"></span> <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" style="min-width:0px;">
+                      <li><a>1</a></li>
+                      <li><a>2</a></li>
+                      <li><a>3</a></li>
+                      <li><a>4</a></li>
+                      <li><a>5</a></li>
+                      <li><a>6</a></li>
+                      <li><a>7</a></li>
+                      <li><a>8</a></li>
+                      <li><a>9</a></li>
+                    </ul>
                   </div>
                   <div class="input-group" style="position: relative;">
                     <input type="text" name="icd9" id="icd9" class="form-control" />
                     <input type="hidden" name="status" class="form-control" value="Ralan" />
-                    <ul class="list-group" id="icd9List" style="z-index:1000;position:absolute;width:100%;top: 100%; left: 0"></ul>
+                    <ul class="list-group" id="icd9List"
+                      style="z-index:1000;position:absolute;width:100%;top: 100%; left: 0"></ul>
                     <span class="input-group-btn">
-                        <button id="simpan_icd9" class="btn btn-primary btn-block">
-                            <span class="glyphicon glyphicon-plus"></span>
-                        </button>
+                      <button id="simpan_icd9" class="btn btn-primary btn-block">
+                        <span class="glyphicon glyphicon-plus"></span>
+                      </button>
                     </span>
                   </div>
                 </div>
@@ -245,45 +239,45 @@
   </div>
 </div>
 <div class="modal fade" id="resumeModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-full" role="document">
-        <div class="modal-content">
-            ...
-        </div>
+  <div class="modal-dialog modal-full" role="document">
+    <div class="modal-content">
+      ...
     </div>
+  </div>
 </div>
 <div class="modal fade" id="eresepModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            ...
-        </div>
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      ...
     </div>
+  </div>
 </div>
 <div class="modal fade" id="odontogramModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            ...
-        </div>
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      ...
     </div>
+  </div>
 </div>
 <div class="modal fade" id="assesmentModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            ...
-        </div>
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      ...
     </div>
+  </div>
 </div>
 <script type="text/javascript">
-  $('input:text[name=kesadaran]').focus(function(){
-       var output='';
-       output+='<li class=\"list-group-item link-class\">Compos Mentis</li>';
-       output+='<li class=\"list-group-item link-class\">Somnolence</li>';
-       output+='<li class=\"list-group-item link-class\">Sopor</li>';
-       output+='<li class=\"list-group-item link-class\">Coma</li>';
-       output+='';
-       $('#kesadaranList').fadeIn();
-       $('#kesadaranList').html(output).show();
+  $('input:text[name=kesadaran]').focus(function () {
+    var output = '';
+    output += '<li class=\"list-group-item link-class\">Compos Mentis</li>';
+    output += '<li class=\"list-group-item link-class\">Somnolence</li>';
+    output += '<li class=\"list-group-item link-class\">Sopor</li>';
+    output += '<li class=\"list-group-item link-class\">Coma</li>';
+    output += '';
+    $('#kesadaranList').fadeIn();
+    $('#kesadaranList').html(output).show();
   });
-  $('#kesadaranList').on('click', 'li', function(){
+  $('#kesadaranList').on('click', 'li', function () {
     $('input:text[name=kesadaran]').val($(this).text());
     $('#kesadaranList').fadeOut();
   });
@@ -296,105 +290,68 @@
 <script type="text/javascript">
   $(document).ready(function () {
     $(".icd9 .dropdown-menu li a").click(function () {
-        var prioritas_icd9 = $(this).text();
-        $(this).closest('.form-group').find('#prioritas_icd9').text(prioritas_icd9);
+      var prioritas_icd9 = $(this).text();
+      $(this).closest('.form-group').find('#prioritas_icd9').text(prioritas_icd9);
     });
   });
 </script>
 <script type="text/javascript">
   $(document).ready(function () {
     $(".icd10 .dropdown-menu li a").click(function () {
-        var prioritas_icd10 = $(this).text();
-        $(this).closest('.form-group').find('#prioritas_icd10').text(prioritas_icd10);
+      var prioritas_icd10 = $(this).text();
+      $(this).closest('.form-group').find('#prioritas_icd10').text(prioritas_icd10);
     });
   });
 </script>
 <script>
-  $('#icd9').keyup(function(){
-       var query = $(this).val();
-       if(query != '')
-       {
-            $.ajax({
-                 url: "{?=url([ADMIN, 'dokter_ralan', 'icd9'])?}",
-                 method:"POST",
-                 data:{query:query},
-                 success:function(data)
-                 {
-                      $('#icd9List').fadeIn();
-                      $('#icd9List').html(data);
-                 }
-            });
-       }
-       $('#icd9List').fadeIn();
+  $('#icd9').keyup(function () {
+    var query = $(this).val();
+    if (query != '') {
+      $.ajax({
+        url: "{?=url([ADMIN, 'dokter_ralan', 'icd9'])?}",
+        method: "POST",
+        data: { query: query },
+        success: function (data) {
+          $('#icd9List').fadeIn();
+          $('#icd9List').html(data);
+        }
+      });
+    }
+    $('#icd9List').fadeIn();
   });
-  $('#icd9List').on('click', 'li', function(){
-       $('#icd9').val($(this).text().split(': ')[1]);
-       $('#kode_icd9').text($(this).text().split(': ')[0]);
-       var kode_icd9 = $('#kode_icd9').val();
-       $('#icd9List').fadeOut();
+  $('#icd9List').on('click', 'li', function () {
+    $('#icd9').val($(this).text().split(': ')[1]);
+    $('#kode_icd9').text($(this).text().split(': ')[0]);
+    var kode_icd9 = $('#kode_icd9').val();
+    $('#icd9List').fadeOut();
   });
 </script>
 <script>
-  $('#icd10').keyup(function(){
-       var query = $(this).val();
-       if(query != '')
-       {
-            $.ajax({
-                 url: "{?=url([ADMIN, 'dokter_ralan', 'icd10'])?}",
-                 method:"POST",
-                 data:{query:query},
-                 success:function(data)
-                 {
-                      $('#icd10List').fadeIn();
-                      $('#icd10List').html(data);
-                 }
-            });
-       }
-       $('#icd10List').fadeIn();
+  $('#icd10').keyup(function () {
+    var query = $(this).val();
+    if (query != '') {
+      $.ajax({
+        url: "{?=url([ADMIN, 'dokter_ralan', 'icd10'])?}",
+        method: "POST",
+        data: { query: query },
+        success: function (data) {
+          $('#icd10List').fadeIn();
+          $('#icd10List').html(data);
+        }
+      });
+    }
+    $('#icd10List').fadeIn();
   });
-  $('#icd10List').on('click', 'li', function(){
-       $('#icd10').val($(this).text().split(': ')[1]);
-       $('#kode_icd10').text($(this).text().split(': ')[0]);
-       var kode_icd10 = $('#kode_icd10').val();
-       $('#icd10List').fadeOut();
-  });
-</script>
-<script>
-  $('#snomed').keyup(function(){
-       var query = $(this).val();
-       if(query != '')
-       {
-            $.ajax({
-                 url: "{?=url([ADMIN, 'dokter_ralan', 'snomed'])?}",
-                 method:"POST",
-                 data:{query:query},
-                 success:function(data)
-                 {
-                      $('#snomedList').fadeIn();
-                      $('#snomedList').html(data);
-                      console.log(data);
-                 }
-            });
-       }
-       $('#snomedList').fadeIn();
-  });
-  $('#snomedList').on('click', 'li', function(){
-       $('#snomed').val($(this).text().split(': ')[1]);
-       $('#kode_snomed').text($(this).text().split(': ')[0]);
-       var kode_snomed = $('#kode_snomed').val();
-       $('#snomedList').fadeOut();
-       
-       // Trigger ICD-10 search based on selected SNOMED term
-       var snomed_term = $('#snomed').val();
-       if(snomed_term != '') {
-           $('#icd10').val(snomed_term);
-           $('#icd10').trigger('keyup');
-       }
+  $('#icd10List').on('click', 'li', function () {
+    $('#icd10').val($(this).text().split(': ')[1]);
+    $('#kode_icd10').text($(this).text().split(': ')[0]);
+    var kode_icd10 = $('#kode_icd10').val();
+    $('#icd10List').fadeOut();
   });
 </script>
 <script type="text/javascript">
   // tombol simpan diklik
-  $("#form_soap").on("click", "#simpan_icd9", function(event){
+  $("#form_soap").on("click", "#simpan_icd9", function (event) {
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var no_rawat = $('input:text[name=no_rawat]').val();
@@ -405,25 +362,25 @@
 
     var url = baseURL + '/dokter_ralan/saveicd9?t=' + mlite.token;
 
-    $.post(url,{
+    $.post(url, {
       no_rawat: no_rawat,
       prioritas: prioritas,
       nama: nama,
       status: status,
       kode: kode
-    } ,function(data) {
+    }, function (data) {
       $("#display_icd").show().load(baseURL + '/dokter_ralan/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
       //bersih();
-      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data ICD 9 (Prosedur) pasien telah disimpan!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
+      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+        "Data ICD 9 (Prosedur) pasien telah disimpan!" +
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+        "</div>").show();
     });
   });
 </script>
 <script type="text/javascript">
   // tombol simpan diklik
-  $("#form_soap").on("click", "#simpan_icd10", function(event){
+  $("#form_soap").on("click", "#simpan_icd10", function (event) {
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var no_rawat = $('input:text[name=no_rawat]').val();
@@ -434,109 +391,67 @@
 
     var url = baseURL + '/dokter_ralan/saveicd10?t=' + mlite.token;
 
-    $.post(url,{
+    $.post(url, {
       no_rawat: no_rawat,
       prioritas: prioritas,
       nama: nama,
       status: status,
       kd_penyakit: kode
-    } ,function(data) {
+    }, function (data) {
       $("#display_icd").show().load(baseURL + '/dokter_ralan/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
       //bersih();
-      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data ICD 10 (Diagnosa) pasien telah disimpan!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
+      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+        "Data ICD 10 (Diagnosa) pasien telah disimpan!" +
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+        "</div>").show();
     });
   });
 </script>
 <script type="text/javascript">
-  // tombol simpan diklik
-  $("#form_soap").on("click", "#simpan_snomed", function(event){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var no_rawat = $('input:text[name=no_rawat]').val();
-    var kd_penyakit = $('#kode_icd10').text(); // Mengambil kode ICD10 yang dipilih sebagai relasi
-    var snomed_term = $('input:text[name=snomed]').val();
-    var snomed_concept_id = $('#kode_snomed').text();
-    var status_penyakit = 'Baru'; // Default atau ambil dari form jika ada
-
-    if(kd_penyakit == 'kode' || kd_penyakit == '') {
-        alert('Silahkan pilih Diagnosa (ICD 10) terlebih dahulu sebelum menyimpan SNOMED CT!');
-        return false;
-    }
-
-    if(snomed_concept_id == 'kode' || snomed_concept_id == '') {
-        alert('Silahkan pilih data SNOMED CT terlebih dahulu!');
-        return false;
-    }
-
-    var url = baseURL + '/dokter_ralan/savesnomed?t=' + mlite.token;
-
-    $.post(url,{
-      no_rawat: no_rawat,
-      kd_penyakit: kd_penyakit,
-      snomed_concept_id: snomed_concept_id,
-      snomed_term: snomed_term,
-      status_penyakit: status_penyakit
-    } ,function(data) {
-      // Membersihkan form SNOMED setelah disimpan
-      $('input:text[name=snomed]').val('');
-      $('#kode_snomed').text('kode');
-      
-      $("#display_icd").show().load(baseURL + '/dokter_ralan/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
-      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data SNOMED CT pasien telah disimpan!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
-    });
-  });
-</script>
-<script type="text/javascript">
-  $("#form_soap").on("click","#buka_riwayat", function(event){
+  $("#form_soap").on("click", "#buka_riwayat", function (event) {
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
-    var loadURL =  baseURL + '/pasien/riwayatperawatan/' + no_rkm_medis + '?t=' + mlite.token;
+    var loadURL = baseURL + '/pasien/riwayatperawatan/' + no_rkm_medis + '?t=' + mlite.token;
 
     var modal = $('#resumeModal');
     var modalContent = $('#resumeModal .modal-content');
 
     modal.off('show.bs.modal');
     modal.on('show.bs.modal', function () {
-        modalContent.load(loadURL);
+      modalContent.load(loadURL);
     }).modal();
     return false;
   });
 </script>
 <script type="text/javascript">
   // tombol buka form diklik
-  $("#form_soap").on('click', '#buka_icd10dan9', function(){
+  $("#form_soap").on('click', '#buka_icd10dan9', function () {
     $("#icd10dan9").show();
     $("#buka_icd10dan9").val("Tutup Form");
     $("#buka_icd10dan9").attr("id", "tutup_icd10dan9");
   });
 
   // tombol tutup form diklik
-  $("#form_soap").on('click', '#tutup_icd10dan9', function(){
+  $("#form_soap").on('click', '#tutup_icd10dan9', function () {
     $("#icd10dan9").hide();
     $("#tutup_icd10dan9").val("Buka Form");
     $("#tutup_icd10dan9").attr("id", "buka_icd10dan9");
   });
 </script>
 <script type="text/javascript">
-  $("#form_soap").on("click","#eresep", function(event){
+  $("#form_soap").on("click", "#eresep", function (event) {
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var no_rawat = $('input:text[name=no_rawat]').val();
-    var loadURL =  baseURL + '/dokter_ralan/eresep/' + no_rawat.replaceAll('/','') + '?t=' + mlite.token;
+    var loadURL = baseURL + '/dokter_ralan/eresep/' + no_rawat.replaceAll('/', '') + '?t=' + mlite.token;
 
     var modal = $('#eresepModal');
     var modalContent = $('#eresepModal .modal-content');
 
     modal.off('show.bs.modal');
     modal.on('show.bs.modal', function () {
-        modalContent.load(loadURL);
+      modalContent.load(loadURL);
     }).modal();
     return false;
   });
