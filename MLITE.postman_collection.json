@@ -5735,6 +5735,55 @@
                     "response": []
                 },
                 {
+                    "name": "Show Detail",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/apotek_ralan/showdetail/{{category}}/{{no_rawat}}?no_resep={{no_resep}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "apotek_ralan",
+                                "showdetail",
+                                "{{category}}",
+                                "{{no_rawat}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "no_resep",
+                                    "value": "{{no_resep}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
                     "name": "Validasi Resep",
                     "request": {
                         "method": "GET",
@@ -5994,6 +6043,55 @@
                                 {
                                     "key": "tgl_akhir",
                                     "value": "{{tgl_akhir}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show Detail",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/apotek_ranap/showdetail/{{category}}/{{no_rawat}}?no_resep={{no_resep}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "apotek_ranap",
+                                "showdetail",
+                                "{{category}}",
+                                "{{no_rawat}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "no_resep",
+                                    "value": "{{no_resep}}"
                                 }
                             ]
                         }

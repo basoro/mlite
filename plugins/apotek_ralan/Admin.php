@@ -1280,6 +1280,21 @@ class Admin extends AdminModule
             ->desc('resep_obat.jam_peresepan')
             ->toArray();
 
+        foreach ($data as &$row) {
+            $is_obat = $this->db('resep_dokter')->select('no_resep')->where('no_resep', $row['no_resep'])->oneArray();
+            $is_racikan = $this->db('resep_dokter_racikan')->select('no_resep')->where('no_resep', $row['no_resep'])->oneArray();
+            
+            if ($is_obat && $is_racikan) {
+                $row['kategori'] = 'obat,racikan';
+            } elseif ($is_obat) {
+                $row['kategori'] = 'obat';
+            } elseif ($is_racikan) {
+                $row['kategori'] = 'racikan';
+            } else {
+                $row['kategori'] = '-';
+            }
+        }
+
         // Optimization: Details are fetched asynchronously on frontend
         // foreach ($data as &$row) {
         //    $row['detail'] = $this->apiShowDetail('obat', $row['no_rawat'], $row['no_resep']);
