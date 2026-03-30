@@ -4307,7 +4307,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{baseUrl}}/admin/api/laboratorium/showdetail/{{no_rawat}}",
+                            "raw": "{{baseUrl}}/admin/api/laboratorium/showdetail/{{status}}/{{no_rawat}}/{{noorder}}",
                             "host": [
                                 "{{baseUrl}}"
                             ],
@@ -4316,7 +4316,9 @@
                                 "api",
                                 "laboratorium",
                                 "showdetail",
-                                "{{no_rawat}}"
+                                "{{status}}",
+                                "{{no_rawat}}",
+                                "{{noorder}}"
                             ]
                         }
                     },
@@ -4856,7 +4858,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{baseUrl}}/admin/api/radiologi/showdetail/{{no_rawat}}",
+                            "raw": "{{baseUrl}}/admin/api/radiologi/showdetail/{{status}}/{{no_rawat}}/{{noorder}}",
                             "host": [
                                 "{{baseUrl}}"
                             ],
@@ -4865,7 +4867,9 @@
                                 "api",
                                 "radiologi",
                                 "showdetail",
-                                "{{no_rawat}}"
+                                "{{status}}",
+                                "{{no_rawat}}",
+                                "{{noorder}}"
                             ]
                         }
                     },
