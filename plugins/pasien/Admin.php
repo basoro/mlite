@@ -813,7 +813,9 @@ class Admin extends AdminModule
       $no_rawat = $_GET['no_rawat'];
     }
 
-    $data = $this->_getRiwayatData($no_rkm_medis, $no_rawat);
+    $detail = isset($_GET['detail']) && $_GET['detail'] === 'false' ? false : true;
+
+    $data = $this->_getRiwayatData($no_rkm_medis, $no_rawat, $detail);
     if (!$data['pasien']) {
       return ['status' => 'error', 'message' => 'Pasien not found'];
     }
@@ -825,7 +827,7 @@ class Admin extends AdminModule
     return ['status' => 'success', 'data' => $data];
   }
 
-  private function _getRiwayatData($no_rkm_medis, $no_rawat = null)
+  private function _getRiwayatData($no_rkm_medis, $no_rawat = null, $detail = true)
   {
     $riwayat['settings'] = $this->settings('settings');
     $riwayat['pasien'] = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
@@ -843,6 +845,11 @@ class Admin extends AdminModule
     $reg_periksa = $regQuery
       ->desc('tgl_registrasi')
       ->toArray();
+
+    if ($detail == false) {
+      $riwayat['reg_periksa'] = $reg_periksa;
+      return $riwayat;
+    }
 
     $riwayat['reg_periksa'] = [];
     foreach ($reg_periksa as $row) {
