@@ -1333,7 +1333,15 @@ class Admin extends AdminModule
   {
     if ($_POST['kat'] == 'laboratorium') {
       $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
-      for ($i = 0; $i < $_POST['jml_tindakan']; $i++) {
+      
+      $jml = 1;
+      if (isset($_POST['jml_tindakan'])) {
+        $jml = is_array($_POST['jml_tindakan']) ? $_POST['jml_tindakan'][0] : $_POST['jml_tindakan'];
+      }
+      $jml = (int) $jml;
+
+      $periksa_lab = false;
+      for ($i = 0; $i < $jml; $i++) {
         $periksa_lab = $this->db('periksa_lab')
           ->save([
             'no_rawat' => $_POST['no_rawat'],
@@ -1357,7 +1365,7 @@ class Admin extends AdminModule
       if ($periksa_lab) {
         $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
         foreach ($template_laboratorium as $row) {
-          for ($i = 0; $i < $_POST['jml_tindakan']; $i++) {
+          for ($i = 0; $i < $jml; $i++) {
             $this->db('detail_periksa_lab')
               ->save([
                 'no_rawat' => $_POST['no_rawat'],

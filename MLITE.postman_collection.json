@@ -228,7 +228,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{baseUrl}}/admin/api/pasien/riwayatperawatan/{{no_rkm_medis}}?no_rawat={{no_rawat}}",
+                            "raw": "{{baseUrl}}/admin/api/pasien/riwayatperawatan/{{no_rkm_medis}}?no_rawat={{no_rawat}}&detail=false",
                             "host": [
                                 "{{baseUrl}}"
                             ],
@@ -243,6 +243,10 @@
                                 {
                                     "key": "no_rawat",
                                     "value": "{{no_rawat}}"
+                                },
+                                {
+                                    "key": "detail",
+                                    "value": "false"
                                 }
                             ]
                         }
