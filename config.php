@@ -64,11 +64,11 @@ define('DBPASS', $db_pass);
 define('DBNAME', $db_name);
 
 // URL Webapps
-define('WEBAPPS_URL', 'https://simrs.rshdbarabai.com/webapps'); // Sesuaikan http://mlite.loc dengan domain atau IP Address server
-define('WEBAPPS_PATH', BASE_DIR . '/webapps');
+define('WEBAPPS_URL', 'http://localhost:8000/uploads'); // Sesuaikan http://mlite.loc dengan domain atau IP Address server
+define('WEBAPPS_PATH', BASE_DIR . '/uploads');
 
 // Multi APP
-define('MULTI_APP', true);
+define('MULTI_APP', false);
 define('MULTI_APP_REDIRECT', '');
 
 // Admin cat name
