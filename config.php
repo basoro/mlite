@@ -4,7 +4,8 @@ if (!version_compare(PHP_VERSION, '8.0.0', '>=')) {
     exit("mLITE requires at least <b>PHP 8.0.0</b> (Current: " . PHP_VERSION . ")");
 }
 
-function env(string $key, $default = null) {
+function env(string $key, $default = null)
+{
     return $_ENV[$key] ?? $_SERVER[$key] ?? $default;
 }
 
@@ -25,14 +26,14 @@ if (file_exists(BASE_DIR . '/.env')) {
         }
 
         [$name, $value] = explode('=', $line, 2);
-        $name  = trim($name);
+        $name = trim($name);
         $value = trim($value);
 
         // Hapus tanda kutip jika ada
         $value = trim($value, "\"'");
 
         if (!isset($_ENV[$name]) && !isset($_SERVER[$name])) {
-            $_ENV[$name]    = $value;
+            $_ENV[$name] = $value;
             $_SERVER[$name] = $value;
         }
     }
@@ -97,11 +98,11 @@ define('BASIC_MODULES', json_encode([
     6 => 'farmasi',
     8 => 'users',
     7 => 'modules',
-   10 => 'wagateway'
+    10 => 'wagateway'
 ]));
 
 // Developer mode
-define('DEV_MODE', true);
+define('DEV_MODE', false);
 
 define('JWT_SECRET', 'mlite_secret_key_change_me');
 
