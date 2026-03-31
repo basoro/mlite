@@ -51,7 +51,7 @@
                         "login"
                     ]
                 },
-                "description": "Mendapatkan Token JWT. \n\nKeamanan Layer 1: API Key harus sesuai dengan Username yang digunakan."
+                "description": "Mendapatkan Token JWT untuk Frontend/Mobile App. \n\nKeamanan Layer 1: Aplikasi diverifikasi via X-Api-Key.\nKeamanan Layer 2: End-User diverifikasi via Username & Password di body.\n(API Key bebas digunakan untuk meloginkan End-User mana saja sesuai tabel mlite_users)."
             },
             "response": []
         },
