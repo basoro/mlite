@@ -54,13 +54,6 @@ $core->router->set('api/login', function () use ($core) {
         $username = $input['username'] ?? $_POST['username'] ?? '';
         $password = $input['password'] ?? $_POST['password'] ?? '';
 
-        if ($apiUser !== $username && $apiUser !== 'admin') {
-             header('Content-Type: application/json');
-             http_response_code(401);
-             echo json_encode(['error' => 'API Key does not match the provided username']);
-             exit;
-        }
-
         $user = $core->db('mlite_users')->where('username', $username)->oneArray();
         if ($user && password_verify($password, $user['password'])) {
             $payload = [
@@ -84,6 +77,9 @@ $core->router->set('api/login', function () use ($core) {
 });
 
 $core->router->set('api/(:str)/(:str)(:any)', function ($module, $method, $params) use ($core) {
+    // 1. Verifikasi kredensial aplikasi klien via API Key atau Sesi
+    $apiUser = $core->checkAuth(strtoupper($_SERVER['REQUEST_METHOD']));
+
     $token = null;
     if (isset($_SERVER['HTTP_AUTHORIZATION']) && preg_match('/Bearer\s(\S+)/', $_SERVER['HTTP_AUTHORIZATION'], $m)) {
         $token = $m[1];
@@ -96,12 +92,7 @@ $core->router->set('api/(:str)/(:str)(:any)', function ($module, $method, $param
     }
     $payload = $token ? \Systems\Lib\Jwt::verify($token, JWT_SECRET) : false;
     $loggedIn = $core->loginCheck();
-    if (!$payload && !$loggedIn) {
-        header('Content-Type: application/json');
-        http_response_code(401);
-        echo json_encode(['error' => 'Unauthorized']);
-        exit;
-    }
+    
     $core->loadModules();
     $moduleObj = $core->module->{$module};
     if (!$moduleObj) {
@@ -116,6 +107,9 @@ $core->router->set('api/(:str)/(:str)(:any)', function ($module, $method, $param
     } elseif ($payload) {
         $uid = $payload['sub'] ?? 0;
         $urow = $core->db('mlite_users')->where('id', $uid)->oneArray();
+        $access = $urow['access'] ?? '';
+    } else {
+        $urow = $core->db('mlite_users')->where('username', $apiUser)->oneArray();
         $access = $urow['access'] ?? '';
     }
     if (!($access == 'all' || in_array($module, explode(',', (string)$access)))) {
