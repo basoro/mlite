@@ -1969,4 +1969,338 @@ class Admin extends AdminModule
         return $seconds;
     }
 
+    public function apiList()
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'presensi')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $pegawai = $this->db('pegawai')->where('nik', $username)->oneArray();
+        if (!$pegawai) {
+            return ['status' => 'error', 'message' => 'Pegawai tidak ditemukan'];
+        }
+
+        $idpeg = $this->db('barcode')->where('id', $pegawai['id'])->oneArray();
+        if (!$idpeg) {
+            return ['status' => 'error', 'message' => 'Pegawai tidak terdaftar di tabel barcode'];
+        }
+        
+        $id = $idpeg['id'];
+
+        $draw = $_GET['draw'] ?? 0;
+        $start = $_GET['start'] ?? 0;
+        $length = $_GET['length'] ?? 10;
+        $tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-01');
+        $tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-t');
+
+        $totalRecords = $this->db('rekap_presensi')
+            ->where('id', $idpeg['id'])
+            ->where('jam_datang', '>=', $tgl_awal . ' 00:00:00')
+            ->where('jam_datang', '<=', $tgl_akhir . ' 23:59:59')
+            ->count();
+
+        $data = $this->db('rekap_presensi')
+            ->where('id', $idpeg['id'])
+            ->where('jam_datang', '>=', $tgl_awal . ' 00:00:00')
+            ->where('jam_datang', '<=', $tgl_akhir . ' 23:59:59')
+            ->asc('jam_datang')
+            ->offset($start)
+            ->limit($length)
+            ->toArray();
+
+        return [
+            "status" => "success",
+            "data" => $data,
+            "meta" => [
+                "page" => floor($start / $length) + 1,
+                "per_page" => intval($length),
+                "total" => $totalRecords
+            ]
+        ];
+    }
+
+    public function apiShow()
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'presensi')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $pegawai = $this->db('pegawai')->where('nik', $username)->oneArray();
+        if (!$pegawai) {
+            return ['status' => 'error', 'message' => 'Pegawai tidak ditemukan'];
+        }
+
+        $idpeg = $this->db('barcode')->where('id', $pegawai['id'])->oneArray();
+        if (!$idpeg) {
+            return ['status' => 'error', 'message' => 'Pegawai tidak terdaftar di tabel barcode'];
+        }
+        
+        $id = $idpeg['id'];
+
+        $tanggal = $_GET['tanggal'] ?? date('Y-m-d');
+
+        $data = $this->db('rekap_presensi')
+            ->where('id', $id)
+            ->like('jam_datang', '%' . $tanggal . '%')
+            ->toArray();
+
+        $temp = $this->db('temporary_presensi')
+            ->where('id', $id)
+            ->oneArray();
+
+        $pegawai = $this->db('pegawai')->where('id', $id)->oneArray();
+        $jam_jaga = [];
+        if ($pegawai && !empty($pegawai['departemen'])) {
+            $jam_jaga = $this->db('jam_jaga')->where('dep_id', $pegawai['departemen'])->toArray();
+        }
+
+        return [
+            "status" => "success",
+            "data" => [
+                "rekap" => $data,
+                "ongoing" => $temp,
+                "shifts" => $jam_jaga
+            ]
+        ];
+    }
+
+    public function apiCreate()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'presensi')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $pegawai = $this->db('pegawai')->where('nik', $username)->oneArray();
+        if (!$pegawai) {
+            return ['status' => 'error', 'message' => 'Pegawai tidak ditemukan'];
+        }
+
+        $idpeg = $this->db('barcode')->where('id', $pegawai['id'])->oneArray();
+        if (!$idpeg) {
+            return ['status' => 'error', 'message' => 'Pegawai tidak terdaftar di tabel barcode'];
+        }
+        
+        $id = $idpeg['id'];
+
+        $shift = $input['shift'] ?? '';
+        $urlnya = $input['photo'] ?? '';
+
+        $bulan = date('m');
+        $tahun = date('Y');
+        $hari = date('j');
+
+        $jam_jaga = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $id)->where('jam_jaga.shift', $shift)->oneArray();
+
+        $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $id)->where('h' . $hari, $jam_jaga['shift'] ?? '')->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
+        $jadwal_tambahan = $this->db('jadwal_tambahan')->where('id', $id)->where('h' . $hari, $jam_jaga['shift'] ?? '')->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
+        $isFullAbsen = $this->db('rekap_presensi')->where('id', $id)->where('shift', $jam_jaga['shift'] ?? '')->like('jam_datang', date('Y-m-d') . '%')->oneArray();
+        $isAbsen = $this->db('temporary_presensi')->where('id', $id)->oneArray();
+
+        $set_keterlambatan  = $this->db('set_keterlambatan')->oneArray();
+        $toleransi      = (int)($set_keterlambatan['toleransi'] ?? 0);
+        $terlambat1     = (int)($set_keterlambatan['terlambat1'] ?? 0);
+        $terlambat2     = (int)($set_keterlambatan['terlambat2'] ?? 0);
+
+        if ($isFullAbsen) {
+            return ['status' => 'error', 'message' => 'Anda sudah presensi untuk tanggal ' . date('Y-m-d')];
+        }
+        if ($isAbsen) {
+            return ['status' => 'error', 'message' => 'Anda belum melakukan clock out untuk shift ' . $isAbsen['shift']];
+        }
+
+        if (!$jadwal_pegawai && !$jadwal_tambahan) {
+            return ['status' => 'error', 'message' => 'ID Pegawai atau jadwal shift tidak sesuai!'];
+        }
+
+        if (empty($shift)) {
+            return ['status' => 'error', 'message' => 'Pilih shift dulu'];
+        }
+
+        $status_presensi = 'Tepat Waktu';
+        $jam_masuk = $jam_jaga['jam_masuk'] ?? '00:00:00';
+
+        $diff_sec = strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . ' ' . $jam_masuk);
+        if ($diff_sec > ($toleransi * 60)) {
+            $status_presensi = 'Terlambat Toleransi';
+        }
+        if ($diff_sec > ($terlambat1 * 60)) {
+            $status_presensi = 'Terlambat I';
+        }
+        if ($diff_sec > ($terlambat2 * 60)) {
+            $status_presensi = 'Terlambat II';
+        }
+
+        $keterlambatan = '00:00:00';
+        if ($diff_sec > ($toleransi * 60)) {
+            $awal  = new \DateTime(date('Y-m-d') . ' ' . $jam_masuk);
+            $akhir = new \DateTime();
+            $diffFormat = $akhir->diff($awal, true);
+            $keterlambatan = ($awal > $akhir) ? '' : $diffFormat->format('%H:%I:%S');
+        }
+
+        $jam_datang = date('Y-m-d H:i:s');
+        try {
+            $this->db('temporary_presensi')->save([
+                'id' => $id,
+                'shift' => $jam_jaga['shift'],
+                'jam_datang' => $jam_datang,
+                'jam_pulang' => NULL,
+                'status' => $status_presensi,
+                'keterlambatan' => $keterlambatan,
+                'durasi' => '',
+                'photo' => $urlnya
+            ]);
+
+            if (isset($input['lat'], $input['lng'])) {
+                if (!$this->db('mlite_geolocation_presensi')->where('id', $id)->where('tanggal', date('Y-m-d'))->oneArray()) {
+                    $this->db('mlite_geolocation_presensi')->save([
+                        'id' => $id,
+                        'tanggal' => date('Y-m-d'),
+                        'latitude' => $input['lat'],
+                        'longitude' => $input['lng']
+                    ]);
+                }
+            }
+
+            return ['status' => 'created', 'message' => 'Presensi Masuk jam ' . $jam_masuk . ' ' . $status_presensi . ' ' . $keterlambatan];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiUpdate()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_update', 'presensi')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $pegawai = $this->db('pegawai')->where('nik', $username)->oneArray();
+        if (!$pegawai) {
+            return ['status' => 'error', 'message' => 'Pegawai tidak ditemukan'];
+        }
+
+        $idpeg = $this->db('barcode')->where('id', $pegawai['id'])->oneArray();
+        if (!$idpeg) {
+            return ['status' => 'error', 'message' => 'Pegawai tidak terdaftar di tabel barcode'];
+        }
+        
+        $id = $idpeg['id'];
+
+        $isAbsen = $this->db('temporary_presensi')->where('id', $id)->oneArray();
+        if (!$isAbsen) {
+            return ['status' => 'error', 'message' => 'Anda belum presensi masuk / tidak ditemukan (temporary_presensi)'];
+        }
+
+        $jam_jaga = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $id)->where('jam_jaga.shift', $isAbsen['shift'])->oneArray();
+
+        $jamDatang = substr($isAbsen['jam_datang'], 11);
+        if ((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d') . ' ' . $jamDatang)) < 2 * 60) {
+           return ['status' => 'error', 'message' => 'Sabar ... Jangan pencet terus'];
+        }
+
+        $status = $isAbsen['status'];
+        $dayShift = date('Y-m-d');
+        if ($isAbsen['shift'] == 'Malam') {
+            $dayShift = substr($isAbsen['jam_datang'], 0, 10);
+            $dayShift = date('Y-m-d', strtotime($dayShift . ' +1 day'));
+        }
+        $jam_pulang = $jam_jaga['jam_pulang'] ?? '00:00:00';
+        if ((strtotime(date('Y-m-d H:i:s')) - strtotime($dayShift . ' ' . $jam_pulang)) < 0) {
+            $status = $isAbsen['status'] . ' & PSW';
+        }
+
+        $awal  = new \DateTime($isAbsen['jam_datang']);
+        $akhir = new \DateTime();
+        $diff = $akhir->diff($awal, true);
+        $durasi = $diff->format('%H:%I:%S');
+        $jam_pulang_sekarang = date('Y-m-d H:i:s');
+
+        try {
+            $ubah = $this->db('temporary_presensi')
+                ->where('id', $id)
+                ->save([
+                    'jam_pulang' => $jam_pulang_sekarang,
+                    'status' => $status,
+                    'durasi' => $durasi
+                ]);
+
+            if ($ubah) {
+                $presensi = $this->db('temporary_presensi')->where('id', $id)->oneArray();
+                $insert = $this->db('rekap_presensi')
+                    ->save([
+                        'id' => $presensi['id'],
+                        'shift' => $presensi['shift'],
+                        'jam_datang' => $presensi['jam_datang'],
+                        'jam_pulang' => $presensi['jam_pulang'],
+                        'status' => $presensi['status'],
+                        'keterlambatan' => $presensi['keterlambatan'],
+                        'durasi' => $presensi['durasi'],
+                        'keterangan' => '-',
+                        'photo' => $presensi['photo']
+                    ]);
+                if ($insert) {
+                    $this->db('temporary_presensi')->where('id', $id)->delete();
+                    return ['status' => 'updated', 'message' => 'Presensi pulang telah disimpan'];
+                }
+            }
+            return ['status' => 'error', 'message' => 'Gagal mengubah presensi sementara'];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiDelete()
+    {
+        $username = $this->core->checkAuth('DELETE');
+        if (!$this->core->checkPermission($username, 'can_delete', 'presensi')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $pegawai = $this->db('pegawai')->where('nik', $username)->oneArray();
+        if (!$pegawai) {
+            return ['status' => 'error', 'message' => 'Pegawai tidak ditemukan'];
+        }
+
+        $idpeg = $this->db('barcode')->where('id', $pegawai['id'])->oneArray();
+        if (!$idpeg) {
+            return ['status' => 'error', 'message' => 'Pegawai tidak terdaftar di tabel barcode'];
+        }
+        
+        $id = $idpeg['id'];
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        $jam_datang = $input['jam_datang'] ?? '';
+        if (empty($jam_datang)) {
+            return ['status' => 'error', 'message' => 'jam_datang missing in body payload'];
+        }
+
+        try {
+            $rekap = $this->db('rekap_presensi')->where('id', $id)->where('jam_datang', $jam_datang)->oneArray();
+            if ($rekap) {
+                $this->db('rekap_presensi')->where('id', $id)->where('jam_datang', $jam_datang)->delete();
+                return ['status' => 'deleted', 'message' => 'Rekap presensi dihapus'];
+            }
+
+            $temp = $this->db('temporary_presensi')->where('id', $id)->where('jam_datang', $jam_datang)->oneArray();
+            if ($temp) {
+                $this->db('temporary_presensi')->where('id', $id)->where('jam_datang', $jam_datang)->delete();
+                return ['status' => 'deleted', 'message' => 'Temporary presensi dihapus'];
+            }
+
+            return ['status' => 'error', 'message' => 'Data tidak ditemukan'];
+
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
 }
