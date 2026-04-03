@@ -272,8 +272,7 @@ if ($core->loginCheck()) {
         $debug_info = '';
 
         if (defined('DEV_MODE') && DEV_MODE) {
-            $title = 'Developer Error';
-            $content = '<div class="alert alert-danger"><strong>Error:</strong> ' . htmlspecialchars($e->getMessage()) . '</div>';
+            $content .= '<div class="alert alert-danger" style="margin-top: 15px;"><strong>Error:</strong> ' . htmlspecialchars($e->getMessage()) . '</div>';
             $debug_info = '<div class="debug-box">';
             $debug_info .= '<p><strong>File:</strong> ' . htmlspecialchars($e->getFile()) . ' on line ' . $e->getLine() . '</p>';
             $debug_info .= '<h4>Stack Trace:</h4>';

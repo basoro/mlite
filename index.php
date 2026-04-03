@@ -35,18 +35,24 @@ ob_start(base64_decode('XFN5c3RlbXNcTWFpbjo6dmVyaWZ5TGljZW5zZQ=='));
 try {
     $core = new Systems\Site();
 } catch (Throwable $e) {
+    error_log('mLITE Error: ' . $e->getMessage());
+    http_response_code(500);
+    
+    $message = 'System Error. Please contact administrator.';
+    $response = ['status' => 'error', 'message' => $message];
+    
     if (DEV_MODE) {
-        throw $e;
-    } else {
-        error_log('mLITE Error: ' . $e->getMessage());
-        http_response_code(500);
-        // Clean error message for production
-        $message = $e->getMessage();
-        // Remove database name pattern `dbname`.
-        $message = preg_replace('/`[^`]+`\./', '', $message);
-        echo json_encode(['status' => 'error', 'message' => $message]);
-        exit;
+        $devMessage = preg_replace('/`[^`]+`\./', '', $e->getMessage());
+        $response['message'] .= ' Detail: ' . $devMessage;
+        $response['debug'] = [
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => explode("\n", $e->getTraceAsString())
+        ];
     }
+    
+    echo json_encode($response);
+    exit;
 }
 
 ob_end_flush();
