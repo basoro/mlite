@@ -1980,14 +1980,15 @@ INSERT INTO `mlite_modules` VALUES ("1","settings","9"),
 ("42","inventaris","37"),
 ("43","jasa_medis","38"),
 ("44","laporan","39"),
-("45","veronisa","40"),
+("45","mini_pacs","40"),
 ("46","mlite_api_key","41"),
 ("47","mlite_logs","42"),
 ("48","penjualan","43"),
 ("49","satu_sehat","44"),
 ("50","sertisign","45"),
 ("51","surat","46"),
-("52","utd","47");
+("52","utd","47"),
+("53","veronisa","48");
 
 
 CREATE TABLE `mlite_news` (
