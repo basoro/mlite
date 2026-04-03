@@ -1428,7 +1428,23 @@ class Admin extends AdminModule
       $periksa_radiologi[] = $row;
     }
 
-    echo $this->draw('rincian.html', ['periksa_radiologi' => htmlspecialchars_array($periksa_radiologi), 'jumlah_total_radiologi' => $jumlah_total_radiologi, 'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), 'radiologi' => htmlspecialchars_array($radiologi)]);
+    $mini_pacs = $this->db('mlite_mini_pacs_study')->where('no_rawat', $_POST['no_rawat'])->toArray();
+    foreach ($mini_pacs as &$mp) {
+        $series = $this->db('mlite_mini_pacs_series')->where('study_id', $mp['id'])->toArray();
+        foreach ($series as &$s) {
+            $s['instances'] = $this->db('mlite_mini_pacs_instance')->where('series_id', $s['id'])->toArray();
+        }
+        $mp['series'] = $series;
+    }
+    unset($mp);
+
+    echo $this->draw('rincian.html', [
+      'periksa_radiologi' => htmlspecialchars_array($periksa_radiologi), 
+      'jumlah_total_radiologi' => $jumlah_total_radiologi, 
+      'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), 
+      'radiologi' => htmlspecialchars_array($radiologi),
+      'mini_pacs' => htmlspecialchars_array($mini_pacs)
+    ]);
     exit();
   }
 

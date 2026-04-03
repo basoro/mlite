@@ -821,6 +821,7 @@
                               </div>
                           {/loop}
                           </div>
+
                       </div>
                     </td>
                   </tr>
@@ -829,10 +830,31 @@
             </tr>
             {/if}
             {/loop}
+            {if: $value.mini_pacs}
+	    <tr>
+              <div style="width: 400px; display:flex; flex-wrap: wrap; gap: 15px; padding: 10px;">
+                {loop: $value.mini_pacs as $mp}
+                {loop: $mp.series as $s}
+                {loop: $s.instances as $ins}
+                <div style="text-align: center;">
+                      {if: file_exists(UPLOADS.'/pacs/'.$ins.sop_instance_uid.'_thumb.jpg')}
+                      <img src="{?=url('uploads/pacs/'.$ins.sop_instance_uid.'_thumb.jpg')?}"
+                        style="width: 100%; height: 100%; object-fit: cover;">
+                      {else}
+                      <i class="fa fa-picture-o fa-3x" style="color: #4bd396;"></i>
+                      {/if}
+                </div>
+                {/loop}
+                {/loop}
+                {/loop}
+              </div>
+	    </tr>
+	    {/if}
           </table>
         </td>
       </tr>
       {/if}
+
       {if: $value.operasi}
       <tr class="isi">
         <td valign="top" width="20%">Operasi</td>

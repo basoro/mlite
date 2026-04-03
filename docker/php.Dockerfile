@@ -8,6 +8,10 @@ RUN apk add libpng-dev
 
 RUN apk add --no-cache mysql-client msmtp perl wget procps shadow libzip libpng libjpeg-turbo libwebp freetype icu
 
+# Install dcmtk from edge testing repository for mini_pacs support
+RUN apk add --no-cache dcmtk --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
+
+
 RUN apk add --no-cache --virtual build-essentials \
     icu-dev icu-libs zlib-dev g++ make automake autoconf libzip-dev \
     libpng-dev libwebp-dev libjpeg-turbo-dev freetype-dev oniguruma-dev linux-headers && \

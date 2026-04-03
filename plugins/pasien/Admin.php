@@ -988,6 +988,17 @@ class Admin extends AdminModule
         $row['periksa_radiologi'][] = $radiologi_session;
       }
 
+      $row['mini_pacs'] = $this->db('mlite_mini_pacs_study')->where('no_rawat', $row['no_rawat'])->toArray();
+      $mini_pacs_result = [];
+      foreach ($row['mini_pacs'] as $mp) {
+        $mp['series'] = $this->db('mlite_mini_pacs_series')->where('study_id', $mp['id'])->toArray();
+        foreach ($mp['series'] as &$series) {
+          $series['instances'] = $this->db('mlite_mini_pacs_instance')->where('series_id', $series['id'])->toArray();
+        }
+        $mini_pacs_result[] = $mp;
+      }
+      $row['mini_pacs'] = $mini_pacs_result;
+
       $pemberian_obat_sessions = $this->db('detail_pemberian_obat')
         ->select(['tgl_perawatan', 'jam'])
         ->where('no_rawat', $row['no_rawat'])
