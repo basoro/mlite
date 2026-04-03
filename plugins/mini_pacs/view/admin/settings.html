@@ -1,0 +1,41 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{$settings.title}</h3>
+            </div>
+            <div class="panel-body">
+                <form action="{?=url([ADMIN, 'mini_pacs', 'savesettings'])?}" method="post">
+                    <h4>Pengiriman DICOM (C-STORE Target)</h4>
+                    <div class="form-group">
+                        <label>Nama Server Aplikasi Ini (AE Title Lokal)</label>
+                        <input type="text" name="ae_title" class="form-control" value="{$settings.ae_title}" required placeholder="MLITE_PACS">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Target AE Title</label>
+                                <input type="text" name="target_aet" class="form-control" value="{$settings.target_aet}" required placeholder="TARGET_PACS">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Target Server IP / Host</label>
+                                <input type="text" name="target_ip" class="form-control" value="{$settings.target_ip}" required placeholder="127.0.0.1">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Target Port</label>
+                                <input type="text" name="target_port" class="form-control" value="{$settings.target_port}" required placeholder="104">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Simpan Pengaturan</button>
+                    <a class="btn btn-default" href="{?=url([ADMIN, 'mini_pacs', 'manage'])?}">Batal</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</article>
