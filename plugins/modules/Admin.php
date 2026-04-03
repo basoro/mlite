@@ -55,11 +55,13 @@ class Admin extends AdminModule
                 $entryName = zip_entry_name($entry);
 
                 // Security check: Prevent path traversal and malicious file extensions
-                // if (strpos($entryName, '..') !== false || 
-                //     preg_match('/\.(php|phtml|php3|php4|php5|phps|exe|sh|bash)$/i', $entryName) && !preg_match('/^(.*?)\/(Info\.php|Admin\.php|Site\.php|index\.html)$/', $entryName)) {
-                //     $this->notify('failure', 'Modul mengandung file yang tidak diizinkan atau path traversal.');
-                //     redirect($backURL);
-                // }
+                if (
+                    strpos($entryName, '..') !== false ||
+                    preg_match('/\.(php|phtml|php3|php4|php5|phps|exe|sh|bash)$/i', $entryName) && !preg_match('/^(.*?)\/(Info\.php|Admin\.php|Site\.php|index\.html)$/', $entryName)
+                ) {
+                    $this->notify('failure', 'Modul mengandung file yang tidak diizinkan atau path traversal.');
+                    redirect($backURL);
+                }
 
                 if (preg_match('/^(.*?)\/Info.php$/', $entryName, $matches)) {
                     $modules[] = ['path' => $matches[0], 'name' => $matches[1]];
