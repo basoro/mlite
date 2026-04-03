@@ -1,6 +1,6 @@
 <?php
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 $baseDir = __DIR__;
 $envFile = $baseDir . '/.env';
@@ -471,52 +471,58 @@ function processInsert($pdo, $sql)
         <?php if ($success): ?>
             <div class="alert" style="background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0;">
                 <strong>Berhasil!</strong> <?= htmlspecialchars($success) ?><br><br>
-                <div style="margin-top: 10px; padding: 10px; background: #fee2e2; border-left: 4px solid #b91c1c; color: #991b1b; border-radius: 4px;">
+                <div
+                    style="margin-top: 10px; padding: 10px; background: #fee2e2; border-left: 4px solid #b91c1c; color: #991b1b; border-radius: 4px;">
                     <strong style="display:block; margin-bottom: 5px;">⚠️ PERINGATAN KEAMANAN</strong>
-                    Harap segera HAPUS atau UBAH NAMA (rename) file <strong>install.php</strong> ini. Membiarkan file ini ada di server dapat menimbulkan celah keamanan bagi aplikasi Anda.
+                    Harap segera HAPUS atau UBAH NAMA (rename) file <strong>install.php</strong> ini. Membiarkan file ini
+                    ada di server dapat menimbulkan celah keamanan bagi aplikasi Anda.
                 </div>
             </div>
-            <a href="/" class="btn-submit" style="text-align: center; text-decoration: none; box-sizing: border-box;">Selesai & Buka Aplikasi</a>
+            <a href="/" class="btn-submit"
+                style="text-align: center; text-decoration: none; box-sizing: border-box;">Selesai & Buka Aplikasi</a>
         <?php else: ?>
-        <form method="POST" action="" id="installForm">
-            <div class="form-group">
-                <label for="db_driver">Database Driver</label>
-                <select name="db_driver" id="db_driver">
-                    <option value="sqlite">SQLite (Portable / Ringan)</option>
-                    <option value="mysql">MySQL / MariaDB</option>
-                </select>
-            </div>
-
-            <div class="mysql-fields" id="mysql_fields">
+            <form method="POST" action="" id="installForm">
                 <div class="form-group">
-                    <label for="db_host">Host</label>
-                    <input type="text" name="db_host" id="db_host" value="<?= htmlspecialchars($defHost) ?>" placeholder="127.0.0.1">
+                    <label for="db_driver">Database Driver</label>
+                    <select name="db_driver" id="db_driver">
+                        <option value="sqlite">SQLite (Portable / Ringan)</option>
+                        <option value="mysql">MySQL / MariaDB</option>
+                    </select>
                 </div>
 
-                <div class="form-group">
-                    <label for="db_port">Port</label>
-                    <input type="number" name="db_port" id="db_port" value="<?= htmlspecialchars($defPort) ?>">
+                <div class="mysql-fields" id="mysql_fields">
+                    <div class="form-group">
+                        <label for="db_host">Host</label>
+                        <input type="text" name="db_host" id="db_host" value="<?= htmlspecialchars($defHost) ?>"
+                            placeholder="127.0.0.1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="db_port">Port</label>
+                        <input type="number" name="db_port" id="db_port" value="<?= htmlspecialchars($defPort) ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="db_name">Database Name</label>
+                        <input type="text" name="db_name" id="db_name" value="<?= htmlspecialchars($defDb) ?>"
+                            placeholder="mlite">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="db_user">Username</label>
+                        <input type="text" name="db_user" id="db_user" value="<?= htmlspecialchars($defUser) ?>"
+                            placeholder="root">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="db_pass">Password</label>
+                        <input type="password" name="db_pass" id="db_pass"
+                            placeholder="(Kosongkan jika tidak ada password)">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="db_name">Database Name</label>
-                    <input type="text" name="db_name" id="db_name" value="<?= htmlspecialchars($defDb) ?>" placeholder="mlite">
-                </div>
-
-                <div class="form-group">
-                    <label for="db_user">Username</label>
-                    <input type="text" name="db_user" id="db_user" value="<?= htmlspecialchars($defUser) ?>" placeholder="root">
-                </div>
-
-                <div class="form-group">
-                    <label for="db_pass">Password</label>
-                    <input type="password" name="db_pass" id="db_pass"
-                        placeholder="(Kosongkan jika tidak ada password)">
-                </div>
-            </div>
-
-            <button type="submit" class="btn-submit">Mulai Instalasi</button>
-        </form>
+                <button type="submit" class="btn-submit">Mulai Instalasi</button>
+            </form>
         <?php endif; ?>
     </div>
 
