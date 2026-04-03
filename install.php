@@ -285,6 +285,7 @@ function processInsert($pdo, $sql)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./favicon.png" type="image/x-icon">
     <title>mLITE Installer</title>
     <style>
         :root {
@@ -326,6 +327,21 @@ function processInsert($pdo, $sql)
             border: 1px solid var(--border-color);
         }
 
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-container img {
+            max-width: 120px;
+            height: auto;
+        }
+
+        .header-center {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
         h1 {
             margin-top: 0;
             margin-bottom: 0.5rem;
@@ -339,6 +355,11 @@ function processInsert($pdo, $sql)
             margin-top: 0;
             margin-bottom: 2rem;
             font-size: 0.95rem;
+        }
+
+        h1,
+        .desc {
+            text-align: center;
         }
 
         .form-group {
@@ -459,8 +480,15 @@ function processInsert($pdo, $sql)
     </div>
 
     <div class="installer-container">
-        <h1>mLITE Setup</h1>
-        <p class="desc">Silakan atur konfigurasi database utama Anda</p>
+
+        <div class="logo-container">
+            <img src="./themes/admin/img/logo.png" alt="mLITE Logo">
+        </div>
+
+        <div class="header-center">
+            <h1>mLITE Setup</h1>
+            <p class="desc">Silakan atur konfigurasi database utama Anda</p>
+        </div>
 
         <?php if ($error): ?>
             <div class="alert alert-error">
