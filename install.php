@@ -5,11 +5,16 @@ ini_set('display_errors', 1);
 $baseDir = __DIR__;
 $envFile = $baseDir . '/.env';
 
-// Jika .env sudah ada, redirect ke index (sudah terinstall)
+// Baca konfigurasi env jika diselipkan melalui PaaS / Docker untuk pre-fill UI
+$envConfig = [];
 if (file_exists($envFile)) {
-    header('Location: /');
-    exit;
+    $envConfig = @parse_ini_file($envFile) ?: [];
 }
+
+$defHost = $envConfig['MYSQLHOST'] ?? 'localhost';
+$defPort = $envConfig['MYSQLPORT'] ?? '3306';
+$defDb = $envConfig['MYSQLDATABASE'] ?? 'mlite';
+$defUser = $envConfig['MYSQLUSER'] ?? 'root';
 
 $error = null;
 $success = null;
@@ -485,22 +490,22 @@ function processInsert($pdo, $sql)
             <div class="mysql-fields" id="mysql_fields">
                 <div class="form-group">
                     <label for="db_host">Host</label>
-                    <input type="text" name="db_host" id="db_host" value="localhost" placeholder="127.0.0.1">
+                    <input type="text" name="db_host" id="db_host" value="<?= htmlspecialchars($defHost) ?>" placeholder="127.0.0.1">
                 </div>
 
                 <div class="form-group">
                     <label for="db_port">Port</label>
-                    <input type="number" name="db_port" id="db_port" value="3306">
+                    <input type="number" name="db_port" id="db_port" value="<?= htmlspecialchars($defPort) ?>">
                 </div>
 
                 <div class="form-group">
                     <label for="db_name">Database Name</label>
-                    <input type="text" name="db_name" id="db_name" value="mlite" placeholder="mlite">
+                    <input type="text" name="db_name" id="db_name" value="<?= htmlspecialchars($defDb) ?>" placeholder="mlite">
                 </div>
 
                 <div class="form-group">
                     <label for="db_user">Username</label>
-                    <input type="text" name="db_user" id="db_user" value="root" placeholder="root">
+                    <input type="text" name="db_user" id="db_user" value="<?= htmlspecialchars($defUser) ?>" placeholder="root">
                 </div>
 
                 <div class="form-group">

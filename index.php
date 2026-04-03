@@ -37,8 +37,15 @@ try {
 } catch (Throwable $e) {
     error_log('mLITE Error: ' . $e->getMessage());
     http_response_code(500);
-    
     $message = 'System Error. Please contact administrator.';
+    
+    // Auto-rescue untuk lingkungan PaaS (Papuyu/Docker) jika .env terbuat tapi database belum di-import
+    $errMsg = $e->getMessage();
+    if (strpos($errMsg, 'Base table or view not found') !== false || strpos($errMsg, 'no such table') !== false || strpos($errMsg, 'Unknown database') !== false) {
+        header('Location: /install.php');
+        exit;
+    }
+    
     $response = ['status' => 'error', 'message' => $message];
     
     if (DEV_MODE) {
