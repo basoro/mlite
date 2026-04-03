@@ -14,6 +14,7 @@ services:
       - php_backups:/var/www/html/backups 
       - php_uploads:/var/www/html/uploads
       - php_systems_data:/var/www/html/systems/data
+      - php_plugins:/var/www/html/plugins
       - ./logs/nginx:/var/log/nginx/
     depends_on:
       - php      
@@ -38,7 +39,8 @@ services:
       - php_backups:/var/www/html/backups 
       - php_uploads:/var/www/html/uploads 
       - php_systems_data:/var/www/html/systems/data 
-    command: sh -c "composer install && mkdir -p /var/www/html/backups /var/www/html/uploads /var/www/html/systems/data /var/www/html/tmp /var/www/html/admin/tmp && chmod -R 777 /var/www/html/backups /var/www/html/uploads /var/www/html/systems/data /var/www/html/tmp /var/www/html/admin/tmp && php-fpm"
+      - php_plugins:/var/www/html/plugins
+    command: sh -c "composer install && mkdir -p /var/www/html/backups /var/www/html/uploads /var/www/html/systems/data /var/www/html/tmp /var/www/html/admin/tmp /var/www/html/plugins && chmod -R 777 /var/www/html/backups /var/www/html/uploads /var/www/html/systems/data /var/www/html/tmp /var/www/html/admin/tmp /var/www/html/plugins && php-fpm"
   
   mysql:
     image: mysql:8.0
@@ -69,4 +71,5 @@ volumes:
   php_backups:
   php_uploads:
   php_systems_data:
+  php_plugins:
   mysql_data:

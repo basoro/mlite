@@ -13,6 +13,7 @@ webapps
 backup/
 plugins/apotek_online
 plugins/simrsp
+plugins/mini_pacs
 config.php
 themes/mlite
 systems/lib/jasperphp
