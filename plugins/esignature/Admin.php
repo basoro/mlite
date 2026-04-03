@@ -15,7 +15,7 @@ class Admin extends AdminModule
 
     public function getManage()
     {
-        $signatures = $this->db('esignatures')->desc('id')->limit(50)->toArray();
+        $signatures = $this->db('mlite_esignatures')->desc('id')->limit(50)->toArray();
         return $this->draw('manage.html', ['signatures' => htmlspecialchars_array($signatures)]);
     }
 
@@ -100,7 +100,7 @@ class Admin extends AdminModule
 
             $hash = hash_file('sha256', $path);
 
-            $save = $this->db('esignatures')->save([
+            $save = $this->db('mlite_esignatures')->save([
                 'ref_type' => $ref_type,
                 'ref_id' => $ref_id,
                 'signer_role' => $_POST['signer_role'] ?? 'unknown',
@@ -134,7 +134,7 @@ class Admin extends AdminModule
 
     public function getGeneratePdf($ref_type, $ref_id)
     {
-        $signatures = $this->db('esignatures')
+        $signatures = $this->db('mlite_esignatures')
             ->where('ref_type', $ref_type)
             ->where('ref_id', $ref_id)
             ->toArray();

@@ -13,7 +13,7 @@ Modul ini menyediakan fitur Tanda Tangan Elektronik (TTE) yang mematuhi UU ITE, 
 1.  Copy folder `esignature` ke dalam folder `plugins/` di instalasi mLITE Anda.
 2.  Login sebagai Administrator.
 3.  Masuk ke menu **Modul**, cari **E-Signature**, lalu klik **Install/Aktifkan**.
-4.  Tabel `esignatures` akan otomatis dibuat di database.
+4.  Tabel `mlite_esignatures` akan otomatis dibuat di database.
 
 ## Cara Penggunaan
 

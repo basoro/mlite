@@ -12,8 +12,8 @@ if (!defined('BASE_DIR')) {
 }
 require_once('config.php');
 
-if (DBDRIVER === 'sqlite' && (!file_exists(BASE_DIR . '/systems/data/mlite.sdb') || filesize(BASE_DIR . '/systems/data/mlite.sdb') === 0)) {
-    header('Location: /tools.php?action=migrate');
+if (!file_exists(BASE_DIR . '/.env')) {
+    header('Location: /install.php');
     exit;
 }
 

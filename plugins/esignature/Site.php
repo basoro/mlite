@@ -12,7 +12,7 @@ class Site extends SiteModule
 
     public function getVerify($hash)
     {
-        $signature = $this->db('esignatures')->where('signature_hash', $hash)->oneArray();
+        $signature = $this->db('mlite_esignatures')->where('signature_hash', $hash)->oneArray();
         
         if ($signature) {
              exit ($this->draw('verify.html', ['signature' => $signature, 'valid' => true]));

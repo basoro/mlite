@@ -1,8 +1,11 @@
--- CREATE DATABASE IF NOT EXISTS `mlite_520`;
+-- CREATE DATABASE IF NOT EXISTS `mlite`;
 
--- USE `mlite_520`;
+
+-- USE `mlite`;
+
 
 SET sql_mode = '';
+
 
 SET foreign_key_checks = 0;
 
@@ -18,7 +21,7 @@ CREATE TABLE `aturan_pakai` (
   KEY `kode_brng` (`kode_brng`),
   CONSTRAINT `aturan_pakai_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `aturan_pakai_ibfk_2` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `bahasa_pasien` (
@@ -26,7 +29,9 @@ CREATE TABLE `bahasa_pasien` (
   `nama_bahasa` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `nama_bahasa` (`nama_bahasa`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `bahasa_pasien` VALUES ("1","-");
 
 
@@ -37,7 +42,9 @@ CREATE TABLE `bangsal` (
   PRIMARY KEY (`kd_bangsal`),
   KEY `nm_bangsal` (`nm_bangsal`),
   KEY `status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `bangsal` VALUES ("-","-","1"),
 ("ANG","Anggrek","1"),
 ("APT","Apotek","1"),
@@ -47,7 +54,9 @@ INSERT INTO `bangsal` VALUES ("-","-","1"),
 CREATE TABLE `bank` (
   `namabank` varchar(50) NOT NULL,
   PRIMARY KEY (`namabank`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `bank` VALUES ("-"),
 ("T");
 
@@ -58,7 +67,7 @@ CREATE TABLE `barcode` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `barcode` (`barcode`),
   CONSTRAINT `barcode_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `beri_obat_operasi` (
@@ -74,7 +83,7 @@ CREATE TABLE `beri_obat_operasi` (
   KEY `jumlah` (`jumlah`),
   CONSTRAINT `beri_obat_operasi_ibfk_2` FOREIGN KEY (`kd_obat`) REFERENCES `obatbhp_ok` (`kd_obat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `beri_obat_operasi_ibfk_3` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `berkas_digital_perawatan` (
@@ -85,13 +94,15 @@ CREATE TABLE `berkas_digital_perawatan` (
   KEY `kode` (`kode`),
   CONSTRAINT `berkas_digital_perawatan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `berkas_digital_perawatan_ibfk_2` FOREIGN KEY (`kode`) REFERENCES `master_berkas_digital` (`kode`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `bidang` (
   `nama` varchar(15) NOT NULL,
   PRIMARY KEY (`nama`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `bidang` VALUES ("-");
 
 
@@ -112,7 +123,7 @@ CREATE TABLE `booking_operasi` (
   CONSTRAINT `booking_operasi_ibfk_2` FOREIGN KEY (`kode_paket`) REFERENCES `paket_operasi` (`kode_paket`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `booking_operasi_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `booking_operasi_ibfk_4` FOREIGN KEY (`kd_ruang_ok`) REFERENCES `ruang_ok` (`kd_ruang_ok`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `booking_periksa` (
@@ -130,7 +141,7 @@ CREATE TABLE `booking_periksa` (
   UNIQUE KEY `tanggal` (`tanggal`,`no_telp`),
   KEY `kd_poli` (`kd_poli`),
   CONSTRAINT `booking_periksa_ibfk_1` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `booking_periksa_balasan` (
@@ -138,7 +149,7 @@ CREATE TABLE `booking_periksa_balasan` (
   `balasan` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`no_booking`),
   CONSTRAINT `booking_periksa_balasan_ibfk_1` FOREIGN KEY (`no_booking`) REFERENCES `booking_periksa` (`no_booking`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `booking_periksa_diterima` (
@@ -148,7 +159,7 @@ CREATE TABLE `booking_periksa_diterima` (
   KEY `no_rkm_medis` (`no_rkm_medis`),
   CONSTRAINT `booking_periksa_diterima_ibfk_1` FOREIGN KEY (`no_booking`) REFERENCES `booking_periksa` (`no_booking`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `booking_periksa_diterima_ibfk_2` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `booking_registrasi` (
@@ -172,7 +183,7 @@ CREATE TABLE `booking_registrasi` (
   CONSTRAINT `booking_registrasi_ibfk_2` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `booking_registrasi_ibfk_3` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `booking_registrasi_ibfk_4` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `bpjs_prb` (
@@ -180,7 +191,7 @@ CREATE TABLE `bpjs_prb` (
   `prb` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`no_sep`),
   CONSTRAINT `bpjs_prb_ibfk_1` FOREIGN KEY (`no_sep`) REFERENCES `bridging_sep` (`no_sep`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `bridging_rujukan_bpjs` (
@@ -201,7 +212,7 @@ CREATE TABLE `bridging_rujukan_bpjs` (
   PRIMARY KEY (`no_rujukan`),
   KEY `no_sep` (`no_sep`),
   CONSTRAINT `bridging_rujukan_bpjs_ibfk_1` FOREIGN KEY (`no_sep`) REFERENCES `bridging_sep` (`no_sep`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `bridging_sep` (
@@ -260,7 +271,7 @@ CREATE TABLE `bridging_sep` (
   PRIMARY KEY (`no_sep`),
   KEY `no_rawat` (`no_rawat`),
   CONSTRAINT `bridging_sep_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `bridging_sep_internal` (
@@ -320,7 +331,7 @@ CREATE TABLE `bridging_sep_internal` (
   KEY `no_sep` (`no_sep`),
   CONSTRAINT `bridging_sep_internal_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `bridging_sep_internal_ibfk_2` FOREIGN KEY (`no_sep`) REFERENCES `bridging_sep` (`no_sep`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `bridging_srb_bpjs` (
@@ -338,7 +349,7 @@ CREATE TABLE `bridging_srb_bpjs` (
   `saran` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`no_sep`,`no_srb`),
   CONSTRAINT `bridging_srb_bpjs_ibfk_1` FOREIGN KEY (`no_sep`) REFERENCES `bridging_sep` (`no_sep`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `bridging_surat_kontrol_bpjs` (
@@ -353,7 +364,7 @@ CREATE TABLE `bridging_surat_kontrol_bpjs` (
   PRIMARY KEY (`no_surat`),
   KEY `bridging_surat_kontrol_bpjs_ibfk_1` (`no_sep`),
   CONSTRAINT `bridging_surat_kontrol_bpjs_ibfk_1` FOREIGN KEY (`no_sep`) REFERENCES `bridging_sep` (`no_sep`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `bridging_surat_pri_bpjs` (
@@ -371,7 +382,7 @@ CREATE TABLE `bridging_surat_pri_bpjs` (
   PRIMARY KEY (`no_surat`),
   KEY `no_rawat` (`no_rawat`),
   CONSTRAINT `bridging_surat_pri_bpjs_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `cacat_fisik` (
@@ -379,7 +390,9 @@ CREATE TABLE `cacat_fisik` (
   `nama_cacat` varchar(30) NOT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `nama_cacat` (`nama_cacat`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `cacat_fisik` VALUES ("1","-");
 
 
@@ -397,7 +410,7 @@ CREATE TABLE `catatan_adime_gizi` (
   KEY `nip` (`nip`) USING BTREE,
   CONSTRAINT `catatan_adime_gizi_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `catatan_adime_gizi_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `catatan_perawatan` (
@@ -410,7 +423,65 @@ CREATE TABLE `catatan_perawatan` (
   KEY `kd_dokter` (`kd_dokter`),
   CONSTRAINT `catatan_perawatan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `catatan_perawatan_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `data_tb` (
+  `no_rawat` varchar(17) NOT NULL,
+  `id_tb_03` varchar(30) DEFAULT NULL,
+  `id_periode_laporan` enum('1=Januari - Maret','2=April - Juni','3=Juli - September','4=Oktober - Desember') DEFAULT NULL,
+  `tanggal_buat_laporan` datetime DEFAULT NULL,
+  `tahun_buat_laporan` year DEFAULT NULL,
+  `kd_wasor` int DEFAULT NULL,
+  `noregkab` int DEFAULT NULL,
+  `id_propinsi` varchar(15) DEFAULT NULL,
+  `kd_kabupaten` varchar(15) DEFAULT NULL,
+  `id_kecamatan` varchar(15) DEFAULT NULL,
+  `id_kelurahan` varchar(15) DEFAULT NULL,
+  `nama_rujukan` enum('Inisiatif pasien/Keluarga','Anggota Masyarakat/Kader','Faskes','Dokter Praktek Mandiri','Poli lain','Lain-lain') DEFAULT NULL,
+  `sebutkan1` varchar(100) DEFAULT NULL,
+  `tipe_diagnosis` enum('Terkonfirmasi bakteriologis','Terdiagnosis klinis') DEFAULT NULL,
+  `klasifikasi_lokasi_anatomi` enum('Paru','Ekstraparu') DEFAULT NULL,
+  `klasifikasi_riwayat_pengobatan` enum('Baru','Kambuh','Diobati setelah gagal','Diobati Setelah Putus Berobat','Lain-lain','Riwayat Pengobatan Sebelumnya Tidak Diketahui','Pindahan') DEFAULT NULL,
+  `klasifikasi_status_hiv` enum('Positif','Negatif','Tidak diketahui') DEFAULT NULL,
+  `total_skoring_anak` enum('1','2','3','4','5','6','7','8','9','10','11','12','13','Tidak dilakukan') DEFAULT NULL,
+  `konfirmasiSkoring5` enum('Uji Tuberkulin Positif','Ada Kontak TB Paru','Uji Tuberkulin Negatif','Tidak Ada Kontak TB Paru') DEFAULT NULL,
+  `konfirmasiSkoring6` enum('Ada Kontak TB Paru','Tidak Ada','Tidak Jelas Kontak TB Paru') DEFAULT NULL,
+  `tanggal_mulai_pengobatan` date DEFAULT NULL,
+  `paduan_oat` varchar(500) DEFAULT NULL,
+  `sumber_obat` enum('Program TB','Bayar Sendiri','Asuransi','Lain-lain') DEFAULT NULL,
+  `sebutkan` varchar(500) DEFAULT NULL,
+  `sebelum_pengobatan_hasil_mikroskopis` enum('Negatif','1-19','1+','2+','3+','Tidak dilakukan') DEFAULT NULL,
+  `sebelum_pengobatan_hasil_tes_cepat` enum('Rif sensitif','Rif resisten','Negatif','Rif Indeterminated','Invalid','Error','No Result','Tidak dilakukan') DEFAULT NULL,
+  `sebelum_pengobatan_hasil_biakan` enum('Negatif','1-19 BTA','1+','2+','3+','4+','NTM','Kontaminasi','Tidak dilakukan') DEFAULT NULL,
+  `noreglab_bulan_2` varchar(15) DEFAULT NULL,
+  `hasil_mikroskopis_bulan_2` enum('Negatif','1-19','1+','2+','3+','Tidak dilakukan') DEFAULT NULL,
+  `noreglab_bulan_3` varchar(15) DEFAULT NULL,
+  `hasil_mikroskopis_bulan_3` enum('Negatif','1-19','1+','2+','3+','Tidak dilakukan') DEFAULT NULL,
+  `noreglab_bulan_5` varchar(15) DEFAULT NULL,
+  `hasil_mikroskopis_bulan_5` enum('Negatif','1-19','1+','2+','3+','Tidak dilakukan') DEFAULT NULL,
+  `akhir_pengobatan_noreglab` varchar(15) DEFAULT NULL,
+  `akhir_pengobatan_hasil_mikroskopis` enum('Negatif','1-19','1+','2+','3+','Tidak dilakukan') DEFAULT NULL,
+  `tanggal_hasil_akhir_pengobatan` date DEFAULT NULL,
+  `hasil_akhir_pengobatan` enum('Belum','Sembuh','Pengobatan Lengkap','Lost To Follow Up','Meninggal','Gagal','Pindah','') DEFAULT NULL,
+  `tanggal_dianjurkan_tes` date DEFAULT NULL,
+  `tanggal_tes_hiv` date DEFAULT NULL,
+  `hasil_tes_hiv` enum('Reaktif','Non Reaktif','Indeterminated') DEFAULT NULL,
+  `ppk` enum('Ya','Tidak') DEFAULT NULL,
+  `art` enum('Ya','Tidak') DEFAULT NULL,
+  `tb_dm` enum('Ya','Tidak') DEFAULT NULL,
+  `terapi_dm` enum('OHO','Inj. Insulin','') DEFAULT NULL,
+  `pindah_ro` enum('Ya','Tidak') DEFAULT NULL,
+  `status_pengobatan` enum('Sesuai Standar','Tidak Sesuai Standar') DEFAULT NULL,
+  `foto_toraks` enum('Positif','Negatif','Tidak Dilakukan') DEFAULT NULL,
+  `toraks_tdk_dilakukan` enum('Tidak dilakukan','Setelah terapi antibioka non OAT: tidak ada perbaikan Klinis, ada faktor resiko TB, dan atas pertimbangan dokter','Setelah terapi antibioka non OAT: ada Perbaikan Klinis') DEFAULT NULL,
+  `keterangan` varchar(100) DEFAULT NULL,
+  `kode_icd_x` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`no_rawat`),
+  KEY `kode_icd_x` (`kode_icd_x`),
+  CONSTRAINT `data_tb_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `data_tb_ibfk_2` FOREIGN KEY (`kode_icd_x`) REFERENCES `penyakit` (`kd_penyakit`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `databarang` (
@@ -470,73 +541,22 @@ CREATE TABLE `databarang` (
   CONSTRAINT `databarang_ibfk_5` FOREIGN KEY (`kode_kategori`) REFERENCES `kategori_barang` (`kode`) ON UPDATE CASCADE,
   CONSTRAINT `databarang_ibfk_6` FOREIGN KEY (`kode_golongan`) REFERENCES `golongan_barang` (`kode`) ON UPDATE CASCADE,
   CONSTRAINT `databarang_ibfk_7` FOREIGN KEY (`kode_satbesar`) REFERENCES `kodesatuan` (`kode_sat`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `databarang` VALUES ("B00001","Paracetamol 500mg","-","-","-","5000","5000","5000","5000","5000","5000","5000","5000","5000","5000","5000","5000","100","-","10","500","2024-06-10","1","-","-","-");
 
-CREATE TABLE `data_tb` (
-  `no_rawat` varchar(17) NOT NULL,
-  `id_tb_03` varchar(30) DEFAULT NULL,
-  `id_periode_laporan` enum('1=Januari - Maret','2=April - Juni','3=Juli - September','4=Oktober - Desember') DEFAULT NULL,
-  `tanggal_buat_laporan` datetime DEFAULT NULL,
-  `tahun_buat_laporan` year(4) DEFAULT NULL,
-  `kd_wasor` int(11) DEFAULT NULL,
-  `noregkab` int(11) DEFAULT NULL,
-  `id_propinsi` varchar(15) DEFAULT NULL,
-  `kd_kabupaten` varchar(15) DEFAULT NULL,
-  `id_kecamatan` varchar(15) DEFAULT NULL,
-  `id_kelurahan` varchar(15) DEFAULT NULL,
-  `nama_rujukan` enum('Inisiatif pasien/Keluarga','Anggota Masyarakat/Kader','Faskes','Dokter Praktek Mandiri','Poli lain','Lain-lain') DEFAULT NULL,
-  `sebutkan1` varchar(100) DEFAULT NULL,
-  `tipe_diagnosis` enum('Terkonfirmasi bakteriologis','Terdiagnosis klinis') DEFAULT NULL,
-  `klasifikasi_lokasi_anatomi` enum('Paru','Ekstraparu') DEFAULT NULL,
-  `klasifikasi_riwayat_pengobatan` enum('Baru','Kambuh','Diobati setelah gagal','Diobati Setelah Putus Berobat','Lain-lain','Riwayat Pengobatan Sebelumnya Tidak Diketahui','Pindahan') DEFAULT NULL,
-  `klasifikasi_status_hiv` enum('Positif','Negatif','Tidak diketahui') DEFAULT NULL,
-  `total_skoring_anak` enum('1','2','3','4','5','6','7','8','9','10','11','12','13','Tidak dilakukan') DEFAULT NULL,
-  `konfirmasiSkoring5` enum('Uji Tuberkulin Positif','Ada Kontak TB Paru','Uji Tuberkulin Negatif','Tidak Ada Kontak TB Paru') DEFAULT NULL,
-  `konfirmasiSkoring6` enum('Ada Kontak TB Paru','Tidak Ada','Tidak Jelas Kontak TB Paru') DEFAULT NULL,
-  `tanggal_mulai_pengobatan` date DEFAULT NULL,
-  `paduan_oat` varchar(500) DEFAULT NULL,
-  `sumber_obat` enum('Program TB','Bayar Sendiri','Asuransi','Lain-lain') DEFAULT NULL,
-  `sebutkan` varchar(500) DEFAULT NULL,
-  `sebelum_pengobatan_hasil_mikroskopis` enum('Negatif','1-19','1+','2+','3+','Tidak dilakukan') DEFAULT NULL,
-  `sebelum_pengobatan_hasil_tes_cepat` enum('Rif sensitif','Rif resisten','Negatif','Rif Indeterminated','Invalid','Error','No Result','Tidak dilakukan') DEFAULT NULL,
-  `sebelum_pengobatan_hasil_biakan` enum('Negatif','1-19 BTA','1+','2+','3+','4+','NTM','Kontaminasi','Tidak dilakukan') DEFAULT NULL,
-  `noreglab_bulan_2` varchar(15) DEFAULT NULL,
-  `hasil_mikroskopis_bulan_2` enum('Negatif','1-19','1+','2+','3+','Tidak dilakukan') DEFAULT NULL,
-  `noreglab_bulan_3` varchar(15) DEFAULT NULL,
-  `hasil_mikroskopis_bulan_3` enum('Negatif','1-19','1+','2+','3+','Tidak dilakukan') DEFAULT NULL,
-  `noreglab_bulan_5` varchar(15) DEFAULT NULL,
-  `hasil_mikroskopis_bulan_5` enum('Negatif','1-19','1+','2+','3+','Tidak dilakukan') DEFAULT NULL,
-  `akhir_pengobatan_noreglab` varchar(15) DEFAULT NULL,
-  `akhir_pengobatan_hasil_mikroskopis` enum('Negatif','1-19','1+','2+','3+','Tidak dilakukan') DEFAULT NULL,
-  `tanggal_hasil_akhir_pengobatan` date DEFAULT NULL,
-  `hasil_akhir_pengobatan` enum('Belum','Sembuh','Pengobatan Lengkap','Lost To Follow Up','Meninggal','Gagal','Pindah','') DEFAULT NULL,
-  `tanggal_dianjurkan_tes` date DEFAULT NULL,
-  `tanggal_tes_hiv` date DEFAULT NULL,
-  `hasil_tes_hiv` enum('Reaktif','Non Reaktif','Indeterminated') DEFAULT NULL,
-  `ppk` enum('Ya','Tidak') DEFAULT NULL,
-  `art` enum('Ya','Tidak') DEFAULT NULL,
-  `tb_dm` enum('Ya','Tidak') DEFAULT NULL,
-  `terapi_dm` enum('OHO','Inj. Insulin','') DEFAULT NULL,
-  `pindah_ro` enum('Ya','Tidak') DEFAULT NULL,
-  `status_pengobatan` enum('Sesuai Standar','Tidak Sesuai Standar') DEFAULT NULL,
-  `foto_toraks` enum('Positif','Negatif','Tidak Dilakukan') DEFAULT NULL,
-  `toraks_tdk_dilakukan` enum('Tidak dilakukan','Setelah terapi antibioka non OAT: tidak ada perbaikan Klinis, ada faktor resiko TB, dan atas pertimbangan dokter','Setelah terapi antibioka non OAT: ada Perbaikan Klinis') DEFAULT NULL,
-  `keterangan` varchar(100) DEFAULT NULL,
-  `kode_icd_x` varchar(15) DEFAULT NULL,
-  PRIMARY KEY (`no_rawat`),
-  KEY `kode_icd_x` (`kode_icd_x`),
-  CONSTRAINT `data_tb_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `data_tb_ibfk_2` FOREIGN KEY (`kode_icd_x`) REFERENCES `penyakit` (`kd_penyakit`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `departemen` (
   `dep_id` char(4) NOT NULL,
   `nama` varchar(25) NOT NULL,
   PRIMARY KEY (`dep_id`),
   KEY `nama` (`nama`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `departemen` VALUES ("-","-");
+
 
 CREATE TABLE `detail_obat_racikan` (
   `tgl_perawatan` date NOT NULL,
@@ -549,7 +569,8 @@ CREATE TABLE `detail_obat_racikan` (
   KEY `kode_brng` (`kode_brng`),
   CONSTRAINT `detail_obat_racikan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
   CONSTRAINT `detail_obat_racikan_ibfk_2` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
 
 CREATE TABLE `detail_pemberian_obat` (
   `tgl_perawatan` date NOT NULL DEFAULT '0000-00-00',
@@ -581,7 +602,7 @@ CREATE TABLE `detail_pemberian_obat` (
   CONSTRAINT `detail_pemberian_obat_ibfk_3` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `detail_pemberian_obat_ibfk_4` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `detail_pemberian_obat_ibfk_5` FOREIGN KEY (`kd_bangsal`) REFERENCES `bangsal` (`kd_bangsal`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `detail_periksa_lab` (
@@ -620,7 +641,7 @@ CREATE TABLE `detail_periksa_lab` (
   CONSTRAINT `detail_periksa_lab_ibfk_10` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
   CONSTRAINT `detail_periksa_lab_ibfk_11` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON UPDATE CASCADE,
   CONSTRAINT `detail_periksa_lab_ibfk_12` FOREIGN KEY (`id_template`) REFERENCES `template_laboratorium` (`id_template`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `diagnosa_pasien` (
@@ -636,7 +657,7 @@ CREATE TABLE `diagnosa_pasien` (
   KEY `no_rawat` (`no_rawat`),
   CONSTRAINT `diagnosa_pasien_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
   CONSTRAINT `diagnosa_pasien_ibfk_2` FOREIGN KEY (`kd_penyakit`) REFERENCES `penyakit` (`kd_penyakit`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `dokter` (
@@ -671,7 +692,9 @@ CREATE TABLE `dokter` (
   KEY `status` (`status`),
   CONSTRAINT `dokter_ibfk_2` FOREIGN KEY (`kd_sps`) REFERENCES `spesialis` (`kd_sps`) ON UPDATE CASCADE,
   CONSTRAINT `dokter_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `pegawai` (`nik`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `dokter` VALUES ("DR001","dr. Ataaka Muhammad","L","Barabai","2000-09-18","O","Islam","Barabai","-","MENIKAH","UMUM","UI","-","1");
 
 
@@ -682,7 +705,7 @@ CREATE TABLE `dpjp_ranap` (
   KEY `dpjp_ranap_ibfk_2` (`kd_dokter`),
   CONSTRAINT `dpjp_ranap_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
   CONSTRAINT `dpjp_ranap_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `emergency_index` (
@@ -690,7 +713,9 @@ CREATE TABLE `emergency_index` (
   `nama_emergency` varchar(200) DEFAULT NULL,
   `indek` tinyint DEFAULT NULL,
   PRIMARY KEY (`kode_emergency`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `emergency_index` VALUES ("-","-","1");
 
 
@@ -701,14 +726,16 @@ CREATE TABLE `gambar_radiologi` (
   `lokasi_gambar` varchar(500) NOT NULL,
   PRIMARY KEY (`no_rawat`,`tgl_periksa`,`jam`,`lokasi_gambar`),
   CONSTRAINT `gambar_radiologi_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `golongan_barang` (
   `kode` char(4) NOT NULL,
   `nama` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`kode`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `golongan_barang` VALUES ("-","-");
 
 
@@ -724,7 +751,7 @@ CREATE TABLE `gudangbarang` (
   KEY `kd_bangsal` (`kd_bangsal`) USING BTREE,
   CONSTRAINT `gudangbarang_ibfk_1` FOREIGN KEY (`kd_bangsal`) REFERENCES `bangsal` (`kd_bangsal`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `gudangbarang_ibfk_2` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `hasil_radiologi` (
@@ -735,7 +762,7 @@ CREATE TABLE `hasil_radiologi` (
   PRIMARY KEY (`no_rawat`,`tgl_periksa`,`jam`),
   KEY `no_rawat` (`no_rawat`),
   CONSTRAINT `hasil_radiologi_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `icd9` (
@@ -743,7 +770,7 @@ CREATE TABLE `icd9` (
   `deskripsi_panjang` varchar(250) DEFAULT NULL,
   `deskripsi_pendek` varchar(40) DEFAULT NULL,
   PRIMARY KEY (`kode`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `industrifarmasi` (
@@ -757,7 +784,9 @@ CREATE TABLE `industrifarmasi` (
   KEY `alamat` (`alamat`),
   KEY `kota` (`kota`),
   KEY `no_telp` (`no_telp`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `industrifarmasi` VALUES ("-","-","-","-","0");
 
 
@@ -782,7 +811,7 @@ CREATE TABLE `inventaris` (
   KEY `no_box` (`no_box`),
   CONSTRAINT `inventaris_ibfk_1` FOREIGN KEY (`kode_barang`) REFERENCES `inventaris_barang` (`kode_barang`) ON UPDATE CASCADE,
   CONSTRAINT `inventaris_ibfk_2` FOREIGN KEY (`id_ruang`) REFERENCES `inventaris_ruang` (`id_ruang`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `inventaris_barang` (
@@ -808,7 +837,7 @@ CREATE TABLE `inventaris_barang` (
   CONSTRAINT `inventaris_barang_ibfk_6` FOREIGN KEY (`id_merk`) REFERENCES `inventaris_merk` (`id_merk`) ON UPDATE CASCADE,
   CONSTRAINT `inventaris_barang_ibfk_7` FOREIGN KEY (`id_kategori`) REFERENCES `inventaris_kategori` (`id_kategori`) ON UPDATE CASCADE,
   CONSTRAINT `inventaris_barang_ibfk_8` FOREIGN KEY (`id_jenis`) REFERENCES `inventaris_jenis` (`id_jenis`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `inventaris_jenis` (
@@ -816,7 +845,7 @@ CREATE TABLE `inventaris_jenis` (
   `nama_jenis` varchar(40) DEFAULT NULL,
   PRIMARY KEY (`id_jenis`),
   KEY `nama_jenis` (`nama_jenis`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `inventaris_kategori` (
@@ -824,7 +853,7 @@ CREATE TABLE `inventaris_kategori` (
   `nama_kategori` varchar(40) DEFAULT NULL,
   PRIMARY KEY (`id_kategori`),
   KEY `nama_kategori` (`nama_kategori`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `inventaris_merk` (
@@ -832,7 +861,7 @@ CREATE TABLE `inventaris_merk` (
   `nama_merk` varchar(40) NOT NULL,
   PRIMARY KEY (`id_merk`),
   KEY `nama_merk` (`nama_merk`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `inventaris_peminjaman` (
@@ -850,7 +879,7 @@ CREATE TABLE `inventaris_peminjaman` (
   KEY `status_pinjam` (`status_pinjam`) USING BTREE,
   CONSTRAINT `inventaris_peminjaman_ibfk_1` FOREIGN KEY (`no_inventaris`) REFERENCES `inventaris` (`no_inventaris`) ON UPDATE CASCADE,
   CONSTRAINT `inventaris_peminjaman_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `inventaris_produsen` (
@@ -866,7 +895,7 @@ CREATE TABLE `inventaris_produsen` (
   KEY `no_telp` (`no_telp`),
   KEY `email` (`email`),
   KEY `website_produsen` (`website_produsen`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `inventaris_ruang` (
@@ -874,7 +903,7 @@ CREATE TABLE `inventaris_ruang` (
   `nama_ruang` varchar(40) NOT NULL,
   PRIMARY KEY (`id_ruang`),
   KEY `nama_ruang` (`nama_ruang`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `jabatan` (
@@ -882,7 +911,9 @@ CREATE TABLE `jabatan` (
   `nm_jbtn` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`kd_jbtn`),
   KEY `nm_jbtn` (`nm_jbtn`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `jabatan` VALUES ("-","-");
 
 
@@ -900,7 +931,7 @@ CREATE TABLE `jadwal` (
   KEY `jam_selesai` (`jam_selesai`),
   CONSTRAINT `jadwal_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `jadwal_ibfk_2` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `jadwal_pegawai` (
@@ -950,7 +981,7 @@ CREATE TABLE `jadwal_pegawai` (
   KEY `h18` (`h18`),
   KEY `h9` (`h9`),
   CONSTRAINT `jadwal_pegawai_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `jadwal_tambahan` (
@@ -990,7 +1021,7 @@ CREATE TABLE `jadwal_tambahan` (
   `h31` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
   PRIMARY KEY (`id`,`tahun`,`bulan`),
   CONSTRAINT `jadwal_tambahan_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `jam_jaga` (
@@ -1006,7 +1037,7 @@ CREATE TABLE `jam_jaga` (
   KEY `jam_masuk` (`jam_masuk`),
   KEY `jam_pulang` (`jam_pulang`),
   CONSTRAINT `jam_jaga_ibfk_1` FOREIGN KEY (`dep_id`) REFERENCES `departemen` (`dep_id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `jam_masuk` (
@@ -1014,7 +1045,9 @@ CREATE TABLE `jam_masuk` (
   `jam_masuk` time NOT NULL,
   `jam_pulang` time NOT NULL,
   PRIMARY KEY (`shift`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `jam_masuk` VALUES ("Pagi","06:00:00","16:00:00"),
 ("Pagi2","08:00:00","14:00:00"),
 ("Pagi3","10:00:00","17:00:00"),
@@ -1035,7 +1068,9 @@ CREATE TABLE `jenis` (
   PRIMARY KEY (`kdjns`),
   KEY `nama` (`nama`),
   KEY `keterangan` (`keterangan`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `jenis` VALUES ("-","-","-");
 
 
@@ -1047,7 +1082,9 @@ CREATE TABLE `jnj_jabatan` (
   PRIMARY KEY (`kode`),
   KEY `nama` (`nama`),
   KEY `tnj` (`tnj`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `jnj_jabatan` VALUES ("-","-","0","1");
 
 
@@ -1085,7 +1122,9 @@ CREATE TABLE `jns_perawatan` (
   CONSTRAINT `jns_perawatan_ibfk_1` FOREIGN KEY (`kd_kategori`) REFERENCES `kategori_perawatan` (`kd_kategori`) ON UPDATE CASCADE,
   CONSTRAINT `jns_perawatan_ibfk_2` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON UPDATE CASCADE,
   CONSTRAINT `jns_perawatan_ibfk_3` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `jns_perawatan` VALUES ("RJ001","Pemeriksaan rutin","-","0","0","50000","0","0","0","50000","0","50000","-","-","1");
 
 
@@ -1124,7 +1163,9 @@ CREATE TABLE `jns_perawatan_inap` (
   CONSTRAINT `jns_perawatan_inap_ibfk_7` FOREIGN KEY (`kd_kategori`) REFERENCES `kategori_perawatan` (`kd_kategori`) ON UPDATE CASCADE,
   CONSTRAINT `jns_perawatan_inap_ibfk_8` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON UPDATE CASCADE,
   CONSTRAINT `jns_perawatan_inap_ibfk_9` FOREIGN KEY (`kd_bangsal`) REFERENCES `bangsal` (`kd_bangsal`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `jns_perawatan_inap` VALUES ("RI001","Pasang Infus","-","0","0","0","25000","0","0","0","25000","25000","-","-","1","Kelas 1");
 
 
@@ -1156,7 +1197,9 @@ CREATE TABLE `jns_perawatan_lab` (
   KEY `menejemen` (`menejemen`),
   KEY `status` (`status`),
   CONSTRAINT `jns_perawatan_lab_ibfk_1` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `jns_perawatan_lab` VALUES ("LAB001","Pemeriksaan Darah","0","0","0","100000","0","0","0","100000","-","1","Kelas 1","PK");
 
 
@@ -1187,7 +1230,9 @@ CREATE TABLE `jns_perawatan_radiologi` (
   KEY `menejemen` (`menejemen`),
   KEY `status` (`status`),
   CONSTRAINT `jns_perawatan_radiologi_ibfk_1` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `jns_perawatan_radiologi` VALUES ("RAD001","Thorax","0","0","0","150000","0","0","0","150000","-","1","Kelas 1");
 
 
@@ -1196,7 +1241,9 @@ CREATE TABLE `kabupaten` (
   `nm_kab` varchar(60) NOT NULL,
   PRIMARY KEY (`kd_kab`),
   UNIQUE KEY `nm_kab` (`nm_kab`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `kabupaten` VALUES ("1","-");
 
 
@@ -1214,7 +1261,9 @@ CREATE TABLE `kamar` (
   KEY `kelas` (`kelas`),
   KEY `statusdata` (`statusdata`),
   CONSTRAINT `kamar_ibfk_1` FOREIGN KEY (`kd_bangsal`) REFERENCES `bangsal` (`kd_bangsal`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `kamar` VALUES ("ANG01","ANG","100000","KOSONG","Kelas 1","1"),
 ("ANG02","ANG","100000","KOSONG","Kelas 1","1");
 
@@ -1244,14 +1293,16 @@ CREATE TABLE `kamar_inap` (
   KEY `trf_kamar` (`trf_kamar`),
   CONSTRAINT `kamar_inap_ibfk_2` FOREIGN KEY (`kd_kamar`) REFERENCES `kamar` (`kd_kamar`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `kamar_inap_ibfk_3` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `kategori_barang` (
   `kode` char(4) NOT NULL,
   `nama` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`kode`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `kategori_barang` VALUES ("-","-");
 
 
@@ -1262,7 +1313,9 @@ CREATE TABLE `kategori_penyakit` (
   PRIMARY KEY (`kd_ktg`),
   KEY `nm_kategori` (`nm_kategori`),
   KEY `ciri_umum` (`ciri_umum`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `kategori_penyakit` VALUES ("-","-","-");
 
 
@@ -1271,7 +1324,9 @@ CREATE TABLE `kategori_perawatan` (
   `nm_kategori` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`kd_kategori`),
   KEY `nm_kategori` (`nm_kategori`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `kategori_perawatan` VALUES ("-","-");
 
 
@@ -1279,7 +1334,9 @@ CREATE TABLE `kecamatan` (
   `kd_kec` int NOT NULL,
   `nm_kec` varchar(60) NOT NULL,
   PRIMARY KEY (`kd_kec`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `kecamatan` VALUES ("1","-");
 
 
@@ -1288,7 +1345,9 @@ CREATE TABLE `kelompok_jabatan` (
   `nama_kelompok` varchar(100) DEFAULT NULL,
   `indek` tinyint DEFAULT NULL,
   PRIMARY KEY (`kode_kelompok`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `kelompok_jabatan` VALUES ("-","-","1");
 
 
@@ -1296,7 +1355,9 @@ CREATE TABLE `kelurahan` (
   `kd_kel` varchar(11) NOT NULL,
   `nm_kel` varchar(60) NOT NULL,
   PRIMARY KEY (`kd_kel`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `kelurahan` VALUES ("1","-");
 
 
@@ -1305,7 +1366,9 @@ CREATE TABLE `kodesatuan` (
   `satuan` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`kode_sat`),
   KEY `satuan` (`satuan`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `kodesatuan` VALUES ("-","-");
 
 
@@ -1320,7 +1383,7 @@ CREATE TABLE `laporan_operasi` (
   `laporan_operasi` text NOT NULL,
   PRIMARY KEY (`no_rawat`,`tanggal`),
   CONSTRAINT `laporan_operasi_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `maping_dokter_dpjpvclaim` (
@@ -1329,7 +1392,7 @@ CREATE TABLE `maping_dokter_dpjpvclaim` (
   `nm_dokter_bpjs` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`kd_dokter`) USING BTREE,
   CONSTRAINT `maping_dokter_dpjpvclaim_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `maping_dokter_pcare` (
@@ -1338,7 +1401,7 @@ CREATE TABLE `maping_dokter_pcare` (
   `nm_dokter_pcare` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`kd_dokter`) USING BTREE,
   CONSTRAINT `maping_dokter_pcare_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `maping_poli_bpjs` (
@@ -1348,7 +1411,7 @@ CREATE TABLE `maping_poli_bpjs` (
   PRIMARY KEY (`kd_poli_rs`),
   UNIQUE KEY `kd_poli_bpjs` (`kd_poli_bpjs`) USING BTREE,
   CONSTRAINT `maping_poli_bpjs_ibfk_1` FOREIGN KEY (`kd_poli_rs`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `maping_poliklinik_pcare` (
@@ -1357,13 +1420,15 @@ CREATE TABLE `maping_poliklinik_pcare` (
   `nm_poli_pcare` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`kd_poli_rs`) USING BTREE,
   CONSTRAINT `maping_poliklinik_pcare_ibfk_1` FOREIGN KEY (`kd_poli_rs`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `master_aturan_pakai` (
   `aturan` varchar(150) NOT NULL,
   PRIMARY KEY (`aturan`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `master_aturan_pakai` VALUES ("3 x 1 Sehari");
 
 
@@ -1371,7 +1436,9 @@ CREATE TABLE `master_berkas_digital` (
   `kode` varchar(10) NOT NULL,
   `nama` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`kode`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `master_berkas_digital` VALUES ("DIG001","Berkas Digital");
 
 
@@ -1379,14 +1446,16 @@ CREATE TABLE `master_masalah_keperawatan` (
   `kode_masalah` varchar(3) NOT NULL,
   `nama_masalah` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`kode_masalah`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `metode_racik` (
   `kd_racik` varchar(3) NOT NULL,
   `nm_racik` varchar(30) NOT NULL,
   PRIMARY KEY (`kd_racik`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `metode_racik` VALUES ("1","Puyer");
 
 
@@ -1395,7 +1464,7 @@ CREATE TABLE `mlite_akun_kegiatan` (
   `kegiatan` varchar(200) DEFAULT NULL,
   `kd_rek` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_antrian_loket` (
@@ -1409,7 +1478,7 @@ CREATE TABLE `mlite_antrian_loket` (
   `status` varchar(10) NOT NULL DEFAULT '0',
   `loket` varchar(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (`kd`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_antrian_referensi` (
@@ -1421,7 +1490,7 @@ CREATE TABLE `mlite_antrian_referensi` (
   `jenis_kunjungan` varchar(10) NOT NULL,
   `status_kirim` varchar(20) DEFAULT NULL,
   `keterangan` varchar(250) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_antrian_referensi_batal` (
@@ -1429,7 +1498,7 @@ CREATE TABLE `mlite_antrian_referensi_batal` (
   `nomor_referensi` varchar(50) NOT NULL,
   `kodebooking` varchar(100) NOT NULL,
   `keterangan` varchar(250) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_antrian_referensi_taskid` (
@@ -1439,7 +1508,7 @@ CREATE TABLE `mlite_antrian_referensi_taskid` (
   `waktu` varchar(50) NOT NULL,
   `status` varchar(20) DEFAULT NULL,
   `keterangan` varchar(250) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_apamregister` (
@@ -1447,7 +1516,7 @@ CREATE TABLE `mlite_apamregister` (
   `email` varchar(225) NOT NULL,
   `nomor_ktp` varchar(225) NOT NULL,
   `nomor_telepon` varchar(225) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_api_key` (
@@ -1459,7 +1528,7 @@ CREATE TABLE `mlite_api_key` (
   `exp_time` datetime NOT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   KEY `mlite_api_key_ibfk_1` (`username`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_apotek_online_log` (
@@ -1475,7 +1544,7 @@ CREATE TABLE `mlite_apotek_online_log` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `no_rawat` (`no_rawat`) USING BTREE,
   KEY `tanggal_kirim` (`tanggal_kirim`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_apotek_online_maping_obat` (
@@ -1484,7 +1553,7 @@ CREATE TABLE `mlite_apotek_online_maping_obat` (
   `nama_obat_bpjs` varchar(200) NOT NULL,
   PRIMARY KEY (`kode_brng`) USING BTREE,
   KEY `kd_obat_bpjs` (`kd_obat_bpjs`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_apotek_online_resep_response_log` (
@@ -1511,7 +1580,7 @@ CREATE TABLE `mlite_apotek_online_resep_response_log` (
   KEY `idx_no_sep_kunjungan` (`no_sep_kunjungan`) USING BTREE,
   KEY `idx_no_resep` (`no_resep`) USING BTREE,
   KEY `idx_tanggal_simpan` (`tanggal_simpan`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_apotek_online_sep_data` (
@@ -1546,7 +1615,7 @@ CREATE TABLE `mlite_apotek_online_sep_data` (
   KEY `no_kartu` (`no_kartu`) USING BTREE,
   KEY `nama_peserta` (`nama_peserta`) USING BTREE,
   KEY `tanggal_simpan` (`tanggal_simpan`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_billing` (
@@ -1562,7 +1631,20 @@ CREATE TABLE `mlite_billing` (
   `id_user` int NOT NULL,
   `keterangan` varchar(100) NOT NULL,
   PRIMARY KEY (`id_billing`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `mlite_bpjs_emr_logs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `no_sep` varchar(50) DEFAULT NULL,
+  `no_rawat` varchar(50) DEFAULT NULL,
+  `payload_json` longtext,
+  `payload_encrypted` longtext,
+  `response` longtext,
+  `status` varchar(20) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_bridging_pcare` (
@@ -1633,7 +1715,20 @@ CREATE TABLE `mlite_bridging_pcare` (
   `terapi_obat` text,
   `terapi_non_obat` text,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_crud_permissions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user` varchar(100) NOT NULL,
+  `module` varchar(100) NOT NULL,
+  `can_create` varchar(10) NOT NULL DEFAULT 'true',
+  `can_read` varchar(10) NOT NULL DEFAULT 'true',
+  `can_update` varchar(10) NOT NULL DEFAULT 'true',
+  `can_delete` varchar(10) NOT NULL DEFAULT 'true',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `user` (`user`,`module`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_detailjurnal` (
@@ -1648,20 +1743,7 @@ CREATE TABLE `mlite_detailjurnal` (
   KEY `kredit` (`kredit`),
   CONSTRAINT `mlite_detailjurnal_ibfk_1` FOREIGN KEY (`no_jurnal`) REFERENCES `mlite_jurnal` (`no_jurnal`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `mlite_detailjurnal_ibfk_2` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
-CREATE TABLE `mlite_crud_permissions` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user` varchar(100) NOT NULL,
-  `module` varchar(100) NOT NULL,
-  `can_create` varchar(10) NOT NULL DEFAULT 'true',
-  `can_read` varchar(10) NOT NULL DEFAULT 'true',
-  `can_update` varchar(10) NOT NULL DEFAULT 'true',
-  `can_delete` varchar(10) NOT NULL DEFAULT 'true',
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `user` (`user`,`module`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_duitku` (
@@ -1679,7 +1761,7 @@ CREATE TABLE `mlite_duitku` (
   KEY `reference` (`reference`),
   KEY `mlite_duitku_ibfk_1` (`no_rkm_medis`),
   CONSTRAINT `mlite_duitku_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_eklaim_logs` (
@@ -1692,7 +1774,28 @@ CREATE TABLE `mlite_eklaim_logs` (
   `status` int DEFAULT '1',
   `username` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_esignatures` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `ref_type` varchar(50) NOT NULL,
+  `ref_id` varchar(50) NOT NULL,
+  `signer_role` varchar(50) NOT NULL,
+  `signer_id` varchar(50) NOT NULL,
+  `signer_name` varchar(255) NOT NULL,
+  `signature_path` varchar(255) NOT NULL,
+  `signature_hash` varchar(255) NOT NULL,
+  `chain_hash` varchar(255) DEFAULT NULL,
+  `signed_at` datetime NOT NULL,
+  `ip_address` varchar(45) NOT NULL,
+  `user_agent` varchar(255) NOT NULL,
+  `legal_basis` text,
+  `audit_json` text,
+  PRIMARY KEY (`id`),
+  KEY `ref_idx` (`ref_type`,`ref_id`),
+  KEY `hash_idx` (`signature_hash`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_geolocation_presensi` (
@@ -1702,7 +1805,7 @@ CREATE TABLE `mlite_geolocation_presensi` (
   `longitude` varchar(200) NOT NULL,
   KEY `mlite_geolocation_presensi_ibfk_1` (`id`),
   CONSTRAINT `mlite_geolocation_presensi_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_idr_codes` (
@@ -1716,7 +1819,7 @@ CREATE TABLE `mlite_idr_codes` (
   `asterisk` tinyint(1) DEFAULT NULL,
   `im` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_inacbg_codes` (
@@ -1727,7 +1830,7 @@ CREATE TABLE `mlite_inacbg_codes` (
   `system` varchar(100) DEFAULT NULL,
   `validcode` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_jurnal` (
@@ -1742,27 +1845,31 @@ CREATE TABLE `mlite_jurnal` (
   KEY `tgl_jurnal` (`tgl_jurnal`),
   KEY `jenis` (`jenis`),
   KEY `keterangan` (`keterangan`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_kasir_shift` (
-  `id_shift` INT AUTO_INCREMENT PRIMARY KEY,
-  `user_id` VARCHAR(64) NOT NULL,
-  `waktu_buka` DATETIME NOT NULL,
-  `waktu_tutup` DATETIME NULL,
-  `kas_awal` DECIMAL(14,2) DEFAULT 0,
-  `kas_akhir` DECIMAL(14,2) DEFAULT 0,
-  `total_transaksi` DECIMAL(14,2) DEFAULT 0,
-  `selisih` DECIMAL(14,2) DEFAULT 0,
-  `keterangan` VARCHAR(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `id_shift` int NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(64) NOT NULL,
+  `waktu_buka` datetime NOT NULL,
+  `waktu_tutup` datetime DEFAULT NULL,
+  `kas_awal` decimal(14,2) DEFAULT '0.00',
+  `kas_akhir` decimal(14,2) DEFAULT '0.00',
+  `total_transaksi` decimal(14,2) DEFAULT '0.00',
+  `selisih` decimal(14,2) DEFAULT '0.00',
+  `keterangan` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id_shift`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_login_attempts` (
   `ip` text,
   `attempts` int NOT NULL,
   `expires` int NOT NULL DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+
+INSERT INTO `mlite_login_attempts` VALUES ("127.0.0.1","0","0");
 
 
 CREATE TABLE `mlite_loinc_radiologi` (
@@ -1784,7 +1891,45 @@ CREATE TABLE `mlite_loinc_radiologi` (
   `BodySiteDisplay` text,
   `BodySiteCodeSystem` text,
   PRIMARY KEY (`Code`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_mini_pacs_instance` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `series_id` int NOT NULL,
+  `sop_instance_uid` varchar(100) NOT NULL,
+  `file_path` varchar(500) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_sop_instance` (`sop_instance_uid`),
+  KEY `fk_series_id` (`series_id`),
+  CONSTRAINT `fk_mlite_mini_pacs_instance_series` FOREIGN KEY (`series_id`) REFERENCES `mlite_mini_pacs_series` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_mini_pacs_series` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `study_id` int NOT NULL,
+  `series_instance_uid` varchar(100) NOT NULL,
+  `series_description` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_series_instance` (`series_instance_uid`),
+  KEY `fk_study_id` (`study_id`),
+  CONSTRAINT `fk_mlite_mini_pacs_series_study` FOREIGN KEY (`study_id`) REFERENCES `mlite_mini_pacs_study` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_mini_pacs_study` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `no_rawat` varchar(17) NOT NULL,
+  `study_instance_uid` varchar(100) NOT NULL,
+  `study_date` datetime DEFAULT NULL,
+  `modality` varchar(10) DEFAULT NULL,
+  `description` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_study_instance` (`study_instance_uid`),
+  KEY `fk_no_rawat` (`no_rawat`),
+  CONSTRAINT `fk_mlite_mini_pacs_study_no_rawat` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_modules` (
@@ -1792,7 +1937,9 @@ CREATE TABLE `mlite_modules` (
   `dir` text,
   `sequence` text,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=36 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=55 DEFAULT CHARSET=utf8mb4;
+
+
 INSERT INTO `mlite_modules` VALUES ("1","settings","9"),
 ("2","dashboard","0"),
 ("3","master","1"),
@@ -1805,7 +1952,7 @@ INSERT INTO `mlite_modules` VALUES ("1","settings","9"),
 ("10","modules","7"),
 ("11","wagateway","10"),
 ("12","apotek_ralan","11"),
-("13","dokter_ralan","12"),
+("36","afm","31"),
 ("14","igd","13"),
 ("15","dokter_igd","14"),
 ("16","laboratorium","15"),
@@ -1825,7 +1972,23 @@ INSERT INTO `mlite_modules` VALUES ("1","settings","9"),
 ("30","vedika","29"),
 ("31","profil","30"),
 ("32","orthanc","31"),
-("33","veronisa","32");
+("37","bpjs_emr","32"),
+("38","bridging_hfis","33"),
+("39","dokter_ralan","34"),
+("54","esignature","48"),
+("41","icare","36"),
+("42","inventaris","37"),
+("43","jasa_medis","38"),
+("44","laporan","39"),
+("45","mini_pacs","40"),
+("46","mlite_api_key","41"),
+("47","mlite_logs","42"),
+("48","penjualan","43"),
+("49","satu_sehat","44"),
+("50","sertisign","45"),
+("51","surat","46"),
+("52","utd","47"),
+("53","veronisa","48");
 
 
 CREATE TABLE `mlite_news` (
@@ -1843,7 +2006,7 @@ CREATE TABLE `mlite_news` (
   `updated_at` int NOT NULL,
   `created_at` int NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_news_tags` (
@@ -1851,7 +2014,7 @@ CREATE TABLE `mlite_news_tags` (
   `name` varchar(225) DEFAULT NULL,
   `slug` varchar(225) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_news_tags_relationship` (
@@ -1861,7 +2024,7 @@ CREATE TABLE `mlite_news_tags_relationship` (
   KEY `tag_id` (`tag_id`) USING BTREE,
   CONSTRAINT `mlite_news_tags_relationship_ibfk_1` FOREIGN KEY (`news_id`) REFERENCES `mlite_news` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `mlite_news_tags_relationship_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `mlite_news_tags` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_notifications` (
@@ -1872,7 +2035,7 @@ CREATE TABLE `mlite_notifications` (
   `no_rkm_medis` varchar(255) NOT NULL,
   `status` varchar(250) NOT NULL DEFAULT 'unread',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_odontogram` (
@@ -1884,7 +2047,7 @@ CREATE TABLE `mlite_odontogram` (
   `id_user` text NOT NULL,
   `tgl_input` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_ohis` (
@@ -1909,7 +2072,7 @@ CREATE TABLE `mlite_ohis` (
   `id_user` text NOT NULL,
   `tgl_input` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_pendaftaran_oral_diagnostic` (
@@ -1943,7 +2106,7 @@ CREATE TABLE `mlite_pendaftaran_oral_diagnostic` (
   CONSTRAINT `mlite_pendaftaran_oral_diagnostic_ibfk_4` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `mlite_pendaftaran_oral_diagnostic_ibfk_6` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON UPDATE CASCADE,
   CONSTRAINT `mlite_pendaftaran_oral_diagnostic_ibfk_7` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_pengaduan` (
@@ -1954,7 +2117,7 @@ CREATE TABLE `mlite_pengaduan` (
   PRIMARY KEY (`id`),
   KEY `no_rkm_medis` (`no_rkm_medis`),
   CONSTRAINT `mlite_pengaduan_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_pengaduan_detail` (
@@ -1966,7 +2129,7 @@ CREATE TABLE `mlite_pengaduan_detail` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `pengaduan_detail_ibfk_1` (`pengaduan_id`),
   CONSTRAINT `mlite_pengaduan_detail_ibfk_1` FOREIGN KEY (`pengaduan_id`) REFERENCES `mlite_pengaduan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_penjualan` (
@@ -1980,7 +2143,7 @@ CREATE TABLE `mlite_penjualan` (
   `id_user` varchar(50) NOT NULL,
   `keterangan` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE `mlite_penjualan_barang` (
@@ -1990,7 +2153,7 @@ CREATE TABLE `mlite_penjualan_barang` (
   `harga` varchar(100) DEFAULT NULL,
   `keterangan` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_penjualan_billing` (
@@ -2004,7 +2167,7 @@ CREATE TABLE `mlite_penjualan_billing` (
   `jam` time NOT NULL,
   `id_user` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE `mlite_penjualan_detail` (
@@ -2019,7 +2182,7 @@ CREATE TABLE `mlite_penjualan_detail` (
   `jam` time NOT NULL,
   `id_user` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE `mlite_query_logs` (
@@ -2030,7 +2193,7 @@ CREATE TABLE `mlite_query_logs` (
   `error_message` text,
   `username` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_rekening` (
@@ -2043,7 +2206,7 @@ CREATE TABLE `mlite_rekening` (
   KEY `nm_rek` (`nm_rek`),
   KEY `tipe` (`tipe`),
   KEY `balance` (`balance`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_rekeningtahun` (
@@ -2054,7 +2217,7 @@ CREATE TABLE `mlite_rekeningtahun` (
   KEY `kd_rek` (`kd_rek`),
   KEY `saldo_awal` (`saldo_awal`),
   CONSTRAINT `mlite_rekeningtahun_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_remember_me` (
@@ -2064,7 +2227,7 @@ CREATE TABLE `mlite_remember_me` (
   `expiry` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `mlite_remember_me_ibfk_1` (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE `mlite_rujukan_internal_poli` (
@@ -2079,7 +2242,7 @@ CREATE TABLE `mlite_rujukan_internal_poli` (
   CONSTRAINT `mlite_rujukan_internal_poli_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `mlite_rujukan_internal_poli_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `mlite_rujukan_internal_poli_ibfk_3` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_satu_sehat_departemen` (
@@ -2088,7 +2251,7 @@ CREATE TABLE `mlite_satu_sehat_departemen` (
   PRIMARY KEY (`dep_id`),
   UNIQUE KEY `id_organisasi_satusehat` (`id_organisasi_satusehat`),
   CONSTRAINT `mlite_satu_sehat_departemen_ibfk_1` FOREIGN KEY (`dep_id`) REFERENCES `departemen` (`dep_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_satu_sehat_lokasi` (
@@ -2103,7 +2266,7 @@ CREATE TABLE `mlite_satu_sehat_lokasi` (
   UNIQUE KEY `id_lokasi_satusehat` (`id_lokasi_satusehat`),
   KEY `id_organisasi_satusehat` (`id_organisasi_satusehat`),
   CONSTRAINT `mlite_satu_sehat_lokasi_ibfk_2` FOREIGN KEY (`id_organisasi_satusehat`) REFERENCES `mlite_satu_sehat_departemen` (`id_organisasi_satusehat`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_satu_sehat_mapping_lab` (
@@ -2117,7 +2280,7 @@ CREATE TABLE `mlite_satu_sehat_mapping_lab` (
   `sampel_display` varchar(80) NOT NULL,
   PRIMARY KEY (`id_template`) USING BTREE,
   CONSTRAINT `mlite_satu_sehat_mapping_lab_ibfk_1` FOREIGN KEY (`id_template`) REFERENCES `template_laboratorium` (`id_template`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_satu_sehat_mapping_obat` (
@@ -2139,7 +2302,7 @@ CREATE TABLE `mlite_satu_sehat_mapping_obat` (
   `id_medication` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`kode_brng`) USING BTREE,
   CONSTRAINT `mlite_satu_sehat_mapping_obat_ibfk_1` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_satu_sehat_mapping_praktisi` (
@@ -2149,7 +2312,7 @@ CREATE TABLE `mlite_satu_sehat_mapping_praktisi` (
   PRIMARY KEY (`practitioner_id`),
   KEY `kd_dokter` (`kd_dokter`),
   CONSTRAINT `mlite_satu_sehat_mapping_praktisi_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_satu_sehat_mapping_rad` (
@@ -2162,7 +2325,7 @@ CREATE TABLE `mlite_satu_sehat_mapping_rad` (
   `sampel_display` varchar(80) NOT NULL,
   PRIMARY KEY (`kd_jenis_prw`) USING BTREE,
   CONSTRAINT `mlite_satu_sehat_mapping_rad_ibfk_1` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_radiologi` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_satu_sehat_response` (
@@ -2207,7 +2370,21 @@ CREATE TABLE `mlite_satu_sehat_response` (
   `id_questionnaire` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`no_rawat`),
   CONSTRAINT `mlite_satu_sehat_response_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_sertisign_webhook` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `transaction_id` varchar(100) NOT NULL,
+  `status` varchar(50) NOT NULL,
+  `document_url` varchar(255) NOT NULL,
+  `payload` text NOT NULL,
+  `received_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `transaction_idx` (`transaction_id`),
+  KEY `status_idx` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+
 
 CREATE TABLE `mlite_settings` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -2216,7 +2393,9 @@ CREATE TABLE `mlite_settings` (
   `value` varchar(1000) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `module` (`module`,`field`)
-) ENGINE=MyISAM AUTO_INCREMENT=161 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=216 DEFAULT CHARSET=utf8mb4;
+
+
 INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/logo.png"),
 ("2","settings","nama_instansi","mLITE Indonesia"),
 ("3","settings","alamat","Jl. Perintis Kemerdekaan 45"),
@@ -2361,12 +2540,10 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("142","orthanc","server","http://localhost:8042"),
 ("143","orthanc","username","orthanc"),
 ("144","orthanc","password","orthanc"),
-("145","veronisa","username",""),
-("146","veronisa","password",""),
-("147","veronisa","obat_kronis",""),
+("166","afm","username_finger",""),
 ("148","jkn_mobile","kirimantrian","tidak"),
 ("149","settings","keamanan","ya"),
-("150","dokter_ralan","set_sudah","tidak"),
+("165","afm","afm_token","fc4eba4aa3ea79a7bba3070cba848696"),
 ("151","settings","websocket","tidak"),
 ("152","settings","websocket_proxy",""),
 ("153","settings","username_fp",""),
@@ -2380,7 +2557,55 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("161","settings","password_expire","tidak"),
 ("162","farmasi","embalase","0"),
 ("163","farmasi","tuslah","0"),
-("164","settings","log_query","tidak");
+("164","settings","log_query","tidak"),
+("167","afm","password_finger",""),
+("168","afm","x_header_token","X-Header-Token"),
+("169","bpjs_emr","consid",""),
+("170","bpjs_emr","secretkey",""),
+("171","bpjs_emr","userkey",""),
+("172","bpjs_emr","koders",""),
+("173","bpjs_emr","kode_kemkes",""),
+("174","bpjs_emr","kodepos",""),
+("175","bpjs_emr","baseurl","https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev/"),
+("176","dokter_ralan","set_sudah","tidak"),
+("215","esignature","kode_berkasdigital",""),
+("178","icare","url","https://apijkn.bpjs-kesehatan.go.id/wsihs/api/rs/validate"),
+("179","icare","consid",""),
+("180","icare","secretkey",""),
+("181","icare","userkey",""),
+("182","icare","urlPCare","https://apijkn.bpjs-kesehatan.go.id/wsihs/api/pcare/validate"),
+("183","icare","usernameICare",""),
+("184","icare","passwordICare",""),
+("185","satu_sehat","organizationid",""),
+("186","satu_sehat","clientid",""),
+("187","satu_sehat","secretkey",""),
+("188","satu_sehat","authurl","https://api-satusehat-dev.dto.kemkes.go.id/oauth2/v1"),
+("189","satu_sehat","fhirurl","https://api-satusehat-dev.dto.kemkes.go.id/fhir-r4/v1"),
+("190","satu_sehat","kelurahan",""),
+("191","satu_sehat","kecamatan",""),
+("192","satu_sehat","kabupaten",""),
+("193","satu_sehat","propinsi",""),
+("194","satu_sehat","kodepos",""),
+("195","satu_sehat","longitude",""),
+("196","satu_sehat","latitude",""),
+("197","satu_sehat","zonawaktu","WIB"),
+("198","satu_sehat","farmasi",""),
+("199","satu_sehat","laboratorium",""),
+("200","satu_sehat","radiologi",""),
+("201","satu_sehat","praktisiapotek",""),
+("202","satu_sehat","praktisilab",""),
+("203","satu_sehat","praktisirad",""),
+("204","satu_sehat","api_openai",""),
+("205","sertisign","api_host","https://api-stag.sertisign.id/"),
+("206","sertisign","api_key",""),
+("207","veronisa","username",""),
+("208","veronisa","password",""),
+("209","veronisa","obat_kronis",""),
+("210","veronisa","cons_id",""),
+("211","veronisa","kode_ppk",""),
+("212","veronisa","user_key",""),
+("213","veronisa","secret_key",""),
+("214","veronisa","bpjs_api_url","");
 
 
 CREATE TABLE `mlite_subrekening` (
@@ -2390,7 +2615,7 @@ CREATE TABLE `mlite_subrekening` (
   KEY `kd_rek` (`kd_rek`),
   CONSTRAINT `mlite_subrekening_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON UPDATE CASCADE,
   CONSTRAINT `mlite_subrekening_ibfk_2` FOREIGN KEY (`kd_rek2`) REFERENCES `mlite_rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_surat_rujukan` (
@@ -2414,7 +2639,7 @@ CREATE TABLE `mlite_surat_rujukan` (
   `dokter` varchar(100) DEFAULT NULL,
   `petugas` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_surat_sakit` (
@@ -2436,7 +2661,7 @@ CREATE TABLE `mlite_surat_sakit` (
   `dokter` varchar(100) DEFAULT NULL,
   `petugas` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_surat_sehat` (
@@ -2459,7 +2684,7 @@ CREATE TABLE `mlite_surat_sehat` (
   `dokter` varchar(100) DEFAULT NULL,
   `petugas` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_temporary` (
@@ -2563,7 +2788,8 @@ CREATE TABLE `mlite_temporary` (
   `temp98` text,
   `temp99` text,
   `temp100` text
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
 
 CREATE TABLE `mlite_triase_igd` (
   `id_triase` int NOT NULL AUTO_INCREMENT,
@@ -2592,7 +2818,7 @@ CREATE TABLE `mlite_triase_igd` (
   PRIMARY KEY (`id_triase`) USING BTREE,
   KEY `no_rawat` (`no_rawat`) USING BTREE,
   CONSTRAINT `fk_triase_reg_periksa` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_users` (
@@ -2610,7 +2836,9 @@ CREATE TABLE `mlite_users` (
   `cap` varchar(100) DEFAULT '',
   `access` varchar(500) NOT NULL DEFAULT 'dashboard',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+
+
 INSERT INTO `mlite_users` VALUES ("1","admin","Administrator","Admin ganteng baik hati, suka menabung dan tidak sombong.","$2y$10$pgRnDiukCbiYVqsamMM3ROWViSRqbyCCL33N8.ykBKZx0dlplXe9i",NULL,NULL,NULL,"avatar6422cb573b50c.png","info@mlite.id","admin","","all"),
 ("2","DR001","dr. Ataaka Muhammad","-","$2y$10$kuf2BxvViduBpUTn.6Nxsug3AskH/PGvXTSlfCfJqK8Ayb9a0.vqC",NULL,NULL,NULL,"avatar643a104444515.png","info@mlite.id","admin","","all");
 
@@ -2621,7 +2849,7 @@ CREATE TABLE `mlite_users_vedika` (
   `password` text,
   `fullname` text,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE `mlite_vedika` (
@@ -2638,7 +2866,7 @@ CREATE TABLE `mlite_vedika` (
   KEY `idx_vedika_status_jenis_tgl` (`status`,`jenis`,`tgl_registrasi`),
   KEY `idx_vedika_nosep` (`nosep`),
   KEY `idx_vedika_no_rkm_medis` (`no_rkm_medis`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_vedika_feedback` (
@@ -2648,7 +2876,7 @@ CREATE TABLE `mlite_vedika_feedback` (
   `catatan` text,
   `username` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_veronisa` (
@@ -2664,7 +2892,7 @@ CREATE TABLE `mlite_veronisa` (
   KEY `idx_no_rawat` (`no_rawat`),
   KEY `idx_status` (`status`),
   KEY `idx_nosep` (`nosep`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_veronisa_feedback` (
@@ -2674,7 +2902,7 @@ CREATE TABLE `mlite_veronisa_feedback` (
   `catatan` text,
   `username` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mutasi_berkas` (
@@ -2687,7 +2915,7 @@ CREATE TABLE `mutasi_berkas` (
   `ranap` datetime NOT NULL,
   PRIMARY KEY (`no_rawat`),
   CONSTRAINT `mutasi_berkas_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mutasibarang` (
@@ -2709,7 +2937,7 @@ CREATE TABLE `mutasibarang` (
   CONSTRAINT `mutasibarang_ibfk_1` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `mutasibarang_ibfk_2` FOREIGN KEY (`kd_bangsaldari`) REFERENCES `bangsal` (`kd_bangsal`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `mutasibarang_ibfk_3` FOREIGN KEY (`kd_bangsalke`) REFERENCES `bangsal` (`kd_bangsal`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `obat_racikan` (
@@ -2728,7 +2956,7 @@ CREATE TABLE `obat_racikan` (
   KEY `no_racik` (`no_racik`),
   CONSTRAINT `obat_racikan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
   CONSTRAINT `obat_racikan_ibfk_2` FOREIGN KEY (`kd_racik`) REFERENCES `metode_racik` (`kd_racik`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `obatbhp_ok` (
@@ -2741,7 +2969,7 @@ CREATE TABLE `obatbhp_ok` (
   KEY `nm_obat` (`nm_obat`),
   KEY `hargasatuan` (`hargasatuan`),
   CONSTRAINT `obatbhp_ok_ibfk_1` FOREIGN KEY (`kode_sat`) REFERENCES `kodesatuan` (`kode_sat`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `operasi` (
@@ -2829,7 +3057,7 @@ CREATE TABLE `operasi` (
   CONSTRAINT `operasi_ibfk_42` FOREIGN KEY (`bidan`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `operasi_ibfk_43` FOREIGN KEY (`perawat_luar`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `operasi_ibfk_44` FOREIGN KEY (`kode_paket`) REFERENCES `paket_operasi` (`kode_paket`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `opname` (
@@ -2856,7 +3084,7 @@ CREATE TABLE `opname` (
   KEY `kode_brng` (`kode_brng`) USING BTREE,
   CONSTRAINT `opname_ibfk_1` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `opname_ibfk_2` FOREIGN KEY (`kd_bangsal`) REFERENCES `bangsal` (`kd_bangsal`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `paket_operasi` (
@@ -2925,7 +3153,7 @@ CREATE TABLE `paket_operasi` (
   KEY `bidan3` (`bidan3`),
   KEY `asisten_operator3_2` (`asisten_operator3`),
   CONSTRAINT `paket_operasi_ibfk_1` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `pasien` (
@@ -2987,7 +3215,7 @@ CREATE TABLE `pasien` (
   CONSTRAINT `pasien_ibfk_7` FOREIGN KEY (`bahasa_pasien`) REFERENCES `bahasa_pasien` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `pasien_ibfk_8` FOREIGN KEY (`cacat_fisik`) REFERENCES `cacat_fisik` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `pasien_ibfk_9` FOREIGN KEY (`kd_prop`) REFERENCES `propinsi` (`kd_prop`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `pegawai` (
@@ -3068,7 +3296,9 @@ CREATE TABLE `pegawai` (
   CONSTRAINT `pegawai_ibfk_7` FOREIGN KEY (`indexins`) REFERENCES `departemen` (`dep_id`) ON UPDATE CASCADE,
   CONSTRAINT `pegawai_ibfk_8` FOREIGN KEY (`bpd`) REFERENCES `bank` (`namabank`) ON UPDATE CASCADE,
   CONSTRAINT `pegawai_ibfk_9` FOREIGN KEY (`kode_emergency`) REFERENCES `emergency_index` (`kode_emergency`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `pegawai` VALUES ("1","DR001","dr. Ataaka Muhammad","Pria","-","-","-","-","-","-","-","-","-","-","-","0","Barabai","2016-06-10","-","Barabai","2019-09-18","<1","-","-","-","AKTIF","0","0","0","2019-09-18","1","0","-","0");
 
 
@@ -3084,7 +3314,7 @@ CREATE TABLE `pemeliharaan_inventaris` (
   KEY `nip` (`nip`),
   CONSTRAINT `pemeliharaan_inventaris_ibfk_1` FOREIGN KEY (`no_inventaris`) REFERENCES `inventaris` (`no_inventaris`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `pemeliharaan_inventaris_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `pemeriksaan_ralan` (
@@ -3114,7 +3344,7 @@ CREATE TABLE `pemeriksaan_ralan` (
   KEY `nip` (`nip`) USING BTREE,
   CONSTRAINT `pemeriksaan_ralan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `pemeriksaan_ralan_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `pegawai` (`nik`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `pemeriksaan_ranap` (
@@ -3143,7 +3373,7 @@ CREATE TABLE `pemeriksaan_ranap` (
   KEY `nip` (`nip`),
   CONSTRAINT `pemeriksaan_ranap_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `pemeriksaan_ranap_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `pegawai` (`nik`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `pendidikan` (
@@ -3153,7 +3383,9 @@ CREATE TABLE `pendidikan` (
   `kenaikan` double NOT NULL,
   `maksimal` int NOT NULL,
   PRIMARY KEY (`tingkat`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `pendidikan` VALUES ("-","1","0","0","1");
 
 
@@ -3231,7 +3463,7 @@ CREATE TABLE `penilaian_awal_keperawatan_igd` (
   KEY `nip` (`nip`) USING BTREE,
   CONSTRAINT `penilaian_awal_keperawatan_igd_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `penilaian_awal_keperawatan_igd_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `penilaian_awal_keperawatan_ralan` (
@@ -3296,7 +3528,7 @@ CREATE TABLE `penilaian_awal_keperawatan_ralan` (
   KEY `nip` (`nip`) USING BTREE,
   CONSTRAINT `penilaian_awal_keperawatan_ralan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `penilaian_awal_keperawatan_ralan_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `penilaian_awal_keperawatan_ranap` (
@@ -3501,7 +3733,7 @@ CREATE TABLE `penilaian_awal_keperawatan_ranap` (
   CONSTRAINT `penilaian_awal_keperawatan_ranap_ibfk_2` FOREIGN KEY (`nip1`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `penilaian_awal_keperawatan_ranap_ibfk_3` FOREIGN KEY (`nip2`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `penilaian_awal_keperawatan_ranap_ibfk_4` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `penilaian_medis_igd` (
@@ -3545,7 +3777,7 @@ CREATE TABLE `penilaian_medis_igd` (
   KEY `kd_dokter` (`kd_dokter`) USING BTREE,
   CONSTRAINT `penilaian_medis_igd_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `penilaian_medis_igd_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `penilaian_medis_ralan` (
@@ -3588,7 +3820,7 @@ CREATE TABLE `penilaian_medis_ralan` (
   KEY `kd_dokter` (`kd_dokter`) USING BTREE,
   CONSTRAINT `penilaian_medis_ralan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `penilaian_medis_ralan_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `penilaian_medis_ranap` (
@@ -3636,7 +3868,7 @@ CREATE TABLE `penilaian_medis_ranap` (
   KEY `kd_dokter` (`kd_dokter`) USING BTREE,
   CONSTRAINT `penilaian_medis_ranap_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `penilaian_medis_ranap_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `penilaian_ulang_nyeri` (
@@ -3658,7 +3890,7 @@ CREATE TABLE `penilaian_ulang_nyeri` (
   KEY `nip` (`nip`) USING BTREE,
   CONSTRAINT `penilaian_ulang_nyeri_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `penilaian_ulang_nyeri_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `penjab` (
@@ -3670,7 +3902,9 @@ CREATE TABLE `penjab` (
   `attn` varchar(60) NOT NULL,
   `status` enum('0','1') NOT NULL,
   PRIMARY KEY (`kd_pj`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `penjab` VALUES ("-","-","-","-","0","0","1"),
 ("BPJ","BPJS Kesehatan","-","-","0","0","1"),
 ("UMU","Umum","-","-","0","0","1");
@@ -3688,7 +3922,7 @@ CREATE TABLE `penyakit` (
   KEY `nm_penyakit` (`nm_penyakit`),
   KEY `status` (`status`),
   CONSTRAINT `penyakit_ibfk_1` FOREIGN KEY (`kd_ktg`) REFERENCES `kategori_penyakit` (`kd_ktg`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `perbaikan_inventaris` (
@@ -3704,7 +3938,7 @@ CREATE TABLE `perbaikan_inventaris` (
   KEY `nip` (`nip`),
   CONSTRAINT `perbaikan_inventaris_ibfk_1` FOREIGN KEY (`no_permintaan`) REFERENCES `permintaan_perbaikan_inventaris` (`no_permintaan`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `perbaikan_inventaris_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `periksa_lab` (
@@ -3735,7 +3969,7 @@ CREATE TABLE `periksa_lab` (
   CONSTRAINT `periksa_lab_ibfk_12` FOREIGN KEY (`dokter_perujuk`) REFERENCES `dokter` (`kd_dokter`) ON UPDATE CASCADE,
   CONSTRAINT `periksa_lab_ibfk_13` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON UPDATE CASCADE,
   CONSTRAINT `periksa_lab_ibfk_9` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `periksa_radiologi` (
@@ -3773,7 +4007,7 @@ CREATE TABLE `periksa_radiologi` (
   CONSTRAINT `periksa_radiologi_ibfk_6` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_radiologi` (`kd_jenis_prw`) ON UPDATE CASCADE,
   CONSTRAINT `periksa_radiologi_ibfk_7` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON UPDATE CASCADE,
   CONSTRAINT `periksa_radiologi_ibfk_8` FOREIGN KEY (`dokter_perujuk`) REFERENCES `dokter` (`kd_dokter`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `permintaan_detail_permintaan_lab` (
@@ -3787,7 +4021,7 @@ CREATE TABLE `permintaan_detail_permintaan_lab` (
   CONSTRAINT `permintaan_detail_permintaan_lab_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `permintaan_detail_permintaan_lab_ibfk_3` FOREIGN KEY (`id_template`) REFERENCES `template_laboratorium` (`id_template`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `permintaan_detail_permintaan_lab_ibfk_4` FOREIGN KEY (`noorder`) REFERENCES `permintaan_lab` (`noorder`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `permintaan_lab` (
@@ -3808,7 +4042,7 @@ CREATE TABLE `permintaan_lab` (
   KEY `no_rawat` (`no_rawat`),
   CONSTRAINT `permintaan_lab_ibfk_2` FOREIGN KEY (`dokter_perujuk`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `permintaan_lab_ibfk_3` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `permintaan_pemeriksaan_lab` (
@@ -3819,7 +4053,7 @@ CREATE TABLE `permintaan_pemeriksaan_lab` (
   KEY `kd_jenis_prw` (`kd_jenis_prw`),
   CONSTRAINT `permintaan_pemeriksaan_lab_ibfk_1` FOREIGN KEY (`noorder`) REFERENCES `permintaan_lab` (`noorder`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `permintaan_pemeriksaan_lab_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `permintaan_pemeriksaan_radiologi` (
@@ -3830,7 +4064,7 @@ CREATE TABLE `permintaan_pemeriksaan_radiologi` (
   KEY `kd_jenis_prw` (`kd_jenis_prw`),
   CONSTRAINT `permintaan_pemeriksaan_radiologi_ibfk_1` FOREIGN KEY (`noorder`) REFERENCES `permintaan_radiologi` (`noorder`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `permintaan_pemeriksaan_radiologi_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_radiologi` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `permintaan_perbaikan_inventaris` (
@@ -3844,7 +4078,7 @@ CREATE TABLE `permintaan_perbaikan_inventaris` (
   KEY `nik` (`nik`),
   CONSTRAINT `permintaan_perbaikan_inventaris_ibfk_1` FOREIGN KEY (`no_inventaris`) REFERENCES `inventaris` (`no_inventaris`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `permintaan_perbaikan_inventaris_ibfk_2` FOREIGN KEY (`nik`) REFERENCES `pegawai` (`nik`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `permintaan_radiologi` (
@@ -3865,7 +4099,7 @@ CREATE TABLE `permintaan_radiologi` (
   KEY `no_rawat` (`no_rawat`),
   CONSTRAINT `permintaan_radiologi_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `permintaan_radiologi_ibfk_3` FOREIGN KEY (`dokter_perujuk`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `personal_pasien` (
@@ -3874,7 +4108,7 @@ CREATE TABLE `personal_pasien` (
   `password` varchar(1000) DEFAULT NULL,
   PRIMARY KEY (`no_rkm_medis`),
   CONSTRAINT `personal_pasien_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `perusahaan_pasien` (
@@ -3884,7 +4118,9 @@ CREATE TABLE `perusahaan_pasien` (
   `kota` varchar(40) DEFAULT NULL,
   `no_telp` varchar(27) DEFAULT NULL,
   PRIMARY KEY (`kode_perusahaan`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `perusahaan_pasien` VALUES ("-","-","-","-","0");
 
 
@@ -3912,7 +4148,9 @@ CREATE TABLE `petugas` (
   KEY `alamat` (`alamat`),
   CONSTRAINT `petugas_ibfk_4` FOREIGN KEY (`nip`) REFERENCES `pegawai` (`nik`) ON UPDATE CASCADE,
   CONSTRAINT `petugas_ibfk_5` FOREIGN KEY (`kd_jbtn`) REFERENCES `jabatan` (`kd_jbtn`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `petugas` VALUES ("DR001","dr. Ataaka Muhammad","L","Barabai","2020-12-01","A","Islam","MENIKAH","-","-","0","1");
 
 
@@ -3926,7 +4164,9 @@ CREATE TABLE `poliklinik` (
   KEY `nm_poli` (`nm_poli`),
   KEY `registrasi` (`registrasi`),
   KEY `registrasilama` (`registrasilama`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `poliklinik` VALUES ("-","-","0","0","1"),
 ("IGDK","IGD","0","0","1"),
 ("UMU","Umum","0","0","1");
@@ -3937,7 +4177,9 @@ CREATE TABLE `propinsi` (
   `nm_prop` varchar(30) NOT NULL,
   PRIMARY KEY (`kd_prop`),
   UNIQUE KEY `nm_prop` (`nm_prop`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `propinsi` VALUES ("1","-");
 
 
@@ -3950,7 +4192,7 @@ CREATE TABLE `prosedur_pasien` (
   KEY `kode` (`kode`),
   CONSTRAINT `prosedur_pasien_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `prosedur_pasien_ibfk_2` FOREIGN KEY (`kode`) REFERENCES `icd9` (`kode`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `rawat_inap_dr` (
@@ -3975,7 +4217,7 @@ CREATE TABLE `rawat_inap_dr` (
   CONSTRAINT `rawat_inap_dr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON UPDATE CASCADE,
   CONSTRAINT `rawat_inap_dr_ibfk_6` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_inap` (`kd_jenis_prw`) ON UPDATE CASCADE,
   CONSTRAINT `rawat_inap_dr_ibfk_7` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `rawat_inap_drpr` (
@@ -4000,7 +4242,7 @@ CREATE TABLE `rawat_inap_drpr` (
   CONSTRAINT `rawat_inap_drpr_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_inap` (`kd_jenis_prw`) ON UPDATE CASCADE,
   CONSTRAINT `rawat_inap_drpr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON UPDATE CASCADE,
   CONSTRAINT `rawat_inap_drpr_ibfk_4` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `rawat_inap_pr` (
@@ -4023,7 +4265,7 @@ CREATE TABLE `rawat_inap_pr` (
   CONSTRAINT `rawat_inap_pr_ibfk_3` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON UPDATE CASCADE,
   CONSTRAINT `rawat_inap_pr_ibfk_6` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_inap` (`kd_jenis_prw`) ON UPDATE CASCADE,
   CONSTRAINT `rawat_inap_pr_ibfk_7` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `rawat_jl_dr` (
@@ -4047,7 +4289,7 @@ CREATE TABLE `rawat_jl_dr` (
   CONSTRAINT `rawat_jl_dr_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON UPDATE CASCADE,
   CONSTRAINT `rawat_jl_dr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON UPDATE CASCADE,
   CONSTRAINT `rawat_jl_dr_ibfk_5` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `rawat_jl_drpr` (
@@ -4074,7 +4316,7 @@ CREATE TABLE `rawat_jl_drpr` (
   CONSTRAINT `rawat_jl_drpr_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON UPDATE CASCADE,
   CONSTRAINT `rawat_jl_drpr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON UPDATE CASCADE,
   CONSTRAINT `rawat_jl_drpr_ibfk_4` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `rawat_jl_pr` (
@@ -4098,7 +4340,7 @@ CREATE TABLE `rawat_jl_pr` (
   CONSTRAINT `rawat_jl_pr_ibfk_10` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON UPDATE CASCADE,
   CONSTRAINT `rawat_jl_pr_ibfk_8` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
   CONSTRAINT `rawat_jl_pr_ibfk_9` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `reg_periksa` (
@@ -4132,7 +4374,7 @@ CREATE TABLE `reg_periksa` (
   CONSTRAINT `reg_periksa_ibfk_4` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `reg_periksa_ibfk_6` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON UPDATE CASCADE,
   CONSTRAINT `reg_periksa_ibfk_7` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `rekap_presensi` (
@@ -4148,7 +4390,7 @@ CREATE TABLE `rekap_presensi` (
   PRIMARY KEY (`id`,`jam_datang`),
   KEY `id` (`id`),
   CONSTRAINT `rekap_presensi_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `resep_dokter` (
@@ -4160,7 +4402,7 @@ CREATE TABLE `resep_dokter` (
   KEY `kode_brng` (`kode_brng`),
   CONSTRAINT `resep_dokter_ibfk_1` FOREIGN KEY (`no_resep`) REFERENCES `resep_obat` (`no_resep`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `resep_dokter_ibfk_2` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `resep_dokter_racikan` (
@@ -4175,7 +4417,7 @@ CREATE TABLE `resep_dokter_racikan` (
   KEY `kd_racik` (`kd_racik`),
   CONSTRAINT `resep_dokter_racikan_ibfk_1` FOREIGN KEY (`no_resep`) REFERENCES `resep_obat` (`no_resep`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `resep_dokter_racikan_ibfk_2` FOREIGN KEY (`kd_racik`) REFERENCES `metode_racik` (`kd_racik`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `resep_dokter_racikan_detail` (
@@ -4190,7 +4432,7 @@ CREATE TABLE `resep_dokter_racikan_detail` (
   KEY `kode_brng` (`kode_brng`),
   CONSTRAINT `resep_dokter_racikan_detail_ibfk_1` FOREIGN KEY (`no_resep`) REFERENCES `resep_obat` (`no_resep`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `resep_dokter_racikan_detail_ibfk_2` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `resep_obat` (
@@ -4209,7 +4451,7 @@ CREATE TABLE `resep_obat` (
   KEY `kd_dokter` (`kd_dokter`),
   CONSTRAINT `resep_obat_ibfk_3` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
   CONSTRAINT `resep_obat_ibfk_4` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `resep_pulang` (
@@ -4231,7 +4473,7 @@ CREATE TABLE `resep_pulang` (
   CONSTRAINT `resep_pulang_ibfk_2` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `resep_pulang_ibfk_3` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
   CONSTRAINT `resep_pulang_ibfk_4` FOREIGN KEY (`kd_bangsal`) REFERENCES `bangsal` (`kd_bangsal`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `resiko_kerja` (
@@ -4239,7 +4481,9 @@ CREATE TABLE `resiko_kerja` (
   `nama_resiko` varchar(200) DEFAULT NULL,
   `indek` tinyint DEFAULT NULL,
   PRIMARY KEY (`kode_resiko`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `resiko_kerja` VALUES ("-","-","1");
 
 
@@ -4274,7 +4518,7 @@ CREATE TABLE `resume_pasien` (
   KEY `kd_dokter` (`kd_dokter`),
   CONSTRAINT `resume_pasien_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `resume_pasien_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `resume_pasien_ranap` (
@@ -4323,7 +4567,7 @@ CREATE TABLE `resume_pasien_ranap` (
   KEY `kd_dokter` (`kd_dokter`),
   CONSTRAINT `resume_pasien_ranap_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `resume_pasien_ranap_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `riwayat_barang_medis` (
@@ -4345,26 +4589,28 @@ CREATE TABLE `riwayat_barang_medis` (
   KEY `kd_bangsal` (`kd_bangsal`) USING BTREE,
   CONSTRAINT `riwayat_barang_medis_ibfk_1` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `riwayat_barang_medis_ibfk_2` FOREIGN KEY (`kd_bangsal`) REFERENCES `bangsal` (`kd_bangsal`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `ruang_ok` (
   `kd_ruang_ok` varchar(3) NOT NULL,
   `nm_ruang_ok` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`kd_ruang_ok`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `set_keterlambatan` (
   `toleransi` int DEFAULT NULL,
   `terlambat1` int DEFAULT NULL,
   `terlambat2` int DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE `set_no_rkm_medis` (
   `no_rkm_medis` varchar(15) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `set_no_rkm_medis` VALUES ("000000");
 
 
@@ -4387,14 +4633,16 @@ CREATE TABLE `skdp_bpjs` (
   KEY `kd_dokter` (`kd_dokter`) USING BTREE,
   CONSTRAINT `skdp_bpjs_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON UPDATE CASCADE,
   CONSTRAINT `skdp_bpjs_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `spesialis` (
   `kd_sps` char(5) NOT NULL DEFAULT '',
   `nm_sps` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`kd_sps`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `spesialis` VALUES ("UMUM","Dokter Umum");
 
 
@@ -4403,7 +4651,9 @@ CREATE TABLE `stts_kerja` (
   `ktg` varchar(20) NOT NULL,
   `indek` tinyint NOT NULL,
   PRIMARY KEY (`stts`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `stts_kerja` VALUES ("-","-","1");
 
 
@@ -4411,7 +4661,9 @@ CREATE TABLE `stts_wp` (
   `stts` char(5) NOT NULL,
   `ktg` varchar(50) NOT NULL,
   PRIMARY KEY (`stts`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `stts_wp` VALUES ("-","-");
 
 
@@ -4420,7 +4672,9 @@ CREATE TABLE `suku_bangsa` (
   `nama_suku_bangsa` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `nama_suku_bangsa` (`nama_suku_bangsa`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `suku_bangsa` VALUES ("1","-");
 
 
@@ -4430,7 +4684,7 @@ CREATE TABLE `tambahan_biaya` (
   `besar_biaya` double NOT NULL,
   PRIMARY KEY (`no_rawat`,`nama_biaya`),
   CONSTRAINT `tambahan_biaya_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `template_laboratorium` (
@@ -4469,7 +4723,9 @@ CREATE TABLE `template_laboratorium` (
   KEY `biaya_item` (`biaya_item`),
   KEY `urut` (`urut`),
   CONSTRAINT `template_laboratorium_ibfk_1` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 INSERT INTO `template_laboratorium` VALUES ("LAB001","1","Leukosit","LK","10","5","10","5","0","0","0","0","0","0","0","0","1"),
 ("LAB001","2","Hemoglobin","HB","20","10","20","10","0","0","0","0","0","0","0","0","2");
 
@@ -4485,7 +4741,7 @@ CREATE TABLE `temporary_presensi` (
   `photo` varchar(500) NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `temporary_presensi_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `utd_donor` (
@@ -4513,7 +4769,7 @@ CREATE TABLE `utd_donor` (
   CONSTRAINT `utd_donor_ibfk_1` FOREIGN KEY (`petugas_aftap`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `utd_donor_ibfk_2` FOREIGN KEY (`petugas_u_saring`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `utd_donor_ibfk_3` FOREIGN KEY (`no_pendonor`) REFERENCES `utd_pendonor` (`no_pendonor`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `utd_komponen_darah` (
@@ -4527,7 +4783,7 @@ CREATE TABLE `utd_komponen_darah` (
   `total` double DEFAULT NULL,
   `pembatalan` double DEFAULT NULL,
   PRIMARY KEY (`kode`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `utd_pendonor` (
@@ -4553,7 +4809,7 @@ CREATE TABLE `utd_pendonor` (
   CONSTRAINT `utd_pendonor_ibfk_1` FOREIGN KEY (`kd_kec`) REFERENCES `kecamatan` (`kd_kec`) ON UPDATE CASCADE,
   CONSTRAINT `utd_pendonor_ibfk_2` FOREIGN KEY (`kd_kab`) REFERENCES `kabupaten` (`kd_kab`) ON UPDATE CASCADE,
   CONSTRAINT `utd_pendonor_ibfk_3` FOREIGN KEY (`kd_prop`) REFERENCES `propinsi` (`kd_prop`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `utd_stok_darah` (
@@ -4568,6 +4824,7 @@ CREATE TABLE `utd_stok_darah` (
   PRIMARY KEY (`no_kantong`),
   KEY `kode_komponen` (`kode_komponen`),
   CONSTRAINT `utd_stok_darah_ibfk_1` FOREIGN KEY (`kode_komponen`) REFERENCES `utd_komponen_darah` (`kode`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
 
 SET foreign_key_checks = 1;
