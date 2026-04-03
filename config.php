@@ -102,7 +102,7 @@ define('BASIC_MODULES', json_encode([
 ]));
 
 // Developer mode
-define('DEV_MODE', false);
+define('DEV_MODE', true);
 
 define('JWT_SECRET', 'mlite_secret_key_change_me');
 
