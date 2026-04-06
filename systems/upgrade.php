@@ -1714,10 +1714,105 @@ switch ($version) {
     case '6.0.0':
         $return = '6.2.0'; 
         break;
+
+    case '6.2.0':
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            // Kapabilitas SQLite sejak 6.2.0
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_study` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+              `no_rawat` TEXT DEFAULT NULL,
+              `study_instance_uid` TEXT NOT NULL,
+              `study_date` TEXT DEFAULT NULL,
+              `modality` TEXT DEFAULT NULL,
+              `description` TEXT DEFAULT NULL
+            );");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_pacs_study_uid ON `mlite_mini_pacs_study` (`study_instance_uid`);");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_pacs_study_rawat ON `mlite_mini_pacs_study` (`no_rawat`);");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_series` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+              `study_id` INTEGER NOT NULL,
+              `series_instance_uid` TEXT NOT NULL,
+              `series_description` TEXT DEFAULT NULL,
+              FOREIGN KEY (`study_id`) REFERENCES `mlite_mini_pacs_study` (`id`) ON DELETE CASCADE
+            );");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_pacs_series_uid ON `mlite_mini_pacs_series` (`series_instance_uid`);");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_pacs_series_study ON `mlite_mini_pacs_series` (`study_id`);");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_instance` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+              `series_id` INTEGER NOT NULL,
+              `sop_instance_uid` TEXT NOT NULL,
+              `file_path` TEXT NOT NULL,
+              FOREIGN KEY (`series_id`) REFERENCES `mlite_mini_pacs_series` (`id`) ON DELETE CASCADE
+            );");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_pacs_inst_uid ON `mlite_mini_pacs_instance` (`sop_instance_uid`);");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_pacs_inst_series ON `mlite_mini_pacs_instance` (`series_id`);");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_instance_metadata` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+              `instance_id` INTEGER NOT NULL,
+              `tag` TEXT NOT NULL,
+              `name` TEXT DEFAULT NULL,
+              `value` TEXT,
+              FOREIGN KEY (`instance_id`) REFERENCES `mlite_mini_pacs_instance` (`id`) ON DELETE CASCADE
+            );");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_pacs_meta_tag ON `mlite_mini_pacs_instance_metadata` (`tag`);");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_pacs_meta_inst ON `mlite_mini_pacs_instance_metadata` (`instance_id`);");
+        } else {
+            // Kapabilitas MySQL sejak 6.2.0
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_study` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `no_rawat` varchar(20) DEFAULT NULL,
+              `study_instance_uid` varchar(100) NOT NULL,
+              `study_date` datetime DEFAULT NULL,
+              `modality` varchar(20) DEFAULT NULL,
+              `description` varchar(255) DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              KEY `idx_study_uid` (`study_instance_uid`),
+              KEY `idx_no_rawat` (`no_rawat`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_series` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `study_id` int(11) NOT NULL,
+              `series_instance_uid` varchar(100) NOT NULL,
+              `series_description` varchar(255) DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              KEY `idx_series_uid` (`series_instance_uid`),
+              KEY `idx_study_id` (`study_id`),
+              CONSTRAINT `fk_pacs_study` FOREIGN KEY (`study_id`) REFERENCES `mlite_mini_pacs_study` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_instance` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `series_id` int(11) NOT NULL,
+              `sop_instance_uid` varchar(100) NOT NULL,
+              `file_path` text NOT NULL,
+              PRIMARY KEY (`id`),
+              KEY `idx_sop_uid` (`sop_instance_uid`),
+              KEY `idx_series_id` (`series_id`),
+              CONSTRAINT `fk_pacs_series` FOREIGN KEY (`series_id`) REFERENCES `mlite_mini_pacs_series` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_instance_metadata` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `instance_id` int(11) NOT NULL,
+              `tag` varchar(20) NOT NULL,
+              `name` varchar(255) DEFAULT NULL,
+              `value` text,
+              PRIMARY KEY (`id`),
+              KEY `idx_instance_id` (`instance_id`),
+              KEY `idx_tag` (`tag`),
+              CONSTRAINT `fk_pacs_instance_metadata` FOREIGN KEY (`instance_id`) REFERENCES `mlite_mini_pacs_instance` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+        }
+        $return = '6.3.0';
+        break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '6.2.0';
+        $return = '6.3.0';
     }
 
 return $return;
