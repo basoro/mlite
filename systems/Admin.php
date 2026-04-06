@@ -252,6 +252,58 @@ class Admin extends Main
             // Reset fail attempts for this IP
             $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
 
+            // Check if OTP Login is enabled
+            if ($this->settings->get('settings.login_otp') === 'ya') {
+                $otp = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+                $expiresAt = date('Y-m-d H:i:s', time() + (10 * 60));
+                
+                // Save OTP to DB
+                $this->db('mlite_users')->where('id', $row['id'])->save(['otp_code' => $otp, 'otp_expires' => $expiresAt]);
+
+                // Set session variables for OTP pending state
+                $_SESSION['mlite_otp_pending'] = true;
+                $_SESSION['mlite_otp_user_id'] = $row['id'];
+                if ($remember_me) {
+                    $_SESSION['mlite_otp_remember_me'] = true;
+                }
+
+                try {
+                    // Send OTP to WhatsApp mapped from dokter/petugas.no_telp
+                    $number = '';
+                    $uname = trim((string)$row['username']);
+                    $dokter = $this->db('dokter')->where('kd_dokter', $uname)->oneArray();
+                    if (!empty($dokter) && !empty($dokter['no_telp'])) {
+                        $number = $dokter['no_telp'];
+                    } else {
+                        $petugas = $this->db('petugas')->where('nip', $uname)->oneArray();
+                        if (!empty($petugas) && !empty($petugas['no_telp'])) {
+                            $number = $petugas['no_telp'];
+                        }
+                    }
+                    if (!empty($number)) {
+                        $waServer = $this->settings->get('wagateway.server');
+                        $waToken = $this->settings->get('wagateway.token');
+                        $waSender = $this->settings->get('wagateway.phonenumber');
+                        if (!empty($waServer) && !empty($waToken) && !empty($waSender)) {
+                            $ch = curl_init();
+                            curl_setopt($ch, CURLOPT_URL, rtrim($waServer, '/') . '/wagateway/kirimpesan');
+                            curl_setopt($ch, CURLOPT_POST, 1);
+                            $message = 'Kode OTP Anda: ' . $otp . "\nKode ini berlaku 10 menit. JANGAN bagikan kode ini kepada siapapun.";
+                            curl_setopt($ch, CURLOPT_POSTFIELDS, 'type=text&api_key=' . urlencode($waToken) . '&sender=' . urlencode($waSender) . '&number=' . urlencode($number) . '&message=' . urlencode($message));
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            curl_exec($ch);
+                            curl_close($ch);
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    // Ignore OTP sending errors
+                }
+
+                // Return true, but admin/index.php will catch the OTP pending state
+                return true;
+            }
+
+            // Normal successful login (no OTP login needed)
             $_SESSION['mlite_user']= $row['id'];
             $_SESSION['token']      = bin2hex(openssl_random_pseudo_bytes(6));
             $_SESSION['userAgent']  = $_SERVER['HTTP_USER_AGENT'];

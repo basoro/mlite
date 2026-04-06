@@ -2604,7 +2604,8 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("211","veronisa","kode_ppk",""),
 ("212","veronisa","user_key",""),
 ("213","veronisa","secret_key",""),
-("214","veronisa","bpjs_api_url","");
+("214","veronisa","bpjs_api_url",""), 
+("215", "login_otp", "tidak");
 
 
 CREATE TABLE `mlite_subrekening` (

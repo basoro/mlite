@@ -45,6 +45,19 @@
             </div>
             <div class="panel-body">
         		<form action="{?=url([ADMIN])?}" method="POST">
+                {if: isset($_SESSION['mlite_otp_pending'])}
+                    <h4 class="text-center" style="margin-bottom:20px;">Verifikasi WhatsApp OTP</h4>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-key"></i></div>
+                            <input type="text" name="otp_code" class="form-control" placeholder="6-digit Kode OTP" pattern="\d{6}" title="Masukkan 6 digit angka OTP" required autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" name="verify_otp" class="btn btn-primary btn-block">Verifikasi OTP</button>
+                        <a href="{?=url([ADMIN])?}?cancel_otp=1" class="btn btn-default btn-block" style="margin-top:10px;">Batal (Login Ulang)</a>
+                    </div>
+                {else}
                   	<div class="form-group">
                         <div class="input-group">
                             <div class="input-group-addon"><i class="fa fa-user"></i></div>
@@ -64,6 +77,7 @@
                         </label>
                         <button type="submit" name="login" class="btn btn-primary pull-right">Sign In</button>
                     </div>
+                {/if}
         		</form>
             </div>
         </div>

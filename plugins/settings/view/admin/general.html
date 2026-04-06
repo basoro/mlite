@@ -320,6 +320,17 @@
                              </label>
                          </div>
                     </div>
+                     </div>
+                    <div class="form-group">
+                         <label>Aktifkan OTP Login (WhatsApp)</label>
+                         <div class="radio">
+                             <label class="radio-inline">
+                                <input type="radio" name="login_otp" value="ya" {if: $settings.login_otp == 'ya'}checked{/if} /> Ya
+                             </label>
+                             <label class="radio-inline">
+                                <input type="radio" name="login_otp" value="tidak" {if: $settings.login_otp == 'tidak'}checked{/if} /> Tidak
+                             </label>
+                         </div>
                     </div>
                    <div class="form-group">
                        <label>Aktifkan Log Query</label>

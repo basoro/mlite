@@ -29,10 +29,10 @@ try {
     }
     require_once('../config.php');
 
-    if (!file_exists(BASE_DIR . '/.env')) {
-        header('Location: /install.php');
-        exit;
-    }
+    // if (!file_exists(BASE_DIR . '/.env')) {
+    //     header('Location: /install.php');
+    //     exit;
+    // }
 
     if (DEV_MODE) {
         error_reporting(E_ALL);
@@ -188,8 +188,35 @@ try {
         $core->drawTheme('index.html');
         $core->module->finishLoop();
     } else {
-        if (isset($_POST['login'])) {
-            if ($core->login($_POST['username'], $_POST['password'], isset($_POST['remember_me']))) {
+        if (isset($_GET['cancel_otp'])) {
+            unset($_SESSION['mlite_otp_pending']);
+            unset($_SESSION['mlite_otp_user_id']);
+            unset($_SESSION['mlite_otp_remember_me']);
+            redirect(url([ADMIN]));
+        }
+
+        if (isset($_POST['verify_otp']) && isset($_SESSION['mlite_otp_pending'])) {
+            $otp_code = trim($_POST['otp_code'] ?? '');
+            $uid = $_SESSION['mlite_otp_user_id'] ?? 0;
+            $userRow = $core->db('mlite_users')->where('id', $uid)->oneArray();
+            
+            if ($userRow && $userRow['otp_code'] === $otp_code && strtotime($userRow['otp_expires']) >= time()) {
+                // OTP Valid
+                unset($_SESSION['mlite_otp_pending']);
+                unset($_SESSION['mlite_otp_user_id']);
+                
+                $_SESSION['mlite_user']= $userRow['id'];
+                $_SESSION['token']      = bin2hex(openssl_random_pseudo_bytes(6));
+                $_SESSION['userAgent']  = $_SERVER['HTTP_USER_AGENT'];
+                $_SESSION['IPaddress']  = $_SERVER['REMOTE_ADDR'];
+
+                if (isset($_SESSION['mlite_otp_remember_me'])) {
+                    $token = str_gen(64, "1234567890qwertyuiop[]asdfghjkl;zxcvbnm,./");
+                    $core->db('mlite_remember_me')->save(['user_id' => $userRow['id'], 'token' => $token, 'expiry' => time()+60*60*24*30]);
+                    setcookie('mlite_remember', $userRow['id'].':'.$token, time()+60*60*24*365, '/');
+                    unset($_SESSION['mlite_otp_remember_me']);
+                }
+
                 $arrayURL = parseURL();
                 if ($arrayURL && count($arrayURL) > 1) {
                     $url = array_merge([ADMIN], $arrayURL);
@@ -207,6 +234,34 @@ try {
                 } else {
                     redirect(url([ADMIN, 'dashboard', 'main']));
                 }
+            } else {
+                $core->setNotify('failure', 'Kode OTP tidak valid atau telah kedaluwarsa.');
+            }
+        }
+
+        if (isset($_POST['login'])) {
+            if ($core->login($_POST['username'], $_POST['password'], isset($_POST['remember_me']))) {
+                if (isset($_SESSION['mlite_otp_pending'])) {
+                    $core->setNotify('success', 'Harap masukkan 6-digit kode OTP yang telah dikirim ke WhatsApp Anda.');
+                } else {
+                    $arrayURL = parseURL();
+                    if ($arrayURL && count($arrayURL) > 1) {
+                        $url = array_merge([ADMIN], $arrayURL);
+                        redirect(url($url));
+                    }
+                    if (!empty($_SESSION['mlite_force_change'])) {
+                        redirect(url([ADMIN, 'profil', 'ganti_pass']));
+                    }
+                    if (MULTI_APP) {
+                        if (!empty(MULTI_APP_REDIRECT)) {
+                            redirect(url([ADMIN, MULTI_APP_REDIRECT, 'main']));
+                        } else {
+                            redirect(url([ADMIN, 'dashboard', 'main']));
+                        }
+                    } else {
+                        redirect(url([ADMIN, 'dashboard', 'main']));
+                    }
+                }
             }
         }
         if (MULTI_APP) {
@@ -222,12 +277,9 @@ try {
     }
 
 } catch (Throwable $e) {
-    // Auto-rescue untuk lingkungan PaaS (Papuyu/Docker) jika .env terbuat tapi database belum di-import
+    // Tangkap khusus error ketidakadaan tabel untuk tidak di redirect melainkan dimunculkan sebagai notifikasi
     $errMsg = $e->getMessage();
-    if (strpos($errMsg, 'Base table or view not found') !== false || strpos($errMsg, 'no such table') !== false || strpos($errMsg, 'Unknown database') !== false) {
-        header('Location: /install.php');
-        exit;
-    }
+    $isMissingTable = (strpos($errMsg, 'Base table or view not found') !== false || strpos($errMsg, 'no such table') !== false || strpos($errMsg, 'Unknown database') !== false);
 
     // Check if this is an AJAX request expecting JSON
     $isAjaxRequest = (
@@ -241,7 +293,10 @@ try {
         $message = 'Please check database configuration and ensure MySQL server is running';
         $debug = [];
 
-        if ($e->getCode() == 23000) {
+        if ($isMissingTable) {
+            $error = 'Table / Database Not Found';
+            $message = $errMsg;
+        } elseif ($e->getCode() == 23000) {
             $message = $e->getMessage();
         }
 
@@ -278,6 +333,12 @@ try {
         $title = 'System Error';
         $content = '<p>Please contact administrator.</p>';
         $debug_info = '';
+
+        if ($isMissingTable) {
+            $title = 'Database Error';
+            $content = '<div class="alert alert-warning" style="margin-top: 15px;"><strong>Warning:</strong><br>' . htmlspecialchars($errMsg) . '</div>';
+            $content .= '<p>Sepertinya tabel yang hendak diakses tidak tersedia di database. Anda mungkin tidak menginstal plugin secara menyeluruh, atau modul belum menyediakan tabel tersebut.</p>';
+        }
 
         if (defined('DEV_MODE') && DEV_MODE) {
             $content .= '<div class="alert alert-danger" style="margin-top: 15px;"><strong>Error:</strong> ' . htmlspecialchars($e->getMessage()) . '</div>';
