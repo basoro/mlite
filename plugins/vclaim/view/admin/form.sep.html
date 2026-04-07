@@ -129,6 +129,25 @@
                   </div>
               </div>
           </div>
+          <div class="panel panel-default">
+              <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">SEP Internal</a>
+                  </h4>
+              </div>
+              <div id="collapseFour" class="panel-collapse collapse">
+                  <div class="panel-body">
+                    <div class="form-group">
+                      <label for="poli">Nomor SEP Internal</label>
+                      <input type="text" id="nomor_sep_internal" name="nomor_sep_internal" class="form-control" value="" readonly>
+                    </div>
+                    <button type="submit" class="btn btn-danger" id="parameter_sep_internal">
+                        Kirim Parameter
+                    </button>
+                    <div id="sep_internal"></div>
+                  </div>
+              </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1357,7 +1376,7 @@ async function openFrista(noka) {
                 output+="Kelas : " + histori[i].kelasRawat + "<br/>";
                 output+="Poli : " + poli + "<br/>";
                 output+="Tgl. SEP : " + histori[i].tglSep + "<br/>";
-                output+="No. SEP : <span id=\"sep_no_sep\" class=\"text-info\" role=\"button\">" + histori[i].noSep + "</span><br/>";
+                output+="No. SEP : <span id=\"sep_no_sep\" class=\"text-info\" role=\"button\" data-jenis=" + histori[i].jnsPelayanan + ">" + histori[i].noSep + "</span><br/>";
                 output+="No. Rjk : " + histori[i].noRujukan + "<br/>";
                 output+="PPK Pelayanan : " + histori[i].ppkPelayanan;
                 output+="</div>";
@@ -1375,8 +1394,57 @@ async function openFrista(noka) {
         });
     }
   });
+  $('#parameter_sep_internal').on('click',function(e){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var nomor_sep_internal = $('input:text[name=nomor_sep_internal]').val();
+    var url_vclaim    = baseURL + '/vclaim/sepinternal/' + nomor_sep_internal + '/?t=' + mlite.token;
+
+    if(nomor_sep_internal!="") {
+        // tampilkan data yang sudah di perbaharui
+        $.get(url_vclaim,function(data) {
+          // console.log(JSON.parse(data));
+          var data = JSON.parse(data);
+          if(data.metaData.code == 200) {
+            var histori = data.response.list;
+            var output="<div class=\"panel panel-default m-t-xl\">";
+            for (var i in histori) {
+                var jnsPelayanan = "Rawat Inap";
+                var poli = "null";
+                if(histori[i].jnsPelayanan == 2) {
+                  var jnsPelayanan = "Rawat Jalan";
+                  var poli = histori[i].poli;
+                }
+                output+="<div class=\"panel-body\">";
+                output+="Diagnosa : " + histori[i].diagnosa + "<br/>";
+                output+="Jenis : " + jnsPelayanan + "<br/>";
+                output+="Kelas : " + histori[i].kelasRawat + "<br/>";
+                output+="Poli : " + poli + "<br/>";
+                output+="Tgl. SEP : " + histori[i].tglSep + "<br/>";
+                output+="No. SEP : <span id=\"sep_no_sep\" class=\"text-info\" role=\"button\" data-jenis=" + histori[i].jnsPelayanan + ">" + histori[i].noSep + "</span><br/>";
+                output+="No. Rjk : " + histori[i].noRujukan + "<br/>";
+                output+="PPK Pelayanan : " + histori[i].ppkPelayanan;
+                output+="</div>";
+                output+="<div class=\"panel-footer\"><button class=\"btn btn-success btn-xs ubah_sep\" data-diagnosa=" + histori[i].diagnosa + " data-poli=" + poli + " data-tgl_sep=" + histori[i].tglSep + " data-no_sep=" + histori[i].noSep + " data-no_rujukan=" + histori[i].noRujukan + ">Ubah</button> <button class=\"btn btn-danger btn-xs hapus_sep\" data-no_sep=" + histori[i].noSep + ">Hapus</button> <button class=\"btn btn-primary btn-xs print_sep\" data-no_sep=" + histori[i].noSep + ">Cetak</button>";
+                if(histori[i].jnsPelayanan == 1) {
+                  output+=" <button class=\"btn btn-warning text-primary btn-xs sep_pulang\" data-no_sep=" + histori[i].noSep + " id=\"sep_pulang_" + histori[i].noSep + "\">Pulang</button>";
+                }
+                output+="</div>";
+            }
+          } else {
+            alert(data.metaData.message);
+          }
+        });
+    }
+  });
   $("#form_sep").on("click","#sep_no_sep", function(event){
-    $('#sep_nomor_rujukan').val($(this).text());
+    var jnsPelayanan = $(this).data('jenis');
+    if(jnsPelayanan == 1) {
+      $('#sep_nomor_rujukan').val($(this).text());
+    } else {
+      $('#collapseFour').collapse('show');
+      $('#collapseThree').collapse('hide');
+      $('#nomor_sep_internal').val($(this).text());
+    }
   });
   // end pencarian
 </script>
