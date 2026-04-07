@@ -1,0 +1,138 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Update Tanggal Pulang</h4>
+</div>
+<div class="modal-body">
+
+  <div id="form_spri">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="row clearfix">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label id="label_sep">No SEP</label>
+                    <input type="text" name="sep" id="sep" class="form-control" value="{?=isset_or($no_sep)?}" readonly />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Tanggal Pulang</label>
+                    <input type="text" name="tanggal_pulang" id="tanggal_pulang" class="form-control tanggal" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Alasan Pulang</label>
+                    <select class="form-control" name="status_pulang" id="status_pulang" data-use-search="true">
+                      <option value="">Pilih alasan pulang</option>
+                      <option value="1">Atas Persetujuan Dokter</option>
+                      <option value="3">Atas Permintaan Sendiri</option>
+                      <option value="4">Meninggal</option>
+                      <option value="5">Lain-lain</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary" id="simpan_tgl_pulang">Simpan</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br><br>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script type="text/javascript">
+   $('select').selectator();
+   $(function () {
+       $('.tanggal').datetimepicker({
+         format: 'YYYY-MM-DD',
+         locale: 'id'
+       });
+   });
+   $(function () {
+       $('.jam').datetimepicker({
+         format: 'HH:mm:ss',
+         locale: 'id'
+       });
+   });
+</script>
+<script type="text/javascript">
+
+  $("#form_spri").on("click","#simpan_tgl_pulang", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    $('#simpan_tgl_pulang').prop('disabled', true);
+    var tanggal_pulang   = $('#tanggal_pulang').val();
+    var sep = $('#sep').val();
+    var status_pulang = $('#status_pulang').val();
+
+    var url = baseURL + '/vclaim/updatetglplg2?t=' + mlite.token;
+
+    $.post(url,{
+      tanggal_pulang : tanggal_pulang,
+      sep : sep,
+      status_pulang : status_pulang
+    } ,function(data) {
+      $('#simpan_tgl_pulang').prop('disabled', false);
+        alert(data);
+        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data Tanggal Pulang telah disimpan!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+    });
+
+  });
+
+  $("#form_spri").on("click","#ubah_spri", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    $('#ubah_spri').prop('disabled', true);
+    var tanggal_surat   = $('#tanggal_rujukan').val();
+    var tanggal_periksa = $('#tanggal_datang').val();
+    var poli            = $('#poli').val();
+    var dokter          = $('#dokter').val();
+    var no_surat        = $('#sep_nomor_surat').val();
+
+    var url = baseURL + '/vclaim/updatespri/'+no_surat+'?t=' + mlite.token;
+    $.post(url,{
+      tanggal_surat : tanggal_surat,
+      tanggal_periksa : tanggal_periksa,
+      dokter : dokter,
+      poli : poli
+    } ,function(data) {
+      $('#ubah_spri').prop('disabled', false);
+        alert(data);
+        $("#spridisplay").show().load(baseURL + '/vclaim/spridisplay/{?=isset_or($no_kartu)?}/{?=convertNorawat($no_rawat)?}?t=' + mlite.token);
+        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data SPRI telah diubah!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+    });
+
+  });
+
+  $("#form_spri").on("click","#hapus_spri", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    $('#hapus_spri').prop('disabled', true);
+    var no_surat        = $('#sep_nomor_surat').val();
+
+    var url = baseURL + '/vclaim/deletespri/'+no_surat+'?t=' + mlite.token;
+    $.post(url,{
+    } ,function(data) {
+      $('#hapus_spri').prop('disabled', false);
+        alert(data);
+        $("#spridisplay").show().load(baseURL + '/vclaim/spridisplay/{?=isset_or($no_kartu)?}/{?=convertNorawat($no_rawat)?}?t=' + mlite.token);
+        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data SPRI telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+    });
+
+  });
+</script>

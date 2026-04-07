@@ -1608,7 +1608,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
     } else {
-      echo htmlspecialchars($data['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+      echo htmlspecialchars($json['metaData']['message'] ?? 'Unknown error', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
     exit();
   }
@@ -1761,7 +1761,6 @@ class Admin extends AdminModule
       ]
     ];
     $data = json_encode($data);
-    echo $data;
     $url = $this->api_url . 'SEP/2.0/updtglplg';
     $output = BpjsService::put($url, $data, $this->consid, $this->secretkey,  $this->user_key, $tStamp);
     $json = json_decode($output, true);
@@ -2437,7 +2436,6 @@ class Admin extends AdminModule
     ];
 
     $data = json_encode($data);
-    print_r($data);
 
     $url = $this->api_url . 'RencanaKontrol/InsertSPRI';
     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
@@ -2493,7 +2491,6 @@ class Admin extends AdminModule
     print_r($data);
     $url = $this->api_url . 'RencanaKontrol/UpdateSPRI';
     $output = BpjsService::put($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
-    echo $output;
     $data = json_decode($output, true);
     //echo $data['metaData']['message'];
     if ($data == NULL) {
@@ -2542,7 +2539,6 @@ class Admin extends AdminModule
     print_r($data);
     $url = $this->api_url . 'RencanaKontrol/Delete';
     $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
-    echo $output;
     $data = json_decode($output, true);
     //echo $data['metaData']['message'];
     if ($data == NULL) {

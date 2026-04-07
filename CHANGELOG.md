@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2026-04-07]
 
 ### Added
 - VClaim: Tambah alur pembaruan tanggal-pulang SEP (endpoint baru `updatetglplg2`) + modal UI `plugins/vclaim/view/admin/sep_pulang.html`.
