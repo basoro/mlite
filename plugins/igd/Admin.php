@@ -71,7 +71,7 @@ class Admin extends AdminModule
         exit();
     }
 
-    public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa='')
+    public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa='', $status_bayar='')
     {
         $this->_addHeaderFiles();
 
@@ -167,7 +167,6 @@ class Admin extends AdminModule
             'sttsumur' => '',
             'status_bayar' => '',
             'status_poli' => '',
-            'nm_pasien' => '',
             'tgl_lahir' => '',
             'jk' => '',
             'alamat' => '',
@@ -217,7 +216,6 @@ class Admin extends AdminModule
       } else {
         $this->assign['reg_periksa'] = [
           'no_rkm_medis' => '',
-          'nm_pasien' => '',
           'no_reg' => '',
           'no_rawat' => '',
           'tgl_registrasi' => '',
@@ -294,61 +292,92 @@ class Admin extends AdminModule
 
     public function postSave()
     {
-      if (!$this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+      $maxRetries = 5;
+      $retryCount = 0;
+      $success = false;
 
-        $_POST['status_lanjut'] = 'Ralan';
-        $_POST['stts'] = 'Belum';
-        $_POST['status_bayar'] = 'Belum Bayar';
-        $_POST['p_jawab'] = '-';
-        $_POST['almt_pj'] = '-';
-        $_POST['hubunganpj'] = '-';
+      while ($retryCount < $maxRetries && !$success) {
+        $this->db()->pdo()->beginTransaction();
+        try {
+          if (!$this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
 
-        $poliklinik = $this->db('poliklinik')->where('kd_poli', $this->settings('settings', 'igd'))->oneArray();
+            $_POST['status_lanjut'] = 'Ralan';
+            $_POST['stts'] = 'Belum';
+            $_POST['status_bayar'] = 'Belum Bayar';
+            $_POST['p_jawab'] = '-';
+            $_POST['almt_pj'] = '-';
+            $_POST['hubunganpj'] = '-';
 
-        $_POST['biaya_reg'] = $poliklinik['registrasi'];
+            $poliklinik = $this->db('poliklinik')->where('kd_poli', $this->settings('settings', 'igd'))->oneArray();
 
-        $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+            $_POST['biaya_reg'] = $poliklinik['registrasi'];
 
-      	$birthDate = new \DateTime($pasien['tgl_lahir']);
-      	$today = new \DateTime("today");
-      	$umur_daftar = "0";
-        $status_umur = 'Hr';
-        if ($birthDate < $today) {
-        	$y = $today->diff($birthDate)->y;
-        	$m = $today->diff($birthDate)->m;
-        	$d = $today->diff($birthDate)->d;
-          $umur_daftar = $d;
-          $status_umur = "Hr";
-          if($y !='0'){
-            $umur_daftar = $y;
-            $status_umur = "Th";
+            $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+
+          	$birthDate = new \DateTime($pasien['tgl_lahir']);
+          	$today = new \DateTime("today");
+          	$umur_daftar = "0";
+            $status_umur = 'Hr';
+            if ($birthDate < $today) {
+            	$y = $today->diff($birthDate)->y;
+            	$m = $today->diff($birthDate)->m;
+            	$d = $today->diff($birthDate)->d;
+              $umur_daftar = $d;
+              $status_umur = "Hr";
+              if($y !='0'){
+                $umur_daftar = $y;
+                $status_umur = "Th";
+              }
+              if($y =='0' && $m !='0'){
+                $umur_daftar = $m;
+                $status_umur = "Bl";
+              }
+            }
+
+            $_POST['umurdaftar'] = $umur_daftar;
+            $_POST['sttsumur'] = $status_umur;
+            $_POST['status_poli'] = 'Lama';
+            $_POST['kd_poli'] = $this->settings('settings', 'igd');
+
+            // Regenerate no_rawat and no_reg inside transaction for atomicity
+            $tgl_registrasi = $_POST['tgl_registrasi'] ?? date('Y-m-d');
+            $urut_rawat = $this->db('reg_periksa')
+                ->where('tgl_registrasi', $tgl_registrasi)
+                ->nextRightNumber('no_rawat', 6);
+            $_POST['no_rawat'] = date('Y/m/d', strtotime($tgl_registrasi)) . '/' . sprintf('%06d', $urut_rawat);
+
+            $urut_reg = $this->db('reg_periksa')
+                ->where('kd_poli', $this->settings('settings', 'igd'))
+                ->where('tgl_registrasi', $tgl_registrasi)
+                ->nextRightNumber('no_reg', 3);
+            $_POST['no_reg'] = sprintf('%03d', $urut_reg);
+
+            $query = $this->db('reg_periksa')->save($_POST);
+          } else {
+            $query = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save([
+              'kd_dokter' => $_POST['kd_dokter'],
+              'kd_pj' => $_POST['kd_pj']
+            ]);
           }
-          if($y =='0' && $m !='0'){
-            $umur_daftar = $m;
-            $status_umur = "Bl";
+
+          if($query) {
+            $this->db()->pdo()->commit();
+            $success = true;
+            $data['status'] = 'success';
+            echo json_encode(htmlspecialchars_array($data));
           }
+        } catch (\Exception $e) {
+          $this->db()->pdo()->rollBack();
+          if ($e->getCode() == '23000' || $e->getCode() == 1) { // 1 is for custom error above
+            $retryCount++;
+            usleep(100000);
+            continue;
+          }
+          $data['status'] = 'error';
+          $data['msg'] = $e->getMessage();
+          echo json_encode(htmlspecialchars_array($data));
+          $success = true; // Stop loop on non-retryable error
         }
-
-        $_POST['umurdaftar'] = $umur_daftar;
-        $_POST['sttsumur'] = $status_umur;
-        $_POST['status_poli'] = 'Lama';
-        $_POST['kd_poli'] = $this->settings('settings', 'igd');
-
-        $query = $this->db('reg_periksa')->save($_POST);
-      } else {
-        $query = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save([
-          'kd_dokter' => $_POST['kd_dokter'],
-          'kd_pj' => $_POST['kd_pj']
-        ]);
-      }
-
-      if($query) {
-        $data['status'] = 'success';
-        echo json_encode(htmlspecialchars_array($data));
-      } else {
-        $data['status'] = 'error';
-        $data['msg'] = $query->errorInfo()['2'];
-        echo json_encode(htmlspecialchars_array($data));
       }
       exit();
     }
@@ -464,48 +493,66 @@ class Admin extends AdminModule
         }
       }
       if($_POST['kat'] == 'obat') {
+        $maxRetries = 5;
+        $retryCount = 0;
+        $success = false;
 
-        $no_resep = $this->core->setNoResep($_POST['tgl_perawatan']);
-        $cek_resep = $this->db('resep_obat')->join('resep_dokter', 'resep_obat.no_resep = resep_dokter.no_resep')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
+        while ($retryCount < $maxRetries && !$success) {
+          $this->db()->pdo()->beginTransaction();
+          try {
+            $no_resep = $this->core->setNoResep($_POST['tgl_perawatan']);
+            $cek_resep = $this->db('resep_obat')->join('resep_dokter', 'resep_obat.no_resep = resep_dokter.no_resep')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
 
-        if(empty($cek_resep)) {
+            if(empty($cek_resep)) {
 
-          $resep_obat = $this->db('resep_obat')
-            ->save([
-              'no_resep' => $no_resep,
-              'tgl_perawatan' => '0000-00-00',
-              'jam' => '00:00:00',
-              'no_rawat' => $_POST['no_rawat'],
-              'kd_dokter' => $_POST['kode_provider'],
-              'tgl_peresepan' => $_POST['tgl_perawatan'],
-              'jam_peresepan' => $_POST['jam_rawat'],
-              'status' => 'ralan',
-              'tgl_penyerahan' => '0000-00-00',
-              'jam_penyerahan' => '00:00:00'
-            ]);
+              $resep_obat = $this->db('resep_obat')
+                ->save([
+                  'no_resep' => $no_resep,
+                  'tgl_perawatan' => '0000-00-00',
+                  'jam' => '00:00:00',
+                  'no_rawat' => $_POST['no_rawat'],
+                  'kd_dokter' => $_POST['kode_provider'],
+                  'tgl_peresepan' => $_POST['tgl_perawatan'],
+                  'jam_peresepan' => $_POST['jam_rawat'],
+                  'status' => 'ralan',
+                  'tgl_penyerahan' => '0000-00-00',
+                  'jam_penyerahan' => '00:00:00'
+                ]);
 
-          if ($this->db('resep_obat')->where('no_resep', $no_resep)->where('kd_dokter', $_POST['kode_provider'])->oneArray()) {
-            $this->db('resep_dokter')
-              ->save([
-                'no_resep' => $no_resep,
-                'kode_brng' => $_POST['kd_jenis_prw'],
-                'jml' => $_POST['jml'],
-                'aturan_pakai' => $_POST['aturan_pakai']
-              ]);
+              if ($this->db('resep_obat')->where('no_resep', $no_resep)->where('kd_dokter', $_POST['kode_provider'])->oneArray()) {
+                $this->db('resep_dokter')
+                  ->save([
+                    'no_resep' => $no_resep,
+                    'kode_brng' => $_POST['kd_jenis_prw'],
+                    'jml' => $_POST['jml'],
+                    'aturan_pakai' => $_POST['aturan_pakai']
+                  ]);
+              }
+
+            } else {
+
+              $no_resep = $cek_resep['no_resep'];
+
+              $this->db('resep_dokter')
+                ->save([
+                  'no_resep' => $no_resep,
+                  'kode_brng' => $_POST['kd_jenis_prw'],
+                  'jml' => $_POST['jml'],
+                  'aturan_pakai' => $_POST['aturan_pakai']
+                ]);
+
+            }
+            $this->db()->pdo()->commit();
+            $success = true;
+          } catch (\Exception $e) {
+            $this->db()->pdo()->rollBack();
+            if ($e->getCode() == '23000') {
+              $retryCount++;
+              usleep(100000);
+              continue;
+            }
+            throw $e;
           }
-
-        } else {
-
-          $no_resep = $cek_resep['no_resep'];
-
-          $this->db('resep_dokter')
-            ->save([
-              'no_resep' => $no_resep,
-              'kode_brng' => $_POST['kd_jenis_prw'],
-              'jml' => $_POST['jml'],
-              'aturan_pakai' => $_POST['aturan_pakai']
-            ]);
-
         }
 
       }

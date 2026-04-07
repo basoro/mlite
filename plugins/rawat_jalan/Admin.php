@@ -232,84 +232,97 @@ class Admin extends AdminModule
         $input['tgl_registrasi'] = $input['tgl_registrasi'] ?? date('Y-m-d');
         $input['jam_reg'] = $input['jam_reg'] ?? date('H:i:s');
 
-        if ($input['tgl_registrasi'] > date('Y-m-d')) {
-            $booking = [
-                'tanggal_booking' => date('Y-m-d'),
-                'jam_booking' => date('H:i:s'),
-                'no_rkm_medis' => $input['no_rkm_medis'],
-                'tanggal_periksa' => $input['tgl_registrasi'],
-                'kd_dokter' => $input['kd_dokter'],
-                'kd_poli' => $input['kd_poli'],
-                'no_reg' => $this->core->setNoBooking($input['kd_dokter'], $input['tgl_registrasi'], $input['kd_poli']),
-                'kd_pj' => $input['kd_pj'] ?? '-',
-                'limit_reg' => '0',
-                'waktu_kunjungan' => $input['tgl_registrasi'] . ' ' . $input['jam_reg'],
-                'status' => 'Belum'
-            ];
+        $maxRetries = 5;
+        $retryCount = 0;
+        $success = false;
+        $lastError = '';
+
+        while ($retryCount < $maxRetries && !$success) {
+            $this->db()->pdo()->beginTransaction();
             try {
-                $this->db('booking_registrasi')->save($booking);
-                return ['status' => 'created', 'data' => $booking];
-            } catch (\PDOException $e) {
-                $message = $e->getMessage();
-                $message = preg_replace('/`[^`]+`\./', '', $message);
-                return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+                if ($input['tgl_registrasi'] > date('Y-m-d')) {
+                    $input['no_reg'] = $this->core->setNoBooking($input['kd_dokter'], $input['tgl_registrasi'], $input['kd_poli']);
+                    $booking = [
+                        'tanggal_booking' => date('Y-m-d'),
+                        'jam_booking' => date('H:i:s'),
+                        'no_rkm_medis' => $input['no_rkm_medis'],
+                        'tanggal_periksa' => $input['tgl_registrasi'],
+                        'kd_dokter' => $input['kd_dokter'],
+                        'kd_poli' => $input['kd_poli'],
+                        'no_reg' => $input['no_reg'],
+                        'kd_pj' => $input['kd_pj'] ?? '-',
+                        'limit_reg' => '0',
+                        'waktu_kunjungan' => $input['tgl_registrasi'] . ' ' . $input['jam_reg'],
+                        'status' => 'Belum'
+                    ];
+                    $this->db('booking_registrasi')->save($booking);
+                    $this->db()->pdo()->commit();
+                    return ['status' => 'created', 'data' => $booking];
+                }
+
+                $input['no_rawat'] = $this->setNoRawat($input['tgl_registrasi']);
+                
+                // Calculate No Reg (Queue Number)
+                $tgl_registrasi = $input['tgl_registrasi'];
+                $q = $this->db('reg_periksa')
+                    ->where('kd_poli', $input['kd_poli'])
+                    ->where('tgl_registrasi', $tgl_registrasi);
+
+                if ($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+                    $q->where('kd_dokter', $input['kd_dokter']);
+                }
+
+                $urut = $q->nextRightNumber('no_reg', 3);
+                $input['no_reg'] = sprintf('%03d', $urut);
+
+                $input['status_lanjut'] = 'Ralan';
+                $input['stts'] = 'Belum';
+                $input['status_bayar'] = 'Belum Bayar';
+                $input['p_jawab'] = $input['p_jawab'] ?? '-';
+                $input['almt_pj'] = $input['almt_pj'] ?? '-';
+                $input['hubunganpj'] = $input['hubunganpj'] ?? '-';
+
+                $poliklinik = $this->db('poliklinik')->where('kd_poli', $input['kd_poli'])->oneArray();
+                $input['biaya_reg'] = $poliklinik['registrasi'];
+
+                $pasien = $this->db('pasien')->where('no_rkm_medis', $input['no_rkm_medis'])->oneArray();
+                
+                // Calculate Age
+                $birthDate = new \DateTime($pasien['tgl_lahir']);
+                $today = new \DateTime("today");
+                $y = $today->diff($birthDate)->y;
+                $m = $today->diff($birthDate)->m;
+                $d = $today->diff($birthDate)->d;
+                $input['umurdaftar'] = $d;
+                $input['sttsumur'] = "Hr";
+                if($y !='0'){
+                    $input['umurdaftar'] = $y;
+                    $input['sttsumur'] = "Th";
+                }
+                if($y =='0' && $m !='0'){
+                    $input['umurdaftar'] = $m;
+                    $input['sttsumur'] = "Bl";
+                }
+                $input['status_poli'] = 'Lama';
+
+                $this->db('reg_periksa')->save($input);
+                $this->db()->pdo()->commit();
+                $success = true;
+                return ['status' => 'created', 'data' => $input];
+
+            } catch (\Exception $e) {
+                $this->db()->pdo()->rollBack();
+                if ($e->getCode() == '23000') {
+                    $retryCount++;
+                    usleep(100000);
+                    continue;
+                }
+                $lastError = $e->getMessage();
+                break;
             }
         }
 
-        $input['no_rawat'] = $this->setNoRawat($input['tgl_registrasi']);
-        
-        // Calculate No Reg (Queue Number)
-        $tgl_registrasi = $input['tgl_registrasi'];
-        $q = $this->db('reg_periksa')
-            ->where('kd_poli', $input['kd_poli'])
-            ->where('tgl_registrasi', $tgl_registrasi);
-
-        if ($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
-            $q->where('kd_dokter', $input['kd_dokter']);
-        }
-
-        $urut = $q->nextRightNumber('no_reg', 3);
-
-        $input['no_reg'] = sprintf('%03d', $urut);
-
-        $input['status_lanjut'] = 'Ralan';
-        $input['stts'] = 'Belum';
-        $input['status_bayar'] = 'Belum Bayar';
-        $input['p_jawab'] = $input['p_jawab'] ?? '-';
-        $input['almt_pj'] = $input['almt_pj'] ?? '-';
-        $input['hubunganpj'] = $input['hubunganpj'] ?? '-';
-
-        $poliklinik = $this->db('poliklinik')->where('kd_poli', $input['kd_poli'])->oneArray();
-        $input['biaya_reg'] = $poliklinik['registrasi'];
-
-        $pasien = $this->db('pasien')->where('no_rkm_medis', $input['no_rkm_medis'])->oneArray();
-        
-        // Calculate Age
-        $birthDate = new \DateTime($pasien['tgl_lahir']);
-        $today = new \DateTime("today");
-        $y = $today->diff($birthDate)->y;
-        $m = $today->diff($birthDate)->m;
-        $d = $today->diff($birthDate)->d;
-        $input['umurdaftar'] = $d;
-        $input['sttsumur'] = "Hr";
-        if($y !='0'){
-            $input['umurdaftar'] = $y;
-            $input['sttsumur'] = "Th";
-        }
-        if($y =='0' && $m !='0'){
-            $input['umurdaftar'] = $m;
-            $input['sttsumur'] = "Bl";
-        }
-        $input['status_poli'] = 'Lama';
-
-        try {
-            $this->db('reg_periksa')->save($input);
-            return ['status' => 'created', 'data' => $input];
-        } catch (\PDOException $e) {
-            $message = $e->getMessage();
-            $message = preg_replace('/`[^`]+`\./', '', $message);
-            return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
-        }
+        return ['status' => 'error', 'message' => htmlspecialchars($lastError ?: 'Terjadi kesalahan sistem.', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')];
     }
 
     public function apiUpdate($no_rawat = null)
@@ -1125,7 +1138,6 @@ class Admin extends AdminModule
             'sttsumur' => '',
             'status_bayar' => '',
             'status_poli' => '',
-            'nm_pasien' => '',
             'tgl_lahir' => '',
             'jk' => '',
             'alamat' => '',
@@ -1189,7 +1201,6 @@ class Admin extends AdminModule
           'sttsumur' => '',
           'status_bayar' => '',
           'status_poli' => '',
-          'nm_pasien' => '',
           'tgl_lahir' => '',
           'jk' => '',
           'alamat' => '',
@@ -1246,66 +1257,104 @@ class Admin extends AdminModule
 
     public function postSave()
     {
-      if ($_POST['tgl_registrasi'] > date('Y-m-d')) {
-        $this->db('booking_registrasi')->save([
-          'tanggal_booking' => date('Y-m-d'),
-          'jam_booking' => date('H:i:s'),
-          'no_rkm_medis' => $_POST['no_rkm_medis'],
-          'tanggal_periksa' => $_POST['tgl_registrasi'],
-          'kd_dokter' => $_POST['kd_dokter'],
-          'kd_poli' => $_POST['kd_poli'],
-          'no_reg' => $this->core->setNoBooking($_POST['kd_dokter'], $_POST['tgl_registrasi'], $_POST['kd_poli']),
-          'kd_pj' => $_POST['kd_pj'],
-          'limit_reg' => '0',
-          'waktu_kunjungan' => $_POST['tgl_registrasi'] . ' ' . $_POST['jam_reg'],
-          'status' => 'Belum'
-        ]);
-      } else if (!$this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+      $maxRetries = 5;
+      $retryCount = 0;
+      $success = false;
+      $lastError = '';
 
-        $_POST['status_lanjut'] = 'Ralan';
-        $_POST['stts'] = 'Belum';
-        $_POST['status_bayar'] = 'Belum Bayar';
-        $_POST['p_jawab'] = '-';
-        $_POST['almt_pj'] = '-';
-        $_POST['hubunganpj'] = '-';
+      while ($retryCount < $maxRetries && !$success) {
+        $this->db()->pdo()->beginTransaction();
+        try {
+          if ($_POST['tgl_registrasi'] > date('Y-m-d')) {
+            $_POST['no_reg'] = $this->core->setNoBooking($_POST['kd_dokter'], $_POST['tgl_registrasi'], $_POST['kd_poli']);
+            $this->db('booking_registrasi')->save([
+              'tanggal_booking' => date('Y-m-d'),
+              'jam_booking' => date('H:i:s'),
+              'no_rkm_medis' => $_POST['no_rkm_medis'],
+              'tanggal_periksa' => $_POST['tgl_registrasi'],
+              'kd_dokter' => $_POST['kd_dokter'],
+              'kd_poli' => $_POST['kd_poli'],
+              'no_reg' => $_POST['no_reg'],
+              'kd_pj' => $_POST['kd_pj'],
+              'limit_reg' => '0',
+              'waktu_kunjungan' => $_POST['tgl_registrasi'] . ' ' . $_POST['jam_reg'],
+              'status' => 'Belum'
+            ]);
+            $this->db()->pdo()->commit();
+            $success = true;
+            $query = true;
+          } else if (!$this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+            $_POST['no_rawat'] = $this->setNoRawat($_POST['tgl_registrasi']);
+            
+            $q = $this->db('reg_periksa')
+                ->where('kd_poli', $_POST['kd_poli'])
+                ->where('tgl_registrasi', $_POST['tgl_registrasi']);
 
-        $poliklinik = $this->db('poliklinik')->where('kd_poli', $_POST['kd_poli'])->oneArray();
+            if ($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+                $q->where('kd_dokter', $_POST['kd_dokter']);
+            }
 
-        $_POST['biaya_reg'] = $poliklinik['registrasi'];
+            $urut = $q->nextRightNumber('no_reg', 3);
+            $_POST['no_reg'] = sprintf('%03d', $urut);
 
-        $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+            $_POST['status_lanjut'] = 'Ralan';
+            $_POST['stts'] = 'Belum';
+            $_POST['status_bayar'] = 'Belum Bayar';
+            $_POST['p_jawab'] = '-';
+            $_POST['almt_pj'] = '-';
+            $_POST['hubunganpj'] = '-';
 
-      	$birthDate = new \DateTime($pasien['tgl_lahir']);
-      	$today = new \DateTime("today");
-      	$umur_daftar = "0";
-        $status_umur = 'Hr';
-        if ($birthDate < $today) {
-        	$y = $today->diff($birthDate)->y;
-        	$m = $today->diff($birthDate)->m;
-        	$d = $today->diff($birthDate)->d;
-          $umur_daftar = $d;
-          $status_umur = "Hr";
-          if($y !='0'){
-            $umur_daftar = $y;
-            $status_umur = "Th";
+            $poliklinik = $this->db('poliklinik')->where('kd_poli', $_POST['kd_poli'])->oneArray();
+            $_POST['biaya_reg'] = $poliklinik['registrasi'];
+
+            $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+
+            $birthDate = new \DateTime($pasien['tgl_lahir']);
+            $today = new \DateTime("today");
+            $umur_daftar = "0";
+            $status_umur = 'Hr';
+            if ($birthDate < $today) {
+                $y = $today->diff($birthDate)->y;
+                $m = $today->diff($birthDate)->m;
+                $d = $today->diff($birthDate)->d;
+              $umur_daftar = $d;
+              $status_umur = "Hr";
+              if($y !='0'){
+                $umur_daftar = $y;
+                $status_umur = "Th";
+              }
+              if($y =='0' && $m !='0'){
+                $umur_daftar = $m;
+                $status_umur = "Bl";
+              }
+            }
+
+            $_POST['umurdaftar'] = $umur_daftar;
+            $_POST['sttsumur'] = $status_umur;
+            $_POST['status_poli'] = 'Lama';
+
+            $query = $this->db('reg_periksa')->save($_POST);
+            $this->db()->pdo()->commit();
+            $success = true;
+          } else {
+            $query = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save([
+              'kd_poli' => $_POST['kd_poli'],
+              'kd_dokter' => $_POST['kd_dokter'],
+              'kd_pj' => $_POST['kd_pj']
+            ]);
+            $this->db()->pdo()->commit();
+            $success = true;
           }
-          if($y =='0' && $m !='0'){
-            $umur_daftar = $m;
-            $status_umur = "Bl";
+        } catch (\Exception $e) {
+          $this->db()->pdo()->rollBack();
+          if ($e->getCode() == '23000') {
+            $retryCount++;
+            usleep(100000);
+            continue;
           }
+          $lastError = $e->getMessage();
+          break;
         }
-
-        $_POST['umurdaftar'] = $umur_daftar;
-        $_POST['sttsumur'] = $status_umur;
-        $_POST['status_poli'] = 'Lama';
-
-        $query = $this->db('reg_periksa')->save($_POST);
-      } else {
-        $query = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save([
-          'kd_poli' => $_POST['kd_poli'],
-          'kd_dokter' => $_POST['kd_dokter'],
-          'kd_pj' => $_POST['kd_pj']
-        ]);
       }
 
       if($query) {
@@ -1380,35 +1429,57 @@ class Admin extends AdminModule
                   }
 
                   if($row['status'] == 'Belum') {
-                    $insert = $this->db('reg_periksa')
-                      ->save([
-                        'no_reg' => $row['no_reg'],
-                        'no_rawat' => $this->setNoRawat(),
-                        'tgl_registrasi' => date('Y-m-d'),
-                        'jam_reg' => date('H:i:s'),
-                        'kd_dokter' => $row['kd_dokter'],
-                        'no_rkm_medis' => $item,
-                        'kd_poli' => $row['kd_poli'],
-                        'p_jawab' => $this->getPasienInfo('namakeluarga', $item),
-                        'almt_pj' => $this->getPasienInfo('alamatpj', $item),
-                        'hubunganpj' => $this->getPasienInfo('keluarga', $item),
-                        'biaya_reg' => $_POST['biaya_reg'],
-                        'stts' => 'Belum',
-                        'stts_daftar' => $_POST['stts_daftar'],
-                        'status_lanjut' => 'Ralan',
-                        'kd_pj' => $row['kd_pj'],
-                        'umurdaftar' => $umur,
-                        'sttsumur' => $sttsumur,
-                        'status_bayar' => 'Belum Bayar',
-                        'status_poli' => $_POST['status_poli']
-                      ]);
+                    $maxRetriesInner = 5;
+                    $retryCountInner = 0;
+                    $successInner = false;
+                    while ($retryCountInner < $maxRetriesInner && !$successInner) {
+                      $this->db()->pdo()->beginTransaction();
+                      try {
+                        $no_rawat = $this->setNoRawat();
+                        $insert = $this->db('reg_periksa')
+                          ->save([
+                            'no_reg' => $row['no_reg'],
+                            'no_rawat' => $no_rawat,
+                            'tgl_registrasi' => date('Y-m-d'),
+                            'jam_reg' => date('H:i:s'),
+                            'kd_dokter' => $row['kd_dokter'],
+                            'no_rkm_medis' => $item,
+                            'kd_poli' => $row['kd_poli'],
+                            'p_jawab' => $this->getPasienInfo('namakeluarga', $item),
+                            'almt_pj' => $this->getPasienInfo('alamatpj', $item),
+                            'hubunganpj' => $this->getPasienInfo('keluarga', $item),
+                            'biaya_reg' => $_POST['biaya_reg'],
+                            'stts' => 'Belum',
+                            'stts_daftar' => $_POST['stts_daftar'],
+                            'status_lanjut' => 'Ralan',
+                            'kd_pj' => $row['kd_pj'],
+                            'umurdaftar' => $umur,
+                            'sttsumur' => $sttsumur,
+                            'status_bayar' => 'Belum Bayar',
+                            'status_poli' => $_POST['status_poli']
+                          ]);
 
-                      if ($insert) {
+                        if ($insert) {
                           $this->db('booking_registrasi')->where('no_rkm_medis', $item)->where('tanggal_periksa', date('Y-m-d'))->update('status', 'Terdaftar');
-                          $this->notify('success', 'Validasi sukses');
-                      } else {
-                          $this->notify('failure', 'Validasi gagal');
+                        }
+                        $this->db()->pdo()->commit();
+                        $successInner = true;
+                      } catch (\Exception $e) {
+                        $this->db()->pdo()->rollBack();
+                        if ($e->getCode() == '23000') {
+                          $retryCountInner++;
+                          usleep(100000);
+                          continue;
+                        }
+                        break;
                       }
+                    }
+
+                    if ($successInner) {
+                        $this->notify('success', 'Validasi sukses');
+                    } else {
+                        $this->notify('failure', 'Validasi gagal');
+                    }
                   }
               }
 

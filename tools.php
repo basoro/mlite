@@ -4,6 +4,7 @@
  * Emulates Apache .htaccess rewrite rules
  * 
  * Usage: PHP_CLI_SERVER_WORKERS=8 php -S localhost:8000 tools.php
+ * Usage: PHP_CLI_SERVER_WORKERS=8 ~/Server/runtime/php/bin/php -c ~/Server/data/php.ini -S 0.0.0.0:8000 tools.php
  */
 
 if (!defined('BASE_DIR')) {
@@ -38,7 +39,7 @@ if (strpos($uri, '/admin/') === 0 || $uri === '/admin') {
     if (file_exists($path) && !is_dir($path)) {
         return false;
     }
-    
+
     // If it's the admin root directory, serve admin/index.php
     if ($uri === '/admin' || $uri === '/admin/') {
         $_SERVER['SCRIPT_NAME'] = '/admin/index.php';

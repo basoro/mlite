@@ -196,37 +196,70 @@ class Admin extends AdminModule
         echo json_encode(['status' => 'error', 'msg' => 'Anda tidak memiliki hak akses untuk menambah data!']);
         exit();
       }
-      if ($manual == '0') {
-        $_POST['no_rkm_medis'] = $this->core->setNoRM();
-      }
-      $_POST['tmp_lahir'] = '-';
-      $_POST['umur'] = $this->hitungUmur($_POST['tgl_lahir']);
-      $_POST['pekerjaanpj'] = '-';
-      $_POST['alamatpj'] = $_POST['alamat'];
-      $_POST['kelurahanpj'] = $_POST['nm_kel'];
-      $_POST['kecamatanpj'] = $_POST['nm_kec'];
-      $_POST['kabupatenpj'] = $_POST['nm_kab'];
-      $_POST['perusahaan_pasien'] = '-';
-      $_POST['suku_bangsa'] = '1';
-      $_POST['bahasa_pasien'] = '1';
-      $_POST['cacat_fisik'] = '1';
-      $_POST['nip'] = '-';
-      $_POST['propinsipj'] = $_POST['nm_prop'];
-      unset($_POST['nm_prop']);
-      unset($_POST['nm_kab']);
-      unset($_POST['nm_kec']);
-      unset($_POST['nm_kel']);
-      $query = $this->db('pasien')->save($_POST);
 
-      if ($query) {
-        if ($manual == '0') {
-          $this->db()->pdo()->prepare("UPDATE set_no_rkm_medis SET no_rkm_medis=?")->execute([$_POST['no_rkm_medis']]);
+      $maxRetries = 5;
+      $retryCount = 0;
+      $success = false;
+      $lastError = '';
+
+      while ($retryCount < $maxRetries && !$success) {
+        $this->db()->pdo()->beginTransaction();
+        try {
+          if ($manual == '0') {
+            $_POST['no_rkm_medis'] = $this->core->setNoRM();
+          }
+
+          $_POST['tmp_lahir'] = '-';
+          $_POST['umur'] = $this->hitungUmur($_POST['tgl_lahir']);
+          $_POST['pekerjaanpj'] = '-';
+          $_POST['alamatpj'] = $_POST['alamat'];
+          $_POST['kelurahanpj'] = $_POST['nm_kel'];
+          $_POST['kecamatanpj'] = $_POST['nm_kec'];
+          $_POST['kabupatenpj'] = $_POST['nm_kab'];
+          $_POST['perusahaan_pasien'] = '-';
+          $_POST['suku_bangsa'] = '1';
+          $_POST['bahasa_pasien'] = '1';
+          $_POST['cacat_fisik'] = '1';
+          $_POST['nip'] = '-';
+          $_POST['propinsipj'] = $_POST['nm_prop'];
+
+          $tempPost = $_POST;
+          unset($tempPost['nm_prop']);
+          unset($tempPost['nm_kab']);
+          unset($tempPost['nm_kec']);
+          unset($tempPost['nm_kel']);
+
+          $query = $this->db('pasien')->save($tempPost);
+
+          if ($query) {
+            if ($manual == '0') {
+              $this->db()->pdo()->prepare("UPDATE set_no_rkm_medis SET no_rkm_medis=?")->execute([$_POST['no_rkm_medis']]);
+            }
+            $this->db()->pdo()->commit();
+            $success = true;
+          } else {
+            $this->db()->pdo()->rollBack();
+            $lastError = 'Gagal menyimpan data pasien.';
+            break; // Bukan error duplikat, keluar dari loop
+          }
+        } catch (\Exception $e) {
+          $this->db()->pdo()->rollBack();
+          if ($e->getCode() == '23000' && $manual == '0') {
+            $retryCount++;
+            usleep(100000); // Tunggu 100ms sebelum mencoba lagi
+            continue;
+          }
+          $lastError = $e->getMessage();
+          break;
         }
+      }
+
+      if ($success) {
         $data['status'] = 'success';
         echo json_encode(htmlspecialchars_array($data));
       } else {
         $data['status'] = 'error';
-        $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $data['msg'] = htmlspecialchars($lastError ?: 'Terjadi kesalahan sistem.', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         echo json_encode(htmlspecialchars_array($data));
       }
 
@@ -287,9 +320,9 @@ class Admin extends AdminModule
       $img = new \Systems\Lib\Image;
       if ($img->load($photo)) {
         if ($img->getInfos('width') < $img->getInfos('height')) {
-          $img->crop(0, 0, $img->getInfos('width'), $img->getInfos('width'));
+          $img->crop(0, 0, (int)$img->getInfos('width'), (int)$img->getInfos('width'));
         } else {
-          $img->crop(0, 0, $img->getInfos('height'), $img->getInfos('height'));
+          $img->crop(0, 0, (int)$img->getInfos('height'), (int)$img->getInfos('height'));
         }
 
         if ($img->getInfos('width') > 512) {
@@ -307,9 +340,9 @@ class Admin extends AdminModule
       $img = new \Systems\Lib\Image;
       if ($img->load($photo)) {
         if ($img->getInfos('width') < $img->getInfos('height')) {
-          $img->crop(0, 0, $img->getInfos('width'), $img->getInfos('width'));
+          $img->crop(0, 0, (int)$img->getInfos('width'), (int)$img->getInfos('width'));
         } else {
-          $img->crop(0, 0, $img->getInfos('height'), $img->getInfos('height'));
+          $img->crop(0, 0, (int)$img->getInfos('height'), (int)$img->getInfos('height'));
         }
 
         if ($img->getInfos('width') > 512) {

@@ -225,27 +225,45 @@ class Admin extends AdminModule
       }
 
       if($_POST['kat'] == 'obat') {
+        $maxRetries = 5;
+        $retryCount = 0;
+        $success = false;
 
-        $no_resep = $this->core->setNoResep($_POST['tgl_perawatan']);
-        $cek_resep = $this->db('resep_obat')->join('resep_dokter', 'resep_obat.no_resep = resep_dokter.no_resep')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
+        while ($retryCount < $maxRetries && !$success) {
+          $this->db()->pdo()->beginTransaction();
+          try {
+            $no_resep = $this->core->setNoResep($_POST['tgl_perawatan']);
+            $cek_resep = $this->db('resep_obat')->join('resep_dokter', 'resep_obat.no_resep = resep_dokter.no_resep')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
 
-        if(empty($cek_resep)) {
+            if(empty($cek_resep)) {
 
-            $resep_obat = $this->db('resep_obat')
-              ->save([
-                'no_resep' => $no_resep,
-                'tgl_perawatan' => '0000-00-00',
-                'jam' => '00:00:00',
-                'no_rawat' => $_POST['no_rawat'],
-                'kd_dokter' => $this->core->getUserInfo('username', null, true),
-                'tgl_peresepan' => $_POST['tgl_perawatan'],
-                'jam_peresepan' => $_POST['jam_rawat'],
-                'status' => 'ralan',
-                'tgl_penyerahan' => '0000-00-00',
-                'jam_penyerahan' => '00:00:00'
-              ]);
+                $resep_obat = $this->db('resep_obat')
+                  ->save([
+                    'no_resep' => $no_resep,
+                    'tgl_perawatan' => '0000-00-00',
+                    'jam' => '00:00:00',
+                    'no_rawat' => $_POST['no_rawat'],
+                    'kd_dokter' => $this->core->getUserInfo('username', null, true),
+                    'tgl_peresepan' => $_POST['tgl_perawatan'],
+                    'jam_peresepan' => $_POST['jam_rawat'],
+                    'status' => 'ralan',
+                    'tgl_penyerahan' => '0000-00-00',
+                    'jam_penyerahan' => '00:00:00'
+                  ]);
 
-            if ($this->db('resep_obat')->where('no_resep', $no_resep)->where('kd_dokter', $this->core->getUserInfo('username', null, true))->oneArray()) {
+                if ($this->db('resep_obat')->where('no_resep', $no_resep)->where('kd_dokter', $this->core->getUserInfo('username', null, true))->oneArray()) {
+                  $this->db('resep_dokter')
+                    ->save([
+                      'no_resep' => $no_resep,
+                      'kode_brng' => $_POST['kd_jenis_prw'],
+                      'jml' => $_POST['jml'],
+                      'aturan_pakai' => $_POST['aturan_pakai']
+                    ]);
+                }
+
+            } else {
+
+              $no_resep = $cek_resep['no_resep'];
               $this->db('resep_dokter')
                 ->save([
                   'no_resep' => $no_resep,
@@ -253,216 +271,272 @@ class Admin extends AdminModule
                   'jml' => $_POST['jml'],
                   'aturan_pakai' => $_POST['aturan_pakai']
                 ]);
+
             }
-
-        } else {
-
-          $no_resep = $cek_resep['no_resep'];
-          $this->db('resep_dokter')
-            ->save([
-              'no_resep' => $no_resep,
-              'kode_brng' => $_POST['kd_jenis_prw'],
-              'jml' => $_POST['jml'],
-              'aturan_pakai' => $_POST['aturan_pakai']
-            ]);
-
+            $this->db()->pdo()->commit();
+            $success = true;
+          } catch (\Exception $e) {
+            $this->db()->pdo()->rollBack();
+            if ($e->getCode() == '23000') {
+              $retryCount++;
+              usleep(100000);
+              continue;
+            }
+            throw $e;
+          }
         }
 
       }
 
       if($_POST['kat'] == 'racikan') {
+        $maxRetries = 5;
+        $retryCount = 0;
+        $success = false;
 
-        $no_resep = $this->core->setNoResep($_POST['tgl_perawatan']);
-        $cek_resep = $this->db('resep_obat')->join('resep_dokter_racikan', 'resep_obat.no_resep = resep_dokter_racikan.no_resep')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
+        while ($retryCount < $maxRetries && !$success) {
+          $this->db()->pdo()->beginTransaction();
+          try {
+            $no_resep = $this->core->setNoResep($_POST['tgl_perawatan']);
+            $cek_resep = $this->db('resep_obat')->join('resep_dokter_racikan', 'resep_obat.no_resep = resep_dokter_racikan.no_resep')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
 
-        if(empty($cek_resep)) {
+            if(empty($cek_resep)) {
 
-          $resep_obat = $this->db('resep_obat')
-            ->save([
-              'no_resep' => $no_resep,
-              'tgl_perawatan' => '0000-00-00',
-              'jam' => '00:00:00',
-              'no_rawat' => $_POST['no_rawat'],
-              'kd_dokter' => $this->core->getUserInfo('username', null, true),
-              'tgl_peresepan' => $_POST['tgl_perawatan'],
-              'jam_peresepan' => $_POST['jam_rawat'],
-              'status' => 'ralan',
-              'tgl_penyerahan' => '0000-00-00',
-              'jam_penyerahan' => '00:00:00'
-            ]);
+              $resep_obat = $this->db('resep_obat')
+                ->save([
+                  'no_resep' => $no_resep,
+                  'tgl_perawatan' => '0000-00-00',
+                  'jam' => '00:00:00',
+                  'no_rawat' => $_POST['no_rawat'],
+                  'kd_dokter' => $this->core->getUserInfo('username', null, true),
+                  'tgl_peresepan' => $_POST['tgl_perawatan'],
+                  'jam_peresepan' => $_POST['jam_rawat'],
+                  'status' => 'ralan',
+                  'tgl_penyerahan' => '0000-00-00',
+                  'jam_penyerahan' => '00:00:00'
+                ]);
 
-          if ($this->db('resep_obat')->where('no_resep', $no_resep)->where('kd_dokter', $this->core->getUserInfo('username', null, true))->oneArray()) {
-            $no_racik = $this->db('resep_dokter_racikan')->where('no_resep', $no_resep)->count();
-            $no_racik = $no_racik+1;
-            $this->db('resep_dokter_racikan')
-              ->save([
-                'no_resep' => $no_resep,
-                'no_racik' => $no_racik,
-                'nama_racik' => $_POST['nama_racik'],
-                'kd_racik' => $_POST['kd_jenis_prw'],
-                'jml_dr' => $_POST['jml'],
-                'aturan_pakai' => $_POST['aturan_pakai'],
-                'keterangan' => $_POST['keterangan']
-              ]);
-            $_POST['kode_brng'] = json_decode($_POST['kode_brng'], true);
-            $_POST['kandungan'] = json_decode($_POST['kandungan'], true);
-            $kode_brng_count = count($_POST['kode_brng']);
-            for ($i = 0; $i < $kode_brng_count; $i++) {
-              $kapasitas = $this->db('databarang')->where('kode_brng', $_POST['kode_brng'][$i]['value'])->oneArray();
-              $jml = $_POST['jml']*$_POST['kandungan'][$i]['value'];
-              $jml = round(($jml/$kapasitas['kapasitas']),1);
-              $this->db('resep_dokter_racikan_detail')
+              if ($this->db('resep_obat')->where('no_resep', $no_resep)->where('kd_dokter', $this->core->getUserInfo('username', null, true))->oneArray()) {
+                $no_racik = $this->db('resep_dokter_racikan')->where('no_resep', $no_resep)->count();
+                $no_racik = $no_racik+1;
+                $this->db('resep_dokter_racikan')
+                  ->save([
+                    'no_resep' => $no_resep,
+                    'no_racik' => $no_racik,
+                    'nama_racik' => $_POST['nama_racik'],
+                    'kd_racik' => $_POST['kd_jenis_prw'],
+                    'jml_dr' => $_POST['jml'],
+                    'aturan_pakai' => $_POST['aturan_pakai'],
+                    'keterangan' => $_POST['keterangan']
+                  ]);
+                $post_kode_brng = json_decode($_POST['kode_brng'], true);
+                $post_kandungan = json_decode($_POST['kandungan'], true);
+                $kode_brng_count = count($post_kode_brng);
+                for ($i = 0; $i < $kode_brng_count; $i++) {
+                  $kapasitas = $this->db('databarang')->where('kode_brng', $post_kode_brng[$i]['value'])->oneArray();
+                  $jml = $_POST['jml']*$post_kandungan[$i]['value'];
+                  $jml = round(($jml/$kapasitas['kapasitas']),1);
+                  $this->db('resep_dokter_racikan_detail')
+                    ->save([
+                      'no_resep' => $no_resep,
+                      'no_racik' => $no_racik,
+                      'kode_brng' => $post_kode_brng[$i]['value'],
+                      'p1' => '1',
+                      'p2' => '1',
+                      'kandungan' => $post_kandungan[$i]['value'],
+                      'jml' => $jml
+                    ]);
+                }
+              }
+
+            } else {
+
+              $no_resep = $cek_resep['no_resep'];
+
+              $no_racik = $this->db('resep_dokter_racikan')->where('no_resep', $no_resep)->count();
+              $no_racik = $no_racik+1;
+              $this->db('resep_dokter_racikan')
                 ->save([
                   'no_resep' => $no_resep,
                   'no_racik' => $no_racik,
-                  'kode_brng' => $_POST['kode_brng'][$i]['value'],
-                  'p1' => '1',
-                  'p2' => '1',
-                  'kandungan' => $_POST['kandungan'][$i]['value'],
-                  'jml' => $jml
+                  'nama_racik' => $_POST['nama_racik'],
+                  'kd_racik' => $_POST['kd_jenis_prw'],
+                  'jml_dr' => $_POST['jml'],
+                  'aturan_pakai' => $_POST['aturan_pakai'],
+                  'keterangan' => $_POST['keterangan']
                 ]);
+              $post_kode_brng = json_decode($_POST['kode_brng'], true);
+              $post_kandungan = json_decode($_POST['kandungan'], true);
+              $kode_brng_count = count($post_kode_brng);
+              for ($i = 0; $i < $kode_brng_count; $i++) {
+                $kapasitas = $this->db('databarang')->where('kode_brng', $post_kode_brng[$i]['value'])->oneArray();
+                $jml = $_POST['jml']*$post_kandungan[$i]['value'];
+                $jml = round(($jml/$kapasitas['kapasitas']),1);
+                $this->db('resep_dokter_racikan_detail')
+                  ->save([
+                    'no_resep' => $no_resep,
+                    'no_racik' => $no_racik,
+                    'kode_brng' => $post_kode_brng[$i]['value'],
+                    'p1' => '1',
+                    'p2' => '1',
+                    'kandungan' => $post_kandungan[$i]['value'],
+                    'jml' => $jml
+                  ]);
+              }
+
             }
+            $this->db()->pdo()->commit();
+            $success = true;
+          } catch (\Exception $e) {
+            $this->db()->pdo()->rollBack();
+            if ($e->getCode() == '23000') {
+              $retryCount++;
+              usleep(100000);
+              continue;
+            }
+            throw $e;
           }
-
-        } else {
-
-          $no_resep = $cek_resep['no_resep'];
-
-          $no_racik = $this->db('resep_dokter_racikan')->where('no_resep', $no_resep)->count();
-          $no_racik = $no_racik+1;
-          $this->db('resep_dokter_racikan')
-            ->save([
-              'no_resep' => $no_resep,
-              'no_racik' => $no_racik,
-              'nama_racik' => $_POST['nama_racik'],
-              'kd_racik' => $_POST['kd_jenis_prw'],
-              'jml_dr' => $_POST['jml'],
-              'aturan_pakai' => $_POST['aturan_pakai'],
-              'keterangan' => $_POST['keterangan']
-            ]);
-          $_POST['kode_brng'] = json_decode($_POST['kode_brng'], true);
-          $_POST['kandungan'] = json_decode($_POST['kandungan'], true);
-          $kode_brng_count = count($_POST['kode_brng']);
-          for ($i = 0; $i < $kode_brng_count; $i++) {
-            $kapasitas = $this->db('databarang')->where('kode_brng', $_POST['kode_brng'][$i]['value'])->oneArray();
-            $jml = $_POST['jml']*$_POST['kandungan'][$i]['value'];
-            $jml = round(($jml/$kapasitas['kapasitas']),1);
-            $this->db('resep_dokter_racikan_detail')
-              ->save([
-                'no_resep' => $no_resep,
-                'no_racik' => $no_racik,
-                'kode_brng' => $_POST['kode_brng'][$i]['value'],
-                'p1' => '1',
-                'p2' => '1',
-                'kandungan' => $_POST['kandungan'][$i]['value'],
-                'jml' => $jml
-              ]);
-          }
-
         }
 
       }
 
       if($_POST['kat'] == 'laboratorium') {
-        $cek_lab = $this->db('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', date('Y-m-d'))->where('tgl_sampel', '0000-00-00')->where('status', 'ralan')->oneArray();
-        if(!$cek_lab) {
-          $urut = $this->db('permintaan_lab')
-              ->where('tgl_permintaan', date('Y-m-d'))
-              ->nextRightNumber('noorder', 4);
-          $noorder = 'PL' . date('Ymd') . sprintf('%04d', $urut);
+        $maxRetries = 5;
+        $retryCount = 0;
+        $success = false;
 
-          $permintaan_lab = $this->db('permintaan_lab')
-            ->save([
-              'noorder' => $noorder,
-              'no_rawat' => $_POST['no_rawat'],
-              'tgl_permintaan' => $_POST['tgl_perawatan'],
-              'jam_permintaan' => $_POST['jam_rawat'],
-              'tgl_sampel' => '0000-00-00',
-              'jam_sampel' => '00:00:00',
-              'tgl_hasil' => '0000-00-00',
-              'jam_hasil' => '00:00:00',
-              'dokter_perujuk' => $this->core->getUserInfo('username', null, true),
-              'status' => 'ralan',
-              'informasi_tambahan' => $_POST['informasi_tambahan'],
-              'diagnosa_klinis' => $_POST['diagnosa_klinis']
-            ]);
-          $this->db('permintaan_pemeriksaan_lab')
-            ->save([
-              'noorder' => $noorder,
-              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
-              'stts_bayar' => 'Belum'
-            ]);
-          $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
-          $template_count = count($template_laboratorium);
-          for ($i = 0; $i < $template_count; $i++) {
-            $this->db('permintaan_detail_permintaan_lab')
-              ->save([
-                'noorder' => $noorder,
-                'kd_jenis_prw' => $_POST['kd_jenis_prw'],
-                'id_template' => $template_laboratorium[$i]['id_template'],
-                'stts_bayar' => 'Belum'
-              ]);
-          }
-        } else {
-          $noorder = $cek_lab['noorder'];
-          $this->db('permintaan_pemeriksaan_lab')
-            ->save([
-              'noorder' => $noorder,
-              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
-              'stts_bayar' => 'Belum'
-            ]);
-          $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
-          $template_count = count($template_laboratorium);
-          for ($i = 0; $i < $template_count; $i++) {
-            $this->db('permintaan_detail_permintaan_lab')
-              ->save([
-                'noorder' => $noorder,
-                'kd_jenis_prw' => $_POST['kd_jenis_prw'],
-                'id_template' => $template_laboratorium[$i]['id_template'],
-                'stts_bayar' => 'Belum'
-              ]);
+        while ($retryCount < $maxRetries && !$success) {
+          $this->db()->pdo()->beginTransaction();
+          try {
+            $cek_lab = $this->db('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', date('Y-m-d'))->where('tgl_sampel', '0000-00-00')->where('status', 'ralan')->oneArray();
+            if(!$cek_lab) {
+              $urut = $this->db('permintaan_lab')
+                  ->where('tgl_permintaan', date('Y-m-d'))
+                  ->nextRightNumber('noorder', 4);
+              $noorder = 'PL' . date('Ymd') . sprintf('%04d', $urut);
+
+              $permintaan_lab = $this->db('permintaan_lab')
+                ->save([
+                  'noorder' => $noorder,
+                  'no_rawat' => $_POST['no_rawat'],
+                  'tgl_permintaan' => $_POST['tgl_perawatan'],
+                  'jam_permintaan' => $_POST['jam_rawat'],
+                  'tgl_sampel' => '0000-00-00',
+                  'jam_sampel' => '00:00:00',
+                  'tgl_hasil' => '0000-00-00',
+                  'jam_hasil' => '00:00:00',
+                  'dokter_perujuk' => $this->core->getUserInfo('username', null, true),
+                  'status' => 'ralan',
+                  'informasi_tambahan' => $_POST['informasi_tambahan'],
+                  'diagnosa_klinis' => $_POST['diagnosa_klinis']
+                ]);
+              $this->db('permintaan_pemeriksaan_lab')
+                ->save([
+                  'noorder' => $noorder,
+                  'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+                  'stts_bayar' => 'Belum'
+                ]);
+              $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
+              $template_count = count($template_laboratorium);
+              for ($i = 0; $i < $template_count; $i++) {
+                $this->db('permintaan_detail_permintaan_lab')
+                  ->save([
+                    'noorder' => $noorder,
+                    'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+                    'id_template' => $template_laboratorium[$i]['id_template'],
+                    'stts_bayar' => 'Belum'
+                  ]);
+              }
+            } else {
+              $noorder = $cek_lab['noorder'];
+              $this->db('permintaan_pemeriksaan_lab')
+                ->save([
+                  'noorder' => $noorder,
+                  'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+                  'stts_bayar' => 'Belum'
+                ]);
+              $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
+              $template_count = count($template_laboratorium);
+              for ($i = 0; $i < $template_count; $i++) {
+                $this->db('permintaan_detail_permintaan_lab')
+                  ->save([
+                    'noorder' => $noorder,
+                    'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+                    'id_template' => $template_laboratorium[$i]['id_template'],
+                    'stts_bayar' => 'Belum'
+                  ]);
+              }
+            }
+            $this->db()->pdo()->commit();
+            $success = true;
+          } catch (\Exception $e) {
+            $this->db()->pdo()->rollBack();
+            if ($e->getCode() == '23000') {
+              $retryCount++;
+              usleep(100000);
+              continue;
+            }
+            throw $e;
           }
         }
       }
 
       if($_POST['kat'] == 'radiologi') {
-        $cek_rad = $this->db('permintaan_radiologi')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', date('Y-m-d'))->where('tgl_sampel', '<>', '0000-00-00')->where('status', 'ralan')->oneArray();
-        if(!$cek_rad) {
-          $urut = $this->db('permintaan_radiologi')
-              ->where('tgl_permintaan', date('Y-m-d'))
-              ->nextRightNumber('noorder', 4);
-          $noorder = 'PR' . date('Ymd') . sprintf('%04d', $urut);
+        $maxRetries = 5;
+        $retryCount = 0;
+        $success = false;
 
-          $permintaan_rad = $this->db('permintaan_radiologi')
-            ->save([
-              'noorder' => $noorder,
-              'no_rawat' => $_POST['no_rawat'],
-              'tgl_permintaan' => $_POST['tgl_perawatan'],
-              'jam_permintaan' => $_POST['jam_rawat'],
-              'tgl_sampel' => '0000-00-00',
-              'jam_sampel' => '00:00:00',
-              'tgl_hasil' => '0000-00-00',
-              'jam_hasil' => '00:00:00',
-              'dokter_perujuk' => $this->core->getUserInfo('username', null, true),
-              'status' => 'ralan',
-              'informasi_tambahan' => $_POST['informasi_tambahan'],
-              'diagnosa_klinis' => $_POST['diagnosa_klinis']
-            ]);
-          $this->db('permintaan_pemeriksaan_radiologi')
-            ->save([
-              'noorder' => $noorder,
-              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
-              'stts_bayar' => 'Belum'
-            ]);
+        while ($retryCount < $maxRetries && !$success) {
+          $this->db()->pdo()->beginTransaction();
+          try {
+            $cek_rad = $this->db('permintaan_radiologi')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', date('Y-m-d'))->where('tgl_sampel', '<>', '0000-00-00')->where('status', 'ralan')->oneArray();
+            if(!$cek_rad) {
+              $urut = $this->db('permintaan_radiologi')
+                  ->where('tgl_permintaan', date('Y-m-d'))
+                  ->nextRightNumber('noorder', 4);
+              $noorder = 'PR' . date('Ymd') . sprintf('%04d', $urut);
 
-        } else {
-          $noorder = $cek_rad['noorder'];
-          $this->db('permintaan_pemeriksaan_radiologi')
-            ->save([
-              'noorder' => $noorder,
-              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
-              'stts_bayar' => 'Belum'
-            ]);
+              $permintaan_rad = $this->db('permintaan_radiologi')
+                ->save([
+                  'noorder' => $noorder,
+                  'no_rawat' => $_POST['no_rawat'],
+                  'tgl_permintaan' => $_POST['tgl_perawatan'],
+                  'jam_permintaan' => $_POST['jam_rawat'],
+                  'tgl_sampel' => '0000-00-00',
+                  'jam_sampel' => '00:00:00',
+                  'tgl_hasil' => '0000-00-00',
+                  'jam_hasil' => '00:00:00',
+                  'dokter_perujuk' => $this->core->getUserInfo('username', null, true),
+                  'status' => 'ralan',
+                  'informasi_tambahan' => $_POST['informasi_tambahan'],
+                  'diagnosa_klinis' => $_POST['diagnosa_klinis']
+                ]);
+              $this->db('permintaan_pemeriksaan_radiologi')
+                ->save([
+                  'noorder' => $noorder,
+                  'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+                  'stts_bayar' => 'Belum'
+                ]);
+
+            } else {
+              $noorder = $cek_rad['noorder'];
+              $this->db('permintaan_pemeriksaan_radiologi')
+                ->save([
+                  'noorder' => $noorder,
+                  'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+                  'stts_bayar' => 'Belum'
+                ]);
+            }
+            $this->db()->pdo()->commit();
+            $success = true;
+          } catch (\Exception $e) {
+            $this->db()->pdo()->rollBack();
+            if ($e->getCode() == '23000') {
+              $retryCount++;
+              usleep(100000);
+              continue;
+            }
+            throw $e;
+          }
         }
       }
 
@@ -568,34 +642,53 @@ class Admin extends AdminModule
       $_POST['jml'] = json_decode($_POST['jml'], true);
       $_POST['aturan_pakai'] = json_decode($_POST['aturan_pakai'], true);
 
-      $no_resep = $this->core->setNoResep($_POST['tgl_perawatan']);
+      $maxRetries = 5;
+      $retryCount = 0;
+      $success = false;
 
-      $resep_obat = $this->db('resep_obat')
-        ->save([
-          'no_resep' => $no_resep,
-          'tgl_perawatan' => '0000-00-00',
-          'jam' => '00:00:00',
-          'no_rawat' => $_POST['no_rawat'],
-          'kd_dokter' => $this->core->getUserInfo('username', null, true),
-          'tgl_peresepan' => $_POST['tgl_perawatan'],
-          'jam_peresepan' => $_POST['jam_rawat'],
-          'status' => 'ralan',
-          'tgl_penyerahan' => '0000-00-00',
-          'jam_penyerahan' => '00:00:00'
-        ]);
+      while ($retryCount < $maxRetries && !$success) {
+        $this->db()->pdo()->beginTransaction();
+        try {
+          $no_resep = $this->core->setNoResep($_POST['tgl_perawatan']);
 
-      if (!empty($_POST['kode_brng'])) {
-          $kode_brng_count = count($_POST['kode_brng']);
-          for ($i = 0; $i < $kode_brng_count; $i++) {
-              $this->db('resep_dokter')
-                ->save([
-                  'no_resep' => $no_resep,
-                  'kode_brng' => $_POST['kode_brng'][$i]['value'],
-                  'jml' => $_POST['jml'][$i]['value'],
-                  'aturan_pakai' => $_POST['aturan_pakai'][$i]['value']
-                ]);
+          $resep_obat = $this->db('resep_obat')
+            ->save([
+              'no_resep' => $no_resep,
+              'tgl_perawatan' => '0000-00-00',
+              'jam' => '00:00:00',
+              'no_rawat' => $_POST['no_rawat'],
+              'kd_dokter' => $this->core->getUserInfo('username', null, true),
+              'tgl_peresepan' => $_POST['tgl_perawatan'],
+              'jam_peresepan' => $_POST['jam_rawat'],
+              'status' => 'ralan',
+              'tgl_penyerahan' => '0000-00-00',
+              'jam_penyerahan' => '00:00:00'
+            ]);
 
+          if (!empty($_POST['kode_brng'])) {
+              $kode_brng_count = count($_POST['kode_brng']);
+              for ($i = 0; $i < $kode_brng_count; $i++) {
+                  $this->db('resep_dokter')
+                    ->save([
+                      'no_resep' => $no_resep,
+                      'kode_brng' => $_POST['kode_brng'][$i]['value'],
+                      'jml' => $_POST['jml'][$i]['value'],
+                      'aturan_pakai' => $_POST['aturan_pakai'][$i]['value']
+                    ]);
+
+              }
           }
+          $this->db()->pdo()->commit();
+          $success = true;
+        } catch (\Exception $e) {
+          $this->db()->pdo()->rollBack();
+          if ($e->getCode() == '23000') {
+            $retryCount++;
+            usleep(100000);
+            continue;
+          }
+          throw $e;
+        }
       }
 
       if (isset($_POST['nama_racik'])) {
