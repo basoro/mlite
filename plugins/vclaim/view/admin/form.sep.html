@@ -161,7 +161,7 @@
                   </div>
                 </div>
                 <div class="form-group clearfix">
-                  <label for="" class="col-sm-3 control-label">Tangga Lahir</label>
+                  <label for="" class="col-sm-3 control-label">Tanggal Lahir</label>
                   <div class="col-sm-6">
                     <input type="text" id="sep_tanggal_lahir" name="sep_tanggal_lahir" class="form-control tanggal" value="">
                   </div>
@@ -442,7 +442,7 @@
                   <div class="col-sm-6">
                     <input type="text" name="sep_keterangan_kecelakaan" id="sep_keterangan_kecelakaan" class="form-control" value="">
                   </div>
-                  <label for="" class="col-sm-1 control-label">Tangal</label>
+                  <label for="" class="col-sm-1 control-label">Tanggal</label>
                   <div class="col-sm-2">
                     <input type="text" name="sep_tanggal_kecelakaan" id="sep_tanggal_kecelakaan" class="form-control tanggal" value="{?=date('Y-m-d')?}">
                   </div>
@@ -546,6 +546,13 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="pulangModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="add_antrianModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -575,6 +582,46 @@
   </div>
 </div>
 <script type="text/javascript">
+  $("#sep_norm").on("focus click",function(){
+    var no_mr = $('#sep_norm').val();
+    if (no_mr && no_mr.trim() !== '') {
+      return;
+    }
+    var no_mr_span = $('#no_mr_peserta').text();
+    if (no_mr_span && no_mr_span.trim() !== '') {
+      $('#sep_norm').val(no_mr_span.trim());
+    }
+  });
+  $("#sep_nomor_rujukan").on("focus click",function(){
+    var no_rujukan = $('#sep_nomor_rujukan').val();
+    var kode_pelayanan = $('#sep_pelayanan_kode').val();
+    if (no_rujukan && no_rujukan.trim() !== '') {
+      return;
+    }
+    if (kode_pelayanan == '1') {
+      var now = new Date();
+      var ymdhms = now.getFullYear().toString() +
+                   ('0' + (now.getMonth() + 1)).slice(-2) +
+                   ('0' + now.getDate()).slice(-2) +
+                   ('0' + now.getHours()).slice(-2);
+      var nomr = $('#sep_norm').val().trim();
+      var number = ymdhms + (nomr || '000000');
+      console.log(number);
+      $('#sep_nomor_rujukan').val(number);
+    }
+  });
+  $("#form_sep").on("click",".sep_pulang", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var modal = $('#pulangModal');
+    var modalContent = $('#pulangModal .modal-content');
+    var no_sep = $(this).data('no_sep');
+    var loadURL =  baseURL + '/vclaim/seppulang/' + no_sep + '?t=' + mlite.token;
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+  });
   $("#form_sep").on("click","#sync_sep", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
@@ -902,6 +949,12 @@ async function openFrista(noka) {
     var assesment = $('#sep_assesment_kode').val();
     var nama_peserta = $('.nama_peserta').text();
     var nomr = $('#sep_norm').val();
+    if (!nomr || nomr.trim() === '') {
+      nomr = $('#no_mr_peserta').text().trim();
+      if (nomr !== '') {
+        $('#sep_norm').val(nomr);
+      }
+    }
     var tanggal_lahir = $('#sep_tanggal_lahir').val();
     var peserta = $('#sep_jenis_peserta').val();
     var jenis_kelamin = $('#sep_jenis_kelamin_kode').val();
@@ -1146,6 +1199,7 @@ async function openFrista(noka) {
           if(!json_obj[0]) {
             alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
           } else if(json_obj[0].metaData.code == 200) {
+            var kode_pelayanan = $('#sep_pelayanan_kode').val();
             var asalFaskes_nama = 'Faskes 1';
             if(json_obj[0].response.asalFaskes == 2) {
               var asalFaskes_nama = 'Faskes 2 (RS)';
@@ -1154,41 +1208,46 @@ async function openFrista(noka) {
             if(json_obj[0].response.rujukan.peserta.sex == 'P') {
               var jenis_kelamin = 'Perempuan';
             }
-            $('input:text[name=sep_jenis_kelamin_nama]').val(jenis_kelamin);
-            $('input:text[name=sep_jenis_kelamin_kode]').val(json_obj[0].response.rujukan.peserta.sex);
-            $('input:text[name=sep_tanggal_lahir]').val(json_obj[0].response.rujukan.peserta.tglLahir);
-            $('input:text[name=sep_jenis_peserta]').val(json_obj[0].response.rujukan.peserta.jenisPeserta.keterangan);
-            $('input:text[name=sep_no_kartu]').val(json_obj[0].response.rujukan.peserta.noKartu);
-            $('input:text[name=sep_norm]').val(json_obj[0].response.rujukan.peserta.mr.noMR);
-            $('input:text[name=sep_eksekutif_kode]').val("0");
-            $('input:text[name=sep_eksekutif_nama]').val("Tidak");
-            $('input:text[name=sep_kunjungan_kode]').val("0");
-            $('input:text[name=sep_kunjungan_nama]').val("Normal");
-            $('input:text[name=sep_cob_kode]').val("0");
-            $('input:text[name=sep_cob_nama]').val("Tidak");
-            $('input:text[name=sep_katarak_kode]').val("0");
-            $('input:text[name=sep_katarak_nama]').val("Tidak");
-            $('input:text[name=sep_status_kecelakaan_kode]').val("0");
-            $('input:text[name=sep_status_kecelakaan_nama]').val("Tidak");
-            $('input:text[name=sep_penjamin_kecelakaan_kode]').val("0");
-            $('input:text[name=sep_penjamin_kecelakaan_nama]').val("Tidak");
-            $('input:text[name=sep_suplesi_kode]').val("0");
-            $('input:text[name=sep_suplesi_nama]').val("Tidak");
-            $('input:text[name=sep_pelayanan_kode]').val(json_obj[0].response.rujukan.pelayanan.kode);
-            $('input:text[name=sep_pelayanan_nama]').val(json_obj[0].response.rujukan.pelayanan.nama);
-            $('input:text[name=sep_kelas_kode]').val(json_obj[0].response.rujukan.peserta.hakKelas.kode);
-            $('input:text[name=sep_kelas_nama]').val(json_obj[0].response.rujukan.peserta.hakKelas.keterangan);
-            $('input:text[name=sep_asal_faskes_kode]').val(json_obj[0].response.asalFaskes);
-            $('input:text[name=sep_asal_faskes_nama]').val(asalFaskes_nama);
-            $('input:text[name=sep_asal_rujukan_nama]').val(json_obj[0].response.rujukan.provPerujuk.nama);
-            $('input:text[name=sep_asal_rujukan_kode]').val(json_obj[0].response.rujukan.provPerujuk.kode);
-            $('input:text[name=sep_tanggal_rujukan]').val(json_obj[0].response.rujukan.tglKunjungan);
-            $('input:text[name=sep_nomor_rujukan]').val(json_obj[0].response.rujukan.noKunjungan);
-            $('input:text[name=sep_spesialis_kode]').val(json_obj[0].response.rujukan.poliRujukan.kode);
-            $('input:text[name=sep_spesialis_nama]').val(json_obj[0].response.rujukan.poliRujukan.nama);
-            $('input:text[name=sep_diagnosa_kode]').val(json_obj[0].response.rujukan.diagnosa.kode);
-            $('input:text[name=sep_diagnosa_nama]').val(json_obj[0].response.rujukan.diagnosa.nama);
-            $('input:text[name=sep_nomor_telepon]').val(json_obj[0].response.rujukan.peserta.mr.noTelepon);
+            if(kode_pelayanan == '1') {
+              $('input:text[name=sep_asal_rujukan_nama]').val(json_obj[0].response.rujukan.provPerujuk.nama);
+              $('input:text[name=sep_asal_rujukan_kode]').val(json_obj[0].response.rujukan.provPerujuk.kode);
+            } else {
+              $('input:text[name=sep_jenis_kelamin_nama]').val(jenis_kelamin);
+              $('input:text[name=sep_jenis_kelamin_kode]').val(json_obj[0].response.rujukan.peserta.sex);
+              $('input:text[name=sep_tanggal_lahir]').val(json_obj[0].response.rujukan.peserta.tglLahir);
+              $('input:text[name=sep_jenis_peserta]').val(json_obj[0].response.rujukan.peserta.jenisPeserta.keterangan);
+              $('input:text[name=sep_no_kartu]').val(json_obj[0].response.rujukan.peserta.noKartu);
+              $('input:text[name=sep_norm]').val(json_obj[0].response.rujukan.peserta.mr.noMR);
+              $('input:text[name=sep_eksekutif_kode]').val("0");
+              $('input:text[name=sep_eksekutif_nama]').val("Tidak");
+              $('input:text[name=sep_kunjungan_kode]').val("0");
+              $('input:text[name=sep_kunjungan_nama]').val("Normal");
+              $('input:text[name=sep_cob_kode]').val("0");
+              $('input:text[name=sep_cob_nama]').val("Tidak");
+              $('input:text[name=sep_katarak_kode]').val("0");
+              $('input:text[name=sep_katarak_nama]').val("Tidak");
+              $('input:text[name=sep_status_kecelakaan_kode]').val("0");
+              $('input:text[name=sep_status_kecelakaan_nama]').val("Tidak");
+              $('input:text[name=sep_penjamin_kecelakaan_kode]').val("0");
+              $('input:text[name=sep_penjamin_kecelakaan_nama]').val("Tidak");
+              $('input:text[name=sep_suplesi_kode]').val("0");
+              $('input:text[name=sep_suplesi_nama]').val("Tidak");
+              $('input:text[name=sep_pelayanan_kode]').val(json_obj[0].response.rujukan.pelayanan.kode);
+              $('input:text[name=sep_pelayanan_nama]').val(json_obj[0].response.rujukan.pelayanan.nama);
+              $('input:text[name=sep_kelas_kode]').val(json_obj[0].response.rujukan.peserta.hakKelas.kode);
+              $('input:text[name=sep_kelas_nama]').val(json_obj[0].response.rujukan.peserta.hakKelas.keterangan);
+              $('input:text[name=sep_asal_faskes_kode]').val(json_obj[0].response.asalFaskes);
+              $('input:text[name=sep_asal_faskes_nama]').val(asalFaskes_nama);
+              $('input:text[name=sep_asal_rujukan_nama]').val(json_obj[0].response.rujukan.provPerujuk.nama);
+              $('input:text[name=sep_asal_rujukan_kode]').val(json_obj[0].response.rujukan.provPerujuk.kode);
+              $('input:text[name=sep_tanggal_rujukan]').val(json_obj[0].response.rujukan.tglKunjungan);
+              $('input:text[name=sep_nomor_rujukan]').val(json_obj[0].response.rujukan.noKunjungan);
+              $('input:text[name=sep_spesialis_kode]').val(json_obj[0].response.rujukan.poliRujukan.kode);
+              $('input:text[name=sep_spesialis_nama]').val(json_obj[0].response.rujukan.poliRujukan.nama);
+              $('input:text[name=sep_diagnosa_kode]').val(json_obj[0].response.rujukan.diagnosa.kode);
+              $('input:text[name=sep_diagnosa_nama]').val(json_obj[0].response.rujukan.diagnosa.nama);
+              $('input:text[name=sep_nomor_telepon]').val(json_obj[0].response.rujukan.peserta.mr.noTelepon);
+            }
           } else {
             alert(json_obj[0].metaData.message);
           }
@@ -1302,7 +1361,11 @@ async function openFrista(noka) {
                 output+="No. Rjk : " + histori[i].noRujukan + "<br/>";
                 output+="PPK Pelayanan : " + histori[i].ppkPelayanan;
                 output+="</div>";
-                output+="<div class=\"panel-footer\"><button class=\"btn btn-success btn-xs ubah_sep\" data-diagnosa=" + histori[i].diagnosa + " data-poli=" + poli + " data-tgl_sep=" + histori[i].tglSep + " data-no_sep=" + histori[i].noSep + " data-no_rujukan=" + histori[i].noRujukan + ">Ubah</button> <button class=\"btn btn-danger btn-xs hapus_sep\" data-no_sep=" + histori[i].noSep + ">Hapus</button> <button class=\"btn btn-primary btn-xs print_sep\" data-no_sep=" + histori[i].noSep + ">Cetak</button></div>";
+                output+="<div class=\"panel-footer\"><button class=\"btn btn-success btn-xs ubah_sep\" data-diagnosa=" + histori[i].diagnosa + " data-poli=" + poli + " data-tgl_sep=" + histori[i].tglSep + " data-no_sep=" + histori[i].noSep + " data-no_rujukan=" + histori[i].noRujukan + ">Ubah</button> <button class=\"btn btn-danger btn-xs hapus_sep\" data-no_sep=" + histori[i].noSep + ">Hapus</button> <button class=\"btn btn-primary btn-xs print_sep\" data-no_sep=" + histori[i].noSep + ">Cetak</button>";
+                if(histori[i].jnsPelayanan == 1) {
+                  output+=" <button class=\"btn btn-primary btn-xs sep_pulang\" data-no_sep=" + histori[i].noSep + " id=\"sep_pulang_" + histori[i].noSep + "\">Pulang</button>";
+                }
+                output+="</div>";
             }
             output+="</div>";
             $("#histori_pelayanan").html(output).show();
@@ -1420,7 +1483,7 @@ async function openFrista(noka) {
   $("#form_sep").on("click","#sep_asal_faskes_nama", function(event){
   //$('#sep_pelayanan_nama').focus(function(){
        var output='';
-       output+='<li class=\"list-group-item link-class\">1: Fakses 1</li>';
+       output+='<li class=\"list-group-item link-class\">1: Faskes 1</li>';
        output+='<li class=\"list-group-item link-class\">2: Faskes 2 (RS)</li>';
        output+='';
        $('#asalfaskesList').fadeIn();
@@ -1592,7 +1655,7 @@ async function openFrista(noka) {
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/{?=ADMIN?}/vclaim/faskes/' + encodeURIComponent(query) + '/' + encodeURIComponent(sep_asal_faskes_kode) + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/vclaim/faskes/' + encodeURIComponent(query) + '/' + encodeURIComponent(sep_asal_faskes_kode) + '?t={?=$_SESSION["token"]?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -1629,7 +1692,7 @@ async function openFrista(noka) {
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/{?=ADMIN?}/vclaim/poli/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/vclaim/poli/' + encodeURIComponent(query) + '?t={?=$_SESSION["token"]?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -1661,42 +1724,45 @@ async function openFrista(noka) {
   });
 </script>
 <script type="text/javascript">
-  $('#sep_spesialis_kode').keyup(function(){
-       var query = $(this).val();
-       var sep_pelayanan_kode = $('input:text[name=sep_pelayanan_kode]').val();
-       if($('#sep_spesialis_kode').val() == 'IGD') {
-         var sep_pelayanan_kode = '1';
-       }
-       var sep_tanggal_sep = $('input:text[name=sep_tanggal_sep]').val();
+  var loadDokterDpjpBySpesialisKode = function () {
+    var query = $('#sep_spesialis_kode').val();
+    var sep_pelayanan_kode = $('input:text[name=sep_pelayanan_kode]').val();
+    if ($('#sep_spesialis_kode').val() == 'IGD') {
+      sep_pelayanan_kode = '1';
+    }
+    var sep_tanggal_sep = $('input:text[name=sep_tanggal_sep]').val();
 
-       if(query != '')
-       {
-            $.ajax({
-                 url: '{?=url()?}/{?=ADMIN?}/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
-                 method:"GET",
-                 data:{},
-                 success:function(data)
-                 {
-                     var data = JSON.parse(data);
-                     var json_obj = [data];
-                     var output='';
-                     if(json_obj[0].metaData.code == 200) {
-                       var dokterdpjp = json_obj[0].response.list;
-                       for (var i in dokterdpjp) {
-                         output+='<li class=\"list-group-item link-class\">' + dokterdpjp[i].kode + ': ' + dokterdpjp[i].nama + '</li>';
-                       }
-                     } else {
-                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
-                     }
-                     output+='';
-                     //console.log(output);
-                     $('#dokterdpjpList').fadeIn();
-                     $('#dokterdpjpList').html(output).show();
-                 }
-            });
-       }
+    if (query != '') {
+      $.ajax({
+        url: '{?=url()?}/{?=ADMIN?}/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION["token"]?}',
+        method:"GET",
+        data:{},
+        success:function(data)
+        {
+          var data = JSON.parse(data);
+          var json_obj = [data];
+          var output='';
+          if(json_obj[0].metaData.code == 200) {
+            var dokterdpjp = json_obj[0].response.list;
+            for (var i in dokterdpjp) {
+              output+='<li class=\"list-group-item link-class\">' + dokterdpjp[i].kode + ': ' + dokterdpjp[i].nama + '</li>';
+            }
+          } else {
+            output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+          }
+          output+='';
+          $('#dokterdpjpList').fadeIn();
+          $('#dokterdpjpList').html(output).show();
+        }
+      });
+    }
+  };
+
+  $('#sep_spesialis_kode').on('keyup click', function(){
+    loadDokterDpjpBySpesialisKode();
   });
   $('#dokterdpjpList').on('click', 'li', function(){
+    var kode_pelayanan = $('#sep_pelayanan_kode').val();
        $('#sep_dpjp_yang_melayani_nama').val($(this).text().split(': ')[1]);
        $('#sep_dpjp_yang_melayani_kode').val($(this).text().split(': ')[0]);
        var sep_dpjp_yang_melayani_kode = $('#sep_dpjp_yang_melayani_kode').val();
@@ -1704,6 +1770,10 @@ async function openFrista(noka) {
        $('#sep_dpjp_pelayanan_kode').val($(this).text().split(': ')[0]);
        var sep_dpjp_pelayanan_kode = $('#sep_dpjp_pelayanan_kode').val();
        $('#dokterdpjpList').fadeOut();
+    if (kode_pelayanan == '1') {
+       $('#sep_spesialis_kode').val('');
+       $('#sep_spesialis_nama').val('');
+    }
   });
 </script>
 <script type="text/javascript">
@@ -1715,7 +1785,7 @@ async function openFrista(noka) {
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/{?=ADMIN?}/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION["token"]?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -1752,7 +1822,7 @@ async function openFrista(noka) {
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/{?=ADMIN?}/vclaim/diagnosa/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/vclaim/diagnosa/' + encodeURIComponent(query) + '?t={?=$_SESSION["token"]?}',
                  method:"GET",
                  data:{},
                  success:function(data)
