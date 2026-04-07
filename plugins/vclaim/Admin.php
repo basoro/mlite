@@ -1883,7 +1883,7 @@ class Admin extends AdminModule
     if($code == '200'){
       $sep_internal = $json['response'];
       $stringDecrypt = stringDecrypt($key, $sep_internal);
-      $decompress = '""';
+      $decompress = "";
       if (!empty($stringDecrypt)) {
         $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       }

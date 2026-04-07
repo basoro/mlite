@@ -601,7 +601,8 @@
   </div>
 </div>
 <script type="text/javascript">
-  $("#sep_norm").on("focus click",function(){
+  $("#sep_norm").on("focus click",function(event){
+    event.preventDefault();
     var no_mr = $('#sep_norm').val();
     if (no_mr && no_mr.trim() !== '') {
       return;
@@ -611,7 +612,8 @@
       $('#sep_norm').val(no_mr_span.trim());
     }
   });
-  $("#sep_nomor_rujukan").on("focus click",function(){
+  $("#sep_nomor_rujukan").on("focus click",function(event){
+    event.preventDefault();
     var no_rujukan = $('#sep_nomor_rujukan').val();
     var kode_pelayanan = $('#sep_pelayanan_kode').val();
     if (no_rujukan && no_rujukan.trim() !== '') {
@@ -630,6 +632,7 @@
     }
   });
   $("#form_sep").on("click",".sep_pulang", function(event){
+    event.preventDefault();
     var baseURL = mlite.url + '/' + mlite.admin;
     var modal = $('#pulangModal');
     var modalContent = $('#pulangModal .modal-content');
@@ -1345,6 +1348,7 @@ async function openFrista(noka) {
   // end pencarian
   // ketika inputbox pencarian diisi
   $('#parameter_histori_pelayanan').on('click',function(e){
+    e.preventDefault();
     var baseURL = mlite.url + '/' + mlite.admin;
     var nomor_asuransi = $('input:text[name=nomor_asuransi]').val();
     var tanggal_awal = $('input:text[name=tanggal_awal]').val();
@@ -1395,6 +1399,7 @@ async function openFrista(noka) {
     }
   });
   $('#parameter_sep_internal').on('click',function(e){
+    e.preventDefault();
     var baseURL = mlite.url + '/' + mlite.admin;
     var nomor_sep_internal = $('input:text[name=nomor_sep_internal]').val();
     var url_vclaim    = baseURL + '/vclaim/sepinternal/' + nomor_sep_internal + '/?t=' + mlite.token;
@@ -1430,6 +1435,8 @@ async function openFrista(noka) {
                 }
                 output+="</div>";
             }
+            output+="</div>";
+            $("#sep_internal").html(output).show();
           } else {
             alert(data.metaData.message);
           }
