@@ -13,7 +13,7 @@
     <tbody>
       {loop: $spri}
       <tr>
-        <td>{?=isset_or($value.no_rawat)?}</td>
+        <td class="pilih_norawat" data-no_surat="{?=isset_or($value.no_surat)?}">{?=isset_or($value.no_rawat)?}</td>
         <td>{?=isset_or($value.no_kartu)?}</td>
         <td class="pilih_nosurat" data-no_surat="{?=isset_or($value.no_surat)?}">{?=isset_or($value.no_surat)?}</td>
         <td>{?=isset_or($value.tgl_surat)?}</td>
