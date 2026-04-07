@@ -2546,7 +2546,7 @@ class Admin extends AdminModule
     } else if ($data['metaData']['code'] == 200) {
       $bridging_surat_pri_bpjs = $this->db('bridging_surat_pri_bpjs')->where('no_surat', $no_surat)->delete();
     } else {
-      echo $data['metaData']['message'];
+      echo htmlentities($data['metaData']['message']);
     }
     exit();
   }
