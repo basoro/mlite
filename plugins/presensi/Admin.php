@@ -15,6 +15,7 @@ class Admin extends AdminModule
                 'Kelola' => 'manage',
                 'Presensi Masuk' => 'presensi',
                 'Rekap Presensi' => 'rekap_presensi',
+                'Rekap Bulanan' => 'rekap_bulanan',
                 'Barcode Presensi' => 'barcode',
                 'Jam Masuk' => 'jammasuk',
                 'Jam Jaga' => 'jamjaga',
@@ -27,6 +28,7 @@ class Admin extends AdminModule
                 'Kelola' => 'manage',
                 'Presensi Masuk' => 'presensi',
                 'Rekap Presensi' => 'rekap_presensi',
+                'Rekap Bulanan' => 'rekap_bulanan',
                 'Jadwal Pegawai' => 'jadwal',
                 'Jadwal Tambahan' => 'jadwal_tambahan'
             ];
@@ -39,6 +41,7 @@ class Admin extends AdminModule
             $sub_modules = [
                 ['name' => 'Presensi', 'url' => url([ADMIN, 'presensi', 'presensi']), 'icon' => 'cubes', 'desc' => 'Presensi Pegawai'],
                 ['name' => 'Rekap Presensi', 'url' => url([ADMIN, 'presensi', 'rekap_presensi']), 'icon' => 'cubes', 'desc' => 'Rekap Presensi Pegawai'],
+                ['name' => 'Rekap Bulanan', 'url' => url([ADMIN, 'presensi', 'rekap_bulanan']), 'icon' => 'cubes', 'desc' => 'Rekap Bulanan Presensi Pegawai'],
                 ['name' => 'Barcode Presensi', 'url' => url([ADMIN, 'presensi', 'barcode']), 'icon' => 'cubes', 'desc' => 'Barcode Presensi Pegawai'],
                 ['name' => 'Jam Masuk', 'url' => url([ADMIN, 'presensi', 'jammasuk']), 'icon' => 'cubes', 'desc' => 'Jam Masuk Pegawai'],
                 ['name' => 'Jam Jaga', 'url' => url([ADMIN, 'presensi', 'jamjaga']), 'icon' => 'cubes', 'desc' => 'Jam Jaga Pegawai'],
@@ -50,6 +53,7 @@ class Admin extends AdminModule
             $sub_modules = [
                 ['name' => 'Presensi', 'url' => url([ADMIN, 'presensi', 'presensi']), 'icon' => 'cubes', 'desc' => 'Presensi Pegawai'],
                 ['name' => 'Rekap Presensi', 'url' => url([ADMIN, 'presensi', 'rekap_presensi']), 'icon' => 'cubes', 'desc' => 'Rekap Presensi Pegawai'],
+                ['name' => 'Rekap Bulanan', 'url' => url([ADMIN, 'presensi', 'rekap_bulanan']), 'icon' => 'cubes', 'desc' => 'Rekap Bulanan Presensi Pegawai'],
                 ['name' => 'Jadwal', 'url' => url([ADMIN, 'presensi', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
                 ['name' => 'Jadwal Tambahan', 'url' => url([ADMIN, 'presensi', 'jadwal_tambahan']), 'icon' => 'cubes', 'desc' => 'Jadwal Tambahan Pegawai']
             ];
@@ -1485,6 +1489,284 @@ class Admin extends AdminModule
         $this->assign['tanggal'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31');
         $this->assign['bidang'] = $this->db('bidang')->toArray();
         return $this->draw('rekap_presensi.html', ['rekap' => htmlspecialchars_array($this->assign)]);
+    }
+
+    public function getCetak_Laporan()
+    {
+        $phrase = '';
+        if (isset($_GET['s']))
+            $phrase = $_GET['s'];
+
+        $tgl_kunjungan = date('Y-m-d');
+        $tgl_kunjungan_akhir = date('Y-m-d');
+
+        if (isset($_GET['awal'])) {
+            $tgl_kunjungan = $_GET['awal'];
+        }
+        if (isset($_GET['akhir'])) {
+            $tgl_kunjungan_akhir = $_GET['akhir'];
+        }
+
+        $ruang = '';
+        if (isset($_GET['ruang'])) {
+            $ruang = $_GET['ruang'];
+        }
+
+        $username = $this->core->getUserInfo('username', null, true);
+
+        if ($this->core->getUserInfo('role') == 'admin') {
+            $rows = $this->db('rekap_presensi')
+                ->select([
+                    'nama' => 'pegawai.nama',
+                    'departemen' => 'pegawai.departemen',
+                    'jbtn' => 'pegawai.jbtn',
+                    'bidang' => 'pegawai.bidang',
+                    'id' => 'rekap_presensi.id',
+                    'shift' => 'rekap_presensi.shift',
+                    'jam_datang' => 'rekap_presensi.jam_datang',
+                    'jam_pulang' => 'rekap_presensi.jam_pulang',
+                    'status' => 'rekap_presensi.status',
+                    'durasi' => 'rekap_presensi.durasi',
+                    'photo' => 'rekap_presensi.photo'
+                ])
+                ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', '>=', $tgl_kunjungan . ' 00:00:00')
+                ->where('jam_datang', '<=', $tgl_kunjungan_akhir . ' 23:59:59')
+                ->like('bidang', '%' . $ruang . '%')
+                ->like('nama', '%' . $phrase . '%')
+                ->asc('jam_datang')
+                ->toArray();
+        } else {
+            $rows = $this->db('rekap_presensi')
+                ->select([
+                    'nama' => 'pegawai.nama',
+                    'departemen' => 'pegawai.departemen',
+                    'jbtn' => 'pegawai.jbtn',
+                    'bidang' => 'pegawai.bidang',
+                    'id' => 'rekap_presensi.id',
+                    'shift' => 'rekap_presensi.shift',
+                    'jam_datang' => 'rekap_presensi.jam_datang',
+                    'jam_pulang' => 'rekap_presensi.jam_pulang',
+                    'status' => 'rekap_presensi.status',
+                    'durasi' => 'rekap_presensi.durasi',
+                    'photo' => 'rekap_presensi.photo'
+                ])
+                ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', '>=', $tgl_kunjungan . ' 00:00:00')
+                ->where('jam_datang', '<=', $tgl_kunjungan_akhir . ' 23:59:59')
+                ->where('departemen', $this->core->getPegawaiInfo('departemen', $username))
+                ->where('bidang', $this->core->getPegawaiInfo('bidang', $username))
+                ->like('nama', '%' . $phrase . '%')
+                ->asc('jam_datang')
+                ->toArray();
+        }
+
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                $day = array(
+                    'Sun' => 'AKHAD',
+                    'Mon' => 'SENIN',
+                    'Tue' => 'SELASA',
+                    'Wed' => 'RABU',
+                    'Thu' => 'KAMIS',
+                    'Fri' => 'JUMAT',
+                    'Sat' => 'SABTU'
+                );
+
+                $jam_datang_timestamp = strtotime($row['jam_datang']);
+                $jam_datang_arr = [
+                    'year' => date('Y', $jam_datang_timestamp),
+                    'month' => date('m', $jam_datang_timestamp),
+                    'day' => date('d', $jam_datang_timestamp),
+                    'shift' => $row['shift']
+                ];
+
+                $row['date'] = $day[date('D', $jam_datang_timestamp)];
+                $this->assign['list'][] = $row;
+            }
+        }
+        $this->assign['awal'] = $tgl_kunjungan;
+        $this->assign['akhir'] = $tgl_kunjungan_akhir;
+        $this->assign['ruang'] = $ruang;
+
+        echo $this->draw('cetak.rekap_presensi.html', ['rekap' => htmlspecialchars_array($this->assign)]);
+        exit();
+    }
+
+    public function getRekap_Bulanan()
+    {
+        $this->_addHeaderFiles();
+        $bulan = date('m');
+        if (isset($_GET['b'])) {
+            $bulan = $_GET['b'];
+        }
+
+        $tahun = date('Y');
+        if (isset($_GET['y'])) {
+            $tahun = $_GET['y'];
+        }
+
+        $ruang = '';
+        if (isset($_GET['ruang'])) {
+            $ruang = $_GET['ruang'];
+        }
+
+        $phrase = '';
+        if (isset($_GET['s']))
+            $phrase = $_GET['s'];
+
+        $username = $this->core->getUserInfo('username', null, true);
+
+        if ($this->core->getUserInfo('role') == 'admin') {
+            $rows = $this->db('rekap_presensi')
+                ->select([
+                    'id' => 'rekap_presensi.id',
+                    'nama' => 'pegawai.nama',
+                    'bidang' => 'pegawai.bidang',
+                    'jbtn' => 'pegawai.jbtn',
+                    'count' => 'COUNT(rekap_presensi.id)'
+                ])
+                ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', 'LIKE', "$tahun-$bulan-%")
+                ->like('bidang', '%' . $ruang . '%')
+                ->like('nama', '%' . $phrase . '%')
+                ->group('rekap_presensi.id')
+                ->toArray();
+        } else {
+            $rows = $this->db('rekap_presensi')
+                ->select([
+                    'id' => 'rekap_presensi.id',
+                    'nama' => 'pegawai.nama',
+                    'bidang' => 'pegawai.bidang',
+                    'jbtn' => 'pegawai.jbtn',
+                    'count' => 'COUNT(rekap_presensi.id)'
+                ])
+                ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', 'LIKE', "$tahun-$bulan-%")
+                ->where('departemen', $this->core->getPegawaiInfo('departemen', $username))
+                ->where('bidang', $this->core->getPegawaiInfo('bidang', $username))
+                ->like('nama', '%' . $phrase . '%')
+                ->group('rekap_presensi.id')
+                ->toArray();
+        }
+
+        $this->assign['list'] = htmlspecialchars_array($rows);
+        $this->assign['bulan_sel'] = $bulan;
+        $this->assign['tahun_sel'] = $tahun;
+        $this->assign['ruang_sel'] = $ruang;
+        $this->assign['bidang'] = $this->db('bidang')->toArray();
+        
+        $month = array(
+            '01' => 'Januari',
+            '02' => 'Februari',
+            '03' => 'Maret',
+            '04' => 'April',
+            '05' => 'Mei',
+            '06' => 'Juni',
+            '07' => 'Juli',
+            '08' => 'Agustus',
+            '09' => 'September',
+            '10' => 'Oktober',
+            '11' => 'November',
+            '12' => 'Desember',
+        );
+        $this->assign['show_bulan'] = $month[$bulan];
+        $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
+
+        $startYear = 2020;
+        $currentYear = date('Y');
+        $endYear = $currentYear + 2;
+        $tahun_list = [''];
+        for ($i = $startYear; $i <= $endYear; $i++) {
+            $tahun_list[] = (string)$i;
+        }
+        $this->assign['tahun'] = $tahun_list;
+        $this->assign['phrase'] = $phrase;
+
+        return $this->draw('rekap_bulanan.html', ['rekap' => $this->assign]);
+    }
+
+    public function getCetak_Rekap_Bulanan()
+    {
+        $bulan = date('m');
+        if (isset($_GET['b'])) {
+            $bulan = $_GET['b'];
+        }
+
+        $tahun = date('Y');
+        if (isset($_GET['y'])) {
+            $tahun = $_GET['y'];
+        }
+
+        $ruang = '';
+        if (isset($_GET['ruang'])) {
+            $ruang = $_GET['ruang'];
+        }
+
+        $phrase = '';
+        if (isset($_GET['s']))
+            $phrase = $_GET['s'];
+
+        $username = $this->core->getUserInfo('username', null, true);
+
+        if ($this->core->getUserInfo('role') == 'admin') {
+            $rows = $this->db('rekap_presensi')
+                ->select([
+                    'id' => 'rekap_presensi.id',
+                    'nama' => 'pegawai.nama',
+                    'bidang' => 'pegawai.bidang',
+                    'jbtn' => 'pegawai.jbtn',
+                    'count' => 'COUNT(rekap_presensi.id)'
+                ])
+                ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', 'LIKE', "$tahun-$bulan-%")
+                ->like('bidang', '%' . $ruang . '%')
+                ->like('nama', '%' . $phrase . '%')
+                ->group('rekap_presensi.id')
+                ->toArray();
+        } else {
+            $rows = $this->db('rekap_presensi')
+                ->select([
+                    'id' => 'rekap_presensi.id',
+                    'nama' => 'pegawai.nama',
+                    'bidang' => 'pegawai.bidang',
+                    'jbtn' => 'pegawai.jbtn',
+                    'count' => 'COUNT(rekap_presensi.id)'
+                ])
+                ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', 'LIKE', "$tahun-$bulan-%")
+                ->where('departemen', $this->core->getPegawaiInfo('departemen', $username))
+                ->where('bidang', $this->core->getPegawaiInfo('bidang', $username))
+                ->like('nama', '%' . $phrase . '%')
+                ->group('rekap_presensi.id')
+                ->toArray();
+        }
+
+        $this->assign['list'] = htmlspecialchars_array($rows);
+        $this->assign['bulan_sel'] = $bulan;
+        $this->assign['tahun_sel'] = $tahun;
+
+        $month = array(
+            '01' => 'Januari',
+            '02' => 'Februari',
+            '03' => 'Maret',
+            '04' => 'April',
+            '05' => 'Mei',
+            '06' => 'Juni',
+            '07' => 'Juli',
+            '08' => 'Agustus',
+            '09' => 'September',
+            '10' => 'Oktober',
+            '11' => 'November',
+            '12' => 'Desember',
+        );
+        $this->assign['show_bulan'] = $month[$bulan];
+        $this->assign['phrase'] = $phrase;
+
+        echo $this->draw('cetak.rekap_bulanan.html', ['rekap' => $this->assign]);
+        exit();
     }
 
     public function getGoogleMap($id, $tanggal)

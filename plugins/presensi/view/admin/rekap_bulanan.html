@@ -1,0 +1,92 @@
+<div class="row">
+  <div class="col-md-12" id='manage'>
+      <div class="panel panel-default">
+          <div class="panel-heading">
+              <h3 class="panel-title">Rekap Bulanan Presensi</h3>
+          </div>
+          <div class="panel-body">
+            <form action="" method="get">
+            <div class="row clearfix">
+              <div class="col col-md-2">
+                <div class="form-group">
+                  <label>Bulan</label>
+                  <select name="b" class="form-control">
+                    {loop: $rekap.bulan}
+                      <option value="{$value}" {if: $value == $rekap.bulan_sel}selected{/if}>{$value}</option>
+                    {/loop}
+                  </select>
+                </div>
+              </div>
+              <div class="col col-md-2">
+                <div class="form-group">
+                  <label>Tahun</label>
+                  <select name="y" class="form-control">
+                    {loop: $rekap.tahun}
+                      <option value="{$value}" {if: $value == $rekap.tahun_sel}selected{/if}>{$value}</option>
+                    {/loop}
+                  </select>
+                </div>
+              </div>
+              <div class="col col-md-3">
+                <div class="form-group">
+                  <label>Ruangan</label>
+                  <select name="ruang" id="bidang" data-use-search="true" class="form-control bidang">
+                      <option value="">---Pilih Ruangan---</option>
+                    {loop: $rekap.bidang}
+                      <option value="{?=isset_or($value.nama)?}" {if: $value.nama == $rekap.ruang_sel}selected{/if}>{?=isset_or($value.nama)?}</option>
+                    {/loop}
+                  </select>
+                </div>
+              </div>
+              <div class="col col-md-3">
+                  <div class="form-group">
+                    <label>Cari Nama</label>
+                    <div class="input-group">
+                        <input type="text" name="s" class="form-control" placeholder="Search" value="{$rekap.phrase}">
+                        <span class="input-group-btn">
+                          <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                        </span>
+                    </div>
+                  </div>
+              </div>
+              <div class="col col-md-2">
+                  <div class="form-group">
+                    <label>&nbsp;</label>
+                    <a href="{?=url([ADMIN, 'presensi', 'cetak_rekap_bulanan', '?b=' . $rekap.bulan_sel . '&y=' . $rekap.tahun_sel . '&ruang=' . $rekap.ruang_sel . '&s=' . $rekap.phrase])?}" class="btn btn-primary btn-block" target="_blank">Cetak Rekap</a>
+                  </div>
+              </div>
+            </div>
+            </form>
+            <hr>
+            <div class="table-responsive no-margin" id="display">
+              <table class="table table-striped no-margin">
+                <thead>
+                  <tr>
+                      <th>Nama</th>
+                      <th>Jabatan</th>
+                      <th>Ruangan</th>
+                      <th class="text-center">Total Kehadiran</th>
+                </tr>
+              </thead>
+              <tbody>
+                {if: !empty($rekap.list)}
+                {loop: $rekap.list}
+                  <tr>
+                    <td>{?=isset_or($value.nama)?}</td>
+                    <td>{?=isset_or($value.jbtn)?}</td>
+                    <td>{?=isset_or($value.bidang)?}</td>
+                    <td class="text-center">{?=isset_or($value.count)?}</td>
+                  </tr>
+                  {/loop}
+                  {else}
+                  <tr>
+                    <td colspan="4" class="text-center">Kosong</td>
+                  </tr>
+                  {/if}
+                </tbody>
+              </table>
+            </div>
+          </div>
+      </div>
+  </div>
+</div>
