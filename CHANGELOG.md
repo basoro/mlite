@@ -6,6 +6,8 @@
 - VClaim: Tambah alur pembaruan tanggal-pulang SEP (endpoint baru `updatetglplg2`) + modal UI `plugins/vclaim/view/admin/sep_pulang.html`.
 - VClaim: Tambah endpoint `spridata` untuk mengambil detail SPRI berdasarkan `no_surat` (dipakai untuk memuat data ke form).
 - VClaim: Tambah aksi Update/Delete SPRI dari form SPRI (menggunakan endpoint update & delete VClaim).
+- VClaim: Tambah aksi Update/Delete Kontrol dari form Kontrol (menggunakan endpoint update & delete VClaim).
+- VClaim: Tambah menu SEP Internal di menu.
 
 ### Changed
 - VClaim: Tambah tombol “Pulang” di riwayat SEP (ditampilkan untuk `jnsPelayanan == 1`) dan muat modal tanggal-pulang.
