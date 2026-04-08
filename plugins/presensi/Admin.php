@@ -77,8 +77,8 @@ class Admin extends AdminModule
         $totalRecords = $this->db('jam_jaga')
             ->like('shift', '%' . $phrase . '%')
             ->orLike('dep_id', '%' . $phrase . '%')
-            ->toArray();
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'jamjaga', '%d']));
+            ->count();
+        $pagination = new \Systems\Lib\Pagination($page, $totalRecords, 10, url([ADMIN, 'presensi', 'jamjaga', '%d', '?s=' . $phrase . '&status=' . $status]));
         $this->assign['pagination'] = $pagination->nav('pagination', '5');
         $this->assign['totalRecords'] = $totalRecords;
 
@@ -101,7 +101,12 @@ class Admin extends AdminModule
 
         $this->assign['addURL'] = url([ADMIN, 'presensi', 'jagaadd']);
 
-        return $this->draw('jam_jaga.html', ['jamjaga' => htmlspecialchars_array($this->assign)]);
+        $pagination = $this->assign['pagination'];
+        unset($this->assign['pagination']);
+        $jamjaga = htmlspecialchars_array($this->assign);
+        $jamjaga['pagination'] = $pagination;
+
+        return $this->draw('jam_jaga.html', ['jamjaga' => $jamjaga]);
     }
 
     public function getJagaAdd()
@@ -209,7 +214,7 @@ class Admin extends AdminModule
                 ->where('jadwal_pegawai.tahun', $tahun)
                 ->like('jadwal_pegawai.bulan', $bulan . '%')
                 ->like('pegawai.nama', '%' . $phrase . '%')
-                ->toArray();
+                ->count();
         } else {
             $totalRecords = $this->db('jadwal_pegawai')
                 ->join('pegawai', 'pegawai.id=jadwal_pegawai.id')
@@ -218,9 +223,9 @@ class Admin extends AdminModule
                 ->where('departemen', $this->core->getPegawaiInfo('departemen', $username))
                 ->where('bidang', $this->core->getPegawaiInfo('bidang', $username))
                 ->like('pegawai.nama', '%' . $phrase . '%')
-                ->toArray();
+                ->count();
         }
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'jadwal', '%d?b=' . $bulan . '&s=' . $phrase]));
+        $pagination = new \Systems\Lib\Pagination($page, $totalRecords, 10, url([ADMIN, 'presensi', 'jadwal', '%d?b=' . $bulan . '&s=' . $phrase]));
         $this->assign['pagination'] = $pagination->nav('pagination', '5');
         $this->assign['totalRecords'] = $totalRecords;
 
@@ -282,7 +287,13 @@ class Admin extends AdminModule
             $tahun[] = (string)$i;
         }
         $this->assign['tahun'] = $tahun;
-        return $this->draw('jadwal.manage.html', ['jadwal' => htmlspecialchars_array($this->assign)]);
+
+        $pagination = $this->assign['pagination'];
+        unset($this->assign['pagination']);
+        $jadwal = htmlspecialchars_array($this->assign);
+        $jadwal['pagination'] = $pagination;
+
+        return $this->draw('jadwal.manage.html', ['jadwal' => $jadwal]);
     }
 
     public function getJadwalAdd()
@@ -469,7 +480,7 @@ class Admin extends AdminModule
             ->where('jadwal_tambahan.tahun',$tahun)
             ->like('jadwal_tambahan.bulan',$bulan.'%')
             ->like('pegawai.nama', '%'.$phrase.'%')
-            ->toArray();
+            ->count();
         }else{
             $totalRecords = $this->db('jadwal_tambahan')
             ->join('pegawai','pegawai.id=jadwal_tambahan.id')
@@ -478,9 +489,9 @@ class Admin extends AdminModule
             ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
 
             ->like('pegawai.nama', '%'.$phrase.'%')
-            ->toArray();
+            ->count();
         }
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'jadwal_tambahan', '%d?b='.$bulan.'&s='.$phrase]));
+        $pagination = new \Systems\Lib\Pagination($page, $totalRecords, 10, url([ADMIN, 'presensi', 'jadwal_tambahan', '%d?b='.$bulan.'&s='.$phrase]));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
         $this->assign['totalRecords'] = $totalRecords;
 
@@ -542,7 +553,13 @@ class Admin extends AdminModule
             $tahun[] = (string)$i;
         }
         $this->assign['tahun'] = $tahun;
-        return $this->draw('jadwal_tambah.manage.html', ['jadwal_tambah' => htmlspecialchars_array($this->assign)]);
+
+        $pagination = $this->assign['pagination'];
+        unset($this->assign['pagination']);
+        $jadwal_tambah = htmlspecialchars_array($this->assign);
+        $jadwal_tambah['pagination'] = $pagination;
+
+        return $this->draw('jadwal_tambah.manage.html', ['jadwal_tambah' => $jadwal_tambah]);
     }
 
     public function getJadwalTambahAdd()
@@ -1126,11 +1143,12 @@ class Admin extends AdminModule
 
     public function getGoogleMap($id, $tanggal)
     {
-        $geo = $this->db('mlite_geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
-        $pegawai = $this->db('pegawai')->where('id', $id)->oneArray();
+        $geo = $this->db('mlite_geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray() ?: [];
+        $pegawai = $this->db('pegawai')->where('id', $id)->oneArray() ?: [];
 
         $this->tpl->set('geo', $geo);
         $this->tpl->set('pegawai', $pegawai);
+        $this->tpl->set('tanggal', $tanggal);
         echo $this->tpl->draw(MODULES . '/presensi/view/admin/google_map.html', true);
         exit();
     }
