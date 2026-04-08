@@ -18,3 +18,8 @@
 ### Fixed
 - VClaim: Perkuat penanganan pesan kesalahan saat respons BPJS null/tidak valid (fallback ke “Unknown error”).
 - VClaim: Perbaiki kesalahan kecil dan pengutipan token sesi di beberapa URL AJAX (mis. label “Faskes” dan pengutipan token).
+
+## [2026-04-08]
+
+### Changed
+- VClaim: Perubahan header dan body request pada aproval SEP 
