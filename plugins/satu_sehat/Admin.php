@@ -6291,31 +6291,49 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     $length = intval($_POST['length'] ?? 10);
     $draw   = intval($_POST['draw'] ?? 1); // untuk datatables tracking
 
-    $data_response = [];
-    $query = $this->db('reg_periksa')
-      ->where('reg_periksa.tgl_registrasi', '>=', $start_date)
-      ->where('reg_periksa.tgl_registrasi', '<=', $end_date)
-      ->where('stts', '!=', 'Batal')
-      ->where('status_lanjut', 'Ralan')
-      ->limit($length)
-      ->offset($start)
-      ->toArray();
+    $searchTerm = $_POST['search']['value'] ?? '';
 
-    $total = $this->db('reg_periksa')->select('no_rawat')
+    $total = $this->db('reg_periksa')
       ->where('reg_periksa.tgl_registrasi', '>=', $start_date)
       ->where('reg_periksa.tgl_registrasi', '<=', $end_date)
       ->where('stts', '!=', 'Batal')
       ->where('status_lanjut', 'Ralan')
       ->count();
 
-    foreach ($query as $row) {
+    $query = $this->db('reg_periksa')
+      ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+      ->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')
+      ->leftJoin('pegawai', 'pegawai.nik = reg_periksa.kd_dokter')
+      ->where('reg_periksa.tgl_registrasi', '>=', $start_date)
+      ->where('reg_periksa.tgl_registrasi', '<=', $end_date)
+      ->where('stts', '!=', 'Batal')
+      ->where('status_lanjut', 'Ralan');
+
+    if ($searchTerm) {
+      $query->where(function($q) use ($searchTerm) {
+        $q->where('reg_periksa.no_rawat', 'LIKE', "%$searchTerm%")
+          ->orWhere('reg_periksa.no_rkm_medis', 'LIKE', "%$searchTerm%")
+          ->orWhere('reg_periksa.tgl_registrasi', 'LIKE', "%$searchTerm%")
+          ->orWhere('pasien.nm_pasien', 'LIKE', "%$searchTerm%")
+          ->orWhere('pasien.no_ktp', 'LIKE', "%$searchTerm%")
+          ->orWhere('dokter.nm_dokter', 'LIKE', "%$searchTerm%")
+          ->orWhere('reg_periksa.kd_dokter', 'LIKE', "%$searchTerm%")
+          ->orWhere('pegawai.no_ktp', 'LIKE', "%$searchTerm%");
+      });
+    }
+
+    $filteredTotal = $query->count();
+
+    $query_data = $query->select(['reg_periksa.*', 'nm_pasien' => 'pasien.nm_pasien', 'no_ktp_pasien' => 'pasien.no_ktp', 'nm_dokter' => 'dokter.nm_dokter', 'no_ktp_dokter' => 'pegawai.no_ktp'])
+      ->limit($length)
+      ->offset($start)
+      ->toArray();
+
+    $data_response = [];
+    foreach ($query_data as $row) {
 
       $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $row['no_rawat'])->oneArray();
       $row['no_rawat_converted'] = convertNoRawat($row['no_rawat']);
-      $row['no_ktp_pasien'] = $this->core->getPasienInfo('no_ktp', $row['no_rkm_medis']);
-      $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
-      $row['nm_dokter'] = $this->core->getDokterInfo('nm_dokter', $row['kd_dokter']);
-      $row['no_ktp_dokter'] = $this->core->getPegawaiInfo('no_ktp', $row['kd_dokter']);
       $row['nm_poli'] = $this->core->getPoliklinikInfo('nm_poli', $row['kd_poli']);
 
       $praktisi_id = $this->db('mlite_satu_sehat_mapping_praktisi')->where('kd_dokter', $row['kd_dokter'])->oneArray();
@@ -6529,7 +6547,7 @@ $nama_praktisi_apoteker = $this->core->getPegawaiInfo('nama', $id_praktisi_apote
     // Format hasil
     echo json_encode([
       "draw" => $draw,
-      "recordsFiltered" => $total, // Jika tidak pakai pencarian server-side, ini bisa sama
+      "recordsFiltered" => $filteredTotal,
       "recordsTotal" => $total,
       "data" => $data_response
     ]);
