@@ -802,642 +802,7 @@ class Admin extends AdminModule
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
-                $row['mapURL']  = url([ADMIN, 'presensi', 'googlemap', $row['id'], date('Y-m-d', strtotime($row['jam_datang']))]);
-
-                $day = array(
-                    'Sun' => 'AKHAD',
-                    'Mon' => 'SENIN',
-                    'Tue' => 'SELASA',
-                    'Wed' => 'RABU',
-                    'Thu' => 'KAMIS',
-                    'Fri' => 'JUMAT',
-                    'Sat' => 'SABTU'
-                );
-
-                // Optimized: removed redundant DB query for date parts and shift
-                $jam_datang_timestamp = strtotime($row['jam_datang']);
-                $jam_datang = [
-                    'year' => date('Y', $jam_datang_timestamp),
-                    'month' => date('m', $jam_datang_timestamp),
-                    'day' => date('d', $jam_datang_timestamp),
-                    'shift' => $row['shift']
-                ];
-                $stts1 = '';
-                $stts2 = '';
-
-                $s = $row['jam_datang'];
-                $dt = new \DateTime($s);
-                $tm = $dt->format('h:i:s');
-
-                $w = $row['jam_pulang'];
-                $dd = new \DateTime($w);
-                $tp = $dd->format('H:i:s');
-
-                $row['date'] = $day[date('D', strtotime(date($jam_datang['year'] . '-' . $jam_datang['month'] . '-' . $jam_datang['day'])))];
-                switch (true) {
-                    case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Pagi'):
-                        $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        if ($tm > '08:11:00' and $tm < '08:30:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '08:31:00' and $tm < '09:00:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '09:01:00' and $tm < '09:30:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '09:31:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '14:01:00' and $tp < '14:19:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '13:31:00' and $tp < '14:00:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '13:01:00' and $tp < '13:30:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '13:00:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Siang'):
-                        $interval = 'INTERVAL 5 HOUR';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        if ($tm > '14:41:00' and $tm < '15:00:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '15:31:00' and $tm < '16:00:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '16:00:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '20:01:00' and $tp < '20:19:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '19:31:00' and $tp < '20:00:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '19:01:00' and $tp < '19:30:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '19:00:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Siang - Gizi'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Malam'):
-                        $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 2 HOUR';
-                        if ($tm > '20:41:00' and $tm < '21:00:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '21:01:00' and $tm < '21:30:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '21:31:00' and $tm < '22:00:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '22:01:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '07:31:00' and $tp < '07:49:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '07:01:00' and $tp < '07:30:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '06:31:00' and $tp < '07:00:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '06:30:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Malam - Gizi (Saji)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Malam - Gizi (Cuci)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Pagi'):
-                        $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        if ($tm > '08:11:00' and $tm < '08:30:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '08:31:00' and $tm < '09:00:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '09:01:00' and $tm < '09:30:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '09:31:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '14:01:00' and $tp < '14:19:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '13:31:00' and $tp < '14:00:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '13:01:00' and $tp < '13:30:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '13:00:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Siang'):
-                        $interval = 'INTERVAL 5 HOUR';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        if ($tm > '14:41:00' and $tm < '15:00:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '15:31:00' and $tm < '16:00:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '16:00:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '20:01:00' and $tp < '20:19:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '19:31:00' and $tp < '20:00:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '19:01:00' and $tp < '19:30:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '19:00:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Siang - Gizi'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Malam'):
-                        $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 2 HOUR';
-                        if ($tm > '20:41:00' and $tm < '21:00:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '21:01:00' and $tm < '21:30:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '21:31:00' and $tm < '22:00:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '22:01:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '07:31:00' and $tp < '07:49:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '07:01:00' and $tp < '07:30:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '06:31:00' and $tp < '07:00:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '06:30:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Malam - Gizi (Saji)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Malam - Gizi (Cuci)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Pagi'):
-                        $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        if ($tm > '08:11:00' and $tm < '08:30:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '08:31:00' and $tm < '09:00:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '09:01:00' and $tm < '09:30:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '09:31:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '14:01:00' and $tp < '14:19:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '13:31:00' and $tp < '14:00:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '13:01:00' and $tp < '13:30:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '13:00:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Siang'):
-                        $interval = 'INTERVAL 5 HOUR';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        if ($tm > '14:41:00' and $tm < '15:00:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '15:31:00' and $tm < '16:00:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '16:00:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '20:01:00' and $tp < '20:19:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '19:31:00' and $tp < '20:00:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '19:01:00' and $tp < '19:30:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '19:00:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Siang - Gizi'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Malam'):
-                        $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 2 HOUR';
-                        if ($tm > '20:41:00' and $tm < '21:00:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '21:01:00' and $tm < '21:30:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '21:31:00' and $tm < '22:00:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '22:01:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '07:31:00' and $tp < '07:49:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '07:01:00' and $tp < '07:30:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '06:31:00' and $tp < '07:00:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '06:30:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Malam - Gizi (Saji)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Malam - Gizi (Cuci)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Pagi'):
-                        $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        if ($tm > '08:11:00' and $tm < '08:30:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '08:31:00' and $tm < '09:00:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '09:01:00' and $tm < '09:30:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '09:31:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '14:01:00' and $tp < '14:19:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '13:31:00' and $tp < '14:00:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '13:01:00' and $tp < '13:30:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '13:00:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Siang'):
-                        $interval = 'INTERVAL 5 HOUR';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        if ($tm > '14:41:00' and $tm < '15:00:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '15:31:00' and $tm < '16:00:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '16:00:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '20:01:00' and $tp < '20:19:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '19:31:00' and $tp < '20:00:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '19:01:00' and $tp < '19:30:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '19:00:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Siang - Gizi'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Malam'):
-                        $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 2 HOUR';
-                        if ($tm > '20:41:00' and $tm < '21:00:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '21:01:00' and $tm < '21:30:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '21:31:00' and $tm < '22:00:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '22:01:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '07:31:00' and $tp < '07:49:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '07:01:00' and $tp < '07:30:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '06:31:00' and $tp < '07:00:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '06:30:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Malam - Gizi (Saji)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Malam - Gizi (Cuci)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Pagi'):
-                        $interval = 'INTERVAL 3 HOUR';
-                        $efektif = 'INTERVAL 30 MINUTE';
-                        if ($tm > '08:11:00' and $tm < '08:30:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '08:31:00' and $tm < '09:00:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '09:01:00' and $tm < '09:30:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '09:31:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '10:30:00' and $tp < '10:49:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '10:01:00' and $tp < '10:30:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '09:30:00' and $tp < '10:00:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '09:29:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Siang'):
-                        $interval = 'INTERVAL 5 HOUR';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        if ($tm > '14:41:00' and $tm < '15:00:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '15:31:00' and $tm < '16:00:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '16:00:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '20:01:00' and $tp < '20:19:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '19:31:00' and $tp < '20:00:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '19:01:00' and $tp < '19:30:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '19:00:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Siang - Gizi'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Malam'):
-                        $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 2 HOUR';
-                        if ($tm > '20:41:00' and $tm < '21:00:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '21:01:00' and $tm < '21:30:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '21:31:00' and $tm < '22:00:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '22:01:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '07:31:00' and $tp < '07:49:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '07:01:00' and $tp < '07:30:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '06:31:00' and $tp < '07:00:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '06:30:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Malam - Gizi (Saji)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Malam - Gizi (Cuci)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Pagi'):
-                        $interval = 'INTERVAL 5 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        if ($tm > '08:11:00' and $tm < '08:30:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '08:31:00' and $tm < '09:00:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '09:01:00' and $tm < '09:30:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '09:31:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '13:00:00' and $tp < '13:19:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '13:31:00' and $tp < '14:00:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '13:01:00' and $tp < '13:30:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '13:00:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Siang'):
-                        $interval = 'INTERVAL 5 HOUR';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        if ($tm > '14:41:00' and $tm < '15:00:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '15:31:00' and $tm < '16:00:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '16:00:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '20:01:00' and $tp < '20:19:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '19:31:00' and $tp < '20:00:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '19:01:00' and $tp < '19:30:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '19:00:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Siang - Gizi'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Malam'):
-                        $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 2 HOUR';
-                        if ($tm > '20:41:00' and $tm < '21:00:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '21:01:00' and $tm < '21:30:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '21:31:00' and $tm < '22:00:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '22:01:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '07:31:00' and $tp < '07:49:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '07:01:00' and $tp < '07:30:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '06:31:00' and $tp < '07:00:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '06:30:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Malam - Gizi (Saji)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Malam - Gizi (Cuci)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Pagi'):
-                        $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        if ($tm > '08:11:00' and $tm < '08:30:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '08:31:00' and $tm < '09:00:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '09:01:00' and $tm < '09:30:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '09:31:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '14:01:00' and $tp < '14:19:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '13:31:00' and $tp < '14:00:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '13:01:00' and $tp < '13:30:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '13:00:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Siang'):
-                        $interval = 'INTERVAL 5 HOUR';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        if ($tm > '14:41:00' and $tm < '15:00:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '15:31:00' and $tm < '16:00:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '16:00:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '20:01:00' and $tp < '20:19:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '19:31:00' and $tp < '20:00:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '19:01:00' and $tp < '19:30:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '19:00:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Siang - Gizi'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Malam'):
-                        $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 2 HOUR';
-                        if ($tm > '20:41:00' and $tm < '21:00:00') {
-                            $stts1 = 'TL1';
-                        } elseif ($tm > '21:01:00' and $tm < '21:30:00') {
-                            $stts1 = 'TL2';
-                        } elseif ($tm > '21:31:00' and $tm < '22:00:00') {
-                            $stts1 = 'TL3';
-                        } elseif ($tm > '22:01:00') {
-                            $stts1 = 'TL4';
-                        }
-                        if ($tp > '07:31:00' and $tp < '07:49:00') {
-                            $stts2 = 'PSW1';
-                        } elseif ($tp > '07:01:00' and $tp < '07:30:00') {
-                            $stts2 = 'PSW2';
-                        } elseif ($tp > '06:31:00' and $tp < '07:00:00') {
-                            $stts2 = 'PSW3';
-                        } elseif ($tp < '06:30:00') {
-                            $stts2 = 'PSW4';
-                        }
-                        break;
-                    case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Malam - Gizi (Saji)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Malam - Gizi (Cuci)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    default:
-                        $interval = 'INTERVAL 5 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                }
-
-                // Optimized: removed redundant DB query and replaced MySQL-specific INTERVAL with PHP calculation
-                $durasiSeconds = !empty($row['durasi']) ? strtotime($row['durasi']) - strtotime('TODAY') : 0;
-                $efektifSeconds = $this->parseInterval($efektif);
-                $intervalSeconds = $this->parseInterval($interval);
-
-                // Calculate efektif (durasi - efektif_interval)
-                $diffEfektif = $durasiSeconds - $efektifSeconds;
-                $signEfektif = ($diffEfektif < 0) ? '-' : '';
-                $diffEfektifAbs = (int) abs($diffEfektif);
-                $efektifTime = $signEfektif . sprintf('%02d:%02d:%02d', floor($diffEfektifAbs / 3600), floor($diffEfektifAbs / 60) % 60, $diffEfektifAbs % 60);
-
-                // Calculate kurang (durasi - interval)
-                $diffKurang = $durasiSeconds - $intervalSeconds;
-                $signKurang = ($diffKurang < 0) ? '-' : '';
-                $diffKurangAbs = (int) abs($diffKurang);
-                $kurangTime = $signKurang . sprintf('%02d:%02d:%02d', floor($diffKurangAbs / 3600), floor($diffKurangAbs / 60) % 60, $diffKurangAbs % 60);
-
-                $row['efektif'] = [
-                    'efektif' => $efektifTime,
-                    'kurang' => $kurangTime
-                ];
-                $row['stts1'] = $stts1;
-                $row['stts2'] = $stts2;
+                $row = $this->_calculateAttendanceDetails($row);
                 $this->assign['list'][] = $row;
             }
         }
@@ -1573,25 +938,7 @@ class Admin extends AdminModule
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
-                $day = array(
-                    'Sun' => 'AKHAD',
-                    'Mon' => 'SENIN',
-                    'Tue' => 'SELASA',
-                    'Wed' => 'RABU',
-                    'Thu' => 'KAMIS',
-                    'Fri' => 'JUMAT',
-                    'Sat' => 'SABTU'
-                );
-
-                $jam_datang_timestamp = strtotime($row['jam_datang']);
-                $jam_datang_arr = [
-                    'year' => date('Y', $jam_datang_timestamp),
-                    'month' => date('m', $jam_datang_timestamp),
-                    'day' => date('d', $jam_datang_timestamp),
-                    'shift' => $row['shift']
-                ];
-
-                $row['date'] = $day[date('D', $jam_datang_timestamp)];
+                $row = $this->_calculateAttendanceDetails($row);
                 $this->assign['list'][] = $row;
             }
         }
@@ -2259,6 +1606,627 @@ class Admin extends AdminModule
 
         // MODULE SCRIPTS
         $this->core->addJS(url([ADMIN, 'presensi', 'javascript']), 'footer');
+    }
+
+    public function getDownload_Excel()
+    {
+        $phrase = '';
+        if (isset($_GET['s']))
+            $phrase = $_GET['s'];
+
+        $tgl_kunjungan = date('Y-m-d');
+        $tgl_kunjungan_akhir = date('Y-m-d');
+
+        if (isset($_GET['awal'])) {
+            $tgl_kunjungan = $_GET['awal'];
+        }
+        if (isset($_GET['akhir'])) {
+            $tgl_kunjungan_akhir = $_GET['akhir'];
+        }
+
+        $ruang = '';
+        if (isset($_GET['ruang'])) {
+            $ruang = $_GET['ruang'];
+        }
+
+        $username = $this->core->getUserInfo('username', null, true);
+
+        if ($this->core->getUserInfo('role') == 'admin') {
+            $rows = $this->db('rekap_presensi')
+                ->select([
+                    'nama' => 'pegawai.nama',
+                    'departemen' => 'pegawai.departemen',
+                    'jbtn' => 'pegawai.jbtn',
+                    'bidang' => 'pegawai.bidang',
+                    'id' => 'rekap_presensi.id',
+                    'shift' => 'rekap_presensi.shift',
+                    'jam_datang' => 'rekap_presensi.jam_datang',
+                    'jam_pulang' => 'rekap_presensi.jam_pulang',
+                    'status' => 'rekap_presensi.status',
+                    'durasi' => 'rekap_presensi.durasi',
+                    'photo' => 'rekap_presensi.photo'
+                ])
+                ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', '>=', $tgl_kunjungan . ' 00:00:00')
+                ->where('jam_datang', '<=', $tgl_kunjungan_akhir . ' 23:59:59')
+                ->like('bidang', '%' . $ruang . '%')
+                ->like('nama', '%' . $phrase . '%')
+                ->asc('jam_datang')
+                ->toArray();
+        } else {
+            $rows = $this->db('rekap_presensi')
+                ->select([
+                    'nama' => 'pegawai.nama',
+                    'departemen' => 'pegawai.departemen',
+                    'jbtn' => 'pegawai.jbtn',
+                    'bidang' => 'pegawai.bidang',
+                    'id' => 'rekap_presensi.id',
+                    'shift' => 'rekap_presensi.shift',
+                    'jam_datang' => 'rekap_presensi.jam_datang',
+                    'jam_pulang' => 'rekap_presensi.jam_pulang',
+                    'status' => 'rekap_presensi.status',
+                    'durasi' => 'rekap_presensi.durasi',
+                    'photo' => 'rekap_presensi.photo'
+                ])
+                ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', '>=', $tgl_kunjungan . ' 00:00:00')
+                ->where('jam_datang', '<=', $tgl_kunjungan_akhir . ' 23:59:59')
+                ->where('departemen', $this->core->getPegawaiInfo('departemen', $username))
+                ->where('bidang', $this->core->getPegawaiInfo('bidang', $username))
+                ->like('nama', '%' . $phrase . '%')
+                ->asc('jam_datang')
+                ->toArray();
+        }
+
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                $row = $this->_calculateAttendanceDetails($row);
+                $this->assign['list'][] = $row;
+            }
+        }
+        $this->assign['awal'] = $tgl_kunjungan;
+        $this->assign['akhir'] = $tgl_kunjungan_akhir;
+        $this->assign['ruang'] = $ruang;
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment; filename="Rekap_Presensi_'.date('Y-m-d', strtotime($tgl_kunjungan)).'_to_'.date('Y-m-d', strtotime($tgl_kunjungan_akhir)).'.xls"');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        echo $this->draw('excel.rekap_presensi.html', ['rekap' => htmlspecialchars_array($this->assign)]);
+        exit();
+    }
+
+    private function _calculateAttendanceDetails($row)
+    {
+        $day = array(
+            'Sun' => 'AKHAD',
+            'Mon' => 'SENIN',
+            'Tue' => 'SELASA',
+            'Wed' => 'RABU',
+            'Thu' => 'KAMIS',
+            'Fri' => 'JUMAT',
+            'Sat' => 'SABTU'
+        );
+
+        $jam_datang_timestamp = strtotime($row['jam_datang']);
+        $tm = date('H:i:s', $jam_datang_timestamp);
+        $tp = !empty($row['jam_pulang']) ? date('H:i:s', strtotime($row['jam_pulang'])) : '00:00:00';
+
+        $row['date'] = $day[date('D', $jam_datang_timestamp)];
+        $shift = $row['shift'];
+        
+        $stts1 = '';
+        $stts2 = '';
+        $interval = 'INTERVAL 5 * 60 + 30 MINUTE';
+        $efektif = 'INTERVAL 1 HOUR';
+
+        switch (true) {
+            case ($row['date'] == 'SENIN' and $shift == 'Pagi'):
+                $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 1 HOUR';
+                if ($tm > '08:11:00' and $tm < '08:30:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '08:31:00' and $tm < '09:00:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '09:01:00' and $tm < '09:30:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '09:31:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '14:01:00' and $tp < '14:19:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '13:31:00' and $tp < '14:00:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '13:01:00' and $tp < '13:30:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '13:00:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'SENIN' and $shift == 'Siang'):
+                $interval = 'INTERVAL 5 HOUR';
+                $efektif = 'INTERVAL 1 HOUR';
+                if ($tm > '14:41:00' and $tm < '15:00:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '15:31:00' and $tm < '16:00:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '16:00:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '20:01:00' and $tp < '20:19:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '19:31:00' and $tp < '20:00:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '19:01:00' and $tp < '19:30:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '19:00:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'SENIN' and $shift == 'Siang - Gizi'):
+                $interval = 'INTERVAL 0 HOUR';
+                $efektif = 'INTERVAL 0 HOUR';
+                break;
+            case ($row['date'] == 'SENIN' and $shift == 'Malam'):
+                $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 2 HOUR';
+                if ($tm > '20:41:00' and $tm < '21:00:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '21:01:00' and $tm < '21:30:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '21:31:00' and $tm < '22:00:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '22:01:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '07:31:00' and $tp < '07:49:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '07:01:00' and $tp < '07:30:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '06:31:00' and $tp < '07:00:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '06:30:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'SELASA' and $shift == 'Pagi'):
+                $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 1 HOUR';
+                if ($tm > '08:11:00' and $tm < '08:30:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '08:31:00' and $tm < '09:00:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '09:01:00' and $tm < '09:30:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '09:31:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '14:01:00' and $tp < '14:19:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '13:31:00' and $tp < '14:00:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '13:01:00' and $tp < '13:30:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '13:00:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'SELASA' and $shift == 'Siang'):
+                $interval = 'INTERVAL 5 HOUR';
+                $efektif = 'INTERVAL 1 HOUR';
+                if ($tm > '14:41:00' and $tm < '15:00:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '15:31:00' and $tm < '16:00:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '16:00:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '20:01:00' and $tp < '20:19:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '19:31:00' and $tp < '20:00:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '19:01:00' and $tp < '19:30:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '19:00:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'SELASA' and $shift == 'Malam'):
+                $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 2 HOUR';
+                if ($tm > '20:41:00' and $tm < '21:00:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '21:01:00' and $tm < '21:30:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '21:31:00' and $tm < '22:00:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '22:01:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '07:31:00' and $tp < '07:49:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '07:01:00' and $tp < '07:30:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '06:31:00' and $tp < '07:00:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '06:30:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'RABU' and $shift == 'Pagi'):
+                $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 1 HOUR';
+                if ($tm > '08:11:00' and $tm < '08:30:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '08:31:00' and $tm < '09:00:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '09:01:00' and $tm < '09:30:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '09:31:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '14:01:00' and $tp < '14:19:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '13:31:00' and $tp < '14:00:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '13:01:00' and $tp < '13:30:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '13:00:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'RABU' and $shift == 'Siang'):
+                $interval = 'INTERVAL 5 HOUR';
+                $efektif = 'INTERVAL 1 HOUR';
+                if ($tm > '14:41:00' and $tm < '15:00:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '15:31:00' and $tm < '16:00:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '16:00:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '20:01:00' and $tp < '20:19:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '19:31:00' and $tp < '20:00:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '19:01:00' and $tp < '19:30:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '19:00:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'RABU' and $shift == 'Malam'):
+                $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 2 HOUR';
+                if ($tm > '20:41:00' and $tm < '21:00:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '21:01:00' and $tm < '21:30:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '21:31:00' and $tm < '22:00:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '22:01:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '07:31:00' and $tp < '07:49:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '07:01:00' and $tp < '07:30:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '06:31:00' and $tp < '07:00:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '06:30:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'KAMIS' and $shift == 'Pagi'):
+                $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 1 HOUR';
+                if ($tm > '08:11:00' and $tm < '08:30:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '08:31:00' and $tm < '09:00:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '09:01:00' and $tm < '09:30:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '09:31:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '14:01:00' and $tp < '14:19:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '13:31:00' and $tp < '14:00:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '13:01:00' and $tp < '13:30:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '13:00:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'KAMIS' and $shift == 'Siang'):
+                $interval = 'INTERVAL 5 HOUR';
+                $efektif = 'INTERVAL 1 HOUR';
+                if ($tm > '14:41:00' and $tm < '15:00:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '15:31:00' and $tm < '16:00:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '16:00:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '20:01:00' and $tp < '20:19:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '19:31:00' and $tp < '20:00:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '19:01:00' and $tp < '19:30:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '19:00:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'KAMIS' and $shift == 'Malam'):
+                $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 2 HOUR';
+                if ($tm > '20:41:00' and $tm < '21:00:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '21:01:00' and $tm < '21:30:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '21:31:00' and $tm < '22:00:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '22:01:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '07:31:00' and $tp < '07:49:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '07:01:00' and $tp < '07:30:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '06:31:00' and $tp < '07:00:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '06:30:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'JUMAT' and $shift == 'Pagi'):
+                $interval = 'INTERVAL 3 HOUR';
+                $efektif = 'INTERVAL 30 MINUTE';
+                if ($tm > '08:11:00' and $tm < '08:30:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '08:31:00' and $tm < '09:00:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '09:01:00' and $tm < '09:30:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '09:31:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '10:30:00' and $tp < '10:49:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '10:01:00' and $tp < '10:30:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '09:30:00' and $tp < '10:00:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '09:29:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'JUMAT' and $shift == 'Siang'):
+                $interval = 'INTERVAL 5 HOUR';
+                $efektif = 'INTERVAL 1 HOUR';
+                if ($tm > '14:41:00' and $tm < '15:00:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '15:31:00' and $tm < '16:00:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '16:00:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '20:01:00' and $tp < '20:19:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '19:31:00' and $tp < '20:00:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '19:01:00' and $tp < '19:30:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '19:00:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'JUMAT' and $shift == 'Malam'):
+                $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 2 HOUR';
+                if ($tm > '20:41:00' and $tm < '21:00:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '21:01:00' and $tm < '21:30:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '21:31:00' and $tm < '22:00:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '22:01:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '07:31:00' and $tp < '07:49:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '07:01:00' and $tp < '07:30:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '06:31:00' and $tp < '07:00:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '06:30:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'SABTU' and $shift == 'Pagi'):
+                $interval = 'INTERVAL 5 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 1 HOUR';
+                if ($tm > '08:11:00' and $tm < '08:30:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '08:31:00' and $tm < '09:00:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '09:01:00' and $tm < '09:30:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '09:31:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '13:00:00' and $tp < '13:19:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '13:31:00' and $tp < '14:00:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '13:01:00' and $tp < '13:30:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '13:00:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'SABTU' and $shift == 'Siang'):
+                $interval = 'INTERVAL 5 HOUR';
+                $efektif = 'INTERVAL 1 HOUR';
+                if ($tm > '14:41:00' and $tm < '15:00:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '15:31:00' and $tm < '16:00:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '16:00:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '20:01:00' and $tp < '20:19:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '19:31:00' and $tp < '20:00:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '19:01:00' and $tp < '19:30:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '19:00:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'SABTU' and $shift == 'Malam'):
+                $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 2 HOUR';
+                if ($tm > '20:41:00' and $tm < '21:00:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '21:01:00' and $tm < '21:30:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '21:31:00' and $tm < '22:00:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '22:01:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '07:31:00' and $tp < '07:49:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '07:01:00' and $tp < '07:30:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '06:31:00' and $tp < '07:00:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '06:30:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'AKHAD' and $shift == 'Pagi'):
+                $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 1 HOUR';
+                if ($tm > '08:11:00' and $tm < '08:30:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '08:31:00' and $tm < '09:00:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '09:01:00' and $tm < '09:30:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '09:31:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '14:01:00' and $tp < '14:19:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '13:31:00' and $tp < '14:00:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '13:01:00' and $tp < '13:30:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '13:00:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'AKHAD' and $shift == 'Siang'):
+                $interval = 'INTERVAL 5 HOUR';
+                $efektif = 'INTERVAL 1 HOUR';
+                if ($tm > '14:41:00' and $tm < '15:00:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '15:31:00' and $tm < '16:00:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '16:00:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '20:01:00' and $tp < '20:19:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '19:31:00' and $tp < '20:00:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '19:01:00' and $tp < '19:30:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '19:00:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            case ($row['date'] == 'AKHAD' and $shift == 'Malam'):
+                $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 2 HOUR';
+                if ($tm > '20:41:00' and $tm < '21:00:00') {
+                    $stts1 = 'TL1';
+                } elseif ($tm > '21:01:00' and $tm < '21:30:00') {
+                    $stts1 = 'TL2';
+                } elseif ($tm > '21:31:00' and $tm < '22:00:00') {
+                    $stts1 = 'TL3';
+                } elseif ($tm > '22:01:00') {
+                    $stts1 = 'TL4';
+                }
+                if ($tp > '07:31:00' and $tp < '07:49:00') {
+                    $stts2 = 'PSW1';
+                } elseif ($tp > '07:01:00' and $tp < '07:30:00') {
+                    $stts2 = 'PSW2';
+                } elseif ($tp > '06:31:00' and $tp < '07:00:00') {
+                    $stts2 = 'PSW3';
+                } elseif ($tp < '06:30:00' && $tp != '00:00:00') {
+                    $stts2 = 'PSW4';
+                }
+                break;
+            default:
+                $interval = 'INTERVAL 5 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 1 HOUR';
+                break;
+        }
+
+        $durasiSeconds = !empty($row['durasi']) ? strtotime($row['durasi']) - strtotime('TODAY') : 0;
+        $efektifSeconds = $this->parseInterval($efektif);
+        $intervalSeconds = $this->parseInterval($interval);
+
+        $diffEfektif = $durasiSeconds - $efektifSeconds;
+        $signEfektif = ($diffEfektif < 0) ? '-' : '';
+        $diffEfektifAbs = (int) abs($diffEfektif);
+        $efektifTime = $signEfektif . sprintf('%02d:%02d:%02d', floor($diffEfektifAbs / 3600), floor($diffEfektifAbs / 60) % 60, $diffEfektifAbs % 60);
+
+        $diffKurang = $durasiSeconds - $intervalSeconds;
+        $signKurang = ($diffKurang < 0) ? '-' : '';
+        $diffKurangAbs = (int) abs($diffKurang);
+        $kurangTime = $signKurang . sprintf('%02d:%02d:%02d', floor($diffKurangAbs / 3600), floor($diffKurangAbs / 60) % 60, $diffKurangAbs % 60);
+
+        $row['efektif'] = [
+            'efektif' => $efektifTime,
+            'kurang' => $kurangTime
+        ];
+        $row['stts1'] = $stts1;
+        $row['stts2'] = $stts2;
+        
+        // Perbaikan Status: Tepat Waktu & PSW
+        if (empty($stts1) && empty($stts2)) {
+            $row['status'] = 'Tepat Waktu';
+        } else {
+            $row['status'] = trim($stts1 . ' ' . $stts2);
+        }
+        
+        $row['mapURL']  = url([ADMIN, 'presensi', 'googlemap', $row['id'], date('Y-m-d', $jam_datang_timestamp)]);
+
+        return $row;
     }
 
     private function parseInterval($intervalStr)

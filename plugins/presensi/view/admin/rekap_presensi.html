@@ -31,6 +31,10 @@
               <a href="{?=url([ADMIN, 'presensi', 'cetak_laporan', '?awal=' . $rekap.awal . '&akhir=' . $rekap.akhir . '&ruang=' . $rekap.ruang_sel . '&s=' . $rekap.phrase])?}" class="btn btn-primary btn-block" target="_blank"
                 style="color: #ffffff !important; padding: 6px;">Cetak Laporan</a>
             </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <a href="{?=url([ADMIN, 'presensi', 'download_excel', '?awal=' . $rekap.awal . '&akhir=' . $rekap.akhir . '&ruang=' . $rekap.ruang_sel . '&s=' . $rekap.phrase])?}" class="btn btn-success btn-block"
+                style="color: #ffffff !important; padding: 6px;">Unduh Excel</a>
+            </li>
           </ul>
         </div>
         <h3 class="panel-title">Rekap Presensi</h3>
