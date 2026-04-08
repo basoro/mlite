@@ -728,8 +728,7 @@ class Admin extends AdminModule
                 ->where('jam_datang', '<=', $tgl_kunjungan_akhir . ' 23:59:59')
                 ->like('bidang', '%' . $ruang . '%')
                 ->like('nama', '%' . $phrase . '%')
-                ->asc('jam_datang')
-                ->toArray();
+                ->count();
         } else {
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
@@ -738,10 +737,10 @@ class Admin extends AdminModule
                 ->where('departemen', $this->core->getPegawaiInfo('departemen', $username))
                 ->where('bidang', $this->core->getPegawaiInfo('bidang', $username))
                 ->like('nama', '%' . $phrase . '%')
-                ->asc('jam_datang')
-                ->toArray();
+                ->count();
         }
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'rekap_presensi', '%d?awal=' . $tgl_kunjungan . '&akhir=' . $tgl_kunjungan_akhir . '&ruang=' . $ruang . '&s=' . $phrase]));
+        $pagination = new \Systems\Lib\Pagination($page, $totalRecords, 10, url([ADMIN, 'presensi', 'rekap_presensi', '%d?awal=' . $tgl_kunjungan . '&akhir=' . $tgl_kunjungan_akhir . '&ruang=' . $ruang . '&s=' . $phrase . '&t=' . $_SESSION['token']]));
+
         $this->assign['pagination'] = $pagination->nav('pagination', '5');
         $this->assign['totalRecords'] = $totalRecords;
 
@@ -861,7 +860,6 @@ class Admin extends AdminModule
                     case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Siang'):
                         $interval = 'INTERVAL 5 HOUR';
                         $efektif = 'INTERVAL 1 HOUR';
-                        break;
                         if ($tm > '14:41:00' and $tm < '15:00:00') {
                             $stts1 = 'TL1';
                         } elseif ($tm > '15:01:00' and $tm < '15:30:00') {
@@ -880,6 +878,7 @@ class Admin extends AdminModule
                         } elseif ($tp < '19:00:00') {
                             $stts2 = 'PSW4';
                         }
+                        break;
                     case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Siang - Gizi'):
                         $interval = 'INTERVAL 0 HOUR';
                         $efektif = 'INTERVAL 0 HOUR';
@@ -1473,7 +1472,6 @@ class Admin extends AdminModule
 
 
         $this->assign['totalminus'] = '-' . $timesplus;
-
         $this->assign['totalplus'] = $timesminus;
 
         $this->assign['getStatus'] = isset($_GET['status']);
@@ -1488,7 +1486,17 @@ class Admin extends AdminModule
         $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
         $this->assign['tanggal'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31');
         $this->assign['bidang'] = $this->db('bidang')->toArray();
-        return $this->draw('rekap_presensi.html', ['rekap' => htmlspecialchars_array($this->assign)]);
+        $this->assign['awal'] = $tgl_kunjungan;
+        $this->assign['akhir'] = $tgl_kunjungan_akhir;
+        $this->assign['phrase'] = $phrase;
+        $this->assign['ruang_sel'] = $ruang;
+
+        $pagination = $this->assign['pagination'];
+        unset($this->assign['pagination']);
+        $rekap = htmlspecialchars_array($this->assign);
+        $rekap['pagination'] = $pagination;
+
+        return $this->draw('rekap_presensi.html', ['rekap' => $rekap]);
     }
 
     public function getCetak_Laporan()
@@ -1808,19 +1816,17 @@ class Admin extends AdminModule
                 ->like('departemen', '%' . $dep . '%')
                 ->like('bidang', '%' . $ruang . '%')
                 ->like('nama', '%' . $phrase . '%')
-                ->asc('jam_datang')
-                ->toArray();
+                ->count();
         } else {
             $totalRecords = $this->db('temporary_presensi')
                 ->join('pegawai', 'pegawai.id = temporary_presensi.id')
                 ->where('departemen', $this->core->getPegawaiInfo('departemen', $username))
                 ->where('bidang', $this->core->getPegawaiInfo('bidang', $username))
                 ->like('nama', '%' . $phrase . '%')
-                ->asc('jam_datang')
-                ->toArray();
+                ->count();
         }
-        //$pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'presensi', '%d']));
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'presensi', '%d', '?s=' . $phrase . '&ruang=' . $ruang . '&dep=' . $dep]));
+        //$pagination = new \Systems\Lib\Pagination($page, $totalRecords, 10, url([ADMIN, 'presensi', 'presensi', '%d']));
+        $pagination = new \Systems\Lib\Pagination($page, $totalRecords, 10, url([ADMIN, 'presensi', 'presensi', '%d', '?s=' . $phrase . '&ruang=' . $ruang . '&dep=' . $dep]));
         $this->assign['pagination'] = $pagination->nav('pagination', '5');
         $this->assign['totalRecords'] = $totalRecords;
 
@@ -1877,7 +1883,12 @@ class Admin extends AdminModule
         $this->assign['bidang'] = htmlspecialchars_array($this->db('bidang')->toArray());
         $this->assign['dep'] = htmlspecialchars_array($this->db('departemen')->toArray());
 
-        return $this->draw('presensi.html', ['presensi' => htmlspecialchars_array($this->assign)]);
+        $pagination = $this->assign['pagination'];
+        unset($this->assign['pagination']);
+        $presensi = htmlspecialchars_array($this->assign);
+        $presensi['pagination'] = $pagination;
+
+        return $this->draw('presensi.html', ['presensi' => $presensi]);
     }
 
     public function getPresensiPulang($id)
@@ -1942,8 +1953,9 @@ class Admin extends AdminModule
         $totalRecords = $this->db('barcode')
             ->select('id')
             ->like('barcode', '%' . $phrase . '%')
-            ->toArray();
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'barcode', '%d']));
+            ->count();
+        $pagination = new \Systems\Lib\Pagination($page, $totalRecords, 10, url([ADMIN, 'presensi', 'barcode', '%d']));
+
         $this->assign['pagination'] = $pagination->nav('pagination', '5');
         $this->assign['totalRecords'] = $totalRecords;
 
@@ -1969,7 +1981,12 @@ class Admin extends AdminModule
 
         $this->assign['addURL'] = url([ADMIN, 'presensi', 'barcodeadd']);
 
-        return $this->draw('barcode.manage.html', ['barcode' => htmlspecialchars_array($this->assign)]);
+        $pagination = $this->assign['pagination'];
+        unset($this->assign['pagination']);
+        $barcode = htmlspecialchars_array($this->assign);
+        $barcode['pagination'] = $pagination;
+
+        return $this->draw('barcode.manage.html', ['barcode' => $barcode]);
     }
 
     public function getBarcodeAdd()
@@ -2074,8 +2091,9 @@ class Admin extends AdminModule
         // pagination
         $totalRecords = $this->db('jam_masuk')
             ->like('shift', '%' . $phrase . '%')
-            ->toArray();
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'jammasuk', '%d']));
+            ->count();
+        $pagination = new \Systems\Lib\Pagination($page, $totalRecords, 10, url([ADMIN, 'presensi', 'jammasuk', '%d']));
+
         $this->assign['pagination'] = $pagination->nav('pagination', '5');
         $this->assign['totalRecords'] = $totalRecords;
 
@@ -2100,7 +2118,12 @@ class Admin extends AdminModule
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['addURL'] = url([ADMIN, 'presensi', 'jammasukadd']);
 
-        return $this->draw('jam_masuk.manage.html', ['jam_masuk' => htmlspecialchars_array($this->assign)]);
+        $pagination = $this->assign['pagination'];
+        unset($this->assign['pagination']);
+        $jam_masuk = htmlspecialchars_array($this->assign);
+        $jam_masuk['pagination'] = $pagination;
+
+        return $this->draw('jam_masuk.manage.html', ['jam_masuk' => $jam_masuk]);
     }
 
     public function getJamMasukAdd()

@@ -28,7 +28,7 @@
                 <div id="lunas_periode_rawat_jalan" class="btn btn-primary btn-block">Per Hari</div>
               </li> -->
             <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <a href="{?=url([ADMIN, 'presensi', 'cetak_laporan'])?}" class="btn btn-primary btn-block" target="_blank"
+              <a href="{?=url([ADMIN, 'presensi', 'cetak_laporan', '?awal=' . $rekap.awal . '&akhir=' . $rekap.akhir . '&ruang=' . $rekap.ruang_sel . '&s=' . $rekap.phrase])?}" class="btn btn-primary btn-block" target="_blank"
                 style="color: #ffffff !important; padding: 6px;">Cetak Laporan</a>
             </li>
           </ul>
@@ -43,7 +43,7 @@
       <div class="panel-body">
         <div class="row clearfix">
           <div class="col col-md-8">
-            <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($rekap.totalRecords)?} | Total Kurang:
+            <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=$rekap.totalRecords?} | Total Kurang:
               {?=isset_or($rekap.totalminus)?} | Total Lebih: {?=isset_or($rekap.totalplus)?}</h3>
           </div>
           <div class="col col-md-2">
