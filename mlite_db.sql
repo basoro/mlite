@@ -1932,6 +1932,14 @@ CREATE TABLE `mlite_mini_pacs_study` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
+CREATE TABLE `mlite_mini_pacs_worklist_status` (
+  `noorder` varchar(20) NOT NULL,
+  `pulled_at` datetime DEFAULT NULL,
+  `notified` tinyint(1) DEFAULT 0,
+  PRIMARY KEY (`noorder`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 CREATE TABLE `mlite_modules` (
   `id` int NOT NULL AUTO_INCREMENT,
   `dir` text,

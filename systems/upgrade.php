@@ -1759,6 +1759,12 @@ switch ($version) {
             );");
             $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_pacs_meta_tag ON `mlite_mini_pacs_instance_metadata` (`tag`);");
             $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_pacs_meta_inst ON `mlite_mini_pacs_instance_metadata` (`instance_id`);");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_worklist_status` (
+              `noorder` TEXT PRIMARY KEY,
+              `pulled_at` DATETIME DEFAULT NULL,
+              `notified` INTEGER DEFAULT 0
+            );");
         } else {
             // Kapabilitas MySQL sejak 6.2.0
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_study` (
@@ -1806,6 +1812,13 @@ switch ($version) {
               KEY `idx_tag` (`tag`),
               CONSTRAINT `fk_pacs_instance_metadata` FOREIGN KEY (`instance_id`) REFERENCES `mlite_mini_pacs_instance` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_worklist_status` (
+              `noorder` varchar(20) NOT NULL,
+              `pulled_at` datetime DEFAULT NULL,
+              `notified` tinyint(1) DEFAULT 0,
+              PRIMARY KEY (`noorder`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         }
         $return = '6.3.0';
         break;
