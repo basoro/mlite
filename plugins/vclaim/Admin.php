@@ -1869,6 +1869,40 @@ class Admin extends AdminModule
     exit();
   }
 
+  public function getSepInternal($noSep)
+  {
+    date_default_timezone_set('UTC');
+    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+    $key = $this->consid . $this->secretkey . $tStamp;
+
+    $url = $this->api_url . 'SEP/Internal/' . $noSep;
+    $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+    $json = json_decode($output, true);
+    $code = $json['metaData']['code'];
+    $message = $json['metaData']['message'];
+    if($code == '200'){
+      $sep_internal = $json['response'];
+      $stringDecrypt = stringDecrypt($key, $sep_internal);
+      $decompress = "";
+      if (!empty($stringDecrypt)) {
+        $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      }
+      if ($json != null) {
+        echo '{
+              "metaData": {
+                "code": "' . htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '",
+                "message": "' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"
+              },
+              "response": ' . $decompress . '}';
+      } else {
+        echo json_encode($json);
+      }
+    } else {
+      echo json_encode($json);
+    }
+    exit();
+  }
+
   public function postInsertRujukan($data = [])
   {
     date_default_timezone_set('UTC');
