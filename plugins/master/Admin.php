@@ -202,19 +202,7 @@ class Admin extends AdminModule
             return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
         }
 
-        // Whitelist allowed tables
-        $allowed_tables = [
-            'dokter', 'petugas', 'poliklinik', 'bangsal', 'kamar', 'databarang',
-            'jns_perawatan', 'jns_perawatan_inap', 'jns_perawatan_lab', 'template_laboratorium', 'jns_perawatan_radiologi',
-            'bahasa', 'propinsi', 'kabupaten', 'kecamatan', 'kelurahan', 'cacat_fisik', 'suku_bangsa',
-            'perusahaan_pasien', 'penjab', 'golongan_barang', 'industri_farmasi', 'jenis', 'kategori_barang',
-            'kategori_penyakit', 'penyakit', 'icd9', 'kategori_perawatan', 'kode_satuan',
-            'master_aturan_pakai', 'master_berkas_digital', 'spesialis', 'bank', 'bidang', 'departemen',
-            'emergency_index', 'jabatan', 'jenjang_jabatan', 'kelompok_jabatan', 'pendidikan',
-            'resiko_kerja', 'status_kerja', 'status_wp', 'metode_racik', 'ruang_ok', 'gudangbarang', 'riwayat_barang_medis', 
-            'mlite_users', 'resep_obat', 'resep_dokter', 'resep_dokter_racikan', 'resep_dokter_racikan_detail', 
-            'diagnosa_pasien', 'prosedur_pasien', 'mlite_modules', 'mlite_settings', 'detail_pemberian_obat', 'mutasibarang'
-        ];
+        $allowed_tables = $this->_getAllowedTables();
         
         if (!in_array($table, $allowed_tables)) {
              return ['status' => 'error', 'message' => 'Table not allowed or not found'];
@@ -419,6 +407,16 @@ class Admin extends AdminModule
             $message = preg_replace('/`[^`]+`\./', '', $message);
             return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
         }
+    }
+
+    private function _getAllowedTables()
+    {
+        if (DBDRIVER == 'sqlite') {
+            $allowed_tables = $this->db()->pdo()->query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")->fetchAll(\PDO::FETCH_COLUMN);
+        } else {
+            $allowed_tables = $this->db()->pdo()->query("SHOW TABLES")->fetchAll(\PDO::FETCH_COLUMN);
+        }
+        return array_filter($allowed_tables, fn($t) => $t !== 'mlite_api_key');
     }
 
     private function getTableProperty($table)

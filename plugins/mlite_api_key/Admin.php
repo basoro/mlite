@@ -10,8 +10,8 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Manage API'   => 'manage',
-            'Alat Pengujian'   => 'tools',
+            'Manage API' => 'manage',
+            'Alat Pengujian' => 'tools',
         ];
     }
 
@@ -39,7 +39,7 @@ class Admin extends AdminModule
         $search_text = $_POST['search_text_mlite_api_key'] ?? '';
 
         $searchQuery = "";
-        $allowedColumns = ['id','api_key','username','method','ip_range','exp_time'];
+        $allowedColumns = ['id', 'api_key', 'username', 'method', 'ip_range', 'exp_time'];
         if (!in_array($columnName, $allowedColumns)) {
             $columnName = 'id';
         }
@@ -60,7 +60,7 @@ class Admin extends AdminModule
         $records = $stmt->fetch();
         $totalRecordwithFilter = $records['allcount'] ?? 0;
 
-        $sql = "SELECT * FROM mlite_api_key WHERE 1=1 $searchQuery ORDER BY `$columnName` $columnSortOrder LIMIT ".(int)$row1.", ".(int)$rowperpage;
+        $sql = "SELECT * FROM mlite_api_key WHERE 1=1 $searchQuery ORDER BY `$columnName` $columnSortOrder LIMIT " . (int) $row1 . ", " . (int) $rowperpage;
         $stmt = $this->db()->pdo()->prepare($sql);
         if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
             $stmt->bindValue(':search_text', "%$search_text%", \PDO::PARAM_STR);
@@ -71,12 +71,12 @@ class Admin extends AdminModule
         $data = [];
         foreach ($result as $row) {
             $data[] = [
-                'id'=>htmlspecialchars($row['id'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-'api_key'=>htmlspecialchars($row['api_key'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-'username'=>htmlspecialchars($row['username'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-'method'=>htmlspecialchars($row['method'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-'ip_range'=>htmlspecialchars($row['ip_range'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-'exp_time'=>htmlspecialchars($row['exp_time'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
+                'id' => htmlspecialchars($row['id'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'api_key' => htmlspecialchars($row['api_key'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'username' => htmlspecialchars($row['username'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'method' => htmlspecialchars($row['method'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'ip_range' => htmlspecialchars($row['ip_range'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'exp_time' => htmlspecialchars($row['exp_time'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
 
             ];
         }
@@ -102,11 +102,11 @@ class Admin extends AdminModule
         try {
             if ($act == 'add') {
                 $id = NULL;
-$api_key = $_POST['api_key'];
-$username = $_POST['username'];
-$method = implode(',', $_POST['method']);
-$ip_range = $_POST['ip_range'];
-$exp_time = $_POST['exp_time'];
+                $api_key = $_POST['api_key'];
+                $username = $_POST['username'];
+                $method = implode(',', $_POST['method']);
+                $ip_range = $_POST['ip_range'];
+                $exp_time = $_POST['exp_time'];
 
 
                 $sql = "INSERT INTO mlite_api_key VALUES (?, ?, ?, ?, ?, ?)";
@@ -114,7 +114,7 @@ $exp_time = $_POST['exp_time'];
                 $stmt = $this->db()->pdo()->prepare($sql);
                 $stmt->execute($binds);
 
-                if($this->settings->get('settings.log_query') == 'ya') {
+                if ($this->settings->get('settings.log_query') == 'ya') {
                     \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
                 }
 
@@ -122,25 +122,25 @@ $exp_time = $_POST['exp_time'];
 
             } elseif ($act == 'edit') {
                 $id = $_POST['id'];
-$api_key = $_POST['api_key'];
-$username = $_POST['username'];
-$method = implode(',', $_POST['method']);
-$ip_range = $_POST['ip_range'];
-$exp_time = $_POST['exp_time'];
+                $api_key = $_POST['api_key'];
+                $username = $_POST['username'];
+                $method = implode(',', $_POST['method']);
+                $ip_range = $_POST['ip_range'];
+                $exp_time = $_POST['exp_time'];
 
 
                 $sql = "UPDATE mlite_api_key SET id=?, api_key=?, username=?, method=?, ip_range=?, exp_time=? WHERE id=?";
-                $binds = [$id, $api_key, $username, $method, $ip_range, $exp_time,$id];
+                $binds = [$id, $api_key, $username, $method, $ip_range, $exp_time, $id];
                 $stmt = $this->db()->pdo()->prepare($sql);
                 $stmt->execute($binds);
 
-                if($this->settings->get('settings.log_query') == 'ya') {
+                if ($this->settings->get('settings.log_query') == 'ya') {
                     \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
                 }
                 echo json_encode(["status" => "success", "message" => "Data berhasil diperbarui."]);
 
             } elseif ($act == 'del') {
-                $id= $_POST['id'];
+                $id = $_POST['id'];
 
                 $sql = "DELETE FROM mlite_api_key WHERE id=?";
                 $binds = [$id];
@@ -148,7 +148,7 @@ $exp_time = $_POST['exp_time'];
                 $stmt = $this->db()->pdo()->prepare($sql);
                 $stmt->execute($binds);
 
-                if($this->settings->get('settings.log_query') == 'ya') {
+                if ($this->settings->get('settings.log_query') == 'ya') {
                     \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds);
                 }
 
@@ -163,7 +163,7 @@ $exp_time = $_POST['exp_time'];
                 $search_text = $_POST['search_text_mlite_api_key'] ?? '';
 
                 $searchQuery = "";
-                $allowedColumns = ['id','api_key','username','method','ip_range','exp_time'];
+                $allowedColumns = ['id', 'api_key', 'username', 'method', 'ip_range', 'exp_time'];
                 if (!empty($search_text) && in_array($search_field, $allowedColumns)) {
                     $searchQuery .= " AND (`" . $search_field . "` LIKE :search_text) ";
                 }
@@ -180,22 +180,22 @@ $exp_time = $_POST['exp_time'];
                 $data = [];
                 foreach ($result as $row) {
                     $data[] = [
-                        'id'=>$row['id'],
-'api_key'=>$row['api_key'],
-'username'=>$row['username'],
-'method'=>$row['method'],
-'ip_range'=>$row['ip_range'],
-'exp_time'=>$row['exp_time']
+                        'id' => $row['id'],
+                        'api_key' => $row['api_key'],
+                        'username' => $row['username'],
+                        'method' => $row['method'],
+                        'ip_range' => $row['ip_range'],
+                        'exp_time' => $row['exp_time']
                     ];
                 }
 
                 echo json_encode(htmlspecialchars_array($data));
             }
         } catch (\PDOException $e) {
-            if($this->settings->get('settings.log_query') == 'ya') {            
+            if ($this->settings->get('settings.log_query') == 'ya') {
                 if (in_array($act, ['add', 'edit', 'del'])) {
-                \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds, $e->getMessage());   
-                } 
+                    \Systems\Lib\QueryWrapper::logPdoQuery($sql, $binds, $e->getMessage());
+                }
             }
             echo json_encode(["status" => "error", "message" => $e->getMessage()]);
         }
@@ -206,7 +206,7 @@ $exp_time = $_POST['exp_time'];
     public function getDetail($id)
     {
         $detail = $this->db('mlite_api_key')->where('id', $id)->toArray();
-        $settings =  $this->settings('settings');
+        $settings = $this->settings('settings');
         echo $this->draw('detail.html', ['detail' => $detail, 'settings' => $settings]);
         exit();
     }
@@ -241,15 +241,48 @@ $exp_time = $_POST['exp_time'];
         exit();
     }
 
-    public function getTools(){
+    public function getTools()
+    {
         $this->_addHeaderFiles();
-        return $this->draw('tools.html');
+        $masterDescription = '';
+        $file_path = BASE_DIR . '/MLITE.postman_collection.json';
+        if (file_exists($file_path)) {
+            $json = file_get_contents($file_path);
+            $decoded = json_decode($json, true);
+            if (isset($decoded['item'])) {
+                foreach ($decoded['item'] as $item) {
+                    if (($item['name'] ?? '') === 'Master') {
+                        $masterDescription = $item['description'] ?? '';
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Fetch allowed tables dynamically
+        if (DBDRIVER == 'sqlite') {
+            $allowed_tables = $this->db()->pdo()->query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")->fetchAll(\PDO::FETCH_COLUMN);
+        } else {
+            $allowed_tables = $this->db()->pdo()->query("SHOW TABLES")->fetchAll(\PDO::FETCH_COLUMN);
+        }
+        $allowed_tables = array_filter($allowed_tables, fn($t) => $t !== 'mlite_api_key');
+        sort($allowed_tables);
+
+        if (!empty($allowed_tables)) {
+            $masterDescription .= "\n\n### Daftar Tabel Tersedia\n";
+            $masterDescription .= "Berikut adalah daftar tabel yang saat ini terdeteksi di database dan dapat diakses melalui API Master:\n\n";
+            foreach ($allowed_tables as $table) {
+                $masterDescription .= "- `{$table}`\n";
+            }
+        }
+
+        return $this->draw('tools.html', ['masterDescription' => $masterDescription]);
     }
 
     public function getCss()
     {
         header('Content-type: text/css');
-        echo $this->draw(MODULES.'/mlite_api_key/css/admin/styles.css');
+        echo $this->draw(MODULES . '/mlite_api_key/css/admin/styles.css');
         exit();
     }
 
@@ -257,8 +290,8 @@ $exp_time = $_POST['exp_time'];
     {
         header('Content-type: text/javascript');
         $settings = $this->settings('settings');
-        $apikey = substr(strtoupper(md5(microtime().rand(1000, 9999))), 0, 32);
-        echo $this->draw(MODULES.'/mlite_api_key/js/admin/scripts.js', ['settings' => $settings, 'apikey' => $apikey]);
+        $apikey = substr(strtoupper(md5(microtime() . rand(1000, 9999))), 0, 32);
+        echo $this->draw(MODULES . '/mlite_api_key/js/admin/scripts.js', ['settings' => $settings, 'apikey' => $apikey]);
         exit();
     }
 
@@ -274,10 +307,10 @@ $exp_time = $_POST['exp_time'];
         }
 
         header('Content-Type: application/json');
-        
+
         $postmanCollection = [];
         $file_path = BASE_DIR . '/MLITE.postman_collection.json';
-        
+
         if (file_exists($file_path)) {
             $json = file_get_contents($file_path);
             // Check for BOM
@@ -301,6 +334,7 @@ $exp_time = $_POST['exp_time'];
             'servers' => [
                 ['url' => url()]
             ],
+            'tags' => [],
             'components' => [
                 'securitySchemes' => [
                     'ApiKeyAuth' => [
@@ -324,18 +358,23 @@ $exp_time = $_POST['exp_time'];
         if (isset($postmanCollection['item'])) {
             foreach ($postmanCollection['item'] as $group) {
                 $groupName = $group['name'] ?? 'General';
+                if (isset($group['name'])) {
+                    $openApi['tags'][] = [
+                        'name' => $groupName
+                    ];
+                }
                 if (isset($group['item'])) {
                     foreach ($group['item'] as $item) {
                         $this->_processPostmanItem($item, $openApi, $groupName);
                     }
                 } else {
-                     $this->_processPostmanItem($group, $openApi, 'General');
+                    $this->_processPostmanItem($group, $openApi, $groupName);
                 }
             }
         }
 
         $output = json_encode($openApi, JSON_PRETTY_PRINT);
-        
+
         if ($output === false) {
             echo json_encode(['error' => 'JSON Encoding Failed: ' . json_last_error_msg()]);
         } else {
@@ -344,7 +383,8 @@ $exp_time = $_POST['exp_time'];
         exit();
     }
 
-    private function _processPostmanItem($item, &$openApi, $tag = null) {
+    private function _processPostmanItem($item, &$openApi, $tag = null)
+    {
         // Handle folder structure recursively
         if (isset($item['item']) && is_array($item['item'])) {
             $groupName = $item['name'] ?? $tag;
@@ -354,7 +394,8 @@ $exp_time = $_POST['exp_time'];
             return;
         }
 
-        if (!isset($item['request'])) return;
+        if (!isset($item['request']))
+            return;
 
         $method = strtolower($item['request']['method']);
         // Extract Path
@@ -363,7 +404,7 @@ $exp_time = $_POST['exp_time'];
         $pathUrl = str_replace('{{baseUrl}}', '', $pathUrl);
         // Remove query parameters from path
         $pathUrl = explode('?', $pathUrl)[0];
-        
+
         // Convert Postman variables {{var}} to OpenAPI {var}
         $pathUrl = preg_replace('/\{\{(.*?)\}\}/', '{$1}', $pathUrl);
 
@@ -372,7 +413,7 @@ $exp_time = $_POST['exp_time'];
         }
 
         $parameters = [];
-        
+
         // Path Parameters
         if (preg_match_all('/\{(.*?)\}/', $pathUrl, $matches)) {
             foreach ($matches[1] as $param) {
@@ -388,7 +429,7 @@ $exp_time = $_POST['exp_time'];
         // Query Parameters
         if (isset($item['request']['url']['query'])) {
             foreach ($item['request']['url']['query'] as $query) {
-                 $parameters[] = [
+                $parameters[] = [
                     'name' => $query['key'],
                     'in' => 'query',
                     'schema' => ['type' => 'string'],

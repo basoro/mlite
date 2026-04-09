@@ -5690,6 +5690,7 @@
         },
         {
             "name": "Master",
+            "description": "\n\n#### Modul Master menyediakan akses generic ke berbagai tabel di database mLITE melalui satu set endpoint yang fleksibel.\n\n### Endpoint Generic\nSeluruh data master dapat diakses dengan mengganti `{table}` pada URL berikut:\n- **List Data (GET)**: `{{baseUrl}}/admin/api/master/list/{table}`\n- **Simpan Data (POST)**: `{{baseUrl}}/admin/api/master/save/{table}`\n- **Hapus Data (DELETE)**: `{{baseUrl}}/admin/api/master/delete/{table}`\n\n### Parameter Pencarian (GET)\n- `page`: Nomor halaman (default: 1)\n- `per_page`: Jumlah record per halaman (default: 10)\n- `s`: Kata kunci pencarian (string)\n- `col`: Nama kolom spesifik untuk pencarian (opsional)\n\n### Keamanan & Whitelist\nSistem secara otomatis mengizinkan akses ke tabel-tabel yang tersedia di database. Tabel sensitif seperti `mlite_api_key` telah diblokir untuk alasan keamanan. \n\nContoh `{table}` yang umum digunakan:\n- `dokter`, `petugas`, `poliklinik`, `bangsal`, `kamar`, `databarang` (Data Dasar)\n- `jns_perawatan`, `jns_perawatan_inap`, `jns_perawatan_lab`, `jns_perawatan_radiologi` (Layanan)\n- `bahasa`, `suku_bangsa`, `cacat_fisik`, `pendidikan` (Biodata)\n- `penyakit` (ICD-10), `icd9` (ICD-9)\n- `mlite_users`, `mlite_settings`, `mlite_modules` (Konfigurasi Sistem)",
             "item": [
                 {
                     "name": "List Master Data",

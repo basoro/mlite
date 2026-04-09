@@ -3,41 +3,72 @@
 <script src="{?=url('plugins/mlite_api_key/js/admin/swagger-ui-standalone-preset.js')?}"></script>
 
 <style>
-    .swagger-ui .wrapper {
-      max-width: none; /* Removes any maximum width constraints */
-    }  
-    .swagger-ui .info {
-        display: none !important;
-    }
-    /* Improve Response Body Readability */
-    .swagger-ui .highlight-code span {
-        text-shadow: none !important;
-        color: #fff !important;
-    }
-    .swagger-ui .highlight-code pre, .swagger-ui .highlight-code pre code {
-        text-shadow: none !important;
-        color: #fff !important;
-    }
-    .swagger-ui .microlight, .swagger-ui .microlight span {
-        text-shadow: none !important;
-        color: #fff !important;
-    }
-    .swagger-ui .opblock .opblock-summary-method {
-        text-shadow: none !important;
-        color: #fff !important;
-    }
+  .swagger-ui .wrapper {
+    max-width: none;
+    /* Removes any maximum width constraints */
+  }
+
+  .swagger-ui .info {
+    display: none !important;
+  }
+
+  /* Improve Response Body Readability */
+  .swagger-ui .highlight-code span {
+    text-shadow: none !important;
+    color: #fff !important;
+  }
+
+  .swagger-ui .highlight-code pre,
+  .swagger-ui .highlight-code pre code {
+    text-shadow: none !important;
+    color: #fff !important;
+  }
+
+  .swagger-ui .microlight,
+  .swagger-ui .microlight span {
+    text-shadow: none !important;
+    color: #fff !important;
+  }
+
+  .swagger-ui .opblock .opblock-summary-method {
+    text-shadow: none !important;
+    color: #fff !important;
+  }
 </style>
 <div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Alat Pengujian (Swagger UI)</h3>
-    </div>
-    <div class="panel-body">
-      <div id="swagger-ui"></div>
-    </div>
+  <div class="panel-heading">
+    <h3 class="panel-title">Alat Pengujian (Swagger UI)</h3>
+  </div>
+  <div class="panel-body">
+    <div id="swagger-ui"></div>
+  </div>
 </div>
 
+<!-- Master Help Modal -->
+<div class="modal fade" id="masterHelpModal" tabindex="-1" role="dialog" aria-labelledby="masterHelpModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="masterHelpModalLabel"><i class="fa fa-question-circle"></i> Dokumentasi Master Data
+          API</h4>
+      </div>
+      <div class="modal-body">
+        <div id="masterDescriptionContent" style="white-space: pre-wrap; font-family: sans-serif; line-height: 1.6;">
+          {$masterDescription}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
     const ui = SwaggerUIBundle({
       url: "{?=url([ADMIN, 'mlite_api_key', 'swaggerjson'])?}",
       dom_id: '#swagger-ui',
@@ -46,19 +77,57 @@
         SwaggerUIStandalonePreset
       ],
       layout: "BaseLayout",
+      onComplete: function () {
+        injectMasterHelpIcon();
+      },
       requestInterceptor: (request) => {
-          if (!request.headers['X-Api-Key']) {
-              request.headers['X-Api-Key'] = localStorage.getItem('mlite_api_key') || 'YOUR_API_KEY_HERE';
+        if (!request.headers['X-Api-Key']) {
+          request.headers['X-Api-Key'] = localStorage.getItem('mlite_api_key') || 'YOUR_API_KEY_HERE';
+        }
+        if (!request.headers['Authorization']) {
+          const token = localStorage.getItem('mlite_token');
+          if (token) {
+            request.headers['Authorization'] = 'Bearer ' + token;
           }
-          if (!request.headers['Authorization']) {
-              const token = localStorage.getItem('mlite_token');
-              if (token) {
-                  request.headers['Authorization'] = 'Bearer ' + token;
-              }
-          }
-          return request;
+        }
+        return request;
       }
     });
     window.ui = ui;
+
+    // Convert Markdown to HTML if marked is loaded
+    if (typeof marked !== 'undefined') {
+      const rawDesc = $('#masterDescriptionContent').text();
+      $('#masterDescriptionContent').html(marked.parse(rawDesc)).css('white-space', 'normal');
+    }
+
+    function injectMasterHelpIcon() {
+      $('#swagger-ui').find('.opblock-tag, h3, h4').each(function () {
+        var $el = $(this);
+        // Search for text "Master" in this element
+        var textContent = $el.text();
+
+        if (textContent.indexOf('Master') !== -1) {
+          if (!$el.find('.help-icon-master').length) {
+            // Find the anchor or main container to append to
+            var $anchor = $el.find('a').first();
+            if ($anchor.length) {
+              $anchor.after(' <a href="javascript:void(0)" class="help-icon-master btn btn-xs" title="Bantuan Dokumentasi" style="cursor:pointer; margin-left:15px; text-decoration:none; display:inline-block; vertical-align:middle; font-weight:bold; z-index:9999; position:relative;"><i class="fa fa-question-circle"></i> Bantuan</a>');
+
+              // Re-bind click event
+              $el.find('.help-icon-master').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $('#masterHelpModal').modal('show');
+                return false;
+              });
+            }
+          }
+        }
+      });
+    }
+
+    // Since Swagger UI can re-render when tags are toggled, we use a simple interval check
+    setInterval(injectMasterHelpIcon, 1500);
   });
 </script>
