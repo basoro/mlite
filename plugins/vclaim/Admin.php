@@ -2795,7 +2795,7 @@ class Admin extends AdminModule
       ]
     ];
 
-    header('Content-type: text/html');
+    header('Content-type: application/x-www-form-urlencoded');
     // echo json_encode($request);
     $request = json_encode($request);
 
@@ -2805,12 +2805,11 @@ class Admin extends AdminModule
     $userkey = $this->settings->get('settings.BpjsUserKey');
     $output = BpjsService::post($url, $request, $consid, $secretkey, $userkey, $tStamp);
     $data = json_decode($output, true);
-    // echo $data;
-    print_r(htmlspecialchars($output, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
+    // print_r(htmlspecialchars($output, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
+    $code = $data['metaData']['code'];
+    $message = $data['metaData']['message'];
     
     if ($data && isset($data['metaData'])) {
-        $code = $data['metaData']['code'];
-        $message = $data['metaData']['message'];
         $stringDecrypt = stringDecrypt($key, $data['response']);
         $decompress = '""';
         if (!empty($stringDecrypt)) {
@@ -2832,21 +2831,21 @@ class Admin extends AdminModule
             ],
             "response" => "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."];
     }
-    if ($code == 200) {
+    if ($code == 200 or $code == 201) {
       $request = [
         'request' => [
           't_sep' => [
             'noKartu' => $_POST['noKartu'],
             'tglSep' => $_POST['tglSep'],
             'jnsPelayanan' => $_POST['jnsPelayanan'],
+            'jnsPengajuan' => $_POST['jnsPengajuan'], 
             'keterangan' => $_POST['keterangan'], 
             'user' => $this->core->getUserInfo('username', null, true)
           ]
         ]
       ];
 
-      header('Content-type: text/html');
-      // echo json_encode($request);
+      header('Content-type: application/x-www-form-urlencoded');
       $request = json_encode($request);
 
       $url = $this->settings->get('settings.BpjsApiUrl') . 'Sep/aprovalSEP';
