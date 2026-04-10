@@ -1,0 +1,273 @@
+<div id="mapping" class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Pemetaan LOINC/SNOMED</h3>
+    </div>
+    <div class="panel-body">
+        <div class="margin-bottom-20">
+            <a href="{?=url([ADMIN, 'bpjs_emr', 'importLOINC'])?}" class="btn btn-sm btn-info">Impor Kamus LOINC</a>
+            <a href="{?=url([ADMIN, 'bpjs_emr', 'importSNOMED'])?}" class="btn btn-sm btn-info">Impor Kamus SNOMED-CT</a>
+        </div>
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#lab" aria-controls="lab" role="tab" data-toggle="tab">Laboratorium (LOINC)</a></li>
+            <li role="presentation"><a href="#rad" aria-controls="rad" role="tab" data-toggle="tab">Radiologi (LOINC/SNOMED)</a></li>
+            <li role="presentation"><a href="#proc" aria-controls="proc" role="tab" data-toggle="tab">Tindakan (SNOMED-CT)</a></li>
+        </ul>
+
+        <div class="tab-content" style="margin-top: 20px;">
+            <!-- Tab Lab -->
+            <div role="tabpanel" class="tab-pane active" id="lab">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>SIMRS Master (Pemeriksaan)</th>
+                                <th>Pilih LOINC (Kode - Nama)</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $lab}
+                            <tr id="lab-{$value.id_template}">
+                                <td>{$value.Pemeriksaan}</td>
+                                <td>
+                                    <select class="form-control input-sm loinc-selectator" data-id="{$value.id_template}" data-selectator-use-search="true" style="width:100%">
+                                        {if: !empty($value.loinc_code)}
+                                        <option value="{$value.loinc_code}" selected data-subtitle="{$value.loinc_display}">{$value.loinc_code} - {$value.loinc_display}</option>
+                                        {/if}
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="btn btn-xs btn-primary btn-save-lab" data-id="{$value.id_template}">Simpan</button>
+                                </td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab Rad -->
+            <div role="tabpanel" class="tab-pane" id="rad">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>SIMRS Master (Radiologi)</th>
+                                <th>Pilih Kode (LOINC/SNOMED)</th>
+                                <th>System</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $rad}
+                            <tr id="rad-{$value.kd_jenis_prw}">
+                                <td>{$value.nm_perawatan}</td>
+                                <td>
+                                    <select class="form-control input-sm snomed-selectator" data-id="{$value.kd_jenis_prw}" data-selectator-use-search="true" style="width:100%">
+                                        {if: !empty($value.standard_code)}
+                                        <option value="{$value.standard_code}" selected data-subtitle="{$value.standard_display}">{$value.standard_code} - {$value.standard_display}</option>
+                                        {/if}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control input-sm select-system">
+                                        <option value="http://loinc.org" {if: $value.system == 'http://loinc.org'}selected{/if}>LOINC</option>
+                                        <option value="http://snomed.info/sct" {if: $value.system == 'http://snomed.info/sct'}selected{/if}>SNOMED-CT</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="btn btn-xs btn-primary btn-save-rad" data-id="{$value.kd_jenis_prw}">Simpan</button>
+                                </td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab Proc -->
+            <div role="tabpanel" class="tab-pane" id="proc">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>SIMRS Master (Tindakan)</th>
+                                <th>Pilih SNOMED Code</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $proc}
+                            <tr id="proc-{$value.kd_jenis_prw}">
+                                <td>{$value.nm_perawatan}</td>
+                                <td>
+                                    <select class="form-control input-sm snomed-selectator" data-id="{$value.kd_jenis_prw}" data-selectator-use-search="true" style="width:100%">
+                                        {if: !empty($value.snomed_code)}
+                                        <option value="{$value.snomed_code}" selected data-subtitle="{$value.snomed_display}">{$value.snomed_code} - {$value.snomed_display}</option>
+                                        {/if}
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="btn btn-xs btn-primary btn-save-proc" data-id="{$value.kd_jenis_prw}">Simpan</button>
+                                </td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('.datatable').DataTable();
+
+    // Selectator LOINC
+    $('.loinc-selectator').each(function() {
+        var $select = $(this);
+        if ($select.data('selectator')) $select.selectator('destroy');
+        $select.selectator({
+            useSearch: true,
+            minSearchLength: 3,
+            delay: 300,
+            load: function (search, callback) {
+                if (search.length < 3) { callback(); return; }
+                $.ajax({
+                    url: "{?=url([ADMIN, 'bpjs_emr', 'searchLOINC'])?}",
+                    type: 'POST',
+                    data: { term: search, t: "{?=$_SESSION['token']?}" },
+                    success: function(data) {
+                        var parsed = JSON.parse(data);
+                        var results = $.map(parsed, function(item) {
+                            return { value: item.code, text: item.code + ' - ' + item.display, subtitle: item.display };
+                        });
+                        callback(results);
+                    }
+                });
+            }
+        });
+    });
+
+    // Selectator SNOMED/RAD
+    $('.snomed-selectator').each(function() {
+        var $select = $(this);
+        if ($select.data('selectator')) $select.selectator('destroy');
+        $select.selectator({
+            useSearch: true,
+            minSearchLength: 3,
+            delay: 300,
+            load: function (search, callback) {
+                if (search.length < 3) { callback(); return; }
+                $.ajax({
+                    url: "{?=url([ADMIN, 'bpjs_emr', 'searchSNOMED'])?}",
+                    type: 'POST',
+                    data: { term: search, t: "{?=$_SESSION['token']?}" },
+                    success: function(data) {
+                        var parsed = JSON.parse(data);
+                        var results = $.map(parsed, function(item) {
+                            return { value: item.code, text: item.code + ' - ' + item.display, subtitle: item.display };
+                        });
+                        callback(results);
+                    }
+                });
+            }
+        });
+    });
+
+    // Save Lab
+    $('.btn-save-lab').click(function() {
+        var id = $(this).data('id');
+        var row = $('#lab-'+id);
+        var $sel = row.find('.loinc-selectator');
+        var code = $sel.val();
+        
+        if (!code) {
+            alert('Silakan pilih kode LOINC terlebih dahulu.');
+            return;
+        }
+
+        // Get display from selected option or selectator data
+        var $selectedOption = $sel.find('option:selected');
+        var itemData = $selectedOption.data('item_data');
+        var display = (itemData && itemData.subtitle) ? itemData.subtitle : ($selectedOption.data('subtitle') || '');
+
+        $.post("{?=url([ADMIN, 'bpjs_emr', 'saveMappingLab'])?}", {
+            id_template: id,
+            loinc_code: code,
+            loinc_display: display,
+            t: "{?=$_SESSION['token']?}"
+        }, function(res) {
+            if(res == '1') {
+                alert('Pemetaan Lab disimpan');
+            } else {
+                alert('Gagal menyimpan pemetaan lab');
+            }
+        });
+    });
+
+    // Save Rad
+    $('.btn-save-rad').click(function() {
+        var id = $(this).data('id');
+        var row = $('#rad-'+id);
+        var $sel = row.find('.snomed-selectator');
+        var code = $sel.val();
+        
+        if (!code) {
+            alert('Silakan pilih kode terlebih dahulu.');
+            return;
+        }
+
+        var $selectedOption = $sel.find('option:selected');
+        var itemData = $selectedOption.data('item_data');
+        var display = (itemData && itemData.subtitle) ? itemData.subtitle : ($selectedOption.data('subtitle') || '');
+        var system = row.find('.select-system').val();
+
+        $.post("{?=url([ADMIN, 'bpjs_emr', 'saveMappingRad'])?}", {
+            kd_jenis_prw: id,
+            standard_code: code,
+            standard_display: display,
+            system: system,
+            t: "{?=$_SESSION['token']?}"
+        }, function(res) {
+            if(res == '1') {
+                alert('Pemetaan Radiologi disimpan');
+            } else {
+                alert('Gagal menyimpan pemetaan radiologi');
+            }
+        });
+    });
+
+    // Save Proc
+    $('.btn-save-proc').click(function() {
+        var id = $(this).data('id');
+        var row = $('#proc-'+id);
+        var $sel = row.find('.snomed-selectator');
+        var code = $sel.val();
+        
+        if (!code) {
+            alert('Silakan pilih kode SNOMED terlebih dahulu.');
+            return;
+        }
+
+        var $selectedOption = $sel.find('option:selected');
+        var itemData = $selectedOption.data('item_data');
+        var display = (itemData && itemData.subtitle) ? itemData.subtitle : ($selectedOption.data('subtitle') || '');
+
+        $.post("{?=url([ADMIN, 'bpjs_emr', 'saveMappingProc'])?}", {
+            kd_jenis_prw: id,
+            snomed_code: code,
+            snomed_display: display,
+            t: "{?=$_SESSION['token']?}"
+        }, function(res) {
+            if(res == '1') {
+                alert('Pemetaan Tindakan disimpan');
+            } else {
+                alert('Gagal menyimpan pemetaan tindakan');
+            }
+        });
+    });
+});
+</script>

@@ -1647,6 +1647,52 @@ CREATE TABLE `mlite_bpjs_emr_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
+CREATE TABLE `mlite_bpjs_emr_mapping_lab` (
+  `id_template` varchar(20) NOT NULL,
+  `loinc_code` varchar(20) NOT NULL,
+  `loinc_display` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id_template`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_bpjs_emr_mapping_radiologi` (
+  `kd_jenis_prw` varchar(20) NOT NULL,
+  `standard_code` varchar(20) NOT NULL,
+  `standard_display` varchar(255) DEFAULT NULL,
+  `system` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`kd_jenis_prw`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_bpjs_emr_mapping_prosedur` (
+  `kd_jenis_prw` varchar(20) NOT NULL,
+  `snomed_code` varchar(20) NOT NULL,
+  `snomed_display` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`kd_jenis_prw`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_bpjs_emr_mapping_obat` (
+  `kode_brng` varchar(20) NOT NULL,
+  `code` varchar(20) NOT NULL,
+  PRIMARY KEY (`kode_brng`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_loinc_master` (
+  `code` varchar(20) NOT NULL,
+  `display` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_snomed_master` (
+  `code` varchar(20) NOT NULL,
+  `display` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 CREATE TABLE `mlite_bridging_pcare` (
   `id` int NOT NULL AUTO_INCREMENT,
   `no_rawat` text NOT NULL,

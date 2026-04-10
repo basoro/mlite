@@ -6945,6 +6945,106 @@
                     "response": []
                 }
             ]
+        },
+        {
+            "name": "Mini PACS",
+            "item": [
+                {
+                    "name": "Study List",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/mini_pacs/studylist?page=1&per_page=10&s="
+                        }
+                    }
+                },
+                {
+                    "name": "Study Detail",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/mini_pacs/studydetail/{{study_id}}"
+                        }
+                    }
+                },
+                {
+                    "name": "Series Detail",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/mini_pacs/seriesdetail/{{series_id}}"
+                        }
+                    }
+                },
+                {
+                    "name": "Download DICOM",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/mini_pacs/instancedicom/{{instance_id}}"
+                        }
+                    }
+                },
+                {
+                    "name": "Get Thumbnail",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/mini_pacs/instancejpg/{{instance_id}}"
+                        }
+                    }
+                }
+            ]
         }
     ],
     "variable": [
