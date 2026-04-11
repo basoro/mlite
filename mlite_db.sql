@@ -1952,6 +1952,18 @@ CREATE TABLE `mlite_mini_pacs_instance` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
+CREATE TABLE `mlite_mini_pacs_instance_metadata` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `instance_id` INT NOT NULL,
+  `tag` TEXT NOT NULL,
+  `name` TEXT DEFAULT NULL,
+  `value` TEXT,
+  CONSTRAINT `fk_instance_metadata_instance`
+    FOREIGN KEY (`instance_id`)
+    REFERENCES `mlite_mini_pacs_instance` (`id`)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
 CREATE TABLE `mlite_mini_pacs_series` (
   `id` int NOT NULL AUTO_INCREMENT,
   `study_id` int NOT NULL,
