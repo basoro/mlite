@@ -2621,7 +2621,7 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("174","bpjs_emr","kodepos",""),
 ("175","bpjs_emr","baseurl","https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev/"),
 ("176","dokter_ralan","set_sudah","tidak"),
-("215","esignature","kode_berkasdigital",""),
+("177","esignature","kode_berkasdigital",""),
 ("178","icare","url","https://apijkn.bpjs-kesehatan.go.id/wsihs/api/rs/validate"),
 ("179","icare","consid",""),
 ("180","icare","secretkey",""),
@@ -2659,7 +2659,7 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("212","veronisa","user_key",""),
 ("213","veronisa","secret_key",""),
 ("214","veronisa","bpjs_api_url",""), 
-("215", "login_otp", "tidak");
+("215","settings","login_otp", "tidak");
 
 
 CREATE TABLE `mlite_subrekening` (
