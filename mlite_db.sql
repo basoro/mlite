@@ -1953,16 +1953,17 @@ CREATE TABLE `mlite_mini_pacs_instance` (
 
 
 CREATE TABLE `mlite_mini_pacs_instance_metadata` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `instance_id` INT NOT NULL,
-  `tag` TEXT NOT NULL,
-  `name` TEXT DEFAULT NULL,
-  `value` TEXT,
-  CONSTRAINT `fk_instance_metadata_instance`
-    FOREIGN KEY (`instance_id`)
-    REFERENCES `mlite_mini_pacs_instance` (`id`)
-    ON DELETE CASCADE
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `instance_id` int(11) NOT NULL,
+  `tag` varchar(20) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `value` text,
+  PRIMARY KEY (`id`),
+  KEY `idx_instance_id` (`instance_id`),
+  KEY `idx_tag` (`tag`),
+  CONSTRAINT `fk_pacs_instance_metadata` FOREIGN KEY (`instance_id`) REFERENCES `mlite_mini_pacs_instance` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
 
 CREATE TABLE `mlite_mini_pacs_series` (
   `id` int NOT NULL AUTO_INCREMENT,
