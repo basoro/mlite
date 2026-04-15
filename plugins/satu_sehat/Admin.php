@@ -5296,45 +5296,158 @@ class Admin extends AdminModule
         ->where('no_rawat', $no_rawat)
         ->oneArray();
       if (!is_array($row['permintaan_radiologi']) || !isset($row['permintaan_radiologi']['noorder'])) {
-        echo '<pre>' . json_encode(['error' => 'Data tidak lengkap untuk Radiology request', 'missing' => ['permintaan_radiologi.noorder' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . '</pre>';
+        echo '<pre>' . json_encode(['error' => 'Data tidak lengkap untuk Radiology image', 'missing' => ['permintaan_radiologi.noorder' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . '</pre>';
         exit();
       }
       $noorder = $row['permintaan_radiologi']['noorder'];
 
-      $accessionNumber = $this->getStudiIdByNoOrder($noorder);
-      if (!$accessionNumber) {
-        echo '<pre>' . json_encode(['error' => 'Tidak ada data image studi untuk accession number ' . $noorder, 'missing' => ['permintaan_radiologi.noorder' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . '</pre>';
-        exit();
+      if ($this->settings->get('satu_sehat.imaging') == 'mini_pacs') {
+
+        // Cari study Mini PACS berdasarkan no_rawat
+        $pacs_study = $this->db('mlite_mini_pacs_study')
+          ->where('no_rawat', $no_rawat)
+          ->oneArray();
+
+        if (!$pacs_study) {
+          $response = json_encode([
+            'error' => 'Data study Mini PACS tidak ditemukan',
+            'missing' => ['mlite_mini_pacs_study.no_rawat' => $no_rawat]
+          ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+          $pesan = 'Gagal: Study Mini PACS tidak ditemukan untuk no_rawat ' . $no_rawat;
+        } else {
+          // Panggil SatusehatDicomClient langsung — hindari nested HTTP (504)
+          try {
+            require_once '../plugins/mini_pacs/SatusehatDicomClient.php';
+
+            $config = [
+              'base_url' => 'https://api-satusehat.kemkes.go.id',
+              'client_key' => $this->core->getSettings('satu_sehat', 'clientid'),
+              'secret_key' => $this->core->getSettings('satu_sehat', 'secretkey'),
+              'organization_id' => $this->core->getSettings('satu_sehat', 'organizationid'),
+            ];
+            $client = new \Plugins\Mini_Pacs\SatusehatDicomClient($config);
+
+            // Ambil series & instance pertama
+            $pacs_series = $this->db('mlite_mini_pacs_series')
+              ->where('study_id', $pacs_study['id'])
+              ->oneArray();
+
+            if (!$pacs_series) {
+              throw new \Exception('Series Mini PACS tidak ditemukan untuk study_id ' . $pacs_study['id']);
+            }
+
+            $pacs_instance = $this->db('mlite_mini_pacs_instance')
+              ->where('series_id', $pacs_series['id'])
+              ->oneArray();
+
+            if (!$pacs_instance || !file_exists($pacs_instance['file_path'])) {
+              throw new \Exception('File DICOM tidak ditemukan atau belum dikonversi');
+            }
+
+            // 1. Upload DICOM
+            $upload = $client->uploadDicom($pacs_instance['file_path']);
+            $isDuplicate = (isset($upload['status']) && $upload['status'] === 'duplicate');
+
+            // 2. Data penunjang
+            $mlite_satu_sehat_response = $this->db('mlite_satu_sehat_response')
+              ->where('no_rawat', $no_rawat)
+              ->oneArray();
+
+            $permintaan_radiologi = $this->db('permintaan_radiologi')
+              ->where('no_rawat', $no_rawat)
+              ->oneArray();
+
+            $pasien = $this->db('reg_periksa')
+              ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+              ->where('reg_periksa.no_rawat', $no_rawat)
+              ->oneArray();
+
+            $no_ktp_pasien = $pasien['no_ktp'] ?? '';
+
+            // Ambil patient IHS ID
+            $__patientResp = $this->getPatient($no_ktp_pasien);
+            $__patientJson = json_decode($__patientResp);
+            $id_pasien = '';
+            if (
+              is_object($__patientJson) &&
+              isset($__patientJson->entry[0]->resource->id)
+            ) {
+              $id_pasien = $__patientJson->entry[0]->resource->id;
+            }
+
+            // 3. Kirim ImagingStudy ke FHIR
+            $fhirResult = $client->sendImagingStudy([
+              'patientId' => $id_pasien,
+              'encounterId' => $mlite_satu_sehat_response['id_encounter'] ?? '',
+              'serviceRequestId' => $mlite_satu_sehat_response['id_rad_request'] ?? '',
+              'noRawat' => $no_rawat,
+              'noOrder' => $permintaan_radiologi['noorder'] ?? '',
+              'studyUID' => $upload['study_uid'] ?: ($pacs_study['study_instance_uid'] ?? ''),
+              'seriesUID' => $pacs_series['series_instance_uid'] ?? '',
+              'instanceUID' => $pacs_instance['sop_instance_uid'] ?? '',
+            ]);
+
+            $fhirString = $fhirResult['response'];
+            $fhirArr = json_decode($fhirString, true);
+            $fhirPayloadArr = json_decode($fhirResult['payload'] ?? '{}', true);
+
+            $response = json_encode([
+              'status' => $isDuplicate ? 'duplicate' : 'success',
+              'message' => $isDuplicate ? 'DICOM sudah ada di Satu Sehat (Duplicate).' : 'Berhasil kirim ke Satu Sehat',
+              'dicom_raw' => $upload['raw'] ?? '',
+              'fhir_payload' => $fhirPayloadArr ?: ($fhirResult['payload'] ?? ''),
+              'fhir_raw' => $fhirArr ?: $fhirString,
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+            $pesan = $isDuplicate
+              ? 'DICOM sudah ada di Satu Sehat (Duplicate) — Mini PACS'
+              : 'Sukses mengirim image ke Satu Sehat via Mini PACS!!';
+
+          } catch (\Exception $e) {
+            $response = json_encode(['error' => $e->getMessage()], JSON_PRETTY_PRINT);
+            $pesan = 'Gagal mengirim image ke Satu Sehat via Mini PACS: ' . $e->getMessage();
+          }
+        }
+
+      } else {
+
+        // Alur Orthanc (default)
+        $accessionNumber = $this->getStudiIdByNoOrder($noorder);
+        if (!$accessionNumber) {
+          echo '<pre>' . json_encode(['error' => 'Tidak ada data image studi untuk accession number ' . $noorder, 'missing' => ['permintaan_radiologi.noorder' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . '</pre>';
+          exit();
+        }
+
+        $orthanc_server = $this->settings->get('orthanc.server');
+        // $orthanc_server = 'http://172.18.0.7:8042';
+        $orthanc_user = $this->settings->get('orthanc.username');
+        $orthanc_password = $this->settings->get('orthanc.password');
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+          CURLOPT_URL => $orthanc_server . '/modalities/DCMROUTER/store',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_TIMEOUT => 30,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+
+          // Orthanc REST API butuh BASIC AUTH
+          CURLOPT_USERPWD => $orthanc_user . ':' . $orthanc_password,
+
+          // UUID instance Orthanc (plain text, BUKAN JSON)
+          CURLOPT_POSTFIELDS => $accessionNumber,
+
+          CURLOPT_HTTPHEADER => [
+            'Content-Type: text/plain'
+          ],
+        ]);
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
       }
-
-      $orthanc_server = $this->settings->get('orthanc.server');
-      // $orthanc_server = 'http://172.18.0.7:8042';
-      $orthanc_user = $this->settings->get('orthanc.username');
-      $orthanc_password = $this->settings->get('orthanc.password');
-
-      $curl = curl_init();
-
-      curl_setopt_array($curl, [
-        CURLOPT_URL => $orthanc_server . '/modalities/DCMROUTER/store',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-
-        // Orthanc REST API butuh BASIC AUTH
-        CURLOPT_USERPWD => $orthanc_user . ':' . $orthanc_password,
-
-        // UUID instance Orthanc (plain text, BUKAN JSON)
-        CURLOPT_POSTFIELDS => $accessionNumber,
-
-        CURLOPT_HTTPHEADER => [
-          'Content-Type: text/plain'
-        ],
-      ]);
-
-      $response = curl_exec($curl);
-
-      curl_close($curl);
     }
     if ($render) {
       echo $this->draw('radiology.html', ['pesan' => $pesan, 'response' => $response]);
@@ -6478,6 +6591,10 @@ class Admin extends AdminModule
 
       $row['diagnostic_report_radiologi'] = isset_or($row['permintaan_radiologi']['tgl_hasil'], '');
 
+      $row['imaging_study_radiologi'] = $this->db('mlite_mini_pacs_study')
+        ->where('no_rawat', $row['no_rawat'])
+        ->oneArray()['id'];
+
       $row['permintaan_lab'] = $this->db('permintaan_lab')
         ->where('no_rawat', $row['no_rawat'])
         ->oneArray();
@@ -6589,6 +6706,7 @@ class Admin extends AdminModule
       $row['id_rad_specimen'] = isset_or($mlite_satu_sehat_response['id_rad_specimen'], '');
       $row['id_rad_observation'] = isset_or($mlite_satu_sehat_response['id_rad_observation'], '');
       $row['id_rad_diagnostic'] = isset_or($mlite_satu_sehat_response['id_rad_diagnostic'], '');
+      $row['id_imaging_study'] = isset_or($mlite_satu_sehat_response['id_imaging_study'], '');
       $row['id_lab_pk_request'] = isset_or($mlite_satu_sehat_response['id_lab_pk_request'], '');
       $row['id_service_request_lab_pa'] = isset_or($mlite_satu_sehat_response['id_service_request_lab_pa'], '');
       $row['id_service_request_lab_mb'] = isset_or($mlite_satu_sehat_response['id_service_request_lab_mb'], '');
