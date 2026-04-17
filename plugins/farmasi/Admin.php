@@ -1254,9 +1254,17 @@ class Admin extends AdminModule
 
     private function _generateDocumentNumber($table, $field, $prefix)
     {
+      $allowed = [
+        'mlite_farmasi_pengajuan_obat' => ['id', 'no_pengajuan'],
+        'mlite_farmasi_pemesanan_obat' => ['id', 'no_pemesanan']
+      ];
+      if (!isset($allowed[$table]) || !in_array($field, $allowed[$table], true)) {
+        return $prefix.date('Ymd').'0001';
+      }
+
       $tanggal = date('Ymd');
       $kodeAwal = $prefix.$tanggal;
-      $stmt = $this->db()->pdo()->prepare("SELECT $field FROM $table WHERE $field LIKE ? ORDER BY id DESC LIMIT 1");
+      $stmt = $this->db()->pdo()->prepare("SELECT `$field` FROM `$table` WHERE `$field` LIKE ? ORDER BY `id` DESC LIMIT 1");
       $stmt->execute([$kodeAwal.'%']);
       $last = $stmt->fetch(\PDO::FETCH_ASSOC);
 
