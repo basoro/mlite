@@ -41,7 +41,7 @@ class Admin extends AdminModule
         ['name' => 'Buku Besar', 'url' => url([ADMIN, 'keuangan', 'bukubesar']), 'icon' => 'money', 'desc' => 'Buku Besar'],
         ['name' => 'Cash Flow', 'url' => url([ADMIN, 'keuangan', 'cashflow']), 'icon' => 'money', 'desc' => 'Cash Flow'],
         ['name' => 'Neraca Keuangan', 'url' => url([ADMIN, 'keuangan', 'neraca']), 'icon' => 'money', 'desc' => 'Neraca Keuangan'],
-        ['name' => 'Pengaturan Keuangan', 'url' => url([ADMIN, 'keuangan', 'settings']), 'icon' => 'money', 'desc' => 'Pengaduan Modul Keuangan'],
+        ['name' => 'Pengaturan Keuangan', 'url' => url([ADMIN, 'keuangan', 'settings']), 'icon' => 'money', 'desc' => 'Pengaturan Modul Keuangan'],
       ];
       return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
@@ -229,7 +229,6 @@ class Admin extends AdminModule
     {
       $settings = $this->settings('settings');
       $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-      $curr_year = date('Y');
       $aruskas = [];
 
       // Definisi kategori arus kas
@@ -260,7 +259,7 @@ class Admin extends AdminModule
           FROM mlite_rekening r
           LEFT JOIN mlite_detailjurnal jd ON r.kd_rek = jd.kd_rek
           WHERE r.kd_rek IN ('1101', '1102', '1103', '1104', '1105')
-          AND r.tipe = 'Y'
+          AND r.tipe = 'N'
       ";
       
       $stmt_saldo = $this->db()->pdo()->prepare($query_saldo_awal);
@@ -350,20 +349,6 @@ class Admin extends AdminModule
         $aruskas[] = $row;
       }
       
-      // Hitung saldo akhir kas: saldo_awal + arus_masuk - arus_keluar
-      $arus_kas_bersih = $total_kredit - $total_debet;
-      $saldo_akhir_kas = $saldo_awal_kas + $arus_kas_bersih;
-      
-      // Pastikan saldo akhir kas adalah 25.000.000 sesuai perbaikan
-      $target_saldo_akhir = 25000000;
-      $adjustment_needed = $target_saldo_akhir - $saldo_akhir_kas;
-      
-      // Jika perlu penyesuaian, tambahkan ke saldo awal
-      if($adjustment_needed != 0) {
-        $saldo_awal_kas += $adjustment_needed;
-        $saldo_akhir_kas = $target_saldo_akhir;
-      }
-      
       $akunrekening = $this->db('mlite_rekening')->toArray();
       
       if(isset($_GET['action']) && $_GET['action'] == 'print') {
@@ -434,7 +419,7 @@ class Admin extends AdminModule
           FROM mlite_rekening r
           LEFT JOIN mlite_detailjurnal jd ON r.kd_rek = jd.kd_rek
           LEFT JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal AND j.tgl_jurnal < ?
-          WHERE r.tipe IN ('Y', 'N')
+          WHERE r.tipe IN ('N', 'M')
           GROUP BY r.kd_rek, r.nm_rek, r.balance
       ";
       
@@ -460,7 +445,7 @@ class Admin extends AdminModule
           FROM mlite_rekening r
           LEFT JOIN mlite_detailjurnal jd ON r.kd_rek = jd.kd_rek
           LEFT JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
-          WHERE r.tipe IN ('Y', 'N')
+          WHERE r.tipe IN ('N', 'M')
           AND j.tgl_jurnal >= ? AND j.tgl_jurnal <= ?
           GROUP BY r.kd_rek, r.nm_rek, r.balance
       ";
@@ -473,7 +458,7 @@ class Admin extends AdminModule
       }
 
       // Ambil semua rekening aktif
-      $query_rekening = "SELECT kd_rek, nm_rek, balance FROM mlite_rekening WHERE tipe IN ('Y', 'N') ORDER BY kd_rek";
+      $query_rekening = "SELECT kd_rek, nm_rek, balance FROM mlite_rekening WHERE tipe IN ('N', 'M') ORDER BY kd_rek";
       $stmt_rekening = $this->db()->pdo()->prepare($query_rekening);
       $stmt_rekening->execute();
       $result = $stmt_rekening->fetchAll();
@@ -556,7 +541,7 @@ class Admin extends AdminModule
           FROM mlite_rekening r
           LEFT JOIN mlite_detailjurnal jd ON r.kd_rek = jd.kd_rek
           LEFT JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
-          WHERE r.tipe IN ('Y', 'N')
+          WHERE r.tipe = 'R'
           AND LEFT(r.kd_rek, 1) IN ('4', '5', '6', '7', '8', '9')
           AND j.tgl_jurnal >= ? AND j.tgl_jurnal <= ?
       ";
