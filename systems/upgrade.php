@@ -1765,6 +1765,55 @@ switch ($version) {
               `pulled_at` DATETIME DEFAULT NULL,
               `notified` INTEGER DEFAULT 0
             );");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_farmasi_pengajuan_obat` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+              `no_pengajuan` TEXT NOT NULL,
+              `tanggal_pengajuan` TEXT NOT NULL,
+              `kode_brng` TEXT NOT NULL,
+              `jumlah` INTEGER NOT NULL DEFAULT 0,
+              `status` TEXT NOT NULL DEFAULT 'Menunggu',
+              `catatan` TEXT,
+              `dibuat_oleh` TEXT DEFAULT '-',
+              `disetujui_oleh` TEXT DEFAULT NULL,
+              `disetujui_at` TEXT DEFAULT NULL,
+              `created_at` TEXT NOT NULL
+            );");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_farmasi_pengajuan_no ON `mlite_farmasi_pengajuan_obat` (`no_pengajuan`);");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_farmasi_pemesanan_obat` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+              `no_pemesanan` TEXT NOT NULL,
+              `no_pengajuan` TEXT NOT NULL,
+              `pengajuan_id` INTEGER NOT NULL,
+              `kode_brng` TEXT NOT NULL,
+              `tanggal_pemesanan` TEXT NOT NULL,
+              `supplier_kode` TEXT,
+              `supplier` TEXT NOT NULL,
+              `jumlah_pengajuan` INTEGER NOT NULL DEFAULT 0,
+              `jumlah_pesan` INTEGER NOT NULL DEFAULT 0,
+              `status_pemesanan` TEXT NOT NULL DEFAULT 'Draft',
+              `catatan` TEXT,
+              `dibuat_oleh` TEXT DEFAULT '-',
+              `created_at` TEXT NOT NULL
+            );");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_farmasi_pemesanan_no ON `mlite_farmasi_pemesanan_obat` (`no_pemesanan`);");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_farmasi_pemesanan_pengajuan ON `mlite_farmasi_pemesanan_obat` (`no_pengajuan`);");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_farmasi_pemesanan_pengajuan_id ON `mlite_farmasi_pemesanan_obat` (`pengajuan_id`);");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_farmasi_penerimaan_obat` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+              `pemesanan_id` INTEGER NOT NULL,
+              `tanggal_penerimaan` TEXT NOT NULL,
+              `jumlah_terima` INTEGER NOT NULL DEFAULT 0,
+              `jenis_pembayaran` TEXT NOT NULL DEFAULT 'Cash',
+              `tanggal_jatuh_tempo` TEXT DEFAULT NULL,
+              `nomor_faktur` TEXT DEFAULT NULL,
+              `catatan` TEXT,
+              `dibuat_oleh` TEXT DEFAULT '-',
+              `created_at` TEXT NOT NULL
+            );");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_farmasi_penerimaan_pemesanan ON `mlite_farmasi_penerimaan_obat` (`pemesanan_id`);");
         } else {
             // Kapabilitas MySQL sejak 6.2.0
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_study` (
@@ -1819,62 +1868,7 @@ switch ($version) {
               `notified` tinyint(1) DEFAULT 0,
               PRIMARY KEY (`noorder`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-        }
-        $return = '6.3.0';
-        break;
-    case '6.3.0':
-        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
-            // Kapabilitas SQLite sejak 6.3.0
-            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_farmasi_pengajuan_obat` (
-              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-              `no_pengajuan` TEXT NOT NULL,
-              `tanggal_pengajuan` TEXT NOT NULL,
-              `kode_brng` TEXT NOT NULL,
-              `jumlah` INTEGER NOT NULL DEFAULT 0,
-              `status` TEXT NOT NULL DEFAULT 'Menunggu',
-              `catatan` TEXT,
-              `dibuat_oleh` TEXT DEFAULT '-',
-              `disetujui_oleh` TEXT DEFAULT NULL,
-              `disetujui_at` TEXT DEFAULT NULL,
-              `created_at` TEXT NOT NULL
-            );");
-            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_farmasi_pengajuan_no ON `mlite_farmasi_pengajuan_obat` (`no_pengajuan`);");
 
-            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_farmasi_pemesanan_obat` (
-              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-              `no_pemesanan` TEXT NOT NULL,
-              `no_pengajuan` TEXT NOT NULL,
-              `pengajuan_id` INTEGER NOT NULL,
-              `kode_brng` TEXT NOT NULL,
-              `tanggal_pemesanan` TEXT NOT NULL,
-              `supplier_kode` TEXT,
-              `supplier` TEXT NOT NULL,
-              `jumlah_pengajuan` INTEGER NOT NULL DEFAULT 0,
-              `jumlah_pesan` INTEGER NOT NULL DEFAULT 0,
-              `status_pemesanan` TEXT NOT NULL DEFAULT 'Draft',
-              `catatan` TEXT,
-              `dibuat_oleh` TEXT DEFAULT '-',
-              `created_at` TEXT NOT NULL
-            );");
-            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_farmasi_pemesanan_no ON `mlite_farmasi_pemesanan_obat` (`no_pemesanan`);");
-            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_farmasi_pemesanan_pengajuan ON `mlite_farmasi_pemesanan_obat` (`no_pengajuan`);");
-            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_farmasi_pemesanan_pengajuan_id ON `mlite_farmasi_pemesanan_obat` (`pengajuan_id`);");
-
-            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_farmasi_penerimaan_obat` (
-              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-              `pemesanan_id` INTEGER NOT NULL,
-              `tanggal_penerimaan` TEXT NOT NULL,
-              `jumlah_terima` INTEGER NOT NULL DEFAULT 0,
-              `jenis_pembayaran` TEXT NOT NULL DEFAULT 'Cash',
-              `tanggal_jatuh_tempo` TEXT DEFAULT NULL,
-              `nomor_faktur` TEXT DEFAULT NULL,
-              `catatan` TEXT,
-              `dibuat_oleh` TEXT DEFAULT '-',
-              `created_at` TEXT NOT NULL
-            );");
-            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_farmasi_penerimaan_pemesanan ON `mlite_farmasi_penerimaan_obat` (`pemesanan_id`);");
-        } else {
-            // Kapabilitas MySQL sejak 6.3.0
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_farmasi_pengajuan_obat` (
               `id` int(11) NOT NULL AUTO_INCREMENT,
               `no_pengajuan` varchar(30) NOT NULL,
@@ -1925,12 +1919,12 @@ switch ($version) {
               KEY `idx_pemesanan_id` (`pemesanan_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
         }
-        $return = '6.4.0';
+        $return = '6.3.0';
         break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '6.4.0';
+        $return = '6.3.0';
     }
 
 return $return;
