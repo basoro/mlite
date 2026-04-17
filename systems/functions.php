@@ -320,14 +320,23 @@ function get_headers_list($key = null)
 
 function str_gen($length, $characters = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM")
 {
-    $return = null;
+    $return = '';
+    $length = (int) $length;
+    if ($length <= 0) {
+        return $return;
+    }
 
     if (is_string($characters)) {
         $characters = str_split($characters);
     }
 
+    if (!is_array($characters) || empty($characters)) {
+        return $return;
+    }
+
+    $maxIndex = count($characters) - 1;
     for ($i = 0; $i < $length; $i++) {
-        $return .= $characters[rand(0, count($characters) - 1)];
+        $return .= $characters[random_int(0, $maxIndex)];
     }
 
     return $return;

@@ -236,8 +236,8 @@ abstract class Main
 
             return true;
         } elseif (isset($_COOKIE['mlite_remember'])) {
-            $token = explode(":", $_COOKIE['mlite_remember']);
-            if (count($token) == 2) {
+            $token = explode(':', $_COOKIE['mlite_remember'], 2);
+            if (count($token) === 2 && ctype_digit($token[0]) && $token[1] !== '') {
                 $row = $this->db('mlite_users')->leftJoin('mlite_remember_me', 'mlite_remember_me.user_id = mlite_users.id')->where('mlite_users.id', $token[0])->where('mlite_remember_me.token', $token[1])->select(['mlite_users.*', 'mlite_remember_me.expiry', 'token_id' => 'mlite_remember_me.id'])->oneArray();
 
                 if ($row) {
@@ -267,7 +267,15 @@ abstract class Main
                     }
                 }
             }
-            setcookie('mlite_remember', '', -1, '/');
+            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
+            setcookie('mlite_remember', '', [
+                'expires' => time() - 3600,
+                'path' => '/',
+                'secure' => $isHttps,
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
         }
 
         return false;
