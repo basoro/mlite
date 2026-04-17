@@ -9,7 +9,7 @@
       <div class="panel-heading">
         <form action="" method="get">
           {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
-          <a href="{?=url()?}/{?=ADMIN?}/keuangan/bukubesar?action=print&tgl_awal={?=$_GET['tgl_awal']?}&tgl_akhir={?=$_GET['tgl_akhir']?}&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
+          <a href="{?=url()?}/{?=ADMIN?}/keuangan/bukubesar?action=print&tgl_awal={?=$tgl_awal?}&tgl_akhir={?=$tgl_akhir?}&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
           {else}
           <a href="{?=url()?}/{?=ADMIN?}/keuangan/bukubesar?action=print&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
           {/if}
@@ -20,11 +20,11 @@
             <ul class="dropdown-menu dropdown-menu-right" style="min-width:240px;">
               <li style="padding-left:5px;padding-right:5px;">
                 <label>Tanggal Awal</label>
-                <input type="text" id="tgl_awal" class="form-control tanggal" name="tgl_awal" value="{?=date('Y-m-d')?}" required>
+                <input type="text" id="tgl_awal" class="form-control tanggal" name="tgl_awal" value="{?=$tgl_awal?}" required>
               </li>
               <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
                 <label>Tanggal Akhir</label>
-                <input type="text" id="tgl_akhir" class="form-control tanggal" name="tgl_akhir" value="{?=date('Y-m-d')?}" required>
+                <input type="text" id="tgl_akhir" class="form-control tanggal" name="tgl_akhir" value="{?=$tgl_akhir?}" required>
               </li>
               <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
                 <label>Akun Rekening (opsional)</label>

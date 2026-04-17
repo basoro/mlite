@@ -106,7 +106,7 @@ class Admin extends AdminModule
 
     public function postSaveRekeningTahun()
     {
-      if($_POST['simpan']) {
+      if(isset($_POST['simpan']) && $_POST['simpan']) {
         $this->db('mlite_rekeningtahun')
         ->save([
           'thn' => $_POST['tahun'],
@@ -114,7 +114,7 @@ class Admin extends AdminModule
           'saldo_awal' => $_POST['saldo_awal']
         ]);
         $this->notify('success', 'Rekening tahun telah disimpan');
-      } else if ($_POST['update']) {
+      } else if (isset($_POST['update']) && $_POST['update']) {
         $this->db('mlite_rekeningtahun')
         ->where('thn', $_POST['tahun'])
         ->where('kd_rek', $_POST['kd_rek'])
@@ -122,7 +122,7 @@ class Admin extends AdminModule
           'saldo_awal' => $_POST['saldo_awal']
         ]);
         $this->notify('success', 'Rekening tahun telah diubah');
-      } else if ($_POST['hapus']) {
+      } else if (isset($_POST['hapus']) && $_POST['hapus']) {
         $this->db('mlite_rekeningtahun')
         ->where('thn', $_POST['tahun'])
         ->where('kd_rek', $_POST['kd_rek'])
@@ -238,7 +238,9 @@ class Admin extends AdminModule
         return $this->draw('buku.besar.html', [
           'bukubesar' => $bukubesar,
           'akunrekening' => $akunrekening,
-          'kd_rek_filter' => $kd_rek
+          'kd_rek_filter' => $kd_rek,
+          'tgl_awal' => htmlspecialchars($tgl_awal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+          'tgl_akhir' => htmlspecialchars($tgl_akhir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
         ]);
       }
     }
@@ -638,14 +640,14 @@ class Admin extends AdminModule
 
     public function postSaveAkunKegiatan()
     {
-        if($_POST['simpan']) {
+        if(isset($_POST['simpan']) && $_POST['simpan']) {
           $this->db('mlite_akun_kegiatan')
           ->save([
             'kegiatan' => $_POST['nama_kegiatan'],
             'kd_rek' => $_POST['kd_rek']
           ]);
           $this->notify('success', 'Nama kegiatan keuangan telah disimpan');
-        } else if ($_POST['update']) {
+        } else if (isset($_POST['update']) && $_POST['update']) {
           $this->db('mlite_akun_kegiatan')
           ->where('id', $_POST['id'])
           ->save([
@@ -653,7 +655,7 @@ class Admin extends AdminModule
             'kd_rek' => $_POST['kd_rek']
           ]);
           $this->notify('success', 'Nama kegiatan keuangan telah diubah');
-        } else if ($_POST['hapus']) {
+        } else if (isset($_POST['hapus']) && $_POST['hapus']) {
           $this->db('mlite_akun_kegiatan')
           ->where('id', $_POST['id'])
           ->delete();

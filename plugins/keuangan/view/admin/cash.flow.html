@@ -4,7 +4,7 @@
       <div class="panel-heading">
         <form action="" method="get">
           {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
-          <a href="{?=url()?}/{?=ADMIN?}/keuangan/cashflow?action=print&tgl_awal={?=$_GET['tgl_awal']?}&tgl_akhir={?=$_GET['tgl_akhir']?}&t={?=$_SESSION['token']?}" target="_blank" class="btn btn-danger pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
+          <a href="{?=url()?}/{?=ADMIN?}/keuangan/cashflow?action=print&tgl_awal={?=$tgl_awal?}&tgl_akhir={?=$tgl_akhir?}&t={?=$_SESSION['token']?}" target="_blank" class="btn btn-danger pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
           {else}
           <a href="{?=url()?}/{?=ADMIN?}/keuangan/cashflow?action=print&t={?=$_SESSION['token']?}" target="_blank" class="btn btn-danger pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
           {/if}
