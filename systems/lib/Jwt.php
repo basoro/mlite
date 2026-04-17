@@ -31,12 +31,19 @@ class Jwt
     public static function encode(array $payload, string $secret, int $expiry = 3600): string
     {
         $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
+        if ($header === false) {
+            throw new \RuntimeException('Failed to encode JWT header');
+        }
         
         $payload['iat'] = time();
         $payload['exp'] = time() + $expiry;
+        $payloadJson = json_encode($payload);
+        if ($payloadJson === false) {
+            throw new \RuntimeException('Failed to encode JWT payload');
+        }
         
-        $base64UrlHeader = self::base64UrlEncode((string) $header);
-        $base64UrlPayload = self::base64UrlEncode((string) json_encode($payload));
+        $base64UrlHeader = self::base64UrlEncode($header);
+        $base64UrlPayload = self::base64UrlEncode($payloadJson);
         
         $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $secret, true);
         $base64UrlSignature = self::base64UrlEncode($signature);
