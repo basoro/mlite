@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <title>Surat Pemesanan Obat &amp; BMHP</title>
+  <meta charset="UTF-8">
+  <link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <style>
+    body { margin: 20px; }
+    table, tr, td, th { border-collapse: collapse; }
+    .table td, .table th { border: 1px solid #ddd !important; padding: 8px; }
+    .float{
+      position:fixed;
+      width:120px;
+      height:40px;
+      bottom:40px;
+      right:40px;
+      background-color:#4C9A2A;
+      color:#FFF;
+      text-align:center;
+      box-shadow: 2px 2px 3px #999;
+    }
+  </style>
+  <script>
+    function printContent(el){
+      var restorepage = document.body.innerHTML;
+      var printcontent = document.getElementById(el).innerHTML;
+      document.body.innerHTML = printcontent;
+      window.print();
+      document.body.innerHTML = restorepage; window.close();
+    }
+  </script>
+</head>
+<body>
+  <div id="surat">
+    <center>
+      <h3 style="margin-bottom: 0;">{?=isset_or($settings.nama_instansi)?}</h3>
+      <p style="margin-top: 0;">{?=isset_or($settings.alamat)?}</p>
+      <hr>
+      <h4><b>SURAT PEMESANAN OBAT &amp; BMHP</b></h4>
+    </center>
+
+    <table width="100%" style="margin-bottom: 20px;">
+      <tr>
+        <td width="180">No. Pemesanan</td>
+        <td width="10">:</td>
+        <td>{?=isset_or($pemesanan.no_pemesanan)?}</td>
+      </tr>
+      <tr>
+        <td>Tanggal Pemesanan</td>
+        <td>:</td>
+        <td>{?=isset_or($pemesanan.tanggal_pemesanan)?}</td>
+      </tr>
+      <tr>
+        <td>No. Pengajuan</td>
+        <td>:</td>
+        <td>{?=isset_or($pemesanan.no_pengajuan)?}</td>
+      </tr>
+      <tr>
+        <td>Supplier</td>
+        <td>:</td>
+        <td>{?=isset_or($pemesanan.supplier)?}</td>
+      </tr>
+      <tr>
+        <td>Kode Supplier</td>
+        <td>:</td>
+        <td>{?=isset_or($pemesanan.supplier_kode)?}</td>
+      </tr>
+    </table>
+
+    <table class="table" width="100%">
+      <thead>
+        <tr>
+          <th>Kode Barang</th>
+          <th>Nama Barang</th>
+          <th>Jumlah Pengajuan</th>
+          <th>Jumlah Pesan</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{?=isset_or($pemesanan.kode_brng)?}</td>
+          <td>{?=isset_or($pemesanan.nama_brng)?}</td>
+          <td>{?=isset_or($pemesanan.jumlah_pengajuan)?}</td>
+          <td>{?=isset_or($pemesanan.jumlah_pesan)?}</td>
+          <td>{?=isset_or($pemesanan.status_pemesanan)?}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><b>Catatan:</b> {?=isset_or($pemesanan.catatan)?}</p>
+    <br><br>
+    <table width="100%">
+      <tr style="border:none;">
+        <td width="70%"></td>
+        <td style="text-align:center;">
+          Dibuat Oleh,
+          <br><br><br><br>
+          <b>{?=isset_or($pemesanan.dibuat_oleh)?}</b>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <button onclick="printContent('surat')" type="button" class="btn btn-danger center-block float">
+    <span class="glyphicon glyphicon-print"></span> Cetak
+  </button>
+</body>
+</html>

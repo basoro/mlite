@@ -1,5 +1,8 @@
 <div class="row">
     <div class="col-md-12">
+        {if: !empty($mlite_crud_permissions) && $mlite_crud_permissions.can_read == 'false'}
+        <div class="alert alert-warning">Anda tidak memiliki hak akses baca untuk modul farmasi.</div>
+        {/if}
         <ul class="modules" style="padding:0;margin:0;">
             {loop: $sub_modules}
             <li class="module">
