@@ -7,7 +7,7 @@
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <form action="" method="">
+        <form action="" method="get">
           {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
           <a href="{?=url()?}/{?=ADMIN?}/keuangan/bukubesar?action=print&tgl_awal={?=$_GET['tgl_awal']?}&tgl_akhir={?=$_GET['tgl_akhir']?}&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
           {else}
@@ -15,14 +15,25 @@
           {/if}
           <div class="btn-group pull-right" style="margin-top:-8px;">
             <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode</span>
+              <i class="fa fa-calendar"></i><span class="hidden-xs"> Filter</span>
             </span>
-            <ul class="dropdown-menu dropdown-menu-right">
+            <ul class="dropdown-menu dropdown-menu-right" style="min-width:240px;">
               <li style="padding-left:5px;padding-right:5px;">
+                <label>Tanggal Awal</label>
                 <input type="text" id="tgl_awal" class="form-control tanggal" name="tgl_awal" value="{?=date('Y-m-d')?}" required>
               </li>
               <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                <label>Tanggal Akhir</label>
                 <input type="text" id="tgl_akhir" class="form-control tanggal" name="tgl_akhir" value="{?=date('Y-m-d')?}" required>
+              </li>
+              <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                <label>Akun Rekening (opsional)</label>
+                <select name="kd_rek" class="form-control">
+                  <option value="">-- Semua Akun --</option>
+                  {loop: $akunrekening}
+                    <option value="{?=isset_or($value.kd_rek)?}" {if: $value.kd_rek == $kd_rek_filter}selected{/if}>{?=isset_or($value.kd_rek)?} - {?=isset_or($value.nm_rek)?}</option>
+                  {/loop}
+                </select>
               </li>
               <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
                 <input type="submit" class="btn btn-primary btn-block" value="Submit">
