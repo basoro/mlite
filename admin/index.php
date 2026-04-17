@@ -213,7 +213,13 @@ try {
                 if (isset($_SESSION['mlite_otp_remember_me'])) {
                     $token = str_gen(64, "1234567890qwertyuiop[]asdfghjkl;zxcvbnm,./");
                     $core->db('mlite_remember_me')->save(['user_id' => $userRow['id'], 'token' => $token, 'expiry' => time()+60*60*24*30]);
-                    setcookie('mlite_remember', $userRow['id'].':'.$token, time()+60*60*24*365, '/');
+                    setcookie('mlite_remember', $userRow['id'] . ':' . $token, [
+                        'expires' => time() + 60 * 60 * 24 * 365,
+                        'path' => '/',
+                        'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+                        'httponly' => true,
+                        'samesite' => 'Lax',
+                    ]);
                     unset($_SESSION['mlite_otp_remember_me']);
                 }
 

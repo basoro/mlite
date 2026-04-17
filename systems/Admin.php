@@ -361,7 +361,13 @@ class Admin extends Main
 
                 $this->db('mlite_remember_me')->save(['user_id' => $row['id'], 'token' => $token, 'expiry' => time()+60*60*24*30]);
 
-                setcookie('mlite_remember', $row['id'].':'.$token, time()+60*60*24*365, '/');
+                setcookie('mlite_remember', $row['id'] . ':' . $token, [
+                    'expires' => time() + 60 * 60 * 24 * 365,
+                    'path' => '/',
+                    'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+                    'httponly' => true,
+                    'samesite' => 'Lax',
+                ]);
             }
             return true;
         } else {
@@ -393,9 +399,17 @@ class Admin extends Main
 
         // Delete remember_me token from database and cookie
         if (isset($_COOKIE['mlite_remember'])) {
-            $token = explode(':', $_COOKIE['mlite_remember']);
-            $this->db('mlite_remember_me')->where('user_id', $token[0])->where('token', $token[1])->delete();
-            setcookie('mlite_remember', null, -1, '/');
+            $token = explode(':', $_COOKIE['mlite_remember'], 2);
+            if (count($token) === 2 && ctype_digit($token[0]) && $token[1] !== '') {
+                $this->db('mlite_remember_me')->where('user_id', $token[0])->where('token', $token[1])->delete();
+            }
+            setcookie('mlite_remember', '', [
+                'expires' => time() - 3600,
+                'path' => '/',
+                'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
         }
 
         session_unset();
