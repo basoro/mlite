@@ -1,0 +1,135 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Penerimaan Obat &amp; BMHP</h3>
+      </div>
+      <div class="panel-body">
+        {if: $mlite_crud_permissions.can_create == 'true'}
+        <form action="{?=isset_or($action)?}" method="POST" class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Pemesanan</label>
+              <select name="pemesanan_id" class="form-control" required>
+                <option value="">- Pilih Pemesanan -</option>
+                {loop: $pemesanan}
+                <option value="{?=isset_or($value.id)?}">
+                  {?=isset_or($value.no_pemesanan)?} - {?=isset_or($value.nama_brng)?} - {?=isset_or($value.supplier)?} (Sisa: {?=isset_or($value.sisa)?})
+                </option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Tanggal Terima</label>
+              <input type="text" name="tanggal_penerimaan" class="form-control tanggal" value="{?=date('Y-m-d')?}" required>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Jumlah Terima</label>
+              <input type="number" min="1" name="jumlah_terima" class="form-control" required>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Jenis Pembayaran</label>
+              <select name="jenis_pembayaran" class="form-control" required>
+                <option value="Cash">Cash</option>
+                <option value="Kredit">Kredit</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>&nbsp;</label>
+              <button type="submit" class="btn btn-primary btn-block"><i class="fa fa-save"></i> Simpan</button>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Nomor Faktur</label>
+              <input type="text" name="nomor_faktur" class="form-control" placeholder="Opsional">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Tanggal Jatuh Tempo</label>
+              <input type="text" name="tanggal_jatuh_tempo" class="form-control tanggal" placeholder="Untuk pembayaran kredit">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Catatan</label>
+              <textarea name="catatan" class="form-control" rows="2"></textarea>
+            </div>
+          </div>
+        </form>
+        <hr>
+        {/if}
+
+        <div class="table-responsive no-margin">
+          <table class="table table-striped no-margin dataTables" width="100%">
+            <thead>
+              <tr>
+                <th>No. Pemesanan</th>
+                <th>Tanggal Terima</th>
+                <th>Barang</th>
+                <th>Supplier</th>
+                <th>Jumlah Terima</th>
+                <th>Jenis Bayar</th>
+                <th>No. Faktur</th>
+                <th>Dibuat Oleh</th>
+                <th>Catatan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {if: !empty($penerimaan)}
+              {loop: $penerimaan}
+              <tr>
+                <td>{?=isset_or($value.no_pemesanan)?}</td>
+                <td>{?=isset_or($value.tanggal_penerimaan)?}</td>
+                <td>{?=isset_or($value.kode_brng)?} - {?=isset_or($value.nama_brng)?}</td>
+                <td>{?=isset_or($value.supplier)?}</td>
+                <td>{?=isset_or($value.jumlah_terima)?}</td>
+                <td>{?=isset_or($value.jenis_pembayaran)?}</td>
+                <td>{?=isset_or($value.nomor_faktur)?}</td>
+                <td>{?=isset_or($value.dibuat_oleh)?}</td>
+                <td>{?=isset_or($value.catatan)?}</td>
+              </tr>
+              {/loop}
+              {else}
+              <tr>
+                <td colspan="9" class="text-center">Data penerimaan belum tersedia.</td>
+              </tr>
+              {/if}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('.dataTables').DataTable({
+      "order": [[ 1, "desc" ]],
+      "pageLength": 20,
+      "pagingType": "full",
+      "language": {
+        "paginate": {
+          "first": "&laquo;",
+          "last": "&raquo;",
+          "previous": "‹",
+          "next": "›"
+        },
+        "search": "",
+        "searchPlaceholder": "Search..."
+      },
+      "lengthChange": false,
+      "scrollX": true,
+      dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+    });
+  });
+</script>

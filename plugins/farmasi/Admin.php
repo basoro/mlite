@@ -13,6 +13,9 @@ class Admin extends AdminModule
         return [
             'Kelola' => 'manage',
             'Mutasi Obat & BHP' => 'mutasi',
+            'Pengajuan Obat & BMHP' => 'pengajuanobatbmhp',
+            'Pemesanan Obat & BMHP' => 'pemesananobatbmhp',
+            'Penerimaan Obat & BMHP' => 'penerimaanobatbmhp',
             'Stok Opname' => 'opname',
             'Darurat Stok' => 'daruratstok',
             'Detail Pemberian Obat' => 'detailpemberianobat',
@@ -23,15 +26,25 @@ class Admin extends AdminModule
 
     public function getManage()
     {
+      $mlite_crud_permissions = $this->_crudPermissionsFarmasi();
       $sub_modules = [
         ['name' => 'Mutasi Obat & BHP', 'url' => url([ADMIN, 'farmasi', 'mutasi']), 'icon' => 'medkit', 'desc' => 'Data obat dan barang habis pakai'],
+        ['name' => 'Pengajuan Obat & BMHP', 'url' => url([ADMIN, 'farmasi', 'pengajuanobatbmhp']), 'icon' => 'file-text-o', 'desc' => 'Pengajuan kebutuhan obat dan BMHP'],
+        ['name' => 'Pemesanan Obat & BMHP', 'url' => url([ADMIN, 'farmasi', 'pemesananobatbmhp']), 'icon' => 'shopping-cart', 'desc' => 'Pemesanan obat/BMHP dan cetak surat pemesanan'],
+        ['name' => 'Penerimaan Obat & BMHP', 'url' => url([ADMIN, 'farmasi', 'penerimaanobatbmhp']), 'icon' => 'download', 'desc' => 'Penerimaan obat/BMHP dan penambahan stok gudang'],
         ['name' => 'Stok Opname', 'url' => url([ADMIN, 'farmasi', 'opname']), 'icon' => 'medkit', 'desc' => 'Tambah stok opname'],
         ['name' => 'Darurat Stok', 'url' => url([ADMIN, 'farmasi', 'daruratstok']), 'icon' => 'warning', 'desc' => 'Monitoring stok darurat obat dan BHP'],
         ['name' => 'Detail Pemberian Obat', 'url' => url([ADMIN, 'farmasi', 'detailpemberianobat']), 'icon' => 'medkit', 'desc' => 'Detail pemberian obat pasien'],
         ['name' => 'Riwayat Barang Medis', 'url' => url([ADMIN, 'farmasi', 'riwayatbarangmedis']), 'icon' => 'medkit', 'desc' => 'Riwayat pergerakan barang medis'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'farmasi', 'settings']), 'icon' => 'medkit', 'desc' => 'Pengaturan farmasi dan depo'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
+      if ($mlite_crud_permissions['can_read'] !== 'true') {
+        $sub_modules = [];
+      }
+      return $this->draw('manage.html', [
+        'sub_modules' => htmlspecialchars_array($sub_modules),
+        'mlite_crud_permissions' => htmlspecialchars_array($mlite_crud_permissions)
+      ]);
     }
 
     public function getMutasi($status = '1')
@@ -474,6 +487,355 @@ class Admin extends AdminModule
       exit();
     }
 
+    /* Pengajuan Obat & BMHP Section */
+    public function getPengajuanobatbmhp()
+    {
+      $this->_ensureCrudPermission('can_read');
+      $this->_addHeaderFiles();
+
+      $stmt = $this->db()->pdo()->prepare("SELECT p.*, d.nama_brng
+        FROM mlite_farmasi_pengajuan_obat p
+        LEFT JOIN databarang d ON d.kode_brng = p.kode_brng
+        ORDER BY p.id DESC");
+      $stmt->execute();
+      $pengajuan = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+      foreach ($pengajuan as &$item) {
+        $item['approveURL'] = url([ADMIN, 'farmasi', 'approvepengajuanobatbmhp', $item['id']]);
+      }
+
+      return $this->draw('pengajuan.obat.bmhp.html', [
+        'mlite_crud_permissions' => htmlspecialchars_array($this->_crudPermissionsFarmasi()),
+        'databarang' => htmlspecialchars_array($this->db('databarang')->where('status', '1')->toArray()),
+        'pengajuan' => htmlspecialchars_array($pengajuan),
+        'action' => url([ADMIN, 'farmasi', 'pengajuanobatbmhpsave']),
+        'default_no_pengajuan' => htmlspecialchars($this->_generateDocumentNumber('mlite_farmasi_pengajuan_obat', 'no_pengajuan', 'PGJ'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
+      ]);
+    }
+
+    public function postPengajuanobatbmhpSave()
+    {
+      $this->_ensureCrudPermission('can_create');
+
+      $kode_brng = trim($_POST['kode_brng'] ?? '');
+      $jumlah = (int)($_POST['jumlah'] ?? 0);
+
+      if ($kode_brng === '' || $jumlah <= 0) {
+        $this->notify('failure', 'Kode barang dan jumlah wajib diisi.');
+        redirect(url([ADMIN, 'farmasi', 'pengajuanobatbmhp']));
+      }
+
+      $no_pengajuan = trim($_POST['no_pengajuan'] ?? '');
+      if ($no_pengajuan === '') {
+        $no_pengajuan = $this->_generateDocumentNumber('mlite_farmasi_pengajuan_obat', 'no_pengajuan', 'PGJ');
+      }
+
+      $query = $this->db('mlite_farmasi_pengajuan_obat')->save([
+        'no_pengajuan' => $no_pengajuan,
+        'tanggal_pengajuan' => $_POST['tanggal_pengajuan'] ?? date('Y-m-d'),
+        'kode_brng' => $kode_brng,
+        'jumlah' => $jumlah,
+        'status' => 'Menunggu',
+        'catatan' => $_POST['catatan'] ?? '',
+        'dibuat_oleh' => $this->core->getUserInfo('fullname', null, true) ?? '-',
+        'created_at' => date('Y-m-d H:i:s')
+      ]);
+
+      if ($query) {
+        $this->notify('success', 'Pengajuan berhasil disimpan.');
+      } else {
+        $this->notify('failure', 'Pengajuan gagal disimpan.');
+      }
+      redirect(url([ADMIN, 'farmasi', 'pengajuanobatbmhp']));
+    }
+
+    public function getApprovepengajuanobatbmhp($id)
+    {
+      $this->_ensureCrudPermission('can_update');
+      $pengajuan = $this->db('mlite_farmasi_pengajuan_obat')->where('id', $id)->oneArray();
+      if (!$pengajuan) {
+        $this->notify('failure', 'Data pengajuan tidak ditemukan.');
+        redirect(url([ADMIN, 'farmasi', 'pengajuanobatbmhp']));
+      }
+
+      $query = $this->db('mlite_farmasi_pengajuan_obat')->where('id', $id)->save([
+        'status' => 'Disetujui',
+        'disetujui_oleh' => $this->core->getUserInfo('fullname', null, true) ?? '-',
+        'disetujui_at' => date('Y-m-d H:i:s')
+      ]);
+
+      if ($query) {
+        $this->notify('success', 'Pengajuan berhasil disetujui.');
+      } else {
+        $this->notify('failure', 'Pengajuan gagal disetujui.');
+      }
+      redirect(url([ADMIN, 'farmasi', 'pengajuanobatbmhp']));
+    }
+    /* End Pengajuan Obat & BMHP Section */
+
+    /* Pemesanan Obat & BMHP Section */
+    public function getPemesananobatbmhp()
+    {
+      $this->_ensureCrudPermission('can_read');
+      $this->_addHeaderFiles();
+
+      $stmt = $this->db()->pdo()->prepare("SELECT p.*, d.nama_brng
+        FROM mlite_farmasi_pemesanan_obat p
+        LEFT JOIN databarang d ON d.kode_brng = p.kode_brng
+        ORDER BY p.id DESC");
+      $stmt->execute();
+      $pemesanan = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      foreach ($pemesanan as &$item) {
+        $item['printURL'] = url([ADMIN, 'farmasi', 'cetaksuratpemesananobatbmhp', $item['id']]);
+      }
+
+      $stmtPengajuan = $this->db()->pdo()->prepare("SELECT p.id, p.no_pengajuan, p.kode_brng, p.jumlah, d.nama_brng
+        FROM mlite_farmasi_pengajuan_obat p
+        LEFT JOIN databarang d ON d.kode_brng = p.kode_brng
+        WHERE p.status IN ('Disetujui','Dipesan')
+        ORDER BY p.id DESC");
+      $stmtPengajuan->execute();
+      $pengajuan = $stmtPengajuan->fetchAll(\PDO::FETCH_ASSOC);
+
+      return $this->draw('pemesanan.obat.bmhp.html', [
+        'mlite_crud_permissions' => htmlspecialchars_array($this->_crudPermissionsFarmasi()),
+        'pemesanan' => htmlspecialchars_array($pemesanan),
+        'pengajuan' => htmlspecialchars_array($pengajuan),
+        'action' => url([ADMIN, 'farmasi', 'pemesananobatbmhpsave']),
+        'default_no_pemesanan' => htmlspecialchars($this->_generateDocumentNumber('mlite_farmasi_pemesanan_obat', 'no_pemesanan', 'PSN'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
+      ]);
+    }
+
+    public function postPemesananobatbmhpSave()
+    {
+      $this->_ensureCrudPermission('can_create');
+
+      $pengajuan_id = (int)($_POST['pengajuan_id'] ?? 0);
+      $jumlah_pesan = (int)($_POST['jumlah_pesan'] ?? 0);
+      $supplier = trim($_POST['supplier'] ?? '');
+
+      $pengajuan = $this->db('mlite_farmasi_pengajuan_obat')->where('id', $pengajuan_id)->oneArray();
+      if (!$pengajuan) {
+        $this->notify('failure', 'Data pengajuan tidak ditemukan.');
+        redirect(url([ADMIN, 'farmasi', 'pemesananobatbmhp']));
+      }
+
+      if ($jumlah_pesan <= 0 || $supplier === '') {
+        $this->notify('failure', 'Jumlah pesan dan supplier wajib diisi.');
+        redirect(url([ADMIN, 'farmasi', 'pemesananobatbmhp']));
+      }
+
+      $no_pemesanan = trim($_POST['no_pemesanan'] ?? '');
+      if ($no_pemesanan === '') {
+        $no_pemesanan = $this->_generateDocumentNumber('mlite_farmasi_pemesanan_obat', 'no_pemesanan', 'PSN');
+      }
+
+      $query = $this->db('mlite_farmasi_pemesanan_obat')->save([
+        'no_pemesanan' => $no_pemesanan,
+        'no_pengajuan' => $pengajuan['no_pengajuan'],
+        'pengajuan_id' => $pengajuan_id,
+        'kode_brng' => $pengajuan['kode_brng'],
+        'tanggal_pemesanan' => $_POST['tanggal_pemesanan'] ?? date('Y-m-d'),
+        'supplier_kode' => $_POST['supplier_kode'] ?? '',
+        'supplier' => $supplier,
+        'jumlah_pengajuan' => (int)$pengajuan['jumlah'],
+        'jumlah_pesan' => $jumlah_pesan,
+        'status_pemesanan' => 'Dipesan',
+        'catatan' => $_POST['catatan'] ?? '',
+        'dibuat_oleh' => $this->core->getUserInfo('fullname', null, true) ?? '-',
+        'created_at' => date('Y-m-d H:i:s')
+      ]);
+
+      if ($query) {
+        $this->db('mlite_farmasi_pengajuan_obat')->where('id', $pengajuan_id)->save(['status' => 'Dipesan']);
+        $this->notify('success', 'Pemesanan berhasil disimpan.');
+      } else {
+        $this->notify('failure', 'Pemesanan gagal disimpan.');
+      }
+      redirect(url([ADMIN, 'farmasi', 'pemesananobatbmhp']));
+    }
+
+    public function getCetaksuratpemesananobatbmhp($id)
+    {
+      $this->_ensureCrudPermission('can_read');
+
+      $stmt = $this->db()->pdo()->prepare("SELECT p.*, d.nama_brng
+        FROM mlite_farmasi_pemesanan_obat p
+        LEFT JOIN databarang d ON d.kode_brng = p.kode_brng
+        WHERE p.id = ?
+        LIMIT 1");
+      $stmt->execute([$id]);
+      $pemesanan = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+      if (!$pemesanan) {
+        $this->notify('failure', 'Data pemesanan tidak ditemukan.');
+        redirect(url([ADMIN, 'farmasi', 'pemesananobatbmhp']));
+      }
+
+      echo $this->draw('cetak.surat.pemesanan.obat.bmhp.html', [
+        'settings' => htmlspecialchars_array($this->settings('settings')),
+        'pemesanan' => htmlspecialchars_array($pemesanan)
+      ]);
+      exit();
+    }
+    /* End Pemesanan Obat & BMHP Section */
+
+    /* Penerimaan Obat & BMHP Section */
+    public function getPenerimaanobatbmhp()
+    {
+      $this->_ensureCrudPermission('can_read');
+      $this->_addHeaderFiles();
+
+      $stmtPemesanan = $this->db()->pdo()->prepare("SELECT p.id, p.no_pemesanan, p.kode_brng, d.nama_brng, p.supplier, p.jumlah_pesan,
+        COALESCE(SUM(t.jumlah_terima), 0) AS total_terima,
+        (p.jumlah_pesan - COALESCE(SUM(t.jumlah_terima), 0)) AS sisa
+        FROM mlite_farmasi_pemesanan_obat p
+        LEFT JOIN databarang d ON d.kode_brng = p.kode_brng
+        LEFT JOIN mlite_farmasi_penerimaan_obat t ON t.pemesanan_id = p.id
+        GROUP BY p.id, p.no_pemesanan, p.kode_brng, d.nama_brng, p.supplier, p.jumlah_pesan
+        HAVING sisa > 0
+        ORDER BY p.id DESC");
+      $stmtPemesanan->execute();
+      $pemesanan = $stmtPemesanan->fetchAll(\PDO::FETCH_ASSOC);
+
+      $stmt = $this->db()->pdo()->prepare("SELECT t.*, p.no_pemesanan, p.kode_brng, d.nama_brng, p.supplier
+        FROM mlite_farmasi_penerimaan_obat t
+        LEFT JOIN mlite_farmasi_pemesanan_obat p ON p.id = t.pemesanan_id
+        LEFT JOIN databarang d ON d.kode_brng = p.kode_brng
+        ORDER BY t.id DESC");
+      $stmt->execute();
+      $penerimaan = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+      return $this->draw('penerimaan.obat.bmhp.html', [
+        'mlite_crud_permissions' => htmlspecialchars_array($this->_crudPermissionsFarmasi()),
+        'pemesanan' => htmlspecialchars_array($pemesanan),
+        'penerimaan' => htmlspecialchars_array($penerimaan),
+        'action' => url([ADMIN, 'farmasi', 'penerimaanobatbmhpsave'])
+      ]);
+    }
+
+    public function postPenerimaanobatbmhpSave()
+    {
+      $this->_ensureCrudPermission('can_create');
+
+      $pemesanan_id = (int)($_POST['pemesanan_id'] ?? 0);
+      $jumlah_terima = (int)($_POST['jumlah_terima'] ?? 0);
+      $nomor_faktur = trim($_POST['nomor_faktur'] ?? '');
+
+      if ($pemesanan_id <= 0 || $jumlah_terima <= 0) {
+        $this->notify('failure', 'Pemesanan dan jumlah terima wajib diisi.');
+        redirect(url([ADMIN, 'farmasi', 'penerimaanobatbmhp']));
+      }
+
+      $pemesanan = $this->db('mlite_farmasi_pemesanan_obat')->where('id', $pemesanan_id)->oneArray();
+      if (!$pemesanan) {
+        $this->notify('failure', 'Data pemesanan tidak ditemukan.');
+        redirect(url([ADMIN, 'farmasi', 'penerimaanobatbmhp']));
+      }
+
+      $stmt = $this->db()->pdo()->prepare("SELECT COALESCE(SUM(jumlah_terima), 0) AS total_terima
+        FROM mlite_farmasi_penerimaan_obat
+        WHERE pemesanan_id = ?");
+      $stmt->execute([$pemesanan_id]);
+      $total_terima = (int)($stmt->fetch(\PDO::FETCH_ASSOC)['total_terima'] ?? 0);
+      $sisa = (int)$pemesanan['jumlah_pesan'] - $total_terima;
+
+      if ($jumlah_terima > $sisa) {
+        $this->notify('failure', 'Jumlah terima melebihi sisa pemesanan.');
+        redirect(url([ADMIN, 'farmasi', 'penerimaanobatbmhp']));
+      }
+
+      $this->db()->pdo()->beginTransaction();
+      try {
+        $saved = $this->db('mlite_farmasi_penerimaan_obat')->save([
+          'pemesanan_id' => $pemesanan_id,
+          'tanggal_penerimaan' => $_POST['tanggal_penerimaan'] ?? date('Y-m-d'),
+          'jumlah_terima' => $jumlah_terima,
+          'jenis_pembayaran' => $_POST['jenis_pembayaran'] ?? 'Cash',
+          'tanggal_jatuh_tempo' => $_POST['tanggal_jatuh_tempo'] ?: null,
+          'nomor_faktur' => $nomor_faktur ?: null,
+          'catatan' => $_POST['catatan'] ?? '',
+          'dibuat_oleh' => $this->core->getUserInfo('fullname', null, true) ?? '-',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
+
+        if (!$saved) {
+          throw new \Exception('Gagal menyimpan penerimaan.');
+        }
+
+        $kd_gudang = $this->settings->get('farmasi.gudang');
+        $gudangbarang = $this->db('gudangbarang')
+          ->where('kode_brng', $pemesanan['kode_brng'])
+          ->where('kd_bangsal', $kd_gudang)
+          ->oneArray();
+
+        $stok_awal = (int)($gudangbarang['stok'] ?? 0);
+        $stok_akhir = $stok_awal + $jumlah_terima;
+
+        $this->db('riwayat_barang_medis')->save([
+          'kode_brng' => $pemesanan['kode_brng'],
+          'stok_awal' => $stok_awal,
+          'masuk' => $jumlah_terima,
+          'keluar' => '0',
+          'stok_akhir' => $stok_akhir,
+          'posisi' => 'Penerimaan',
+          'tanggal' => $_POST['tanggal_penerimaan'] ?? date('Y-m-d'),
+          'jam' => date('H:i:s'),
+          'petugas' => $this->core->getUserInfo('fullname', null, true),
+          'kd_bangsal' => $kd_gudang,
+          'status' => 'Simpan',
+          'no_batch' => '0',
+          'no_faktur' => $nomor_faktur ?: '0',
+          'keterangan' => 'Penerimaan dari pemesanan '.$pemesanan['no_pemesanan']
+        ]);
+
+        if ($gudangbarang) {
+          $this->db('gudangbarang')
+            ->where('kode_brng', $pemesanan['kode_brng'])
+            ->where('kd_bangsal', $kd_gudang)
+            ->save([
+              'stok' => $stok_akhir,
+              'no_faktur' => $nomor_faktur ?: '0'
+            ]);
+        } else {
+          $this->db('gudangbarang')->save([
+            'kode_brng' => $pemesanan['kode_brng'],
+            'kd_bangsal' => $kd_gudang,
+            'stok' => $stok_akhir,
+            'no_batch' => '0',
+            'no_faktur' => $nomor_faktur ?: '0'
+          ]);
+        }
+
+        $databarang = $this->db('databarang')->where('kode_brng', $pemesanan['kode_brng'])->oneArray();
+        $this->db('mutasibarang')->save([
+          'kode_brng' => $pemesanan['kode_brng'],
+          'jml' => $jumlah_terima,
+          'harga' => $databarang['dasar'] ?? 0,
+          'kd_bangsaldari' => $kd_gudang,
+          'kd_bangsalke' => $kd_gudang,
+          'tanggal' => date('Y-m-d H:i:s'),
+          'keterangan' => 'Penerimaan dari pemesanan '.$pemesanan['no_pemesanan'],
+          'no_batch' => '0',
+          'no_faktur' => $nomor_faktur ?: '0'
+        ]);
+
+        $total_akhir = $total_terima + $jumlah_terima;
+        $status_pemesanan = ($total_akhir >= (int)$pemesanan['jumlah_pesan']) ? 'Diterima' : 'Parsial';
+        $this->db('mlite_farmasi_pemesanan_obat')->where('id', $pemesanan_id)->save([
+          'status_pemesanan' => $status_pemesanan
+        ]);
+
+        $this->db()->pdo()->commit();
+        $this->notify('success', 'Penerimaan berhasil disimpan dan stok diperbarui.');
+      } catch (\Exception $e) {
+        $this->db()->pdo()->rollBack();
+        $this->notify('failure', 'Penerimaan gagal disimpan: '.$e->getMessage());
+      }
+      redirect(url([ADMIN, 'farmasi', 'penerimaanobatbmhp']));
+    }
+    /* End Penerimaan Obat & BMHP Section */
+
     /* Settings Farmasi Section */
     public function getSettings()
     {
@@ -874,6 +1236,35 @@ class Admin extends AdminModule
         // MODULE SCRIPTS
         $this->core->addCSS(url([ADMIN, 'farmasi', 'css']));
         $this->core->addJS(url([ADMIN, 'farmasi', 'javascript']), 'footer');
+    }
+
+    private function _crudPermissionsFarmasi()
+    {
+      return $this->core->loadCrudPermissions('farmasi');
+    }
+
+    private function _ensureCrudPermission($action)
+    {
+      $mlite_crud_permissions = $this->_crudPermissionsFarmasi();
+      if (!isset($mlite_crud_permissions[$action]) || $mlite_crud_permissions[$action] !== 'true') {
+        $this->notify('failure', 'Anda tidak memiliki hak akses untuk aksi ini.');
+        redirect(url([ADMIN, 'farmasi', 'manage']));
+      }
+    }
+
+    private function _generateDocumentNumber($table, $field, $prefix)
+    {
+      $tanggal = date('Ymd');
+      $kodeAwal = $prefix.$tanggal;
+      $stmt = $this->db()->pdo()->prepare("SELECT $field FROM $table WHERE $field LIKE ? ORDER BY id DESC LIMIT 1");
+      $stmt->execute([$kodeAwal.'%']);
+      $last = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+      $nomor = 1;
+      if (!empty($last[$field]) && preg_match('/(\d{4})$/', $last[$field], $matches)) {
+        $nomor = (int)$matches[1] + 1;
+      }
+      return $kodeAwal.sprintf('%04d', $nomor);
     }
 
 }
