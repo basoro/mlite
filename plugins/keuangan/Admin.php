@@ -238,7 +238,7 @@ class Admin extends AdminModule
         return $this->draw('buku.besar.html', [
           'bukubesar' => $bukubesar,
           'akunrekening' => $akunrekening,
-          'kd_rek_filter' => htmlspecialchars($kd_rek, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
+          'kd_rek_filter' => $kd_rek
         ]);
       }
     }
