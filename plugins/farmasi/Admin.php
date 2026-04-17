@@ -808,10 +808,13 @@ class Admin extends AdminModule
         }
 
         $databarang = $this->db('databarang')->where('kode_brng', $pemesanan['kode_brng'])->oneArray();
+        if (!$databarang || !isset($databarang['dasar'])) {
+          throw new \Exception('Harga dasar barang tidak ditemukan untuk mutasi penerimaan.');
+        }
         $this->db('mutasibarang')->save([
           'kode_brng' => $pemesanan['kode_brng'],
           'jml' => $jumlah_terima,
-          'harga' => $databarang['dasar'] ?? 0,
+          'harga' => $databarang['dasar'],
           'kd_bangsaldari' => $kd_gudang,
           'kd_bangsalke' => $kd_gudang,
           'tanggal' => date('Y-m-d H:i:s'),
@@ -1254,17 +1257,17 @@ class Admin extends AdminModule
 
     private function _generateDocumentNumber($table, $field, $prefix)
     {
-      $allowed = [
-        'mlite_farmasi_pengajuan_obat' => ['id', 'no_pengajuan'],
-        'mlite_farmasi_pemesanan_obat' => ['id', 'no_pemesanan']
-      ];
-      if (!isset($allowed[$table]) || !in_array($field, $allowed[$table], true)) {
-        return $prefix.date('Ymd').'0001';
-      }
-
       $tanggal = date('Ymd');
       $kodeAwal = $prefix.$tanggal;
-      $stmt = $this->db()->pdo()->prepare("SELECT `$field` FROM `$table` WHERE `$field` LIKE ? ORDER BY `id` DESC LIMIT 1");
+
+      if ($table === 'mlite_farmasi_pengajuan_obat' && $field === 'no_pengajuan') {
+        $stmt = $this->db()->pdo()->prepare("SELECT `no_pengajuan` FROM `mlite_farmasi_pengajuan_obat` WHERE `no_pengajuan` LIKE ? ORDER BY `id` DESC LIMIT 1");
+      } elseif ($table === 'mlite_farmasi_pemesanan_obat' && $field === 'no_pemesanan') {
+        $stmt = $this->db()->pdo()->prepare("SELECT `no_pemesanan` FROM `mlite_farmasi_pemesanan_obat` WHERE `no_pemesanan` LIKE ? ORDER BY `id` DESC LIMIT 1");
+      } else {
+        return $kodeAwal.'0001';
+      }
+
       $stmt->execute([$kodeAwal.'%']);
       $last = $stmt->fetch(\PDO::FETCH_ASSOC);
 
