@@ -267,10 +267,12 @@ abstract class Main
                     }
                 }
             }
+            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
             setcookie('mlite_remember', '', [
                 'expires' => time() - 3600,
                 'path' => '/',
-                'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+                'secure' => $isHttps,
                 'httponly' => true,
                 'samesite' => 'Lax',
             ]);

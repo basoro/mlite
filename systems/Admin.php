@@ -358,13 +358,15 @@ class Admin extends Main
 
             if ($remember_me) {
                 $token = str_gen(64, "1234567890qwertyuiop[]asdfghjkl;zxcvbnm,./");
+                $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                    || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
 
                 $this->db('mlite_remember_me')->save(['user_id' => $row['id'], 'token' => $token, 'expiry' => time()+60*60*24*30]);
 
                 setcookie('mlite_remember', $row['id'] . ':' . $token, [
                     'expires' => time() + 60 * 60 * 24 * 365,
                     'path' => '/',
-                    'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+                    'secure' => $isHttps,
                     'httponly' => true,
                     'samesite' => 'Lax',
                 ]);
@@ -399,6 +401,8 @@ class Admin extends Main
 
         // Delete remember_me token from database and cookie
         if (isset($_COOKIE['mlite_remember'])) {
+            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
             $token = explode(':', $_COOKIE['mlite_remember'], 2);
             if (count($token) === 2 && ctype_digit($token[0]) && $token[1] !== '') {
                 $this->db('mlite_remember_me')->where('user_id', $token[0])->where('token', $token[1])->delete();
@@ -406,7 +410,7 @@ class Admin extends Main
             setcookie('mlite_remember', '', [
                 'expires' => time() - 3600,
                 'path' => '/',
-                'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+                'secure' => $isHttps,
                 'httponly' => true,
                 'samesite' => 'Lax',
             ]);

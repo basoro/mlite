@@ -11,6 +11,10 @@ class Jwt
 
     private static function base64UrlDecode(string $input): ?string
     {
+        if (!preg_match('/^[A-Za-z0-9\-_]*$/', $input)) {
+            return null;
+        }
+
         $remainder = strlen($input) % 4;
         if ($remainder !== 0) {
             $input .= str_repeat('=', 4 - $remainder);
