@@ -1447,7 +1447,7 @@ class Site extends SiteModule
       ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
       ->join('permintaan_pemeriksaan_lab', 'permintaan_pemeriksaan_lab.noorder=permintaan_lab.noorder')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
-      ->where('permintaan_lab.tgl_hasil', '0000:00:00')
+      ->where('permintaan_lab.tgl_hasil', '0000-00-00')
       ->where('permintaan_lab.tgl_permintaan', '>=', $date_start)
       ->where('permintaan_lab.tgl_permintaan', '<=', $date)
       ->group('permintaan_lab.noorder')
@@ -2456,7 +2456,7 @@ class Site extends SiteModule
           foreach ($rows as $row) {      
            
             echo '<li style="padding:10px;">'
-               .  '<button type="button" class="btn btn-lg btn-warning">' . $row['no_reg'] . '</button>' . ' Nama: ' . $row['nm_pasien'] . ', No. RM: ' . $row['no_rkm_medis'] . '  <span class="pull-right">Status: <b class="label ' . $row['status_class'] . '">' . $row['status_antrian'] . '</b></span><br>'
+               .  '<button type="button" class="btn btn-lg btn-warning">' . $row['no_reg'] . '</button>' . ' Nama: ' . $row['nm_pasien'] . ', No. RM: ' . $row['no_rkm_medis'] . ' <span class="pull-right">Status: <b class="label ' . $row['status_class'] . '">' . $row['status_antrian'] . '</b></span><br>'
                . '</li>'; 
           }
         break;
@@ -2464,7 +2464,7 @@ class Site extends SiteModule
           $rows = $this->_resultDisplayAntrianRadiologi();
           foreach ($rows as $row) {
             echo '<li style="padding:10px;">'
-               .  '<button type="button" class="btn btn-lg btn-warning">' . $row['no_reg'] . '</button>' . ' Nama: ' . $row['nm_pasien'] . ', No. RM: ' . $row['no_rkm_medis'] . '  <span class="pull-right">Status: <b class="label ' . $row['status_class'] . '">' . $row['status_antrian'] . '</b></span><br>'
+               .  '<button type="button" class="btn btn-lg btn-warning">' . $row['no_reg'] . '</button>' . ' Nama: ' . $row['nm_pasien'] . ', No. RM: ' . $row['no_rkm_medis'] . ' <span class="pull-right">Status: <b class="label ' . $row['status_class'] . '">' . $row['status_antrian'] . '</b></span><br>'
                . '</li>';
           }
         break;
