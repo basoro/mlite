@@ -502,8 +502,8 @@
     })
     .done(function(response) {
       if (response && response.status === 'success' && response.data) {
-        $('input:text[name=snomed_concept_id]').val((response.data.snomed_concept_id || '').trim());
-        $('input:text[name=snomed_term]').val((response.data.snomed_term || '').trim());
+        $('input:text[name=snomed_concept_id]').val(String(response.data.snomed_concept_id ?? '').trim());
+        $('input:text[name=snomed_term]').val(String(response.data.snomed_term ?? '').trim());
       } else {
         alert((response && response.message) ? response.message : 'Gagal generate SNOMED-CT.');
       }

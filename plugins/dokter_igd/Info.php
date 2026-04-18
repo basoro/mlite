@@ -20,7 +20,7 @@ return [
         INDEX (`no_rawat`),
         INDEX (`kd_penyakit`),
         INDEX (`snomed_concept_id`)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC");
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC");
     },
     'uninstall'     =>  function() use($core)
     {
