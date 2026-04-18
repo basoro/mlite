@@ -204,7 +204,6 @@ $(document).ready(function() {
             alert('Nama tindakan tidak ditemukan.');
             return;
         }
-        namaTindakan = namaTindakan.trim();
 
         button.html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
         $.ajax({
@@ -222,21 +221,21 @@ $(document).ready(function() {
                 row.find('.snomed-code').val((data.data.snomed_code || '').toString().trim());
                 row.find('.snomed-display').val((data.data.snomed_display || '').toString().trim());
                 alert('Kode SNOMED berhasil di-generate.');
-                return;
+            } else {
+                var doneMessage = (data && data.message) ? data.message : 'Kode SNOMED tidak ditemukan';
+                alert(doneMessage);
             }
-            var doneMessage = (data && data.message) ? data.message : 'Kode SNOMED tidak ditemukan';
-            alert(doneMessage);
         })
         .fail(function(xhr, status) {
             if (status === 'timeout') {
                 alert('Permintaan generate SNOMED timeout.');
-                return;
+            } else {
+                var message = 'Gagal generate SNOMED.';
+                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert(message);
             }
-            var message = 'Gagal generate SNOMED.';
-            if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                message = xhr.responseJSON.message;
-            }
-            alert(message);
         })
         .always(function() {
             button.html(originalText).prop('disabled', false);
