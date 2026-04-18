@@ -215,13 +215,20 @@
      AMBIL LIST ANTRIAN SAJA (BENAR)
   ===================================================== */
   function loadLaboratoriumList(callback = null){
-    $.get('{?=url()?}/anjungan/ajax?show=laboratorium-display', function(html){
-        $("#laboratoriumList").html(html);
-        resetAnimation();
+    $.ajax({
+      url: '{?=url()?}/anjungan/ajax?show=laboratorium-display',
+      success: function(html){
+          $("#laboratoriumList").html(html);
+          resetAnimation();
 
-        if(callback){
-            callback(html);
-        }
+          if(callback){
+              callback(html);
+          }
+      },
+      error: function(xhr) {
+          console.log("Gagal memuat antrian laboratorium.");
+          console.log(xhr.status);
+      }
     });
   }  
   /* =====================================================

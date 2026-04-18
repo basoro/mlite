@@ -141,9 +141,16 @@
   }
 
   function loadApotek() {
-    $.get('{?=url()?}/anjungan/ajax?show=apotek-display', function(html){
-      $("#list_apotek").html(html || '<li style="padding:10px;"><center><b style="color:white;">Belum ada data antrian!</b></center></li>');
-      resetAnimation();
+    $.ajax({
+      url: '{?=url()?}/anjungan/ajax?show=apotek-display',
+      success: function(html){
+        $("#list_apotek").html(html || '<li style="padding:10px;"><center><b style="color:white;">Belum ada data antrian!</b></center></li>');
+        resetAnimation();
+      },
+      error: function(xhr) {
+        console.log('Gagal memuat antrian apotek.');
+        console.log(xhr.status);
+      }
     });
   }
 </script>

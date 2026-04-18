@@ -115,9 +115,16 @@
   }
 
   function loadRadiologiList(){
-    $.get('{?=url()?}/anjungan/ajax?show=radiologi-display', function(html){
-      $("#radiologiList").html(html || '<li style="padding:10px;"><center><b>Belum ada data antrian!</b></center></li>');
-      resetAnimation(".scroll-container ul");
+    $.ajax({
+      url: '{?=url()?}/anjungan/ajax?show=radiologi-display',
+      success: function(html){
+        $("#radiologiList").html(html || '<li style="padding:10px;"><center><b>Belum ada data antrian!</b></center></li>');
+        resetAnimation(".scroll-container ul");
+      },
+      error: function(xhr) {
+        console.log('Gagal memuat antrian radiologi.');
+        console.log(xhr.status);
+      }
     });
   }
 

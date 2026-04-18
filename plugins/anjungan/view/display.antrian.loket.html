@@ -271,6 +271,10 @@
         $('.get_CS').html(data.cs && data.cs.counter ? data.cs.counter : '');
         $('.antrian_Apotek').html(data.apotek && data.apotek.antrian ? data.apotek.antrian : '');
         $('.get_Apotek').html(data.apotek && data.apotek.counter ? data.apotek.counter : '');
+      },
+      error: function(xhr) {
+        console.log('Gagal memuat tampilan loket.');
+        console.log(xhr.status);
       }
     });
   }
