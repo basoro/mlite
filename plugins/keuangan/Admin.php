@@ -717,6 +717,41 @@ class Admin extends AdminModule
             ['no_jurnal' => 'JU-2026-006', 'kd_rek' => '5101', 'arus_kas' => 0, 'debet' => 10000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-006', 'kd_rek' => '5102', 'arus_kas' => 0, 'debet' => 8000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-006', 'kd_rek' => '5103', 'arus_kas' => 0, 'debet' => 5000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-006', 'kd_rek' => '5201', 'arus_kas' => 0, 'debet' => 22000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-006', 'kd_rek' => '5301', 'arus_kas' => 0, 'debet' => 2500000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-006', 'kd_rek' => '5302', 'arus_kas' => 0, 'debet' => 600000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-006', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 48100000]
         ];
 
+        $defaultRekening = [
+            '1101' => ['kd_rek' => '1101', 'nm_rek' => 'Kas Umum', 'tipe' => 'N', 'balance' => 'D', 'level' => '1'],
+            '1102' => ['kd_rek' => '1102', 'nm_rek' => 'Kas Kasir Rawat Jalan', 'tipe' => 'N', 'balance' => 'D', 'level' => '1'],
+            '1103' => ['kd_rek' => '1103', 'nm_rek' => 'Kas Kasir Rawat Inap', 'tipe' => 'N', 'balance' => 'D', 'level' => '1'],
+            '1104' => ['kd_rek' => '1104', 'nm_rek' => 'Kas Farmasi', 'tipe' => 'N', 'balance' => 'D', 'level' => '1'],
+            '1105' => ['kd_rek' => '1105', 'nm_rek' => 'Kas Kecil', 'tipe' => 'N', 'balance' => 'D', 'level' => '1'],
+            '1201' => ['kd_rek' => '1201', 'nm_rek' => 'Bank BRI', 'tipe' => 'N', 'balance' => 'D', 'level' => '1'],
+            '1301' => ['kd_rek' => '1301', 'nm_rek' => 'Piutang BPJS', 'tipe' => 'N', 'balance' => 'D', 'level' => '1'],
+            '1302' => ['kd_rek' => '1302', 'nm_rek' => 'Piutang Pasien Umum', 'tipe' => 'N', 'balance' => 'D', 'level' => '1'],
+            '1401' => ['kd_rek' => '1401', 'nm_rek' => 'Persediaan Obat & BHP', 'tipe' => 'N', 'balance' => 'D', 'level' => '1'],
+            '1601' => ['kd_rek' => '1601', 'nm_rek' => 'Gedung & Bangunan', 'tipe' => 'N', 'balance' => 'D', 'level' => '1'],
+            '1701' => ['kd_rek' => '1701', 'nm_rek' => 'Peralatan Medis', 'tipe' => 'N', 'balance' => 'D', 'level' => '1'],
+            '1801' => ['kd_rek' => '1801', 'nm_rek' => 'Kendaraan', 'tipe' => 'N', 'balance' => 'D', 'level' => '1'],
+            '1901' => ['kd_rek' => '1901', 'nm_rek' => 'Inventaris Kantor', 'tipe' => 'N', 'balance' => 'D', 'level' => '1'],
+            '2101' => ['kd_rek' => '2101', 'nm_rek' => 'Hutang Usaha', 'tipe' => 'N', 'balance' => 'K', 'level' => '1'],
+            '2102' => ['kd_rek' => '2102', 'nm_rek' => 'Hutang Gaji', 'tipe' => 'N', 'balance' => 'K', 'level' => '1'],
+            '2201' => ['kd_rek' => '2201', 'nm_rek' => 'Hutang Bank', 'tipe' => 'N', 'balance' => 'K', 'level' => '1'],
+            '3101' => ['kd_rek' => '3101', 'nm_rek' => 'Modal Disetor', 'tipe' => 'M', 'balance' => 'K', 'level' => '1'],
+            '3201' => ['kd_rek' => '3201', 'nm_rek' => 'Laba Ditahan', 'tipe' => 'M', 'balance' => 'K', 'level' => '1'],
+            '4101' => ['kd_rek' => '4101', 'nm_rek' => 'Pendapatan Rawat Jalan', 'tipe' => 'R', 'balance' => 'K', 'level' => '1'],
+            '4102' => ['kd_rek' => '4102', 'nm_rek' => 'Pendapatan Rawat Inap', 'tipe' => 'R', 'balance' => 'K', 'level' => '1'],
+            '4103' => ['kd_rek' => '4103', 'nm_rek' => 'Pendapatan Obat & BHP', 'tipe' => 'R', 'balance' => 'K', 'level' => '1'],
+            '4104' => ['kd_rek' => '4104', 'nm_rek' => 'Pendapatan Laboratorium', 'tipe' => 'R', 'balance' => 'K', 'level' => '1'],
+            '4105' => ['kd_rek' => '4105', 'nm_rek' => 'Pendapatan Radiologi', 'tipe' => 'R', 'balance' => 'K', 'level' => '1'],
+            '4201' => ['kd_rek' => '4201', 'nm_rek' => 'Pendapatan Lain-lain', 'tipe' => 'R', 'balance' => 'K', 'level' => '1'],
+            '5101' => ['kd_rek' => '5101', 'nm_rek' => 'Beban Gaji Dokter', 'tipe' => 'R', 'balance' => 'D', 'level' => '1'],
+            '5102' => ['kd_rek' => '5102', 'nm_rek' => 'Beban Gaji Paramedis', 'tipe' => 'R', 'balance' => 'D', 'level' => '1'],
+            '5103' => ['kd_rek' => '5103', 'nm_rek' => 'Beban Gaji Karyawan', 'tipe' => 'R', 'balance' => 'D', 'level' => '1'],
+            '5201' => ['kd_rek' => '5201', 'nm_rek' => 'Beban Obat & BHP', 'tipe' => 'R', 'balance' => 'D', 'level' => '1'],
+            '5301' => ['kd_rek' => '5301', 'nm_rek' => 'Beban Listrik', 'tipe' => 'R', 'balance' => 'D', 'level' => '1'],
+            '5302' => ['kd_rek' => '5302', 'nm_rek' => 'Beban Air & Kebersihan', 'tipe' => 'R', 'balance' => 'D', 'level' => '1'],
+            '5401' => ['kd_rek' => '5401', 'nm_rek' => 'Beban Penyusutan', 'tipe' => 'R', 'balance' => 'D', 'level' => '1'],
+            '5501' => ['kd_rek' => '5501', 'nm_rek' => 'Beban Administrasi Umum', 'tipe' => 'R', 'balance' => 'D', 'level' => '1']
+        ];
+
         $requiredRekening = [];
         foreach ($rekeningtahun as $item) {
             $requiredRekening[$item['kd_rek']] = true;
@@ -726,10 +761,15 @@ class Admin extends AdminModule
         }
 
         $missingRekening = [];
+        $rekeningToInsert = [];
         foreach (array_keys($requiredRekening) as $kd_rek) {
             $rekening = $this->db('mlite_rekening')->where('kd_rek', $kd_rek)->oneArray();
             if (empty($rekening)) {
-                $missingRekening[] = $kd_rek;
+                if (isset($defaultRekening[$kd_rek])) {
+                    $rekeningToInsert[$kd_rek] = $defaultRekening[$kd_rek];
+                } else {
+                    $missingRekening[] = $kd_rek;
+                }
             }
         }
 
@@ -742,6 +782,13 @@ class Admin extends AdminModule
         $this->db()->pdo()->beginTransaction();
 
         try {
+            foreach ($rekeningToInsert as $item) {
+                $exists = $this->db('mlite_rekening')->where('kd_rek', $item['kd_rek'])->oneArray();
+                if (empty($exists)) {
+                    $this->db('mlite_rekening')->save($item);
+                }
+            }
+
             $insertedRekeningTahun = 0;
             foreach ($rekeningtahun as $item) {
                 $exists = $this->db('mlite_rekeningtahun')->where('thn', $item['thn'])->where('kd_rek', $item['kd_rek'])->oneArray();
