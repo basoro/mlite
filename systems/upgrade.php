@@ -1826,6 +1826,15 @@ switch ($version) {
               `snomed_display` TEXT DEFAULT NULL,
               PRIMARY KEY (`kode_paket`)
             );");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mapping_snomed_icd` (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                no_rawat TEXT NOT NULL,
+                kd_penyakit TEXT NOT NULL,
+                snomed_concept_id INTEGER NOT NULL,
+                snomed_term TEXT NOT NULL,
+                status_penyakit TEXT DEFAULT 'Baru' CHECK(status_penyakit IN ('Baru','Lama')),
+                UNIQUE (no_rawat, kd_penyakit, snomed_concept_id)
+            );");
         } else {
             // Kapabilitas MySQL sejak 6.2.0
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_study` (
@@ -1942,6 +1951,21 @@ switch ($version) {
               `snomed_display` varchar(255) DEFAULT NULL,
               PRIMARY KEY (`kode_paket`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mapping_snomed_icd` (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `no_rawat` varchar(20) NOT NULL,
+              `kd_penyakit` varchar(10) NOT NULL,
+              `snomed_concept_id` bigint NOT NULL,
+              `snomed_term` varchar(255) NOT NULL,
+              `status_penyakit` enum('Baru','Lama') DEFAULT 'Baru',
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `uniq_mapping` (`no_rawat`,`kd_penyakit`,`snomed_concept_id`),
+              KEY `no_rawat` (`no_rawat`),
+              KEY `kd_penyakit` (`kd_penyakit`),
+              KEY `snomed_concept_id` (`snomed_concept_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+
+
         }
         $return = '6.3.0';
         break;
