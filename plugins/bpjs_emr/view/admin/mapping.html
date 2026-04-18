@@ -97,7 +97,14 @@
                             <tr id="proc-{$value.kd_jenis_prw}">
                                 <td>{$value.nm_perawatan}</td>
                                 <td>
-                                    <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm btn-ai-snomed" title="Fetch SNOMED dari AI">
+                                                <i class="fa fa-robot"></i> AI
+                                            </button>
+                                        </span>
+                                    </div>
                                     <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
                                 </td>
                                 <td>
@@ -125,7 +132,14 @@
                             <tr id="proc-ranap-{$value.kd_jenis_prw}">
                                 <td>{$value.nm_perawatan}</td>
                                 <td>
-                                    <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm btn-ai-snomed" title="Fetch SNOMED dari AI">
+                                                <i class="fa fa-robot"></i> AI
+                                            </button>
+                                        </span>
+                                    </div>
                                     <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
                                 </td>
                                 <td>
@@ -153,7 +167,14 @@
                             <tr id="operasi-{$value.kode_paket}">
                                 <td>[{$value.kode_paket}] {$value.nm_perawatan}</td>
                                 <td>
-                                    <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm btn-ai-snomed" title="Fetch SNOMED dari AI">
+                                                <i class="fa fa-robot"></i> AI
+                                            </button>
+                                        </span>
+                                    </div>
                                     <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
                                 </td>
                                 <td>
@@ -172,6 +193,115 @@
 <script>
 $(document).ready(function() {
     $('.datatable').DataTable();
+    var apiOpenAI = "{?=$this->core->settings->get('satu_sehat.api_openai')?}";
+
+    function extractJSONBlock(text) {
+        var raw = (text || '').trim();
+        var fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
+        if (fenced && fenced[1]) {
+            raw = fenced[1].trim();
+        }
+        var start = raw.indexOf('{');
+        var end = raw.lastIndexOf('}');
+        if (start !== -1 && end !== -1 && end > start) {
+            try {
+                return JSON.parse(raw.slice(start, end + 1));
+            } catch (e) {}
+        }
+        try {
+            return JSON.parse(raw);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function resolveSnomedFromResponse(parsed) {
+        if (!parsed) return null;
+        if (parsed.snomed_code || parsed.snomed_display) {
+            return {
+                code: (parsed.snomed_code || '').toString().trim(),
+                display: (parsed.snomed_display || '').toString().trim()
+            };
+        }
+        if (parsed.code || parsed.display) {
+            return {
+                code: (parsed.code || '').toString().trim(),
+                display: (parsed.display || '').toString().trim()
+            };
+        }
+        if (parsed.coding && parsed.coding[0]) {
+            return {
+                code: (parsed.coding[0].code || '').toString().trim(),
+                display: (parsed.coding[0].display || '').toString().trim()
+            };
+        }
+        return null;
+    }
+
+    $('.btn-ai-snomed').on('click', function() {
+        var button = $(this);
+        var row = button.closest('tr');
+        var namaTindakan = $.trim(row.find('td').first().text());
+        var originalText = button.html();
+
+        if (!namaTindakan) {
+            alert('Nama tindakan tidak ditemukan.');
+            return;
+        }
+        if (!apiOpenAI) {
+            alert('API key OpenAI belum diset pada plugin Satu Sehat.');
+            return;
+        }
+
+        button.html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
+
+        var requestData = {
+            model: "openai/gpt-4o",
+            messages: [
+                {
+                    role: "user",
+                    content: 'Berikan SNOMED CT paling relevan untuk tindakan medis "' + namaTindakan + '". Balas HANYA JSON mentah dengan format: {"snomed_code":"kode SNOMED","snomed_display":"nama SNOMED"} tanpa teks tambahan.'
+                }
+            ]
+        };
+
+        fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + apiOpenAI
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('HTTP error! status: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            if (!(data.choices && data.choices[0] && data.choices[0].message)) {
+                throw new Error('Invalid response format from API');
+            }
+            var responseContent = (data.choices[0].message.content || '').trim();
+            var parsed = extractJSONBlock(responseContent);
+            var snomed = resolveSnomedFromResponse(parsed);
+
+            if (!snomed || !snomed.code) {
+                throw new Error('Kode SNOMED tidak ditemukan dari respons AI');
+            }
+
+            row.find('.snomed-code').val(snomed.code);
+            row.find('.snomed-display').val(snomed.display || '');
+            alert('Kode SNOMED berhasil di-generate.');
+        })
+        .catch(function(error) {
+            alert('Gagal generate SNOMED: ' + error.message);
+        })
+        .finally(function() {
+            button.html(originalText).prop('disabled', false);
+        });
+    });
 
     // Save Lab
     $('.btn-save-lab').click(function() {
