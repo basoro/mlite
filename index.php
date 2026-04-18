@@ -12,7 +12,11 @@ if (!defined('BASE_DIR')) {
 }
 require_once('config.php');
 
-if (!file_exists(BASE_DIR . '/.env')) {
+if (
+    !file_exists(BASE_DIR . '/.env')
+    && !isset($_ENV['DBDRIVER'])
+    && !isset($_SERVER['DBDRIVER'])
+) {
     header('Location: /install.php');
     exit;
 }

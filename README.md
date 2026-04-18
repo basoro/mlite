@@ -91,6 +91,20 @@ $ cd mlite/docker && docker-compose build && docker-compose up -d
 
 4. Silahkan login dengan Username: admin dan Password: admin
 
+### Deploy untuk development di Vercel
+1. Push repository ini ke GitHub, lalu import project ke Vercel.
+2. Pada **Settings → Environment Variables**, tambahkan minimal:
+   - `DBDRIVER=mysql`
+   - `MYSQLHOST=...`
+   - `MYSQLPORT=3306`
+   - `MYSQLDATABASE=...`
+   - `MYSQLUSER=...`
+   - `MYSQLPASSWORD=...`
+3. Gunakan database MySQL/MariaDB eksternal (bukan SQLite lokal), lalu import `mlite_db.sql` ke database tersebut.
+4. Deploy dari branch development (Preview) agar aman untuk uji coba.
+5. Setelah deploy selesai, buka URL preview Vercel dan login seperti biasa.
+
+> Catatan: mLITE akan memakai environment variable dari Vercel walau file `.env` tidak tersedia di server.
 
 ## Catatan:
 Untuk setiap kali update, silahkan jalankan perintah
