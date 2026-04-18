@@ -569,7 +569,7 @@ class Admin extends AdminModule
           LEFT JOIN mlite_detailjurnal jd ON r.kd_rek = jd.kd_rek
           LEFT JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
           WHERE r.tipe = 'R'
-          AND LEFT(r.kd_rek, 1) IN ('4', '5', '6', '7', '8', '9')
+          AND SUBSTR(r.kd_rek, 1, 1) IN ('4', '5', '6', '7', '8', '9')
           AND j.tgl_jurnal >= ? AND j.tgl_jurnal <= ?
       ";
       
