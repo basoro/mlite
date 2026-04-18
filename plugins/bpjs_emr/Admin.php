@@ -1358,13 +1358,22 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
 
         $lab = $this->db('template_laboratorium')
-            ->select('template_laboratorium.*, COALESCE(mlite_bpjs_emr_mapping_lab.loinc_code, mlite_satu_sehat_mapping_lab.code) as loinc_code, COALESCE(mlite_bpjs_emr_mapping_lab.loinc_display, mlite_satu_sehat_mapping_lab.display) as loinc_display')
+            ->select(
+                'template_laboratorium.*,
+                COALESCE(mlite_bpjs_emr_mapping_lab.loinc_code, mlite_satu_sehat_mapping_lab.code) as loinc_code,
+                COALESCE(mlite_bpjs_emr_mapping_lab.loinc_display, mlite_satu_sehat_mapping_lab.display) as loinc_display'
+            )
             ->leftJoin('mlite_bpjs_emr_mapping_lab', 'template_laboratorium.id_template = mlite_bpjs_emr_mapping_lab.id_template')
             ->leftJoin('mlite_satu_sehat_mapping_lab', 'template_laboratorium.id_template = mlite_satu_sehat_mapping_lab.id_template')
             ->toArray();
 
         $rad = $this->db('jns_perawatan_radiologi')
-            ->select('jns_perawatan_radiologi.*, COALESCE(mlite_bpjs_emr_mapping_radiologi.standard_code, mlite_satu_sehat_mapping_rad.code) as standard_code, COALESCE(mlite_bpjs_emr_mapping_radiologi.standard_display, mlite_satu_sehat_mapping_rad.display) as standard_display, COALESCE(mlite_bpjs_emr_mapping_radiologi.system, mlite_satu_sehat_mapping_rad.system) as system')
+            ->select(
+                'jns_perawatan_radiologi.*,
+                COALESCE(mlite_bpjs_emr_mapping_radiologi.standard_code, mlite_satu_sehat_mapping_rad.code) as standard_code,
+                COALESCE(mlite_bpjs_emr_mapping_radiologi.standard_display, mlite_satu_sehat_mapping_rad.display) as standard_display,
+                COALESCE(mlite_bpjs_emr_mapping_radiologi.system, mlite_satu_sehat_mapping_rad.system) as system'
+            )
             ->leftJoin('mlite_bpjs_emr_mapping_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw = mlite_bpjs_emr_mapping_radiologi.kd_jenis_prw')
             ->leftJoin('mlite_satu_sehat_mapping_rad', 'jns_perawatan_radiologi.kd_jenis_prw = mlite_satu_sehat_mapping_rad.kd_jenis_prw')
             ->toArray();
