@@ -245,7 +245,7 @@ function processCreateTable($pdo, $sql)
             $def = preg_replace('/ON\s+UPDATE\s+CURRENT_TIMESTAMP/i', '', $def);
             $def = str_ireplace('CURRENT_TIMESTAMP', 'CURRENT_TIMESTAMP', $def);
 
-            if ($colName === $pkColumn && !preg_match('/PRIMARY\s+KEY/i', $def)) {
+            if ($colName === $pkColumn && stripos($def, 'PRIMARY KEY') === false) {
                 $def .= ' PRIMARY KEY';
             }
 
@@ -270,16 +270,14 @@ function processCreateTable($pdo, $sql)
 
 function processInsert($pdo, $sql)
 {
-    $statement = trim($sql);
-    if (!preg_match('/^INSERT\s+INTO\s+/i', $statement)) {
-        return;
-    }
-
-    // Hapus titik koma penutup agar konsisten untuk MySQL/SQLite.
-    $statement = rtrim($statement, " \t\n\r\0\x0B;");
+    $sql = str_replace('\\"', '##DQ##', $sql);
+    $sql = str_replace("'", "''", $sql);
+    $sql = str_replace('"', "'", $sql);
+    $sql = str_replace('##DQ##', '"', $sql);
+    $sql = str_replace('\\\\', '\\', $sql);
 
     try {
-        $pdo->exec($statement);
+        $pdo->exec($sql);
     } catch (PDOException $e) {
     }
 }
