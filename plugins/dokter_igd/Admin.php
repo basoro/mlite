@@ -991,6 +991,7 @@ class Admin extends AdminModule
 
     public function anySoap()
     {
+      $this->ensureMappingSnomedIcdTable();
 
       $prosedurs = $this->db('prosedur_pasien')
          ->where('no_rawat', $_POST['no_rawat'])
@@ -1011,6 +1012,16 @@ class Admin extends AdminModule
          $icd10 = $this->db('penyakit')->where('kd_penyakit', $row['kd_penyakit'])->oneArray();
          $row['nama'] = $icd10['nm_penyakit'];
          $diagnosa[] = $row;
+       }
+       $mapping_snomeds = $this->db('mlite_mapping_snomed_icd')
+         ->where('no_rawat', $_POST['no_rawat'])
+         ->asc('kd_penyakit')
+         ->toArray();
+       $mapping_snomed = [];
+       foreach ($mapping_snomeds as $row_mapping_snomed) {
+         $penyakit = $this->db('penyakit')->where('kd_penyakit', $row_mapping_snomed['kd_penyakit'])->oneArray();
+         $row_mapping_snomed['nm_penyakit'] = $penyakit ? $penyakit['nm_penyakit'] : '';
+         $mapping_snomed[] = $row_mapping_snomed;
        }
 
       $i = 1;
@@ -1038,7 +1049,7 @@ class Admin extends AdminModule
        $result_ranap[] = $row;
       }
 
-      echo $this->draw('soap.html', ['pemeriksaan' => htmlspecialchars_array($result), 'pemeriksaan_ranap' => htmlspecialchars_array($result_ranap), 'diagnosa' => htmlspecialchars_array($diagnosa), 'prosedur' => htmlspecialchars_array($prosedur), 'admin_mode' => $this->settings->get('settings.admin_mode')]);
+      echo $this->draw('soap.html', ['pemeriksaan' => htmlspecialchars_array($result), 'pemeriksaan_ranap' => htmlspecialchars_array($result_ranap), 'diagnosa' => htmlspecialchars_array($diagnosa), 'prosedur' => htmlspecialchars_array($prosedur), 'mapping_snomed' => htmlspecialchars_array($mapping_snomed), 'admin_mode' => $this->settings->get('settings.admin_mode')]);
       exit();
     }
 
@@ -1475,15 +1486,44 @@ class Admin extends AdminModule
   
     public function postSaveICD10()
     {
+      $this->ensureMappingSnomedIcdTable();
+      $snomed_concept_id = trim((string) ($_POST['snomed_concept_id'] ?? ''));
+      $snomed_term = trim((string) ($_POST['snomed_term'] ?? ''));
       $_POST['status_penyakit'] = 'Baru';
-      unset($_POST['nama']);
+      unset($_POST['nama'], $_POST['snomed_concept_id'], $_POST['snomed_term']);
       $this->db('diagnosa_pasien')->save($_POST);
+      if ($snomed_concept_id !== '' && $snomed_term !== '' && is_numeric($snomed_concept_id)) {
+        $this->saveSnomedMappingICD(
+          $_POST['no_rawat'],
+          $_POST['kd_penyakit'],
+          $snomed_concept_id,
+          $snomed_term,
+          $_POST['status_penyakit']
+        );
+      }
       exit();
     }  
 
     public function postHapusICD10()
     {
+      $this->ensureMappingSnomedIcdTable();
+      $diagnosa = $this->db('diagnosa_pasien')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->where('prioritas', $_POST['prioritas'])
+        ->oneArray();
       $this->db('diagnosa_pasien')->where('no_rawat', $_POST['no_rawat'])->where('prioritas', $_POST['prioritas'])->delete();
+      if ($diagnosa) {
+        $masih_ada_diagnosa = $this->db('diagnosa_pasien')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->where('kd_penyakit', $diagnosa['kd_penyakit'])
+          ->oneArray();
+        if (!$masih_ada_diagnosa) {
+          $this->db('mlite_mapping_snomed_icd')
+            ->where('no_rawat', $_POST['no_rawat'])
+            ->where('kd_penyakit', $diagnosa['kd_penyakit'])
+            ->delete();
+        }
+      }
       exit();
     }
   
@@ -1546,6 +1586,7 @@ class Admin extends AdminModule
 
     public function getDisplayICD()
     {
+      $this->ensureMappingSnomedIcdTable();
       $no_rawat = $_GET['no_rawat'];
       $prosedurs = $this->db('prosedur_pasien')
         ->where('no_rawat', $no_rawat)
@@ -1568,9 +1609,100 @@ class Admin extends AdminModule
         $row_diagnosa['nama'] = $icd10['nm_penyakit'];
         $diagnosa[] = $row_diagnosa;
       }
+
+      $mapping_snomeds = $this->db('mlite_mapping_snomed_icd')
+        ->where('no_rawat', $no_rawat)
+        ->asc('kd_penyakit')
+        ->toArray();
+      $mapping_snomed = [];
+      foreach ($mapping_snomeds as $row_mapping_snomed) {
+        $icd10 = $this->db('penyakit')->where('kd_penyakit', $row_mapping_snomed['kd_penyakit'])->oneArray();
+        $row_mapping_snomed['nm_penyakit'] = $icd10 ? $icd10['nm_penyakit'] : '';
+        $mapping_snomed[] = $row_mapping_snomed;
+      }
   
-      echo $this->draw('display.icd.html', ['diagnosa' => htmlspecialchars_array($diagnosa), 'prosedur' => htmlspecialchars_array($prosedur)]);
+      echo $this->draw('display.icd.html', ['diagnosa' => htmlspecialchars_array($diagnosa), 'prosedur' => htmlspecialchars_array($prosedur), 'mapping_snomed' => htmlspecialchars_array($mapping_snomed)]);
       exit();
+    }
+
+    public function postSaveMappingSnomedIcd()
+    {
+      $this->ensureMappingSnomedIcdTable();
+      $no_rawat = trim((string) ($_POST['no_rawat'] ?? ''));
+      $kd_penyakit = trim((string) ($_POST['kd_penyakit'] ?? ''));
+      $snomed_concept_id = trim((string) ($_POST['snomed_concept_id'] ?? ''));
+      $snomed_term = trim((string) ($_POST['snomed_term'] ?? ''));
+      $status_penyakit = trim((string) ($_POST['status_penyakit'] ?? 'Baru'));
+
+      if ($no_rawat === '' || $kd_penyakit === '' || $snomed_concept_id === '' || $snomed_term === '' || !is_numeric($snomed_concept_id)) {
+        echo '0';
+        exit();
+      }
+
+      if (!$this->db('diagnosa_pasien')->where('no_rawat', $no_rawat)->where('kd_penyakit', $kd_penyakit)->oneArray()) {
+        echo '0';
+        exit();
+      }
+
+      $this->saveSnomedMappingICD($no_rawat, $kd_penyakit, $snomed_concept_id, $snomed_term, $status_penyakit);
+      echo '1';
+      exit();
+    }
+
+    public function postHapusMappingSnomedIcd()
+    {
+      $this->ensureMappingSnomedIcdTable();
+      $id = (int) ($_POST['id'] ?? 0);
+      $no_rawat = trim((string) ($_POST['no_rawat'] ?? ''));
+
+      if ($id > 0 && $no_rawat !== '') {
+        $this->db('mlite_mapping_snomed_icd')
+          ->where('id', $id)
+          ->where('no_rawat', $no_rawat)
+          ->delete();
+      }
+
+      exit();
+    }
+
+    private function saveSnomedMappingICD($no_rawat, $kd_penyakit, $snomed_concept_id, $snomed_term, $status_penyakit = 'Baru')
+    {
+      $status_penyakit = in_array($status_penyakit, ['Baru', 'Lama']) ? $status_penyakit : 'Baru';
+      $data_mapping = [
+        'no_rawat' => $no_rawat,
+        'kd_penyakit' => $kd_penyakit,
+        'snomed_concept_id' => $snomed_concept_id,
+        'snomed_term' => $snomed_term,
+        'status_penyakit' => $status_penyakit
+      ];
+
+      $mapping_tersimpan = $this->db('mlite_mapping_snomed_icd')
+        ->where('no_rawat', $no_rawat)
+        ->where('kd_penyakit', $kd_penyakit)
+        ->where('snomed_concept_id', $snomed_concept_id)
+        ->oneArray();
+
+      if ($mapping_tersimpan) {
+        $this->db('mlite_mapping_snomed_icd')->where('id', $mapping_tersimpan['id'])->save($data_mapping);
+      } else {
+        $this->db('mlite_mapping_snomed_icd')->save($data_mapping);
+      }
+    }
+
+    private function ensureMappingSnomedIcdTable()
+    {
+      $this->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mapping_snomed_icd` (
+        `id` INT AUTO_INCREMENT PRIMARY KEY,
+        `no_rawat` VARCHAR(20) NOT NULL,
+        `kd_penyakit` VARCHAR(10) NOT NULL,
+        `snomed_concept_id` BIGINT NOT NULL,
+        `snomed_term` VARCHAR(255) NOT NULL,
+        `status_penyakit` ENUM('Baru','Lama') DEFAULT 'Baru',
+        UNIQUE KEY `uniq_mapping` (`no_rawat`,`kd_penyakit`,`snomed_concept_id`),
+        INDEX (`no_rawat`),
+        INDEX (`kd_penyakit`),
+        INDEX (`snomed_concept_id`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC");
     }
 
     public function getJavascript()

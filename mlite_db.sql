@@ -2730,6 +2730,21 @@ CREATE TABLE `mlite_sertisign_webhook` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
 
+CREATE TABLE `mlite_mapping_snomed_icd` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `no_rawat` varchar(20) NOT NULL,
+  `kd_penyakit` varchar(10) NOT NULL,
+  `snomed_concept_id` bigint NOT NULL,
+  `snomed_term` varchar(255) NOT NULL,
+  `status_penyakit` enum('Baru','Lama') DEFAULT 'Baru',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_mapping` (`no_rawat`,`kd_penyakit`,`snomed_concept_id`),
+  KEY `no_rawat` (`no_rawat`),
+  KEY `kd_penyakit` (`kd_penyakit`),
+  KEY `snomed_concept_id` (`snomed_concept_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 CREATE TABLE `mlite_settings` (
   `id` int NOT NULL AUTO_INCREMENT,
   `module` varchar(100) NOT NULL,
