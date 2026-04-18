@@ -179,6 +179,18 @@
                       </button>
                     </span>
                   </div>
+                  <div class="input-group" style="margin-top: 6px;">
+                    <input type="text" name="snomed_concept_id" id="snomed_concept_id" class="form-control" placeholder="SNOMED Concept ID" />
+                    <span class="input-group-btn">
+                      <button type="button" id="ai_generate_snomed" class="btn btn-default" title="Generate SNOMED-CT dari AI">
+                        <i class="fa fa-robot"></i>
+                      </button>
+                    </span>
+                  </div>
+                  <input type="text" name="snomed_term" id="snomed_term" class="form-control" placeholder="SNOMED Term" style="margin-top: 6px;" />
+                  <button type="button" id="simpan_mapping_snomed" class="btn btn-info btn-xs" style="margin-top: 6px;">
+                    <i class="fa fa-save"></i><span class="hidden-xs"> Simpan Mapping SNOMED</span>
+                  </button>
                 </div>
               </div>
               <div class="col-sm-6">
@@ -405,6 +417,8 @@
     var nama = $('input:text[name=icd10]').val();
     var kode = $('#kode_icd10').text();
     var status = $('input:hidden[name=status]').val();
+    var snomed_concept_id = $('input:text[name=snomed_concept_id]').val();
+    var snomed_term = $('input:text[name=snomed_term]').val();
 
     var url = baseURL + '/dokter_igd/saveicd10?t=' + mlite.token;
 
@@ -413,7 +427,9 @@
       prioritas: prioritas,
       nama: nama,
       status: status,
-      kd_penyakit: kode
+      kd_penyakit: kode,
+      snomed_concept_id: snomed_concept_id,
+      snomed_term: snomed_term
     } ,function(data) {
       $("#display_icd").show().load(baseURL + '/dokter_igd/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token); 
       //bersih();
@@ -421,6 +437,88 @@
       "Data ICD 10 (Diagnosa) pasien telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
       "</div>").show();
+    });
+  });
+</script>
+<script type="text/javascript">
+  $("#form_soap").on("click", "#simpan_mapping_snomed", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rawat = $('input:text[name=no_rawat]').val();
+    var kd_penyakit = $('#kode_icd10').text();
+    var snomed_concept_id = $('input:text[name=snomed_concept_id]').val();
+    var snomed_term = $('input:text[name=snomed_term]').val();
+
+    var url = baseURL + '/dokter_igd/savemappingsnomedicd?t=' + mlite.token;
+
+    $.post(url, {
+      no_rawat: no_rawat,
+      kd_penyakit: kd_penyakit,
+      snomed_concept_id: snomed_concept_id,
+      snomed_term: snomed_term,
+      status_penyakit: 'Baru'
+    }, function(response){
+      if(response === '1') {
+        $("#display_icd").show().load(baseURL + '/dokter_igd/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
+        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Mapping SNOMED-CT berhasil disimpan!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      } else {
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Gagal menyimpan mapping SNOMED-CT. Pastikan diagnosa ICD 10 sudah tersimpan."+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      }
+    });
+  });
+</script>
+<script type="text/javascript">
+  $("#form_soap").on("click", "#ai_generate_snomed", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var namaDiagnosa = $('input:text[name=icd10]').val();
+    var kodeDiagnosa = $('#kode_icd10').text();
+
+    if (!namaDiagnosa || !kodeDiagnosa || kodeDiagnosa === 'kode') {
+      alert('Pilih diagnosa ICD 10 terlebih dahulu.');
+      return;
+    }
+
+    var button = $(this);
+    var originalText = button.html();
+    button.html('<i class="fa fa-spinner fa-spin"></i>').prop('disabled', true);
+
+    $.ajax({
+      type: 'POST',
+      url: baseURL + '/dokter_igd/fetchaisnomedicd?t=' + mlite.token,
+      data: {
+        kode_diagnosa: kodeDiagnosa,
+        nama_diagnosa: namaDiagnosa
+      },
+      dataType: 'json',
+      timeout: 20000
+    })
+    .done(function(response) {
+      if (response && response.status === 'success' && response.data) {
+        $('input:text[name=snomed_concept_id]').val(String(response.data.snomed_concept_id ?? '').trim());
+        $('input:text[name=snomed_term]').val(String(response.data.snomed_term ?? '').trim());
+      } else {
+        alert((response && response.message) ? response.message : 'Gagal generate SNOMED-CT.');
+      }
+    })
+    .fail(function(xhr, status) {
+      if (status === 'timeout') {
+        alert('Permintaan generate SNOMED-CT timeout.');
+      } else if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+        alert(xhr.responseJSON.message);
+      } else {
+        alert('Gagal generate SNOMED-CT.');
+      }
+    })
+    .always(function() {
+      button.html(originalText).prop('disabled', false);
     });
   });
 </script>

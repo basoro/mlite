@@ -21,7 +21,7 @@ CREATE TABLE `aturan_pakai` (
   KEY `kode_brng` (`kode_brng`),
   CONSTRAINT `aturan_pakai_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `aturan_pakai_ibfk_2` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `bahasa_pasien` (
@@ -2728,6 +2728,21 @@ CREATE TABLE `mlite_sertisign_webhook` (
   KEY `transaction_idx` (`transaction_id`),
   KEY `status_idx` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_mapping_snomed_icd` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `no_rawat` varchar(20) NOT NULL,
+  `kd_penyakit` varchar(10) NOT NULL,
+  `snomed_concept_id` bigint NOT NULL,
+  `snomed_term` varchar(255) NOT NULL,
+  `status_penyakit` enum('Baru','Lama') DEFAULT 'Baru',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_mapping` (`no_rawat`,`kd_penyakit`,`snomed_concept_id`),
+  KEY `no_rawat` (`no_rawat`),
+  KEY `kd_penyakit` (`kd_penyakit`),
+  KEY `snomed_concept_id` (`snomed_concept_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_settings` (
