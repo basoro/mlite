@@ -270,12 +270,17 @@ function processCreateTable($pdo, $sql)
 
 function processInsert($pdo, $sql)
 {
-    if (stripos(trim($sql), 'INSERT INTO') !== 0) {
+    $statement = trim($sql);
+    if (!preg_match('/^INSERT\s+INTO\s+/i', $statement)) {
+        return;
+    }
+
+    if (strpos(rtrim($statement, " \t\n\r\0\x0B;"), ';') !== false) {
         return;
     }
 
     try {
-        $pdo->exec($sql);
+        $pdo->exec($statement);
     } catch (PDOException $e) {
     }
 }
