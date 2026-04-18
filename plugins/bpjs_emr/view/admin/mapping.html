@@ -94,7 +94,7 @@
                         </thead>
                         <tbody>
                             {loop: $proc}
-                            <tr id="proc-{$value.kd_jenis_prw}">
+                            <tr id="proc-{$value.kd_jenis_prw}" data-nama-tindakan="{$value.nm_perawatan}">
                                 <td>{$value.nm_perawatan}</td>
                                 <td>
                                     <div class="input-group">
@@ -129,7 +129,7 @@
                         </thead>
                         <tbody>
                             {loop: $proc_ranap}
-                            <tr id="proc-ranap-{$value.kd_jenis_prw}">
+                            <tr id="proc-ranap-{$value.kd_jenis_prw}" data-nama-tindakan="{$value.nm_perawatan}">
                                 <td>{$value.nm_perawatan}</td>
                                 <td>
                                     <div class="input-group">
@@ -164,7 +164,7 @@
                         </thead>
                         <tbody>
                             {loop: $operasi}
-                            <tr id="operasi-{$value.kode_paket}">
+                            <tr id="operasi-{$value.kode_paket}" data-nama-tindakan="{$value.nm_perawatan}">
                                 <td>[{$value.kode_paket}] {$value.nm_perawatan}</td>
                                 <td>
                                     <div class="input-group">
@@ -197,7 +197,7 @@ $(document).ready(function() {
     $('.btn-ai-snomed').on('click', function() {
         var button = $(this);
         var row = button.closest('tr');
-        var namaTindakan = $.trim(row.find('td').first().text());
+        var namaTindakan = row.data('nama-tindakan') || $.trim(row.find('td').first().text());
         var originalText = button.html();
 
         if (!namaTindakan) {
