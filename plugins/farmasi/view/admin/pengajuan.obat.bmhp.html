@@ -68,7 +68,6 @@
               </tr>
             </thead>
             <tbody>
-              {if: !empty($pengajuan)}
               {loop: $pengajuan}
               <tr>
                 <td>{?=isset_or($value.no_pengajuan)?}</td>
@@ -88,11 +87,6 @@
                 </td>
               </tr>
               {/loop}
-              {else}
-              <tr>
-                <td colspan="9" class="text-center">Data pengajuan belum tersedia.</td>
-              </tr>
-              {/if}
             </tbody>
           </table>
         </div>
