@@ -412,6 +412,7 @@
 <script>
 var MEDIS_IGD_STATUS_PENYAKIT_BARU = 'Baru';
 var MEDIS_IGD_AI_TIMEOUT_MS = 20000;
+var MEDIS_IGD_SAVE_SUCCESS = '1';
 
 $(document).off('click', '#medis_igd_ai_generate_snomed').on('click', '#medis_igd_ai_generate_snomed', function(event) {
   var baseURL = mlite.url + '/' + mlite.admin;
@@ -474,7 +475,7 @@ $(document).off('click', '#medis_igd_simpan_mapping_snomed').on('click', '#medis
     return;
   }
 
-  // SNOMED Concept ID valid: 6-18 digit numerik dan tidak boleh diawali angka 0.
+  // Format SNOMED Concept ID yang diterima sistem: 6-18 digit angka (regex ^[1-9][0-9]{5,17}$), tanpa awalan 0.
   if (!/^[1-9][0-9]{5,17}$/.test(snomedConceptId)) {
     alert('Format SNOMED Concept ID tidak valid.');
     return;
@@ -487,7 +488,7 @@ $(document).off('click', '#medis_igd_simpan_mapping_snomed').on('click', '#medis
     snomed_term: snomedTerm,
     status_penyakit: MEDIS_IGD_STATUS_PENYAKIT_BARU
   }, function(response) {
-    if (response === '1') {
+    if (response === MEDIS_IGD_SAVE_SUCCESS) {
       alert('Mapping SNOMED-CT berhasil disimpan!');
     } else {
       alert('Gagal menyimpan mapping SNOMED-CT. Pastikan diagnosa ICD-10 sudah tersimpan.');
