@@ -1466,6 +1466,16 @@ CREATE TABLE `mlite_akun_kegiatan` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
+INSERT INTO `mlite_akun_kegiatan` VALUES
+(1,'Penerimaan Pasien Rawat Jalan','4101'),
+(2,'Penerimaan Pasien Rawat Inap','4102'),
+(3,'Penerimaan Penjualan Obat & BHP','4103'),
+(4,'Penerimaan Laboratorium','4104'),
+(5,'Penerimaan Radiologi','4105'),
+(6,'Pembayaran Gaji Karyawan','5101'),
+(7,'Pembelian Obat & BHP','5201'),
+(8,'Pembayaran Biaya Operasional','5301');
+
 
 CREATE TABLE `mlite_antrian_loket` (
   `kd` int NOT NULL AUTO_INCREMENT,
@@ -1846,6 +1856,112 @@ CREATE TABLE `mlite_detailjurnal` (
   CONSTRAINT `mlite_detailjurnal_ibfk_2` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
+-- Detail jurnal 2025
+-- JU-2025-001: Penerimaan Q1 Jan (D=75jt, K=75jt)
+INSERT INTO `mlite_detailjurnal` VALUES
+('JU-2025-001','1101',0,75000000,0),
+('JU-2025-001','4101',0,0,30000000),
+('JU-2025-001','4102',0,0,20000000),
+('JU-2025-001','4103',0,0,15000000),
+('JU-2025-001','4104',0,0,5000000),
+('JU-2025-001','4105',0,0,5000000),
+-- JU-2025-002: Pembayaran Gaji Jan (D=23jt, K=23jt)
+('JU-2025-002','5101',0,10000000,0),
+('JU-2025-002','5102',0,8000000,0),
+('JU-2025-002','5103',0,5000000,0),
+('JU-2025-002','1101',0,0,23000000),
+-- JU-2025-003: Penerimaan Q2 Apr (D=90jt, K=90jt)
+('JU-2025-003','1101',0,90000000,0),
+('JU-2025-003','4101',0,0,35000000),
+('JU-2025-003','4102',0,0,25000000),
+('JU-2025-003','4103',0,0,20000000),
+('JU-2025-003','4104',0,0,5000000),
+('JU-2025-003','4105',0,0,5000000),
+-- JU-2025-004: Pembayaran Biaya Q2 (D=50jt, K=50jt)
+('JU-2025-004','5101',0,10000000,0),
+('JU-2025-004','5102',0,8000000,0),
+('JU-2025-004','5103',0,5000000,0),
+('JU-2025-004','5201',0,25000000,0),
+('JU-2025-004','5301',0,2000000,0),
+('JU-2025-004','1101',0,0,50000000),
+-- JU-2025-005: Penerimaan Q3 Jul (D=85jt, K=85jt)
+('JU-2025-005','1101',0,85000000,0),
+('JU-2025-005','4101',0,0,30000000),
+('JU-2025-005','4102',0,0,25000000),
+('JU-2025-005','4103',0,0,18000000),
+('JU-2025-005','4104',0,0,7000000),
+('JU-2025-005','4105',0,0,5000000),
+-- JU-2025-006: Pembayaran Biaya Q3 (D=45jt, K=45jt)
+('JU-2025-006','5101',0,10000000,0),
+('JU-2025-006','5102',0,8000000,0),
+('JU-2025-006','5103',0,5000000,0),
+('JU-2025-006','5201',0,20000000,0),
+('JU-2025-006','5301',0,2000000,0),
+('JU-2025-006','1101',0,0,45000000),
+-- JU-2025-007: Penerimaan Q4 Okt (D=95jt, K=95jt)
+('JU-2025-007','1101',0,95000000,0),
+('JU-2025-007','4101',0,0,35000000),
+('JU-2025-007','4102',0,0,30000000),
+('JU-2025-007','4103',0,0,18000000),
+('JU-2025-007','4104',0,0,7000000),
+('JU-2025-007','4105',0,0,5000000),
+-- JU-2025-008: Pembayaran Biaya Q4 (D=47jt, K=47jt)
+('JU-2025-008','5101',0,10000000,0),
+('JU-2025-008','5102',0,8000000,0),
+('JU-2025-008','5103',0,5000000,0),
+('JU-2025-008','5201',0,22000000,0),
+('JU-2025-008','5301',0,2000000,0),
+('JU-2025-008','1101',0,0,47000000),
+-- JU-2025-009: Penyesuaian Penyusutan Akhir Tahun (D=15jt, K=15jt)
+('JU-2025-009','5401',0,15000000,0),
+('JU-2025-009','1601',0,0,5000000),
+('JU-2025-009','1701',0,0,7000000),
+('JU-2025-009','1801',0,0,3000000),
+-- Detail jurnal 2026
+-- JU-2026-001: Penerimaan Jan 2026 (D=80jt, K=80jt)
+('JU-2026-001','1101',0,80000000,0),
+('JU-2026-001','4101',0,0,30000000),
+('JU-2026-001','4102',0,0,25000000),
+('JU-2026-001','4103',0,0,15000000),
+('JU-2026-001','4104',0,0,5000000),
+('JU-2026-001','4105',0,0,5000000),
+-- JU-2026-002: Pembayaran Biaya Jan 2026 (D=45.5jt, K=45.5jt)
+('JU-2026-002','5101',0,10000000,0),
+('JU-2026-002','5102',0,8000000,0),
+('JU-2026-002','5103',0,5000000,0),
+('JU-2026-002','5201',0,20000000,0),
+('JU-2026-002','5301',0,2500000,0),
+('JU-2026-002','1101',0,0,45500000),
+-- JU-2026-003: Penerimaan Feb 2026 (D=75jt, K=75jt)
+('JU-2026-003','1101',0,75000000,0),
+('JU-2026-003','4101',0,0,28000000),
+('JU-2026-003','4102',0,0,22000000),
+('JU-2026-003','4103',0,0,14000000),
+('JU-2026-003','4104',0,0,6000000),
+('JU-2026-003','4105',0,0,5000000),
+-- JU-2026-004: Pembayaran Biaya Feb 2026 (D=41.6jt, K=41.6jt)
+('JU-2026-004','5101',0,10000000,0),
+('JU-2026-004','5102',0,8000000,0),
+('JU-2026-004','5103',0,5000000,0),
+('JU-2026-004','5201',0,18000000,0),
+('JU-2026-004','5302',0,600000,0),
+('JU-2026-004','1101',0,0,41600000),
+-- JU-2026-005: Penerimaan Mar 2026 (D=85jt, K=85jt)
+('JU-2026-005','1101',0,85000000,0),
+('JU-2026-005','4101',0,0,32000000),
+('JU-2026-005','4102',0,0,27000000),
+('JU-2026-005','4103',0,0,16000000),
+('JU-2026-005','4104',0,0,5000000),
+('JU-2026-005','4105',0,0,5000000),
+-- JU-2026-006: Pembayaran Biaya Mar 2026 (D=48.1jt, K=48.1jt)
+('JU-2026-006','5101',0,10000000,0),
+('JU-2026-006','5102',0,8000000,0),
+('JU-2026-006','5103',0,5000000,0),
+('JU-2026-006','5201',0,22000000,0),
+('JU-2026-006','5301',0,2500000,0),
+('JU-2026-006','5302',0,600000,0),
+('JU-2026-006','1101',0,0,48100000);
+
 
 CREATE TABLE `mlite_duitku` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -1947,6 +2063,23 @@ CREATE TABLE `mlite_jurnal` (
   KEY `jenis` (`jenis`),
   KEY `keterangan` (`keterangan`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+INSERT INTO `mlite_jurnal` VALUES
+('JU-2025-001','BKT-2025-001','2025-01-15','U','Penerimaan Kasir Rawat Jalan','Penerimaan pendapatan layanan Q1 Januari 2025. Diposting oleh Administrator.'),
+('JU-2025-002','BKT-2025-002','2025-01-31','U','Pembayaran Gaji Karyawan','Pembayaran gaji seluruh karyawan bulan Januari 2025. Diposting oleh Administrator.'),
+('JU-2025-003','BKT-2025-003','2025-04-15','U','Penerimaan Kasir Q2','Penerimaan pendapatan layanan Q2 April 2025. Diposting oleh Administrator.'),
+('JU-2025-004','BKT-2025-004','2025-04-30','U','Pembayaran Biaya Operasional Q2','Pembayaran biaya operasional bulan April 2025. Diposting oleh Administrator.'),
+('JU-2025-005','BKT-2025-005','2025-07-15','U','Penerimaan Kasir Q3','Penerimaan pendapatan layanan Q3 Juli 2025. Diposting oleh Administrator.'),
+('JU-2025-006','BKT-2025-006','2025-07-31','U','Pembayaran Biaya Operasional Q3','Pembayaran biaya operasional bulan Juli 2025. Diposting oleh Administrator.'),
+('JU-2025-007','BKT-2025-007','2025-10-15','U','Penerimaan Kasir Q4','Penerimaan pendapatan layanan Q4 Oktober 2025. Diposting oleh Administrator.'),
+('JU-2025-008','BKT-2025-008','2025-10-31','U','Pembayaran Biaya Operasional Q4','Pembayaran biaya operasional bulan Oktober 2025. Diposting oleh Administrator.'),
+('JU-2025-009','BKT-2025-009','2025-12-31','P','Penyesuaian Akhir Tahun 2025','Jurnal penyesuaian beban penyusutan aset tetap tahun 2025. Diposting oleh Administrator.'),
+('JU-2026-001','BKT-2026-001','2026-01-15','U','Penerimaan Kasir Januari 2026','Penerimaan pendapatan layanan bulan Januari 2026. Diposting oleh Administrator.'),
+('JU-2026-002','BKT-2026-002','2026-01-31','U','Pembayaran Biaya Januari 2026','Pembayaran biaya operasional bulan Januari 2026. Diposting oleh Administrator.'),
+('JU-2026-003','BKT-2026-003','2026-02-15','U','Penerimaan Kasir Februari 2026','Penerimaan pendapatan layanan bulan Februari 2026. Diposting oleh Administrator.'),
+('JU-2026-004','BKT-2026-004','2026-02-28','U','Pembayaran Biaya Februari 2026','Pembayaran biaya operasional bulan Februari 2026. Diposting oleh Administrator.'),
+('JU-2026-005','BKT-2026-005','2026-03-15','U','Penerimaan Kasir Maret 2026','Penerimaan pendapatan layanan bulan Maret 2026. Diposting oleh Administrator.'),
+('JU-2026-006','BKT-2026-006','2026-03-31','U','Pembayaran Biaya Maret 2026','Pembayaran biaya operasional bulan Maret 2026. Diposting oleh Administrator.');
 
 
 CREATE TABLE `mlite_kasir_shift` (
@@ -2329,6 +2462,47 @@ CREATE TABLE `mlite_rekening` (
   KEY `balance` (`balance`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
+INSERT INTO `mlite_rekening` VALUES
+-- Aktiva Lancar (tipe N, balance D)
+('1101','Kas Umum','N','D','1'),
+('1102','Kas Kasir Rawat Jalan','N','D','1'),
+('1103','Kas Kasir Rawat Inap','N','D','1'),
+('1104','Kas Farmasi','N','D','1'),
+('1105','Kas Kecil','N','D','1'),
+('1201','Bank BRI','N','D','1'),
+('1301','Piutang BPJS','N','D','1'),
+('1302','Piutang Pasien Umum','N','D','1'),
+('1401','Persediaan Obat & BHP','N','D','1'),
+-- Aktiva Tetap (tipe N, balance D)
+('1601','Gedung & Bangunan','N','D','1'),
+('1701','Peralatan Medis','N','D','1'),
+('1801','Kendaraan','N','D','1'),
+('1901','Inventaris Kantor','N','D','1'),
+-- Hutang Lancar (tipe N, balance K)
+('2101','Hutang Usaha','N','K','1'),
+('2102','Hutang Gaji','N','K','1'),
+-- Hutang Jangka Panjang (tipe N, balance K)
+('2201','Hutang Bank','N','K','1'),
+-- Modal (tipe M, balance K)
+('3101','Modal Disetor','M','K','1'),
+('3201','Laba Ditahan','M','K','1'),
+-- Pendapatan (tipe R, balance K)
+('4101','Pendapatan Rawat Jalan','R','K','1'),
+('4102','Pendapatan Rawat Inap','R','K','1'),
+('4103','Pendapatan Obat & BHP','R','K','1'),
+('4104','Pendapatan Laboratorium','R','K','1'),
+('4105','Pendapatan Radiologi','R','K','1'),
+('4201','Pendapatan Lain-lain','R','K','1'),
+-- Beban (tipe R, balance D)
+('5101','Beban Gaji Dokter','R','D','1'),
+('5102','Beban Gaji Paramedis','R','D','1'),
+('5103','Beban Gaji Karyawan','R','D','1'),
+('5201','Beban Obat & BHP','R','D','1'),
+('5301','Beban Listrik','R','D','1'),
+('5302','Beban Air & Kebersihan','R','D','1'),
+('5401','Beban Penyusutan','R','D','1'),
+('5501','Beban Administrasi Umum','R','D','1');
+
 
 CREATE TABLE `mlite_rekeningtahun` (
   `thn` year NOT NULL,
@@ -2339,6 +2513,39 @@ CREATE TABLE `mlite_rekeningtahun` (
   KEY `saldo_awal` (`saldo_awal`),
   CONSTRAINT `mlite_rekeningtahun_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+-- Saldo awal akun per tahun (N = Neraca, M = Modal)
+-- Verifikasi: Total Aktiva 2025 = 1.420.000.000, Total Pasiva 2025 = 1.420.000.000
+INSERT INTO `mlite_rekeningtahun` VALUES
+(2025,'1101',50000000),
+(2025,'1201',200000000),
+(2025,'1301',75000000),
+(2025,'1302',15000000),
+(2025,'1401',80000000),
+(2025,'1601',500000000),
+(2025,'1701',300000000),
+(2025,'1801',150000000),
+(2025,'1901',50000000),
+(2025,'2101',25000000),
+(2025,'2102',20000000),
+(2025,'2201',200000000),
+(2025,'3101',800000000),
+(2025,'3201',375000000),
+-- Verifikasi: Total Aktiva 2026 = 1.585.000.000, Total Pasiva 2026 = 1.585.000.000
+(2026,'1101',230000000),
+(2026,'1201',200000000),
+(2026,'1301',75000000),
+(2026,'1302',15000000),
+(2026,'1401',80000000),
+(2026,'1601',495000000),
+(2026,'1701',293000000),
+(2026,'1801',147000000),
+(2026,'1901',50000000),
+(2026,'2101',25000000),
+(2026,'2102',20000000),
+(2026,'2201',200000000),
+(2026,'3101',800000000),
+(2026,'3201',540000000);
 
 
 CREATE TABLE `mlite_remember_me` (
@@ -2514,7 +2721,7 @@ CREATE TABLE `mlite_settings` (
   `value` varchar(1000) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `module` (`module`,`field`)
-) ENGINE=MyISAM AUTO_INCREMENT=216 DEFAULT CHARSET=utf8mb4;
+) ENGINE=MyISAM AUTO_INCREMENT=217 DEFAULT CHARSET=utf8mb4;
 
 
 INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/logo.png"),
@@ -2623,12 +2830,12 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("104","jkn_mobile","bahasa_pasien",""),
 ("105","jkn_mobile","cacat_fisik",""),
 ("106","keuangan","jurnal_kasir","0"),
-("107","keuangan","akun_kredit_pendaftaran",""),
-("108","keuangan","akun_kredit_tindakan",""),
-("109","keuangan","akun_kredit_obat_bhp",""),
-("110","keuangan","akun_kredit_laboratorium",""),
-("111","keuangan","akun_kredit_radiologi",""),
-("112","keuangan","akun_kredit_tambahan_biaya",""),
+("107","keuangan","akun_kredit_pendaftaran","4101"),
+("108","keuangan","akun_kredit_tindakan","4102"),
+("109","keuangan","akun_kredit_obat_bhp","4103"),
+("110","keuangan","akun_kredit_laboratorium","4104"),
+("111","keuangan","akun_kredit_radiologi","4105"),
+("112","keuangan","akun_kredit_tambahan_biaya","4201"),
 ("113","manajemen","penjab_umum","UMU"),
 ("114","manajemen","penjab_bpjs","BPJ"),
 ("115","presensi","lat","-2.58"),
@@ -2727,7 +2934,8 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("212","veronisa","user_key",""),
 ("213","veronisa","secret_key",""),
 ("214","veronisa","bpjs_api_url",""), 
-("215","settings","login_otp", "tidak");
+("215","settings","login_otp", "tidak"),
+("216","keuangan","akun_debet_kas","1101");
 
 
 CREATE TABLE `mlite_subrekening` (
