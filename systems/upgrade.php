@@ -1712,7 +1712,7 @@ switch ($version) {
         break;
 
     case '6.0.0':
-        $return = '6.2.0'; 
+        $return = '6.2.0';
         break;
 
     case '6.2.0':
@@ -1814,6 +1814,18 @@ switch ($version) {
               `created_at` TEXT NOT NULL
             );");
             $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_farmasi_penerimaan_pemesanan ON `mlite_farmasi_penerimaan_obat` (`pemesanan_id`);");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_prosedur_ranap` (
+              `kd_jenis_prw` TEXT NOT NULL,
+              `snomed_code` TEXT NOT NULL,
+              `snomed_display` TEXT DEFAULT NULL,
+              PRIMARY KEY (`kd_jenis_prw`)
+            );");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_operasi` (
+              `kode_paket` TEXT NOT NULL,
+              `snomed_code` TEXT NOT NULL,
+              `snomed_display` TEXT DEFAULT NULL,
+              PRIMARY KEY (`kode_paket`)
+            );");
         } else {
             // Kapabilitas MySQL sejak 6.2.0
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_study` (
@@ -1917,6 +1929,18 @@ switch ($version) {
               `created_at` datetime NOT NULL,
               PRIMARY KEY (`id`),
               KEY `idx_pemesanan_id` (`pemesanan_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_prosedur_ranap` (
+              `kd_jenis_prw` varchar(20) NOT NULL,
+              `snomed_code` varchar(20) NOT NULL,
+              `snomed_display` varchar(255) DEFAULT NULL,
+              PRIMARY KEY (`kd_jenis_prw`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_operasi` (
+              `kode_paket` varchar(20) NOT NULL,
+              `snomed_code` varchar(20) NOT NULL,
+              `snomed_display` varchar(255) DEFAULT NULL,
+              PRIMARY KEY (`kode_paket`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
         }
         $return = '6.3.0';

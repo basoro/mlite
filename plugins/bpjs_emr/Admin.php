@@ -1358,13 +1358,24 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
 
         $lab = $this->db('template_laboratorium')
-            ->select('template_laboratorium.*, mlite_bpjs_emr_mapping_lab.loinc_code, mlite_bpjs_emr_mapping_lab.loinc_display')
+            ->select(
+                'template_laboratorium.*,
+                COALESCE(mlite_bpjs_emr_mapping_lab.loinc_code, mlite_satu_sehat_mapping_lab.code) as loinc_code,
+                COALESCE(mlite_bpjs_emr_mapping_lab.loinc_display, mlite_satu_sehat_mapping_lab.display) as loinc_display'
+            )
             ->leftJoin('mlite_bpjs_emr_mapping_lab', 'template_laboratorium.id_template = mlite_bpjs_emr_mapping_lab.id_template')
+            ->leftJoin('mlite_satu_sehat_mapping_lab', 'template_laboratorium.id_template = mlite_satu_sehat_mapping_lab.id_template')
             ->toArray();
 
         $rad = $this->db('jns_perawatan_radiologi')
-            ->select('jns_perawatan_radiologi.*, mlite_bpjs_emr_mapping_radiologi.standard_code, mlite_bpjs_emr_mapping_radiologi.standard_display, mlite_bpjs_emr_mapping_radiologi.system')
+            ->select(
+                'jns_perawatan_radiologi.*,
+                COALESCE(mlite_bpjs_emr_mapping_radiologi.standard_code, mlite_satu_sehat_mapping_rad.code) as standard_code,
+                COALESCE(mlite_bpjs_emr_mapping_radiologi.standard_display, mlite_satu_sehat_mapping_rad.display) as standard_display,
+                COALESCE(mlite_bpjs_emr_mapping_radiologi.system, mlite_satu_sehat_mapping_rad.system) as system'
+            )
             ->leftJoin('mlite_bpjs_emr_mapping_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw = mlite_bpjs_emr_mapping_radiologi.kd_jenis_prw')
+            ->leftJoin('mlite_satu_sehat_mapping_rad', 'jns_perawatan_radiologi.kd_jenis_prw = mlite_satu_sehat_mapping_rad.kd_jenis_prw')
             ->toArray();
 
         $proc = $this->db('jns_perawatan')
@@ -1372,10 +1383,22 @@ class Admin extends AdminModule
             ->leftJoin('mlite_bpjs_emr_mapping_prosedur', 'jns_perawatan.kd_jenis_prw = mlite_bpjs_emr_mapping_prosedur.kd_jenis_prw')
             ->toArray();
 
+        $proc_ranap = $this->db('jns_perawatan_inap')
+            ->select('jns_perawatan_inap.*, mlite_bpjs_emr_mapping_prosedur_ranap.snomed_code, mlite_bpjs_emr_mapping_prosedur_ranap.snomed_display')
+            ->leftJoin('mlite_bpjs_emr_mapping_prosedur_ranap', 'jns_perawatan_inap.kd_jenis_prw = mlite_bpjs_emr_mapping_prosedur_ranap.kd_jenis_prw')
+            ->toArray();
+
+        $operasi = $this->db('paket_operasi')
+            ->select('paket_operasi.*, mlite_bpjs_emr_mapping_operasi.snomed_code, mlite_bpjs_emr_mapping_operasi.snomed_display')
+            ->leftJoin('mlite_bpjs_emr_mapping_operasi', 'paket_operasi.kode_paket = mlite_bpjs_emr_mapping_operasi.kode_paket')
+            ->toArray();
+
         return $this->draw('mapping.html', [
             'lab' => $lab,
             'rad' => $rad,
-            'proc' => $proc
+            'proc' => $proc,
+            'proc_ranap' => $proc_ranap,
+            'operasi' => $operasi
         ]);
     }
 
@@ -1449,6 +1472,56 @@ class Admin extends AdminModule
             }
         } else {
             if ($this->db('mlite_bpjs_emr_mapping_prosedur')->save($saveData)) {
+                echo '1';
+            }
+        }
+        exit;
+    }
+
+    public function postSaveMappingProcRanap()
+    {
+        $id = $_POST['kd_jenis_prw'] ?? '';
+        if (empty($id)) {
+            exit;
+        }
+
+        $saveData = [
+            'kd_jenis_prw' => $id,
+            'snomed_code' => $_POST['snomed_code'],
+            'snomed_display' => $_POST['snomed_display']
+        ];
+
+        if ($this->db('mlite_bpjs_emr_mapping_prosedur_ranap')->where('kd_jenis_prw', $id)->count()) {
+            if ($this->db('mlite_bpjs_emr_mapping_prosedur_ranap')->where('kd_jenis_prw', $id)->save($saveData)) {
+                echo '1';
+            }
+        } else {
+            if ($this->db('mlite_bpjs_emr_mapping_prosedur_ranap')->save($saveData)) {
+                echo '1';
+            }
+        }
+        exit;
+    }
+
+    public function postSaveMappingOperasi()
+    {
+        $id = $_POST['kode_paket'] ?? '';
+        if (empty($id)) {
+            exit;
+        }
+
+        $saveData = [
+            'kode_paket' => $id,
+            'snomed_code' => $_POST['snomed_code'],
+            'snomed_display' => $_POST['snomed_display']
+        ];
+
+        if ($this->db('mlite_bpjs_emr_mapping_operasi')->where('kode_paket', $id)->count()) {
+            if ($this->db('mlite_bpjs_emr_mapping_operasi')->where('kode_paket', $id)->save($saveData)) {
+                echo '1';
+            }
+        } else {
+            if ($this->db('mlite_bpjs_emr_mapping_operasi')->save($saveData)) {
                 echo '1';
             }
         }
@@ -1598,6 +1671,12 @@ class Admin extends AdminModule
         }
         if ($type == 'prosedur') {
             return $this->db('mlite_bpjs_emr_mapping_prosedur')->where('kd_jenis_prw', $id)->oneArray();
+        }
+        if ($type == 'prosedur_ranap') {
+            return $this->db('mlite_bpjs_emr_mapping_prosedur_ranap')->where('kd_jenis_prw', $id)->oneArray();
+        }
+        if ($type == 'operasi') {
+            return $this->db('mlite_bpjs_emr_mapping_operasi')->where('kode_paket', $id)->oneArray();
         }
         return null;
     }
