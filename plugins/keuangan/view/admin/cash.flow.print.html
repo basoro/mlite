@@ -44,7 +44,11 @@
 					<hr style="margin-top:0;">
 					<p>
             <b>Laporan Arus Kas</b><br>
-            Tahun Anggaran {?=date('Y')?}
+            {if: isset($tgl_awal) && isset($tgl_akhir)}
+            Periode {?=date('d-m-Y', strtotime($tgl_awal))?} s/d {?=date('d-m-Y', strtotime($tgl_akhir))?}
+            {else}
+            Periode {?=date('d-m-Y')?}
+            {/if}
           </p>
 				</header>
 				<div class="">
@@ -53,8 +57,8 @@
               <tr>
                 <th width="50px">No.</th>
                 <th>Uraian Arus Kas</th>
-                <th width="160px"><span class="pull-right">{?=date('Y')?}</span></th>
-                <th width="160px"><span class="pull-right">{?=date('Y')-1?}</span></th>
+                <th width="160px"><span class="pull-right">Periode Ini</span></th>
+                <th width="160px"><span class="pull-right">Tahun Lalu</span></th>
               </tr>
             </thead>
             <tbody>
@@ -119,14 +123,14 @@
               <tr>
                 <th></th>
                 <th style="text-align:right">Saldo Awal Kas dan Setara Kas</th>
-                <th><span class="pull-right">{?= number_format($jumlah_total_saldo + $saldo_keluar,2,',','.')?}</span></th>
                 <th><span class="pull-right">{?= number_format($jumlah_total_saldo,2,',','.')?}</span></th>
+                <th></th>
               </tr>
               <tr>
                 <th></th>
                 <th style="text-align:right">Saldo Akhir Kas dan Setara Kas</th>
-                <th><span class="pull-right">{?= number_format(($masuk_all - $keluar_all) + ($jumlah_total_saldo + $saldo_keluar),2,',','.')?}</span></th>
-                <th><span class="pull-right">{?= number_format($jumlah_total_saldo + $saldo_keluar,2,',','.')?}</span></th>
+                <th><span class="pull-right">{?= number_format(($masuk_all - $keluar_all) + $jumlah_total_saldo,2,',','.')?}</span></th>
+                <th></th>
               </tr>
             </tfoot>
           </table>

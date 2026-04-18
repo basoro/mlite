@@ -41,7 +41,7 @@ class Admin extends AdminModule
         ['name' => 'Buku Besar', 'url' => url([ADMIN, 'keuangan', 'bukubesar']), 'icon' => 'money', 'desc' => 'Buku Besar'],
         ['name' => 'Cash Flow', 'url' => url([ADMIN, 'keuangan', 'cashflow']), 'icon' => 'money', 'desc' => 'Cash Flow'],
         ['name' => 'Neraca Keuangan', 'url' => url([ADMIN, 'keuangan', 'neraca']), 'icon' => 'money', 'desc' => 'Neraca Keuangan'],
-        ['name' => 'Pengaturan Keuangan', 'url' => url([ADMIN, 'keuangan', 'settings']), 'icon' => 'money', 'desc' => 'Pengaduan Modul Keuangan'],
+        ['name' => 'Pengaturan Keuangan', 'url' => url([ADMIN, 'keuangan', 'settings']), 'icon' => 'money', 'desc' => 'Pengaturan Modul Keuangan'],
       ];
       return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
@@ -106,7 +106,7 @@ class Admin extends AdminModule
 
     public function postSaveRekeningTahun()
     {
-      if($_POST['simpan']) {
+      if(isset($_POST['simpan']) && $_POST['simpan']) {
         $this->db('mlite_rekeningtahun')
         ->save([
           'thn' => $_POST['tahun'],
@@ -114,20 +114,20 @@ class Admin extends AdminModule
           'saldo_awal' => $_POST['saldo_awal']
         ]);
         $this->notify('success', 'Rekening tahun telah disimpan');
-      } else if ($_POST['update']) {
+      } else if (isset($_POST['update']) && $_POST['update']) {
         $this->db('mlite_rekeningtahun')
         ->where('thn', $_POST['tahun'])
         ->where('kd_rek', $_POST['kd_rek'])
         ->save([
           'saldo_awal' => $_POST['saldo_awal']
         ]);
-        $this->notify('failure', 'Rekening tahun telah diubah');
-      } else if ($_POST['hapus']) {
+        $this->notify('success', 'Rekening tahun telah diubah');
+      } else if (isset($_POST['hapus']) && $_POST['hapus']) {
         $this->db('mlite_rekeningtahun')
         ->where('thn', $_POST['tahun'])
         ->where('kd_rek', $_POST['kd_rek'])
         ->delete();
-        $this->notify('failure', 'Rekening tahun  telah dihapus');
+        $this->notify('success', 'Rekening tahun telah dihapus');
       }
       redirect(url([ADMIN, 'keuangan', 'rekeningtahun']));
     }
@@ -210,9 +210,23 @@ class Admin extends AdminModule
         $tgl_akhir = $_GET['tgl_akhir'];
       }
 
-      $query = $this->db()->pdo()->prepare("SELECT mlite_detailjurnal.no_jurnal, tgl_jurnal, keterangan, debet, kredit, CASE WHEN mlite_rekening.balance = 'D' THEN cast((@saldo:= @saldo + debet - kredit) AS DECIMAL(12,0)) ELSE cast((@saldo:= @saldo + kredit - debet) AS DECIMAL(12,0)) END AS saldo FROM mlite_detailjurnal JOIN (SELECT @saldo := 0) as saldo_sementara JOIN mlite_jurnal ON mlite_detailjurnal.no_jurnal = mlite_jurnal.no_jurnal JOIN mlite_rekening ON mlite_detailjurnal.kd_rek = mlite_rekening.kd_rek WHERE (mlite_jurnal.tgl_jurnal BETWEEN ? AND ?) ORDER BY mlite_detailjurnal.no_jurnal ASC");
-      $query->execute([$tgl_awal, $tgl_akhir]);
-      $bukubesar = $query->fetchAll(\PDO::FETCH_ASSOC);;
+      $kd_rek = isset($_GET['kd_rek']) ? $_GET['kd_rek'] : '';
+
+      $sql = "SELECT mlite_detailjurnal.no_jurnal, tgl_jurnal, keterangan, debet, kredit, CASE WHEN mlite_rekening.balance = 'D' THEN cast((@saldo:= @saldo + debet - kredit) AS DECIMAL(12,0)) ELSE cast((@saldo:= @saldo + kredit - debet) AS DECIMAL(12,0)) END AS saldo FROM mlite_detailjurnal JOIN (SELECT @saldo := 0) as saldo_sementara JOIN mlite_jurnal ON mlite_detailjurnal.no_jurnal = mlite_jurnal.no_jurnal JOIN mlite_rekening ON mlite_detailjurnal.kd_rek = mlite_rekening.kd_rek WHERE (mlite_jurnal.tgl_jurnal BETWEEN ? AND ?)";
+      $params = [$tgl_awal, $tgl_akhir];
+
+      if(!empty($kd_rek)) {
+        $sql .= " AND mlite_detailjurnal.kd_rek = ?";
+        $params[] = $kd_rek;
+      }
+
+      $sql .= " ORDER BY mlite_detailjurnal.no_jurnal ASC";
+
+      $query = $this->db()->pdo()->prepare($sql);
+      $query->execute($params);
+      $bukubesar = $query->fetchAll(\PDO::FETCH_ASSOC);
+
+      $akunrekening = $this->db('mlite_rekening')->toArray();
 
       if(isset($_GET['action']) && $_GET['action'] == 'print') {
         echo $this->draw('buku.besar.print.html', [
@@ -221,172 +235,170 @@ class Admin extends AdminModule
         ]);
         exit();
       } else {
-        return $this->draw('buku.besar.html', ['bukubesar' => $bukubesar]);
+        return $this->draw('buku.besar.html', [
+          'bukubesar' => $bukubesar,
+          'akunrekening' => $akunrekening,
+          'kd_rek_filter' => $kd_rek,
+          'tgl_awal' => htmlspecialchars($tgl_awal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+          'tgl_akhir' => htmlspecialchars($tgl_akhir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+        ]);
       }
     }
 
     public function getCashFlow()
     {
+      $this->_addHeaderFiles();
       $settings = $this->settings('settings');
       $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-      $curr_year = date('Y');
       $aruskas = [];
 
-      // Definisi kategori arus kas
+      $tgl_awal = date('Y-01-01');
+      $tgl_akhir = date('Y-m-d');
+
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+
+      // Definisi kategori arus kas — mapping sesuai tipe rekening:
+      // R (Rugi/Laba) = Kegiatan Operasional
+      // N (Neraca/Aset-Liabilitas) = Kegiatan Investasi
+      // M (Modal) = Kegiatan Pendanaan
       $rows_aruskas = array(
-          array(
-              "tipe" => "N",
-              "arus_kas" => "Kegiatan Operasional",
-          ),
-          array(
-              "tipe" => "R",
-              "arus_kas" => "Kegiatan Pendanaan",
-          ),
-          array(
-              "tipe" => "M",
-              "arus_kas" => "Kegiatan Investasi",
-          )
+          array("tipe" => "R", "arus_kas" => "Kegiatan Operasional"),
+          array("tipe" => "N", "arus_kas" => "Kegiatan Investasi"),
+          array("tipe" => "M", "arus_kas" => "Kegiatan Pendanaan"),
       );
-      
-      // Hitung saldo awal kas dari akun kas (1101-1105)
-      $saldo_awal_kas = 0;
+
+      // Hitung saldo awal kas dari akun kas (1101-1105) sebelum periode
       $query_saldo_awal = "
           SELECT COALESCE(SUM(
-              CASE 
+              CASE
                   WHEN r.balance = 'D' THEN COALESCE(jd.debet, 0) - COALESCE(jd.kredit, 0)
                   ELSE COALESCE(jd.kredit, 0) - COALESCE(jd.debet, 0)
               END
           ), 0) as saldo_kas
           FROM mlite_rekening r
           LEFT JOIN mlite_detailjurnal jd ON r.kd_rek = jd.kd_rek
+          LEFT JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal AND j.tgl_jurnal < ?
           WHERE r.kd_rek IN ('1101', '1102', '1103', '1104', '1105')
-          AND r.tipe = 'Y'
+          AND r.tipe = 'N'
       ";
-      
+
       $stmt_saldo = $this->db()->pdo()->prepare($query_saldo_awal);
-      $stmt_saldo->execute();
+      $stmt_saldo->execute([$tgl_awal]);
       $result_saldo = $stmt_saldo->fetch();
       $saldo_awal_kas = $result_saldo['saldo_kas'] ?? 0;
-      
+
       $total_kredit = 0;
       $total_debet = 0;
       $total_saldo_kredit = 0;
       $total_saldo_debet = 0;
       $n = 1;
-      
+
       foreach ($rows_aruskas as $row) {
         $row['nomor'] = $n++;
         $row['total_masuk'] = 0;
         $row['total_keluar'] = 0;
         $row['total_saldo_awal_masuk'] = 0;
         $row['total_saldo_awal_keluar'] = 0;
-        
-        // Arus kas masuk (transaksi yang menambah kas)
+
+        // Arus kas masuk (transaksi yang menambah kas) dalam periode
         $query_masuk = "
-            SELECT 
+            SELECT
                 jd.kd_rek,
                 r.nm_rek,
                 r.tipe,
                 r.balance,
-                SUM(CASE 
+                SUM(CASE
                     WHEN jd.kd_rek IN ('1101', '1102', '1103', '1104', '1105') THEN jd.debet
                     ELSE jd.kredit
                 END) as total_masuk
             FROM mlite_detailjurnal jd
             JOIN mlite_rekening r ON r.kd_rek = jd.kd_rek
-            WHERE r.tipe = ? 
+            JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
+            WHERE r.tipe = ?
+            AND j.tgl_jurnal >= ? AND j.tgl_jurnal <= ?
             AND ((jd.kd_rek IN ('1101', '1102', '1103', '1104', '1105') AND jd.debet > 0)
                  OR (jd.kd_rek NOT IN ('1101', '1102', '1103', '1104', '1105') AND jd.kredit > 0))
             GROUP BY jd.kd_rek, r.nm_rek, r.tipe, r.balance
             HAVING total_masuk > 0
         ";
-        
+
         $stmt_masuk = $this->db()->pdo()->prepare($query_masuk);
-        $stmt_masuk->execute([$row['tipe']]);
+        $stmt_masuk->execute([$row['tipe'], $tgl_awal, $tgl_akhir]);
         $rows_masuk = $stmt_masuk->fetchAll();
-        
+
         $row['jurnal_masuk'] = [];
         foreach ($rows_masuk as $row_masuk) {
           $row_masuk['kredit_all'] = $row_masuk['total_masuk'];
-          $row_masuk['saldo_awal'] = 0; // Untuk kompatibilitas template
+          $row_masuk['saldo_awal'] = 0;
           $row['total_masuk'] += $row_masuk['total_masuk'];
           $row['jurnal_masuk'][] = $row_masuk;
           $total_kredit += $row_masuk['total_masuk'];
         }
-        
-        // Arus kas keluar (transaksi yang mengurangi kas)
+
+        // Arus kas keluar (transaksi yang mengurangi kas) dalam periode
         $query_keluar = "
-            SELECT 
+            SELECT
                 jd.kd_rek,
                 r.nm_rek,
                 r.tipe,
                 r.balance,
-                SUM(CASE 
+                SUM(CASE
                     WHEN jd.kd_rek IN ('1101', '1102', '1103', '1104', '1105') THEN jd.kredit
                     ELSE jd.debet
                 END) as total_keluar
             FROM mlite_detailjurnal jd
             JOIN mlite_rekening r ON r.kd_rek = jd.kd_rek
-            WHERE r.tipe = ? 
+            JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
+            WHERE r.tipe = ?
+            AND j.tgl_jurnal >= ? AND j.tgl_jurnal <= ?
             AND ((jd.kd_rek IN ('1101', '1102', '1103', '1104', '1105') AND jd.kredit > 0)
                  OR (jd.kd_rek NOT IN ('1101', '1102', '1103', '1104', '1105') AND jd.debet > 0))
             GROUP BY jd.kd_rek, r.nm_rek, r.tipe, r.balance
             HAVING total_keluar > 0
         ";
-        
+
         $stmt_keluar = $this->db()->pdo()->prepare($query_keluar);
-        $stmt_keluar->execute([$row['tipe']]);
+        $stmt_keluar->execute([$row['tipe'], $tgl_awal, $tgl_akhir]);
         $rows_keluar = $stmt_keluar->fetchAll();
-        
+
         $row['jurnal_keluar'] = [];
         foreach ($rows_keluar as $row_keluar) {
           $row_keluar['debet_all'] = $row_keluar['total_keluar'];
-          $row_keluar['saldo_awal'] = 0; // Untuk kompatibilitas template
+          $row_keluar['saldo_awal'] = 0;
           $row['total_keluar'] += $row_keluar['total_keluar'];
           $row['jurnal_keluar'][] = $row_keluar;
           $total_debet += $row_keluar['total_keluar'];
         }
-        
+
         $aruskas[] = $row;
       }
-      
-      // Hitung saldo akhir kas: saldo_awal + arus_masuk - arus_keluar
-      $arus_kas_bersih = $total_kredit - $total_debet;
-      $saldo_akhir_kas = $saldo_awal_kas + $arus_kas_bersih;
-      
-      // Pastikan saldo akhir kas adalah 25.000.000 sesuai perbaikan
-      $target_saldo_akhir = 25000000;
-      $adjustment_needed = $target_saldo_akhir - $saldo_akhir_kas;
-      
-      // Jika perlu penyesuaian, tambahkan ke saldo awal
-      if($adjustment_needed != 0) {
-        $saldo_awal_kas += $adjustment_needed;
-        $saldo_akhir_kas = $target_saldo_akhir;
-      }
-      
+
       $akunrekening = $this->db('mlite_rekening')->toArray();
-      
+      $tgl_awal_escaped = htmlspecialchars($tgl_awal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+      $tgl_akhir_escaped = htmlspecialchars($tgl_akhir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+      $template_data = [
+        'aruskas' => $aruskas,
+        'akunrekening' => $akunrekening,
+        'masuk_all' => $total_kredit,
+        'keluar_all' => $total_debet,
+        'saldo_masuk' => $total_saldo_kredit,
+        'saldo_keluar' => $total_saldo_debet,
+        'jumlah_total_saldo' => $saldo_awal_kas,
+        'tgl_awal' => $tgl_awal_escaped,
+        'tgl_akhir' => $tgl_akhir_escaped,
+      ];
+
       if(isset($_GET['action']) && $_GET['action'] == 'print') {
-        echo $this->draw('cash.flow.print.html', [
-          'aruskas' => $aruskas, 
-          'akunrekening' => $akunrekening, 
-          'masuk_all' => $total_kredit, 
-          'keluar_all' => $total_debet, 
-          'saldo_masuk' => $total_saldo_kredit, 
-          'saldo_keluar' => $total_saldo_debet, 
-          'jumlah_total_saldo' => $saldo_awal_kas
-        ]);
+        echo $this->draw('cash.flow.print.html', $template_data);
         exit();
       } else {
-        return $this->draw('cash.flow.html', [
-          'aruskas' => $aruskas, 
-          'akunrekening' => $akunrekening, 
-          'masuk_all' => $total_kredit, 
-          'keluar_all' => $total_debet, 
-          'saldo_masuk' => $total_saldo_kredit, 
-          'saldo_keluar' => $total_saldo_debet, 
-          'jumlah_total_saldo' => $saldo_awal_kas
-        ]);
+        return $this->draw('cash.flow.html', $template_data);
       }
     }
 
@@ -434,7 +446,7 @@ class Admin extends AdminModule
           FROM mlite_rekening r
           LEFT JOIN mlite_detailjurnal jd ON r.kd_rek = jd.kd_rek
           LEFT JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal AND j.tgl_jurnal < ?
-          WHERE r.tipe IN ('Y', 'N')
+          WHERE r.tipe IN ('N', 'M')
           GROUP BY r.kd_rek, r.nm_rek, r.balance
       ";
       
@@ -460,7 +472,7 @@ class Admin extends AdminModule
           FROM mlite_rekening r
           LEFT JOIN mlite_detailjurnal jd ON r.kd_rek = jd.kd_rek
           LEFT JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
-          WHERE r.tipe IN ('Y', 'N')
+          WHERE r.tipe IN ('N', 'M')
           AND j.tgl_jurnal >= ? AND j.tgl_jurnal <= ?
           GROUP BY r.kd_rek, r.nm_rek, r.balance
       ";
@@ -473,7 +485,7 @@ class Admin extends AdminModule
       }
 
       // Ambil semua rekening aktif
-      $query_rekening = "SELECT kd_rek, nm_rek, balance FROM mlite_rekening WHERE tipe IN ('Y', 'N') ORDER BY kd_rek";
+      $query_rekening = "SELECT kd_rek, nm_rek, balance FROM mlite_rekening WHERE tipe IN ('N', 'M') ORDER BY kd_rek";
       $stmt_rekening = $this->db()->pdo()->prepare($query_rekening);
       $stmt_rekening->execute();
       $result = $stmt_rekening->fetchAll();
@@ -556,7 +568,7 @@ class Admin extends AdminModule
           FROM mlite_rekening r
           LEFT JOIN mlite_detailjurnal jd ON r.kd_rek = jd.kd_rek
           LEFT JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
-          WHERE r.tipe IN ('Y', 'N')
+          WHERE r.tipe = 'R'
           AND LEFT(r.kd_rek, 1) IN ('4', '5', '6', '7', '8', '9')
           AND j.tgl_jurnal >= ? AND j.tgl_jurnal <= ?
       ";
@@ -628,26 +640,26 @@ class Admin extends AdminModule
 
     public function postSaveAkunKegiatan()
     {
-        if($_POST['simpan']) {
+        if(isset($_POST['simpan']) && $_POST['simpan']) {
           $this->db('mlite_akun_kegiatan')
           ->save([
             'kegiatan' => $_POST['nama_kegiatan'],
             'kd_rek' => $_POST['kd_rek']
           ]);
           $this->notify('success', 'Nama kegiatan keuangan telah disimpan');
-        } else if ($_POST['update']) {
+        } else if (isset($_POST['update']) && $_POST['update']) {
           $this->db('mlite_akun_kegiatan')
           ->where('id', $_POST['id'])
           ->save([
             'kegiatan' => $_POST['nama_kegiatan'],
             'kd_rek' => $_POST['kd_rek']
           ]);
-          $this->notify('failure', 'Nama kegiatan keuangan telah diubah');
-        } else if ($_POST['hapus']) {
+          $this->notify('success', 'Nama kegiatan keuangan telah diubah');
+        } else if (isset($_POST['hapus']) && $_POST['hapus']) {
           $this->db('mlite_akun_kegiatan')
           ->where('id', $_POST['id'])
           ->delete();
-          $this->notify('failure', 'Nama kegiatan keuangan telah dihapus');
+          $this->notify('success', 'Nama kegiatan keuangan telah dihapus');
         }
         redirect(url([ADMIN, 'keuangan', 'pengaturanrekening']));
     }
@@ -661,8 +673,7 @@ class Admin extends AdminModule
               'kd_rek' => $val
             ]);
         }
-        $this->notify('success', 'Pengaturan rekeing keuangan telah disimpan');
-        //exit();
+        $this->notify('success', 'Pengaturan rekening keuangan telah disimpan');
         redirect(url([ADMIN, 'keuangan', 'pengaturanrekening']));
     }
 
