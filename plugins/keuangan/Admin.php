@@ -212,7 +212,7 @@ class Admin extends AdminModule
 
       $kd_rek = isset($_GET['kd_rek']) ? $_GET['kd_rek'] : '';
 
-      $sql = "SELECT mlite_detailjurnal.no_jurnal, tgl_jurnal, keterangan, debet, kredit, CASE WHEN mlite_rekening.balance = 'D' THEN cast((@saldo:= @saldo + debet - kredit) AS DECIMAL(12,0)) ELSE cast((@saldo:= @saldo + kredit - debet) AS DECIMAL(12,0)) END AS saldo FROM mlite_detailjurnal JOIN (SELECT @saldo := 0) as saldo_sementara JOIN mlite_jurnal ON mlite_detailjurnal.no_jurnal = mlite_jurnal.no_jurnal JOIN mlite_rekening ON mlite_detailjurnal.kd_rek = mlite_rekening.kd_rek WHERE (mlite_jurnal.tgl_jurnal BETWEEN ? AND ?)";
+      $sql = "SELECT mlite_detailjurnal.no_jurnal, tgl_jurnal, keterangan, debet, kredit, mlite_rekening.balance FROM mlite_detailjurnal JOIN mlite_jurnal ON mlite_detailjurnal.no_jurnal = mlite_jurnal.no_jurnal JOIN mlite_rekening ON mlite_detailjurnal.kd_rek = mlite_rekening.kd_rek WHERE (mlite_jurnal.tgl_jurnal BETWEEN ? AND ?)";
       $params = [$tgl_awal, $tgl_akhir];
 
       if(!empty($kd_rek)) {
@@ -225,6 +225,17 @@ class Admin extends AdminModule
       $query = $this->db()->pdo()->prepare($sql);
       $query->execute($params);
       $bukubesar = $query->fetchAll(\PDO::FETCH_ASSOC);
+      $saldo = 0;
+      foreach ($bukubesar as $key => $row) {
+        $debet = (float)$row['debet'];
+        $kredit = (float)$row['kredit'];
+        if ($row['balance'] === 'D') {
+          $saldo += ($debet - $kredit);
+        } else {
+          $saldo += ($kredit - $debet);
+        }
+        $bukubesar[$key]['saldo'] = $saldo;
+      }
 
       $akunrekening = $this->db('mlite_rekening')->toArray();
 
