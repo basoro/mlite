@@ -226,7 +226,7 @@ class Admin extends AdminModule
       $query->execute($params);
       $bukubesar = $query->fetchAll(\PDO::FETCH_ASSOC);
       $saldo = 0;
-      foreach ($bukubesar as &$row) {
+      foreach ($bukubesar as $key => $row) {
         $debet = (float)$row['debet'];
         $kredit = (float)$row['kredit'];
         if ($row['balance'] === 'D') {
@@ -234,9 +234,8 @@ class Admin extends AdminModule
         } else {
           $saldo += ($kredit - $debet);
         }
-        $row['saldo'] = $saldo;
+        $bukubesar[$key]['saldo'] = $saldo;
       }
-      unset($row);
 
       $akunrekening = $this->db('mlite_rekening')->toArray();
 
