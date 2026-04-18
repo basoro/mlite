@@ -2457,6 +2457,15 @@ class Admin extends AdminModule
             $result_detail['obat_operasi'][] = $obat_operasi;
           }
 
+          $result_detail['resep_pulang'] = $this->db('resep_pulang')
+            ->join('databarang', 'databarang.kode_brng=resep_pulang.kode_brng')
+            ->where('resep_pulang.no_rawat', $no_rawat)
+            ->toArray();
+
+          $result_detail['tambahan_biaya'] = $this->db('tambahan_biaya')
+            ->where('no_rawat', $no_rawat)
+            ->toArray();
+
        } else {
 
          $result_detail['billing'] = $this->db('mlite_billing')->where('no_rawat', $no_rawat)->like('kd_billing', 'RI%')->desc('id_billing')->oneArray();
@@ -2536,6 +2545,11 @@ class Admin extends AdminModule
            $jumlah_total_obat_operasi += $obat_operasi['harga'];
            $result_detail['obat_operasi'][] = $obat_operasi;
          }
+
+         $result_detail['resep_pulang'] = $this->db('resep_pulang')
+           ->join('databarang', 'databarang.kode_brng=resep_pulang.kode_brng')
+           ->where('resep_pulang.no_rawat', $no_rawat)
+           ->toArray();
 
        }
 

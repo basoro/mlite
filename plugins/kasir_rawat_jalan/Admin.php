@@ -257,6 +257,26 @@ class Admin extends AdminModule
             $total_biaya += $t['besar_biaya'];
         }
 
+        // 9. Obat Pulang
+        $resep_pulang = $this->db('resep_pulang')
+            ->join('databarang', 'databarang.kode_brng = resep_pulang.kode_brng')
+            ->where('resep_pulang.no_rawat', $no_rawat)
+            ->toArray();
+        foreach ($resep_pulang as $r) {
+            $details[] = [
+                'kategori' => 'Obat Pulang',
+                'nama' => $r['nama_brng'],
+                'biaya' => $r['harga'],
+                'jumlah' => $r['jml_barang'],
+                'subtotal' => $r['total'],
+                'kode_brng' => $r['kode_brng'],
+                'tanggal' => $r['tanggal'],
+                'jam' => $r['jam'],
+                'type' => 'obat_pulang'
+            ];
+            $total_biaya += $r['total'];
+        }
+
         header('Content-Type: application/json');
         echo json_encode([
             'status' => 'success',
@@ -888,6 +908,31 @@ class Admin extends AdminModule
         $jumlah_total_obat_operasi += $obat_operasi['harga'];
       }
 
+      $rows_resep_pulang = $this->db('resep_pulang')
+        ->join('databarang', 'databarang.kode_brng=resep_pulang.kode_brng')
+        ->where('resep_pulang.no_rawat', $_POST['no_rawat'])
+        ->toArray();
+      $resep_pulang = [];
+      $no_resep_pulang = 1;
+      $jumlah_total_obat_pulang = 0;
+      foreach ($rows_resep_pulang as $row) {
+        $row['nomor'] = $no_resep_pulang++;
+        $jumlah_total_obat_pulang += $row['total'];
+        $resep_pulang[] = $row;
+      }
+
+      $rows_tambahan_biaya = $this->db('tambahan_biaya')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->toArray();
+      $tambahan_biaya = [];
+      $no_tambahan_biaya = 1;
+      $jumlah_total_tambahan = 0;
+      foreach ($rows_tambahan_biaya as $row) {
+        $row['nomor'] = $no_tambahan_biaya++;
+        $jumlah_total_tambahan += $row['besar_biaya'];
+        $tambahan_biaya[] = $row;
+      }
+
       echo $this->draw('rincian.html', [
         'rawat_jl_dr' => $rawat_jl_dr,
         'rawat_jl_pr' => $rawat_jl_pr,
@@ -906,6 +951,10 @@ class Admin extends AdminModule
         'jumlah_total_radiologi' => $jumlah_total_radiologi,
         'jumlah_total_operasi' => $jumlah_total_operasi,
         'jumlah_total_obat_operasi' => $jumlah_total_obat_operasi,
+        'resep_pulang' => htmlspecialchars_array($resep_pulang),
+        'jumlah_total_obat_pulang' => $jumlah_total_obat_pulang,
+        'tambahan_biaya' => $tambahan_biaya,
+        'jumlah_total_tambahan' => $jumlah_total_tambahan,
         'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
       ]);
       exit();
@@ -2027,6 +2076,15 @@ class Admin extends AdminModule
           $jumlah_total_obat_operasi += $obat_operasi['harga'];
           $result_detail['obat_operasi'][] = $obat_operasi;
         }
+
+        $result_detail['resep_pulang'] = $this->db('resep_pulang')
+          ->join('databarang', 'databarang.kode_brng=resep_pulang.kode_brng')
+          ->where('resep_pulang.no_rawat', $_GET['no_rawat'])
+          ->toArray();
+
+        $result_detail['tambahan_biaya'] = $this->db('tambahan_biaya')
+          ->where('no_rawat', $_GET['no_rawat'])
+          ->toArray();
 
         $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
         $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();

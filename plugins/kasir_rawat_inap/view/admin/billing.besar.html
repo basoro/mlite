@@ -267,7 +267,30 @@
 			{/if}
 			<tr border='1', height='20px'>
 				<td>X</td>
-				<td colspan="1">Biaya Tambahan</td>
+				<td colspan="1">Obat Pulang</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail.resep_pulang}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {?=isset_or($value.nama_brng)?}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
+				<td>{?=isset_or($value.jml_barang)?}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.total,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			{if: $billing_besar_detail.resep_pulang}
+			<tr border='0', height='20px'>
+				<td colspan="2"></td>
+				<td colspan="2"><b>Sub total</b></td>
+				<td><b>Rp. <span class="pull-right">{?= number_format(array_sum(array_column($billing_besar_detail.resep_pulang, 'total')),2,',','.')?}</span></a></td>
+			</tr>
+			{/if}
+			<tr border='1', height='20px'>
+				<td>XI</td>
+				<td colspan="1">Biaya Tambahan (termasuk UTD)</td>
 				<td></td>
 				<td></td>
 				<td></td>
