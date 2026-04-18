@@ -1712,7 +1712,7 @@ switch ($version) {
         break;
 
     case '6.0.0':
-        $return = '6.2.0'; 
+        $return = '6.2.0';
         break;
 
     case '6.2.0':
@@ -1921,10 +1921,41 @@ switch ($version) {
         }
         $return = '6.3.0';
         break;
+
+    case '6.3.0':
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_prosedur_ranap` (
+              `kd_jenis_prw` TEXT NOT NULL,
+              `snomed_code` TEXT NOT NULL,
+              `snomed_display` TEXT DEFAULT NULL,
+              PRIMARY KEY (`kd_jenis_prw`)
+            );");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_operasi` (
+              `kode_paket` TEXT NOT NULL,
+              `snomed_code` TEXT NOT NULL,
+              `snomed_display` TEXT DEFAULT NULL,
+              PRIMARY KEY (`kode_paket`)
+            );");
+        } else {
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_prosedur_ranap` (
+              `kd_jenis_prw` varchar(20) NOT NULL,
+              `snomed_code` varchar(20) NOT NULL,
+              `snomed_display` varchar(255) DEFAULT NULL,
+              PRIMARY KEY (`kd_jenis_prw`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_operasi` (
+              `kode_paket` varchar(20) NOT NULL,
+              `snomed_code` varchar(20) NOT NULL,
+              `snomed_display` varchar(255) DEFAULT NULL,
+              PRIMARY KEY (`kode_paket`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+        }
+        $return = '6.3.1';
+        break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '6.3.0';
+        $return = '6.3.1';
     }
 
 return $return;
