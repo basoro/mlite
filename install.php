@@ -270,6 +270,10 @@ function processCreateTable($pdo, $sql)
 
 function processInsert($pdo, $sql)
 {
+    if (stripos(trim($sql), 'INSERT INTO') !== 0) {
+        return;
+    }
+
     try {
         $pdo->exec($sql);
     } catch (PDOException $e) {
