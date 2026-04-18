@@ -2,6 +2,11 @@
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
     <h4 class="modal-title">Penilaian Awal Medis Dokter IGD</h4>
 </div>
+<style>
+  .medis-igd-mt-6 {
+    margin-top: 6px;
+  }
+</style>
 <div class="modal-body">
   <h4>I. Riwayat Kesehatan</h4>
   <div class="row">
@@ -293,6 +298,28 @@
         <div class="form-group">
           <textarea name="diagnosis" id="diagnosis" class="form-control" cols="5" rows="5">{if: $penilaian_medis_igd}{?=isset_or($penilaian_medis_igd.diagnosis,'')?}{else}{?=isset_or($data_medisIgd.penilaian_medis_igd.diagnosis,'')?}{/if}</textarea>
         </div>
+        <div class="form-group">
+          <label for="medis_igd_icd10_code">Kode ICD-10 untuk Mapping SNOMED</label>
+          <input type="text" name="medis_igd_icd10_code" id="medis_igd_icd10_code" class="form-control" placeholder="Contoh: A09" maxlength="10" aria-label="Kode ICD-10 untuk mapping SNOMED">
+        </div>
+        <div class="form-group">
+          <label for="medis_igd_snomed_concept_id">SNOMED Concept ID</label>
+          <div class="input-group">
+            <input type="text" name="medis_igd_snomed_concept_id" id="medis_igd_snomed_concept_id" class="form-control" placeholder="SNOMED Concept ID" aria-label="SNOMED Concept ID" />
+            <span class="input-group-btn">
+              <button type="button" id="medis_igd_ai_generate_snomed" class="btn btn-default" title="Generate SNOMED-CT dari AI" aria-label="Generate SNOMED-CT dari AI">
+                <i class="fa fa-robot"></i>
+              </button>
+            </span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="medis_igd_snomed_term">SNOMED Term</label>
+          <input type="text" name="medis_igd_snomed_term" id="medis_igd_snomed_term" class="form-control" placeholder="SNOMED Term" aria-label="SNOMED Term">
+          <button type="button" id="medis_igd_simpan_mapping_snomed" class="btn btn-info btn-xs medis-igd-mt-6" aria-label="Simpan Mapping SNOMED">
+            <i class="fa fa-save"></i><span class="hidden-xs"> Simpan Mapping SNOMED</span>
+          </button>
+        </div>
       </div>
       <div class="col-sm-6">
         <h4>VIII. Tata Laksana</h4>
@@ -383,6 +410,92 @@
 </div>
 
 <script>
+var MEDIS_IGD_STATUS_PENYAKIT_BARU = 'Baru';
+var MEDIS_IGD_AI_TIMEOUT_MS = 20000;
+var MEDIS_IGD_SAVE_SUCCESS = '1';
+
+$(document).off('click', '#medis_igd_ai_generate_snomed').on('click', '#medis_igd_ai_generate_snomed', function(event) {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var kodeDiagnosa = String($('#medis_igd_icd10_code').val() || '').trim();
+  var namaDiagnosa = String($('#diagnosis').val() || '').trim();
+  if (!kodeDiagnosa || !namaDiagnosa) {
+    alert('Diagnosis dan kode ICD-10 harus diisi.');
+    return;
+  }
+
+  var button = $(this);
+  var originalText = button.html();
+  button.html('<i class="fa fa-spinner fa-spin"></i>').prop('disabled', true);
+
+  $.ajax({
+    type: 'POST',
+    url: baseURL + '/dokter_igd/fetchaisnomedicd?t=' + mlite.token,
+    data: {
+      kode_diagnosa: kodeDiagnosa,
+      nama_diagnosa: namaDiagnosa
+    },
+    dataType: 'json',
+    timeout: MEDIS_IGD_AI_TIMEOUT_MS
+  })
+  .done(function(response) {
+    if (response && response.status === 'success' && response.data) {
+      $('#medis_igd_snomed_concept_id').val(String(response.data.snomed_concept_id || '').trim());
+      $('#medis_igd_snomed_term').val(String(response.data.snomed_term || '').trim());
+    } else {
+      alert((response && response.message) ? response.message : 'Gagal generate SNOMED-CT.');
+    }
+  })
+  .fail(function(xhr, status) {
+    if (status === 'timeout') {
+      alert('Permintaan generate SNOMED-CT timeout.');
+    } else if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+      alert(xhr.responseJSON.message);
+    } else {
+      alert('Gagal generate SNOMED-CT.');
+    }
+  })
+  .always(function() {
+    button.html(originalText).prop('disabled', false);
+  });
+});
+
+$(document).off('click', '#medis_igd_simpan_mapping_snomed').on('click', '#medis_igd_simpan_mapping_snomed', function(event) {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var noRawat = String($('input:text[name=no_rawat_medisIgd]').val() || '').trim();
+  var kdPenyakit = String($('#medis_igd_icd10_code').val() || '').trim();
+  var snomedConceptId = String($('#medis_igd_snomed_concept_id').val() || '').trim();
+  var snomedTerm = String($('#medis_igd_snomed_term').val() || '').trim();
+
+  if (!noRawat || !kdPenyakit || !snomedConceptId || !snomedTerm) {
+    alert('Lengkapi kode ICD-10, SNOMED Concept ID, dan SNOMED Term.');
+    return;
+  }
+
+  // Format SNOMED Concept ID yang diterima sistem: 6-18 digit angka (regex ^[1-9][0-9]{5,17}$), tanpa awalan 0.
+  if (!/^[1-9][0-9]{5,17}$/.test(snomedConceptId)) {
+    alert('Format SNOMED Concept ID tidak valid.');
+    return;
+  }
+
+  $.post(baseURL + '/dokter_igd/savemappingsnomedicd?t=' + mlite.token, {
+    no_rawat: noRawat,
+    kd_penyakit: kdPenyakit,
+    snomed_concept_id: snomedConceptId,
+    snomed_term: snomedTerm,
+    status_penyakit: MEDIS_IGD_STATUS_PENYAKIT_BARU
+  }, function(response) {
+    if (response === MEDIS_IGD_SAVE_SUCCESS) {
+      alert('Mapping SNOMED-CT berhasil disimpan!');
+    } else {
+      alert('Gagal menyimpan mapping SNOMED-CT. Pastikan diagnosa ICD-10 sudah tersimpan.');
+    }
+  });
+});
+
 $(document).off('click', '#saveMedisIgd').on('click', '#saveMedisIgd', function(event) {
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
