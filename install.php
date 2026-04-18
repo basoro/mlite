@@ -275,6 +275,7 @@ function processInsert($pdo, $sql)
         return;
     }
 
+    // Tolak statement chaining: hanya boleh satu INSERT statement dari dump.
     if (strpos(rtrim($statement, " \t\n\r\0\x0B;"), ';') !== false) {
         return;
     }
@@ -282,6 +283,7 @@ function processInsert($pdo, $sql)
     try {
         $pdo->exec($statement);
     } catch (PDOException $e) {
+        // Abaikan baris INSERT yang gagal agar proses import dump tetap lanjut.
     }
 }
 
