@@ -648,6 +648,143 @@ class Admin extends AdminModule
         redirect(url([ADMIN, 'keuangan', 'settings']));
     }
 
+    public function postInsertDummyKeuangan()
+    {
+        $rekeningtahun = [
+            ['thn' => 2025, 'kd_rek' => '1101', 'saldo_awal' => 50000000],
+            ['thn' => 2025, 'kd_rek' => '1201', 'saldo_awal' => 200000000],
+            ['thn' => 2025, 'kd_rek' => '1301', 'saldo_awal' => 75000000],
+            ['thn' => 2025, 'kd_rek' => '1302', 'saldo_awal' => 15000000],
+            ['thn' => 2025, 'kd_rek' => '1401', 'saldo_awal' => 80000000],
+            ['thn' => 2025, 'kd_rek' => '1601', 'saldo_awal' => 500000000],
+            ['thn' => 2025, 'kd_rek' => '1701', 'saldo_awal' => 300000000],
+            ['thn' => 2025, 'kd_rek' => '1801', 'saldo_awal' => 150000000],
+            ['thn' => 2025, 'kd_rek' => '1901', 'saldo_awal' => 50000000],
+            ['thn' => 2025, 'kd_rek' => '2101', 'saldo_awal' => 25000000],
+            ['thn' => 2025, 'kd_rek' => '2102', 'saldo_awal' => 20000000],
+            ['thn' => 2025, 'kd_rek' => '2201', 'saldo_awal' => 200000000],
+            ['thn' => 2025, 'kd_rek' => '3101', 'saldo_awal' => 800000000],
+            ['thn' => 2025, 'kd_rek' => '3201', 'saldo_awal' => 375000000],
+            ['thn' => 2026, 'kd_rek' => '1101', 'saldo_awal' => 230000000],
+            ['thn' => 2026, 'kd_rek' => '1201', 'saldo_awal' => 200000000],
+            ['thn' => 2026, 'kd_rek' => '1301', 'saldo_awal' => 75000000],
+            ['thn' => 2026, 'kd_rek' => '1302', 'saldo_awal' => 15000000],
+            ['thn' => 2026, 'kd_rek' => '1401', 'saldo_awal' => 80000000],
+            ['thn' => 2026, 'kd_rek' => '1601', 'saldo_awal' => 495000000],
+            ['thn' => 2026, 'kd_rek' => '1701', 'saldo_awal' => 293000000],
+            ['thn' => 2026, 'kd_rek' => '1801', 'saldo_awal' => 147000000],
+            ['thn' => 2026, 'kd_rek' => '1901', 'saldo_awal' => 50000000],
+            ['thn' => 2026, 'kd_rek' => '2101', 'saldo_awal' => 25000000],
+            ['thn' => 2026, 'kd_rek' => '2102', 'saldo_awal' => 20000000],
+            ['thn' => 2026, 'kd_rek' => '2201', 'saldo_awal' => 200000000],
+            ['thn' => 2026, 'kd_rek' => '3101', 'saldo_awal' => 800000000],
+            ['thn' => 2026, 'kd_rek' => '3201', 'saldo_awal' => 540000000]
+        ];
+
+        $jurnal = [
+            ['no_jurnal' => 'JU-2025-001', 'no_bukti' => 'BKT-2025-001', 'tgl_jurnal' => '2025-01-15', 'jenis' => 'U', 'kegiatan' => 'Penerimaan Kasir Rawat Jalan', 'keterangan' => 'Penerimaan pendapatan layanan Q1 Januari 2025. Diposting oleh Administrator.'],
+            ['no_jurnal' => 'JU-2025-002', 'no_bukti' => 'BKT-2025-002', 'tgl_jurnal' => '2025-01-31', 'jenis' => 'U', 'kegiatan' => 'Pembayaran Gaji Karyawan', 'keterangan' => 'Pembayaran gaji seluruh karyawan bulan Januari 2025. Diposting oleh Administrator.'],
+            ['no_jurnal' => 'JU-2025-003', 'no_bukti' => 'BKT-2025-003', 'tgl_jurnal' => '2025-04-15', 'jenis' => 'U', 'kegiatan' => 'Penerimaan Kasir Q2', 'keterangan' => 'Penerimaan pendapatan layanan Q2 April 2025. Diposting oleh Administrator.'],
+            ['no_jurnal' => 'JU-2025-004', 'no_bukti' => 'BKT-2025-004', 'tgl_jurnal' => '2025-04-30', 'jenis' => 'U', 'kegiatan' => 'Pembayaran Biaya Operasional Q2', 'keterangan' => 'Pembayaran biaya operasional bulan April 2025. Diposting oleh Administrator.'],
+            ['no_jurnal' => 'JU-2025-005', 'no_bukti' => 'BKT-2025-005', 'tgl_jurnal' => '2025-07-15', 'jenis' => 'U', 'kegiatan' => 'Penerimaan Kasir Q3', 'keterangan' => 'Penerimaan pendapatan layanan Q3 Juli 2025. Diposting oleh Administrator.'],
+            ['no_jurnal' => 'JU-2025-006', 'no_bukti' => 'BKT-2025-006', 'tgl_jurnal' => '2025-07-31', 'jenis' => 'U', 'kegiatan' => 'Pembayaran Biaya Operasional Q3', 'keterangan' => 'Pembayaran biaya operasional bulan Juli 2025. Diposting oleh Administrator.'],
+            ['no_jurnal' => 'JU-2025-007', 'no_bukti' => 'BKT-2025-007', 'tgl_jurnal' => '2025-10-15', 'jenis' => 'U', 'kegiatan' => 'Penerimaan Kasir Q4', 'keterangan' => 'Penerimaan pendapatan layanan Q4 Oktober 2025. Diposting oleh Administrator.'],
+            ['no_jurnal' => 'JU-2025-008', 'no_bukti' => 'BKT-2025-008', 'tgl_jurnal' => '2025-10-31', 'jenis' => 'U', 'kegiatan' => 'Pembayaran Biaya Operasional Q4', 'keterangan' => 'Pembayaran biaya operasional bulan Oktober 2025. Diposting oleh Administrator.'],
+            ['no_jurnal' => 'JU-2025-009', 'no_bukti' => 'BKT-2025-009', 'tgl_jurnal' => '2025-12-31', 'jenis' => 'P', 'kegiatan' => 'Penyesuaian Akhir Tahun 2025', 'keterangan' => 'Jurnal penyesuaian beban penyusutan aset tetap tahun 2025. Diposting oleh Administrator.'],
+            ['no_jurnal' => 'JU-2026-001', 'no_bukti' => 'BKT-2026-001', 'tgl_jurnal' => '2026-01-15', 'jenis' => 'U', 'kegiatan' => 'Penerimaan Kasir Januari 2026', 'keterangan' => 'Penerimaan pendapatan layanan bulan Januari 2026. Diposting oleh Administrator.'],
+            ['no_jurnal' => 'JU-2026-002', 'no_bukti' => 'BKT-2026-002', 'tgl_jurnal' => '2026-01-31', 'jenis' => 'U', 'kegiatan' => 'Pembayaran Biaya Januari 2026', 'keterangan' => 'Pembayaran biaya operasional bulan Januari 2026. Diposting oleh Administrator.'],
+            ['no_jurnal' => 'JU-2026-003', 'no_bukti' => 'BKT-2026-003', 'tgl_jurnal' => '2026-02-15', 'jenis' => 'U', 'kegiatan' => 'Penerimaan Kasir Februari 2026', 'keterangan' => 'Penerimaan pendapatan layanan bulan Februari 2026. Diposting oleh Administrator.'],
+            ['no_jurnal' => 'JU-2026-004', 'no_bukti' => 'BKT-2026-004', 'tgl_jurnal' => '2026-02-28', 'jenis' => 'U', 'kegiatan' => 'Pembayaran Biaya Februari 2026', 'keterangan' => 'Pembayaran biaya operasional bulan Februari 2026. Diposting oleh Administrator.'],
+            ['no_jurnal' => 'JU-2026-005', 'no_bukti' => 'BKT-2026-005', 'tgl_jurnal' => '2026-03-15', 'jenis' => 'U', 'kegiatan' => 'Penerimaan Kasir Maret 2026', 'keterangan' => 'Penerimaan pendapatan layanan bulan Maret 2026. Diposting oleh Administrator.'],
+            ['no_jurnal' => 'JU-2026-006', 'no_bukti' => 'BKT-2026-006', 'tgl_jurnal' => '2026-03-31', 'jenis' => 'U', 'kegiatan' => 'Pembayaran Biaya Maret 2026', 'keterangan' => 'Pembayaran biaya operasional bulan Maret 2026. Diposting oleh Administrator.']
+        ];
+
+        $detailjurnal = [
+            ['no_jurnal' => 'JU-2025-001', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 75000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-001', 'kd_rek' => '4101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 30000000], ['no_jurnal' => 'JU-2025-001', 'kd_rek' => '4102', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 20000000], ['no_jurnal' => 'JU-2025-001', 'kd_rek' => '4103', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 15000000], ['no_jurnal' => 'JU-2025-001', 'kd_rek' => '4104', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 5000000], ['no_jurnal' => 'JU-2025-001', 'kd_rek' => '4105', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 5000000],
+            ['no_jurnal' => 'JU-2025-002', 'kd_rek' => '5101', 'arus_kas' => 0, 'debet' => 10000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-002', 'kd_rek' => '5102', 'arus_kas' => 0, 'debet' => 8000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-002', 'kd_rek' => '5103', 'arus_kas' => 0, 'debet' => 5000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-002', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 23000000],
+            ['no_jurnal' => 'JU-2025-003', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 90000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-003', 'kd_rek' => '4101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 35000000], ['no_jurnal' => 'JU-2025-003', 'kd_rek' => '4102', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 25000000], ['no_jurnal' => 'JU-2025-003', 'kd_rek' => '4103', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 20000000], ['no_jurnal' => 'JU-2025-003', 'kd_rek' => '4104', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 5000000], ['no_jurnal' => 'JU-2025-003', 'kd_rek' => '4105', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 5000000],
+            ['no_jurnal' => 'JU-2025-004', 'kd_rek' => '5101', 'arus_kas' => 0, 'debet' => 10000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-004', 'kd_rek' => '5102', 'arus_kas' => 0, 'debet' => 8000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-004', 'kd_rek' => '5103', 'arus_kas' => 0, 'debet' => 5000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-004', 'kd_rek' => '5201', 'arus_kas' => 0, 'debet' => 25000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-004', 'kd_rek' => '5301', 'arus_kas' => 0, 'debet' => 2000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-004', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 50000000],
+            ['no_jurnal' => 'JU-2025-005', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 85000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-005', 'kd_rek' => '4101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 30000000], ['no_jurnal' => 'JU-2025-005', 'kd_rek' => '4102', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 25000000], ['no_jurnal' => 'JU-2025-005', 'kd_rek' => '4103', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 18000000], ['no_jurnal' => 'JU-2025-005', 'kd_rek' => '4104', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 7000000], ['no_jurnal' => 'JU-2025-005', 'kd_rek' => '4105', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 5000000],
+            ['no_jurnal' => 'JU-2025-006', 'kd_rek' => '5101', 'arus_kas' => 0, 'debet' => 10000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-006', 'kd_rek' => '5102', 'arus_kas' => 0, 'debet' => 8000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-006', 'kd_rek' => '5103', 'arus_kas' => 0, 'debet' => 5000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-006', 'kd_rek' => '5201', 'arus_kas' => 0, 'debet' => 20000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-006', 'kd_rek' => '5301', 'arus_kas' => 0, 'debet' => 2000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-006', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 45000000],
+            ['no_jurnal' => 'JU-2025-007', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 95000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-007', 'kd_rek' => '4101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 35000000], ['no_jurnal' => 'JU-2025-007', 'kd_rek' => '4102', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 30000000], ['no_jurnal' => 'JU-2025-007', 'kd_rek' => '4103', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 18000000], ['no_jurnal' => 'JU-2025-007', 'kd_rek' => '4104', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 7000000], ['no_jurnal' => 'JU-2025-007', 'kd_rek' => '4105', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 5000000],
+            ['no_jurnal' => 'JU-2025-008', 'kd_rek' => '5101', 'arus_kas' => 0, 'debet' => 10000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-008', 'kd_rek' => '5102', 'arus_kas' => 0, 'debet' => 8000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-008', 'kd_rek' => '5103', 'arus_kas' => 0, 'debet' => 5000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-008', 'kd_rek' => '5201', 'arus_kas' => 0, 'debet' => 22000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-008', 'kd_rek' => '5301', 'arus_kas' => 0, 'debet' => 2000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-008', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 47000000],
+            ['no_jurnal' => 'JU-2025-009', 'kd_rek' => '5401', 'arus_kas' => 0, 'debet' => 15000000, 'kredit' => 0], ['no_jurnal' => 'JU-2025-009', 'kd_rek' => '1601', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 5000000], ['no_jurnal' => 'JU-2025-009', 'kd_rek' => '1701', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 7000000], ['no_jurnal' => 'JU-2025-009', 'kd_rek' => '1801', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 3000000],
+            ['no_jurnal' => 'JU-2026-001', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 80000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-001', 'kd_rek' => '4101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 30000000], ['no_jurnal' => 'JU-2026-001', 'kd_rek' => '4102', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 25000000], ['no_jurnal' => 'JU-2026-001', 'kd_rek' => '4103', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 15000000], ['no_jurnal' => 'JU-2026-001', 'kd_rek' => '4104', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 5000000], ['no_jurnal' => 'JU-2026-001', 'kd_rek' => '4105', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 5000000],
+            ['no_jurnal' => 'JU-2026-002', 'kd_rek' => '5101', 'arus_kas' => 0, 'debet' => 10000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-002', 'kd_rek' => '5102', 'arus_kas' => 0, 'debet' => 8000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-002', 'kd_rek' => '5103', 'arus_kas' => 0, 'debet' => 5000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-002', 'kd_rek' => '5201', 'arus_kas' => 0, 'debet' => 20000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-002', 'kd_rek' => '5301', 'arus_kas' => 0, 'debet' => 2500000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-002', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 45500000],
+            ['no_jurnal' => 'JU-2026-003', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 75000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-003', 'kd_rek' => '4101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 28000000], ['no_jurnal' => 'JU-2026-003', 'kd_rek' => '4102', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 22000000], ['no_jurnal' => 'JU-2026-003', 'kd_rek' => '4103', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 14000000], ['no_jurnal' => 'JU-2026-003', 'kd_rek' => '4104', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 6000000], ['no_jurnal' => 'JU-2026-003', 'kd_rek' => '4105', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 5000000],
+            ['no_jurnal' => 'JU-2026-004', 'kd_rek' => '5101', 'arus_kas' => 0, 'debet' => 10000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-004', 'kd_rek' => '5102', 'arus_kas' => 0, 'debet' => 8000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-004', 'kd_rek' => '5103', 'arus_kas' => 0, 'debet' => 5000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-004', 'kd_rek' => '5201', 'arus_kas' => 0, 'debet' => 18000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-004', 'kd_rek' => '5302', 'arus_kas' => 0, 'debet' => 600000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-004', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 41600000],
+            ['no_jurnal' => 'JU-2026-005', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 85000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-005', 'kd_rek' => '4101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 32000000], ['no_jurnal' => 'JU-2026-005', 'kd_rek' => '4102', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 27000000], ['no_jurnal' => 'JU-2026-005', 'kd_rek' => '4103', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 16000000], ['no_jurnal' => 'JU-2026-005', 'kd_rek' => '4104', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 5000000], ['no_jurnal' => 'JU-2026-005', 'kd_rek' => '4105', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 5000000],
+            ['no_jurnal' => 'JU-2026-006', 'kd_rek' => '5101', 'arus_kas' => 0, 'debet' => 10000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-006', 'kd_rek' => '5102', 'arus_kas' => 0, 'debet' => 8000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-006', 'kd_rek' => '5103', 'arus_kas' => 0, 'debet' => 5000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-006', 'kd_rek' => '5201', 'arus_kas' => 0, 'debet' => 22000000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-006', 'kd_rek' => '5301', 'arus_kas' => 0, 'debet' => 2500000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-006', 'kd_rek' => '5302', 'arus_kas' => 0, 'debet' => 600000, 'kredit' => 0], ['no_jurnal' => 'JU-2026-006', 'kd_rek' => '1101', 'arus_kas' => 0, 'debet' => 0, 'kredit' => 48100000]
+        ];
+
+        $requiredRekening = [];
+        foreach ($rekeningtahun as $item) {
+            $requiredRekening[$item['kd_rek']] = true;
+        }
+        foreach ($detailjurnal as $item) {
+            $requiredRekening[$item['kd_rek']] = true;
+        }
+
+        $missingRekening = [];
+        foreach (array_keys($requiredRekening) as $kd_rek) {
+            $rekening = $this->db('mlite_rekening')->where('kd_rek', $kd_rek)->oneArray();
+            if (empty($rekening)) {
+                $missingRekening[] = $kd_rek;
+            }
+        }
+
+        if (!empty($missingRekening)) {
+            $this->notify('failure', 'Insert data dummy gagal. Akun rekening tidak ditemukan: '.implode(', ', $missingRekening));
+            redirect(url([ADMIN, 'keuangan', 'settings']));
+            return;
+        }
+
+        $this->db()->pdo()->beginTransaction();
+
+        try {
+            $insertedRekeningTahun = 0;
+            foreach ($rekeningtahun as $item) {
+                $exists = $this->db('mlite_rekeningtahun')->where('thn', $item['thn'])->where('kd_rek', $item['kd_rek'])->oneArray();
+                if (empty($exists)) {
+                    $this->db('mlite_rekeningtahun')->save($item);
+                    $insertedRekeningTahun++;
+                }
+            }
+
+            $insertedJurnal = 0;
+            foreach ($jurnal as $item) {
+                $exists = $this->db('mlite_jurnal')->where('no_jurnal', $item['no_jurnal'])->oneArray();
+                if (empty($exists)) {
+                    $this->db('mlite_jurnal')->save($item);
+                    $insertedJurnal++;
+                }
+            }
+
+            $insertedDetail = 0;
+            foreach ($detailjurnal as $item) {
+                $exists = $this->db('mlite_detailjurnal')
+                    ->where('no_jurnal', $item['no_jurnal'])
+                    ->where('kd_rek', $item['kd_rek'])
+                    ->where('arus_kas', $item['arus_kas'])
+                    ->where('debet', $item['debet'])
+                    ->where('kredit', $item['kredit'])
+                    ->oneArray();
+                if (empty($exists)) {
+                    $this->db('mlite_detailjurnal')->save($item);
+                    $insertedDetail++;
+                }
+            }
+
+            $this->db()->pdo()->commit();
+            $this->notify('success', 'Data dummy keuangan diproses. Insert baru: rekening tahun '.$insertedRekeningTahun.', jurnal '.$insertedJurnal.', detail jurnal '.$insertedDetail.'.');
+        } catch (\Exception $e) {
+            $this->db()->pdo()->rollBack();
+            $this->notify('failure', 'Insert data dummy keuangan gagal: '.$e->getMessage());
+        }
+
+        redirect(url([ADMIN, 'keuangan', 'settings']));
+    }
+
 
     public function postSaveAkunKegiatan()
     {

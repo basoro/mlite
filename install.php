@@ -275,15 +275,12 @@ function processInsert($pdo, $sql)
         return;
     }
 
-    // Tolak statement chaining: hanya boleh satu INSERT statement dari dump.
-    if (strpos(rtrim($statement, " \t\n\r\0\x0B;"), ';') !== false) {
-        return;
-    }
+    // Hapus titik koma penutup agar konsisten untuk MySQL/SQLite.
+    $statement = rtrim($statement, " \t\n\r\0\x0B;");
 
     try {
         $pdo->exec($statement);
     } catch (PDOException $e) {
-        // Abaikan baris INSERT yang gagal agar proses import dump tetap lanjut.
     }
 }
 

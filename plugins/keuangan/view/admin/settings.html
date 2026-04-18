@@ -34,4 +34,17 @@
             </div>
         </div>
     </form>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Dummy Keuangan</h3>
+            </div>
+            <div class="panel-body">
+                <p>Insert data dummy keuangan tahun 2025 dan 2026 untuk tabel jurnal, detail jurnal, dan rekening tahun.</p>
+                <form action="{?=url(ADMIN.'/keuangan/insertDummyKeuangan')?}" method="POST">
+                    <button type="submit" class="btn btn-warning" onclick="return confirm('Insert data dummy keuangan 2025 dan 2026?');">Data Dummy</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
