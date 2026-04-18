@@ -231,6 +231,7 @@ $("#display").on("click", ".sep", function(event){
       $('#no_kartu_peserta').text(json_obj[0].response.peserta.noKartu);
       $('#no_mr_peserta').text(no_rkm_medis);
       $('#nik_peserta').text(json_obj[0].response.peserta.nik);
+      $('#prov_umum_peserta').text(json_obj[0].response.peserta.provUmum.nmProvider);
       $('#tgl_lahir_peserta').text(json_obj[0].response.peserta.tglLahir);
       $('#status_peserta').text(json_obj[0].response.peserta.statusPeserta.keterangan);
       $('#jenis_peserta').text(json_obj[0].response.peserta.jenisPeserta.keterangan);
