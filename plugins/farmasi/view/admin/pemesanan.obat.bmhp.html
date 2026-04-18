@@ -83,7 +83,6 @@
               </tr>
             </thead>
             <tbody>
-              {if: !empty($pemesanan)}
               {loop: $pemesanan}
               <tr>
                 <td>{?=isset_or($value.no_pemesanan)?}</td>
@@ -102,11 +101,6 @@
                 </td>
               </tr>
               {/loop}
-              {else}
-              <tr>
-                <td colspan="10" class="text-center">Data pemesanan belum tersedia.</td>
-              </tr>
-              {/if}
             </tbody>
           </table>
         </div>
