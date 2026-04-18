@@ -1106,8 +1106,8 @@ class Admin extends AdminModule
         // Mengambil dari diagnosa_pasien mlite
         $diagnosa_db = $this->db('diagnosa_pasien')
             ->join('penyakit', 'diagnosa_pasien.kd_penyakit = penyakit.kd_penyakit')
-            ->leftJoin('mlite_mapping_icd2snomedct', 'diagnosa_pasien.kd_penyakit = mlite_mapping_icd2snomedct.kd_penyakit')
-            ->where('no_rawat', $no_rawat)
+            ->leftJoin('mlite_mapping_snomed_icd', 'diagnosa_pasien.kd_penyakit = mlite_mapping_snomed_icd.kd_penyakit AND diagnosa_pasien.no_rawat = mlite_mapping_snomed_icd.no_rawat')
+            ->where('diagnosa_pasien.no_rawat', $no_rawat)
             ->toArray();
 
         $diagnosa = [];
@@ -1116,8 +1116,8 @@ class Admin extends AdminModule
                 $diagnosa[] = [
                     "code" => $diag['kd_penyakit'],
                     "display" => $diag['nm_penyakit'],
-                    "snomed_code" => $diag['snomed_code'] ?? '',
-                    "snomed_display" => $diag['snomed_display'] ?? ''
+                    "snomed_code" => $diag['snomed_concept_id'] ?? '',
+                    "snomed_display" => $diag['snomed_term'] ?? ''
                 ];
             }
         } else {
