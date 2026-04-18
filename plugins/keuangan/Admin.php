@@ -778,7 +778,7 @@ class Admin extends AdminModule
             $this->db()->pdo()->commit();
             $this->notify('success', 'Data dummy keuangan diproses. Insert baru: rekening tahun '.$insertedRekeningTahun.', jurnal '.$insertedJurnal.', detail jurnal '.$insertedDetail.'.');
         } catch (\Exception $e) {
-            $this->db()->pdo()->rollback();
+            $this->db()->pdo()->rollBack();
             $this->notify('failure', 'Insert data dummy keuangan gagal: '.$e->getMessage());
         }
 

@@ -270,14 +270,16 @@ function processCreateTable($pdo, $sql)
 
 function processInsert($pdo, $sql)
 {
-    $sql = str_replace('\\"', '##DQ##', $sql);
-    $sql = str_replace("'", "''", $sql);
-    $sql = str_replace('"', "'", $sql);
-    $sql = str_replace('##DQ##', '"', $sql);
-    $sql = str_replace('\\\\', '\\', $sql);
+    $statement = trim($sql);
+    if (!preg_match('/^INSERT\s+INTO\s+/i', $statement)) {
+        return;
+    }
+
+    // Hapus titik koma penutup agar konsisten untuk MySQL/SQLite.
+    $statement = rtrim($statement, " \t\n\r\0\x0B;");
 
     try {
-        $pdo->exec($sql);
+        $pdo->exec($statement);
     } catch (PDOException $e) {
     }
 }
