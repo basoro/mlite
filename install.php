@@ -270,12 +270,6 @@ function processCreateTable($pdo, $sql)
 
 function processInsert($pdo, $sql)
 {
-    $sql = str_replace('\\"', '##DQ##', $sql);
-    $sql = str_replace("'", "''", $sql);
-    $sql = str_replace('"', "'", $sql);
-    $sql = str_replace('##DQ##', '"', $sql);
-    $sql = str_replace('\\\\', '\\', $sql);
-
     try {
         $pdo->exec($sql);
     } catch (PDOException $e) {
