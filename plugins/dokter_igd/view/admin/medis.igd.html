@@ -410,6 +410,8 @@
 </div>
 
 <script>
+var MEDIS_IGD_STATUS_PENYAKIT_BARU = 'Baru';
+
 $(document).off('click', '#medis_igd_ai_generate_snomed').on('click', '#medis_igd_ai_generate_snomed', function(event) {
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
@@ -459,7 +461,6 @@ $(document).off('click', '#medis_igd_ai_generate_snomed').on('click', '#medis_ig
 
 $(document).off('click', '#medis_igd_simpan_mapping_snomed').on('click', '#medis_igd_simpan_mapping_snomed', function(event) {
   var baseURL = mlite.url + '/' + mlite.admin;
-  var statusPenyakitBaru = 'Baru';
   event.preventDefault();
 
   var noRawat = String($('input:text[name=no_rawat_medisIgd]').val() || '').trim();
@@ -483,7 +484,7 @@ $(document).off('click', '#medis_igd_simpan_mapping_snomed').on('click', '#medis
     kd_penyakit: kdPenyakit,
     snomed_concept_id: snomedConceptId,
     snomed_term: snomedTerm,
-    status_penyakit: statusPenyakitBaru
+    status_penyakit: MEDIS_IGD_STATUS_PENYAKIT_BARU
   }, function(response) {
     if (response === '1') {
       alert('Mapping SNOMED-CT berhasil disimpan!');
