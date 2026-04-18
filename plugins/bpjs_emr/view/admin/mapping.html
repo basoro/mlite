@@ -94,10 +94,17 @@
                         </thead>
                         <tbody>
                             {loop: $proc}
-                            <tr id="proc-{$value.kd_jenis_prw}">
+                            <tr id="proc-{$value.kd_jenis_prw}" data-nama-tindakan="{$value.nm_perawatan}">
                                 <td>{$value.nm_perawatan}</td>
                                 <td>
-                                    <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm btn-ai-snomed" title="Fetch SNOMED dari AI">
+                                                <i class="fa fa-robot"></i> AI
+                                            </button>
+                                        </span>
+                                    </div>
                                     <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
                                 </td>
                                 <td>
@@ -122,10 +129,17 @@
                         </thead>
                         <tbody>
                             {loop: $proc_ranap}
-                            <tr id="proc-ranap-{$value.kd_jenis_prw}">
+                            <tr id="proc-ranap-{$value.kd_jenis_prw}" data-nama-tindakan="{$value.nm_perawatan}">
                                 <td>{$value.nm_perawatan}</td>
                                 <td>
-                                    <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm btn-ai-snomed" title="Fetch SNOMED dari AI">
+                                                <i class="fa fa-robot"></i> AI
+                                            </button>
+                                        </span>
+                                    </div>
                                     <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
                                 </td>
                                 <td>
@@ -150,10 +164,17 @@
                         </thead>
                         <tbody>
                             {loop: $operasi}
-                            <tr id="operasi-{$value.kode_paket}">
+                            <tr id="operasi-{$value.kode_paket}" data-nama-tindakan="{$value.nm_perawatan}">
                                 <td>[{$value.kode_paket}] {$value.nm_perawatan}</td>
                                 <td>
-                                    <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm btn-ai-snomed" title="Fetch SNOMED dari AI">
+                                                <i class="fa fa-robot"></i> AI
+                                            </button>
+                                        </span>
+                                    </div>
                                     <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
                                 </td>
                                 <td>
@@ -172,6 +193,54 @@
 <script>
 $(document).ready(function() {
     $('.datatable').DataTable();
+
+    $('.btn-ai-snomed').on('click', function() {
+        var button = $(this);
+        var row = button.closest('tr');
+        var namaTindakan = row.data('nama-tindakan') || $.trim(row.find('td').first().text());
+        var originalText = button.html();
+
+        if (!namaTindakan) {
+            alert('Nama tindakan tidak ditemukan.');
+            return;
+        }
+
+        button.html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
+        $.ajax({
+            type: 'POST',
+            url: "{?=url([ADMIN, 'bpjs_emr', 'fetchAISnomed'])?}",
+            data: {
+                nama_tindakan: namaTindakan,
+                t: "{?=$_SESSION['token']?}"
+            },
+            dataType: 'json',
+            timeout: 20000
+        })
+        .done(function(data) {
+            if (data && data.status === 'success' && data.data && data.data.snomed_code) {
+                row.find('.snomed-code').val((data.data.snomed_code || '').toString().trim());
+                row.find('.snomed-display').val((data.data.snomed_display || '').toString().trim());
+                alert('Kode SNOMED berhasil di-generate.');
+            } else {
+                var doneMessage = (data && data.message) ? data.message : 'Kode SNOMED tidak ditemukan';
+                alert(doneMessage);
+            }
+        })
+        .fail(function(xhr, status) {
+            if (status === 'timeout') {
+                alert('Permintaan generate SNOMED timeout.');
+            } else {
+                var message = 'Gagal generate SNOMED.';
+                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert(message);
+            }
+        })
+        .always(function() {
+            button.html(originalText).prop('disabled', false);
+        });
+    });
 
     // Save Lab
     $('.btn-save-lab').click(function() {
