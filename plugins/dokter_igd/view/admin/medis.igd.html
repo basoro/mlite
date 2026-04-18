@@ -300,12 +300,12 @@
         </div>
         <div class="form-group">
           <label for="medis_igd_icd10_code">Kode ICD-10 untuk Mapping SNOMED</label>
-          <input type="text" name="medis_igd_icd10_code" id="medis_igd_icd10_code" class="form-control" placeholder="Contoh: A09" maxlength="20">
+          <input type="text" name="medis_igd_icd10_code" id="medis_igd_icd10_code" class="form-control" placeholder="Contoh: A09" maxlength="20" aria-label="Kode ICD-10 untuk mapping SNOMED">
         </div>
         <div class="form-group">
           <label for="medis_igd_snomed_concept_id">SNOMED Concept ID</label>
           <div class="input-group">
-            <input type="text" name="medis_igd_snomed_concept_id" id="medis_igd_snomed_concept_id" class="form-control" placeholder="SNOMED Concept ID" />
+            <input type="text" name="medis_igd_snomed_concept_id" id="medis_igd_snomed_concept_id" class="form-control" placeholder="SNOMED Concept ID" aria-label="SNOMED Concept ID" />
             <span class="input-group-btn">
               <button type="button" id="medis_igd_ai_generate_snomed" class="btn btn-default" title="Generate SNOMED-CT dari AI" aria-label="Generate SNOMED-CT dari AI">
                 <i class="fa fa-robot"></i>
@@ -315,8 +315,8 @@
         </div>
         <div class="form-group">
           <label for="medis_igd_snomed_term">SNOMED Term</label>
-          <input type="text" name="medis_igd_snomed_term" id="medis_igd_snomed_term" class="form-control" placeholder="SNOMED Term">
-          <button type="button" id="medis_igd_simpan_mapping_snomed" class="btn btn-info btn-xs medis-igd-mt-6">
+          <input type="text" name="medis_igd_snomed_term" id="medis_igd_snomed_term" class="form-control" placeholder="SNOMED Term" aria-label="SNOMED Term">
+          <button type="button" id="medis_igd_simpan_mapping_snomed" class="btn btn-info btn-xs medis-igd-mt-6" aria-label="Simpan Mapping SNOMED">
             <i class="fa fa-save"></i><span class="hidden-xs"> Simpan Mapping SNOMED</span>
           </button>
         </div>
