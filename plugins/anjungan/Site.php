@@ -53,6 +53,7 @@ class Site extends SiteModule
         $this->route('anjungan/display/poli/(:str)', 'getDisplayAntrianPoliDisplay');
         $this->route('anjungan/display/poli/(:str)/(:str)', 'getDisplayAntrianPoliDisplay');
         $this->route('anjungan/laboratorium', 'getDisplayAntrianLaboratorium');
+        $this->route('anjungan/radiologi', 'getDisplayAntrianRadiologi');
         $this->route('anjungan/apotek', 'getDisplayAntrianApotek');
         $this->route('anjungan/apotek/ambilantrian', 'getDisplayAntrianApotekAmbil');
         $this->route('anjungan/ajax', 'getAjax');
@@ -1395,6 +1396,45 @@ class Site extends SiteModule
         //exit();
     }
 
+    public function getDisplayAntrianRadiologi()
+    {
+        $logo  = $this->settings->get('settings.logo');
+        $title = 'Display Antrian Radiologi';
+        $display = $this->_resultDisplayAntrianRadiologi();
+
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
+        }
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $__username;
+        $running_text = $this->settings->get('anjungan.text_radiologi');
+        if(empty($running_text)) {
+          $running_text = $this->settings->get('anjungan.text_laboratorium');
+        }
+
+        $content = $this->draw('display.antrian.radiologi.html', [
+          'logo' => $logo,
+          'title' => $title,
+          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
+          'username' => $username,
+          'tanggal' => $tanggal,
+          'running_text' => $running_text,
+          'display' => $display
+        ]);
+
+        $assign = [
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+    }
+
   public function _resultDisplayAntrianLaboratorium()
   {
     $date_start = date('Y-m-d', strtotime('-1 month')); 
@@ -1435,6 +1475,44 @@ class Site extends SiteModule
     $rows = $filteredRows;
     
     return $rows;
+  }
+
+  public function _resultDisplayAntrianRadiologi()
+  {
+    $date_start = date('Y-m-d', strtotime('-1 month'));
+    $date = date('Y-m-d');
+
+    $rows = $this->db('permintaan_radiologi')
+      ->join('dokter', 'dokter.kd_dokter=permintaan_radiologi.dokter_perujuk')
+      ->join('reg_periksa', 'reg_periksa.no_rawat=permintaan_radiologi.no_rawat')
+      ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->join('permintaan_pemeriksaan_radiologi', 'permintaan_pemeriksaan_radiologi.noorder=permintaan_radiologi.noorder')
+      ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=permintaan_pemeriksaan_radiologi.kd_jenis_prw')
+      ->where('permintaan_radiologi.tgl_hasil', '0000:00:00')
+      ->where('permintaan_radiologi.tgl_permintaan', '>=', $date_start)
+      ->where('permintaan_radiologi.tgl_permintaan', '<=', $date)
+      ->group('permintaan_radiologi.noorder')
+      ->desc('permintaan_radiologi.tgl_permintaan')
+      ->toArray();
+
+    $filteredRows = [];
+    foreach ($rows as $row) {
+      if ($row['tgl_sampel'] == '0000-00-00' && $row['jam_sampel'] == '00:00:00') {
+        $row['status_antrian'] = 'Menunggu';
+        $row['status_class'] = 'label-warning';
+      } elseif ($row['tgl_sampel'] != '0000-00-00' && $row['jam_sampel'] != '00:00:00') {
+        $row['status_antrian'] = 'Diproses';
+        $row['status_class'] = 'label-success';
+      } else {
+        $row['status_antrian'] = 'Diproses';
+        $row['status_class'] = 'label-warning';
+      }
+
+      $filteredRows[] = $row;
+    }
+
+    return $filteredRows;
   }
 
     public function getDisplayAntrianApotek()
@@ -2339,6 +2417,31 @@ class Site extends SiteModule
               echo json_encode(htmlspecialchars_array($data));
           }
         break;
+        case "loket-display":
+          $apotek = $this->db('mlite_antrian_loket')
+            ->select('noantrian')
+            ->select('loket')
+            ->where('type', 'Apotek')
+            ->where('postdate', date('Y-m-d'))
+            ->where('status', '>=', 1)
+            ->desc('kd')
+            ->oneArray();
+
+          echo json_encode([
+            'loket' => [
+              'antrian' => (string) $this->settings->get('anjungan.no_antrian_loket'),
+              'counter' => (string) $this->settings->get('anjungan.konter_antrian_loket')
+            ],
+            'cs' => [
+              'antrian' => (string) $this->settings->get('anjungan.no_antrian_cs'),
+              'counter' => (string) $this->settings->get('anjungan.konter_antrian_cs')
+            ],
+            'apotek' => [
+              'antrian' => isset($apotek['noantrian']) ? (string) $apotek['noantrian'] : '',
+              'counter' => isset($apotek['loket']) ? (string) $apotek['loket'] : ''
+            ]
+          ]);
+        break;
         // FOR DISPLAY
         case "apotek-display":
           $rows = $this->_resultDisplayAntrianApotek();  
@@ -2353,8 +2456,16 @@ class Site extends SiteModule
           foreach ($rows as $row) {      
            
             echo '<li style="padding:10px;">'
-               .  '<button type="button" class="btn btn-lg btn-warning">' . $row['no_reg'] . '</button>' . 'Nama: ' . $row['nm_pasien'] . ', No. RM: ' . $row['no_rkm_medis'] . '  <span class="pull-right">Status: <b {if: $row.stts == "Sudah"}style="color:red;"{/if}>' . $row['stts'] . '</b></span><br>'
+               .  '<button type="button" class="btn btn-lg btn-warning">' . $row['no_reg'] . '</button>' . ' Nama: ' . $row['nm_pasien'] . ', No. RM: ' . $row['no_rkm_medis'] . '  <span class="pull-right">Status: <b class="label ' . $row['status_class'] . '">' . $row['status_antrian'] . '</b></span><br>'
                . '</li>'; 
+          }
+        break;
+        case "radiologi-display":
+          $rows = $this->_resultDisplayAntrianRadiologi();
+          foreach ($rows as $row) {
+            echo '<li style="padding:10px;">'
+               .  '<button type="button" class="btn btn-lg btn-warning">' . $row['no_reg'] . '</button>' . ' Nama: ' . $row['nm_pasien'] . ', No. RM: ' . $row['no_rkm_medis'] . '  <span class="pull-right">Status: <b class="label ' . $row['status_class'] . '">' . $row['status_antrian'] . '</b></span><br>'
+               . '</li>';
           }
         break;
         case "bed-display":
