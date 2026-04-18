@@ -1146,6 +1146,22 @@ Ralan :
 				<td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
+			<tr border='1', height='20px'>
+				<td>XI</td>
+				<td colspan="1">Obat Pulang</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: isset_or($billing_mlite_detail.resep_pulang, []) as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {?=isset_or($data.nama_brng)?}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.harga,2,',','.')?}</span></td>
+				<td>{?=isset_or($data.jml_barang)?}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.total,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
 			<tr >
 				<td colspan="2"></td>
 				<td colspan="2">Jumlah</td>

@@ -1593,6 +1593,15 @@ public function postHapusResepResponse()
       $result_detail['obat_operasi'][] = $obat_operasi;
     }
 
+    $result_detail['resep_pulang'] = $this->db('resep_pulang')
+      ->join('databarang', 'databarang.kode_brng=resep_pulang.kode_brng')
+      ->where('resep_pulang.no_rawat', $no_rawat)
+      ->toArray();
+
+    $result_detail['tambahan_biaya'] = $this->db('tambahan_biaya')
+      ->where('no_rawat', $no_rawat)
+      ->toArray();
+
     $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
     //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
     $im=$qr->createImage(4,4);
