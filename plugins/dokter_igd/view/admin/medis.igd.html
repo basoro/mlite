@@ -2,6 +2,11 @@
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
     <h4 class="modal-title">Penilaian Awal Medis Dokter IGD</h4>
 </div>
+<style>
+  .medis-igd-mt-6 {
+    margin-top: 6px;
+  }
+</style>
 <div class="modal-body">
   <h4>I. Riwayat Kesehatan</h4>
   <div class="row">
@@ -302,7 +307,7 @@
           <div class="input-group">
             <input type="text" name="medis_igd_snomed_concept_id" id="medis_igd_snomed_concept_id" class="form-control" placeholder="SNOMED Concept ID" />
             <span class="input-group-btn">
-              <button type="button" id="medis_igd_ai_generate_snomed" class="btn btn-default" title="Generate SNOMED-CT dari AI">
+              <button type="button" id="medis_igd_ai_generate_snomed" class="btn btn-default" title="Generate SNOMED-CT dari AI" aria-label="Generate SNOMED-CT dari AI">
                 <i class="fa fa-robot"></i>
               </button>
             </span>
@@ -311,7 +316,7 @@
         <div class="form-group">
           <label for="medis_igd_snomed_term">SNOMED Term</label>
           <input type="text" name="medis_igd_snomed_term" id="medis_igd_snomed_term" class="form-control" placeholder="SNOMED Term">
-          <button type="button" id="medis_igd_simpan_mapping_snomed" class="btn btn-info btn-xs" style="margin-top: 6px;">
+          <button type="button" id="medis_igd_simpan_mapping_snomed" class="btn btn-info btn-xs medis-igd-mt-6">
             <i class="fa fa-save"></i><span class="hidden-xs"> Simpan Mapping SNOMED</span>
           </button>
         </div>
@@ -454,6 +459,7 @@ $(document).off('click', '#medis_igd_ai_generate_snomed').on('click', '#medis_ig
 
 $(document).off('click', '#medis_igd_simpan_mapping_snomed').on('click', '#medis_igd_simpan_mapping_snomed', function(event) {
   var baseURL = mlite.url + '/' + mlite.admin;
+  var statusPenyakitBaru = 'Baru';
   event.preventDefault();
 
   var noRawat = String($('input:text[name=no_rawat_medisIgd]').val() || '').trim();
@@ -466,6 +472,7 @@ $(document).off('click', '#medis_igd_simpan_mapping_snomed').on('click', '#medis
     return;
   }
 
+  // SNOMED Concept ID: 6-18 digit angka dan tidak boleh diawali 0.
   if (!/^[1-9][0-9]{5,17}$/.test(snomedConceptId)) {
     alert('Format SNOMED Concept ID tidak valid.');
     return;
@@ -476,7 +483,7 @@ $(document).off('click', '#medis_igd_simpan_mapping_snomed').on('click', '#medis
     kd_penyakit: kdPenyakit,
     snomed_concept_id: snomedConceptId,
     snomed_term: snomedTerm,
-    status_penyakit: 'Baru'
+    status_penyakit: statusPenyakitBaru
   }, function(response) {
     if (response === '1') {
       alert('Mapping SNOMED-CT berhasil disimpan!');
