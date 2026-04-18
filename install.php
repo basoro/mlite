@@ -270,15 +270,20 @@ function processCreateTable($pdo, $sql)
 
 function processInsert($pdo, $sql)
 {
-    $sql = str_replace('\\"', '##DQ##', $sql);
-    $sql = str_replace("'", "''", $sql);
-    $sql = str_replace('"', "'", $sql);
-    $sql = str_replace('##DQ##', '"', $sql);
-    $sql = str_replace('\\\\', '\\', $sql);
+    $statement = trim($sql);
+    if (!preg_match('/^INSERT\s+INTO\s+/i', $statement)) {
+        return;
+    }
+
+    // Tolak statement chaining: hanya boleh satu INSERT statement dari dump.
+    if (strpos(rtrim($statement, " \t\n\r\0\x0B;"), ';') !== false) {
+        return;
+    }
 
     try {
-        $pdo->exec($sql);
+        $pdo->exec($statement);
     } catch (PDOException $e) {
+        // Abaikan baris INSERT yang gagal agar proses import dump tetap lanjut.
     }
 }
 
