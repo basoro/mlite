@@ -245,6 +245,10 @@ function processCreateTable($pdo, $sql)
             $def = preg_replace('/ON\s+UPDATE\s+CURRENT_TIMESTAMP/i', '', $def);
             $def = str_ireplace('CURRENT_TIMESTAMP', 'CURRENT_TIMESTAMP', $def);
 
+            if ($colName === $pkColumn && !preg_match('/PRIMARY\s+KEY/i', $def)) {
+                $def .= ' PRIMARY KEY';
+            }
+
             $columnDefs[] = "`$colName` $def";
         }
     }
