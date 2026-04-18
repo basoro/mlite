@@ -17,6 +17,18 @@ return [
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('bpjs_emr', 'kode_kemkes', '')");
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('bpjs_emr', 'kodepos', '')");
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('bpjs_emr', 'baseurl', 'https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev/')");
+    $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_prosedur_ranap` (
+      `kd_jenis_prw` varchar(20) NOT NULL,
+      `snomed_code` varchar(20) NOT NULL,
+      `snomed_display` varchar(255) DEFAULT NULL,
+      PRIMARY KEY (`kd_jenis_prw`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC");
+    $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_operasi` (
+      `kode_paket` varchar(20) NOT NULL,
+      `snomed_code` varchar(20) NOT NULL,
+      `snomed_display` varchar(255) DEFAULT NULL,
+      PRIMARY KEY (`kode_paket`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC");
   },
   'uninstall' => function () use ($core) {
     $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'bpjs_emr'");

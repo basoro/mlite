@@ -1682,6 +1682,22 @@ CREATE TABLE `mlite_bpjs_emr_mapping_prosedur` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
+CREATE TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` (
+  `kd_jenis_prw` varchar(20) NOT NULL,
+  `snomed_code` varchar(20) NOT NULL,
+  `snomed_display` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`kd_jenis_prw`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_bpjs_emr_mapping_operasi` (
+  `kode_paket` varchar(20) NOT NULL,
+  `snomed_code` varchar(20) NOT NULL,
+  `snomed_display` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`kode_paket`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 CREATE TABLE `mlite_bpjs_emr_mapping_obat` (
   `kode_brng` varchar(20) NOT NULL,
   `code` varchar(20) NOT NULL,
