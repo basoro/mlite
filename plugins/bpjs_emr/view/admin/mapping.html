@@ -204,7 +204,7 @@ $(document).ready(function() {
             alert('Nama tindakan tidak ditemukan.');
             return;
         }
-        namaTindakan = namaTindakan.replace(/[\r\n\t]/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 200);
+        namaTindakan = namaTindakan.trim();
 
         button.html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
         $.ajax({
@@ -218,14 +218,14 @@ $(document).ready(function() {
             timeout: 20000
         })
         .done(function(data) {
-            if (!data || data.status !== 'success' || !data.data || !data.data.snomed_code) {
-                var doneMessage = (data && data.message) ? data.message : 'Kode SNOMED tidak ditemukan';
-                alert(doneMessage);
+            if (data && data.status === 'success' && data.data && data.data.snomed_code) {
+                row.find('.snomed-code').val((data.data.snomed_code || '').toString().trim());
+                row.find('.snomed-display').val((data.data.snomed_display || '').toString().trim());
+                alert('Kode SNOMED berhasil di-generate.');
                 return;
             }
-            row.find('.snomed-code').val((data.data.snomed_code || '').toString().trim());
-            row.find('.snomed-display').val((data.data.snomed_display || '').toString().trim());
-            alert('Kode SNOMED berhasil di-generate.');
+            var doneMessage = (data && data.message) ? data.message : 'Kode SNOMED tidak ditemukan';
+            alert(doneMessage);
         })
         .fail(function(xhr, status) {
             if (status === 'timeout') {

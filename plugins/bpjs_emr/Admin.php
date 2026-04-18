@@ -1572,13 +1572,14 @@ class Admin extends AdminModule
         $nama_tindakan = str_replace(["\r", "\n", "\t"], ' ', $nama_tindakan);
         $nama_tindakan = preg_replace('/\s+/', ' ', $nama_tindakan);
         $nama_tindakan = trim(mb_substr($nama_tindakan, 0, 200));
+        $nama_tindakan_prompt = addcslashes($nama_tindakan, "\\\"");
 
         $request_data = [
             'model' => 'openai/gpt-4o',
             'messages' => [
                 [
                     'role' => 'user',
-                    'content' => 'Berikan SNOMED CT paling relevan untuk tindakan medis "' . $nama_tindakan . '". Balas HANYA JSON mentah dengan format: {"snomed_code":"kode SNOMED","snomed_display":"nama SNOMED"} tanpa teks tambahan.'
+                    'content' => 'Berikan SNOMED CT paling relevan untuk tindakan medis "' . $nama_tindakan_prompt . '". Balas HANYA JSON mentah dengan format: {"snomed_code":"kode SNOMED","snomed_display":"nama SNOMED"} tanpa teks tambahan.'
                 ]
             ]
         ];
@@ -1610,7 +1611,15 @@ class Admin extends AdminModule
         }
 
         $json_response = json_decode($response, true);
-        $content = $json_response['choices'][0]['message']['content'] ?? '';
+        $content = '';
+        if (
+            is_array($json_response) &&
+            isset($json_response['choices']) &&
+            is_array($json_response['choices']) &&
+            isset($json_response['choices'][0]['message']['content'])
+        ) {
+            $content = (string) $json_response['choices'][0]['message']['content'];
+        }
 
         if (empty($content)) {
             echo json_encode(['status' => 'error', 'message' => 'Respons AI tidak valid.']);
@@ -1806,7 +1815,7 @@ class Admin extends AdminModule
             ];
         }
 
-        if (!empty($parsed['coding'][0]) && is_array($parsed['coding'][0])) {
+        if (isset($parsed['coding']) && is_array($parsed['coding']) && !empty($parsed['coding'][0]) && is_array($parsed['coding'][0])) {
             return [
                 'snomed_code' => trim((string) ($parsed['coding'][0]['code'] ?? '')),
                 'snomed_display' => trim((string) ($parsed['coding'][0]['display'] ?? ''))
