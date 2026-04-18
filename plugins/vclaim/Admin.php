@@ -169,7 +169,7 @@ class Admin extends AdminModule
     ];
 
     $data = json_encode($data);
-    echo $data;
+    // echo $data;
 
     $url = $this->api_url . 'SEP/2.0/insert';
     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
