@@ -1489,7 +1489,7 @@ class Site extends SiteModule
       ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
       ->join('permintaan_pemeriksaan_radiologi', 'permintaan_pemeriksaan_radiologi.noorder=permintaan_radiologi.noorder')
       ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=permintaan_pemeriksaan_radiologi.kd_jenis_prw')
-      ->where('permintaan_radiologi.tgl_hasil', '0000:00:00')
+      ->where('permintaan_radiologi.tgl_hasil', '0000-00-00')
       ->where('permintaan_radiologi.tgl_permintaan', '>=', $date_start)
       ->where('permintaan_radiologi.tgl_permintaan', '<=', $date)
       ->group('permintaan_radiologi.noorder')
