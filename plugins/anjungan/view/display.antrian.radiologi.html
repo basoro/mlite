@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>{$title} - {$settings.nama_instansi}</title>
+    <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
+    <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+    <style media="screen">
+      body {
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        color: #fff;
+      	background: #0264d6;
+      	height:calc(100vh);
+      	width:100%;
+      }
+      li:nth-child(even) {background: #0264d6; color: #ffffff;}
+      li:nth-child(odd) {background: #ffffff; color: #0264d6;}
+      footer {
+          position: fixed;
+          right: 0px;
+          bottom: 0px;
+          height: 40px;
+          width: calc(100% - 0px);
+          font-size: 14px;
+          color: #fff;
+      }
+      footer a, footer a:hover {
+        color: #fff;
+      }
+      .label {
+        display: inline;
+        padding: .2em .6em .3em;
+        font-size: 75%;
+        font-weight: 700;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: .25em;
+      }
+      .label-warning { background-color: #f0ad4e; }
+      .label-success { background-color: #5cb85c; }
+      .scroll-container {
+        height: 700px;
+        overflow: hidden;
+        position: relative;
+      }
+      .scroll-container ul {
+        position: absolute;
+        width: 100%;
+        animation: scrollUp 20s linear infinite;
+      }
+      @keyframes scrollUp {
+        0% { top: 100%; }
+        100% { top: -100%; }
+      }
+      .running-text-wrapper {
+        overflow: hidden;
+        white-space: nowrap;
+        width: 100%;
+      }
+      .running-text-track {
+        display: inline-block;
+        padding-left: 100%;
+        animation: ticker 25s linear infinite;
+      }
+      @keyframes ticker {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
+      }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Antrian Radiologi {$settings.nama_instansi}</h1>
+  <table class="table table-bordered text-primary">
+    <tbody class="bg-primary">
+      <tr>
+        <td>
+          <div class="scroll-container">
+            <ul class="list-unstyled" id="radiologiList"></ul>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="row" style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
+    <h3 class="display-6 running-text-wrapper"><span class="running-text-track" id="radiologiRunningText">{$running_text}</span></h3>
+  </div>
+</div>
+<footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
+  <div class="canvas">
+    <p class="pull-right">
+      Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
+      {$powered}.
+    </p>
+    <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
+  </div>
+</footer>
+
+<script>
+  function resetAnimation(selector){
+    const el = document.querySelector(selector);
+    if(!el) return;
+    el.style.animation = "none";
+    el.offsetHeight;
+    el.style.animation = null;
+  }
+
+  function loadRadiologiList(){
+    $.ajax({
+      url: '{?=url()?}/anjungan/ajax?show=radiologi-display',
+      success: function(html){
+        $("#radiologiList").html(html || '<li style="padding:10px;"><center><b>Belum ada data antrian!</b></center></li>');
+        resetAnimation(".scroll-container ul");
+      },
+      error: function(xhr) {
+        console.log('Gagal memuat antrian radiologi.');
+        console.log(xhr.status);
+      }
+    });
+  }
+
+  $(function(){
+    loadRadiologiList();
+    setInterval(loadRadiologiList, 5000);
+  });
+</script>
+
+</body>
+</html>

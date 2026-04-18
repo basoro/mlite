@@ -55,6 +55,34 @@
         padding-top: 0;
         padding-bottom: 0;
       }
+      .scroll-container {
+        height: 700px;
+        overflow: hidden;
+        position: relative;
+      }
+      .scroll-container ul {
+        position: absolute;
+        width: 100%;
+        animation: scrollUp 20s linear infinite;
+      }
+      @keyframes scrollUp {
+        0% { top: 100%; }
+        100% { top: -100%; }
+      }
+      .running-text-wrapper {
+        overflow: hidden;
+        white-space: nowrap;
+        width: 100%;
+      }
+      .running-text-track {
+        display: inline-block;
+        padding-left: 100%;
+        animation: ticker 25s linear infinite;
+      }
+      @keyframes ticker {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
+      }
     </style>
 </head>
 <body>
@@ -76,20 +104,17 @@
     <tbody class="bg-primary">
       <tr>
         <td>
-          <marquee direction="up" scrollamount="3" height="700">
+          <div class="scroll-container">
             <div id="list_lab" style="font-size: 24px; font-weight:bold;">
               <ul class="list-unstyled" id="list_apotek"></ul>
-              {if: !$display}
-              <center><b style="color:white;">Belum ada data antrian!</b></center>
-              {/if}
             </div>
-          </marquee>
+          </div>
         </td>
       </tr>
     </tbody>
   </table>
   <div class="row" style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
-  	<h3><marquee>{?=isset_or($running_text)?} :: {loop: $jadwal}<i class="fa fa-user-md"></i> {?=isset_or($value.nm_dokter)?} [{?=isset_or($value.nm_poli)?}] - {?=isset_or($value.jam_mulai)?} s/d  {?=isset_or($value.jam_selesai)?} WITA {/loop}</marquee></h3>
+  	<h3 class="running-text-wrapper"><span class="running-text-track">{?=isset_or($running_text)?} :: {loop: $jadwal}<i class="fa fa-user-md"></i> {?=isset_or($value.nm_dokter)?} [{?=isset_or($value.nm_poli)?}] - {?=isset_or($value.jam_mulai)?} s/d {?=isset_or($value.jam_selesai)?} WITA {/loop}</span></h3>
   </div>
 </div>
 <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
@@ -104,13 +129,30 @@
 <script>
   $(document).ready(function(){
     loadApotek();
+    setInterval(loadApotek, 5000);
   }); 
+
+  function resetAnimation(){
+    const el = document.querySelector(".scroll-container ul");
+    if(!el) return;
+    el.style.animation = "none";
+    el.offsetHeight;
+    el.style.animation = null;
+  }
+
   function loadApotek() {
-  $.get('{?=url()?}/anjungan/ajax?show=apotek-display', function(html){
-    $("#list_apotek").html(html);     
-    
-  });
-}
+    $.ajax({
+      url: '{?=url()?}/anjungan/ajax?show=apotek-display',
+      success: function(html){
+        $("#list_apotek").html(html || '<li style="padding:10px;"><center><b style="color:white;">Belum ada data antrian!</b></center></li>');
+        resetAnimation();
+      },
+      error: function(xhr) {
+        console.log('Gagal memuat antrian apotek.');
+        console.log(xhr.status);
+      }
+    });
+  }
 </script>
 {if: isset($_GET['status']) && $_GET['status'] == '1'}
 <script>

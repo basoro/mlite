@@ -73,8 +73,22 @@
          padding-bottom: 0px;
          margin-top: 0px;
          margin-bottom: 10px;
-         color: #FF0000;
-         background-color: #fff;
+          color: #FF0000;
+          background-color: #fff;
+      }
+      .running-text-wrapper {
+        overflow: hidden;
+        white-space: nowrap;
+        width: 100%;
+      }
+      .running-text-track {
+        display: inline-block;
+        padding-left: 100%;
+        animation: ticker 25s linear infinite;
+      }
+      @keyframes ticker {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
       }
       footer {
           position: fixed;
@@ -110,26 +124,26 @@
       <div class="kanan">
             <div class="panel border-success">
               <div class="panel-body text-success">
-                <div class="no_antrian">A<span class="antrian_Loket"><span></div>
+                <div class="no_antrian">A<span class="antrian_Loket"></span></div>
               </div>
               <div class="panel-footer bg-transparent border-success">
-                <div class="no_loket">Konter <span class="get_Loket"><span></div>
+                <div class="no_loket">Konter <span class="get_Loket"></span></div>
               </div>
             </div>
             <div class="panel border-success">
               <div class="panel-body text-success">
-                <div class="no_antrian">B<span class="antrian_CS"><span></div>
+                <div class="no_antrian">B<span class="antrian_CS"></span></div>
               </div>
               <div class="panel-footer bg-transparent border-success">
-                <div class="no_loket">Konter <span class="get_CS"><span></div>
+                <div class="no_loket">Konter <span class="get_CS"></span></div>
                 </div>
             </div>
             <div class="panel border-success">
               <div class="panel-body text-success">
-                <div class="no_antrian">F<span class="antrian_Apotek"><span></div>
+                <div class="no_antrian">F<span class="antrian_Apotek"></span></div>
               </div>
               <div class="panel-footer bg-transparent border-success">
-                <div class="no_loket">Konter <span class="get_Apotek"><span></div>
+                <div class="no_loket">Konter <span class="get_Apotek"></span></div>
                 </div>
             </div>
           <div class="panel border-success">
@@ -158,8 +172,8 @@
       </div>
   </div>
   <div class="row">
-    <div class="panel-title marquee">
-      <marquee>{$running_text}</marquee>
+    <div class="panel-title marquee running-text-wrapper">
+      <span class="running-text-track">{$running_text}</span>
     </div>
   </div>
   <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
@@ -238,10 +252,32 @@
   </script>
   <script>
   $(document).ready(function(){
+    refreshLoketDisplay();
+    setInterval(refreshLoketDisplay, 5000);
     setTimeout(function(){
       getAntrian();
     }, 4000);
   });
+
+  function refreshLoketDisplay() {
+    $.ajax({
+      url: '{?=url()?}/anjungan/ajax?show=loket-display',
+      dataType: 'json',
+      success: function(data) {
+        if(!data) return;
+        $('.antrian_Loket').html(data.loket && data.loket.antrian ? data.loket.antrian : '');
+        $('.get_Loket').html(data.loket && data.loket.counter ? data.loket.counter : '');
+        $('.antrian_CS').html(data.cs && data.cs.antrian ? data.cs.antrian : '');
+        $('.get_CS').html(data.cs && data.cs.counter ? data.cs.counter : '');
+        $('.antrian_Apotek').html(data.apotek && data.apotek.antrian ? data.apotek.antrian : '');
+        $('.get_Apotek').html(data.apotek && data.apotek.counter ? data.apotek.counter : '');
+      },
+      error: function(xhr) {
+        console.log('Gagal memuat tampilan loket.');
+        console.log(xhr.status);
+      }
+    });
+  }
 
   function getAntrian() {
     $.ajax({
