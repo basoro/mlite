@@ -6,11 +6,11 @@
         <form action="{?=url([ADMIN, 'bpjs_emr', 'response'])?}" method="GET" class="form-inline margin-bottom-20">
             <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
             <div class="form-group">
-                <input type="text" name="start_date" class="form-control datepicker" value="{$start_date}"
+                <input type="text" name="start_date" class="form-control datetimepicker" value="{$start_date}"
                     placeholder="Tanggal Awal">
             </div>
             <div class="form-group">
-                <input type="text" name="end_date" class="form-control datepicker" value="{$end_date}"
+                <input type="text" name="end_date" class="form-control datetimepicker" value="{$end_date}"
                     placeholder="Tanggal Akhir">
             </div>
             <div class="form-group">
@@ -899,7 +899,7 @@ function escapeHtml(text) {
 
 <script type="text/javascript">
     $(function () {
-        $('.datepicker').datetimepicker({
+        $('.datetimepicker').datetimepicker({
           defaultDate: '{?=date('Y-m-d')?}',
           format: 'YYYY-MM-DD',
           locale: 'id'
