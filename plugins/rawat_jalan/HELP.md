@@ -1,28 +1,79 @@
 # Plugin Rawat Jalan
 
-Dokumentasi penggunaan plugin **Rawat Jalan** pada mLITE.
+Modul pendaftaran dan pengelolaan layanan rawat jalan di mLITE, mencakup registrasi pasien, booking, jadwal dokter, input tindakan dan obat, hingga integrasi BPJS.
 
-## Deskripsi Singkat
+## Akses Modul
 
-Modul pendaftaran layanan untuk mLITE
+- Masuk ke panel admin mLITE.
+- Buka menu **Rawat Jalan**.
+- Pilih submenu sesuai kebutuhan:
+  - Kelola
+  - Rawat Jalan
+  - Booking Registrasi
+  - Booking Periksa
+  - Jadwal Dokter
+
+## Panduan Pengguna (Petugas)
+
+1. **Kelola (Dashboard)**
+   - Halaman utama Rawat Jalan sebagai titik masuk modul.
+
+2. **Rawat Jalan**
+   - Tampil daftar kunjungan rawat jalan hari ini (default), dapat difilter berdasarkan rentang tanggal.
+   - Filter berdasarkan status periksa: **Belum**, **Selesai**, atau **Lunas**.
+   - Tampilan dibatasi sesuai poliklinik yang menjadi wewenang akun pengguna (kecuali admin atau centang "Semua Poli").
+   - **Mendaftarkan Pasien Baru**:
+     - Pilih pasien (no rekam medis), poliklinik, dokter, penjamin, dan tanggal.
+     - Sistem otomatis mengisi no rawat, no urut antrian, biaya registrasi, dan umur pasien.
+     - Jika tanggal lebih dari hari ini, registrasi dicatat sebagai **booking** (`booking_registrasi`).
+   - **Input Tindakan**:
+     - Pilih jenis perawatan, provider (dokter/petugas/dokter+petugas), tanggal, jam, dan jumlah.
+     - Sistem menyimpan ke tabel `rawat_jl_dr`, `rawat_jl_pr`, atau `rawat_jl_drpr` sesuai provider.
+   - **Input Obat**:
+     - Pilih obat, isi jumlah dan aturan pakai.
+     - Sistem membuat atau menggabungkan resep harian ke tabel `resep_obat` dan `resep_dokter`.
+   - **Input Racikan**:
+     - Isi nama racikan, komposisi obat, kandungan, jumlah, dan aturan pakai.
+     - Data tersimpan di `resep_dokter_racikan` dan `resep_dokter_racikan_detail`.
+   - **Rujukan Internal**: Aktifkan filter rujukan internal untuk menampilkan pasien yang dirujuk antar poli.
+   - **Dokumen Pendukung**: Buat surat rujukan, surat sakit, surat sehat, dan persetujuan umum dari halaman detail pasien.
+
+3. **Booking Registrasi**
+   - Lihat daftar booking pendaftaran yang belum diproses.
+   - Ubah status booking menjadi **Terdaftar** untuk mengkonversinya menjadi `reg_periksa` resmi pada hari pemeriksaan.
+
+4. **Booking Periksa**
+   - Kelola jadwal booking pemeriksaan pasien yang telah dikonfirmasi.
+
+5. **Jadwal Dokter**
+   - Lihat dan kelola jadwal praktik dokter per poliklinik.
+   - Jadwal bersumber dari tabel `jadwal` yang dikelola di modul Master.
 
 ## Panduan Admin
 
-1. Masuk ke panel admin mLITE dengan akun yang memiliki hak akses pengelolaan modul.
-2. Buka menu **Rawat Jalan** dari navigasi utama, lalu cek konfigurasi dasar plugin.
-3. Atur data master, parameter, dan hak akses pengguna sesuai kebutuhan operasional.
-4. Lakukan verifikasi hasil input dan pastikan integrasi data berjalan sebelum dipakai harian.
-5. Pantau penggunaan plugin secara berkala dan lakukan pembaruan pengaturan bila diperlukan.
+1. **Pengaturan Poliklinik dan Dokter**
+   - Kelola data poliklinik (termasuk biaya registrasi) dan dokter di modul **Master**.
+   - Pastikan status poliklinik dan dokter aktif (`status = 1`) agar tampil di form pendaftaran.
 
-## Panduan Pengguna
+2. **Pengaturan IGD**
+   - Di menu **Settings → Umum**, atur kode poliklinik IGD (`igd`) agar pasien IGD tidak tercampur di daftar rawat jalan biasa.
 
-1. Login menggunakan akun petugas/pengguna yang sudah diberikan akses ke plugin **Rawat Jalan**.
-2. Masuk ke menu **Rawat Jalan** untuk menjalankan proses sesuai alur kerja unit.
-3. Isi data yang dibutuhkan dengan lengkap dan benar pada form yang tersedia.
-4. Simpan transaksi/perubahan data, lalu periksa notifikasi status berhasil atau gagal.
-5. Gunakan fitur pencarian, filter, cetak, atau ekspor (jika tersedia) untuk kebutuhan operasional.
+3. **Pengaturan Antrian per Dokter**
+   - Aktifkan opsi `dokter_ralan_per_dokter` di Settings agar nomor urut antrian dihitung per dokter (bukan per poliklinik).
+
+4. **Hak Akses Poliklinik**
+   - Atur `cap` (capability) akun petugas dengan kode poliklinik yang menjadi wewenangnya (dipisah koma).
+   - Admin dapat melihat semua poliklinik; petugas hanya melihat poliklinik sesuai `cap`-nya.
+
+5. **Integrasi vClaim BPJS**
+   - Jika modul `vclaim` aktif, tombol pengajuan SEP muncul di daftar pasien.
+   - Nomor SEP dari bridging ditampilkan di kolom SEP.
+
+6. **Berkas Digital**
+   - Berkas digital pasien (persetujuan, form, dll.) diunggah ke `webapps/berkasrawat/pages/upload/`.
 
 ## Catatan
 
-- Jika menu tidak muncul, minta admin untuk mengaktifkan akses plugin pada akun Anda.
-- Gunakan data yang valid agar laporan dan proses di modul lain tetap sinkron.
+- Registrasi untuk tanggal yang akan datang otomatis masuk ke `booking_registrasi`; registrasi hari ini langsung ke `reg_periksa`.
+- No rawat dihasilkan otomatis dengan format `YYYY/MM/DD/XXXXX`.
+- Sistem mencoba kembali hingga 5 kali jika terjadi konflik no rawat (duplicate key) saat pendaftaran bersamaan.

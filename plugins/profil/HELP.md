@@ -1,28 +1,66 @@
 # Plugin Profil
 
-Dokumentasi penggunaan plugin **Profil** pada mLITE.
+Modul pengelolaan profil dan kehadiran pegawai di mLITE.
 
-## Deskripsi Singkat
+## Akses Modul
 
-Modul profil
+- Masuk ke panel admin mLITE.
+- Buka menu **Profil**.
+- Pilih submenu sesuai kebutuhan:
+  - Kelola
+  - Biodata
+  - Presensi Masuk
+  - Rekap Presensi
+  - Jadwal Pegawai
+  - Ganti Password
+
+## Panduan Pengguna (Petugas)
+
+1. **Kelola**
+   - Halaman beranda profil menampilkan nama, NIK, tanggal hari ini, serta ringkasan kehadiran bulan berjalan (hadir dan absen).
+   - Klik sub-menu yang tersedia untuk berpindah ke fitur lain.
+
+2. **Biodata**
+   - Lihat dan edit data diri pegawai: nama, jenis kelamin, departemen, bidang, jabatan, pendidikan, status wajib pajak, dll.
+   - Upload foto profil (akan otomatis dipotong persegi dan dikompresi maks 512×512 px).
+   - Klik **Simpan** setelah mengisi form.
+
+3. **Presensi Masuk**
+   - Menampilkan daftar presensi masuk (data dari `temporary_presensi`) milik pegawai yang sedang login.
+   - Admin dapat melihat presensi semua pegawai.
+   - Klik ikon peta untuk melihat lokasi GPS presensi di Google Maps.
+
+4. **Rekap Presensi**
+   - Menampilkan rekap kehadiran per bulan beserta shift, jam datang, jam pulang, durasi, dan status.
+   - Pilih bulan untuk melihat rekap bulan berbeda.
+   - Admin dapat melihat rekap seluruh pegawai; petugas biasa hanya melihat rekap milik sendiri.
+
+5. **Jadwal Pegawai**
+   - Menampilkan jadwal kerja pegawai untuk bulan dan tahun berjalan.
+   - Admin melihat jadwal semua pegawai; petugas melihat jadwal milik sendiri.
+
+6. **Ganti Password**
+   - Masukkan **Password Lama** dan **Password Baru**.
+   - Password baru tidak boleh sama dengan password lama.
+   - Klik **Simpan** untuk memperbarui password.
 
 ## Panduan Admin
 
-1. Masuk ke panel admin mLITE dengan akun yang memiliki hak akses pengelolaan modul.
-2. Buka menu **Profil** dari navigasi utama, lalu cek konfigurasi dasar plugin.
-3. Atur data master, parameter, dan hak akses pengguna sesuai kebutuhan operasional.
-4. Lakukan verifikasi hasil input dan pastikan integrasi data berjalan sebelum dipakai harian.
-5. Pantau penggunaan plugin secara berkala dan lakukan pembaruan pengaturan bila diperlukan.
+1. **Kelola Biodata Pegawai**
+   - Pastikan data pegawai di tabel `pegawai` sudah terisi (NIK, nama, departemen, bidang, jabatan, dll.) agar menu Biodata berfungsi.
+   - Data departemen, bidang, jenjang jabatan, pendidikan, dan status wajib pajak dikelola di modul **Master**.
 
-## Panduan Pengguna
+2. **Verifikasi Presensi**
+   - Data presensi bersumber dari tabel `temporary_presensi` (presensi masuk) dan `rekap_presensi` (rekap bulanan).
+   - Admin dapat memantau seluruh pegawai sekaligus; petugas biasa hanya melihat data sendiri.
+   - Foto presensi dan data geolokasi tersimpan di tabel `mlite_geolocation_presensi`.
 
-1. Login menggunakan akun petugas/pengguna yang sudah diberikan akses ke plugin **Profil**.
-2. Masuk ke menu **Profil** untuk menjalankan proses sesuai alur kerja unit.
-3. Isi data yang dibutuhkan dengan lengkap dan benar pada form yang tersedia.
-4. Simpan transaksi/perubahan data, lalu periksa notifikasi status berhasil atau gagal.
-5. Gunakan fitur pencarian, filter, cetak, atau ekspor (jika tersedia) untuk kebutuhan operasional.
+3. **Jadwal Kerja**
+   - Jadwal dikelola dari modul **Presensi** (tabel `jadwal_pegawai`).
+   - Plugin Profil hanya menampilkan jadwal yang sudah diinput di modul tersebut.
 
 ## Catatan
 
-- Jika menu tidak muncul, minta admin untuk mengaktifkan akses plugin pada akun Anda.
-- Gunakan data yang valid agar laporan dan proses di modul lain tetap sinkron.
+- NIK pegawai harus sama dengan username akun mLITE agar data profil terhubung dengan benar.
+- Foto profil disimpan di direktori `webapps/penggajian/pages/pegawai/photo/`.
+- Jika pegawai belum terdaftar di tabel `pegawai`, halaman Kelola menampilkan nama "Admin Utama".

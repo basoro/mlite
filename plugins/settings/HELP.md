@@ -1,28 +1,60 @@
 # Plugin Pengaturan
 
-Dokumentasi penggunaan plugin **Pengaturan** pada mLITE.
+Modul konfigurasi sistem mLITE, mencakup pengaturan umum instansi, manajemen tema tampilan, pembaruan sistem, serta backup dan restore database.
 
-## Deskripsi Singkat
+## Akses Modul
 
-Pengelolaan pengaturan
+- Masuk ke panel admin mLITE.
+- Buka menu **Pengaturan**.
+- Pilih submenu sesuai kebutuhan:
+  - Pengaturan
+  - Umum
+  - Tema
+  - Pembaruan
+  - Backup & Restore
+
+## Panduan Pengguna (Petugas)
+
+Plugin ini hanya diakses oleh Administrator sistem. Tidak ada operasional harian untuk petugas biasa.
 
 ## Panduan Admin
 
-1. Masuk ke panel admin mLITE dengan akun yang memiliki hak akses pengelolaan modul.
-2. Buka menu **Pengaturan** dari navigasi utama, lalu cek konfigurasi dasar plugin.
-3. Atur data master, parameter, dan hak akses pengguna sesuai kebutuhan operasional.
-4. Lakukan verifikasi hasil input dan pastikan integrasi data berjalan sebelum dipakai harian.
-5. Pantau penggunaan plugin secara berkala dan lakukan pembaruan pengaturan bila diperlukan.
+1. **Umum**
+   - Isi identitas instansi: nama, alamat, kota, propinsi, nomor telepon, email, website.
+   - Upload **logo** instansi (otomatis dipotong persegi, maks 512×512 px) dan **wallpaper** halaman login.
+   - Atur zona waktu sistem.
+   - Konfigurasikan poliklinik dan dokter default (IGD, dokter umum, dll.) jika modul Master aktif.
+   - Atur format **No Rekam Medis** (`set_no_rkm_medis`) dan format **Nomor Surat**.
+   - Pilih integrasi aktif: Pasien, IGD, Laboratorium, Radiologi, WhatsApp Gateway, Bridging SEP, Rawat Jalan, Presensi.
+   - Lihat informasi sistem: versi PHP, versi database, dan status lisensi.
+   - Aktifkan **Lisensi** dengan memasukkan kode validasi penggunaan.
+   - Klik **Simpan** — data instansi juga dikirim ke server mLITE untuk registrasi.
 
-## Panduan Pengguna
+2. **Tema**
+   - Lihat daftar tema yang tersedia di direktori `themes/`.
+   - Klik **Aktifkan** untuk mengganti tema tampilan publik yang aktif.
+   - Klik nama file tema untuk membuka **editor kode** (MarkItUp) dan mengedit template HTML/CSS secara langsung.
+   - Simpan perubahan file tema — berlaku langsung tanpa restart.
 
-1. Login menggunakan akun petugas/pengguna yang sudah diberikan akses ke plugin **Pengaturan**.
-2. Masuk ke menu **Pengaturan** untuk menjalankan proses sesuai alur kerja unit.
-3. Isi data yang dibutuhkan dengan lengkap dan benar pada form yang tersedia.
-4. Simpan transaksi/perubahan data, lalu periksa notifikasi status berhasil atau gagal.
-5. Gunakan fitur pencarian, filter, cetak, atau ekspor (jika tersedia) untuk kebutuhan operasional.
+3. **Pembaruan**
+   - Klik **Cek Pembaruan** untuk memeriksa versi terbaru dari GitHub (`basoro/mlite`).
+   - Jika tersedia versi baru, klik **Update** untuk mengunduh dan menginstal otomatis:
+     - Sistem membuat backup otomatis ke folder `backup/{timestamp}/` sebelum update.
+     - File `systems/`, `plugins/`, `assets/`, dan `themes/` diperbarui.
+     - File `config.php` dan `manifest.json` dipertahankan dari backup.
+     - Script `upgrade.php` dijalankan untuk migrasi database jika diperlukan.
+   - **Update Nightly**: unduh dan instal versi terbaru dari branch `master` GitHub.
+   - **Update Manual**: letakkan file `mlite-{versi}.zip` di root direktori, lalu klik Update Manual.
+
+4. **Backup & Restore**
+   - **Backup Database**: buat salinan database saat ini dalam format file backup.
+   - **Restore Database**: pulihkan database dari file backup yang diunggah.
+   - Lakukan backup rutin sebelum melakukan update sistem atau perubahan konfigurasi besar.
 
 ## Catatan
 
-- Jika menu tidak muncul, minta admin untuk mengaktifkan akses plugin pada akun Anda.
-- Gunakan data yang valid agar laporan dan proses di modul lain tetap sinkron.
+- Hanya administrator sistem yang boleh mengakses menu Pengaturan.
+- Saat update sistem, backup dilakukan otomatis — namun sangat disarankan untuk melakukan backup manual database terlebih dahulu melalui **Backup & Restore**.
+- Jika `FILE_LOCK` aktif di konfigurasi server, pengeditan file tema melalui editor akan dinonaktifkan.
+- Update sistem memerlukan ekstensi PHP **ZipArchive** dan akses **curl** aktif di server.
+- Setelah update, bersihkan cache browser untuk memastikan perubahan tampilan termuat dengan benar.
