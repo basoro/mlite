@@ -1,28 +1,50 @@
 # Plugin Apotek Ralan
 
-Dokumentasi penggunaan plugin **Apotek Ralan** pada mLITE.
+Dokumentasi singkat penggunaan modul **Apotek Rawat Jalan** di mLITE.
 
-## Deskripsi Singkat
+## Akses Modul
 
-Modul apotek rawat jalan untuk mLITE
+- Masuk ke panel admin mLITE.
+- Buka menu **Apotek Ralan**.
+- Pilih submenu sesuai kebutuhan:
+  - Kelola
+
+## Panduan Pengguna (Petugas)
+
+Petugas apotek rawat jalan menggunakan menu **Kelola** untuk seluruh proses pelayanan resep:
+
+1. **Melihat Daftar Resep**
+   - Buka **Apotek Ralan → Kelola**.
+   - Atur filter **Tanggal Kunjungan** (dari–sampai) dan **Status Periksa** (semua / belum / selesai / lunas).
+   - Klik **Tampilkan** untuk memuat daftar pasien rawat jalan.
+
+2. **Memproses Resep Pasien**
+   - Klik baris pasien untuk membuka detail resep.
+   - Periksa daftar obat yang diresepkan dokter.
+   - Klik **Validasi Resep** untuk memvalidasi resep sebelum penyiapan obat.
+   - Tambah item obat dengan mengisi kode barang, jumlah, aturan pakai, dan keterangan, lalu klik **Simpan**.
+   - Untuk obat racikan, gunakan form **Racikan** — isi nama racikan, jumlah, dan komposisi obat.
+   - Hapus item obat atau resep yang tidak sesuai menggunakan tombol hapus.
+
+3. **Mencetak Etiket dan E-Resep**
+   - Setelah resep divalidasi, klik **Cetak Etiket** untuk mencetak label etiket obat per item.
+   - Klik **Cetak E-Resep** untuk mencetak keseluruhan resep elektronik pasien.
+
+4. **Rincian Resep**
+   - Buka **Rincian** untuk melihat detail biaya dan item resep yang sudah diproses.
 
 ## Panduan Admin
 
-1. Masuk ke panel admin mLITE dengan akun yang memiliki hak akses pengelolaan modul.
-2. Buka menu **Apotek Ralan** dari navigasi utama, lalu cek konfigurasi dasar plugin.
-3. Atur data master, parameter, dan hak akses pengguna sesuai kebutuhan operasional.
-4. Lakukan verifikasi hasil input dan pastikan integrasi data berjalan sebelum dipakai harian.
-5. Pantau penggunaan plugin secara berkala dan lakukan pembaruan pengaturan bila diperlukan.
+1. **Konfigurasi Depo Apotek Ralan**
+   - Pastikan pengaturan `farmasi.deporalan` sudah mengarah ke kode bangsal/gudang apotek rawat jalan yang benar (diatur di modul Farmasi/Settings).
+   - Kode bangsal ini digunakan saat validasi stok obat saat memproses resep.
 
-## Panduan Pengguna
-
-1. Login menggunakan akun petugas/pengguna yang sudah diberikan akses ke plugin **Apotek Ralan**.
-2. Masuk ke menu **Apotek Ralan** untuk menjalankan proses sesuai alur kerja unit.
-3. Isi data yang dibutuhkan dengan lengkap dan benar pada form yang tersedia.
-4. Simpan transaksi/perubahan data, lalu periksa notifikasi status berhasil atau gagal.
-5. Gunakan fitur pencarian, filter, cetak, atau ekspor (jika tersedia) untuk kebutuhan operasional.
+2. **Integrasi VClaim**
+   - Jika modul **VClaim** aktif, kolom SEP akan ditampilkan pada daftar pasien di Kelola.
+   - Pastikan modul VClaim sudah dikonfigurasi sebelum menggunakan fitur ini.
 
 ## Catatan
 
-- Jika menu tidak muncul, minta admin untuk mengaktifkan akses plugin pada akun Anda.
-- Gunakan data yang valid agar laporan dan proses di modul lain tetap sinkron.
+- Resep hanya dapat diproses untuk pasien yang sudah terdaftar di rawat jalan (tabel `reg_periksa`).
+- Validasi resep harus dilakukan sebelum obat dapat diserahkan kepada pasien.
+- Cetak etiket mendukung format per item obat (termasuk aturan pakai dan nama pasien).

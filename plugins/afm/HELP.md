@@ -1,28 +1,29 @@
 # Plugin AFM
 
-Dokumentasi penggunaan plugin **AFM** pada mLITE.
+Dokumentasi singkat penggunaan modul **AFM** di mLITE.
 
-## Deskripsi Singkat
+## Akses Modul
 
-Katalog API AFM mLITE
+- Masuk ke panel admin mLITE.
+- Buka menu **API AFM mLITE**.
+- Pilih submenu sesuai kebutuhan:
+  - Kelola
+
+## Panduan Pengguna (Petugas)
+
+Plugin AFM bersifat konfigurasi teknis dan tidak memiliki alur operasional harian untuk petugas. Akses diberikan kepada admin teknis yang mengelola integrasi API.
 
 ## Panduan Admin
 
-1. Masuk ke panel admin mLITE dengan akun yang memiliki hak akses pengelolaan modul.
-2. Buka menu **AFM** dari navigasi utama, lalu cek konfigurasi dasar plugin.
-3. Atur data master, parameter, dan hak akses pengguna sesuai kebutuhan operasional.
-4. Lakukan verifikasi hasil input dan pastikan integrasi data berjalan sebelum dipakai harian.
-5. Pantau penggunaan plugin secara berkala dan lakukan pembaruan pengaturan bila diperlukan.
-
-## Panduan Pengguna
-
-1. Login menggunakan akun petugas/pengguna yang sudah diberikan akses ke plugin **AFM**.
-2. Masuk ke menu **AFM** untuk menjalankan proses sesuai alur kerja unit.
-3. Isi data yang dibutuhkan dengan lengkap dan benar pada form yang tersedia.
-4. Simpan transaksi/perubahan data, lalu periksa notifikasi status berhasil atau gagal.
-5. Gunakan fitur pencarian, filter, cetak, atau ekspor (jika tersedia) untuk kebutuhan operasional.
+1. **Kelola (Pengaturan Token API)**
+   - Buka menu **API AFM mLITE → Kelola**.
+   - Isi field **AFM Token** dengan token autentikasi yang diberikan oleh penyedia layanan AFM.
+   - Isi **Username Finger** dan **Password Finger** untuk integrasi perangkat fingerprint.
+   - Isi **X-Header-Token** sesuai nama header yang disepakati dengan sistem eksternal (default: `X-Header-Token`).
+   - Klik **Simpan** untuk menyimpan konfigurasi.
 
 ## Catatan
 
-- Jika menu tidak muncul, minta admin untuk mengaktifkan akses plugin pada akun Anda.
-- Gunakan data yang valid agar laporan dan proses di modul lain tetap sinkron.
+- Token AFM bersifat rahasia; jangan bagikan ke pihak yang tidak berwenang.
+- Perubahan token memerlukan sinkronisasi ulang dengan sistem eksternal yang menggunakan API ini.
+- Plugin ini termasuk kategori **bridging** dan berfungsi sebagai katalog titik akses API AFM mLITE untuk integrasi sistem lain.

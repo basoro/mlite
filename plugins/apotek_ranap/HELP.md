@@ -1,28 +1,50 @@
 # Plugin Apotek Ranap
 
-Dokumentasi penggunaan plugin **Apotek Ranap** pada mLITE.
+Dokumentasi singkat penggunaan modul **Apotek Rawat Inap** di mLITE.
 
-## Deskripsi Singkat
+## Akses Modul
 
-Modul apotek rawat inap untuk mLITE
+- Masuk ke panel admin mLITE.
+- Buka menu **Apotek Ranap**.
+- Pilih submenu sesuai kebutuhan:
+  - Kelola
+
+## Panduan Pengguna (Petugas)
+
+Petugas apotek rawat inap menggunakan menu **Kelola** untuk seluruh proses pelayanan resep pasien yang sedang dirawat:
+
+1. **Melihat Daftar Pasien Rawat Inap**
+   - Buka **Apotek Ranap → Kelola**.
+   - Atur filter **Tanggal Masuk** (dari–sampai) dan **Status Pulang** (semua / belum pulang / sudah pulang).
+   - Klik **Tampilkan** untuk memuat daftar pasien rawat inap.
+
+2. **Memproses Resep Pasien**
+   - Klik baris pasien untuk membuka detail resep rawat inap.
+   - Periksa daftar obat yang diresepkan dokter untuk setiap episode rawat.
+   - Klik **Validasi Resep** untuk memvalidasi resep sebelum penyiapan obat.
+   - Tambah item obat dengan mengisi kode barang, jumlah, aturan pakai, dan keterangan, lalu klik **Simpan**.
+   - Untuk obat racikan, gunakan form **Racikan** — isi nama racikan, jumlah, dan komposisi obat.
+   - Hapus item obat atau resep yang tidak sesuai menggunakan tombol hapus.
+
+3. **Mencetak Etiket dan E-Resep**
+   - Setelah resep divalidasi, klik **Cetak Etiket** untuk mencetak label etiket obat per item.
+   - Klik **Cetak E-Resep** untuk mencetak keseluruhan resep elektronik pasien rawat inap.
+
+4. **Rincian Resep**
+   - Buka **Rincian** untuk melihat detail biaya dan item resep yang sudah diproses per episode rawat.
 
 ## Panduan Admin
 
-1. Masuk ke panel admin mLITE dengan akun yang memiliki hak akses pengelolaan modul.
-2. Buka menu **Apotek Ranap** dari navigasi utama, lalu cek konfigurasi dasar plugin.
-3. Atur data master, parameter, dan hak akses pengguna sesuai kebutuhan operasional.
-4. Lakukan verifikasi hasil input dan pastikan integrasi data berjalan sebelum dipakai harian.
-5. Pantau penggunaan plugin secara berkala dan lakukan pembaruan pengaturan bila diperlukan.
+1. **Konfigurasi Depo Apotek Ranap**
+   - Pastikan pengaturan `farmasi.deposranap` sudah mengarah ke kode bangsal/gudang apotek rawat inap yang benar (diatur di modul Farmasi/Settings).
+   - Kode bangsal ini digunakan saat validasi stok obat ketika memproses resep rawat inap.
 
-## Panduan Pengguna
-
-1. Login menggunakan akun petugas/pengguna yang sudah diberikan akses ke plugin **Apotek Ranap**.
-2. Masuk ke menu **Apotek Ranap** untuk menjalankan proses sesuai alur kerja unit.
-3. Isi data yang dibutuhkan dengan lengkap dan benar pada form yang tersedia.
-4. Simpan transaksi/perubahan data, lalu periksa notifikasi status berhasil atau gagal.
-5. Gunakan fitur pencarian, filter, cetak, atau ekspor (jika tersedia) untuk kebutuhan operasional.
+2. **Integrasi VClaim**
+   - Jika modul **VClaim** aktif, kolom SEP akan ditampilkan pada daftar pasien.
+   - Pastikan modul VClaim sudah dikonfigurasi agar data klaim JKN pasien rawat inap dapat diakses.
 
 ## Catatan
 
-- Jika menu tidak muncul, minta admin untuk mengaktifkan akses plugin pada akun Anda.
-- Gunakan data yang valid agar laporan dan proses di modul lain tetap sinkron.
+- Resep rawat inap hanya dapat diproses untuk pasien yang tercatat aktif di rawat inap (tabel `kamar_inap`).
+- Filter berdasarkan tanggal masuk memudahkan pemantauan pasien lama maupun pasien baru yang masuk hari ini.
+- Validasi resep harus dilakukan sebelum obat dapat disiapkan dan diserahkan ke ruang perawatan.
