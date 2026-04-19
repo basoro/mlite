@@ -17,7 +17,7 @@ Dokumentasi singkat penggunaan modul **Keuangan** di mLITE.
   - Neraca Keuangan
   - Pengaturan
 
-## Panduan User (Petugas)
+## Panduan Pengguna (Petugas)
 
 User/petugas umumnya menggunakan fitur operasional dan pelaporan:
 
