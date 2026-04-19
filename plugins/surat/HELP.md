@@ -1,28 +1,62 @@
 # Plugin Surat-Surat
 
-Dokumentasi penggunaan plugin **Surat-Surat** pada mLITE.
+Dokumentasi singkat penggunaan modul **Surat-Surat** di mLITE untuk penerbitan surat rujukan, surat keterangan sakit, dan surat keterangan sehat pasien.
 
-## Deskripsi Singkat
+## Akses Modul
 
-Modul mlite surat rujukan, sakit, dan sehat untuk mLITE
+- Masuk ke panel admin mLITE.
+- Buka menu **Surat-Surat**.
+- Pilih submenu sesuai kebutuhan:
+  - Kelola
+  - Surat Rujukan
+  - Surat Sakit
+  - Surat Sehat
+
+## Panduan Pengguna (Petugas)
+
+1. **Surat Rujukan**
+   - Buka submenu **Surat Rujukan**.
+   - Klik **Tambah** untuk membuat surat baru, atau pilih surat dari daftar untuk diedit.
+   - Isi nomor surat, no rawat, data pasien (nama, tanggal lahir, jenis kelamin, alamat), tujuan faskes rujukan, anamnesa, pemeriksaan fisik, pemeriksaan penunjang, diagnosa, terapi, dan alasan dirujuk.
+   - Klik **Simpan** untuk menyimpan data.
+   - Untuk mencetak, buka menu **Rawat Jalan** pada data kunjungan pasien, pilih **Surat Rujukan** dari menu surat yang muncul otomatis.
+
+2. **Surat Keterangan Sakit**
+   - Buka submenu **Surat Sakit**.
+   - Klik **Tambah** atau cari surat yang sudah ada menggunakan kolom pencarian (nomor surat / nama pasien).
+   - Isi nomor surat, no rawat, data pasien, keadaan umum, diagnosa, lama istirahat (angka dan huruf), tanggal mulai dan selesai.
+   - Klik **Simpan**.
+   - Cetak surat dari halaman kunjungan Rawat Jalan melalui menu **Surat Keterangan Sakit**.
+
+3. **Surat Keterangan Sehat**
+   - Buka submenu **Surat Sehat**.
+   - Isi nomor surat, no rawat, data pasien, tanggal periksa, berat badan, tinggi badan, tensi, golongan darah, riwayat penyakit, dan keperluan surat.
+   - Klik **Simpan**.
+   - Cetak surat dari halaman kunjungan Rawat Jalan melalui menu **Surat Keterangan Sehat**.
+
+4. **Pencarian Surat**
+   - Setiap submenu dilengkapi kolom pencarian berdasarkan nomor surat atau nama pasien.
+   - Gunakan tombol **Edit** untuk mengubah data dan **Hapus** untuk menghapus surat.
 
 ## Panduan Admin
 
-1. Masuk ke panel admin mLITE dengan akun yang memiliki hak akses pengelolaan modul.
-2. Buka menu **Surat-Surat** dari navigasi utama, lalu cek konfigurasi dasar plugin.
-3. Atur data master, parameter, dan hak akses pengguna sesuai kebutuhan operasional.
-4. Lakukan verifikasi hasil input dan pastikan integrasi data berjalan sebelum dipakai harian.
-5. Pantau penggunaan plugin secara berkala dan lakukan pembaruan pengaturan bila diperlukan.
+1. **Pengaturan Kop dan Footer Surat**
+   - Akses **Pengaturan** (getSettings) pada modul Surat-Surat.
+   - Isi field **Kepala Surat** untuk kop surat institusi.
+   - Isi field **Footer Surat** untuk tanda tangan atau informasi penutup.
+   - Simpan perubahan.
 
-## Panduan Pengguna
+2. **Template Surat**
+   - Atur template tampilan untuk masing-masing jenis surat (rujukan, sakit, sehat) melalui field template di halaman Pengaturan.
+   - Template menentukan tata letak cetak surat yang dihasilkan.
 
-1. Login menggunakan akun petugas/pengguna yang sudah diberikan akses ke plugin **Surat-Surat**.
-2. Masuk ke menu **Surat-Surat** untuk menjalankan proses sesuai alur kerja unit.
-3. Isi data yang dibutuhkan dengan lengkap dan benar pada form yang tersedia.
-4. Simpan transaksi/perubahan data, lalu periksa notifikasi status berhasil atau gagal.
-5. Gunakan fitur pencarian, filter, cetak, atau ekspor (jika tersedia) untuk kebutuhan operasional.
+3. **Integrasi Rawat Jalan**
+   - Plugin ini terintegrasi otomatis dengan modul Rawat Jalan melalui event `rawat_jalan.surat_menu`.
+   - Pastikan modul Rawat Jalan aktif agar tautan cetak surat muncul pada halaman kunjungan pasien.
 
 ## Catatan
 
-- Jika menu tidak muncul, minta admin untuk mengaktifkan akses plugin pada akun Anda.
-- Gunakan data yang valid agar laporan dan proses di modul lain tetap sinkron.
+- Nomor surat diisi manual; pastikan menggunakan format penomoran yang konsisten sesuai kebijakan fasilitas kesehatan.
+- Data dokter dan SIP dokter diambil otomatis dari data kunjungan (no rawat) yang terhubung ke tabel `reg_periksa`, `dokter`, dan `pasien`.
+- Surat dicetak langsung dari browser; gunakan fungsi print browser atau tombol Print yang tersedia di halaman cetak.
+- Satu no rawat hanya dapat memiliki satu surat per jenis (rujukan/sakit/sehat); data lama akan tertimpa jika disimpan ulang dengan no rawat yang sama.
