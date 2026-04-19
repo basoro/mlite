@@ -1562,8 +1562,22 @@ class Admin extends AdminModule
 
     public function postSaveICD9()
     {
-      unset($_POST['nama']);
+      $snomed_concept_id = trim((string) ($_POST['snomed_concept_id'] ?? ''));
+      $snomed_term = trim((string) ($_POST['snomed_term'] ?? ''));
+      $snomed_term = strip_tags($snomed_term);
+      $snomed_term = str_replace(["\r", "\n", "\t"], ' ', $snomed_term);
+      $snomed_term = preg_replace('/\s+/', ' ', $snomed_term);
+      $snomed_term = trim(mb_substr($snomed_term, 0, 255));
+      unset($_POST['nama'], $_POST['snomed_concept_id'], $_POST['snomed_term']);
       $this->db('prosedur_pasien')->save($_POST);
+      if ($snomed_concept_id !== '' && $snomed_term !== '' && $this->isValidSnomedConceptId($snomed_concept_id)) {
+        $this->saveSnomedMappingICD9(
+          $_POST['no_rawat'],
+          $_POST['kode'],
+          $snomed_concept_id,
+          $snomed_term
+        );
+      }
       exit();
     }
 
