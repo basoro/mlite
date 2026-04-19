@@ -1723,9 +1723,13 @@ class Admin extends AdminModule
         exit();
       }
 
-      if (!$this->db('prosedur_pasien')->where('no_rawat', $no_rawat)->where('kode', $kd_tindakan)->oneArray()) {
-        echo '0';
-        exit();
+      $prosedur_pasien = $this->db('prosedur_pasien')->where('no_rawat', $no_rawat)->where('kode', $kd_tindakan)->oneArray();
+      if (!$prosedur_pasien) {
+        $icd9 = $this->db('icd9')->where('kode', $kd_tindakan)->oneArray();
+        if (!$icd9) {
+          echo '0';
+          exit();
+        }
       }
 
       $this->saveSnomedMappingICD9($no_rawat, $kd_tindakan, $snomed_concept_id, $snomed_term);
