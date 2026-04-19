@@ -1705,17 +1705,9 @@ CREATE TABLE `mlite_bpjs_emr_mapping_obat` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
-CREATE TABLE `mlite_loinc_master` (
-  `code` varchar(20) NOT NULL,
-  `display` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
-
-
-CREATE TABLE `mlite_snomed_master` (
-  `code` varchar(20) NOT NULL,
-  `display` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`code`)
+CREATE TABLE `mlite_bpjs_emr_uuid_condition`  (
+  `kd_penyakit` varchar(15) NOT NULL,
+  `uuid` varchar(200) NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
@@ -2925,7 +2917,7 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("172","bpjs_emr","koders",""),
 ("173","bpjs_emr","kode_kemkes",""),
 ("174","bpjs_emr","kodepos",""),
-("175","bpjs_emr","baseurl","https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev/"),
+("175","bpjs_emr","baseurl","https://apijkn-dev.bpjs-kesehatan.go.id/erekammedis_dev/"),
 ("176","dokter_ralan","set_sudah","tidak"),
 ("177","esignature","kode_berkasdigital",""),
 ("178","icare","url","https://apijkn.bpjs-kesehatan.go.id/wsihs/api/rs/validate"),
@@ -2966,7 +2958,8 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("213","veronisa","secret_key",""),
 ("214","veronisa","bpjs_api_url",""), 
 ("215","settings","login_otp", "tidak"),
-("216","keuangan","akun_debet_kas","1101");
+("216","keuangan","akun_debet_kas","1101"),
+("217","bpjs_emr","kecamatan","");
 
 
 CREATE TABLE `mlite_subrekening` (
