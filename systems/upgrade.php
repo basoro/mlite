@@ -1835,6 +1835,17 @@ switch ($version) {
                 status_penyakit TEXT DEFAULT 'Baru' CHECK(status_penyakit IN ('Baru','Lama')),
                 UNIQUE (no_rawat, kd_penyakit, snomed_concept_id)
             );");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mapping_snomed_icd9` (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                no_rawat TEXT NOT NULL,
+                kd_tindakan TEXT NOT NULL,
+                snomed_concept_id TEXT NOT NULL,
+                snomed_term TEXT DEFAULT NULL,
+                UNIQUE (no_rawat, kd_tindakan, snomed_concept_id)
+            );");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_mapping_snomed_icd9_no_rawat ON `mlite_mapping_snomed_icd9` (`no_rawat`);");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_mapping_snomed_icd9_kd_tindakan ON `mlite_mapping_snomed_icd9` (`kd_tindakan`);");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_mapping_snomed_icd9_concept_id ON `mlite_mapping_snomed_icd9` (`snomed_concept_id`);");
         } else {
             // Kapabilitas MySQL sejak 6.2.0
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_study` (
@@ -1962,6 +1973,18 @@ switch ($version) {
               UNIQUE KEY `uniq_mapping` (`no_rawat`,`kd_penyakit`,`snomed_concept_id`),
               KEY `no_rawat` (`no_rawat`),
               KEY `kd_penyakit` (`kd_penyakit`),
+              KEY `snomed_concept_id` (`snomed_concept_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mapping_snomed_icd9` (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `no_rawat` varchar(17) NOT NULL,
+              `kd_tindakan` varchar(10) NOT NULL,
+              `snomed_concept_id` varchar(50) NOT NULL,
+              `snomed_term` text DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `uniq_mapping` (`no_rawat`,`kd_tindakan`,`snomed_concept_id`),
+              KEY `no_rawat` (`no_rawat`),
+              KEY `kd_tindakan` (`kd_tindakan`),
               KEY `snomed_concept_id` (`snomed_concept_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
 
