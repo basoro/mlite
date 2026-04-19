@@ -48,16 +48,49 @@ class Admin extends AdminModule
     public function getResponse()
     {
         $this->_addHeaderFiles();
-        $periode = date('Y-m-d');
-        if (isset($_GET['periode']) && $_GET['periode'] != '') {
-        $periode = $_GET['periode'];
+
+        $page = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+        $perpage = 20;
+        $search = isset($_GET['s']) ? trim($_GET['s']) : '';
+        $start_date = isset($_GET['start_date']) && $_GET['start_date'] !== '' ? $_GET['start_date'] : date('Y-m-d');
+        $end_date = isset($_GET['end_date']) && $_GET['end_date'] !== '' ? $_GET['end_date'] : date('Y-m-d');
+
+        $query = "SELECT r.*
+                  FROM reg_periksa r
+                  JOIN pasien p ON p.no_rkm_medis = r.no_rkm_medis
+                  WHERE r.tgl_registrasi BETWEEN :start_date AND :end_date
+                    AND r.stts != 'Batal'
+                    AND r.kd_pj = 'BPJ'";
+
+        $params = [
+            ':start_date' => $start_date,
+            ':end_date' => $end_date
+        ];
+
+        if (!empty($search)) {
+            $query .= " AND (r.no_rawat LIKE :search OR r.no_rkm_medis LIKE :search OR p.nm_pasien LIKE :search)";
+            $params[':search'] = "%$search%";
         }
+
+        $stmtCount = $this->db()->pdo()->prepare($query);
+        $stmtCount->execute($params);
+        $totalRecords = $stmtCount->rowCount();
+
+        $pagination = new \Systems\Lib\Pagination(
+            $page,
+            $totalRecords,
+            $perpage,
+            url([ADMIN, 'bpjs_emr', 'response', '%d?s=' . urlencode($search) . '&start_date=' . urlencode($start_date) . '&end_date=' . urlencode($end_date)])
+        );
+
+        $offset = $pagination->offset();
+        $query .= " ORDER BY r.tgl_registrasi DESC, r.jam_reg DESC LIMIT " . (int) $perpage . " OFFSET " . (int) $offset;
+
+        $stmt = $this->db()->pdo()->prepare($query);
+        $stmt->execute($params);
+        $query = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
         $data_response = [];
-        $query = $this->db('reg_periksa')
-        ->where('reg_periksa.tgl_registrasi', $periode)
-        ->where('stts', '!=', 'Batal')
-        ->where('kd_pj', 'BPJ')
-        ->toArray();
         foreach ($query as $row) {
 
             $erm_response = $this->db('mlite_bpjs_emr_logs')->where('no_rawat', $row['no_rawat'])->oneArray();
@@ -105,7 +138,13 @@ class Admin extends AdminModule
 
             $data_response[] = $row;
         }
-        return $this->draw('response.html', ['data_response' => $data_response]);
+        return $this->draw('response.html', [
+            'data_response' => $data_response,
+            'pagination' => $pagination->nav('pagination', '5'),
+            's' => htmlspecialchars($search),
+            'start_date' => htmlspecialchars($start_date),
+            'end_date' => htmlspecialchars($end_date)
+        ]);
     }
 
     public function postCekkelengkapan()
