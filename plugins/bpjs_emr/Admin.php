@@ -49,11 +49,32 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
 
-        $page = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+        $maxPage = 10000;
+        $page = isset($_GET['page']) ? max(1, min($maxPage, (int) $_GET['page'])) : 1;
         $perpage = 20;
         $search = isset($_GET['s']) ? trim($_GET['s']) : '';
-        $start_date = isset($_GET['start_date']) && $_GET['start_date'] !== '' ? $_GET['start_date'] : date('Y-m-d');
-        $end_date = isset($_GET['end_date']) && $_GET['end_date'] !== '' ? $_GET['end_date'] : date('Y-m-d');
+        $today = date('Y-m-d');
+        $start_date = isset($_GET['start_date']) && $_GET['start_date'] !== '' ? $_GET['start_date'] : $today;
+        $end_date = isset($_GET['end_date']) && $_GET['end_date'] !== '' ? $_GET['end_date'] : $today;
+
+        $isValidDate = function ($date) {
+            $parsedDate = \DateTime::createFromFormat('Y-m-d', $date);
+            return $parsedDate && $parsedDate->format('Y-m-d') === $date;
+        };
+
+        if (!$isValidDate($start_date)) {
+            $start_date = $today;
+        }
+
+        if (!$isValidDate($end_date)) {
+            $end_date = $today;
+        }
+
+        if ($start_date > $end_date) {
+            $tempDate = $start_date;
+            $start_date = $end_date;
+            $end_date = $tempDate;
+        }
 
         $queryJoins = "FROM reg_periksa r
                        JOIN pasien p ON p.no_rkm_medis = r.no_rkm_medis";

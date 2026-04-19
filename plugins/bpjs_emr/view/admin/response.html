@@ -7,14 +7,16 @@
             <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
             <div class="form-group">
                 <input type="text" name="start_date" class="form-control datetimepicker" value="{$start_date}"
+                    aria-label="Tanggal awal"
                     placeholder="Tanggal Awal">
             </div>
             <div class="form-group">
                 <input type="text" name="end_date" class="form-control datetimepicker" value="{$end_date}"
+                    aria-label="Tanggal akhir"
                     placeholder="Tanggal Akhir">
             </div>
             <div class="form-group">
-                <input type="text" name="s" class="form-control" value="{$s}"
+                <input type="text" name="s" class="form-control" value="{$s}" aria-label="Pencarian data response"
                     placeholder="Cari No Rawat/No RM/Nama">
             </div>
             <button type="submit" class="btn btn-primary">Cari</button>
