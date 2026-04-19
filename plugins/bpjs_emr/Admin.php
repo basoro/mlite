@@ -11,17 +11,17 @@ class Admin extends AdminModule
 
     private $consid;
     private $secretkey;
-    private $user_key;
+    private $userkey;
     private $koders;
     private $kodeppk;
-    private $ermurl;
+    private $baseurl;
 
     public function init()
     {
         $this->consid = $this->settings->get('bpjs_emr.consid');
         $this->secretkey = $this->settings->get('bpjs_emr.secretkey');
-        $this->ermurl = $this->settings->get('bpjs_emr.baseurl');
-        $this->user_key = $this->settings->get('bpjs_emr.userkey');
+        $this->baseurl = $this->settings->get('bpjs_emr.baseurl');
+        $this->userkey = $this->settings->get('bpjs_emr.userkey');
         $this->koders = $this->settings->get('bpjs_emr.koders');
         $this->kodeppk = $this->settings->get('bpjs_emr.kode_kemkes');
     }
@@ -1502,7 +1502,7 @@ class Admin extends AdminModule
         // 5. cURL 
         // ============================================
         
-        $url = $this->ermurl . 'eclaim/rekammedis/insert';
+        $url = $this->baseurl . 'eclaim/rekammedis/insert';
         
         $ch = curl_init();
         curl_setopt_array($ch, [
@@ -1514,7 +1514,7 @@ class Admin extends AdminModule
                 'X-cons-id: ' . $this->consid,
                 'X-timestamp: ' . $timestamp,
                 'X-signature: ' . $signature,
-                'user_key: ' . $this->user_key
+                'user_key: ' . $this->userkey
             ],
             CURLOPT_POSTFIELDS     => $body,
             CURLOPT_TIMEOUT        => 30,
