@@ -2590,12 +2590,6 @@ class Admin extends AdminModule
         exit();
       }
 
-      $api_key = trim((string) $this->core->settings->get('satu_sehat.api_openai'));
-      if (empty($api_key)) {
-        echo json_encode(['status' => 'error', 'message' => 'API key (setting satu_sehat.api_openai untuk OpenRouter) belum diatur.']);
-        exit();
-      }
-
       $kode_diagnosa = strip_tags($kode_diagnosa);
       $kode_diagnosa = preg_replace('/[^A-Za-z0-9\.\-]/', '', $kode_diagnosa);
       $kode_diagnosa = trim(mb_substr($kode_diagnosa, 0, 20));
@@ -2611,6 +2605,30 @@ class Admin extends AdminModule
       }
       if ($nama_prompt === false) {
         $nama_prompt = '""';
+      }
+
+      $mapping_tersimpan = $this->db('mlite_mapping_snomed_icd')
+        ->where('kd_penyakit', $kode_diagnosa)
+        ->oneArray();
+      if ($mapping_tersimpan) {
+        $stored_concept_id = trim((string) ($mapping_tersimpan['snomed_concept_id'] ?? ''));
+        $stored_term = trim((string) ($mapping_tersimpan['snomed_term'] ?? ''));
+        if ($this->isValidSnomedConceptId($stored_concept_id) && $stored_term !== '') {
+          echo json_encode([
+            'status' => 'success',
+            'data' => [
+              'snomed_concept_id' => $stored_concept_id,
+              'snomed_term' => $stored_term
+            ]
+          ]);
+          exit();
+        }
+      }
+
+      $api_key = trim((string) $this->core->settings->get('satu_sehat.api_openai'));
+      if (empty($api_key)) {
+        echo json_encode(['status' => 'error', 'message' => 'API key (setting satu_sehat.api_openai untuk OpenRouter) belum diatur.']);
+        exit();
       }
 
       $request_data = [
@@ -2694,12 +2712,6 @@ class Admin extends AdminModule
         exit();
       }
 
-      $api_key = trim((string) $this->core->settings->get('satu_sehat.api_openai'));
-      if (empty($api_key)) {
-        echo json_encode(['status' => 'error', 'message' => 'API key (setting satu_sehat.api_openai untuk OpenRouter) belum diatur.']);
-        exit();
-      }
-
       $kode_tindakan = strip_tags($kode_tindakan);
       $kode_tindakan = preg_replace('/[^A-Za-z0-9\.\-]/', '', $kode_tindakan);
       $kode_tindakan = trim(mb_substr($kode_tindakan, 0, 20));
@@ -2715,6 +2727,30 @@ class Admin extends AdminModule
       }
       if ($nama_prompt === false) {
         $nama_prompt = '""';
+      }
+
+      $mapping_tersimpan = $this->db('mlite_mapping_snomed_icd9')
+        ->where('kd_tindakan', $kode_tindakan)
+        ->oneArray();
+      if ($mapping_tersimpan) {
+        $stored_concept_id = trim((string) ($mapping_tersimpan['snomed_concept_id'] ?? ''));
+        $stored_term = trim((string) ($mapping_tersimpan['snomed_term'] ?? ''));
+        if ($this->isValidSnomedConceptId($stored_concept_id) && $stored_term !== '') {
+          echo json_encode([
+            'status' => 'success',
+            'data' => [
+              'snomed_concept_id' => $stored_concept_id,
+              'snomed_term' => $stored_term
+            ]
+          ]);
+          exit();
+        }
+      }
+
+      $api_key = trim((string) $this->core->settings->get('satu_sehat.api_openai'));
+      if (empty($api_key)) {
+        echo json_encode(['status' => 'error', 'message' => 'API key (setting satu_sehat.api_openai untuk OpenRouter) belum diatur.']);
+        exit();
       }
 
       $request_data = [
