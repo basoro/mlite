@@ -21,29 +21,30 @@
             </div>
             <button type="submit" class="btn btn-primary">Cari</button>
         </form>
-        <div class="row">
+        <div class="row" style="margin-top: 10px;">
             <div class="col-md-12">
-                <table class="table display table-bordered table-striped" width="100%" id="ermTable">
-                    <thead>
-                        <tr>
-                            <th style="white-space: nowrap;">Aksi</th>
-                            <th style="white-space: nowrap;">Tgl. Rawat</th>
-                            <th style="white-space: nowrap;">No. Rawat</th>
-                            <th style="white-space: nowrap;">No. RM</th>
-                            <th style="white-space: nowrap;">Nama Pasien</th>
-                            <th style="white-space: nowrap;">No. KTP Pasien</th>
-                            <th style="white-space: nowrap;">Kd. Dokter</th>
-                            <th style="white-space: nowrap;">Nama Dokter</th>
-                            <th style="white-space: nowrap;">No. KTP Dokter</th>
-                            <th style="white-space: nowrap;">Kd. Poli/Unit</th>
-                            <th style="white-space: nowrap;">Poli/Unit</th>
-                            <th style="white-space: nowrap;">Status Rawat</th>
-                            <th style="white-space: nowrap;">Status Lanjut</th>
-                            <th style="white-space: nowrap;">Status Bayar</th>
-                            <th style="white-space: nowrap;">Tgl. Pulang</th>
-                        </tr>    
-                    </thead>
-                    <tbody>
+                <div class="table-responsive">
+                    <table class="table display table-bordered table-striped" width="100%" id="ermTable">
+                        <thead>
+                            <tr>
+                                <th style="white-space: nowrap;">Aksi</th>
+                                <th style="white-space: nowrap;">Tgl. Rawat</th>
+                                <th style="white-space: nowrap;">No. Rawat</th>
+                                <th style="white-space: nowrap;">No. RM</th>
+                                <th style="white-space: nowrap;">Nama Pasien</th>
+                                <th style="white-space: nowrap;">No. KTP Pasien</th>
+                                <th style="white-space: nowrap;">Kd. Dokter</th>
+                                <th style="white-space: nowrap;">Nama Dokter</th>
+                                <th style="white-space: nowrap;">No. KTP Dokter</th>
+                                <th style="white-space: nowrap;">Kd. Poli/Unit</th>
+                                <th style="white-space: nowrap;">Poli/Unit</th>
+                                <th style="white-space: nowrap;">Status Rawat</th>
+                                <th style="white-space: nowrap;">Status Lanjut</th>
+                                <th style="white-space: nowrap;">Status Bayar</th>
+                                <th style="white-space: nowrap;">Tgl. Pulang</th>
+                            </tr>    
+                        </thead>
+                        <tbody>
                         {if: !empty($data_response)}
                         {loop: $data_response}
                         <tr>
@@ -71,13 +72,13 @@
                               
                               <!-- Status Pengiriman -->
                               {if: $value.mlite_bpjs_emr_logs && $value.mlite_bpjs_emr_logs.status == 'Terkirim'}
-                                  <span class="label label-success">
+                                  <button class="btn btn-xs btn-success">
                                       <i class="fa fa-check-circle"></i> Terkirim
-                                  </span>
+                                  </button>
                               {else}
-                                  <span class="label label-warning">
+                                  <button class="btn btn-xs btn-warning">
                                       <i class="fa fa-clock-o"></i> Belum
-                                  </span>
+                                  </button>
                               {/if}
                             </td>
                             <td style="white-space: nowrap;">{$value.tgl_registrasi}</td>
@@ -103,6 +104,7 @@
                         {/if}
                     </tbody>
                 </table>
+                </div>
                 {$pagination}
             </div>
         </div>
@@ -437,12 +439,39 @@ $(document).ready(function(){
     $('#logModal').modal('show');
 
     $.ajax({
-      url: '{?=url([ADMIN, "bpjs_emr", "getlog"])?}',
+      url: '{?=url([ADMIN, "bpjs_emr", "log"])?}',
       type: 'GET',
       data: { no_sep: noSep },
       dataType: 'json',
       success: function(response) {
         $('#loadingLog').hide();
+        
+        // Parse nested JSON strings for better readability
+        if (response && response.data && Array.isArray(response.data)) {
+          response.data.forEach(function(item) {
+            if (item.payload_json && typeof item.payload_json === 'string') {
+              try {
+                item.payload_json = JSON.parse(item.payload_json);
+              } catch(e) {}
+            }
+            if (item.payload_json.fhir_bundle_json && typeof item.payload_json.fhir_bundle_json === 'string') {
+              try {
+                item.payload_json.fhir_bundle_json = JSON.parse(item.payload_json.fhir_bundle_json);
+              } catch(e) {}
+            }
+            if (item.payload_json.request_body && typeof item.payload_json.request_body === 'string') {
+              try {
+                item.payload_json.request_body = JSON.parse(item.payload_json.request_body);
+              } catch(e) {}
+            }
+            if (item.response && typeof item.response === 'string') {
+              try {
+                item.response = JSON.parse(item.response);
+              } catch(e) {}
+            }
+          });
+        }
+        
         var prettyJson = JSON.stringify(response, null, 2);
         $('#logJsonContent').text(prettyJson);
         $('#contentLog').show();
