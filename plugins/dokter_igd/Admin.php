@@ -1795,18 +1795,20 @@ class Admin extends AdminModule
 
       $mapping_tersimpan = $this->db('mlite_mapping_snomed_icd')
         ->where('kd_penyakit', $kode_diagnosa)
-        ->where('snomed_concept_id', '!=', '')
-        ->where('snomed_term', '!=', '')
         ->oneArray();
       if ($mapping_tersimpan) {
-        echo json_encode([
-          'status' => 'success',
-          'data' => [
-            'snomed_concept_id' => trim((string) $mapping_tersimpan['snomed_concept_id']),
-            'snomed_term' => trim((string) $mapping_tersimpan['snomed_term'])
-          ]
-        ]);
-        exit();
+        $stored_concept_id = trim((string) ($mapping_tersimpan['snomed_concept_id'] ?? ''));
+        $stored_term = trim((string) ($mapping_tersimpan['snomed_term'] ?? ''));
+        if ($this->isValidSnomedConceptId($stored_concept_id) && $stored_term !== '') {
+          echo json_encode([
+            'status' => 'success',
+            'data' => [
+              'snomed_concept_id' => $stored_concept_id,
+              'snomed_term' => $stored_term
+            ]
+          ]);
+          exit();
+        }
       }
 
       $api_key = trim((string) $this->core->settings->get('satu_sehat.api_openai'));
@@ -1915,18 +1917,20 @@ class Admin extends AdminModule
 
       $mapping_tersimpan = $this->db('mlite_mapping_snomed_icd9')
         ->where('kd_tindakan', $kode_tindakan)
-        ->where('snomed_concept_id', '!=', '')
-        ->where('snomed_term', '!=', '')
         ->oneArray();
       if ($mapping_tersimpan) {
-        echo json_encode([
-          'status' => 'success',
-          'data' => [
-            'snomed_concept_id' => trim((string) $mapping_tersimpan['snomed_concept_id']),
-            'snomed_term' => trim((string) $mapping_tersimpan['snomed_term'])
-          ]
-        ]);
-        exit();
+        $stored_concept_id = trim((string) ($mapping_tersimpan['snomed_concept_id'] ?? ''));
+        $stored_term = trim((string) ($mapping_tersimpan['snomed_term'] ?? ''));
+        if ($this->isValidSnomedConceptId($stored_concept_id) && $stored_term !== '') {
+          echo json_encode([
+            'status' => 'success',
+            'data' => [
+              'snomed_concept_id' => $stored_concept_id,
+              'snomed_term' => $stored_term
+            ]
+          ]);
+          exit();
+        }
       }
 
       $api_key = trim((string) $this->core->settings->get('satu_sehat.api_openai'));
