@@ -1,24 +1,26 @@
 <div class="panel panel-default">
     <div class="panel-heading">
-        <div class="btn-group pull-right" style="margin-top:-8px;">
-            <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode</span>
-            </span>
-            <ul class="dropdown-menu dropdown-menu-right">
-                <form action="" method="GET">
-                    <li style="padding-left:5px;padding-right:5px;">
-                        <input type="text" id="periode" class="form-control periode" name="periode" value="{$periode}" required>
-                    </li>
-                    <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-                        <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
-                        <input type="submit" class="btn btn-primary btn-block" value="Cari">
-                    </li>        
-                </form>
-            </ul>
-        </div>
         <h3 class="panel-title">Data Response Bridging ERM</h3>
     </div>
     <div class="panel-body">
+        <form action="{?=url([ADMIN, 'bpjs_emr', 'response'])?}" method="GET" class="form-inline margin-bottom-20">
+            <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+            <div class="form-group">
+                <input type="text" name="start_date" class="form-control datetimepicker" value="{$start_date}"
+                    aria-label="Tanggal awal"
+                    placeholder="Tanggal Awal">
+            </div>
+            <div class="form-group">
+                <input type="text" name="end_date" class="form-control datetimepicker" value="{$end_date}"
+                    aria-label="Tanggal akhir"
+                    placeholder="Tanggal Akhir">
+            </div>
+            <div class="form-group">
+                <input type="text" name="s" class="form-control" value="{$s}" aria-label="Pencarian data response"
+                    placeholder="Cari No Rawat/No RM/Nama">
+            </div>
+            <button type="submit" class="btn btn-primary">Cari</button>
+        </form>
         <div class="row">
             <div class="col-md-12">
                 <table class="table display table-bordered table-striped" width="100%" id="ermTable">
@@ -42,6 +44,7 @@
                         </tr>    
                     </thead>
                     <tbody>
+                        {if: !empty($data_response)}
                         {loop: $data_response}
                         <tr>
                             <td style="white-space: nowrap;">
@@ -83,8 +86,14 @@
                             <td style="white-space: nowrap;">{$value.tgl_pulang}</td>
                         </tr>
                         {/loop}
+                        {else}
+                        <tr>
+                            <td colspan="15" class="text-center">Data tidak ditemukan.</td>
+                        </tr>
+                        {/if}
                     </tbody>
                 </table>
+                {$pagination}
             </div>
         </div>
     </div>
@@ -378,18 +387,6 @@
 var tableInstances = {};
 
 $(document).ready(function(){
-  // Inisialisasi DataTable utama
-  var table = $('#ermTable').DataTable({
-    "language": { "search": "", "searchPlaceholder": "Search..." },
-    "fixedColumns": { "left": 4 },
-    "lengthChange": false,
-    "scrollX": true,
-    dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
-  });
-  
-  var t = table.rows().count();
-  $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
-  
   // Event handler untuk tombol cek kelengkapan
   $(document).on('click', '.cek-kelengkapan-btn', function() {
     var noRawat = $(this).data('no-rawat');
@@ -904,7 +901,7 @@ function escapeHtml(text) {
 
 <script type="text/javascript">
     $(function () {
-        $('.periode').datetimepicker({
+        $('.datetimepicker').datetimepicker({
           defaultDate: '{?=date('Y-m-d')?}',
           format: 'YYYY-MM-DD',
           locale: 'id'

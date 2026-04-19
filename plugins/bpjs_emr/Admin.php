@@ -48,17 +48,81 @@ class Admin extends AdminModule
     public function getResponse()
     {
         $this->_addHeaderFiles();
-        $periode = date('Y-m-d');
-        if (isset($_GET['periode']) && $_GET['periode'] != '') {
-        $periode = $_GET['periode'];
+
+        $maxPage = 10000;
+        $page = isset($_GET['page']) ? max(1, min($maxPage, (int) $_GET['page'])) : 1;
+        $perpage = 20;
+        $search = isset($_GET['s']) ? trim($_GET['s']) : '';
+        $today = date('Y-m-d');
+        $start_date = isset($_GET['start_date']) && $_GET['start_date'] !== '' ? $_GET['start_date'] : $today;
+        $end_date = isset($_GET['end_date']) && $_GET['end_date'] !== '' ? $_GET['end_date'] : $today;
+
+        $isValidDate = function ($date) {
+            $parsedDate = \DateTime::createFromFormat('Y-m-d', $date);
+            return $parsedDate && $parsedDate->format('Y-m-d') === $date;
+        };
+
+        if (!$isValidDate($start_date)) {
+            $start_date = $today;
         }
+
+        if (!$isValidDate($end_date)) {
+            $end_date = $today;
+        }
+
+        if ($start_date > $end_date) {
+            $tempDate = $start_date;
+            $start_date = $end_date;
+            $end_date = $tempDate;
+        }
+
+        $queryJoins = "FROM reg_periksa r
+                       JOIN pasien p ON p.no_rkm_medis = r.no_rkm_medis";
+        $queryConditions = "WHERE r.tgl_registrasi BETWEEN :start_date AND :end_date
+                            AND r.stts != 'Batal'
+                            AND r.kd_pj = 'BPJ'";
+
+        $params = [
+            ':start_date' => $start_date,
+            ':end_date' => $end_date
+        ];
+
+        if (!empty($search)) {
+            $queryConditions .= " AND (r.no_rawat LIKE :search OR r.no_rkm_medis LIKE :search OR p.nm_pasien LIKE :search)";
+            $params[':search'] = "%$search%";
+        }
+
+        $stmtCount = $this->db()->pdo()->prepare("SELECT COUNT(*) AS total " . $queryJoins . " " . $queryConditions);
+        $stmtCount->execute($params);
+        $totalRecords = (int) $stmtCount->fetchColumn();
+
+        $paginationParams = http_build_query([
+            's' => $search,
+            'start_date' => $start_date,
+            'end_date' => $end_date
+        ]);
+
+        $pagination = new \Systems\Lib\Pagination(
+            $page,
+            $totalRecords,
+            $perpage,
+            url([ADMIN, 'bpjs_emr', 'response', '%d?' . $paginationParams])
+        );
+
+        $offset = $pagination->offset();
+        $query = "SELECT r.* " . $queryJoins . " " . $queryConditions . " ORDER BY r.tgl_registrasi DESC, r.jam_reg DESC LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->db()->pdo()->prepare($query);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value, \PDO::PARAM_STR);
+        }
+        $stmt->bindValue(':limit', (int) $perpage, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int) $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+        $records = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
         $data_response = [];
-        $query = $this->db('reg_periksa')
-        ->where('reg_periksa.tgl_registrasi', $periode)
-        ->where('stts', '!=', 'Batal')
-        ->where('kd_pj', 'BPJ')
-        ->toArray();
-        foreach ($query as $row) {
+        foreach ($records as $row) {
 
             $erm_response = $this->db('mlite_bpjs_emr_logs')->where('no_rawat', $row['no_rawat'])->oneArray();
             $status_lanjut = $row['status_lanjut'];
@@ -105,7 +169,13 @@ class Admin extends AdminModule
 
             $data_response[] = $row;
         }
-        return $this->draw('response.html', ['data_response' => $data_response]);
+        return $this->draw('response.html', [
+            'data_response' => $data_response,
+            'pagination' => $pagination->nav('pagination', '5'),
+            's' => htmlspecialchars($search),
+            'start_date' => htmlspecialchars($start_date),
+            'end_date' => htmlspecialchars($end_date)
+        ]);
     }
 
     public function postCekkelengkapan()
