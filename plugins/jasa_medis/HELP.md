@@ -1,28 +1,49 @@
 # Plugin Jasa Medis
 
-Dokumentasi penggunaan plugin **Jasa Medis** pada mLITE.
+Dokumentasi singkat penggunaan modul **Jasa Medis** di mLITE.
 
-## Deskripsi Singkat
+## Akses Modul
 
-Modul jasa medis dokter dan perawat untuk mLITE
+- Masuk ke panel admin mLITE.
+- Buka menu **Jasa Medis**.
+- Pilih submenu sesuai kebutuhan:
+  - Kelola (halaman utama)
+  - Jasa Medis Dokter
+  - Jasa Medis Perawat
+
+## Panduan Pengguna (Petugas)
+
+1. **Jasa Medis Dokter**
+   - Buka submenu **Jasa Medis Dokter**.
+   - Atur rentang tanggal pada filter **Tanggal Awal** dan **Tanggal Akhir**.
+   - Gunakan kolom pencarian untuk memfilter berdasarkan kode dokter jika diperlukan.
+   - Klik **Tampilkan** untuk memuat data remunerasi.
+   - Laporan menampilkan rincian tindakan per dokter per tanggal perawatan beserta tarif tindakan dokter.
+   - Gunakan tombol **Print** atau **Excel** untuk mengekspor laporan.
+
+2. **Jasa Medis Perawat**
+   - Buka submenu **Jasa Medis Perawat**.
+   - Atur rentang tanggal dan gunakan pencarian berdasarkan NIP petugas bila diperlukan.
+   - Klik **Tampilkan** untuk memuat data remunerasi paramedis/perawat.
+   - Laporan menampilkan rincian tindakan per perawat per tanggal perawatan beserta tarif tindakan paramedis.
+   - Gunakan tombol **Print** atau **Excel** untuk mengekspor laporan.
 
 ## Panduan Admin
 
-1. Masuk ke panel admin mLITE dengan akun yang memiliki hak akses pengelolaan modul.
-2. Buka menu **Jasa Medis** dari navigasi utama, lalu cek konfigurasi dasar plugin.
-3. Atur data master, parameter, dan hak akses pengguna sesuai kebutuhan operasional.
-4. Lakukan verifikasi hasil input dan pastikan integrasi data berjalan sebelum dipakai harian.
-5. Pantau penggunaan plugin secara berkala dan lakukan pembaruan pengaturan bila diperlukan.
+1. **Tarif Tindakan Dokter**
+   - Data tarif jasa medis dokter (`tarif_tindakandr`) bersumber dari tabel `rawat_jl_dr` dan dikaitkan dengan tabel `jns_perawatan`.
+   - Pastikan tarif tindakan sudah diatur dengan benar di master data jenis perawatan agar perhitungan remunerasi akurat.
 
-## Panduan Pengguna
+2. **Tarif Tindakan Paramedis**
+   - Data tarif jasa paramedis (`tarif_tindakanpr`) bersumber dari tabel `rawat_jl_pr`.
+   - Verifikasi tarif di master data jenis perawatan secara berkala.
 
-1. Login menggunakan akun petugas/pengguna yang sudah diberikan akses ke plugin **Jasa Medis**.
-2. Masuk ke menu **Jasa Medis** untuk menjalankan proses sesuai alur kerja unit.
-3. Isi data yang dibutuhkan dengan lengkap dan benar pada form yang tersedia.
-4. Simpan transaksi/perubahan data, lalu periksa notifikasi status berhasil atau gagal.
-5. Gunakan fitur pencarian, filter, cetak, atau ekspor (jika tersedia) untuk kebutuhan operasional.
+3. **Data Billing**
+   - Plugin ini mengambil data billing dari tabel `mlite_billing`.
+   - Pastikan proses billing rawat jalan sudah berjalan dengan benar agar laporan jasa medis menampilkan data yang lengkap.
 
 ## Catatan
 
-- Jika menu tidak muncul, minta admin untuk mengaktifkan akses plugin pada akun Anda.
-- Gunakan data yang valid agar laporan dan proses di modul lain tetap sinkron.
+- Laporan hanya memuat data rawat jalan (rawat_jl_dr dan rawat_jl_pr); rawat inap menggunakan modul terpisah.
+- Grand total remunerasi dihitung otomatis dari akumulasi semua tindakan dalam rentang tanggal yang dipilih.
+- Pastikan data dokter dan petugas berstatus aktif agar muncul dalam laporan.

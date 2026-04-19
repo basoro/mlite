@@ -1,28 +1,67 @@
 # Plugin Kasir Rawat Jalan
 
-Dokumentasi penggunaan plugin **Kasir Rawat Jalan** pada mLITE.
+Dokumentasi singkat penggunaan modul **Kasir Rawat Jalan** di mLITE.
 
-## Deskripsi Singkat
+## Akses Modul
 
-Modul kasir rawat jalan untuk mLITE
+- Masuk ke panel admin mLITE.
+- Buka menu **Kasir Rawat Jalan**.
+- Pilih submenu sesuai kebutuhan:
+  - Kelola (daftar pasien rawat jalan)
+  - Kasir (buka/tutup shift)
+  - Laporan
+
+## Panduan Pengguna (Petugas)
+
+1. **Buka Shift Kasir**
+   - Sebelum memulai transaksi, buka submenu **Kasir**.
+   - Klik **Buka Kasir**, isi modal awal, lalu konfirmasi.
+   - Shift hanya bisa dibuka sekali per sesi; pastikan modal awal sesuai dengan uang kas fisik.
+
+2. **Proses Pembayaran Pasien Rawat Jalan**
+   - Dari submenu **Kelola**, cari pasien berdasarkan tanggal kunjungan atau status periksa.
+   - Klik nama pasien untuk membuka halaman **Rincian Billing**.
+   - Rincian menampilkan komponen biaya: **Layanan**, **Obat**, **Laboratorium**, dan **Radiologi**.
+   - Tambah atau hapus item pada masing-masing komponen bila diperlukan.
+   - Setelah rincian lengkap, klik **Proses Bayar** untuk membuat faktur.
+   - Pilih metode pembayaran, isi jumlah yang diterima, lalu simpan transaksi.
+   - Cetak **Billing Kecil** (struk) atau **Billing Besar** (rincian lengkap) untuk diberikan ke pasien.
+
+3. **Tambah Item Billing Manual**
+   - Pada halaman rincian, tambahkan item layanan, obat, laboratorium, atau radiologi yang belum tercatat.
+   - Gunakan form yang tersedia, pilih jenis item, isi kuantitas dan harga, lalu simpan.
+
+4. **Tutup Shift Kasir**
+   - Di akhir sesi, buka submenu **Kasir** lalu klik **Tutup Kasir**.
+   - Sistem akan merekap total transaksi selama shift berjalan.
+   - Konfirmasi penutupan shift setelah kas fisik dicocokkan.
+
+5. **Laporan**
+   - Buka submenu **Laporan** untuk melihat rekap transaksi kasir rawat jalan.
+   - Filter berdasarkan rentang tanggal.
+   - Gunakan tombol **Export** untuk mengunduh laporan dalam format Excel atau cetak langsung.
 
 ## Panduan Admin
 
-1. Masuk ke panel admin mLITE dengan akun yang memiliki hak akses pengelolaan modul.
-2. Buka menu **Kasir Rawat Jalan** dari navigasi utama, lalu cek konfigurasi dasar plugin.
-3. Atur data master, parameter, dan hak akses pengguna sesuai kebutuhan operasional.
-4. Lakukan verifikasi hasil input dan pastikan integrasi data berjalan sebelum dipakai harian.
-5. Pantau penggunaan plugin secara berkala dan lakukan pembaruan pengaturan bila diperlukan.
+1. **Kelola Daftar Pasien**
+   - Submenu **Kelola** menampilkan semua kunjungan pasien rawat jalan beserta status periksa.
+   - Filter berdasarkan tanggal kunjungan awal, tanggal kunjungan akhir, dan status periksa.
 
-## Panduan Pengguna
+2. **Verifikasi Komponen Billing**
+   - Pastikan data layanan, obat, laboratorium, dan radiologi sudah terisi lengkap dari modul terkait sebelum proses pembayaran.
+   - Item billing dapat ditambah/dihapus manual dari halaman rincian jika terdapat koreksi.
 
-1. Login menggunakan akun petugas/pengguna yang sudah diberikan akses ke plugin **Kasir Rawat Jalan**.
-2. Masuk ke menu **Kasir Rawat Jalan** untuk menjalankan proses sesuai alur kerja unit.
-3. Isi data yang dibutuhkan dengan lengkap dan benar pada form yang tersedia.
-4. Simpan transaksi/perubahan data, lalu periksa notifikasi status berhasil atau gagal.
-5. Gunakan fitur pencarian, filter, cetak, atau ekspor (jika tersedia) untuk kebutuhan operasional.
+3. **Invoice Digital**
+   - Saat instalasi, plugin membuat folder `uploads/invoices` untuk menyimpan file invoice digital.
+   - Pastikan folder tersebut dapat ditulis oleh web server (permission 0777).
+
+4. **Pengiriman Email Faktur**
+   - Sistem mendukung pengiriman faktur via email setelah pembayaran selesai.
+   - Pastikan konfigurasi email (SMTP) sudah diatur di pengaturan sistem mLITE.
 
 ## Catatan
 
-- Jika menu tidak muncul, minta admin untuk mengaktifkan akses plugin pada akun Anda.
-- Gunakan data yang valid agar laporan dan proses di modul lain tetap sinkron.
+- Shift kasir harus dibuka terlebih dahulu sebelum transaksi pembayaran dapat diproses.
+- Setiap transaksi tercatat dengan nomor rawat dan waktu billing; verifikasi rincian sebelum menyimpan untuk menghindari duplikasi.
+- Billing besar dan billing kecil dapat dicetak ulang dari halaman rincian pasien selama data masih tersimpan.
+- Berbeda dengan rawat inap, komponen rawat jalan tidak mencakup biaya tambahan akomodasi/kamar.
