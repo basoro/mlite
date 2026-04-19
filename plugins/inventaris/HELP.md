@@ -4,7 +4,7 @@ Dokumentasi penggunaan plugin **Inventaris** pada mLITE.
 
 ## Deskripsi Singkat
 
-Modul inventaris, pemeliharana dan perbaikan untuk mLITE
+Modul inventaris, pemeliharaan dan perbaikan untuk mLITE
 
 ## Panduan Admin
 
