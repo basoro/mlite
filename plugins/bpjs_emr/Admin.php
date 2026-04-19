@@ -1904,11 +1904,11 @@ class Admin extends AdminModule
                     'prosedur_pasien.kode', 
                     'icd9.deskripsi_panjang as nama',
                     'icd9.deskripsi_pendek',
-                    'mlite_mapping_snomed_icd.snomed_concept_id',
-                    'mlite_mapping_snomed_icd.snomed_term'
+                    'mlite_mapping_snomed_icd9.snomed_concept_id',
+                    'mlite_mapping_snomed_icd9.snomed_term'
                 ])
                 ->join('icd9', 'icd9.kode = prosedur_pasien.kode')
-                ->leftJoin('mlite_mapping_snomed_icd', 'icd9.kode = mlite_mapping_snomed_icd.kd_penyakit')
+                ->leftJoin('mlite_mapping_snomed_icd9', 'icd9.kode = mlite_mapping_snomed_icd9.kd_tindakan')
                 ->where('prosedur_pasien.no_rawat', $no_rawat)
                 ->toArray();
                 

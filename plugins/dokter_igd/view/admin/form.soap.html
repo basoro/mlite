@@ -400,6 +400,9 @@
     var nama = $('input:text[name=icd9]').val();
     var kode = $('#kode_icd9').text();
     var status = $('input:hidden[name=status]').val();
+    var snomed_concept_id = $('input:text[name=snomed_concept_id_icd9]').val();
+    var snomed_term = $('input:text[name=snomed_term_icd9]').val();
+
 
     var url = baseURL + '/dokter_igd/saveicd9?t=' + mlite.token;
 
@@ -408,7 +411,9 @@
       prioritas: prioritas,
       nama: nama,
       status: status,
-      kode: kode
+      kode: kode, 
+      snomed_concept_id: snomed_concept_id, 
+      snomed_term: snomed_term
     } ,function(data) {
       $("#display_icd").show().load(baseURL + '/dokter_igd/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
       //bersih();
