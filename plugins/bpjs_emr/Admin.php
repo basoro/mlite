@@ -1467,6 +1467,7 @@ class Admin extends AdminModule
         ];
 
         $existingLog = null;
+        $logId = null;
         if (!empty($no_rawat)) {
             $existingLog = $this->db('mlite_bpjs_emr_logs')->where('no_rawat', $no_rawat)->oneArray();
         }
@@ -1476,6 +1477,7 @@ class Admin extends AdminModule
 
         if ($existingLog) {
             $this->db('mlite_bpjs_emr_logs')->where('id', $existingLog['id'])->update($logData);
+            $logId = $existingLog['id'];
         } else {
             $this->db('mlite_bpjs_emr_logs')->save($logData);
             if (!empty($no_rawat)) {
@@ -1483,6 +1485,9 @@ class Admin extends AdminModule
             }
             if (!$existingLog) {
                 $existingLog = $this->db('mlite_bpjs_emr_logs')->where('no_sep', $noSep)->oneArray();
+            }
+            if ($existingLog) {
+                $logId = $existingLog['id'];
             }
         }
         
@@ -1538,14 +1543,11 @@ class Admin extends AdminModule
         $encodedResponse = json_encode($responseData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $logResponseData = [
             'response' => $encodedResponse !== false ? $encodedResponse : null,
-            'status' => ($httpStatus === 200 && empty($curlError)) ? 'Terkirim' : 'Gagal',
-            'created_at' => date('Y-m-d H:i:s')
+            'status' => ($httpStatus === 200 && empty($curlError)) ? 'Terkirim' : 'Gagal'
         ];
 
-        if ($existingLog) {
-            $this->db('mlite_bpjs_emr_logs')->where('id', $existingLog['id'])->update($logResponseData);
-        } else {
-            $this->db('mlite_bpjs_emr_logs')->save(array_merge($logData, $logResponseData));
+        if ($logId) {
+            $this->db('mlite_bpjs_emr_logs')->where('id', $logId)->update($logResponseData);
         }
         
         // ============================================
