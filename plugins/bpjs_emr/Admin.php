@@ -55,12 +55,11 @@ class Admin extends AdminModule
         $start_date = isset($_GET['start_date']) && $_GET['start_date'] !== '' ? $_GET['start_date'] : date('Y-m-d');
         $end_date = isset($_GET['end_date']) && $_GET['end_date'] !== '' ? $_GET['end_date'] : date('Y-m-d');
 
-        $query = "SELECT r.*
-                  FROM reg_periksa r
-                  JOIN pasien p ON p.no_rkm_medis = r.no_rkm_medis
-                  WHERE r.tgl_registrasi BETWEEN :start_date AND :end_date
-                    AND r.stts != 'Batal'
-                    AND r.kd_pj = 'BPJ'";
+        $baseQuery = "FROM reg_periksa r
+                      JOIN pasien p ON p.no_rkm_medis = r.no_rkm_medis
+                      WHERE r.tgl_registrasi BETWEEN :start_date AND :end_date
+                        AND r.stts != 'Batal'
+                        AND r.kd_pj = 'BPJ'";
 
         $params = [
             ':start_date' => $start_date,
@@ -68,13 +67,13 @@ class Admin extends AdminModule
         ];
 
         if (!empty($search)) {
-            $query .= " AND (r.no_rawat LIKE :search OR r.no_rkm_medis LIKE :search OR p.nm_pasien LIKE :search)";
+            $baseQuery .= " AND (r.no_rawat LIKE :search OR r.no_rkm_medis LIKE :search OR p.nm_pasien LIKE :search)";
             $params[':search'] = "%$search%";
         }
 
-        $stmtCount = $this->db()->pdo()->prepare($query);
+        $stmtCount = $this->db()->pdo()->prepare("SELECT COUNT(*) AS total " . $baseQuery);
         $stmtCount->execute($params);
-        $totalRecords = $stmtCount->rowCount();
+        $totalRecords = (int) $stmtCount->fetchColumn();
 
         $pagination = new \Systems\Lib\Pagination(
             $page,
@@ -84,10 +83,15 @@ class Admin extends AdminModule
         );
 
         $offset = $pagination->offset();
-        $query .= " ORDER BY r.tgl_registrasi DESC, r.jam_reg DESC LIMIT " . (int) $perpage . " OFFSET " . (int) $offset;
+        $query = "SELECT r.* " . $baseQuery . " ORDER BY r.tgl_registrasi DESC, r.jam_reg DESC LIMIT :limit OFFSET :offset";
 
         $stmt = $this->db()->pdo()->prepare($query);
-        $stmt->execute($params);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value, \PDO::PARAM_STR);
+        }
+        $stmt->bindValue(':limit', (int) $perpage, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int) $offset, \PDO::PARAM_INT);
+        $stmt->execute();
         $query = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         $data_response = [];
