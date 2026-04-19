@@ -58,6 +58,16 @@
                                       title="Lihat Data ERM">
                                   <i class="fa fa-eye"></i> Lihat
                               </button>
+
+                              <!-- Tombol Log -->
+                              {if: $value.mlite_bpjs_emr_logs && $value.mlite_bpjs_emr_logs.no_sep}
+                              <button type="button" class="btn btn-xs btn-default lihat-log-btn"
+                                      data-no-sep="{$value.mlite_bpjs_emr_logs.no_sep}"
+                                      data-nm-pasien="{$value.nm_pasien}"
+                                      title="Lihat Log Pengiriman">
+                                  <i class="fa fa-list-alt"></i> Log
+                              </button>
+                              {/if}
                               
                               <!-- Status Pengiriman -->
                               {if: $value.mlite_bpjs_emr_logs && $value.mlite_bpjs_emr_logs.status == 'Terkirim'}
@@ -382,11 +392,74 @@
   </div>
 </div>
 
+<!-- Modal Log Pengiriman -->
+<div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logModalLabel">
+  <div class="modal-dialog modal-lg" style="width: 90%;" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-default">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="logModalLabel">
+          <i class="fa fa-list-alt"></i> Log Pengiriman - <span id="logModalPasienName"></span>
+        </h4>
+      </div>
+      <div class="modal-body" style="max-height: 600px; overflow-y: auto;">
+        <div id="loadingLog" class="text-center" style="padding: 50px;">
+          <i class="fa fa-spinner fa-spin fa-3x"></i>
+          <p>Memuat data log...</p>
+        </div>
+        <div id="contentLog" style="display: none;">
+          <pre id="logJsonContent" style="background:#f5f5f5; padding:15px; border-radius:4px; font-size:12px; white-space:pre-wrap; word-wrap:break-word; max-height:520px; overflow-y:auto;"></pre>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+          <i class="fa fa-times"></i> Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="text/javascript">
 // Global variable untuk DataTable instances
 var tableInstances = {};
 
 $(document).ready(function(){
+  // Event handler untuk tombol lihat log
+  $(document).on('click', '.lihat-log-btn', function() {
+    var noSep = $(this).data('no-sep');
+    var nmPasien = $(this).data('nm-pasien');
+
+    $('#logModalPasienName').text(nmPasien || noSep);
+    $('#logJsonContent').text('');
+    $('#contentLog').hide();
+    $('#loadingLog').show();
+    $('#logModal').modal('show');
+
+    $.ajax({
+      url: '{?=url([ADMIN, "bpjs_emr", "getlog"])?}',
+      type: 'GET',
+      data: { no_sep: noSep },
+      dataType: 'json',
+      success: function(response) {
+        $('#loadingLog').hide();
+        var prettyJson = JSON.stringify(response, null, 2);
+        $('#logJsonContent').text(prettyJson);
+        $('#contentLog').show();
+      },
+      error: function(xhr) {
+        $('#loadingLog').hide();
+        var errText = xhr.responseText || 'Gagal memuat data log';
+        try {
+          var parsed = JSON.parse(errText);
+          errText = JSON.stringify(parsed, null, 2);
+        } catch(e) {}
+        $('#logJsonContent').text(errText);
+        $('#contentLog').show();
+      }
+    });
+  });
+
   // Event handler untuk tombol cek kelengkapan
   $(document).on('click', '.cek-kelengkapan-btn', function() {
     var noRawat = $(this).data('no-rawat');

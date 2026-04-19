@@ -1412,7 +1412,7 @@ class Admin extends AdminModule
         return base64_encode($cipher);
     }
 
-    public function sendERM($noSep, $fhirBundle, $jnsPelayanan = '2', $bulan = null, $tahun = null)
+    public function sendERM($noSep, $fhirBundle, $jnsPelayanan = '2', $bulan = null, $tahun = null, $no_rawat = null)
     {
         // Default bulan dan tahun sekarang jika tidak disediakan
         if (!$bulan) $bulan = date('m');
@@ -1436,40 +1436,60 @@ class Admin extends AdminModule
         $body = '{"request":{"noSep":"' . $noSep . '","jnsPelayanan":"' . $jnsPelayanan . '","bulan":"' . $bulan . '","tahun":"' . $tahun . '","dataMR":"' . $dataMR . '"}}';
         
         // ============================================
-        // 3. SIMPAN JSON KE FILE (TAMBAHAN)
+        // 3. SIMPAN PAYLOAD KE DATABASE
         // ============================================
-        
-        // Buat direktori jika belum ada
-        $saveDir = __DIR__ . '/logs/erm_json/';
-        if (!is_dir($saveDir)) {
-            mkdir($saveDir, 0755, true);
-        }
-        
-        // Generate nama file dengan timestamp
-        $filename = $saveDir . date('Ymd_His') . '_' . $noSep . '.json';
-        
-        // Data yang akan disimpan
+
         $jsonData = [
             'metadata' => [
                 'timestamp' => date('Y-m-d H:i:s'),
                 'noSep' => $noSep,
+                'noRawat' => $no_rawat,
                 'jnsPelayanan' => $jnsPelayanan,
                 'bulan' => $bulan,
                 'tahun' => $tahun,
                 'koders' => $this->koders
             ],
-            'fhir_bundle' => $fhirBundle,           // Original FHIR Bundle (array/object)
-            'fhir_bundle_json' => $jsonErm,         // JSON string sebelum encrypt
-            'encrypted_dataMR' => $dataMR,          // Hasil enkripsi
-            'request_body' => $body,                // Body yang dikirim ke API
-            'request_body_parsed' => json_decode($body, true) // Body dalam bentuk array
+            'fhir_bundle' => $fhirBundle,
+            'fhir_bundle_json' => $jsonErm,
+            'encrypted_dataMR' => $dataMR,
+            'request_body' => $body,
+            'request_body_parsed' => json_decode($body, true)
         ];
-        
-        // Simpan dengan format pretty print untuk readability
-        file_put_contents(
-            $filename, 
-            json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
-        );
+
+        $payloadJson = json_encode($jsonData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $payloadEncrypted = $dataMR;
+        $logData = [
+            'no_sep' => $noSep,
+            'no_rawat' => $no_rawat,
+            'payload_json' => $payloadJson !== false ? $payloadJson : null,
+            'payload_encrypted' => $payloadEncrypted,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        $existingLog = null;
+        $logId = null;
+        if (!empty($no_rawat)) {
+            $existingLog = $this->db('mlite_bpjs_emr_logs')->where('no_rawat', $no_rawat)->oneArray();
+        }
+        if (!$existingLog) {
+            $existingLog = $this->db('mlite_bpjs_emr_logs')->where('no_sep', $noSep)->oneArray();
+        }
+
+        if ($existingLog) {
+            $this->db('mlite_bpjs_emr_logs')->where('id', $existingLog['id'])->update($logData);
+            $logId = $existingLog['id'];
+        } else {
+            $this->db('mlite_bpjs_emr_logs')->save($logData);
+            if (!empty($no_rawat)) {
+                $existingLog = $this->db('mlite_bpjs_emr_logs')->where('no_rawat', $no_rawat)->oneArray();
+            }
+            if (!$existingLog) {
+                $existingLog = $this->db('mlite_bpjs_emr_logs')->where('no_sep', $noSep)->oneArray();
+            }
+            if ($existingLog) {
+                $logId = $existingLog['id'];
+            }
+        }
         
         // ============================================
         // 4. SIGNATURE 
@@ -1509,22 +1529,26 @@ class Admin extends AdminModule
         curl_close($ch);
         
         // ============================================
-        // 6. SIMPAN RESPONSE (TAMBAHAN)
+        // 6. SIMPAN RESPONSE KE DATABASE
         // ============================================
-        
-        // Update file dengan response
-        $jsonData['response'] = [
+
+        $responseData = [
             'http_status' => $httpStatus,
             'raw_response' => $response,
             'parsed_response' => json_decode($response, true),
             'curl_error' => $curlError,
             'timestamp_response' => date('Y-m-d H:i:s')
         ];
-        
-        file_put_contents(
-            $filename, 
-            json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
-        );
+
+        $encodedResponse = json_encode($responseData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $logResponseData = [
+            'response' => $encodedResponse !== false ? $encodedResponse : null,
+            'status' => ($httpStatus === 200 && empty($curlError)) ? 'Terkirim' : 'Gagal'
+        ];
+
+        if ($logId) {
+            $this->db('mlite_bpjs_emr_logs')->where('id', $logId)->update($logResponseData);
+        }
         
         // ============================================
         // 7. PARSE RESPONSE
@@ -1540,8 +1564,7 @@ class Admin extends AdminModule
                 'body_length' => strlen($body),
                 'dataMR_length' => strlen($dataMR),
                 'timestamp' => $timestamp,
-                'signature' => $signature,
-                'saved_file' => $filename 
+                'signature' => $signature
             ]
         ];
         
@@ -2252,7 +2275,8 @@ class Admin extends AdminModule
                 $bundle,
                 $status_lanjut,
                 date('m'),
-                date('Y')
+                date('Y'),
+                $no_rawat
             );
             
             $responseCode = $result['parsed']['metadata']['code'] ?? null;
