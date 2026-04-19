@@ -723,8 +723,8 @@ function renderData(data) {
           <td>${i+1}</td>
           <td>${escapeHtml(d.kode || '-')}</td>
           <td>${escapeHtml(d.nama || '-')}</td>
-          <td>${escapeHtml(d.code || '-')}</td>
-          <td>${escapeHtml(d.display_map || '-')}</td>
+          <td>${escapeHtml(d.snomed_concept_id || '-')}</td>
+          <td>${escapeHtml(d.snomed_term || '-')}</td>
           <td>${escapeHtml(d.system || '-')}</td>
           <td>${d.prioritas == '1' ? 'Utama' : 'Sekunder'}</td>
         </tr>
@@ -753,8 +753,8 @@ function renderData(data) {
       prosHtml += `
         <tr>
           <td>${i+1}</td>
-          <td>${escapeHtml(p.kode || p.code || '-')}</td>
-          <td>${escapeHtml(p.nama || p.display_map || '-')}</td>
+          <td>${escapeHtml(p.kode || p.snomed_concept_id || '-')}</td>
+          <td>${escapeHtml(p.nama || p.snomed_term || '-')}</td>
         </tr>
       `;
     });
@@ -800,10 +800,10 @@ function renderData(data) {
         <tr>
           <td>${escapeHtml(p.tgl_perawatan || '-')}</td>
           <td>${escapeHtml(p.jam_rawat || p.jam || '-')}</td>
-          <td>${escapeHtml(p.code || '-')}</td>
-          <td>${escapeHtml(p.display_simrs || '-')}</td>
-          <td>${escapeHtml(p.display_map || '-')}</td>
-          <td>${escapeHtml(p.system || '-')}</td>
+          <td>${escapeHtml(p.snomed_code || '-')}</td>
+          <td>${escapeHtml(p.snomed_display || '-')}</td>
+          <td>${escapeHtml(p.snomed_display || '-')}</td>
+          <td>${escapeHtml(p.system || 'http://snomed.info/sct')}</td>
           <td>${escapeHtml(p.nm_dokter || '-')}</td>
         </tr>
       `;
@@ -845,7 +845,7 @@ function renderData(data) {
         <tr>
           <td>${escapeHtml(r.tgl_perawatan || '-')}</td>
           <td>${escapeHtml(r.jam_rawat || '-')}</td>
-          <td>${escapeHtml(r.display_simrs || '-')}</td>
+          <td>${escapeHtml(r.standard_display || '-')}</td>
           <td>${escapeHtml(r.hasil || '-')}</td>
         </tr>
       `;
@@ -863,7 +863,7 @@ function renderData(data) {
         <tr>
           <td>${escapeHtml(l.tgl_perawatan || '-')}</td>
           <td>${escapeHtml(l.jam_rawat || '-')}</td>
-          <td>${escapeHtml(l.display_simrs || '-')}</td>
+          <td>${escapeHtml(l.loinc_display || '-')}</td>
           <td>${escapeHtml(l.hasil || '-')}</td>
           <td>${escapeHtml(l.display_map || '-')}</td>
         </tr>

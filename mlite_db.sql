@@ -2736,6 +2736,15 @@ CREATE TABLE `mlite_mapping_snomed_icd` (
   KEY `snomed_concept_id` (`snomed_concept_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
+CREATE TABLE `mlite_mapping_snomed_icd9` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `no_rawat` varchar(17) NOT NULL,
+  `kd_tindakan` varchar(10) NOT NULL,
+  `snomed_concept_id` varchar(50) NOT NULL,
+  `snomed_term` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_mapping` (`no_rawat`,`kd_tindakan`,`snomed_concept_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 CREATE TABLE `mlite_settings` (
   `id` int NOT NULL AUTO_INCREMENT,

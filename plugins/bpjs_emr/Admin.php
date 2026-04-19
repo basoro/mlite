@@ -1040,7 +1040,7 @@ class Admin extends AdminModule
     private function buildConditionResource($cond, $data, $uuids, $uuid)
     {
         // Pastikan ada display text
-        $displayText = !empty($cond['display_map']) ? $cond['display_map'] : 
+        $displayText = !empty($cond['snomed_term']) ? $cond['snomed_term'] : 
                     (!empty($cond['nama']) ? $cond['nama'] : 'Diagnosis');
         
         return [
@@ -1063,7 +1063,7 @@ class Admin extends AdminModule
                 'coding' => [
                     [
                         'system' => 'http://snomed.info/sct',
-                        'code' => $cond['code'] ?? '',
+                        'code' => $cond['snomed_concept_id'] ?? '',
                         'display' => $displayText
                     ]
                 ],
@@ -1143,17 +1143,17 @@ class Admin extends AdminModule
             'status' => 'final',
             'text' => [
                 'status' => 'generated',
-                'div' => ($diag['snomed_display'] ?? '') . ' Hasil: ' . ($diag['hasil'] ?? '-')
+                'div' => ($diag['standard_display'] ?? $diag['loinc_display'] ?? '') . ' Hasil: ' . ($diag['hasil'] ?? '-')
             ],
             'issued' => $diag['tgl_perawatan'] . ' ' . $diag['jam_rawat'],
             'effectiveDateTime' => $diag['tgl_perawatan'] . ' ' . $diag['jam_rawat'],
             'code' => [
                 'coding' => [
                     'system' => 'http://snomed.info/sct',
-                    'code' => $diag['snomed_code'] ?? '',
-                    'display' => $diag['snomed_display'] ?? '',
+                    'code' => $diag['standard_code'] ?? $diag['loinc_code'] ?? '',
+                    'display' => $diag['standard_display'] ?? $diag['loinc_display'] ?? '',
                 ],
-                'text' => $diag['snomed_display'] ?? ''
+                'text' => $diag['standard_display'] ?? $diag['loinc_display'] ?? ''
             ],
             'subject' => [
                 'reference' => 'Patient/' . $uuids['patient'],
