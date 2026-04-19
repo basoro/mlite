@@ -1723,7 +1723,8 @@ class Admin extends AdminModule
         exit();
       }
 
-      if (!$this->db('prosedur_pasien')->where('no_rawat', $no_rawat)->where('kode', $kd_tindakan)->oneArray()) {
+      $icd9_exists = (bool) $this->db('icd9')->where('kode', $kd_tindakan)->oneArray();
+      if (!$icd9_exists) {
         echo '0';
         exit();
       }
