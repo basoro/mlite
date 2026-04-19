@@ -1,28 +1,60 @@
 # Plugin mLITE API Key
 
-Dokumentasi penggunaan plugin **mLITE API Key** pada mLITE.
+Modul pengelolaan API key untuk mLITE, memungkinkan admin membuat, mengatur, dan menguji kunci akses API yang digunakan oleh aplikasi eksternal untuk berinteraksi dengan sistem mLITE.
 
-## Deskripsi Singkat
+## Akses Modul
 
-Modul mlite api key untuk mLITE
+- Masuk ke panel admin mLITE.
+- Buka menu **mLITE API Key**.
+- Pilih submenu sesuai kebutuhan:
+  - Manage API
+  - Alat Pengujian
+
+## Panduan Pengguna (Petugas)
+
+Plugin ini dikelola oleh admin. Petugas teknis dapat menggunakan **Alat Pengujian** untuk mengeksplorasi endpoint API yang tersedia.
+
+1. **Alat Pengujian (Swagger UI)**
+   - Buka **mLITE API Key → Alat Pengujian**.
+   - Halaman menampilkan dokumentasi API interaktif (Swagger/OpenAPI) yang dikonversi dari file `MLITE.postman_collection.json`.
+   - Daftar semua tabel database yang dapat diakses melalui endpoint **Master** ditampilkan secara otomatis.
+   - Gunakan antarmuka Swagger untuk mencoba request API langsung dari browser.
 
 ## Panduan Admin
 
-1. Masuk ke panel admin mLITE dengan akun yang memiliki hak akses pengelolaan modul.
-2. Buka menu **mLITE API Key** dari navigasi utama, lalu cek konfigurasi dasar plugin.
-3. Atur data master, parameter, dan hak akses pengguna sesuai kebutuhan operasional.
-4. Lakukan verifikasi hasil input dan pastikan integrasi data berjalan sebelum dipakai harian.
-5. Pantau penggunaan plugin secara berkala dan lakukan pembaruan pengaturan bila diperlukan.
+1. **Membuat API Key Baru**
+   - Buka **mLITE API Key → Manage API**.
+   - Klik **Tambah** untuk membuka form pembuatan API key.
+   - Isi kolom berikut:
+     - **API Key**: kunci akses unik (sistem dapat men-generate otomatis).
+     - **Username**: akun pengguna mLITE yang terikat dengan API key ini.
+     - **Method**: pilih satu atau beberapa metode HTTP yang diizinkan (`GET`, `POST`, `PUT`, `DELETE`).
+     - **IP Range**: batasi akses berdasarkan alamat IP atau rentang IP (kosongkan untuk semua IP).
+     - **Exp Time**: tanggal dan waktu kadaluarsa API key (kosongkan untuk tanpa batas).
+   - Klik **Simpan**.
 
-## Panduan Pengguna
+2. **Mengubah API Key**
+   - Klik baris API key yang ingin diubah, lalu pilih **Edit** dari context menu.
+   - Perbarui field yang diperlukan, lalu klik **Simpan**.
 
-1. Login menggunakan akun petugas/pengguna yang sudah diberikan akses ke plugin **mLITE API Key**.
-2. Masuk ke menu **mLITE API Key** untuk menjalankan proses sesuai alur kerja unit.
-3. Isi data yang dibutuhkan dengan lengkap dan benar pada form yang tersedia.
-4. Simpan transaksi/perubahan data, lalu periksa notifikasi status berhasil atau gagal.
-5. Gunakan fitur pencarian, filter, cetak, atau ekspor (jika tersedia) untuk kebutuhan operasional.
+3. **Menghapus API Key**
+   - Klik baris API key, lalu pilih **Hapus** dari context menu.
+   - Konfirmasi penghapusan; API key yang dihapus tidak dapat dipulihkan.
+
+4. **Mencari dan Memfilter Data**
+   - Gunakan kolom pencarian di tabel untuk mencari berdasarkan field tertentu: `id`, `api_key`, `username`, `method`, `ip_range`, atau `exp_time`.
+   - Klik header kolom untuk mengurutkan data.
+
+5. **Melihat Detail API Key**
+   - Klik ikon detail untuk melihat informasi lengkap satu API key.
+
+6. **Visualisasi Grafik**
+   - Tersedia tampilan grafik distribusi API key berdasarkan kolom tertentu (default: per method).
 
 ## Catatan
 
-- Jika menu tidak muncul, minta admin untuk mengaktifkan akses plugin pada akun Anda.
-- Gunakan data yang valid agar laporan dan proses di modul lain tetap sinkron.
+- API key dikirim melalui header HTTP `X-Api-Key` pada setiap request ke endpoint API mLITE.
+- Autentikasi juga mendukung **Bearer Token** (`Authorization: Bearer <token>`).
+- Satu API key dapat diberi izin untuk beberapa method HTTP sekaligus (disimpan sebagai nilai dipisah koma).
+- Pembatasan IP (`ip_range`) menambah lapisan keamanan; gunakan notasi CIDR atau alamat IP tunggal.
+- Log query API dapat dipantau melalui plugin **mLITE Logs** jika fitur `log_query` diaktifkan di pengaturan sistem.
