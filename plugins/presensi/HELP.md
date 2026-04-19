@@ -1,28 +1,71 @@
 # Plugin Presensi
 
-Dokumentasi penggunaan plugin **Presensi** pada mLITE.
+Dokumentasi singkat penggunaan modul **Presensi** di mLITE.
 
-## Deskripsi Singkat
+## Akses Modul
 
-Modul presensi
+- Masuk ke panel admin mLITE.
+- Buka menu **Presensi**.
+- Pilih submenu sesuai kebutuhan:
+  - Presensi Masuk
+  - Rekap Presensi
+  - Rekap Bulanan
+  - Jadwal Pegawai
+  - Jadwal Tambahan
+  - *(Khusus admin)* Barcode Presensi, Jam Masuk, Jam Jaga, Pengaturan
+
+## Panduan Pengguna (Petugas)
+
+1. **Presensi Masuk**
+   - Halaman ini digunakan untuk mencatat atau memantau kehadiran pegawai.
+   - Data presensi ditampilkan sesuai tanggal yang dipilih.
+
+2. **Rekap Presensi**
+   - Lihat rekap kehadiran pegawai berdasarkan periode tertentu.
+   - Tersedia opsi **Cetak** untuk mencetak rekap dalam format laporan.
+   - Tersedia opsi **Export Excel** untuk mengunduh data rekap ke format spreadsheet.
+
+3. **Rekap Bulanan**
+   - Lihat ringkasan presensi per bulan untuk seluruh pegawai (admin) atau pegawai di departemen/bidang yang sama (non-admin).
+   - Gunakan filter bulan dan tahun untuk memilih periode yang diinginkan.
+   - Tersedia opsi **Cetak** rekap bulanan.
+
+4. **Jadwal Pegawai**
+   - Lihat jadwal shift pegawai per bulan.
+   - Non-admin hanya melihat jadwal pegawai di departemen dan bidang yang sama.
+   - Tambah jadwal baru melalui tombol tambah, isi pegawai, tahun, bulan, dan shift per hari (h1–h31).
+   - Edit jadwal yang sudah ada melalui tombol edit pada baris jadwal.
+
+5. **Jadwal Tambahan**
+   - Kelola jadwal shift tambahan di luar jadwal rutin pegawai.
+   - Sama seperti Jadwal Pegawai, tersedia fitur tambah dan edit dengan filter bulan dan tahun.
 
 ## Panduan Admin
 
-1. Masuk ke panel admin mLITE dengan akun yang memiliki hak akses pengelolaan modul.
-2. Buka menu **Presensi** dari navigasi utama, lalu cek konfigurasi dasar plugin.
-3. Atur data master, parameter, dan hak akses pengguna sesuai kebutuhan operasional.
-4. Lakukan verifikasi hasil input dan pastikan integrasi data berjalan sebelum dipakai harian.
-5. Pantau penggunaan plugin secara berkala dan lakukan pembaruan pengaturan bila diperlukan.
+1. **Barcode Presensi**
+   - Generate dan kelola barcode untuk setiap pegawai.
+   - Barcode digunakan sebagai identitas pegawai saat melakukan presensi dengan scanner.
 
-## Panduan Pengguna
+2. **Jam Masuk**
+   - Kelola daftar jam masuk (shift) yang tersedia.
+   - Tambah shift baru: isi nama shift, jam masuk, dan jam pulang.
+   - Shift ini digunakan sebagai pilihan saat membuat jadwal pegawai (role admin).
 
-1. Login menggunakan akun petugas/pengguna yang sudah diberikan akses ke plugin **Presensi**.
-2. Masuk ke menu **Presensi** untuk menjalankan proses sesuai alur kerja unit.
-3. Isi data yang dibutuhkan dengan lengkap dan benar pada form yang tersedia.
-4. Simpan transaksi/perubahan data, lalu periksa notifikasi status berhasil atau gagal.
-5. Gunakan fitur pencarian, filter, cetak, atau ekspor (jika tersedia) untuk kebutuhan operasional.
+3. **Jam Jaga**
+   - Kelola daftar jam jaga per departemen.
+   - Tambah jam jaga baru: pilih departemen dan shift yang berlaku untuk departemen tersebut.
+   - Jam jaga ini digunakan sebagai pilihan jadwal bagi pengguna non-admin saat membuat jadwal di departemennya.
+
+4. **Pengaturan**
+   - Atur lokasi GPS kantor/faskes:
+     - **Latitude** dan **Longitude**: koordinat lokasi absensi (contoh: `-2.58`, `115.37`).
+     - **Distance**: radius toleransi absensi dalam kilometer (contoh: `2`).
+   - Atur pesan motivasi harian (`helloworld`) yang ditampilkan kepada pegawai, pisahkan setiap pesan dengan titik koma (`;`).
+   - Simpan pengaturan setelah melakukan perubahan.
 
 ## Catatan
 
-- Jika menu tidak muncul, minta admin untuk mengaktifkan akses plugin pada akun Anda.
-- Gunakan data yang valid agar laporan dan proses di modul lain tetap sinkron.
+- Pengguna dengan role `admin` dapat melihat seluruh data pegawai lintas departemen. Pengguna non-admin hanya dapat melihat dan mengelola data di departemen dan bidangnya sendiri.
+- Jadwal pegawai menggunakan field `h1` hingga `h31` untuk mewakili setiap tanggal dalam sebulan.
+- Koordinat GPS default saat instalasi adalah Barabai, Hulu Sungai Tengah (lat: `-2.58`, lon: `115.37`). Sesuaikan dengan lokasi faskes Anda melalui menu **Pengaturan**.
+- Plugin versi 1.2 ke atas mendukung jadwal tambahan terpisah dari jadwal rutin.

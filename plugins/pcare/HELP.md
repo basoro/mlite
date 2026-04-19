@@ -1,28 +1,79 @@
 # Plugin Bridging PCare
 
-Dokumentasi penggunaan plugin **Bridging PCare** pada mLITE.
+Dokumentasi singkat penggunaan modul **Bridging PCare** di mLITE.
 
-## Deskripsi Singkat
+## Akses Modul
 
-Modul pcare api untuk mLITE
+- Masuk ke panel admin mLITE.
+- Buka menu **Bridging PCare**.
+- Pilih submenu sesuai kebutuhan:
+  - Kelola
+  - Diagnosa
+  - Dokter
+  - Kesadaran
+  - Kunjungan
+  - MCU
+  - Obat
+  - Pendaftaran
+  - Peserta
+  - Poli
+  - Alergi
+  - Prognosa
+  - Provider
+  - Tindakan
+  - Status Pulang
+  - Kelompok
+  - Spesialis
+  - Settings
+
+## Panduan Pengguna (Petugas)
+
+1. **Kelola**
+   - Halaman utama menampilkan panduan penggunaan modul PCare.
+   - Gunakan halaman ini sebagai titik awal sebelum menggunakan fitur bridging.
+
+2. **Referensi Data dari PCare API**
+   - Submenu **Diagnosa**, **Dokter**, **Kesadaran**, **Kunjungan**, **MCU**, **Obat**, **Pendaftaran**, **Peserta**, **Poli**, **Alergi**, **Prognosa**, **Provider**, **Tindakan**, **Status Pulang**, **Kelompok**, dan **Spesialis** menampilkan data referensi langsung dari server PCare BPJS.
+   - Data diambil secara real-time menggunakan API PCare dengan autentikasi konsumen.
+   - Gunakan fitur ini untuk memverifikasi kode-kode referensi yang digunakan saat pengisian data kunjungan.
+
+3. **Kunjungan**
+   - Lihat daftar kunjungan PCare berdasarkan kata kunci dan parameter yang tersedia.
+   - Tambah kunjungan baru ke PCare (kirim data dari SIMRS ke server PCare).
+   - Edit kunjungan yang sudah ada menggunakan nomor kunjungan PCare.
+   - Delete kunjungan menggunakan nomor kunjungan PCare.
+
+4. **Pendaftaran**
+   - Cek data pendaftaran pasien di server PCare.
+
+5. **Peserta**
+   - Cari data peserta BPJS berdasarkan nomor kartu atau NIK melalui API PCare.
 
 ## Panduan Admin
 
-1. Masuk ke panel admin mLITE dengan akun yang memiliki hak akses pengelolaan modul.
-2. Buka menu **Bridging PCare** dari navigasi utama, lalu cek konfigurasi dasar plugin.
-3. Atur data master, parameter, dan hak akses pengguna sesuai kebutuhan operasional.
-4. Lakukan verifikasi hasil input dan pastikan integrasi data berjalan sebelum dipakai harian.
-5. Pantau penggunaan plugin secara berkala dan lakukan pembaruan pengaturan bila diperlukan.
+1. **Settings**
+   - Buka submenu **Settings** dan isi seluruh parameter koneksi PCare:
+     - **Username PCare** dan **Password PCare**: kredensial login ke aplikasi PCare.
+     - **Consumer ID** dan **Consumer Secret**: kunci autentikasi API PCare dari BPJS.
+     - **Consumer User Key**: kunci pengguna untuk API PCare.
+     - **Consumer User Key Antrol**: kunci untuk API antrian online (Antrol).
+     - **PCare API URL**: URL endpoint API PCare. Gunakan URL `-dev` untuk lingkungan pengujian.
+     - **Kode FKTP** dan **Nama FKTP**: kode dan nama fasilitas kesehatan tingkat pertama.
+     - **Kode Kabupaten/Kota** dan **Kabupaten/Kota**: wilayah operasional faskes.
+     - **Wilayah** dan **Cabang**: regional dan cabang BPJS yang menaungi faskes.
+   - Simpan pengaturan.
 
-## Panduan Pengguna
+2. **Verifikasi Koneksi**
+   - Setelah menyimpan pengaturan, buka salah satu submenu referensi (misal: **Diagnosa**) untuk memastikan data berhasil diambil dari server PCare.
+   - Jika muncul pesan "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS", periksa kembali kredensial dan URL API.
 
-1. Login menggunakan akun petugas/pengguna yang sudah diberikan akses ke plugin **Bridging PCare**.
-2. Masuk ke menu **Bridging PCare** untuk menjalankan proses sesuai alur kerja unit.
-3. Isi data yang dibutuhkan dengan lengkap dan benar pada form yang tersedia.
-4. Simpan transaksi/perubahan data, lalu periksa notifikasi status berhasil atau gagal.
-5. Gunakan fitur pencarian, filter, cetak, atau ekspor (jika tersedia) untuk kebutuhan operasional.
+3. **Mode Pengujian vs Produksi**
+   - PCare API URL yang mengandung kata `dev` akan otomatis menggunakan endpoint Antrol dan iCare versi development.
+   - Gunakan URL produksi untuk lingkungan live.
 
 ## Catatan
 
-- Jika menu tidak muncul, minta admin untuk mengaktifkan akses plugin pada akun Anda.
-- Gunakan data yang valid agar laporan dan proses di modul lain tetap sinkron.
+- Semua respons dari API PCare dienkripsi. Plugin mendekripsi dan mengurai data menggunakan `LZString` secara otomatis.
+- Plugin mendukung integrasi dengan iCare (validasi peserta IHS BPJS).
+- Pastikan server mLITE memiliki akses internet ke endpoint BPJS (`apijkn.bpjs-kesehatan.go.id`).
+- Saat instalasi, plugin membuat entri pengaturan kosong di tabel `mlite_settings`. Isi semua field sebelum menggunakan bridging.

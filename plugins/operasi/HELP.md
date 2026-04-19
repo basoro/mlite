@@ -1,28 +1,60 @@
 # Plugin Operasi
 
-Dokumentasi penggunaan plugin **Operasi** pada mLITE.
+Dokumentasi singkat penggunaan modul **Operasi** di mLITE.
 
-## Deskripsi Singkat
+## Akses Modul
 
-Modul operasi dan VK di mLITE
+- Masuk ke panel admin mLITE.
+- Buka menu **Operasi**.
+- Pilih submenu sesuai kebutuhan:
+  - Pasien Operasi
+  - Booking Operasi
+  - Paket Operasi
+  - Obat Operasi
+  - Laporan Operasi
+
+## Panduan Pengguna (Petugas)
+
+1. **Pasien Operasi**
+   - Pilih rentang tanggal operasi lalu klik filter.
+   - Cari pasien berdasarkan nomor rawat di kolom pencarian.
+   - Klik tombol form untuk mengisi atau memperbarui data operasi.
+   - Isi detail: tanggal operasi, jenis anestesi, kategori, operator 1–3, asisten operator, dokter anestesi, asisten anestesi, bidan, perawat luar, dan paket operasi.
+   - Pilih status operasi lalu simpan.
+
+2. **Obat Operasi (input per pasien)**
+   - Dari halaman Pasien Operasi, buka rincian obat untuk nomor rawat tertentu.
+   - Cari obat/BHP dari daftar obatbhp_ok menggunakan kolom pencarian.
+   - Masukkan jumlah pemakaian lalu simpan.
+   - Hapus item jika terjadi kesalahan input.
+
+3. **Booking Operasi**
+   - Tambah jadwal operasi baru: isi nomor rawat pasien, pilih dokter, ruang OK, paket operasi, tanggal, dan status booking.
+   - Ubah atau hapus booking yang sudah ada melalui tombol aksi pada tabel.
+
+4. **Laporan Operasi**
+   - Tambah laporan pasca operasi per nomor rawat.
+   - Isi data laporan termasuk permintaan PA (Patologi Anatomi) jika diperlukan.
+   - Ubah atau hapus laporan yang sudah tersimpan.
 
 ## Panduan Admin
 
-1. Masuk ke panel admin mLITE dengan akun yang memiliki hak akses pengelolaan modul.
-2. Buka menu **Operasi** dari navigasi utama, lalu cek konfigurasi dasar plugin.
-3. Atur data master, parameter, dan hak akses pengguna sesuai kebutuhan operasional.
-4. Lakukan verifikasi hasil input dan pastikan integrasi data berjalan sebelum dipakai harian.
-5. Pantau penggunaan plugin secara berkala dan lakukan pembaruan pengaturan bila diperlukan.
+1. **Paket Operasi**
+   - Tambah paket operasi baru: isi kode paket, nama perawatan, kategori, kelas, penjamin, dan rincian biaya (operator 1–3, asisten, anestesi, bidan, alat, sewa OK, sarpras, dll.).
+   - Ubah atau hapus paket yang sudah ada.
+   - Pastikan paket aktif (status = 1) agar bisa dipilih saat input pasien operasi.
 
-## Panduan Pengguna
+2. **Obat Operasi (master)**
+   - Tambah item obat/BHP kamar operasi ke daftar `obatbhp_ok`.
+   - Isi kode obat, nama obat, satuan, dan harga satuan.
+   - Ubah atau hapus item obat yang tidak relevan.
 
-1. Login menggunakan akun petugas/pengguna yang sudah diberikan akses ke plugin **Operasi**.
-2. Masuk ke menu **Operasi** untuk menjalankan proses sesuai alur kerja unit.
-3. Isi data yang dibutuhkan dengan lengkap dan benar pada form yang tersedia.
-4. Simpan transaksi/perubahan data, lalu periksa notifikasi status berhasil atau gagal.
-5. Gunakan fitur pencarian, filter, cetak, atau ekspor (jika tersedia) untuk kebutuhan operasional.
+3. **Hak Akses**
+   - Pengguna dengan role `medis` hanya dapat melihat data operasi yang menjadi operator1-nya sendiri.
+   - Pengguna dengan role lain dapat melihat semua data operasi.
 
 ## Catatan
 
-- Jika menu tidak muncul, minta admin untuk mengaktifkan akses plugin pada akun Anda.
-- Gunakan data yang valid agar laporan dan proses di modul lain tetap sinkron.
+- Paket operasi harus sudah tersedia sebelum input pasien operasi agar biaya terhitung otomatis.
+- Jika modul VClaim aktif, data pasien operasi dapat diintegrasikan dengan bridging SEP.
+- Berkas digital pasien operasi dapat dilampirkan melalui menu form operasi jika master berkas digital sudah dikonfigurasi.
