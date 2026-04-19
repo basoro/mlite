@@ -1478,6 +1478,12 @@ class Admin extends AdminModule
             $this->db('mlite_bpjs_emr_logs')->where('id', $existingLog['id'])->update($logData);
         } else {
             $this->db('mlite_bpjs_emr_logs')->save($logData);
+            if (!empty($no_rawat)) {
+                $existingLog = $this->db('mlite_bpjs_emr_logs')->where('no_rawat', $no_rawat)->oneArray();
+            }
+            if (!$existingLog) {
+                $existingLog = $this->db('mlite_bpjs_emr_logs')->where('no_sep', $noSep)->oneArray();
+            }
         }
         
         // ============================================
@@ -1539,7 +1545,7 @@ class Admin extends AdminModule
         if ($existingLog) {
             $this->db('mlite_bpjs_emr_logs')->where('id', $existingLog['id'])->update($logResponseData);
         } else {
-            $this->db('mlite_bpjs_emr_logs')->where('no_sep', $noSep)->update($logResponseData);
+            $this->db('mlite_bpjs_emr_logs')->save(array_merge($logData, $logResponseData));
         }
         
         // ============================================
