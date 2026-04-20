@@ -368,6 +368,10 @@ $(document).ready(function() {
             if (data && data.status === 'success' && data.data && data.data.focal_device_code) {
                 row.find('.focal-device-code').val((data.data.focal_device_code || '').toString().trim());
                 row.find('.focal-device-display').val((data.data.focal_device_display || '').toString().trim());
+                var aiAction = (data.data.focal_device_action || '').toString().trim();
+                if (aiAction) {
+                    row.find('.focal-device-action').val(aiAction);
+                }
                 alert('Kode focalDevice berhasil dibuat.');
             } else {
                 var doneMessage = (data && data.message) ? data.message : 'Kode focalDevice tidak ditemukan';
