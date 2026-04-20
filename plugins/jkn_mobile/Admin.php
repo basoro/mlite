@@ -74,7 +74,7 @@ class Admin extends AdminModule
     {
         $this->getCssCard();
         $parsedown = new \Systems\Lib\Parsedown();
-        $readme_file = MODULES . '/jkn_mobile/Help.md';
+        $readme_file = file_exists(MODULES . '/jkn_mobile/HELP.md') ? MODULES . '/jkn_mobile/HELP.md' : MODULES . '/jkn_mobile/Help.md';
         $readme =  $parsedown->text($this->tpl->noParse(file_get_contents($readme_file)));
         return $this->draw('wsbpjs.html', ['readme' => $readme]);
     }
