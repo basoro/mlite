@@ -55,6 +55,7 @@ class Admin extends AdminModule
           'Status Pulang' => 'refstatuspulang',
           'Kelompok' => 'refkelompok',
           'Spesialis' => 'refspesialis',
+          'Pengaturan' => 'settings',
       ];
   }
 

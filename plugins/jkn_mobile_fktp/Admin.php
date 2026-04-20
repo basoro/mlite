@@ -44,6 +44,7 @@ class Admin extends AdminModule
             'Katalog' => 'index',
             'Mapping Poli' => 'mappingpoli',
             'Mapping Dokter' => 'mappingdokter',
+            'Pengaturan' => 'settings',
         ];
     }
 
