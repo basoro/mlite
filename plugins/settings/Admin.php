@@ -92,7 +92,7 @@ class Admin extends AdminModule
                 try {
                     if (isset($this->core->module->{$tab['dir']}) && method_exists($this->core->module->{$tab['dir']}, 'getSettings')) {
                         $tab_content = $this->core->getModuleMethod($tab['dir'], 'getSettings');
-                        if (is_string($tab_content)) {
+                        if ($tab_content !== null && is_string($tab_content)) {
                             $tab['content'] = $tab_content;
                         }
                     }
