@@ -2903,6 +2903,7 @@ class Admin extends AdminModule
         redirect(url([ADMIN, 'vedika', 'formsepvclaim']));
     }
     $this->_addHeaderFiles();
+    $this->assign['title'] = 'Pengaturan Modul Vedika';
     $this->assign['vedika'] = htmlspecialchars_array($this->settings('vedika'));
     $this->assign['penjab'] = $this->_getPenjab($this->settings->get('vedika.carabayar'));
     $this->assign['master_berkas_digital'] = $this->db('master_berkas_digital')->toArray();

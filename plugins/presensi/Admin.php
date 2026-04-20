@@ -1591,6 +1591,7 @@ class Admin extends AdminModule
           redirect(url([ADMIN, 'presensi', 'presensi']));
       }
       $this->_addHeaderFiles();
+      $this->assign['title'] = 'Pengaturan Presensi';
       $this->assign['presensi'] = htmlspecialchars_array($this->settings('presensi'));
       return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
     }

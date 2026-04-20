@@ -1196,6 +1196,7 @@ class Admin extends AdminModule
             redirect(url([ADMIN, 'jkn_mobile', 'index']));
         }
         $this->_addHeaderFiles();
+        $this->assign['title'] = 'Pengaturan Modul JKN Mobile';
         $this->assign['propinsi'] = $this->db('propinsi')->where('kd_prop', $this->settings->get('jkn_mobile.kdprop'))->oneArray();
         $this->assign['kabupaten'] = $this->db('kabupaten')->where('kd_kab', $this->settings->get('jkn_mobile.kdkab'))->oneArray();
         $this->assign['kecamatan'] = $this->db('kecamatan')->where('kd_kec', $this->settings->get('jkn_mobile.kdkec'))->oneArray();

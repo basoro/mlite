@@ -70,6 +70,7 @@ class Admin extends AdminModule
             redirect(url([ADMIN, 'jkn_mobile_fktp', 'index']));
         }
         $this->_addHeaderFiles();
+        $this->assign['title'] = 'Pengaturan Modul JKN Mobile FKTP';
         
         // Tambahkan nilai default untuk semua key jkn_mobile_fktp
         $defaultSettings = [

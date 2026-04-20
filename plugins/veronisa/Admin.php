@@ -1910,6 +1910,7 @@ public function postHapusResepResponse()
         redirect(url([ADMIN, 'veronisa', 'index']));
     }
     $this->_addHeaderFiles();
+    $this->assign['title'] = 'Pengaturan Modul veronisa';
     $this->assign['veronisa'] = htmlspecialchars_array($this->settings('veronisa'));
     $this->assign['master_berkas_digital'] = $this->db('master_berkas_digital')->toArray();
     return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);

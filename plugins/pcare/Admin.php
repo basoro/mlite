@@ -73,6 +73,7 @@ class Admin extends AdminModule
           redirect(url([ADMIN, 'pcare', 'manage']));
       }
       $this->_addHeaderFiles();
+      $this->assign['title'] = 'Pengaturan PCare';
       
       // Default settings untuk pcare
       $defaultSettings = [
