@@ -87,7 +87,8 @@ class Admin extends AdminModule
             }
         }
 
-        $active_tab = isset($_GET['tab']) ? preg_replace('/[^a-z0-9_]/i', '', (string) $_GET['tab']) : '';
+        $active_tab = filter_input(INPUT_GET, 'tab', FILTER_UNSAFE_RAW);
+        $active_tab = is_string($active_tab) ? preg_replace('/[^a-z0-9_]/i', '', $active_tab) : '';
         $tab_ids = array_column($plugin_settings, 'id');
         if (empty($active_tab) || !in_array($active_tab, $tab_ids, true)) {
             $active_tab = !empty($plugin_settings) ? $plugin_settings[0]['id'] : '';
