@@ -13,7 +13,17 @@
         <div class="tab-content" style="margin-top: 15px;">
             {loop: $plugin_settings}
             <div role="tabpanel" class="tab-pane {if: $active_tab == $value.id}active{/if}" id="tab-{?=isset_or($value.id)?}">
-                {include: ../plugins/settings/view/admin/plugin.settings.tab.content.html}
+                <p class="help-block">{?=isset_or($value.desc)?}</p>
+                {if: !empty($value.content)}
+                    {?=isset_or($value.content)?}
+                {else}
+                    <div class="alert alert-warning">
+                        Konten pengaturan plugin tidak dapat ditampilkan di tab ini.
+                        <a href="{?=isset_or($value.url)?}" class="btn btn-xs btn-primary">
+                            Buka Pengaturan {?=isset_or($value.name)?}
+                        </a>
+                    </div>
+                {/if}
             </div>
             {/loop}
         </div>
