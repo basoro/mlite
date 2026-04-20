@@ -1,5 +1,6 @@
 <div class="row">
     <form action="{?=url(ADMIN.'/settings/saveGeneral')?}" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="_b64" value="1" />
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -484,4 +485,12 @@
    if (i<1){ return; }
    document.getElementById(id).src=path+img_array[i];
   }
+
+  $('form[action*="saveGeneral"]').on('submit', function() {
+    $(this).find('input[type=text]').each(function() {
+      try {
+        this.value = btoa(unescape(encodeURIComponent(this.value)));
+      } catch(e) {}
+    });
+  });
 </script>
