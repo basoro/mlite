@@ -47,7 +47,6 @@ class Admin extends AdminModule
         if ($this->core->getUserInfo('role') != 'admin') {
             $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
             redirect(url([ADMIN, 'settings', 'manage']));
-            return;
         }
 
         $tabs = [
