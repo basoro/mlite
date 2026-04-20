@@ -29,10 +29,17 @@
                         </thead>
                         <tbody>
                             {loop: $lab}
-                            <tr id="lab-{$value.id_template}">
+                            <tr id="lab-{$value.id_template}" data-nama-pemeriksaan="{$value.Pemeriksaan}">
                                 <td>{$value.Pemeriksaan}</td>
                                 <td>
-                                    <input type="text" class="form-control input-sm loinc-code" value="{$value.loinc_code}" placeholder="Kode LOINC">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm loinc-code" value="{$value.loinc_code}" placeholder="Kode LOINC">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm btn-ai-loinc" title="Fetch LOINC dari AI">
+                                                <i class="fa fa-robot"></i> AI
+                                            </button>
+                                        </span>
+                                    </div>
                                     <input type="text" class="form-control input-sm loinc-display" value="{$value.loinc_display}" placeholder="Nama LOINC" style="margin-top:4px">
                                 </td>
                                 <td>
@@ -59,10 +66,17 @@
                         </thead>
                         <tbody>
                             {loop: $rad}
-                            <tr id="rad-{$value.kd_jenis_prw}">
+                            <tr id="rad-{$value.kd_jenis_prw}" data-nama-pemeriksaan="{$value.nm_perawatan}">
                                 <td>{$value.nm_perawatan}</td>
                                 <td>
-                                    <input type="text" class="form-control input-sm standard-code" value="{$value.standard_code}" placeholder="Kode">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm standard-code" value="{$value.standard_code}" placeholder="Kode">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm btn-ai-rad" title="Fetch Kode Radiologi dari AI">
+                                                <i class="fa fa-robot"></i> AI
+                                            </button>
+                                        </span>
+                                    </div>
                                     <input type="text" class="form-control input-sm standard-display" value="{$value.standard_display}" placeholder="Nama" style="margin-top:4px">
                                 </td>
                                 <td>
@@ -192,12 +206,17 @@
 
 <script>
 $(document).ready(function() {
+    const AI_REQUEST_TIMEOUT = 20000;
     $('.datatable').DataTable();
+
+    function getRowPrimaryText(row, dataAttr) {
+        return row.data(dataAttr) || $.trim(row.find('td').first().text());
+    }
 
     $('.btn-ai-snomed').on('click', function() {
         var button = $(this);
         var row = button.closest('tr');
-        var namaTindakan = row.data('nama-tindakan') || $.trim(row.find('td').first().text());
+        var namaTindakan = getRowPrimaryText(row, 'nama-tindakan');
         var originalText = button.html();
 
         if (!namaTindakan) {
@@ -214,13 +233,13 @@ $(document).ready(function() {
                 t: "{?=$_SESSION['token']?}"
             },
             dataType: 'json',
-            timeout: 20000
+            timeout: AI_REQUEST_TIMEOUT
         })
         .done(function(data) {
             if (data && data.status === 'success' && data.data && data.data.snomed_code) {
                 row.find('.snomed-code').val((data.data.snomed_code || '').toString().trim());
                 row.find('.snomed-display').val((data.data.snomed_display || '').toString().trim());
-                alert('Kode SNOMED berhasil di-generate.');
+                alert('Kode SNOMED berhasil dibuat.');
             } else {
                 var doneMessage = (data && data.message) ? data.message : 'Kode SNOMED tidak ditemukan';
                 alert(doneMessage);
@@ -231,6 +250,105 @@ $(document).ready(function() {
                 alert('Permintaan generate SNOMED timeout.');
             } else {
                 var message = 'Gagal generate SNOMED.';
+                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert(message);
+            }
+        })
+        .always(function() {
+            button.html(originalText).prop('disabled', false);
+        });
+    });
+
+    $('.btn-ai-loinc').on('click', function() {
+        var button = $(this);
+        var row = button.closest('tr');
+        var namaPemeriksaan = getRowPrimaryText(row, 'nama-pemeriksaan');
+        var originalText = button.html();
+
+        if (!namaPemeriksaan) {
+            alert('Nama pemeriksaan laboratorium tidak ditemukan.');
+            return;
+        }
+
+        button.html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
+        $.ajax({
+            type: 'POST',
+            url: "{?=url([ADMIN, 'bpjs_emr', 'fetchAILab'])?}",
+            data: {
+                nama_pemeriksaan: namaPemeriksaan,
+                t: "{?=$_SESSION['token']?}"
+            },
+            dataType: 'json',
+            timeout: AI_REQUEST_TIMEOUT
+        })
+        .done(function(data) {
+            if (data && data.status === 'success' && data.data && data.data.loinc_code) {
+                row.find('.loinc-code').val((data.data.loinc_code || '').toString().trim());
+                row.find('.loinc-display').val((data.data.loinc_display || '').toString().trim());
+                alert('Kode LOINC berhasil dibuat.');
+            } else {
+                var doneMessage = (data && data.message) ? data.message : 'Kode LOINC tidak ditemukan';
+                alert(doneMessage);
+            }
+        })
+        .fail(function(xhr, status) {
+            if (status === 'timeout') {
+                alert('Permintaan generate LOINC timeout.');
+            } else {
+                var message = 'Gagal generate LOINC.';
+                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert(message);
+            }
+        })
+        .always(function() {
+            button.html(originalText).prop('disabled', false);
+        });
+    });
+
+    $('.btn-ai-rad').on('click', function() {
+        var button = $(this);
+        var row = button.closest('tr');
+        var namaPemeriksaan = getRowPrimaryText(row, 'nama-pemeriksaan');
+        var originalText = button.html();
+
+        if (!namaPemeriksaan) {
+            alert('Nama pemeriksaan radiologi tidak ditemukan.');
+            return;
+        }
+
+        button.html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
+        $.ajax({
+            type: 'POST',
+            url: "{?=url([ADMIN, 'bpjs_emr', 'fetchAIRad'])?}",
+            data: {
+                nama_pemeriksaan: namaPemeriksaan,
+                t: "{?=$_SESSION['token']?}"
+            },
+            dataType: 'json',
+            timeout: AI_REQUEST_TIMEOUT
+        })
+        .done(function(data) {
+            if (data && data.status === 'success' && data.data && data.data.standard_code) {
+                row.find('.standard-code').val((data.data.standard_code || '').toString().trim());
+                row.find('.standard-display').val((data.data.standard_display || '').toString().trim());
+                if (data.data.system) {
+                    row.find('.select-system').val((data.data.system || '').toString().trim());
+                }
+                alert('Kode radiologi berhasil dibuat.');
+            } else {
+                var doneMessage = (data && data.message) ? data.message : 'Kode radiologi tidak ditemukan';
+                alert(doneMessage);
+            }
+        })
+        .fail(function(xhr, status) {
+            if (status === 'timeout') {
+                alert('Permintaan generate kode radiologi timeout.');
+            } else {
+                var message = 'Gagal generate kode radiologi.';
                 if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
                     message = xhr.responseJSON.message;
                 }
