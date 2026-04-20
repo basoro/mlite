@@ -124,6 +124,20 @@ class Admin extends AdminModule
     public function postSaveGeneral()
     {
         unset($_POST['save']);
+
+        if (!empty($_POST['_b64'])) {
+            unset($_POST['_b64']);
+            foreach ($_POST as $field => &$value) {
+                if (is_string($value)) {
+                    $decoded = base64_decode($value, true);
+                    if ($decoded !== false) {
+                        $value = $decoded;
+                    }
+                }
+            }
+            unset($value);
+        }
+
         if (($_logo = isset_or($_FILES['logo']['tmp_name'], false))) {
             $img = new \Systems\Lib\Image;
 
@@ -184,7 +198,14 @@ class Admin extends AdminModule
                 curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
                 curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
                 curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
-                curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"nama_instansi=".$_POST['nama_instansi']."&alamat_instansi=".$_POST['alamat']."&kabupaten=".$_POST['kota']."&propinsi=".$_POST['propinsi']."&kontak=".$_POST['nomor_telepon']."&email=".$_POST['email']);
+                curl_setopt($curlHandle, CURLOPT_POSTFIELDS, http_build_query([
+                    'nama_instansi'   => $_POST['nama_instansi'],
+                    'alamat_instansi' => $_POST['alamat'],
+                    'kabupaten'       => $_POST['kota'],
+                    'propinsi'        => $_POST['propinsi'],
+                    'kontak'          => $_POST['nomor_telepon'],
+                    'email'           => $_POST['email'],
+                ]));
                 curl_setopt($curlHandle, CURLOPT_HEADER, 0);
                 curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
                 curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
