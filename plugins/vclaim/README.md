@@ -79,4 +79,4 @@ Dokumentasi singkat penggunaan modul **VClaim Request** di mLITE untuk bridging 
 - SEP yang sudah dikirim ke BPJS tidak dapat dihapus sembarangan; koordinasikan dengan petugas BPJS sebelum membatalkan SEP.
 - QR Code SEP disimpan otomatis di folder `uploads/qrcode/sep/` saat SEP berhasil dibuat.
 - Gunakan submenu **Referensi** untuk memverifikasi kode diagnosa, prosedur, dan faskes sebelum mengisi form SEP.
-- Halaman Kelola menampilkan dokumentasi ini (HELP.md) sebagai panduan cepat bagi pengguna.
+- Halaman Kelola menampilkan dokumentasi ini (README.md) sebagai panduan cepat bagi pengguna.
