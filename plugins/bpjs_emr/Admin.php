@@ -1083,13 +1083,18 @@ class Admin extends AdminModule
             $focalDeviceCode = trim((string) ($proc['focal_device_code'] ?? ''));
             if ($focalDeviceCode !== '') {
                 $focalDeviceDisplay = trim((string) ($proc['focal_device_display'] ?? ''));
+                $focalDeviceAction = trim((string) ($proc['focal_device_action'] ?? ''));
+                $validActions = ['implanted', 'explanted', 'adjusted', 'removed'];
+                if (!in_array($focalDeviceAction, $validActions)) {
+                    $focalDeviceAction = 'implanted';
+                }
                 $resource['focalDevice'] = [
                     [
                         'action' => [
                             'coding' => [
                                 [
                                     'system' => 'http://hl7.org/fhir/device-action',
-                                    'code' => 'implanted'
+                                    'code' => $focalDeviceAction
                                 ]
                             ]
                         ],
@@ -1811,6 +1816,7 @@ class Admin extends AdminModule
                     mlite_bpjs_emr_mapping_prosedur.snomed_display,
                     mlite_bpjs_emr_mapping_prosedur.focal_device_code,
                     mlite_bpjs_emr_mapping_prosedur.focal_device_display,
+                    mlite_bpjs_emr_mapping_prosedur.focal_device_action,
                     dokter.nm_dokter
                 FROM rawat_jl_dr
                 INNER JOIN mlite_bpjs_emr_mapping_prosedur ON rawat_jl_dr.kd_jenis_prw = mlite_bpjs_emr_mapping_prosedur.kd_jenis_prw
@@ -1830,6 +1836,7 @@ class Admin extends AdminModule
                     mlite_bpjs_emr_mapping_prosedur_ranap.snomed_display,
                     mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_code,
                     mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_display,
+                    mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_action,
                     dokter.nm_dokter
                 FROM rawat_inap_dr
                 INNER JOIN mlite_bpjs_emr_mapping_prosedur_ranap ON rawat_inap_dr.kd_jenis_prw = mlite_bpjs_emr_mapping_prosedur_ranap.kd_jenis_prw
@@ -1903,6 +1910,7 @@ class Admin extends AdminModule
                     mlite_bpjs_emr_mapping_prosedur.snomed_display,
                     mlite_bpjs_emr_mapping_prosedur.focal_device_code,
                     mlite_bpjs_emr_mapping_prosedur.focal_device_display,
+                    mlite_bpjs_emr_mapping_prosedur.focal_device_action,
                     '-' AS nm_dokter
                 FROM rawat_jl_pr
                 INNER JOIN mlite_bpjs_emr_mapping_prosedur ON rawat_jl_pr.kd_jenis_prw = mlite_bpjs_emr_mapping_prosedur.kd_jenis_prw
@@ -1920,6 +1928,7 @@ class Admin extends AdminModule
                     mlite_bpjs_emr_mapping_prosedur_ranap.snomed_display,
                     mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_code,
                     mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_display,
+                    mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_action,
                     '-' AS nm_dokter
                 FROM rawat_inap_pr
                 INNER JOIN mlite_bpjs_emr_mapping_prosedur_ranap ON rawat_inap_pr.kd_jenis_prw = mlite_bpjs_emr_mapping_prosedur_ranap.kd_jenis_prw
@@ -2474,17 +2483,17 @@ class Admin extends AdminModule
             ->toArray();
 
         $proc = $this->db('jns_perawatan')
-            ->select('jns_perawatan.*, mlite_bpjs_emr_mapping_prosedur.snomed_code, mlite_bpjs_emr_mapping_prosedur.snomed_display, mlite_bpjs_emr_mapping_prosedur.focal_device_code, mlite_bpjs_emr_mapping_prosedur.focal_device_display')
+            ->select('jns_perawatan.*, mlite_bpjs_emr_mapping_prosedur.snomed_code, mlite_bpjs_emr_mapping_prosedur.snomed_display, mlite_bpjs_emr_mapping_prosedur.focal_device_code, mlite_bpjs_emr_mapping_prosedur.focal_device_display, mlite_bpjs_emr_mapping_prosedur.focal_device_action')
             ->leftJoin('mlite_bpjs_emr_mapping_prosedur', 'jns_perawatan.kd_jenis_prw = mlite_bpjs_emr_mapping_prosedur.kd_jenis_prw')
             ->toArray();
 
         $proc_ranap = $this->db('jns_perawatan_inap')
-            ->select('jns_perawatan_inap.*, mlite_bpjs_emr_mapping_prosedur_ranap.snomed_code, mlite_bpjs_emr_mapping_prosedur_ranap.snomed_display, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_code, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_display')
+            ->select('jns_perawatan_inap.*, mlite_bpjs_emr_mapping_prosedur_ranap.snomed_code, mlite_bpjs_emr_mapping_prosedur_ranap.snomed_display, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_code, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_display, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_action')
             ->leftJoin('mlite_bpjs_emr_mapping_prosedur_ranap', 'jns_perawatan_inap.kd_jenis_prw = mlite_bpjs_emr_mapping_prosedur_ranap.kd_jenis_prw')
             ->toArray();
 
         $operasi = $this->db('paket_operasi')
-            ->select('paket_operasi.*, mlite_bpjs_emr_mapping_operasi.snomed_code, mlite_bpjs_emr_mapping_operasi.snomed_display, mlite_bpjs_emr_mapping_operasi.focal_device_code, mlite_bpjs_emr_mapping_operasi.focal_device_display')
+            ->select('paket_operasi.*, mlite_bpjs_emr_mapping_operasi.snomed_code, mlite_bpjs_emr_mapping_operasi.snomed_display, mlite_bpjs_emr_mapping_operasi.focal_device_code, mlite_bpjs_emr_mapping_operasi.focal_device_display, mlite_bpjs_emr_mapping_operasi.focal_device_action')
             ->leftJoin('mlite_bpjs_emr_mapping_operasi', 'paket_operasi.kode_paket = mlite_bpjs_emr_mapping_operasi.kode_paket')
             ->toArray();
 
@@ -2560,7 +2569,8 @@ class Admin extends AdminModule
             'snomed_code' => $_POST['snomed_code'],
             'snomed_display' => $_POST['snomed_display'],
             'focal_device_code' => $_POST['focal_device_code'] ?? '',
-            'focal_device_display' => $_POST['focal_device_display'] ?? ''
+            'focal_device_display' => $_POST['focal_device_display'] ?? '',
+            'focal_device_action' => $_POST['focal_device_action'] ?? ''
         ];
 
         if ($this->db('mlite_bpjs_emr_mapping_prosedur')->where('kd_jenis_prw', $id)->count()) {
@@ -2587,7 +2597,8 @@ class Admin extends AdminModule
             'snomed_code' => $_POST['snomed_code'],
             'snomed_display' => $_POST['snomed_display'],
             'focal_device_code' => $_POST['focal_device_code'] ?? '',
-            'focal_device_display' => $_POST['focal_device_display'] ?? ''
+            'focal_device_display' => $_POST['focal_device_display'] ?? '',
+            'focal_device_action' => $_POST['focal_device_action'] ?? ''
         ];
 
         if ($this->db('mlite_bpjs_emr_mapping_prosedur_ranap')->where('kd_jenis_prw', $id)->count()) {
@@ -2614,7 +2625,8 @@ class Admin extends AdminModule
             'snomed_code' => $_POST['snomed_code'],
             'snomed_display' => $_POST['snomed_display'],
             'focal_device_code' => $_POST['focal_device_code'] ?? '',
-            'focal_device_display' => $_POST['focal_device_display'] ?? ''
+            'focal_device_display' => $_POST['focal_device_display'] ?? '',
+            'focal_device_action' => $_POST['focal_device_action'] ?? ''
         ];
 
         if ($this->db('mlite_bpjs_emr_mapping_operasi')->where('kode_paket', $id)->count()) {
@@ -2945,10 +2957,13 @@ class Admin extends AdminModule
         $alterStatements = [
             "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_code` varchar(20) DEFAULT NULL",
             "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL",
+            "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_action` varchar(20) DEFAULT NULL",
             "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_code` varchar(20) DEFAULT NULL",
             "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL",
+            "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_action` varchar(20) DEFAULT NULL",
             "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_code` varchar(20) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL"
+            "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL",
+            "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_action` varchar(20) DEFAULT NULL"
         ];
 
         foreach ($alterStatements as $sql) {
