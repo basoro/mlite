@@ -1081,21 +1081,22 @@ class Admin extends AdminModule
             ];
 
             $focalDeviceCode = trim((string) ($proc['focal_device_code'] ?? ''));
-            $focalDeviceDisplay = trim((string) ($proc['focal_device_display'] ?? ''));
-            if ($focalDeviceCode !== '' && $focalDeviceDisplay !== '') {
-                $manipulated = [
-                    'identifier' => [
-                        'system' => 'http://snomed.info/sct',
-                        'value' => $focalDeviceCode
-                    ],
-                    'display' => $focalDeviceDisplay
-                ];
+            if ($focalDeviceCode !== '') {
+                $focalDeviceDisplay = trim((string) ($proc['focal_device_display'] ?? ''));
                 $resource['focalDevice'] = [
                     [
                         'action' => [
-                            'text' => 'Focal device'
+                            'coding' => [
+                                [
+                                    'system' => 'http://hl7.org/fhir/device-action',
+                                    'code' => 'implanted'
+                                ]
+                            ]
                         ],
-                        'manipulated' => $manipulated
+                        'manipulated' => [
+                            'reference' => 'Device/' . $focalDeviceCode,
+                            'display' => $focalDeviceDisplay
+                        ]
                     ]
                 ];
             }
