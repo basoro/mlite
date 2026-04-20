@@ -491,6 +491,10 @@ class Admin extends AdminModule
     // PENGATURAN METHODS
     public function getSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'surat', 'rujukan']));
+        }
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengaturan Surat';
         $this->assign['settings'] = [
@@ -505,6 +509,10 @@ class Admin extends AdminModule
 
     public function postSettingsSave()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'surat', 'rujukan']));
+        }
         foreach ($_POST as $key => $value) {
             $this->settings->set('surat.' . $key, $value);
         }

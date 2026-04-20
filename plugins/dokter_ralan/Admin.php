@@ -20,8 +20,7 @@ class Admin extends AdminModule
     {
         return [
             'Kelola'   => 'index',
-            'Dokter Ralan'   => 'manage',
-            'Pengaturan' =>'settings'
+            'Dokter Ralan'   => 'manage'
         ];
     }
 
@@ -2102,6 +2101,10 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'dokter_ralan', 'manage']));
+        }
         $this->assign['title'] = 'Pengaturan Modul Dokter Ralan';
         $this->assign['dokter_ralan'] = htmlspecialchars_array($this->settings('dokter_ralan'));
         return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
@@ -2109,6 +2112,10 @@ class Admin extends AdminModule
 
     public function postSaveSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'dokter_ralan', 'manage']));
+        }
         foreach ($_POST['dokter_ralan'] as $key => $val) {
             $this->settings('dokter_ralan', $key, $val);
         }

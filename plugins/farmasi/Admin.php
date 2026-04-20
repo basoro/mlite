@@ -20,7 +20,6 @@ class Admin extends AdminModule
             'Darurat Stok' => 'daruratstok',
             'Detail Pemberian Obat' => 'detailpemberianobat',
             'Riwayat Barang Medis' => 'riwayatbarangmedis',
-            'Pengaturan' => 'settings',
         ];
     }
 
@@ -842,6 +841,10 @@ class Admin extends AdminModule
     /* Settings Farmasi Section */
     public function getSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'farmasi', 'mutasi']));
+        }
         $this->assign['title'] = 'Pengaturan Modul Farmasi';
         $this->assign['bangsal'] = $this->db('bangsal')->toArray();
         $this->assign['farmasi'] = htmlspecialchars_array($this->settings('farmasi'));
@@ -850,6 +853,10 @@ class Admin extends AdminModule
 
     public function postSaveSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'farmasi', 'mutasi']));
+        }
         foreach ($_POST['farmasi'] as $key => $val) {
             $this->settings('farmasi', $key, $val);
         }

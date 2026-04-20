@@ -1379,12 +1379,20 @@ class Admin extends AdminModule
 
   public function getSettings()
   {
+    if ($this->core->getUserInfo('role') != 'admin') {
+        $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+        redirect(url([ADMIN, 'pasien', 'uploadphoto']));
+    }
     $set_no_rkm_medis = $this->db('set_no_rkm_medis')->oneArray();
     return $this->draw('settings.html', ['set_no_rkm_medis' => $set_no_rkm_medis]);
   }
 
   public function postSaveSettings()
   {
+    if ($this->core->getUserInfo('role') != 'admin') {
+        $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+        redirect(url([ADMIN, 'pasien', 'uploadphoto']));
+    }
     $this->db()->pdo()->exec("DELETE FROM `set_no_rkm_medis`");
     $set_no_rkm_medis = $this->db('set_no_rkm_medis')->save(['no_rkm_medis' => $_POST['set_no_rkm_medis']]);
     if ($set_no_rkm_medis) {

@@ -34,7 +34,6 @@ class Admin extends AdminModule
       'Log Apotek Online' => 'logapotikonline',
       'Mapping Obat' => 'mappingobat',
       'Monitoring Data Klaim' => 'monitoringdataklaim',
-      'Pengaturan' => 'settings',
     ];
   }
 
@@ -1906,6 +1905,10 @@ public function postHapusResepResponse()
 
   public function getSettings()
   {
+    if ($this->core->getUserInfo('role') != 'admin') {
+        $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+        redirect(url([ADMIN, 'veronisa', 'index']));
+    }
     $this->_addHeaderFiles();
     $this->assign['title'] = 'Pengaturan Modul veronisa';
     $this->assign['veronisa'] = htmlspecialchars_array($this->settings('veronisa'));
@@ -1915,6 +1918,10 @@ public function postHapusResepResponse()
 
   public function postSaveSettings()
   {
+    if ($this->core->getUserInfo('role') != 'admin') {
+        $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+        redirect(url([ADMIN, 'veronisa', 'index']));
+    }
     foreach ($_POST['veronisa'] as $key => $val) {
       $this->settings('veronisa', $key, $val);
     }

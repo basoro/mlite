@@ -77,7 +77,6 @@ class Admin extends AdminModule
       'Mapping Radiologi' => 'mappingrad',
       'Data Response' => 'response',
       'Verifikasi KYC' => 'kyc',
-      'Pengaturan' => 'settings',
     ];
   }
 
@@ -5878,11 +5877,19 @@ class Admin extends AdminModule
 
   public function getSettings()
   {
+    if ($this->core->getUserInfo('role') != 'admin') {
+        $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+        redirect(url([ADMIN, 'satu_sehat', 'praktisi']));
+    }
     return $this->draw('settings.html', ['satu_sehat' => $this->settings->get('satu_sehat'), 'mapping_lokasi' => $this->db('mlite_satu_sehat_lokasi')->toArray(), 'bidang' => $this->db('bidang')->toArray()]);
   }
 
   public function postSaveSettings()
   {
+    if ($this->core->getUserInfo('role') != 'admin') {
+        $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+        redirect(url([ADMIN, 'satu_sehat', 'praktisi']));
+    }
     foreach ($_POST['satu_sehat'] as $key => $val) {
       $this->settings('satu_sehat', $key, $val);
     }

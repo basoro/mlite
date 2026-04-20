@@ -13,7 +13,6 @@ class Admin extends AdminModule
             'Kelola' => 'manage',
             'Display' => 'index',
             'Pemanggil' => 'pemanggil',
-            'Pengaturan' => 'settings',
         ];
     }
 
@@ -210,6 +209,10 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'anjungan', 'index']));
+        }
         $this->assign['title'] = 'Pengaturan Modul Anjungan';
         $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));
         $this->assign['penjab'] = $this->_getPenjab($this->settings->get('anjungan.carabayar'));
@@ -220,6 +223,10 @@ class Admin extends AdminModule
 
     public function postSaveSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'anjungan', 'index']));
+        }
         $_POST['anjungan']['display_poli'] = implode(',', $_POST['anjungan']['display_poli']);
         $_POST['anjungan']['carabayar'] = implode(',', $_POST['anjungan']['carabayar']);
         foreach ($_POST['anjungan'] as $key => $val) {

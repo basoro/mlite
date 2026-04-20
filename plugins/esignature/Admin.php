@@ -8,8 +8,7 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Kelola' => 'manage',
-            'Pengaturan' => 'settings'
+            'Kelola' => 'manage'
         ];
     }
 
@@ -21,12 +20,20 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'esignature', 'manage']));
+        }
         $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
         return $this->draw('settings.html', ['settings' => $this->settings('esignature'), 'master_berkas_digital' => htmlspecialchars_array($master_berkas_digital)]);
     }
 
     public function postSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'esignature', 'manage']));
+        }
         foreach ($_POST['esignature'] as $key => $val) {
             $this->settings('esignature', $key, $val);
         }

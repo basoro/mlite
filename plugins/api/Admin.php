@@ -163,6 +163,10 @@ class Admin extends AdminModule
     /* Settings Section */
     public function getSettingsApam()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'api', 'notifikasi']));
+        }
         $this->assign['title'] = 'Pengaturan Modul API';
         $this->assign['api'] = htmlspecialchars_array($this->settings('api'));
         $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
@@ -171,6 +175,10 @@ class Admin extends AdminModule
 
 public function postSaveSettingsApam()
 {
+    if ($this->core->getUserInfo('role') != 'admin') {
+        $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+        redirect(url([ADMIN, 'api', 'notifikasi']));
+    }
     $api = $_POST['api'] ?? [];
 
     // ---------- PROPINSI ----------
@@ -234,6 +242,10 @@ public function postSaveSettingsApam()
     /* Settings Section */
     public function getSettingsKey()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'api', 'notifikasi']));
+        }
         $this->assign['title'] = 'Pengaturan Modul API Key';
         $this->assign['api'] = htmlspecialchars_array($this->settings('api'));
         return $this->draw('settings.key.html', ['settings' => htmlspecialchars_array($this->assign)]);
@@ -241,6 +253,10 @@ public function postSaveSettingsApam()
 
     public function postSaveSettingsKey()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'api', 'notifikasi']));
+        }
         foreach ($_POST['api'] as $key => $val) {
             $this->settings('api', $key, $val);
         }

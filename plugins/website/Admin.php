@@ -305,6 +305,10 @@ class Admin extends AdminModule
 
     public function getSettingsNews()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'website', 'managenews']));
+        }
         $assign = htmlspecialchars_array($this->settings('website'));
         $assign['dateformats'] = [
             [
@@ -341,6 +345,10 @@ class Admin extends AdminModule
 
     public function postSaveSettingsNews()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'website', 'managenews']));
+        }
         foreach ($_POST['website'] as $key => $val) {
             $this->settings('website', $key, $val);
         }
@@ -350,6 +358,10 @@ class Admin extends AdminModule
 
     public function getSettingsWebsite()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'website', 'managenews']));
+        }
         $this->assign['title'] = 'Pengaturan Website';
         $this->assign['website'] = htmlspecialchars_array($this->settings('website'));
         return $this->draw('settings.website.html', ['settings' => htmlspecialchars_array($this->assign)]);
@@ -357,6 +369,10 @@ class Admin extends AdminModule
 
     public function postSaveSettingsWebsite()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'website', 'managenews']));
+        }
         $dir    = $this->_uploads;
         $img = new \Systems\Lib\Image;
         if ($img->load(isset_or($_FILES['logo']['tmp_name'], false))) {

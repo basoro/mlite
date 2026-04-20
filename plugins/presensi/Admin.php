@@ -20,8 +20,7 @@ class Admin extends AdminModule
                 'Jam Masuk' => 'jammasuk',
                 'Jam Jaga' => 'jamjaga',
                 'Jadwal Pegawai' => 'jadwal',
-                'Jadwal Tambahan' => 'jadwal_tambahan',
-                'Pengaturan' => 'settings'
+                'Jadwal Tambahan' => 'jadwal_tambahan'
             ];
         } else {
             return [
@@ -1587,6 +1586,10 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
+      if ($this->core->getUserInfo('role') != 'admin') {
+          $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+          redirect(url([ADMIN, 'presensi', 'presensi']));
+      }
       $this->_addHeaderFiles();
       $this->assign['title'] = 'Pengaturan Presensi';
       $this->assign['presensi'] = htmlspecialchars_array($this->settings('presensi'));
@@ -1595,6 +1598,10 @@ class Admin extends AdminModule
 
     public function postSaveSettings()
     {
+      if ($this->core->getUserInfo('role') != 'admin') {
+          $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+          redirect(url([ADMIN, 'presensi', 'presensi']));
+      }
       foreach ($_POST['presensi'] as $key => $val) {
         $this->settings('presensi', $key, $val);
       }

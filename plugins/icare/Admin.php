@@ -51,6 +51,10 @@ class Admin extends AdminModule
 
   public function postSaveSettings()
   {
+      if ($this->core->getUserInfo('role') != 'admin') {
+          $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+          redirect(url([ADMIN, 'icare', 'manage']));
+      }
       foreach ($_POST['icare'] as $key => $val) {
           $this->settings('icare', $key, $val);
       }

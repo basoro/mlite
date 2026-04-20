@@ -38,7 +38,6 @@ class Admin extends AdminModule
       'Bridging Eklaim' => 'bridgingeklaim',
       'Logs e-Klaim' => 'logseklaim',
       'User Vedika' => 'uservedika',
-      'Pengaturan' => 'settings',
     ];
   }
 
@@ -2899,6 +2898,10 @@ class Admin extends AdminModule
 
   public function getSettings()
   {
+    if ($this->core->getUserInfo('role') != 'admin') {
+        $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+        redirect(url([ADMIN, 'vedika', 'formsepvclaim']));
+    }
     $this->_addHeaderFiles();
     $this->assign['title'] = 'Pengaturan Modul Vedika';
     $this->assign['vedika'] = htmlspecialchars_array($this->settings('vedika'));
@@ -2909,6 +2912,10 @@ class Admin extends AdminModule
 
   public function postSaveSettings()
   {
+    if ($this->core->getUserInfo('role') != 'admin') {
+        $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+        redirect(url([ADMIN, 'vedika', 'formsepvclaim']));
+    }
     $_POST['vedika']['carabayar'] = implode(',', $_POST['vedika']['carabayar']);
     foreach ($_POST['vedika'] as $key => $val) {
       $this->settings('vedika', $key, $val);

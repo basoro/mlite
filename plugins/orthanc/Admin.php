@@ -10,7 +10,6 @@ class Admin extends AdminModule
     {
         return [
             'Manage' => 'manage',
-            'Settings' => 'settings',
             'Studies' => 'studies',
         ];
     }
@@ -26,7 +25,11 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
-      $orthanc['server'] = $this->settings->get('orthanc.server');
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'orthanc', 'studies']));
+        }
+        $orthanc['server'] = $this->settings->get('orthanc.server');
       $orthanc['username'] = $this->settings->get('orthanc.username');
       $orthanc['password'] = $this->settings->get('orthanc.password');
       $orthanc['ai_api_key'] = $this->settings->get('orthanc.ai_api_key');
@@ -36,6 +39,10 @@ class Admin extends AdminModule
 
     public function postSaveSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'orthanc', 'studies']));
+        }
         foreach ($_POST['orthanc'] as $key => $val) {
             $this->settings('orthanc', $key, $val);
         }

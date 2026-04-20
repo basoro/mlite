@@ -36,8 +36,7 @@ class Admin extends AdminModule
     {
         return [
             'Data BPJS EMR' => 'response',
-            'Pemetaan' => 'mapping',
-            'Pengaturan' => 'settings'
+            'Pemetaan' => 'mapping'
         ];
     }
 
@@ -2810,6 +2809,10 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'bpjs_emr', 'response']));
+        }
         $settings_db = $this->db('mlite_settings')->where('module', 'bpjs_emr')->toArray();
         $settings = array_column($settings_db, 'value', 'field');
 
@@ -2818,6 +2821,10 @@ class Admin extends AdminModule
 
     public function postSaveSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'bpjs_emr', 'response']));
+        }
         // Logic to save settings
         foreach ($_POST['settings'] as $key => $value) {
             $this->db('mlite_settings')

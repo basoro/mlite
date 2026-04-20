@@ -44,7 +44,6 @@ class Admin extends AdminModule
             'Katalog' => 'index',
             'Mapping Poli' => 'mappingpoli',
             'Mapping Dokter' => 'mappingdokter',
-            'Pengaturan' => 'settings',
         ];
     }
 
@@ -66,6 +65,10 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'jkn_mobile_fktp', 'index']));
+        }
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengaturan Modul JKN Mobile FKTP';
         
@@ -140,6 +143,10 @@ class Admin extends AdminModule
 
     public function postSaveSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'jkn_mobile_fktp', 'index']));
+        }
         if (isset($_POST['jkn_mobile_fktp']['display'])) {
             $_POST['jkn_mobile_fktp']['display'] = implode(',', $_POST['jkn_mobile_fktp']['display']);
         } else {
