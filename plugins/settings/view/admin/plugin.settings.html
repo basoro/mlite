@@ -14,7 +14,9 @@
             {loop: $plugin_settings}
             <div role="tabpanel" class="tab-pane {if: $active_tab == $value.id}active{/if}" id="tab-{?=isset_or($value.id)?}">
                 <p class="help-block">{?=isset_or($value.desc)?}</p>
-                <iframe src="{?=isset_or($value.url)?}" style="width: 100%; min-height: 900px; border: 0;" loading="lazy" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation-by-user-activation"></iframe>
+                <a href="{?=isset_or($value.url)?}" class="btn btn-primary">
+                    Buka Pengaturan {?=isset_or($value.name)?}
+                </a>
             </div>
             {/loop}
         </div>
