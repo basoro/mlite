@@ -1905,8 +1905,11 @@ public function postHapusResepResponse()
 
   public function getSettings()
   {
+    if ($this->core->getUserInfo('role') != 'admin') {
+        $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+        redirect(url([ADMIN, 'veronisa', 'index']));
+    }
     $this->_addHeaderFiles();
-    $this->assign['title'] = 'Pengaturan Modul veronisa';
     $this->assign['veronisa'] = htmlspecialchars_array($this->settings('veronisa'));
     $this->assign['master_berkas_digital'] = $this->db('master_berkas_digital')->toArray();
     return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
@@ -1914,6 +1917,10 @@ public function postHapusResepResponse()
 
   public function postSaveSettings()
   {
+    if ($this->core->getUserInfo('role') != 'admin') {
+        $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+        redirect(url([ADMIN, 'veronisa', 'index']));
+    }
     foreach ($_POST['veronisa'] as $key => $val) {
       $this->settings('veronisa', $key, $val);
     }

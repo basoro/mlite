@@ -1586,14 +1586,21 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
+      if ($this->core->getUserInfo('role') != 'admin') {
+          $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+          redirect(url([ADMIN, 'presensi', 'presensi']));
+      }
       $this->_addHeaderFiles();
-      $this->assign['title'] = 'Pengaturan Presensi';
       $this->assign['presensi'] = htmlspecialchars_array($this->settings('presensi'));
       return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postSaveSettings()
     {
+      if ($this->core->getUserInfo('role') != 'admin') {
+          $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+          redirect(url([ADMIN, 'presensi', 'presensi']));
+      }
       foreach ($_POST['presensi'] as $key => $val) {
         $this->settings('presensi', $key, $val);
       }

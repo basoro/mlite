@@ -133,7 +133,11 @@ class Admin extends AdminModule
 
     public function getPengaturanRekening()
     {
-      $this->core->addJS(url([ADMIN, 'keuangan', 'akunrekeningjs']), 'footer');
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'keuangan', 'manage']));
+        }
+        $this->core->addJS(url([ADMIN, 'keuangan', 'akunrekeningjs']), 'footer');
       $akunkegiatan = $this->db('mlite_akun_kegiatan')->toArray();
       $akunrekening = $this->db('mlite_rekening')->toArray();
       return $this->draw('pengaturan.rekening.html', ['akunkegiatan' => $akunkegiatan, 'akunrekening' => $akunrekening]);
@@ -631,6 +635,10 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'keuangan', 'manage']));
+        }
         $this->assign['title'] = 'Pengaturan Modul Keuangan';
         $this->assign['keuangan'] = htmlspecialchars_array($this->settings('keuangan'));
         $akunkegiatan = $this->db('mlite_settings')->where('module', 'keuangan')->where('field', '<>', 'jurnal_kasir')->toArray();
@@ -640,6 +648,10 @@ class Admin extends AdminModule
 
     public function postSaveSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'keuangan', 'manage']));
+        }
         foreach ($_POST['keuangan'] as $key => $val) {
             $this->settings('keuangan', $key, $val);
         }
@@ -860,6 +872,10 @@ class Admin extends AdminModule
 
     public function postSaveSettingsRekening()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'keuangan', 'manage']));
+        }
         foreach ($_POST['kegiatan'] as $key => $val) {
             $this->db('mlite_akun_kegiatan')
             ->where('id', $key)

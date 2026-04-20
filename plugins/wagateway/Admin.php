@@ -37,7 +37,11 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
-      $wagateway['server'] = $this->settings->get('wagateway.server');
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'wagateway', 'sendmessage']));
+        }
+        $wagateway['server'] = $this->settings->get('wagateway.server');
       $wagateway['token'] = $this->settings->get('wagateway.token');
       $wagateway['phonenumber'] = $this->settings->get('wagateway.phonenumber');
       return $this->draw('settings.html', ['wagateway' => $wagateway]);
@@ -63,6 +67,10 @@ class Admin extends AdminModule
 
     public function postSaveSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'wagateway', 'sendmessage']));
+        }
         foreach ($_POST['wagateway'] as $key => $val) {
             $this->settings('wagateway', $key, $val);
         }

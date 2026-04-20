@@ -68,8 +68,11 @@ class Admin extends AdminModule
 
   public function getSettings()
   {
+      if ($this->core->getUserInfo('role') != 'admin') {
+          $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+          redirect(url([ADMIN, 'pcare', 'manage']));
+      }
       $this->_addHeaderFiles();
-      $this->assign['title'] = 'Pengaturan PCare';
       
       // Default settings untuk pcare
       $defaultSettings = [
@@ -103,6 +106,10 @@ class Admin extends AdminModule
 
   public function postSaveSettings()
   {
+      if ($this->core->getUserInfo('role') != 'admin') {
+          $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+          redirect(url([ADMIN, 'pcare', 'manage']));
+      }
       foreach ($_POST['pcare'] as $key => $val) {
           $this->settings('pcare', $key, $val);
       }

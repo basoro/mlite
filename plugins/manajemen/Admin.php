@@ -2169,6 +2169,10 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'manajemen', 'manage']));
+        }
         $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
         $this->assign['manajemen'] = htmlspecialchars_array($this->settings('manajemen'));
         return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
@@ -2176,6 +2180,10 @@ class Admin extends AdminModule
 
     public function postSaveSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'manajemen', 'manage']));
+        }
         foreach ($_POST['manajemen'] as $key => $val) {
             $this->settings('manajemen', $key, $val);
         }
