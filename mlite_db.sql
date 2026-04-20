@@ -2971,7 +2971,8 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("214","veronisa","bpjs_api_url",""), 
 ("215","settings","login_otp", "tidak"),
 ("216","keuangan","akun_debet_kas","1101"),
-("217","bpjs_emr","kecamatan","");
+("217","bpjs_emr","kecamatan",""),
+("218","satu_sehat","imaging","");
 
 
 CREATE TABLE `mlite_subrekening` (
