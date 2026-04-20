@@ -13,10 +13,7 @@
         <div class="tab-content" style="margin-top: 15px;">
             {loop: $plugin_settings}
             <div role="tabpanel" class="tab-pane {if: $active_tab == $value.id}active{/if}" id="tab-{?=isset_or($value.id)?}">
-                <p class="help-block">{?=isset_or($value.desc)?}</p>
-                <a href="{?=isset_or($value.url)?}" class="btn btn-primary">
-                    Buka Pengaturan {?=isset_or($value.name)?}
-                </a>
+                {include: ../plugins/settings/view/admin/plugin.settings.tab.content.html}
             </div>
             {/loop}
         </div>
