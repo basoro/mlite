@@ -2995,6 +2995,7 @@ class Admin extends AdminModule
     private function sanitizeInputForPrompt($input)
     {
         $input = strip_tags((string) $input);
+        $input = preg_replace('/[\p{Cc}\x{200B}-\x{200D}\x{FEFF}]/u', ' ', $input);
         $input = preg_replace(self::PROMPT_SAFE_CHARS_REGEX, ' ', $input);
         $input = str_replace(["\r", "\n", "\t"], ' ', $input);
         $input = preg_replace('/\s+/', ' ', $input);
@@ -3003,7 +3004,7 @@ class Admin extends AdminModule
 
     private function encodePromptInput($value)
     {
-        $encoded = json_encode((string) $value, JSON_UNESCAPED_UNICODE);
+        $encoded = json_encode((string) $value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_QUOT | JSON_HEX_TAG);
         return $encoded === false ? '""' : $encoded;
     }
 
@@ -3051,11 +3052,14 @@ class Admin extends AdminModule
 
     private function extractOpenRouterMessageContent($response)
     {
-        if (!is_array($response)) {
+        if (
+            !is_array($response) ||
+            !isset($response['choices'][0]['message']['content'])
+        ) {
             return '';
         }
 
-        return (string) ($response['choices'][0]['message']['content'] ?? '');
+        return (string) $response['choices'][0]['message']['content'];
     }
 
 }
