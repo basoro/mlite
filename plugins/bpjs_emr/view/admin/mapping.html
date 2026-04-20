@@ -121,26 +121,32 @@
                                     </div>
                                     <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
                                     <hr style="margin:8px 0;">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
-                                                <i class="fa fa-robot"></i> AI Focal
-                                            </button>
-                                        </span>
+                                    <div class="row" style="margin-left:0;margin-right:0;">
+                                        <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
+                                                        <i class="fa fa-robot"></i> AI Focal
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-4" style="padding-left:0;padding-right:0;">
+                                            <select class="form-control input-sm focal-device-action">
+                                                <option value="">-- Aksi FocalDevice --</option>
+                                                <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam permanen</option>
+                                                <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dikeluarkan (biasanya setelah sebelumnya ditanam)</option>
+                                                <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat dilepas</option>
+                                                <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>replaced – alat diganti dengan yang baru</option>
+                                                <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan / di-setting</option>
+                                                <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>inspected – alat diperiksa</option>
+                                                <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>repaired – alat diperbaiki</option>
+                                                <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>inserted – alat dimasukkan (tidak selalu permanen)</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
-                                    <select class="form-control input-sm focal-device-action" style="margin-top:4px">
-                                        <option value="">-- Aksi FocalDevice --</option>
-                                        <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam permanen</option>
-                                        <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dikeluarkan (biasanya setelah sebelumnya ditanam)</option>
-                                        <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat dilepas</option>
-                                        <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>replaced – alat diganti dengan yang baru</option>
-                                        <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan / di-setting</option>
-                                        <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>inspected – alat diperiksa</option>
-                                        <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>repaired – alat diperbaiki</option>
-                                        <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>inserted – alat dimasukkan (tidak selalu permanen)</option>
-                                    </select>
                                 </td>
                                 <td>
                                     <button class="btn btn-xs btn-primary btn-save-proc" data-id="{$value.kd_jenis_prw}">Simpan</button>
@@ -177,26 +183,32 @@
                                     </div>
                                     <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
                                     <hr style="margin:8px 0;">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
-                                                <i class="fa fa-robot"></i> AI Focal
-                                            </button>
-                                        </span>
+                                    <div class="row" style="margin-left:0;margin-right:0;">
+                                        <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
+                                                        <i class="fa fa-robot"></i> AI Focal
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-4" style="padding-left:0;padding-right:0;">
+                                            <select class="form-control input-sm focal-device-action">
+                                                <option value="">-- Aksi FocalDevice --</option>
+                                                <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam permanen</option>
+                                                <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dikeluarkan (biasanya setelah sebelumnya ditanam)</option>
+                                                <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat dilepas</option>
+                                                <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>replaced – alat diganti dengan yang baru</option>
+                                                <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan / di-setting</option>
+                                                <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>inspected – alat diperiksa</option>
+                                                <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>repaired – alat diperbaiki</option>
+                                                <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>inserted – alat dimasukkan (tidak selalu permanen)</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
-                                    <select class="form-control input-sm focal-device-action" style="margin-top:4px">
-                                        <option value="">-- Aksi FocalDevice --</option>
-                                        <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam permanen</option>
-                                        <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dikeluarkan (biasanya setelah sebelumnya ditanam)</option>
-                                        <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat dilepas</option>
-                                        <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>replaced – alat diganti dengan yang baru</option>
-                                        <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan / di-setting</option>
-                                        <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>inspected – alat diperiksa</option>
-                                        <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>repaired – alat diperbaiki</option>
-                                        <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>inserted – alat dimasukkan (tidak selalu permanen)</option>
-                                    </select>
                                 </td>
                                 <td>
                                     <button class="btn btn-xs btn-primary btn-save-proc-ranap" data-id="{$value.kd_jenis_prw}">Simpan</button>
@@ -233,26 +245,32 @@
                                     </div>
                                     <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
                                     <hr style="margin:8px 0;">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
-                                                <i class="fa fa-robot"></i> AI Focal
-                                            </button>
-                                        </span>
+                                    <div class="row" style="margin-left:0;margin-right:0;">
+                                        <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
+                                                        <i class="fa fa-robot"></i> AI Focal
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-4" style="padding-left:0;padding-right:0;">
+                                            <select class="form-control input-sm focal-device-action">
+                                                <option value="">-- Aksi FocalDevice --</option>
+                                                <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam permanen</option>
+                                                <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dikeluarkan (biasanya setelah sebelumnya ditanam)</option>
+                                                <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat dilepas</option>
+                                                <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>replaced – alat diganti dengan yang baru</option>
+                                                <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan / di-setting</option>
+                                                <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>inspected – alat diperiksa</option>
+                                                <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>repaired – alat diperbaiki</option>
+                                                <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>inserted – alat dimasukkan (tidak selalu permanen)</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
-                                    <select class="form-control input-sm focal-device-action" style="margin-top:4px">
-                                        <option value="">-- Aksi FocalDevice --</option>
-                                        <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam permanen</option>
-                                        <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dikeluarkan (biasanya setelah sebelumnya ditanam)</option>
-                                        <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat dilepas</option>
-                                        <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>replaced – alat diganti dengan yang baru</option>
-                                        <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan / di-setting</option>
-                                        <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>inspected – alat diperiksa</option>
-                                        <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>repaired – alat diperbaiki</option>
-                                        <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>inserted – alat dimasukkan (tidak selalu permanen)</option>
-                                    </select>
                                 </td>
                                 <td>
                                     <button class="btn btn-xs btn-primary btn-save-operasi" data-id="{$value.kode_paket}">Simpan</button>
