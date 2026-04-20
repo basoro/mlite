@@ -2690,10 +2690,7 @@ class Admin extends AdminModule
             exit;
         }
 
-        $nama_pemeriksaan = strip_tags($nama_pemeriksaan);
-        $nama_pemeriksaan = str_replace(["\r", "\n", "\t"], ' ', $nama_pemeriksaan);
-        $nama_pemeriksaan = preg_replace('/\s+/', ' ', $nama_pemeriksaan);
-        $nama_pemeriksaan = trim(mb_substr($nama_pemeriksaan, 0, 200));
+        $nama_pemeriksaan = $this->sanitizeInputForPrompt($nama_pemeriksaan);
         $nama_pemeriksaan_prompt = json_encode($nama_pemeriksaan, JSON_UNESCAPED_UNICODE);
         if ($nama_pemeriksaan_prompt === false) {
             $nama_pemeriksaan_prompt = '""';
@@ -2709,48 +2706,13 @@ class Admin extends AdminModule
             ]
         ];
 
-        $ch = curl_init('https://openrouter.ai/api/v1/chat/completions');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $api_key
-        ]);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data));
-        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-
-        $response = curl_exec($ch);
-        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curl_error = curl_error($ch);
-        curl_close($ch);
-
-        if ($response === false || !empty($curl_error)) {
-            echo json_encode(['status' => 'error', 'message' => 'Gagal menghubungi layanan AI.']);
+        $openRouterResult = $this->callOpenRouterAPI($request_data, $api_key);
+        if (!$openRouterResult['ok']) {
+            echo json_encode(['status' => 'error', 'message' => $openRouterResult['message']]);
             exit;
         }
 
-        if ($http_code < 200 || $http_code >= 300) {
-            echo json_encode(['status' => 'error', 'message' => 'Layanan AI mengembalikan status ' . $http_code . '.']);
-            exit;
-        }
-
-        $json_response = json_decode($response, true);
-        $content = '';
-        if (
-            is_array($json_response) &&
-            isset($json_response['choices']) &&
-            is_array($json_response['choices']) &&
-            isset($json_response['choices'][0]['message']['content'])
-        ) {
-            $content = (string) $json_response['choices'][0]['message']['content'];
-        }
-
-        if (empty($content)) {
-            echo json_encode(['status' => 'error', 'message' => 'Respons AI tidak valid.']);
-            exit;
-        }
-
+        $content = $openRouterResult['content'];
         $parsed = $this->extractJsonObjectFromText($content);
         $resolved = $this->resolveLoincPayload($parsed);
 
@@ -2782,10 +2744,7 @@ class Admin extends AdminModule
             exit;
         }
 
-        $nama_pemeriksaan = strip_tags($nama_pemeriksaan);
-        $nama_pemeriksaan = str_replace(["\r", "\n", "\t"], ' ', $nama_pemeriksaan);
-        $nama_pemeriksaan = preg_replace('/\s+/', ' ', $nama_pemeriksaan);
-        $nama_pemeriksaan = trim(mb_substr($nama_pemeriksaan, 0, 200));
+        $nama_pemeriksaan = $this->sanitizeInputForPrompt($nama_pemeriksaan);
         $nama_pemeriksaan_prompt = json_encode($nama_pemeriksaan, JSON_UNESCAPED_UNICODE);
         if ($nama_pemeriksaan_prompt === false) {
             $nama_pemeriksaan_prompt = '""';
@@ -2801,48 +2760,13 @@ class Admin extends AdminModule
             ]
         ];
 
-        $ch = curl_init('https://openrouter.ai/api/v1/chat/completions');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $api_key
-        ]);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data));
-        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-
-        $response = curl_exec($ch);
-        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curl_error = curl_error($ch);
-        curl_close($ch);
-
-        if ($response === false || !empty($curl_error)) {
-            echo json_encode(['status' => 'error', 'message' => 'Gagal menghubungi layanan AI.']);
+        $openRouterResult = $this->callOpenRouterAPI($request_data, $api_key);
+        if (!$openRouterResult['ok']) {
+            echo json_encode(['status' => 'error', 'message' => $openRouterResult['message']]);
             exit;
         }
 
-        if ($http_code < 200 || $http_code >= 300) {
-            echo json_encode(['status' => 'error', 'message' => 'Layanan AI mengembalikan status ' . $http_code . '.']);
-            exit;
-        }
-
-        $json_response = json_decode($response, true);
-        $content = '';
-        if (
-            is_array($json_response) &&
-            isset($json_response['choices']) &&
-            is_array($json_response['choices']) &&
-            isset($json_response['choices'][0]['message']['content'])
-        ) {
-            $content = (string) $json_response['choices'][0]['message']['content'];
-        }
-
-        if (empty($content)) {
-            echo json_encode(['status' => 'error', 'message' => 'Respons AI tidak valid.']);
-            exit;
-        }
-
+        $content = $openRouterResult['content'];
         $parsed = $this->extractJsonObjectFromText($content);
         $resolved = $this->resolveRadiologyPayload($parsed);
 
@@ -3066,6 +2990,63 @@ class Admin extends AdminModule
         }
 
         return $default;
+    }
+
+    private function sanitizeInputForPrompt($input)
+    {
+        $input = strip_tags((string) $input);
+        $input = str_replace(["\r", "\n", "\t"], ' ', $input);
+        $input = preg_replace('/\s+/', ' ', $input);
+        return trim(mb_substr((string) $input, 0, 200));
+    }
+
+    private function callOpenRouterAPI($requestData, $apiKey)
+    {
+        $result = ['ok' => false, 'content' => '', 'message' => 'Respons AI tidak valid.'];
+
+        $ch = curl_init('https://openrouter.ai/api/v1/chat/completions');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $apiKey
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData));
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+
+        $response = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_error = curl_error($ch);
+        curl_close($ch);
+
+        if ($response === false || !empty($curl_error)) {
+            $result['message'] = 'Gagal menghubungi layanan AI.';
+            return $result;
+        }
+
+        if ($http_code < 200 || $http_code >= 300) {
+            $result['message'] = 'Layanan AI mengembalikan status ' . $http_code . '.';
+            return $result;
+        }
+
+        $json_response = json_decode($response, true);
+        if (
+            is_array($json_response) &&
+            isset($json_response['choices']) &&
+            is_array($json_response['choices']) &&
+            isset($json_response['choices'][0]['message']['content'])
+        ) {
+            $result['content'] = (string) $json_response['choices'][0]['message']['content'];
+        }
+
+        if (empty($result['content'])) {
+            $result['message'] = 'Respons AI tidak valid.';
+            return $result;
+        }
+
+        $result['ok'] = true;
+        return $result;
     }
 
 }

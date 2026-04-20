@@ -208,10 +208,14 @@
 $(document).ready(function() {
     $('.datatable').DataTable();
 
+    function getRowPrimaryText(row, dataAttr) {
+        return row.data(dataAttr) || $.trim(row.find('td').first().text());
+    }
+
     $('.btn-ai-snomed').on('click', function() {
         var button = $(this);
         var row = button.closest('tr');
-        var namaTindakan = row.data('nama-tindakan') || $.trim(row.find('td').first().text());
+        var namaTindakan = getRowPrimaryText(row, 'nama-tindakan');
         var originalText = button.html();
 
         if (!namaTindakan) {
@@ -259,7 +263,7 @@ $(document).ready(function() {
     $('.btn-ai-loinc').on('click', function() {
         var button = $(this);
         var row = button.closest('tr');
-        var namaPemeriksaan = row.data('nama-pemeriksaan') || $.trim(row.find('td').first().text());
+        var namaPemeriksaan = getRowPrimaryText(row, 'nama-pemeriksaan');
         var originalText = button.html();
 
         if (!namaPemeriksaan) {
@@ -307,7 +311,7 @@ $(document).ready(function() {
     $('.btn-ai-rad').on('click', function() {
         var button = $(this);
         var row = button.closest('tr');
-        var namaPemeriksaan = row.data('nama-pemeriksaan') || $.trim(row.find('td').first().text());
+        var namaPemeriksaan = getRowPrimaryText(row, 'nama-pemeriksaan');
         var originalText = button.html();
 
         if (!namaPemeriksaan) {
