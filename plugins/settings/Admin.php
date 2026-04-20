@@ -64,14 +64,21 @@ class Admin extends AdminModule
             ['id' => 'wagateway', 'dir' => 'wagateway', 'name' => 'WA Gateway', 'url' => url([ADMIN, 'wagateway', 'settings']), 'desc' => 'Pengaturan modul WA Gateway'],
         ];
 
+        $active_modules = [];
+        foreach ($this->db('mlite_modules')->toArray() as $module) {
+            if (!empty($module['dir'])) {
+                $active_modules[$module['dir']] = true;
+            }
+        }
+
         $plugin_settings = [];
         foreach ($tabs as $tab) {
-            if ($this->db('mlite_modules')->where('dir', $tab['dir'])->oneArray()) {
+            if (isset($active_modules[$tab['dir']])) {
                 $plugin_settings[] = $tab;
             }
         }
 
-        $active_tab = isset($_GET['tab']) ? $_GET['tab'] : '';
+        $active_tab = isset($_GET['tab']) ? preg_replace('/[^a-z0-9_]/i', '', (string) $_GET['tab']) : '';
         $tab_ids = array_column($plugin_settings, 'id');
         if (empty($active_tab) || !in_array($active_tab, $tab_ids, true)) {
             $active_tab = !empty($plugin_settings) ? $plugin_settings[0]['id'] : '';
