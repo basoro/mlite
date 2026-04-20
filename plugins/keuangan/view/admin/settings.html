@@ -10,7 +10,7 @@
                         <label>Aktifkan Posting Jurnal di Kasir</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="keuangan[jurnal_kasir]" value="0" {if: $settings.keuangan.jurnal_kasir == '0'}checked{/if} /> Tidak
+                               <input type="radio" name="keuangan[jurnal_kasir]" value="0" {if: $settings.keuangan.jurnal_kasir == '0' || empty($settings.keuangan.jurnal_kasir)}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
                                <input type="radio" name="keuangan[jurnal_kasir]" value="1" {if: $settings.keuangan.jurnal_kasir == '1'}checked{/if} /> Ya

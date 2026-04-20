@@ -12,7 +12,7 @@
                                 <label>Tampilkan Login</label>
                                 <div class="radio">
                                     <label class="radio-inline">
-                                       <input type="radio" name="website[homepage_login]" value="0" {if: $settings.website.homepage_login == '0'}checked{/if} /> Tidak
+                                       <input type="radio" name="website[homepage_login]" value="0" {if: $settings.website.homepage_login == '0' || empty($settings.website.homepage_login)}checked{/if} /> Tidak
                                     </label>
                                     <label class="radio-inline">
                                        <input type="radio" name="website[homepage_login]" value="1" {if: $settings.website.homepage_login == '1'}checked{/if} /> Ya

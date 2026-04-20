@@ -64,9 +64,9 @@
                              <label class="radio-inline">
                                 <input type="radio" name="jkn_mobile[kirimantrian]" value="ya" {if: $settings.jkn_mobile.kirimantrian == 'ya'}checked{/if} /> Ya
                              </label>
-                             <label class="radio-inline">
-                                <input type="radio" name="jkn_mobile[kirimantrian]" value="tidak" {if: $settings.jkn_mobile.kirimantrian == 'tidak'}checked{/if} /> Tidak
-                             </label>
+                              <label class="radio-inline">
+                                <input type="radio" name="jkn_mobile[kirimantrian]" value="tidak" {if: $settings.jkn_mobile.kirimantrian == 'tidak' || empty($settings.jkn_mobile.kirimantrian)}checked{/if} /> Tidak
+                              </label>
                          </div>
                     </div>
                     <div class="form-group">

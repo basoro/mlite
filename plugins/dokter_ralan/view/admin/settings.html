@@ -13,10 +13,10 @@
                                 <input type="radio" name="dokter_ralan[set_sudah]" value="ya" {if:
                                     $settings.dokter_ralan.set_sudah=='ya' }checked{/if} /> Ya
                             </label>
-                            <label class="radio-inline">
-                                <input type="radio" name="dokter_ralan[set_sudah]" value="tidak" {if:
-                                    $settings.dokter_ralan.set_sudah=='tidak' }checked{/if} /> Tidak
-                            </label>
+                             <label class="radio-inline">
+                                 <input type="radio" name="dokter_ralan[set_sudah]" value="tidak" {if:
+                                     $settings.dokter_ralan.set_sudah=='tidak' || empty($settings.dokter_ralan.set_sudah) }checked{/if} /> Tidak
+                             </label>
                         </div>
                     </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
