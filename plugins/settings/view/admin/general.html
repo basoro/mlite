@@ -488,15 +488,15 @@
   }
 
   $('form[action*="saveGeneral"]').on('submit', function() {
-    var b64Fields = [];
+    var base64EncodedFields = [];
     $(this).find('input[type=text]').each(function() {
       if (this.name) {
-        b64Fields.push(this.name);
+        base64EncodedFields.push(this.name);
       }
       try {
         this.value = btoa(unescape(encodeURIComponent(this.value)));
       } catch(e) {}
     });
-    $(this).find('input[name="_b64_fields"]').val(JSON.stringify(b64Fields));
+    $(this).find('input[name="_b64_fields"]').val(JSON.stringify(base64EncodedFields));
   });
 </script>
