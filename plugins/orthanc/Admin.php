@@ -10,7 +10,6 @@ class Admin extends AdminModule
     {
         return [
             'Manage' => 'manage',
-            'Settings' => 'settings',
             'Studies' => 'studies',
         ];
     }

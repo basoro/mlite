@@ -1,0 +1,25 @@
+<div class="row">
+    <div class="col-md-12">
+        {if: !empty($plugin_settings)}
+        <ul class="nav nav-tabs" role="tablist">
+            {loop: $plugin_settings}
+            <li role="presentation" {if: $active_tab == $value.id}class="active"{/if}>
+                <a href="#tab-{?=isset_or($value.id)?}" aria-controls="tab-{?=isset_or($value.id)?}" role="tab" data-toggle="tab">
+                    {?=isset_or($value.name)?}
+                </a>
+            </li>
+            {/loop}
+        </ul>
+        <div class="tab-content" style="margin-top: 15px;">
+            {loop: $plugin_settings}
+            <div role="tabpanel" class="tab-pane {if: $active_tab == $value.id}active{/if}" id="tab-{?=isset_or($value.id)?}">
+                <p class="help-block">{?=isset_or($value.desc)?}</p>
+                <iframe src="{?=isset_or($value.url)?}" style="width: 100%; min-height: 900px; border: 0;" loading="lazy"></iframe>
+            </div>
+            {/loop}
+        </div>
+        {else}
+        <div class="alert alert-info">Belum ada plugin dengan halaman pengaturan aktif.</div>
+        {/if}
+    </div>
+</div>

@@ -77,7 +77,6 @@ class Admin extends AdminModule
       'Mapping Radiologi' => 'mappingrad',
       'Data Response' => 'response',
       'Verifikasi KYC' => 'kyc',
-      'Pengaturan' => 'settings',
     ];
   }
 

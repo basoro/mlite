@@ -10,8 +10,7 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Kelola'   => 'manage',
-            'Pengaturan' => 'settings'
+            'Kelola'   => 'manage'
         ];
     }
 

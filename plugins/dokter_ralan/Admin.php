@@ -20,8 +20,7 @@ class Admin extends AdminModule
     {
         return [
             'Kelola'   => 'index',
-            'Dokter Ralan'   => 'manage',
-            'Pengaturan' =>'settings'
+            'Dokter Ralan'   => 'manage'
         ];
     }
 

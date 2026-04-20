@@ -36,8 +36,7 @@ class Admin extends AdminModule
     {
         return [
             'Data BPJS EMR' => 'response',
-            'Pemetaan' => 'mapping',
-            'Pengaturan' => 'settings'
+            'Pemetaan' => 'mapping'
         ];
     }
 

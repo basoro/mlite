@@ -26,7 +26,6 @@ class Admin extends AdminModule
             'Buku Besar' => 'bukubesar',
             'Cash Flow' => 'cashflow',
             'Neraca Keuangan' => 'neraca',
-            'Pengaturan' => 'settings'
         ];
     }
 

@@ -24,6 +24,7 @@ class Admin extends AdminModule
             'Pengaturan'          => 'manage',
             'Umum'          => 'general',
             'Tema' => 'theme',
+            'Pengaturan Plugin' => 'pluginsettings',
             'Pembaruan'          => 'updates',
             'Backup & Restore'   => 'backuprestore',
         ];
@@ -34,10 +35,52 @@ class Admin extends AdminModule
       $sub_modules = [
         ['name' => 'Pengaturan Umum', 'url' => url([ADMIN, 'settings', 'general']), 'icon' => 'wrench', 'desc' => 'Pengaturan umum mLITE'],
         ['name' => 'Tema Publik', 'url' => url([ADMIN, 'settings', 'theme']), 'icon' => 'cubes', 'desc' => 'Pengaturan tema tampilan publik'],
+        ['name' => 'Pengaturan Plugin', 'url' => url([ADMIN, 'settings', 'pluginsettings']), 'icon' => 'cogs', 'desc' => 'Pengaturan plugin dalam tab'],
         ['name' => 'Pembaruan Sistem', 'url' => url([ADMIN, 'settings', 'updates']), 'icon' => 'cubes', 'desc' => 'Pembaruan sistem'],
         ['name' => 'Backup & Restore', 'url' => url([ADMIN, 'settings', 'backuprestore']), 'icon' => 'database', 'desc' => 'Backup dan restore database'],
       ];
       return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
+    }
+
+    public function getPluginSettings()
+    {
+        $tabs = [
+            ['id' => 'anjungan', 'dir' => 'anjungan', 'name' => 'Anjungan', 'url' => url([ADMIN, 'anjungan', 'settings']), 'desc' => 'Pengaturan modul Anjungan'],
+            ['id' => 'bpjs_emr', 'dir' => 'bpjs_emr', 'name' => 'BPJS EMR', 'url' => url([ADMIN, 'bpjs_emr', 'settings']), 'desc' => 'Pengaturan modul BPJS EMR'],
+            ['id' => 'dokter_ralan', 'dir' => 'dokter_ralan', 'name' => 'Dokter Ralan', 'url' => url([ADMIN, 'dokter_ralan', 'settings']), 'desc' => 'Pengaturan modul Dokter Ralan'],
+            ['id' => 'esignature', 'dir' => 'esignature', 'name' => 'eSignature', 'url' => url([ADMIN, 'esignature', 'settings']), 'desc' => 'Pengaturan modul eSignature'],
+            ['id' => 'farmasi', 'dir' => 'farmasi', 'name' => 'Farmasi', 'url' => url([ADMIN, 'farmasi', 'settings']), 'desc' => 'Pengaturan modul Farmasi'],
+            ['id' => 'jkn_mobile', 'dir' => 'jkn_mobile', 'name' => 'JKN Mobile', 'url' => url([ADMIN, 'jkn_mobile', 'settings']), 'desc' => 'Pengaturan modul JKN Mobile'],
+            ['id' => 'jkn_mobile_fktp', 'dir' => 'jkn_mobile_fktp', 'name' => 'JKN Mobile FKTP', 'url' => url([ADMIN, 'jkn_mobile_fktp', 'settings']), 'desc' => 'Pengaturan modul JKN Mobile FKTP'],
+            ['id' => 'keuangan', 'dir' => 'keuangan', 'name' => 'Keuangan', 'url' => url([ADMIN, 'keuangan', 'settings']), 'desc' => 'Pengaturan modul Keuangan'],
+            ['id' => 'manajemen', 'dir' => 'manajemen', 'name' => 'Manajemen', 'url' => url([ADMIN, 'manajemen', 'settings']), 'desc' => 'Pengaturan modul Manajemen'],
+            ['id' => 'orthanc', 'dir' => 'orthanc', 'name' => 'Orthanc', 'url' => url([ADMIN, 'orthanc', 'settings']), 'desc' => 'Pengaturan modul Orthanc'],
+            ['id' => 'pcare', 'dir' => 'pcare', 'name' => 'PCare', 'url' => url([ADMIN, 'pcare', 'settings']), 'desc' => 'Pengaturan modul PCare'],
+            ['id' => 'presensi', 'dir' => 'presensi', 'name' => 'Presensi', 'url' => url([ADMIN, 'presensi', 'settings']), 'desc' => 'Pengaturan modul Presensi'],
+            ['id' => 'satu_sehat', 'dir' => 'satu_sehat', 'name' => 'Satu Sehat', 'url' => url([ADMIN, 'satu_sehat', 'settings']), 'desc' => 'Pengaturan modul Satu Sehat'],
+            ['id' => 'sertisign', 'dir' => 'sertisign', 'name' => 'Sertisign', 'url' => url([ADMIN, 'sertisign', 'settings']), 'desc' => 'Pengaturan modul Sertisign'],
+            ['id' => 'vedika', 'dir' => 'vedika', 'name' => 'Vedika', 'url' => url([ADMIN, 'vedika', 'settings']), 'desc' => 'Pengaturan modul Vedika'],
+            ['id' => 'veronisa', 'dir' => 'veronisa', 'name' => 'Veronisa', 'url' => url([ADMIN, 'veronisa', 'settings']), 'desc' => 'Pengaturan modul Veronisa'],
+            ['id' => 'wagateway', 'dir' => 'wagateway', 'name' => 'WA Gateway', 'url' => url([ADMIN, 'wagateway', 'settings']), 'desc' => 'Pengaturan modul WA Gateway'],
+        ];
+
+        $plugin_settings = [];
+        foreach ($tabs as $tab) {
+            if ($this->db('mlite_modules')->where('dir', $tab['dir'])->oneArray()) {
+                $plugin_settings[] = $tab;
+            }
+        }
+
+        $active_tab = isset($_GET['tab']) ? $_GET['tab'] : '';
+        $tab_ids = array_column($plugin_settings, 'id');
+        if (empty($active_tab) || !in_array($active_tab, $tab_ids, true)) {
+            $active_tab = !empty($plugin_settings) ? $plugin_settings[0]['id'] : '';
+        }
+
+        return $this->draw('plugin.settings.html', [
+            'plugin_settings' => htmlspecialchars_array($plugin_settings),
+            'active_tab' => $active_tab
+        ]);
     }
 
     public function getGeneral()

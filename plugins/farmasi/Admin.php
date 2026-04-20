@@ -20,7 +20,6 @@ class Admin extends AdminModule
             'Darurat Stok' => 'daruratstok',
             'Detail Pemberian Obat' => 'detailpemberianobat',
             'Riwayat Barang Medis' => 'riwayatbarangmedis',
-            'Pengaturan' => 'settings',
         ];
     }
 

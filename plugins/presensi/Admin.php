@@ -20,8 +20,7 @@ class Admin extends AdminModule
                 'Jam Masuk' => 'jammasuk',
                 'Jam Jaga' => 'jamjaga',
                 'Jadwal Pegawai' => 'jadwal',
-                'Jadwal Tambahan' => 'jadwal_tambahan',
-                'Pengaturan' => 'settings'
+                'Jadwal Tambahan' => 'jadwal_tambahan'
             ];
         } else {
             return [

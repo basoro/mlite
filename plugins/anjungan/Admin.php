@@ -13,7 +13,6 @@ class Admin extends AdminModule
             'Kelola' => 'manage',
             'Display' => 'index',
             'Pemanggil' => 'pemanggil',
-            'Pengaturan' => 'settings',
         ];
     }
 
