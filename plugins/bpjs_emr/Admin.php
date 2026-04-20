@@ -1084,7 +1084,7 @@ class Admin extends AdminModule
             if ($focalDeviceCode !== '') {
                 $focalDeviceDisplay = trim((string) ($proc['focal_device_display'] ?? ''));
                 $focalDeviceAction = trim((string) ($proc['focal_device_action'] ?? ''));
-                $validActions = ['implanted', 'explanted', 'adjusted', 'removed'];
+                $validActions = ['implanted', 'explanted', 'removed', 'replaced', 'adjusted', 'inspected', 'repaired', 'inserted'];
                 if (!in_array($focalDeviceAction, $validActions)) {
                     $focalDeviceAction = 'implanted';
                 }

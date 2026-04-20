@@ -132,10 +132,14 @@
                                     <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
                                     <select class="form-control input-sm focal-device-action" style="margin-top:4px">
                                         <option value="">-- Aksi FocalDevice --</option>
-                                        <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam</option>
-                                        <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dilepas</option>
-                                        <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan</option>
-                                        <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat diangkat</option>
+                                        <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam permanen</option>
+                                        <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dikeluarkan (biasanya setelah sebelumnya ditanam)</option>
+                                        <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat dilepas</option>
+                                        <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>replaced – alat diganti dengan yang baru</option>
+                                        <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan / di-setting</option>
+                                        <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>inspected – alat diperiksa</option>
+                                        <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>repaired – alat diperbaiki</option>
+                                        <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>inserted – alat dimasukkan (tidak selalu permanen)</option>
                                     </select>
                                 </td>
                                 <td>
@@ -184,10 +188,14 @@
                                     <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
                                     <select class="form-control input-sm focal-device-action" style="margin-top:4px">
                                         <option value="">-- Aksi FocalDevice --</option>
-                                        <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam</option>
-                                        <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dilepas</option>
-                                        <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan</option>
-                                        <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat diangkat</option>
+                                        <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam permanen</option>
+                                        <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dikeluarkan (biasanya setelah sebelumnya ditanam)</option>
+                                        <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat dilepas</option>
+                                        <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>replaced – alat diganti dengan yang baru</option>
+                                        <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan / di-setting</option>
+                                        <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>inspected – alat diperiksa</option>
+                                        <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>repaired – alat diperbaiki</option>
+                                        <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>inserted – alat dimasukkan (tidak selalu permanen)</option>
                                     </select>
                                 </td>
                                 <td>
@@ -236,10 +244,14 @@
                                     <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
                                     <select class="form-control input-sm focal-device-action" style="margin-top:4px">
                                         <option value="">-- Aksi FocalDevice --</option>
-                                        <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam</option>
-                                        <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dilepas</option>
-                                        <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan</option>
-                                        <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat diangkat</option>
+                                        <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam permanen</option>
+                                        <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dikeluarkan (biasanya setelah sebelumnya ditanam)</option>
+                                        <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat dilepas</option>
+                                        <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>replaced – alat diganti dengan yang baru</option>
+                                        <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan / di-setting</option>
+                                        <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>inspected – alat diperiksa</option>
+                                        <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>repaired – alat diperbaiki</option>
+                                        <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>inserted – alat dimasukkan (tidak selalu permanen)</option>
                                     </select>
                                 </td>
                                 <td>
