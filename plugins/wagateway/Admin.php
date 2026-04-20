@@ -14,7 +14,7 @@ class Admin extends AdminModule
             'Send Message' => 'sendmessage',
             'Send Image' => 'sendimage',
             'Send File' => 'sendfile',
-            'Settings' => 'settings'
+            'Pengaturan' => 'settings'
         ];
     }
 

@@ -13,7 +13,7 @@ class Admin extends AdminModule
             'TTE Invisible' => 'signinginvisible',
             'Webhook Data' => 'datawebhook',
             'Tampil Webhook' => 'tampilwebhook',
-            'Settings' => 'settings',
+            'Pengaturan' => 'settings',
         ];
     }
 

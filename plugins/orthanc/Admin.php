@@ -11,7 +11,7 @@ class Admin extends AdminModule
         return [
             'Manage' => 'manage',
             'Studies' => 'studies',
-            'Settings' => 'settings',
+            'Pengaturan' => 'settings',
         ];
     }
 
