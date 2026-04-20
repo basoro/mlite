@@ -6599,9 +6599,10 @@ class Admin extends AdminModule
 
       $row['diagnostic_report_radiologi'] = isset_or($row['permintaan_radiologi']['tgl_hasil'], '');
 
-      $row['imaging_study_radiologi'] = $this->db('mlite_mini_pacs_study')
+      $pacs_study = $this->db('mlite_mini_pacs_study')
         ->where('no_rawat', $row['no_rawat'])
-        ->oneArray()['id'];
+        ->oneArray();
+      $row['imaging_study_radiologi'] = isset($pacs_study['id']) ? $pacs_study['id'] : null;
 
       $row['permintaan_lab'] = $this->db('permintaan_lab')
         ->where('no_rawat', $row['no_rawat'])
