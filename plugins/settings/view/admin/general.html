@@ -1,6 +1,7 @@
 <div class="row">
     <form action="{?=url(ADMIN.'/settings/saveGeneral')?}" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="_b64" value="1" />
+        <input type="hidden" name="_b64_fields" value="" />
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -487,10 +488,15 @@
   }
 
   $('form[action*="saveGeneral"]').on('submit', function() {
+    var base64EncodedFields = [];
     $(this).find('input[type=text]').each(function() {
+      if (this.name) {
+        base64EncodedFields.push(this.name);
+      }
       try {
         this.value = btoa(unescape(encodeURIComponent(this.value)));
       } catch(e) {}
     });
+    $(this).find('input[name="_b64_fields"]').val(JSON.stringify(base64EncodedFields));
   });
 </script>
