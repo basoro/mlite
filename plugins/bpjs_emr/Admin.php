@@ -1082,17 +1082,14 @@ class Admin extends AdminModule
 
             $focalDeviceCode = trim((string) ($proc['focal_device_code'] ?? ''));
             $focalDeviceDisplay = trim((string) ($proc['focal_device_display'] ?? ''));
-            if ($focalDeviceCode !== '' || $focalDeviceDisplay !== '') {
-                $manipulated = [];
-                if ($focalDeviceCode !== '') {
-                    $manipulated['identifier'] = [
+            if ($focalDeviceCode !== '' && $focalDeviceDisplay !== '') {
+                $manipulated = [
+                    'identifier' => [
                         'system' => 'http://snomed.info/sct',
                         'value' => $focalDeviceCode
-                    ];
-                }
-                if ($focalDeviceDisplay !== '') {
-                    $manipulated['display'] = $focalDeviceDisplay;
-                }
+                    ],
+                    'display' => $focalDeviceDisplay
+                ];
                 $resource['focalDevice'] = [
                     [
                         'action' => [
