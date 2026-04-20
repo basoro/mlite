@@ -127,15 +127,22 @@ class Admin extends AdminModule
 
         if (!empty($_POST['_b64'])) {
             unset($_POST['_b64']);
-            foreach ($_POST as $field => &$value) {
-                if (is_string($value)) {
-                    $decoded = base64_decode($value, true);
+            $encodedFields = [];
+            if (!empty($_POST['_b64_fields'])) {
+                $decodedFields = json_decode($_POST['_b64_fields'], true);
+                if (is_array($decodedFields)) {
+                    $encodedFields = $decodedFields;
+                }
+            }
+            unset($_POST['_b64_fields']);
+            foreach ($encodedFields as $field) {
+                if (isset($_POST[$field]) && is_string($_POST[$field])) {
+                    $decoded = base64_decode($_POST[$field], true);
                     if ($decoded !== false) {
-                        $value = $decoded;
+                        $_POST[$field] = $decoded;
                     }
                 }
             }
-            unset($value);
         }
 
         if (($_logo = isset_or($_FILES['logo']['tmp_name'], false))) {
