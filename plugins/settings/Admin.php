@@ -44,6 +44,12 @@ class Admin extends AdminModule
 
     public function getPluginSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'settings', 'manage']));
+            return;
+        }
+
         $tabs = [
             ['id' => 'anjungan', 'dir' => 'anjungan', 'name' => 'Anjungan', 'url' => url([ADMIN, 'anjungan', 'settings']), 'desc' => 'Pengaturan modul Anjungan'],
             ['id' => 'bpjs_emr', 'dir' => 'bpjs_emr', 'name' => 'BPJS EMR', 'url' => url([ADMIN, 'bpjs_emr', 'settings']), 'desc' => 'Pengaturan modul BPJS EMR'],
