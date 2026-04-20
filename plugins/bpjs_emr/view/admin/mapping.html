@@ -206,6 +206,7 @@
 
 <script>
 $(document).ready(function() {
+    var AI_REQUEST_TIMEOUT = 20000;
     $('.datatable').DataTable();
 
     function getRowPrimaryText(row, dataAttr) {
@@ -232,7 +233,7 @@ $(document).ready(function() {
                 t: "{?=$_SESSION['token']?}"
             },
             dataType: 'json',
-            timeout: 20000
+            timeout: AI_REQUEST_TIMEOUT
         })
         .done(function(data) {
             if (data && data.status === 'success' && data.data && data.data.snomed_code) {
@@ -280,7 +281,7 @@ $(document).ready(function() {
                 t: "{?=$_SESSION['token']?}"
             },
             dataType: 'json',
-            timeout: 20000
+            timeout: AI_REQUEST_TIMEOUT
         })
         .done(function(data) {
             if (data && data.status === 'success' && data.data && data.data.loinc_code) {
@@ -328,7 +329,7 @@ $(document).ready(function() {
                 t: "{?=$_SESSION['token']?}"
             },
             dataType: 'json',
-            timeout: 20000
+            timeout: AI_REQUEST_TIMEOUT
         })
         .done(function(data) {
             if (data && data.status === 'success' && data.data && data.data.standard_code) {
