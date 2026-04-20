@@ -238,7 +238,7 @@ $(document).ready(function() {
             if (data && data.status === 'success' && data.data && data.data.snomed_code) {
                 row.find('.snomed-code').val((data.data.snomed_code || '').toString().trim());
                 row.find('.snomed-display').val((data.data.snomed_display || '').toString().trim());
-                alert('Kode SNOMED berhasil di-generate.');
+                alert('Kode SNOMED berhasil dibuat.');
             } else {
                 var doneMessage = (data && data.message) ? data.message : 'Kode SNOMED tidak ditemukan';
                 alert(doneMessage);
@@ -286,7 +286,7 @@ $(document).ready(function() {
             if (data && data.status === 'success' && data.data && data.data.loinc_code) {
                 row.find('.loinc-code').val((data.data.loinc_code || '').toString().trim());
                 row.find('.loinc-display').val((data.data.loinc_display || '').toString().trim());
-                alert('Kode LOINC berhasil di-generate.');
+                alert('Kode LOINC berhasil dibuat.');
             } else {
                 var doneMessage = (data && data.message) ? data.message : 'Kode LOINC tidak ditemukan';
                 alert(doneMessage);
@@ -337,7 +337,7 @@ $(document).ready(function() {
                 if (data.data.system) {
                     row.find('.select-system').val((data.data.system || '').toString().trim());
                 }
-                alert('Kode radiologi berhasil di-generate.');
+                alert('Kode radiologi berhasil dibuat.');
             } else {
                 var doneMessage = (data && data.message) ? data.message : 'Kode radiologi tidak ditemukan';
                 alert(doneMessage);
