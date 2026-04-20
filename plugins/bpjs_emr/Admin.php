@@ -2598,7 +2598,7 @@ class Admin extends AdminModule
             exit;
         }
 
-        $api_key = trim((string) $this->core->settings->get('satu_sehat.api_openai'));
+        $api_key = $this->getOpenRouterApiKey();
         if (empty($api_key)) {
             echo json_encode(['status' => 'error', 'message' => 'API key OpenAI belum diset.']);
             exit;
@@ -2690,21 +2690,21 @@ class Admin extends AdminModule
             exit;
         }
 
-        $api_key = trim((string) $this->core->settings->get('satu_sehat.api_openai'));
+        $api_key = $this->getOpenRouterApiKey();
         if (empty($api_key)) {
             echo json_encode(['status' => 'error', 'message' => 'API key OpenAI belum diset.']);
             exit;
         }
 
         $nama_pemeriksaan = $this->sanitizeInputForPrompt($nama_pemeriksaan);
-        $nama_pemeriksaan_prompt = $this->encodePromptInput($nama_pemeriksaan);
+        $nama_pemeriksaan_encoded = $this->encodePromptInput($nama_pemeriksaan);
 
         $request_data = [
             'model' => 'openai/gpt-4o',
             'messages' => [
                 [
                     'role' => 'user',
-                    'content' => sprintf(self::AI_PROMPT_LAB_MAPPING, $nama_pemeriksaan_prompt)
+                    'content' => sprintf(self::AI_PROMPT_LAB_MAPPING, $nama_pemeriksaan_encoded)
                 ]
             ]
         ];
@@ -2741,21 +2741,21 @@ class Admin extends AdminModule
             exit;
         }
 
-        $api_key = trim((string) $this->core->settings->get('satu_sehat.api_openai'));
+        $api_key = $this->getOpenRouterApiKey();
         if (empty($api_key)) {
             echo json_encode(['status' => 'error', 'message' => 'API key OpenAI belum diset.']);
             exit;
         }
 
         $nama_pemeriksaan = $this->sanitizeInputForPrompt($nama_pemeriksaan);
-        $nama_pemeriksaan_prompt = $this->encodePromptInput($nama_pemeriksaan);
+        $nama_pemeriksaan_encoded = $this->encodePromptInput($nama_pemeriksaan);
 
         $request_data = [
             'model' => 'openai/gpt-4o',
             'messages' => [
                 [
                     'role' => 'user',
-                    'content' => sprintf(self::AI_PROMPT_RAD_MAPPING, $nama_pemeriksaan_prompt)
+                    'content' => sprintf(self::AI_PROMPT_RAD_MAPPING, $nama_pemeriksaan_encoded)
                 ]
             ]
         ];
@@ -3004,8 +3004,17 @@ class Admin extends AdminModule
 
     private function encodePromptInput($value)
     {
-        $encoded = json_encode((string) $value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_QUOT | JSON_HEX_TAG);
+        $encoded = json_encode((string) $value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS);
         return $encoded === false ? '""' : $encoded;
+    }
+
+    private function getOpenRouterApiKey()
+    {
+        $api_key = trim((string) $this->core->settings->get('satu_sehat.api_openai'));
+        if (preg_match('/[\r\n]/', $api_key)) {
+            return '';
+        }
+        return $api_key;
     }
 
     private function callOpenRouterAPI($requestData, $apiKey)
