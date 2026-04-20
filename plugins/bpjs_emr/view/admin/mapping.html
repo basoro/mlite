@@ -120,6 +120,27 @@
                                         </span>
                                     </div>
                                     <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
+                                    <hr style="margin:8px 0;">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
+                                                <i class="fa fa-robot"></i> AI Focal
+                                            </button>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
+                                    <select class="form-control input-sm focal-device-action" style="margin-top:4px">
+                                        <option value="">-- Aksi FocalDevice --</option>
+                                        <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam permanen</option>
+                                        <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dikeluarkan (biasanya setelah sebelumnya ditanam)</option>
+                                        <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat dilepas</option>
+                                        <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>replaced – alat diganti dengan yang baru</option>
+                                        <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan / di-setting</option>
+                                        <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>inspected – alat diperiksa</option>
+                                        <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>repaired – alat diperbaiki</option>
+                                        <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>inserted – alat dimasukkan (tidak selalu permanen)</option>
+                                    </select>
                                 </td>
                                 <td>
                                     <button class="btn btn-xs btn-primary btn-save-proc" data-id="{$value.kd_jenis_prw}">Simpan</button>
@@ -155,6 +176,27 @@
                                         </span>
                                     </div>
                                     <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
+                                    <hr style="margin:8px 0;">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
+                                                <i class="fa fa-robot"></i> AI Focal
+                                            </button>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
+                                    <select class="form-control input-sm focal-device-action" style="margin-top:4px">
+                                        <option value="">-- Aksi FocalDevice --</option>
+                                        <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam permanen</option>
+                                        <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dikeluarkan (biasanya setelah sebelumnya ditanam)</option>
+                                        <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat dilepas</option>
+                                        <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>replaced – alat diganti dengan yang baru</option>
+                                        <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan / di-setting</option>
+                                        <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>inspected – alat diperiksa</option>
+                                        <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>repaired – alat diperbaiki</option>
+                                        <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>inserted – alat dimasukkan (tidak selalu permanen)</option>
+                                    </select>
                                 </td>
                                 <td>
                                     <button class="btn btn-xs btn-primary btn-save-proc-ranap" data-id="{$value.kd_jenis_prw}">Simpan</button>
@@ -190,6 +232,27 @@
                                         </span>
                                     </div>
                                     <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
+                                    <hr style="margin:8px 0;">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
+                                                <i class="fa fa-robot"></i> AI Focal
+                                            </button>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
+                                    <select class="form-control input-sm focal-device-action" style="margin-top:4px">
+                                        <option value="">-- Aksi FocalDevice --</option>
+                                        <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>implanted – alat ditanam permanen</option>
+                                        <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>explanted – alat dikeluarkan (biasanya setelah sebelumnya ditanam)</option>
+                                        <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>removed – alat dilepas</option>
+                                        <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>replaced – alat diganti dengan yang baru</option>
+                                        <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>adjusted – alat disesuaikan / di-setting</option>
+                                        <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>inspected – alat diperiksa</option>
+                                        <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>repaired – alat diperbaiki</option>
+                                        <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>inserted – alat dimasukkan (tidak selalu permanen)</option>
+                                    </select>
                                 </td>
                                 <td>
                                     <button class="btn btn-xs btn-primary btn-save-operasi" data-id="{$value.kode_paket}">Simpan</button>
@@ -250,6 +313,54 @@ $(document).ready(function() {
                 alert('Permintaan generate SNOMED timeout.');
             } else {
                 var message = 'Gagal generate SNOMED.';
+                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert(message);
+            }
+        })
+        .always(function() {
+            button.html(originalText).prop('disabled', false);
+        });
+    });
+
+    $('.btn-ai-focal-device').on('click', function() {
+        var button = $(this);
+        var row = button.closest('tr');
+        var namaTindakan = getRowPrimaryText(row, 'nama-tindakan');
+        var originalText = button.html();
+
+        if (!namaTindakan) {
+            alert('Nama tindakan tidak ditemukan.');
+            return;
+        }
+
+        button.html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
+        $.ajax({
+            type: 'POST',
+            url: "{?=url([ADMIN, 'bpjs_emr', 'fetchAIFocalDevice'])?}",
+            data: {
+                nama_tindakan: namaTindakan,
+                t: "{?=$_SESSION['token']?}"
+            },
+            dataType: 'json',
+            timeout: AI_REQUEST_TIMEOUT
+        })
+        .done(function(data) {
+            if (data && data.status === 'success' && data.data && data.data.focal_device_code) {
+                row.find('.focal-device-code').val((data.data.focal_device_code || '').toString().trim());
+                row.find('.focal-device-display').val((data.data.focal_device_display || '').toString().trim());
+                alert('Kode focalDevice berhasil dibuat.');
+            } else {
+                var doneMessage = (data && data.message) ? data.message : 'Kode focalDevice tidak ditemukan';
+                alert(doneMessage);
+            }
+        })
+        .fail(function(xhr, status) {
+            if (status === 'timeout') {
+                alert('Permintaan generate focalDevice timeout.');
+            } else {
+                var message = 'Gagal generate focalDevice.';
                 if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
                     message = xhr.responseJSON.message;
                 }
@@ -420,6 +531,9 @@ $(document).ready(function() {
         var row = $('#proc-'+id);
         var code = row.find('.snomed-code').val();
         var display = row.find('.snomed-display').val();
+        var focalDeviceCode = row.find('.focal-device-code').val();
+        var focalDeviceDisplay = row.find('.focal-device-display').val();
+        var focalDeviceAction = row.find('.focal-device-action').val();
         
         if (!code) {
             alert('Silakan pilih kode SNOMED terlebih dahulu.');
@@ -430,6 +544,9 @@ $(document).ready(function() {
             kd_jenis_prw: id,
             snomed_code: code,
             snomed_display: display,
+            focal_device_code: focalDeviceCode,
+            focal_device_display: focalDeviceDisplay,
+            focal_device_action: focalDeviceAction,
             t: "{?=$_SESSION['token']?}"
         }, function(res) {
             if(res == '1') {
@@ -446,6 +563,9 @@ $(document).ready(function() {
         var row = $('#proc-ranap-'+id);
         var code = row.find('.snomed-code').val();
         var display = row.find('.snomed-display').val();
+        var focalDeviceCode = row.find('.focal-device-code').val();
+        var focalDeviceDisplay = row.find('.focal-device-display').val();
+        var focalDeviceAction = row.find('.focal-device-action').val();
 
         if (!code) {
             alert('Silakan pilih kode SNOMED terlebih dahulu.');
@@ -456,6 +576,9 @@ $(document).ready(function() {
             kd_jenis_prw: id,
             snomed_code: code,
             snomed_display: display,
+            focal_device_code: focalDeviceCode,
+            focal_device_display: focalDeviceDisplay,
+            focal_device_action: focalDeviceAction,
             t: "{?=$_SESSION['token']?}"
         }, function(res) {
             if(res == '1') {
@@ -472,6 +595,9 @@ $(document).ready(function() {
         var row = $('#operasi-'+id);
         var code = row.find('.snomed-code').val();
         var display = row.find('.snomed-display').val();
+        var focalDeviceCode = row.find('.focal-device-code').val();
+        var focalDeviceDisplay = row.find('.focal-device-display').val();
+        var focalDeviceAction = row.find('.focal-device-action').val();
 
         if (!code) {
             alert('Silakan pilih kode SNOMED terlebih dahulu.');
@@ -482,6 +608,9 @@ $(document).ready(function() {
             kode_paket: id,
             snomed_code: code,
             snomed_display: display,
+            focal_device_code: focalDeviceCode,
+            focal_device_display: focalDeviceDisplay,
+            focal_device_action: focalDeviceAction,
             t: "{?=$_SESSION['token']?}"
         }, function(res) {
             if(res == '1') {

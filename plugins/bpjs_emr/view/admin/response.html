@@ -187,9 +187,9 @@
                     <th>No</th>
                     <th>Kode</th>
                     <th>Nama Penyakit</th>
-                    <th>Code Map</th>
-                    <th>Nama Map</th>
-                    <th>System</th>
+                    <th>Code Map (SNOMED)</th>
+                    <th>Nama Map (SNOMED)</th>
+                    <th>System Map</th>
                     <th>Prioritas</th>
                   </tr>
                 </thead>
@@ -212,6 +212,9 @@
                     <th>No</th>
                     <th>Kode</th>
                     <th>Nama Prosedur</th>
+                    <th>Code Map</th>
+                    <th>Nama Map</th>
+                    <th>System</th>
                   </tr>
                 </thead>
                 <tbody id="tableProsedur">
@@ -854,11 +857,14 @@ function renderData(data) {
           <td>${i+1}</td>
           <td>${escapeHtml(p.kode || p.snomed_concept_id || '-')}</td>
           <td>${escapeHtml(p.nama || p.snomed_term || '-')}</td>
+          <td>${escapeHtml(p.snomed_concept_id || '-')}</td>
+          <td>${escapeHtml(p.snomed_term || '-')}</td>
+          <td>${p.snomed_concept_id ? 'http://snomed.info/sct' : '-'}</td>
         </tr>
       `;
     });
   } else {
-    prosHtml = '<tr><td colspan="3" class="text-center text-muted">Tidak ada data prosedur</td></tr>';
+    prosHtml = '<tr><td colspan="6" class="text-center text-muted">Tidak ada data prosedur</td></tr>';
   }
   $('#tableProsedur').html(prosHtml);
   
