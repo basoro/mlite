@@ -89,9 +89,15 @@ class Admin extends AdminModule
         foreach ($tabs as $tab) {
             if (isset($active_modules[$tab['dir']])) {
                 $tab['content'] = '';
-                $tab_content = $this->core->getModuleMethod($tab['dir'], 'getSettings');
-                if (is_string($tab_content)) {
-                    $tab['content'] = $tab_content;
+                try {
+                    if (isset($this->core->module->{$tab['dir']}) && method_exists($this->core->module->{$tab['dir']}, 'getSettings')) {
+                        $tab_content = $this->core->getModuleMethod($tab['dir'], 'getSettings');
+                        if (is_string($tab_content)) {
+                            $tab['content'] = $tab_content;
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    $tab['content'] = '';
                 }
                 $plugin_settings[] = $tab;
             }
