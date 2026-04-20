@@ -1818,14 +1818,24 @@ switch ($version) {
               `kd_jenis_prw` TEXT NOT NULL,
               `snomed_code` TEXT NOT NULL,
               `snomed_display` TEXT DEFAULT NULL,
+              `focal_device_code` TEXT DEFAULT NULL,
+              `focal_device_display` TEXT DEFAULT NULL,
               PRIMARY KEY (`kd_jenis_prw`)
             );");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_operasi` (
               `kode_paket` TEXT NOT NULL,
               `snomed_code` TEXT NOT NULL,
               `snomed_display` TEXT DEFAULT NULL,
+              `focal_device_code` TEXT DEFAULT NULL,
+              `focal_device_display` TEXT DEFAULT NULL,
               PRIMARY KEY (`kode_paket`)
             );");
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_code` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_display` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_code` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_display` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_code` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_display` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mapping_snomed_icd` (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 no_rawat TEXT NOT NULL,
@@ -1954,14 +1964,24 @@ switch ($version) {
               `kd_jenis_prw` varchar(20) NOT NULL,
               `snomed_code` varchar(20) NOT NULL,
               `snomed_display` varchar(255) DEFAULT NULL,
+              `focal_device_code` varchar(20) DEFAULT NULL,
+              `focal_device_display` varchar(255) DEFAULT NULL,
               PRIMARY KEY (`kd_jenis_prw`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_operasi` (
               `kode_paket` varchar(20) NOT NULL,
               `snomed_code` varchar(20) NOT NULL,
               `snomed_display` varchar(255) DEFAULT NULL,
+              `focal_device_code` varchar(20) DEFAULT NULL,
+              `focal_device_display` varchar(255) DEFAULT NULL,
               PRIMARY KEY (`kode_paket`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_code` varchar(20) DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_code` varchar(20) DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_code` varchar(20) DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL"); } catch (\Throwable $e) {}
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mapping_snomed_icd` (
               `id` int NOT NULL AUTO_INCREMENT,
               `no_rawat` varchar(20) NOT NULL,

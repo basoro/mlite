@@ -45,14 +45,15 @@ Petugas rekam medis menggunakan menu **Data BPJS EMR** untuk mengirimkan data re
    - Buka **BPJS E-Medical Records → Pemetaan**.
    - Petakan kode tindakan laboratorium RS ke kode **LOINC** yang sesuai.
    - Petakan kode tindakan radiologi RS ke kode **LOINC** radiologi.
-   - Petakan kode prosedur rawat jalan dan rawat inap RS ke kode **SNOMED** prosedur.
-   - Petakan kode paket operasi RS ke kode **SNOMED** operasi.
+   - Petakan kode prosedur rawat jalan dan rawat inap RS ke kode **SNOMED** prosedur, termasuk mapping **focalDevice**.
+   - Petakan kode paket operasi RS ke kode **SNOMED** operasi, termasuk mapping **focalDevice**.
    - Gunakan fitur **Fetch AI SNOMED** untuk mendapatkan saran kode SNOMED secara otomatis berdasarkan nama tindakan.
+   - Gunakan fitur **Fetch AI Focal** untuk mendapatkan saran kode perangkat medis pada `focalDevice`.
    - Simpan pemetaan agar data yang dikirim ke BPJS EMR menggunakan kode standar internasional.
 
 ## Catatan
 
 - Data yang dikirim menggunakan format **FHIR Bundle** sesuai standar HL7 FHIR yang ditetapkan BPJS Kesehatan.
-- Pastikan pemetaan LOINC/SNOMED sudah lengkap sebelum mengirim data agar tidak terjadi penolakan dari server BPJS.
+- Pastikan pemetaan LOINC/SNOMED/focalDevice sudah lengkap sebelum mengirim data agar tidak terjadi penolakan dari server BPJS.
 - URL API default adalah lingkungan **development** (`apijkn-dev`); ganti ke URL produksi setelah pengujian selesai.
 - Tabel pemetaan prosedur rawat inap (`mlite_bpjs_emr_mapping_prosedur_ranap`) dan operasi (`mlite_bpjs_emr_mapping_operasi`) dibuat otomatis saat instalasi plugin.

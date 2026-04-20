@@ -22,14 +22,34 @@ return [
       `kd_jenis_prw` varchar(20) NOT NULL,
       `snomed_code` varchar(20) NOT NULL,
       `snomed_display` varchar(255) DEFAULT NULL,
+      `focal_device_code` varchar(20) DEFAULT NULL,
+      `focal_device_display` varchar(255) DEFAULT NULL,
       PRIMARY KEY (`kd_jenis_prw`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC");
     $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_operasi` (
       `kode_paket` varchar(20) NOT NULL,
       `snomed_code` varchar(20) NOT NULL,
       `snomed_display` varchar(255) DEFAULT NULL,
+      `focal_device_code` varchar(20) DEFAULT NULL,
+      `focal_device_display` varchar(255) DEFAULT NULL,
       PRIMARY KEY (`kode_paket`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC");
+
+    $alterStatements = [
+      "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_code` varchar(20) DEFAULT NULL",
+      "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL",
+      "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_code` varchar(20) DEFAULT NULL",
+      "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL",
+      "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_code` varchar(20) DEFAULT NULL",
+      "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL"
+    ];
+    foreach ($alterStatements as $sql) {
+      try {
+        $core->db()->pdo()->exec($sql);
+      } catch (\Throwable $e) {
+        // ignore if column already exists or table not available
+      }
+    }
   },
   'uninstall' => function () use ($core) {
     $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'bpjs_emr'");
