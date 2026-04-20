@@ -1,0 +1,11 @@
+<p class="help-block">{?=isset_or($value.desc)?}</p>
+{if: !empty($value.content)}
+    {?=isset_or($value.content)?}
+{else}
+    <div class="alert alert-warning">
+        Konten pengaturan plugin tidak dapat ditampilkan di tab ini.
+        <a href="{?=isset_or($value.url)?}" class="btn btn-xs btn-primary">
+            Buka Pengaturan {?=isset_or($value.name)?}
+        </a>
+    </div>
+{/if}

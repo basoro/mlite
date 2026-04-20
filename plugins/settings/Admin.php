@@ -88,6 +88,17 @@ class Admin extends AdminModule
         $plugin_settings = [];
         foreach ($tabs as $tab) {
             if (isset($active_modules[$tab['dir']])) {
+                $tab['content'] = '';
+                try {
+                    if (isset($this->core->module->{$tab['dir']}) && method_exists($this->core->module->{$tab['dir']}, 'getSettings')) {
+                        $tab_content = $this->core->getModuleMethod($tab['dir'], 'getSettings');
+                        if ($tab_content !== null && is_string($tab_content)) {
+                            $tab['content'] = $tab_content;
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    $tab['content'] = '';
+                }
                 $plugin_settings[] = $tab;
             }
         }
@@ -99,8 +110,19 @@ class Admin extends AdminModule
             $active_tab = !empty($plugin_settings) ? $plugin_settings[0]['id'] : '';
         }
 
+        $safe_plugin_settings = [];
+        foreach ($plugin_settings as $plugin_setting) {
+            $safe_plugin_settings[] = [
+                'id' => htmlspecialchars((string) isset_or($plugin_setting['id']), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                'name' => htmlspecialchars((string) isset_or($plugin_setting['name']), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                'desc' => htmlspecialchars((string) isset_or($plugin_setting['desc']), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                'url' => htmlspecialchars((string) isset_or($plugin_setting['url']), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                'content' => $this->tpl->noParse((string) isset_or($plugin_setting['content'])),
+            ];
+        }
+
         return $this->draw('plugin.settings.html', [
-            'plugin_settings' => htmlspecialchars_array($plugin_settings),
+            'plugin_settings' => $safe_plugin_settings,
             'active_tab' => $active_tab
         ]);
     }
