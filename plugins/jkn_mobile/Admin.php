@@ -39,6 +39,7 @@ class Admin extends AdminModule
             'Task ID' => 'taskid',
             'Quality Rate' => 'qrantrol',
             'Dashboard Antrol BPJS' => 'antrol',
+            'Pengaturan' => 'settings',
         ];
     }
 

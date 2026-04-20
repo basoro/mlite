@@ -38,6 +38,7 @@ class Admin extends AdminModule
       'Bridging Eklaim' => 'bridgingeklaim',
       'Logs e-Klaim' => 'logseklaim',
       'User Vedika' => 'uservedika',
+      'Pengaturan' => 'settings',
     ];
   }
 

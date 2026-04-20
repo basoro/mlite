@@ -34,6 +34,7 @@ class Admin extends AdminModule
       'Log Apotek Online' => 'logapotikonline',
       'Mapping Obat' => 'mappingobat',
       'Monitoring Data Klaim' => 'monitoringdataklaim',
+      'Pengaturan' => 'settings',
     ];
   }
 
