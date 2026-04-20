@@ -65,7 +65,15 @@ class Admin extends AdminModule
         ];
 
         $active_modules = [];
-        $module_dirs = $this->db()->pdo()->query('SELECT dir FROM mlite_modules')->fetchAll(\PDO::FETCH_COLUMN);
+        $module_dirs = [];
+        try {
+            $stmt = $this->db()->pdo()->query('SELECT dir FROM mlite_modules');
+            if ($stmt) {
+                $module_dirs = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+            }
+        } catch (\Throwable $e) {
+            $module_dirs = [];
+        }
         foreach ($module_dirs as $module_dir) {
             if (!empty($module_dir)) {
                 $active_modules[$module_dir] = true;
