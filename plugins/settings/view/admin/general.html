@@ -163,7 +163,7 @@
                                 <input type="radio" name="dokter_ralan_per_dokter" value="true" {if: $settings.dokter_ralan_per_dokter == 'true'}checked{/if} /> Per Dokter
                              </label>
                              <label class="radio-inline">
-                                <input type="radio" name="dokter_ralan_per_dokter" value="false" {if: $settings.dokter_ralan_per_dokter == 'false'}checked{/if} /> Per Klinik
+                               <input type="radio" name="dokter_ralan_per_dokter" value="false" {if: $settings.dokter_ralan_per_dokter == 'false' || empty($settings.dokter_ralan_per_dokter)}checked{/if} /> Per Klinik
                              </label>
                          </div>
                     </div>
@@ -174,7 +174,7 @@
                                 <input type="radio" name="responsivevoice" value="true" {if: $settings.responsivevoice == 'true'}checked{/if} /> Aktif
                              </label>
                              <label class="radio-inline">
-                                <input type="radio" name="responsivevoice" value="false" {if: $settings.responsivevoice == 'false'}checked{/if} /> Tidak Aktif
+                                <input type="radio" name="responsivevoice" value="false" {if: $settings.responsivevoice == 'false' || empty($settings.responsivevoice)}checked{/if} /> Tidak Aktif
                              </label>
                          </div>
                     </div>
@@ -184,7 +184,7 @@
                         <label>Aktifkan Cek Status Bayar</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="cekstatusbayar" value="false" {if: $settings.cekstatusbayar == 'false'}checked{/if} /> Tidak
+                               <input type="radio" name="cekstatusbayar" value="false" {if: $settings.cekstatusbayar == 'false' || empty($settings.cekstatusbayar)}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
                                <input type="radio" name="cekstatusbayar" value="true" {if: $settings.cekstatusbayar == 'true'}checked{/if} /> Ya
@@ -195,7 +195,7 @@
                         <label>Aktifkan Cek Limit Kuota</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="ceklimit" value="false" {if: $settings.ceklimit == 'false'}checked{/if} /> Tidak
+                               <input type="radio" name="ceklimit" value="false" {if: $settings.ceklimit == 'false' || empty($settings.ceklimit)}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
                                <input type="radio" name="ceklimit" value="true" {if: $settings.ceklimit == 'true'}checked{/if} /> Ya
@@ -208,7 +208,7 @@
                         <label>Aktifkan Notifikasi Presensi</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="notif_presensi" value="false" {if: $settings.notif_presensi == 'false'}checked{/if} /> Tidak
+                               <input type="radio" name="notif_presensi" value="false" {if: $settings.notif_presensi == 'false' || empty($settings.notif_presensi)}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
                                <input type="radio" name="notif_presensi" value="true" {if: $settings.notif_presensi == 'true'}checked{/if} /> Ya
@@ -220,7 +220,7 @@
                         <label>Tambilkan Obat di Billing</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="billing_obat" value="false" {if: $settings.billing_obat == 'false'}checked{/if} /> Tidak
+                               <input type="radio" name="billing_obat" value="false" {if: $settings.billing_obat == 'false' || empty($settings.billing_obat)}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
                                <input type="radio" name="billing_obat" value="true" {if: $settings.billing_obat == 'true'}checked{/if} /> Ya
@@ -231,7 +231,7 @@
                         <label>Aktifkan Websocket</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="websocket" value="tidak" {if: $settings.websocket == 'tidak'}checked{/if} /> Tidak
+                               <input type="radio" name="websocket" value="tidak" {if: $settings.websocket == 'tidak' || empty($settings.websocket)}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
                                <input type="radio" name="websocket" value="ya" {if: $settings.websocket == 'ya'}checked{/if} /> Ya
@@ -295,7 +295,7 @@
                                 <input type="radio" name="input_kasir" value="ya" {if: $settings.input_kasir == 'ya'}checked{/if} /> Ya
                              </label>
                              <label class="radio-inline">
-                                <input type="radio" name="input_kasir" value="tidak" {if: $settings.input_kasir == 'tidak'}checked{/if} /> Tidak
+                                <input type="radio" name="input_kasir" value="tidak" {if: $settings.input_kasir == 'tidak' || empty($settings.input_kasir)}checked{/if} /> Tidak
                              </label>
                          </div>
                     </div>
@@ -307,7 +307,7 @@
                                 <input type="radio" name="keamanan" value="ya" {if: $settings.keamanan == 'ya'}checked{/if} /> Ya
                              </label>
                              <label class="radio-inline">
-                                <input type="radio" name="keamanan" value="tidak" {if: $settings.keamanan == 'tidak'}checked{/if} /> Tidak
+                                <input type="radio" name="keamanan" value="tidak" {if: $settings.keamanan == 'tidak' || empty($settings.keamanan)}checked{/if} /> Tidak
                              </label>
                      </div>
                     <div class="form-group">
@@ -317,7 +317,7 @@
                                 <input type="radio" name="password_expire" value="ya" {if: $settings.password_expire == 'ya'}checked{/if} /> Ya
                              </label>
                              <label class="radio-inline">
-                                <input type="radio" name="password_expire" value="tidak" {if: $settings.password_expire == 'tidak'}checked{/if} /> Tidak
+                                <input type="radio" name="password_expire" value="tidak" {if: $settings.password_expire == 'tidak' || empty($settings.password_expire)}checked{/if} /> Tidak
                              </label>
                          </div>
                     </div>
@@ -329,7 +329,7 @@
                                 <input type="radio" name="login_otp" value="ya" {if: $settings.login_otp == 'ya'}checked{/if} /> Ya
                              </label>
                              <label class="radio-inline">
-                                <input type="radio" name="login_otp" value="tidak" {if: $settings.login_otp == 'tidak'}checked{/if} /> Tidak
+                                <input type="radio" name="login_otp" value="tidak" {if: $settings.login_otp == 'tidak' || empty($settings.login_otp)}checked{/if} /> Tidak
                              </label>
                          </div>
                     </div>
@@ -340,7 +340,7 @@
                               <input type="radio" name="log_query" value="ya" {if: $settings.log_query == 'ya'}checked{/if} /> Ya
                            </label>
                            <label class="radio-inline">
-                              <input type="radio" name="log_query" value="tidak" {if: $settings.log_query == 'tidak'}checked{/if} /> Tidak
+                              <input type="radio" name="log_query" value="tidak" {if: $settings.log_query == 'tidak' || empty($settings.log_query)}checked{/if} /> Tidak
                            </label>
                        </div>
                   </div>
