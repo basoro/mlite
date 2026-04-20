@@ -21,7 +21,11 @@
                         src="{?=isset_or($value.url)?}"
                         title="Pengaturan {?=isset_or($value.name)?}"
                         style="width:100%;min-height:700px;border:0;"
-                        loading="lazy">
+                        loading="lazy"
+                        sandbox="allow-forms allow-scripts allow-same-origin"
+                        referrerpolicy="no-referrer">
+                        Browser Anda tidak mendukung iframe. Buka pengaturan langsung di
+                        <a href="{?=isset_or($value.url)?}">halaman ini</a>.
                     </iframe>
                 {/if}
             </div>
