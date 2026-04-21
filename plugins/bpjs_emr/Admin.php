@@ -33,7 +33,6 @@ class Admin extends AdminModule
         $this->koders = $this->settings->get('bpjs_emr.koders');
         $this->kodeppk = $this->settings->get('bpjs_emr.kode_kemkes');
         $this->ensureFocalDeviceMappingColumns();
-        $this->ensureDeviceMasterTable();
     }
 
     public function navigation()
@@ -3022,23 +3021,6 @@ class Admin extends AdminModule
         $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
-    }
-
-    private function ensureDeviceMasterTable()
-    {
-        try {
-            $this->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_device` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
-                `device_id` varchar(255) NOT NULL COMMENT 'ID resource Device di FHIR server BPJS/Satu Sehat',
-                `nama_alkes` varchar(255) NOT NULL COMMENT 'Nama alat kesehatan',
-                `kode_produk` varchar(100) DEFAULT NULL COMMENT 'Kode produk atau nomor registrasi alkes',
-                `keterangan` text DEFAULT NULL,
-                PRIMARY KEY (`id`),
-                UNIQUE KEY `uq_device_id` (`device_id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-        } catch (\Throwable $e) {
-            // ignore
-        }
     }
 
     private function ensureFocalDeviceMappingColumns()

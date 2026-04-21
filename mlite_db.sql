@@ -1678,8 +1678,9 @@ CREATE TABLE `mlite_bpjs_emr_mapping_prosedur` (
   `kd_jenis_prw` varchar(20) NOT NULL,
   `snomed_code` varchar(20) NOT NULL,
   `snomed_display` varchar(255) DEFAULT NULL,
-  `focal_device_code` varchar(20) DEFAULT NULL,
+  `focal_device_code` varchar(255) DEFAULT NULL,
   `focal_device_display` varchar(255) DEFAULT NULL,
+  `focal_device_action` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`kd_jenis_prw`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
@@ -1688,8 +1689,9 @@ CREATE TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` (
   `kd_jenis_prw` varchar(20) NOT NULL,
   `snomed_code` varchar(20) NOT NULL,
   `snomed_display` varchar(255) DEFAULT NULL,
-  `focal_device_code` varchar(20) DEFAULT NULL,
+  `focal_device_code` varchar(255) DEFAULT NULL,
   `focal_device_display` varchar(255) DEFAULT NULL,
+  `focal_device_action` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`kd_jenis_prw`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
@@ -1698,8 +1700,9 @@ CREATE TABLE `mlite_bpjs_emr_mapping_operasi` (
   `kode_paket` varchar(20) NOT NULL,
   `snomed_code` varchar(20) NOT NULL,
   `snomed_display` varchar(255) DEFAULT NULL,
-  `focal_device_code` varchar(20) DEFAULT NULL,
+  `focal_device_code` varchar(255) DEFAULT NULL,
   `focal_device_display` varchar(255) DEFAULT NULL,
+  `focal_device_action` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`kode_paket`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
@@ -1714,6 +1717,17 @@ CREATE TABLE `mlite_bpjs_emr_mapping_obat` (
 CREATE TABLE `mlite_bpjs_emr_uuid_condition`  (
   `kd_penyakit` varchar(15) NOT NULL,
   `uuid` varchar(200) NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_bpjs_emr_device` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `device_id` varchar(255) NOT NULL COMMENT 'ID resource Device di FHIR server BPJS/Satu Sehat',
+  `nama_alkes` varchar(255) NOT NULL COMMENT 'Nama alat kesehatan',
+  `kode_produk` varchar(100) DEFAULT NULL COMMENT 'Kode produk atau nomor registrasi alkes',
+  `keterangan` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_device_id` (`device_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 

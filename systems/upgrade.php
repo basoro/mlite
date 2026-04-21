@@ -2006,10 +2006,42 @@ switch ($version) {
         }
         $return = '6.3.0';
         break;
+
+    case '6.3.0':
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_device` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+              `device_id` TEXT NOT NULL UNIQUE,
+              `nama_alkes` TEXT NOT NULL,
+              `kode_produk` TEXT DEFAULT NULL,
+              `keterangan` TEXT DEFAULT NULL
+            );");
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_action` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_action` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_action` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
+        } else {
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_device` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `device_id` varchar(255) NOT NULL COMMENT 'ID resource Device di FHIR server BPJS/Satu Sehat',
+              `nama_alkes` varchar(255) NOT NULL COMMENT 'Nama alat kesehatan',
+              `kode_produk` varchar(100) DEFAULT NULL COMMENT 'Kode produk atau nomor registrasi alkes',
+              `keterangan` text DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `uq_device_id` (`device_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_action` varchar(20) DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_action` varchar(20) DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_action` varchar(20) DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL"); } catch (\Throwable $e) {}
+        }
+        $return = '6.4.0';
+        break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '6.3.0';
+        $return = '6.4.0';
     }
 
 return $return;
