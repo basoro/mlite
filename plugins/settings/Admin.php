@@ -42,6 +42,11 @@ class Admin extends AdminModule
 
     public function getGeneral()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'settings', 'manage']));
+        }
+
         $this->_addHeaderFiles();
         $settings = $this->settings('settings');
         $settings['module_pasien'] = $this->db('mlite_modules')->where('dir', 'pasien')->oneArray();
@@ -302,6 +307,12 @@ class Admin extends AdminModule
 
     public function anyUpdates()
     {
+
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'settings', 'manage']));
+        }
+
         $this->tpl->set('allow_curl', intval(function_exists('curl_init')));
         $settings = $this->settings('settings');
 
