@@ -1836,6 +1836,7 @@ switch ($version) {
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_display` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_code` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_display` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_satu_sehat_response` AFTER `id_rad_diagnostic` ADD COLUMN `id_imaging_study` varchar(50) DEFAULT NULL"); } catch (\Throwable $e) {}
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mapping_snomed_icd` (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 no_rawat TEXT NOT NULL,

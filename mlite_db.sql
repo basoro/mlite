@@ -2695,6 +2695,7 @@ CREATE TABLE `mlite_satu_sehat_response` (
   `id_rad_specimen` varchar(50) DEFAULT NULL,
   `id_rad_observation` varchar(50) DEFAULT NULL,
   `id_rad_diagnostic` varchar(50) DEFAULT NULL,
+  `id_imaging_study` varchar(50) DEFAULT NULL,
   `id_lab_pk_request` varchar(50) DEFAULT NULL,
   `id_lab_pk_specimen` varchar(50) DEFAULT NULL,
   `id_lab_pk_observation` varchar(50) DEFAULT NULL,

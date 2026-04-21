@@ -5382,7 +5382,7 @@ class Admin extends AdminModule
               'serviceRequestId' => $mlite_satu_sehat_response['id_rad_request'] ?? '',
               'noRawat' => $no_rawat,
               'noOrder' => $permintaan_radiologi['noorder'] ?? '',
-              'studyUID' => $upload['study_uid'] ?: ($pacs_study['study_instance_uid'] ?? ''),
+              'studyUID' => $pacs_study['study_instance_uid'] ?? '',
               'seriesUID' => $pacs_series['series_instance_uid'] ?? '',
               'instanceUID' => $pacs_instance['sop_instance_uid'] ?? '',
             ]);
@@ -5399,9 +5399,19 @@ class Admin extends AdminModule
               'fhir_raw' => $fhirArr ?: $fhirString,
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
+            $id_imaging_study = isset_or(json_decode($response)->fhir_raw->id, '');
+
             $pesan = $isDuplicate
               ? 'DICOM sudah ada di Satu Sehat (Duplicate) — Mini PACS'
-              : 'Sukses mengirim image ke Satu Sehat via Mini PACS!!';
+              : 'Sukses mengirim image ke Satu Sehat via Mini PACS!! — ID ImagingStudy: ' . $id_imaging_study;
+
+            // 4. Simpan ID ImagingStudy ke database
+            $this->db('mlite_satu_sehat_response')
+              ->where('no_rawat', $no_rawat)
+              ->save([
+                'id_imaging_study' => $id_imaging_study
+              ]);
+                         
 
           } catch (\Exception $e) {
             $response = json_encode(['error' => $e->getMessage()], JSON_PRETTY_PRINT);
