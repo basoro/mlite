@@ -2964,7 +2964,7 @@ class Admin extends AdminModule
             "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
             "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL",
             "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_action` varchar(20) DEFAULT NULL",
-            // Widen existing focal_device_code columns to support long Device IDs (UUIDs)
+            // Widen focal_device_code on existing installations where it was previously created as varchar(20)
             "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
             "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
             "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL"
