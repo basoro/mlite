@@ -124,13 +124,14 @@
                                     <div class="row" style="margin-left:0;margin-right:0;">
                                         <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
                                             <div class="input-group">
-                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
+                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="ID Resource Device (UUID)">
                                                 <span class="input-group-btn">
                                                     <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
                                                         <i class="fa fa-robot"></i> AI
                                                     </button>
                                                 </span>
                                             </div>
+                                            <small class="text-muted">Isi dengan ID resource Device FHIR (mis. UUID dari server)</small>
                                             <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">                                            
                                         </div>
                                         <div class="col-xs-4" style="padding-left:0;padding-right:0;">
@@ -186,13 +187,14 @@
                                     <div class="row" style="margin-left:0;margin-right:0;">
                                         <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
                                             <div class="input-group">
-                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
+                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="ID Resource Device (UUID)">
                                                 <span class="input-group-btn">
                                                     <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
                                                         <i class="fa fa-robot"></i> AI
                                                     </button>
                                                 </span>
                                             </div>
+                                            <small class="text-muted">Isi dengan ID resource Device FHIR (mis. UUID dari server)</small>
                                             <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
                                         </div>
                                         <div class="col-xs-4" style="padding-left:0;padding-right:0;">
@@ -248,13 +250,14 @@
                                     <div class="row" style="margin-left:0;margin-right:0;">
                                         <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
                                             <div class="input-group">
-                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
+                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="ID Resource Device (UUID)">
                                                 <span class="input-group-btn">
                                                     <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
                                                         <i class="fa fa-robot"></i> AI
                                                     </button>
                                                 </span>
                                             </div>
+                                            <small class="text-muted">Isi dengan ID resource Device FHIR (mis. UUID dari server)</small>
                                             <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
                                         </div>
                                         <div class="col-xs-4" style="padding-left:0;padding-right:0;">
@@ -365,16 +368,15 @@ $(document).ready(function() {
             timeout: AI_REQUEST_TIMEOUT
         })
         .done(function(data) {
-            if (data && data.status === 'success' && data.data && data.data.focal_device_code) {
-                row.find('.focal-device-code').val((data.data.focal_device_code || '').toString().trim());
+            if (data && data.status === 'success' && data.data && (data.data.focal_device_display || data.data.focal_device_action)) {
                 row.find('.focal-device-display').val((data.data.focal_device_display || '').toString().trim());
                 var aiAction = (data.data.focal_device_action || '').toString().trim();
                 if (aiAction) {
                     row.find('.focal-device-action').val(aiAction);
                 }
-                alert('Kode focalDevice berhasil dibuat.');
+                alert('Saran nama perangkat dan aksi focalDevice berhasil diperoleh. Silakan isi ID Resource Device secara manual.');
             } else {
-                var doneMessage = (data && data.message) ? data.message : 'Kode focalDevice tidak ditemukan';
+                var doneMessage = (data && data.message) ? data.message : 'Data focalDevice tidak ditemukan';
                 alert(doneMessage);
             }
         })

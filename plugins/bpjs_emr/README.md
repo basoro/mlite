@@ -48,12 +48,13 @@ Petugas rekam medis menggunakan menu **Data BPJS EMR** untuk mengirimkan data re
    - Petakan kode prosedur rawat jalan dan rawat inap RS ke kode **SNOMED** prosedur, termasuk mapping **focalDevice**.
    - Petakan kode paket operasi RS ke kode **SNOMED** operasi, termasuk mapping **focalDevice**.
    - Gunakan fitur **Fetch AI SNOMED** untuk mendapatkan saran kode SNOMED secara otomatis berdasarkan nama tindakan.
-   - Gunakan fitur **Fetch AI Focal** untuk mendapatkan saran kode perangkat medis pada `focalDevice`.
+   - Gunakan fitur **Fetch AI Focal** untuk mendapatkan saran **nama perangkat medis** dan **aksi** pada `focalDevice`. Setelah AI mengisi nama dan aksi, isi **ID Resource Device** secara manual dengan `id` dari resource `Device` FHIR yang sesuai (contoh: `0901R001-1180006-12-ddd99da0-3916-446e-8429-207c22738496`). ID ini digunakan sebagai referensi `Device/{id}` pada field `manipulated.reference`.
    - Simpan pemetaan agar data yang dikirim ke BPJS EMR menggunakan kode standar internasional.
 
 ## Catatan
 
 - Data yang dikirim menggunakan format **FHIR Bundle** sesuai standar HL7 FHIR yang ditetapkan BPJS Kesehatan.
 - Pastikan pemetaan LOINC/SNOMED/focalDevice sudah lengkap sebelum mengirim data agar tidak terjadi penolakan dari server BPJS.
+- Field **ID Resource Device** pada mapping focalDevice harus diisi dengan nilai `id` dari resource `Device` FHIR yang sudah ada di server (bukan kode SNOMED). Nilai ini digunakan sebagai `Device/{id}` pada `Procedure.focalDevice.manipulated.reference`.
 - URL API default adalah lingkungan **development** (`apijkn-dev`); ganti ke URL produksi setelah pengujian selesai.
 - Tabel pemetaan prosedur rawat inap (`mlite_bpjs_emr_mapping_prosedur_ranap`) dan operasi (`mlite_bpjs_emr_mapping_operasi`) dibuat otomatis saat instalasi plugin.
