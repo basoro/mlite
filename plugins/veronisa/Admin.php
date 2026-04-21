@@ -333,7 +333,7 @@ class Admin extends AdminModule
   public function getApotekOnline()
   {
     $parsedown = new \Systems\Lib\Parsedown();
-    $readme_file = file_exists(MODULES . '/veronisa/HELP.md') ? MODULES . '/veronisa/HELP.md' : MODULES . '/veronisa/Help.md';
+    $readme_file = MODULES . '/veronisa/README.md';
     $readme =  $parsedown->text($this->tpl->noParse(file_get_contents($readme_file)));
     return $this->draw('apotekonline.html', ['readme' => $readme]);
   }

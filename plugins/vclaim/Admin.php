@@ -43,7 +43,7 @@ class Admin extends AdminModule
   public function getManage()
   {
     $parsedown = new \Systems\Lib\Parsedown();
-    $readme_file = file_exists(MODULES . '/vclaim/HELP.md') ? MODULES . '/vclaim/HELP.md' : MODULES . '/vclaim/Help.md';
+    $readme_file = MODULES . '/vclaim/README.md';
     $readme =  $parsedown->text($this->tpl->noParse(file_get_contents($readme_file)));
     return $this->draw('manage.html', ['readme' => $readme]);
   }
