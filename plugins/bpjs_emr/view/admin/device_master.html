@@ -1,0 +1,186 @@
+<div id="device-master" class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Master Alat Kesehatan / Device FHIR</h3>
+    </div>
+    <div class="panel-body">
+        <div class="alert alert-info">
+            Daftarkan alat kesehatan (implant, stent, dll.) beserta ID resource Device dari server FHIR BPJS/Satu Sehat.
+            ID Device ini digunakan pada field <code>focalDevice</code> saat pengiriman data Procedure.
+            Untuk mendapatkan ID Device, daftarkan alkes ke server FHIR BPJS terlebih dahulu, kemudian catat ID yang dikembalikan.
+        </div>
+
+        <button class="btn btn-primary btn-sm margin-bottom-10" id="btn-tambah-device">
+            <i class="fa fa-plus"></i> Tambah Device
+        </button>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover datatable" id="table-device">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ID Resource Device (UUID / FHIR ID)</th>
+                        <th>Nama Alat Kesehatan</th>
+                        <th>Kode Produk / No. Registrasi</th>
+                        <th>Keterangan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {loop: $devices}
+                    <tr id="device-row-{$value.id}">
+                        <td>{$value.id}</td>
+                        <td><code>{$value.device_id}</code></td>
+                        <td>{$value.nama_alkes}</td>
+                        <td>{$value.kode_produk}</td>
+                        <td>{$value.keterangan}</td>
+                        <td>
+                            <button class="btn btn-xs btn-warning btn-edit-device"
+                                data-id="{$value.id}"
+                                data-device-id="{$value.device_id}"
+                                data-nama-alkes="{$value.nama_alkes}"
+                                data-kode-produk="{$value.kode_produk}"
+                                data-keterangan="{$value.keterangan}">
+                                <i class="fa fa-pencil"></i> Edit
+                            </button>
+                            <button class="btn btn-xs btn-danger btn-hapus-device" data-id="{$value.id}" data-nama="{$value.nama_alkes}">
+                                <i class="fa fa-trash"></i> Hapus
+                            </button>
+                        </td>
+                    </tr>
+                    {/loop}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tambah / Edit Device -->
+<div class="modal fade" id="modal-device" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title" id="modal-device-title">Tambah Device</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="device-edit-id" value="0">
+                <div class="form-group">
+                    <label>ID Resource Device (UUID / FHIR ID) <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="input-device-id" placeholder="Contoh: 0901R001-1180006-12-ddd99da0-3916-446e-8429-207c22738496">
+                    <small class="text-muted">ID ini didapat dari server FHIR BPJS/Satu Sehat setelah Device didaftarkan.</small>
+                </div>
+                <div class="form-group">
+                    <label>Nama Alat Kesehatan <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="input-nama-alkes" placeholder="Contoh: Orthopedic Implant Screw">
+                </div>
+                <div class="form-group">
+                    <label>Kode Produk / No. Registrasi</label>
+                    <input type="text" class="form-control" id="input-kode-produk" placeholder="Contoh: AKL-12345">
+                </div>
+                <div class="form-group">
+                    <label>Keterangan</label>
+                    <textarea class="form-control" id="input-keterangan" rows="2" placeholder="Keterangan tambahan (opsional)"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btn-simpan-device">
+                    <i class="fa fa-save"></i> Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#table-device').DataTable();
+
+    $('#btn-tambah-device').on('click', function() {
+        $('#modal-device-title').text('Tambah Device');
+        $('#device-edit-id').val('0');
+        $('#input-device-id').val('').prop('readonly', false);
+        $('#input-nama-alkes').val('');
+        $('#input-kode-produk').val('');
+        $('#input-keterangan').val('');
+        $('#modal-device').modal('show');
+    });
+
+    $(document).on('click', '.btn-edit-device', function() {
+        var btn = $(this);
+        $('#modal-device-title').text('Edit Device');
+        $('#device-edit-id').val(btn.data('id'));
+        $('#input-device-id').val(btn.data('device-id')).prop('readonly', true);
+        $('#input-nama-alkes').val(btn.data('nama-alkes'));
+        $('#input-kode-produk').val(btn.data('kode-produk'));
+        $('#input-keterangan').val(btn.data('keterangan'));
+        $('#modal-device').modal('show');
+    });
+
+    $('#btn-simpan-device').on('click', function() {
+        var deviceId  = $.trim($('#input-device-id').val());
+        var namaAlkes = $.trim($('#input-nama-alkes').val());
+        if (!deviceId || !namaAlkes) {
+            alert('ID Device dan Nama Alkes wajib diisi.');
+            return;
+        }
+
+        var btn = $(this);
+        btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Menyimpan...');
+
+        $.ajax({
+            type: 'POST',
+            url: "{?=url([ADMIN, 'bpjs_emr', 'saveDevice'])?}",
+            data: {
+                id:           $('#device-edit-id').val(),
+                device_id:    deviceId,
+                nama_alkes:   namaAlkes,
+                kode_produk:  $.trim($('#input-kode-produk').val()),
+                keterangan:   $.trim($('#input-keterangan').val()),
+                t:            "{?=$_SESSION['token']?}"
+            },
+            dataType: 'json'
+        })
+        .done(function(data) {
+            if (data && data.status === 'success') {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert((data && data.message) ? data.message : 'Gagal menyimpan.');
+            }
+        })
+        .fail(function() {
+            alert('Gagal menghubungi server.');
+        })
+        .always(function() {
+            btn.prop('disabled', false).html('<i class="fa fa-save"></i> Simpan');
+        });
+    });
+
+    $(document).on('click', '.btn-hapus-device', function() {
+        var btn  = $(this);
+        var id   = btn.data('id');
+        var nama = btn.data('nama');
+        if (!confirm('Hapus device "' + nama + '"? Data yang sudah dipetakan tidak akan terhapus, namun dropdown mapping tidak akan menampilkan device ini lagi.')) {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: "{?=url([ADMIN, 'bpjs_emr', 'deleteDevice'])?}",
+            data: { id: id, t: "{?=$_SESSION['token']?}" },
+            dataType: 'json'
+        })
+        .done(function(data) {
+            if (data && data.status === 'success') {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert((data && data.message) ? data.message : 'Gagal menghapus.');
+            }
+        })
+        .fail(function() {
+            alert('Gagal menghubungi server.');
+        });
+    });
+});
+</script>

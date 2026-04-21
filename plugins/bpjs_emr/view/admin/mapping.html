@@ -123,16 +123,12 @@
                                     <hr style="margin:8px 0;">
                                     <div class="row" style="margin-left:0;margin-right:0;">
                                         <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
-                                            <div class="input-group">
-                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="ID Resource Device (UUID)">
-                                                <span class="input-group-btn">
-                                                    <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
-                                                        <i class="fa fa-robot"></i> AI
-                                                    </button>
-                                                </span>
-                                            </div>
-                                            <small class="text-muted">Isi dengan ID resource Device FHIR (mis. UUID dari server)</small>
-                                            <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">                                            
+                                            <select class="form-control input-sm focal-device-code">
+                                                <option value="">-- Pilih Device (opsional) --</option>
+                                                {?= implode('', array_map(function($d) use ($value) { $sel = $d['device_id'] === ($value['focal_device_code'] ?? '') ? ' selected' : ''; $lbl = htmlspecialchars($d['nama_alkes']); if (!empty($d['kode_produk'])) $lbl .= ' ['.htmlspecialchars($d['kode_produk']).']'; return '<option value="'.htmlspecialchars($d['device_id']).'" data-nama="'.htmlspecialchars($d['nama_alkes']).'"'.$sel.'>' . $lbl . '</option>'; }, $devices ?? [])) ?}
+                                            </select>
+                                            <small class="text-muted">Tambah device di menu <a href="{?=url([ADMIN,'bpjs_emr','deviceMaster'])?}" target="_blank">Master Device</a></small>
+                                            <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice (otomatis terisi)" style="margin-top:4px">                                            
                                         </div>
                                         <div class="col-xs-4" style="padding-left:0;padding-right:0;">
                                             <select class="form-control input-sm focal-device-action">
@@ -186,16 +182,12 @@
                                     <hr style="margin:8px 0;">
                                     <div class="row" style="margin-left:0;margin-right:0;">
                                         <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
-                                            <div class="input-group">
-                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="ID Resource Device (UUID)">
-                                                <span class="input-group-btn">
-                                                    <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
-                                                        <i class="fa fa-robot"></i> AI
-                                                    </button>
-                                                </span>
-                                            </div>
-                                            <small class="text-muted">Isi dengan ID resource Device FHIR (mis. UUID dari server)</small>
-                                            <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
+                                            <select class="form-control input-sm focal-device-code">
+                                                <option value="">-- Pilih Device (opsional) --</option>
+                                                {?= implode('', array_map(function($d) use ($value) { $sel = $d['device_id'] === ($value['focal_device_code'] ?? '') ? ' selected' : ''; $lbl = htmlspecialchars($d['nama_alkes']); if (!empty($d['kode_produk'])) $lbl .= ' ['.htmlspecialchars($d['kode_produk']).']'; return '<option value="'.htmlspecialchars($d['device_id']).'" data-nama="'.htmlspecialchars($d['nama_alkes']).'"'.$sel.'>' . $lbl . '</option>'; }, $devices ?? [])) ?}
+                                            </select>
+                                            <small class="text-muted">Tambah device di menu <a href="{?=url([ADMIN,'bpjs_emr','deviceMaster'])?}" target="_blank">Master Device</a></small>
+                                            <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice (otomatis terisi)" style="margin-top:4px">
                                         </div>
                                         <div class="col-xs-4" style="padding-left:0;padding-right:0;">
                                             <select class="form-control input-sm focal-device-action">
@@ -249,16 +241,12 @@
                                     <hr style="margin:8px 0;">
                                     <div class="row" style="margin-left:0;margin-right:0;">
                                         <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
-                                            <div class="input-group">
-                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="ID Resource Device (UUID)">
-                                                <span class="input-group-btn">
-                                                    <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
-                                                        <i class="fa fa-robot"></i> AI
-                                                    </button>
-                                                </span>
-                                            </div>
-                                            <small class="text-muted">Isi dengan ID resource Device FHIR (mis. UUID dari server)</small>
-                                            <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
+                                            <select class="form-control input-sm focal-device-code">
+                                                <option value="">-- Pilih Device (opsional) --</option>
+                                                {?= implode('', array_map(function($d) use ($value) { $sel = $d['device_id'] === ($value['focal_device_code'] ?? '') ? ' selected' : ''; $lbl = htmlspecialchars($d['nama_alkes']); if (!empty($d['kode_produk'])) $lbl .= ' ['.htmlspecialchars($d['kode_produk']).']'; return '<option value="'.htmlspecialchars($d['device_id']).'" data-nama="'.htmlspecialchars($d['nama_alkes']).'"'.$sel.'>' . $lbl . '</option>'; }, $devices ?? [])) ?}
+                                            </select>
+                                            <small class="text-muted">Tambah device di menu <a href="{?=url([ADMIN,'bpjs_emr','deviceMaster'])?}" target="_blank">Master Device</a></small>
+                                            <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice (otomatis terisi)" style="margin-top:4px">
                                         </div>
                                         <div class="col-xs-4" style="padding-left:0;padding-right:0;">
                                             <select class="form-control input-sm focal-device-action">
@@ -345,55 +333,12 @@ $(document).ready(function() {
         });
     });
 
-    $('.btn-ai-focal-device').on('click', function() {
-        var button = $(this);
-        var row = button.closest('tr');
-        var namaTindakan = getRowPrimaryText(row, 'nama-tindakan');
-        var originalText = button.html();
-
-        if (!namaTindakan) {
-            alert('Nama tindakan tidak ditemukan.');
-            return;
-        }
-
-        button.html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
-        $.ajax({
-            type: 'POST',
-            url: "{?=url([ADMIN, 'bpjs_emr', 'fetchAIFocalDevice'])?}",
-            data: {
-                nama_tindakan: namaTindakan,
-                t: "{?=$_SESSION['token']?}"
-            },
-            dataType: 'json',
-            timeout: AI_REQUEST_TIMEOUT
-        })
-        .done(function(data) {
-            if (data && data.status === 'success' && data.data && (data.data.focal_device_display || data.data.focal_device_action)) {
-                row.find('.focal-device-display').val((data.data.focal_device_display || '').toString().trim());
-                var aiAction = (data.data.focal_device_action || '').toString().trim();
-                if (aiAction) {
-                    row.find('.focal-device-action').val(aiAction);
-                }
-                alert('Saran nama perangkat dan aksi focalDevice berhasil diperoleh. Silakan isi ID Resource Device secara manual.');
-            } else {
-                var doneMessage = (data && data.message) ? data.message : 'Data focalDevice tidak ditemukan';
-                alert(doneMessage);
-            }
-        })
-        .fail(function(xhr, status) {
-            if (status === 'timeout') {
-                alert('Permintaan generate focalDevice timeout.');
-            } else {
-                var message = 'Gagal generate focalDevice.';
-                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                    message = xhr.responseJSON.message;
-                }
-                alert(message);
-            }
-        })
-        .always(function() {
-            button.html(originalText).prop('disabled', false);
-        });
+    // Auto-fill device display name when a device is selected from the dropdown
+    $(document).on('change', '.focal-device-code', function() {
+        var select = $(this);
+        var row = select.closest('tr');
+        var nama = select.find('option:selected').data('nama') || '';
+        row.find('.focal-device-display').val(nama);
     });
 
     $('.btn-ai-loinc').on('click', function() {

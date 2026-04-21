@@ -33,6 +33,7 @@ class Admin extends AdminModule
         $this->koders = $this->settings->get('bpjs_emr.koders');
         $this->kodeppk = $this->settings->get('bpjs_emr.kode_kemkes');
         $this->ensureFocalDeviceMappingColumns();
+        $this->ensureDeviceMasterTable();
     }
 
     public function navigation()
@@ -40,6 +41,7 @@ class Admin extends AdminModule
         return [
             'Data BPJS EMR' => 'response',
             'Pemetaan' => 'mapping',
+            'Master Device' => 'deviceMaster',
             'Pengaturan' => 'settings'
         ];
     }
@@ -49,6 +51,7 @@ class Admin extends AdminModule
         $sub_modules = [
             ['name' => 'Data BPJS EMR', 'url' => url([ADMIN, 'bpjs_emr', 'response']), 'icon' => 'tasks', 'desc' => 'Data BPJS EMR'],
             ['name' => 'Pemetaan', 'url' => url([ADMIN, 'bpjs_emr', 'mapping']), 'icon' => 'list', 'desc' => 'Pemetaan LOINC/SNOMED'],
+            ['name' => 'Master Device', 'url' => url([ADMIN, 'bpjs_emr', 'deviceMaster']), 'icon' => 'microchip', 'desc' => 'Master Alat Kesehatan / Device FHIR'],
             ['name' => 'Pengaturan', 'url' => url([ADMIN, 'bpjs_emr', 'settings']), 'icon' => 'tasks', 'desc' => 'Pengaturan BPJS EMR'],
         ];
         return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
@@ -2457,6 +2460,74 @@ class Admin extends AdminModule
         return $decoded !== false;
     }
 
+    public function getDeviceMaster()
+    {
+        $this->_addHeaderFiles();
+        $devices = $this->db('mlite_bpjs_emr_device')->orderBy('nama_alkes', 'ASC')->toArray();
+        return $this->draw('device_master.html', ['devices' => $devices]);
+    }
+
+    public function postSaveDevice()
+    {
+        header('Content-Type: application/json');
+        $id          = (int) ($_POST['id'] ?? 0);
+        $device_id   = trim($_POST['device_id'] ?? '');
+        $nama_alkes  = trim($_POST['nama_alkes'] ?? '');
+        $kode_produk = trim($_POST['kode_produk'] ?? '');
+        $keterangan  = trim($_POST['keterangan'] ?? '');
+
+        if ($device_id === '' || $nama_alkes === '') {
+            echo json_encode(['status' => 'error', 'message' => 'ID Device dan Nama Alkes wajib diisi.']);
+            exit;
+        }
+
+        $data = [
+            'device_id'   => $device_id,
+            'nama_alkes'  => $nama_alkes,
+            'kode_produk' => $kode_produk,
+            'keterangan'  => $keterangan,
+        ];
+
+        if ($id > 0) {
+            if ($this->db('mlite_bpjs_emr_device')->where('id', $id)->save($data)) {
+                echo json_encode(['status' => 'success', 'message' => 'Data device berhasil diperbarui.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal memperbarui data device.']);
+            }
+        } else {
+            if ($this->db('mlite_bpjs_emr_device')->save($data)) {
+                echo json_encode(['status' => 'success', 'message' => 'Data device berhasil disimpan.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data device.']);
+            }
+        }
+        exit;
+    }
+
+    public function postDeleteDevice()
+    {
+        header('Content-Type: application/json');
+        $id = (int) ($_POST['id'] ?? 0);
+        if ($id <= 0) {
+            echo json_encode(['status' => 'error', 'message' => 'ID tidak valid.']);
+            exit;
+        }
+        if ($this->db('mlite_bpjs_emr_device')->where('id', $id)->delete()) {
+            echo json_encode(['status' => 'success', 'message' => 'Data device berhasil dihapus.']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus data device.']);
+        }
+        exit;
+    }
+
+    public function getGetDeviceList()
+    {
+        header('Content-Type: application/json');
+        $devices = $this->db('mlite_bpjs_emr_device')->select('id, device_id, nama_alkes, kode_produk')->orderBy('nama_alkes', 'ASC')->toArray();
+        echo json_encode($devices);
+        exit;
+    }
+
     public function getMapping()
     {
         $this->_addHeaderFiles();
@@ -2502,7 +2573,8 @@ class Admin extends AdminModule
             'rad' => $rad,
             'proc' => $proc,
             'proc_ranap' => $proc_ranap,
-            'operasi' => $operasi
+            'operasi' => $operasi,
+            'devices' => $this->db('mlite_bpjs_emr_device')->select('device_id, nama_alkes, kode_produk')->orderBy('nama_alkes', 'ASC')->toArray()
         ]);
     }
 
@@ -2950,6 +3022,23 @@ class Admin extends AdminModule
         $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+    }
+
+    private function ensureDeviceMasterTable()
+    {
+        try {
+            $this->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_device` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `device_id` varchar(255) NOT NULL COMMENT 'ID resource Device di FHIR server BPJS/Satu Sehat',
+                `nama_alkes` varchar(255) NOT NULL COMMENT 'Nama alat kesehatan',
+                `kode_produk` varchar(100) DEFAULT NULL COMMENT 'Kode produk atau nomor registrasi alkes',
+                `keterangan` text DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `uq_device_id` (`device_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        } catch (\Throwable $e) {
+            // ignore
+        }
     }
 
     private function ensureFocalDeviceMappingColumns()
