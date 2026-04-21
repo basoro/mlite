@@ -121,6 +121,11 @@ class Admin extends AdminModule
 
         $json = json_decode($output, true);
 
+        // Jika json tidak berbentuk array (gagal decode / response kosong) jadikan array kosong agar tidak error di htmlspecialchars_array
+        if (!is_array($json)) {
+            $json = [];
+        }
+
         if (isset($json['response']) && !is_array($json['response'])) {
              $stringDecrypt = stringDecrypt($key, $json['response']);
              $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent($stringDecrypt);
