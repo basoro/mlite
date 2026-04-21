@@ -7,6 +7,16 @@
             <div class="alert alert-info no-margin">Pemetaan Lab dan Radiologi mengambil referensi dari plugin Satu Sehat.</div>
         </div>
 
+        {?= ($buildDeviceOptions = function($currentId) use ($devices) {
+            $html = '';
+            foreach ($devices ?? [] as $d) {
+                $sel = $d['device_id'] === ($currentId ?? '') ? ' selected' : '';
+                $lbl = htmlspecialchars($d['nama_alkes']);
+                if (!empty($d['kode_produk'])) $lbl .= ' ['.htmlspecialchars($d['kode_produk']).']';
+                $html .= '<option value="'.htmlspecialchars($d['device_id']).'" data-nama="'.htmlspecialchars($d['nama_alkes']).'"'.$sel.'>'.$lbl.'</option>';
+            }
+            return $html;
+        }) and false ?}
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active"><a href="#lab" aria-controls="lab" role="tab" data-toggle="tab">Laboratorium (LOINC)</a></li>
             <li role="presentation"><a href="#rad" aria-controls="rad" role="tab" data-toggle="tab">Radiologi (LOINC/SNOMED)</a></li>
@@ -125,7 +135,7 @@
                                         <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
                                             <select class="form-control input-sm focal-device-code">
                                                 <option value="">-- Pilih Device (opsional) --</option>
-                                                {?= implode('', array_map(function($d) use ($value) { $sel = $d['device_id'] === ($value['focal_device_code'] ?? '') ? ' selected' : ''; $lbl = htmlspecialchars($d['nama_alkes']); if (!empty($d['kode_produk'])) $lbl .= ' ['.htmlspecialchars($d['kode_produk']).']'; return '<option value="'.htmlspecialchars($d['device_id']).'" data-nama="'.htmlspecialchars($d['nama_alkes']).'"'.$sel.'>' . $lbl . '</option>'; }, $devices ?? [])) ?}
+                                                {?= $buildDeviceOptions($value['focal_device_code'] ?? '') ?}
                                             </select>
                                             <small class="text-muted">Tambah device di menu <a href="{?=url([ADMIN,'bpjs_emr','deviceMaster'])?}" target="_blank">Master Device</a></small>
                                             <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice (otomatis terisi)" style="margin-top:4px">                                            
@@ -184,7 +194,7 @@
                                         <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
                                             <select class="form-control input-sm focal-device-code">
                                                 <option value="">-- Pilih Device (opsional) --</option>
-                                                {?= implode('', array_map(function($d) use ($value) { $sel = $d['device_id'] === ($value['focal_device_code'] ?? '') ? ' selected' : ''; $lbl = htmlspecialchars($d['nama_alkes']); if (!empty($d['kode_produk'])) $lbl .= ' ['.htmlspecialchars($d['kode_produk']).']'; return '<option value="'.htmlspecialchars($d['device_id']).'" data-nama="'.htmlspecialchars($d['nama_alkes']).'"'.$sel.'>' . $lbl . '</option>'; }, $devices ?? [])) ?}
+                                                {?= $buildDeviceOptions($value['focal_device_code'] ?? '') ?}
                                             </select>
                                             <small class="text-muted">Tambah device di menu <a href="{?=url([ADMIN,'bpjs_emr','deviceMaster'])?}" target="_blank">Master Device</a></small>
                                             <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice (otomatis terisi)" style="margin-top:4px">
@@ -243,7 +253,7 @@
                                         <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
                                             <select class="form-control input-sm focal-device-code">
                                                 <option value="">-- Pilih Device (opsional) --</option>
-                                                {?= implode('', array_map(function($d) use ($value) { $sel = $d['device_id'] === ($value['focal_device_code'] ?? '') ? ' selected' : ''; $lbl = htmlspecialchars($d['nama_alkes']); if (!empty($d['kode_produk'])) $lbl .= ' ['.htmlspecialchars($d['kode_produk']).']'; return '<option value="'.htmlspecialchars($d['device_id']).'" data-nama="'.htmlspecialchars($d['nama_alkes']).'"'.$sel.'>' . $lbl . '</option>'; }, $devices ?? [])) ?}
+                                                {?= $buildDeviceOptions($value['focal_device_code'] ?? '') ?}
                                             </select>
                                             <small class="text-muted">Tambah device di menu <a href="{?=url([ADMIN,'bpjs_emr','deviceMaster'])?}" target="_blank">Master Device</a></small>
                                             <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice (otomatis terisi)" style="margin-top:4px">
