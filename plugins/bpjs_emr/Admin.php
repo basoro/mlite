@@ -1328,7 +1328,8 @@ class Admin extends AdminModule
             'encounter' => $this->generateBPJSId($jenisPelayanan),
             'composition' => $this->generateBPJSId($jenisPelayanan),
             'medication' => $this->generateBPJSId($jenisPelayanan),
-            'condition_primary' => $this->generateBPJSId($jenisPelayanan)
+            'condition_primary' => $this->generateBPJSId($jenisPelayanan),
+            'device' => $this->generateBPJSId($jenisPelayanan)
         ];
         
         $bundle = [
@@ -1406,6 +1407,16 @@ class Admin extends AdminModule
         $bundle['entry'][] = [
             'resource' => $this->buildEncounterResource($data, $uuids, $jenisPelayanan)
         ];
+
+        // 8. Device Resources (dari focal_device pada prosedur)
+        $deviceResources = $this->buildDeviceResources($data, $uuids);
+        if (!empty($deviceResources)) {
+            foreach ($deviceResources as $deviceResource) {
+                $bundle['entry'][] = [
+                    'resource' => $deviceResource
+                ];
+            }
+        }
         
         
         // 6. DiagnosticReport Resources (Lab & Radiologi)
@@ -1417,6 +1428,58 @@ class Admin extends AdminModule
         }
         
         return $bundle;
+    }
+
+    /**
+     * Build Device Resources dari data device yang terkait dengan prosedur (focalDevice)
+     */
+    private function buildDeviceResources($data, $uuids)
+    {
+        $resources = [];
+        $jenisPelayanan = $data['registrasi']['status_lanjut'] == 'Ranap' ? 1 : 2;
+
+        if (empty($data['device'])) {
+            return $resources;
+        }
+
+        $baseUrl = rtrim((string) $this->settings->get('bpjs_emr.baseurl'), '/');
+        $identifierSystem = $baseUrl . '/device/serial';
+
+        foreach ($data['device'] as $device) {
+            $deviceUuid = $this->generateBPJSId($jenisPelayanan);
+            $resources[] = [
+                'resourceType' => 'Device',
+                'id' => $deviceUuid,
+                'text' => [
+                    'status' => 'generated',
+                    'div' => 'Generated Narrative with Details'
+                ],
+                'identifier' => [
+                    [
+                        'system' => $identifierSystem,
+                        'value' => $device['kode_produk'] ?? ''
+                    ]
+                ],
+                'type' => [
+                    'coding' => [
+                        [
+                            'system' => 'http://snomed.info/sct',
+                            'code' => $device['focal_device_code'] ?? '',
+                            'display' => $device['focal_device_display'] ?? $device['nama_alkes'] ?? ''
+                        ]
+                    ],
+                    'text' => $device['nama_alkes'] ?? ''
+                ],
+                'lotNumber' => '',
+                'manufacturer' => $device['manufacture'] ?? '',
+                'model' => $device['model'] ?? '',
+                'patient' => [
+                    'reference' => 'Patient/' . $uuids['patient']
+                ]
+            ];
+        }
+
+        return $resources;
     }
 
     public function makeDataMR(string $jsonPlain, string $consid, string $secretkey, string $koders): string
@@ -1631,7 +1694,8 @@ class Admin extends AdminModule
             'diagnostic' => [],
             'composition' => [],
             'organization' => [],
-            'practitioner' => []
+            'practitioner' => [],
+            'device' => []
         ];
 
         // 1. Data Registrasi & Pasien
@@ -1948,6 +2012,33 @@ class Admin extends AdminModule
         } catch (\Exception $e) {
             error_log("ERROR getDataERM procedure: " . $e->getMessage());
             $result['procedure'] = ['tindakan' => [], 'lab' => [], 'radiologi' => [], 'operasi' => []];
+        }
+
+        // 5b. Device (dari focal_device_code pada prosedur)
+        try {
+            $allProcs = array_merge(
+                $result['procedure']['tindakan'] ?? [],
+                $result['procedure']['operasi'] ?? []
+            );
+            $seenDeviceCodes = [];
+            foreach ($allProcs as $proc) {
+                $code = trim((string) ($proc['focal_device_code'] ?? ''));
+                if ($code !== '' && !in_array($code, $seenDeviceCodes, true)) {
+                    $seenDeviceCodes[] = $code;
+                    $deviceRow = $this->db('mlite_bpjs_emr_device')
+                        ->where('device_id', $code)
+                        ->oneArray();
+                    if ($deviceRow) {
+                        $result['device'][] = array_merge($deviceRow, [
+                            'focal_device_code' => $code,
+                            'focal_device_display' => trim((string) ($proc['focal_device_display'] ?? $deviceRow['nama_alkes'] ?? ''))
+                        ]);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            error_log("ERROR getDataERM device: " . $e->getMessage());
+            $result['device'] = [];
         }
 
         // 6. Diagnosa
@@ -2474,6 +2565,8 @@ class Admin extends AdminModule
         $nama_alkes  = trim($_POST['nama_alkes'] ?? '');
         $kode_produk = trim($_POST['kode_produk'] ?? '');
         $keterangan  = trim($_POST['keterangan'] ?? '');
+        $manufacture = trim($_POST['manufacture'] ?? '');
+        $model       = trim($_POST['model'] ?? '');
 
         if ($device_id === '' || $nama_alkes === '') {
             echo json_encode(['status' => 'error', 'message' => 'ID Device dan Nama Alkes wajib diisi.']);
@@ -2485,6 +2578,8 @@ class Admin extends AdminModule
             'nama_alkes'  => $nama_alkes,
             'kode_produk' => $kode_produk,
             'keterangan'  => $keterangan,
+            'manufacture' => $manufacture,
+            'model'       => $model,
         ];
 
         if ($id > 0) {
@@ -2522,7 +2617,7 @@ class Admin extends AdminModule
     public function getGetDeviceList()
     {
         header('Content-Type: application/json');
-        $devices = $this->db('mlite_bpjs_emr_device')->select('id, device_id, nama_alkes, kode_produk')->orderBy('nama_alkes', 'ASC')->toArray();
+        $devices = $this->db('mlite_bpjs_emr_device')->select('id, device_id, nama_alkes, kode_produk, manufacture, model')->orderBy('nama_alkes', 'ASC')->toArray();
         echo json_encode($devices);
         exit;
     }
@@ -2539,6 +2634,7 @@ class Admin extends AdminModule
             )
             ->leftJoin('mlite_bpjs_emr_mapping_lab', 'template_laboratorium.id_template = mlite_bpjs_emr_mapping_lab.id_template')
             ->leftJoin('mlite_satu_sehat_mapping_lab', 'template_laboratorium.id_template = mlite_satu_sehat_mapping_lab.id_template')
+            ->orderBy('template_laboratorium.Pemeriksaan', 'ASC')
             ->toArray();
 
         $rad = $this->db('jns_perawatan_radiologi')
@@ -2550,21 +2646,25 @@ class Admin extends AdminModule
             )
             ->leftJoin('mlite_bpjs_emr_mapping_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw = mlite_bpjs_emr_mapping_radiologi.kd_jenis_prw')
             ->leftJoin('mlite_satu_sehat_mapping_rad', 'jns_perawatan_radiologi.kd_jenis_prw = mlite_satu_sehat_mapping_rad.kd_jenis_prw')
+            ->orderBy('jns_perawatan_radiologi.nm_perawatan', 'ASC')
             ->toArray();
 
         $proc = $this->db('jns_perawatan')
             ->select('jns_perawatan.*, mlite_bpjs_emr_mapping_prosedur.snomed_code, mlite_bpjs_emr_mapping_prosedur.snomed_display, mlite_bpjs_emr_mapping_prosedur.focal_device_code, mlite_bpjs_emr_mapping_prosedur.focal_device_display, mlite_bpjs_emr_mapping_prosedur.focal_device_action')
             ->leftJoin('mlite_bpjs_emr_mapping_prosedur', 'jns_perawatan.kd_jenis_prw = mlite_bpjs_emr_mapping_prosedur.kd_jenis_prw')
+            ->orderBy('jns_perawatan.nm_perawatan', 'ASC')
             ->toArray();
 
         $proc_ranap = $this->db('jns_perawatan_inap')
             ->select('jns_perawatan_inap.*, mlite_bpjs_emr_mapping_prosedur_ranap.snomed_code, mlite_bpjs_emr_mapping_prosedur_ranap.snomed_display, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_code, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_display, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_action')
             ->leftJoin('mlite_bpjs_emr_mapping_prosedur_ranap', 'jns_perawatan_inap.kd_jenis_prw = mlite_bpjs_emr_mapping_prosedur_ranap.kd_jenis_prw')
+            ->orderBy('jns_perawatan_inap.nm_perawatan', 'ASC')
             ->toArray();
 
         $operasi = $this->db('paket_operasi')
             ->select('paket_operasi.*, mlite_bpjs_emr_mapping_operasi.snomed_code, mlite_bpjs_emr_mapping_operasi.snomed_display, mlite_bpjs_emr_mapping_operasi.focal_device_code, mlite_bpjs_emr_mapping_operasi.focal_device_display, mlite_bpjs_emr_mapping_operasi.focal_device_action')
             ->leftJoin('mlite_bpjs_emr_mapping_operasi', 'paket_operasi.kode_paket = mlite_bpjs_emr_mapping_operasi.kode_paket')
+            ->orderBy('paket_operasi.nm_perawatan', 'ASC')
             ->toArray();
 
         return $this->draw('mapping.html', [
@@ -2573,7 +2673,7 @@ class Admin extends AdminModule
             'proc' => $proc,
             'proc_ranap' => $proc_ranap,
             'operasi' => $operasi,
-            'devices' => $this->db('mlite_bpjs_emr_device')->select('device_id, nama_alkes, kode_produk')->orderBy('nama_alkes', 'ASC')->toArray()
+            'devices' => $this->db('mlite_bpjs_emr_device')->select('device_id, nama_alkes, kode_produk, manufacture, model')->orderBy('nama_alkes', 'ASC')->toArray()
         ]);
     }
 
@@ -3038,7 +3138,10 @@ class Admin extends AdminModule
             // Widen focal_device_code on existing installations where it was previously created as varchar(20)
             "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
             "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL"
+            "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
+            // Add manufacture and model columns to device master table
+            "ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacture` varchar(255) DEFAULT NULL",
+            "ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `model` varchar(255) DEFAULT NULL"
         ];
 
         foreach ($alterStatements as $sql) {
