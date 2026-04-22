@@ -2553,7 +2553,7 @@ class Admin extends AdminModule
     public function getDeviceMaster()
     {
         $this->_addHeaderFiles();
-        $devices = $this->db('mlite_bpjs_emr_device')->orderBy('nama_alkes', 'ASC')->toArray();
+        $devices = $this->db('mlite_bpjs_emr_device')->asc('nama_alkes')->toArray();
         return $this->draw('device_master.html', ['devices' => $devices]);
     }
 
@@ -2617,7 +2617,7 @@ class Admin extends AdminModule
     public function getGetDeviceList()
     {
         header('Content-Type: application/json');
-        $devices = $this->db('mlite_bpjs_emr_device')->select('id, device_id, nama_alkes, kode_produk, manufacturer, model')->orderBy('nama_alkes', 'ASC')->toArray();
+        $devices = $this->db('mlite_bpjs_emr_device')->select('id, device_id, nama_alkes, kode_produk, manufacturer, model')->asc('nama_alkes')->toArray();
         echo json_encode($devices);
         exit;
     }
@@ -2634,7 +2634,7 @@ class Admin extends AdminModule
             )
             ->leftJoin('mlite_bpjs_emr_mapping_lab', 'template_laboratorium.id_template = mlite_bpjs_emr_mapping_lab.id_template')
             ->leftJoin('mlite_satu_sehat_mapping_lab', 'template_laboratorium.id_template = mlite_satu_sehat_mapping_lab.id_template')
-            ->orderBy('template_laboratorium.Pemeriksaan', 'ASC')
+            ->asc('template_laboratorium.Pemeriksaan')
             ->toArray();
 
         $rad = $this->db('jns_perawatan_radiologi')
@@ -2646,25 +2646,25 @@ class Admin extends AdminModule
             )
             ->leftJoin('mlite_bpjs_emr_mapping_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw = mlite_bpjs_emr_mapping_radiologi.kd_jenis_prw')
             ->leftJoin('mlite_satu_sehat_mapping_rad', 'jns_perawatan_radiologi.kd_jenis_prw = mlite_satu_sehat_mapping_rad.kd_jenis_prw')
-            ->orderBy('jns_perawatan_radiologi.nm_perawatan', 'ASC')
+            ->asc('jns_perawatan_radiologi.nm_perawatan')
             ->toArray();
 
         $proc = $this->db('jns_perawatan')
             ->select('jns_perawatan.*, mlite_bpjs_emr_mapping_prosedur.snomed_code, mlite_bpjs_emr_mapping_prosedur.snomed_display, mlite_bpjs_emr_mapping_prosedur.focal_device_code, mlite_bpjs_emr_mapping_prosedur.focal_device_display, mlite_bpjs_emr_mapping_prosedur.focal_device_action')
             ->leftJoin('mlite_bpjs_emr_mapping_prosedur', 'jns_perawatan.kd_jenis_prw = mlite_bpjs_emr_mapping_prosedur.kd_jenis_prw')
-            ->orderBy('jns_perawatan.nm_perawatan', 'ASC')
+            ->asc('jns_perawatan.nm_perawatan')
             ->toArray();
 
         $proc_ranap = $this->db('jns_perawatan_inap')
             ->select('jns_perawatan_inap.*, mlite_bpjs_emr_mapping_prosedur_ranap.snomed_code, mlite_bpjs_emr_mapping_prosedur_ranap.snomed_display, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_code, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_display, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_action')
             ->leftJoin('mlite_bpjs_emr_mapping_prosedur_ranap', 'jns_perawatan_inap.kd_jenis_prw = mlite_bpjs_emr_mapping_prosedur_ranap.kd_jenis_prw')
-            ->orderBy('jns_perawatan_inap.nm_perawatan', 'ASC')
+            ->asc('jns_perawatan_inap.nm_perawatan')
             ->toArray();
 
         $operasi = $this->db('paket_operasi')
             ->select('paket_operasi.*, mlite_bpjs_emr_mapping_operasi.snomed_code, mlite_bpjs_emr_mapping_operasi.snomed_display, mlite_bpjs_emr_mapping_operasi.focal_device_code, mlite_bpjs_emr_mapping_operasi.focal_device_display, mlite_bpjs_emr_mapping_operasi.focal_device_action')
             ->leftJoin('mlite_bpjs_emr_mapping_operasi', 'paket_operasi.kode_paket = mlite_bpjs_emr_mapping_operasi.kode_paket')
-            ->orderBy('paket_operasi.nm_perawatan', 'ASC')
+            ->asc('paket_operasi.nm_perawatan')
             ->toArray();
 
         return $this->draw('mapping.html', [
@@ -2673,7 +2673,7 @@ class Admin extends AdminModule
             'proc' => $proc,
             'proc_ranap' => $proc_ranap,
             'operasi' => $operasi,
-            'devices' => $this->db('mlite_bpjs_emr_device')->select('device_id, nama_alkes, kode_produk, manufacturer, model')->orderBy('nama_alkes', 'ASC')->toArray()
+            'devices' => $this->db('mlite_bpjs_emr_device')->select('device_id, nama_alkes, kode_produk, manufacturer, model')->asc('nama_alkes')->toArray()
         ]);
     }
 
