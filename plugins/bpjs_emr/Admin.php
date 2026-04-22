@@ -1471,7 +1471,7 @@ class Admin extends AdminModule
                     'text' => $device['nama_alkes'] ?? ''
                 ],
                 'lotNumber' => '',
-                'manufacturer' => $device['manufacture'] ?? '',
+                'manufacturer' => $device['manufacturer'] ?? '',
                 'model' => $device['model'] ?? '',
                 'patient' => [
                     'reference' => 'Patient/' . $uuids['patient']
@@ -2565,7 +2565,7 @@ class Admin extends AdminModule
         $nama_alkes  = trim($_POST['nama_alkes'] ?? '');
         $kode_produk = trim($_POST['kode_produk'] ?? '');
         $keterangan  = trim($_POST['keterangan'] ?? '');
-        $manufacture = trim($_POST['manufacture'] ?? '');
+        $manufacturer = trim($_POST['manufacturer'] ?? '');
         $model       = trim($_POST['model'] ?? '');
 
         if ($device_id === '' || $nama_alkes === '') {
@@ -2578,7 +2578,7 @@ class Admin extends AdminModule
             'nama_alkes'  => $nama_alkes,
             'kode_produk' => $kode_produk,
             'keterangan'  => $keterangan,
-            'manufacture' => $manufacture,
+            'manufacturer' => $manufacturer,
             'model'       => $model,
         ];
 
@@ -2617,7 +2617,7 @@ class Admin extends AdminModule
     public function getGetDeviceList()
     {
         header('Content-Type: application/json');
-        $devices = $this->db('mlite_bpjs_emr_device')->select('id, device_id, nama_alkes, kode_produk, manufacture, model')->orderBy('nama_alkes', 'ASC')->toArray();
+        $devices = $this->db('mlite_bpjs_emr_device')->select('id, device_id, nama_alkes, kode_produk, manufacturer, model')->orderBy('nama_alkes', 'ASC')->toArray();
         echo json_encode($devices);
         exit;
     }
@@ -2673,7 +2673,7 @@ class Admin extends AdminModule
             'proc' => $proc,
             'proc_ranap' => $proc_ranap,
             'operasi' => $operasi,
-            'devices' => $this->db('mlite_bpjs_emr_device')->select('device_id, nama_alkes, kode_produk, manufacture, model')->orderBy('nama_alkes', 'ASC')->toArray()
+            'devices' => $this->db('mlite_bpjs_emr_device')->select('device_id, nama_alkes, kode_produk, manufacturer, model')->orderBy('nama_alkes', 'ASC')->toArray()
         ]);
     }
 
@@ -3139,8 +3139,8 @@ class Admin extends AdminModule
             "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
             "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
             "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
-            // Add manufacture and model columns to device master table
-            "ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacture` varchar(255) DEFAULT NULL",
+            // Add manufacturer and model columns to device master table
+            "ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacturer` varchar(255) DEFAULT NULL",
             "ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `model` varchar(255) DEFAULT NULL"
         ];
 

@@ -21,7 +21,7 @@
                         <th>ID Resource Device (UUID / FHIR ID)</th>
                         <th>Nama Alat Kesehatan</th>
                         <th>Kode Produk / No. Registrasi</th>
-                        <th>Manufacture</th>
+                        <th>Manufacturer</th>
                         <th>Model</th>
                         <th>Keterangan</th>
                         <th>Aksi</th>
@@ -34,7 +34,7 @@
                         <td><code>{$value.device_id}</code></td>
                         <td>{$value.nama_alkes}</td>
                         <td>{$value.kode_produk}</td>
-                        <td>{$value.manufacture}</td>
+                        <td>{$value.manufacturer}</td>
                         <td>{$value.model}</td>
                         <td>{$value.keterangan}</td>
                         <td>
@@ -43,7 +43,7 @@
                                 data-device-id="{$value.device_id}"
                                 data-nama-alkes="{$value.nama_alkes}"
                                 data-kode-produk="{$value.kode_produk}"
-                                data-manufacture="{$value.manufacture}"
+                                data-manufacturer="{$value.manufacturer}"
                                 data-model="{$value.model}"
                                 data-keterangan="{$value.keterangan}">
                                 <i class="fa fa-pencil"></i> Edit
@@ -84,8 +84,8 @@
                     <input type="text" class="form-control" id="input-kode-produk" placeholder="Contoh: AKL-12345">
                 </div>
                 <div class="form-group">
-                    <label>Manufacture / Pabrikan</label>
-                    <input type="text" class="form-control" id="input-manufacture" placeholder="Contoh: PT. Mitra Medika">
+                    <label>Manufacturer / Pabrikan</label>
+                    <input type="text" class="form-control" id="input-manufacturer" placeholder="Contoh: PT. Mitra Medika">
                 </div>
                 <div class="form-group">
                     <label>Model</label>
@@ -116,7 +116,7 @@ $(document).ready(function() {
         $('#input-device-id').val('').prop('readonly', false);
         $('#input-nama-alkes').val('');
         $('#input-kode-produk').val('');
-        $('#input-manufacture').val('');
+        $('#input-manufacturer').val('');
         $('#input-model').val('');
         $('#input-keterangan').val('');
         $('#modal-device').modal('show');
@@ -129,7 +129,7 @@ $(document).ready(function() {
         $('#input-device-id').val(btn.data('device-id')).prop('readonly', true);
         $('#input-nama-alkes').val(btn.data('nama-alkes'));
         $('#input-kode-produk').val(btn.data('kode-produk'));
-        $('#input-manufacture').val(btn.data('manufacture'));
+        $('#input-manufacturer').val(btn.data('manufacturer'));
         $('#input-model').val(btn.data('model'));
         $('#input-keterangan').val(btn.data('keterangan'));
         $('#modal-device').modal('show');
@@ -154,7 +154,7 @@ $(document).ready(function() {
                 device_id:    deviceId,
                 nama_alkes:   namaAlkes,
                 kode_produk:  $.trim($('#input-kode-produk').val()),
-                manufacture:  $.trim($('#input-manufacture').val()),
+                manufacturer:  $.trim($('#input-manufacturer').val()),
                 model:        $.trim($('#input-model').val()),
                 keterangan:   $.trim($('#input-keterangan').val()),
                 t:            "{?=$_SESSION['token']?}"
