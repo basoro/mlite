@@ -371,7 +371,8 @@ class Admin extends AdminModule
   public function getMonitoringDataKlaim()
   {
     $this->_addHeaderFiles();
-    return $this->draw('monitoringdataklaim.html', ['veronisa' => htmlspecialchars_array($this->assign)]);
+    $assign = is_array($this->assign) ? $this->assign : [];
+    return $this->draw('monitoringdataklaim.html', ['veronisa' => htmlspecialchars_array($assign)]);
   }
 
   public function getKirimApotikOnline($no_rawat)
