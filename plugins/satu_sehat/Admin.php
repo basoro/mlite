@@ -5340,7 +5340,7 @@ class Admin extends AdminModule
               ->where('series_id', $pacs_series['id'])
               ->oneArray();
 
-            if (!$pacs_instance || !file_exists($pacs_instance['file_path'])) {
+            if (!$pacs_instance ) {
               throw new \Exception('File DICOM tidak ditemukan atau belum dikonversi');
             }
 
