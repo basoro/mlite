@@ -3284,6 +3284,10 @@ class Admin extends AdminModule
       $gudangbarang = $this->db('gudangbarang')->where('kode_brng', $obat['kode_brng'])->where('kd_bangsal', $this->core->getSettings('satu_sehat', 'farmasi'))->oneArray();
       // $batch['no_batch'] = '121212';
 
+      $batch['no_batch'] = !empty($gudangbarang['no_batch']) 
+          ? $gudangbarang['no_batch'] 
+          : 'BATCH-' . date('YmdHis');
+
       $data = '{
         "resourceType": "Immunization",
         "status": "completed",
@@ -3310,7 +3314,7 @@ class Admin extends AdminModule
             "reference": "Location/' . $mlite_satu_sehat_lokasi['id_lokasi_satusehat'] . '",
             "display": "' . $mlite_satu_sehat_lokasi['lokasi'] . '"
         },
-        "lotNumber": "' . $gudangbarang['no_batch'] . '",
+        "lotNumber": "' . $batch['no_batch'] . '",
         "route": {
             "coding": [
                 {
