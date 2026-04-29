@@ -37,6 +37,10 @@
                 <td style="word-break: break-all; font-family: monospace;">{?=isset_or($signature.signature_hash)?}</td>
             </tr>
             <tr>
+                <td><strong>Tautan Dokumen:</strong></td>
+                <td style="word-break: break-all; font-family: monospace;"><a href="{?=url(WEBAPPS_URL.'/berkasrawat/'.$berkas_perawatan.lokasi_file)?}">[DOKUMEN DIGITAL]</a></td>
+            </tr>
+            <tr>
                 <td><strong>Legal Basis:</strong></td>
                 <td>{?=isset_or($signature.legal_basis)?}</td>
             </tr>
