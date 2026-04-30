@@ -33,7 +33,6 @@ class Admin extends AdminModule
         $this->userkey = $this->settings->get('bpjs_emr.userkey');
         $this->koders = $this->settings->get('bpjs_emr.koders');
         $this->kodeppk = $this->settings->get('bpjs_emr.kode_kemkes');
-        $this->ensureFocalDeviceMappingColumns();
     }
 
     public function navigation()
@@ -3195,99 +3194,6 @@ class Admin extends AdminModule
         $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
-    }
-
-    private function ensureFocalDeviceMappingColumns()
-    {
-        $driver = $this->db()->pdo()->getAttribute(\PDO::ATTR_DRIVER_NAME);
-        $createSql = '';
-        if ($driver === 'sqlite') {
-            $createSql = "CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_device` (
-                `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-                `device_id` TEXT NOT NULL UNIQUE,
-                `nama_alkes` TEXT NOT NULL,
-                `kategori` TEXT DEFAULT 'tindakan',
-                `kode_produk` TEXT DEFAULT NULL,
-                `manufacturer` TEXT DEFAULT NULL,
-                `model` TEXT DEFAULT NULL,
-                `keterangan` TEXT DEFAULT NULL
-            )";
-        } else {
-            $createSql = "CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_device` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
-                `device_id` varchar(255) NOT NULL,
-                `nama_alkes` varchar(255) NOT NULL,
-                `kategori` varchar(50) DEFAULT 'tindakan',
-                `kode_produk` varchar(255) DEFAULT NULL,
-                `manufacturer` varchar(255) DEFAULT NULL,
-                `model` varchar(255) DEFAULT NULL,
-                `keterangan` text DEFAULT NULL,
-                PRIMARY KEY (`id`),
-                UNIQUE KEY `device_id` (`device_id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-        }
-
-        try {
-            $this->db()->pdo()->exec($createSql);
-        } catch (\Throwable $e) {
-            // ignore create failure in mixed migration state
-        }
-
-        $alterStatements = [
-            "ALTER TABLE `mlite_bpjs_emr_mapping_lab` ADD COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_lab` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_lab` ADD COLUMN `focal_device_action` varchar(20) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_radiologi` ADD COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_radiologi` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_radiologi` ADD COLUMN `focal_device_action` varchar(20) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_action` varchar(20) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_action` varchar(20) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_display` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_action` varchar(20) DEFAULT NULL",
-            // Widen focal_device_code on existing installations where it was previously created as varchar(20)
-            "ALTER TABLE `mlite_bpjs_emr_mapping_lab` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_radiologi` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_mapping_operasi` MODIFY COLUMN `focal_device_code` varchar(255) DEFAULT NULL",
-            // Add manufacturer and model columns to device master table
-            "ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacturer` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `model` varchar(255) DEFAULT NULL",
-            "ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `kategori` varchar(50) DEFAULT 'tindakan'"
-        ];
-
-        foreach ($alterStatements as $sql) {
-            try {
-                $this->db()->pdo()->exec($sql);
-            } catch (\Throwable $e) {
-                // ignore duplicate column or missing table during migration state
-            }
-        }
-    }
-
-    private function lookupMapping($type, $id)
-    {
-        if ($type == 'lab') {
-            return $this->db('mlite_bpjs_emr_mapping_lab')->where('id_template', $id)->oneArray();
-        }
-        if ($type == 'radiologi') {
-            return $this->db('mlite_bpjs_emr_mapping_radiologi')->where('kd_jenis_prw', $id)->oneArray();
-        }
-        if ($type == 'prosedur') {
-            return $this->db('mlite_bpjs_emr_mapping_prosedur')->where('kd_jenis_prw', $id)->oneArray();
-        }
-        if ($type == 'prosedur_ranap') {
-            return $this->db('mlite_bpjs_emr_mapping_prosedur_ranap')->where('kd_jenis_prw', $id)->oneArray();
-        }
-        if ($type == 'operasi') {
-            return $this->db('mlite_bpjs_emr_mapping_operasi')->where('kode_paket', $id)->oneArray();
-        }
-        return null;
     }
 
     private function extractJsonObjectFromText($text)
