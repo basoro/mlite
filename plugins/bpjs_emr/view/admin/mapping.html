@@ -23,7 +23,7 @@
                         <thead>
                             <tr>
                                 <th>SIMRS Master (Pemeriksaan)</th>
-                                <th>Pilih LOINC (Kode - Nama)</th>
+                                <th>Detail Mapping (LOINC/SNOMED)</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -32,18 +32,18 @@
                             <tr id="lab-{$value.id_template}" data-nama-pemeriksaan="{$value.Pemeriksaan}">
                                 <td>{$value.Pemeriksaan}</td>
                                 <td>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control input-sm loinc-code" value="{$value.loinc_code}" placeholder="Kode LOINC">
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default btn-sm btn-ai-loinc" title="Fetch LOINC dari AI">
-                                                <i class="fa fa-robot"></i> AI
-                                            </button>
-                                        </span>
-                                    </div>
-                                    <input type="text" class="form-control input-sm loinc-display" value="{$value.loinc_display}" placeholder="Nama LOINC" style="margin-top:4px">
+                                    <input type="hidden" class="loinc-code" value="{$value.loinc_code}">
+                                    <input type="hidden" class="loinc-display" value="{$value.loinc_display}">
+                                    <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
+                                    <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
+                                    <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
+                                    <div class="mapping-detail mapping-summary"></div>
+                                    <button type="button" class="btn btn-default btn-xs btn-open-mapping" data-context="lab" style="margin-top:6px;">
+                                        <i class="fa fa-link"></i> Mapping
+                                    </button>
                                 </td>
                                 <td>
-                                    <button class="btn btn-xs btn-primary btn-save-lab" data-id="{$value.id_template}">Simpan</button>
+                                    <button class="btn btn-xs btn-danger btn-delete-mapping" data-context="lab" style="display:none;">Hapus</button>
                                 </td>
                             </tr>
                             {/loop}
@@ -59,8 +59,7 @@
                         <thead>
                             <tr>
                                 <th>SIMRS Master (Radiologi)</th>
-                                <th>Pilih Kode (LOINC/SNOMED)</th>
-                                <th>System</th>
+                                <th>Detail Mapping (LOINC/SNOMED)</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -69,24 +68,19 @@
                             <tr id="rad-{$value.kd_jenis_prw}" data-nama-pemeriksaan="{$value.nm_perawatan}">
                                 <td>{$value.nm_perawatan}</td>
                                 <td>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control input-sm standard-code" value="{$value.standard_code}" placeholder="Kode">
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default btn-sm btn-ai-rad" title="Fetch Kode Radiologi dari AI">
-                                                <i class="fa fa-robot"></i> AI
-                                            </button>
-                                        </span>
-                                    </div>
-                                    <input type="text" class="form-control input-sm standard-display" value="{$value.standard_display}" placeholder="Nama" style="margin-top:4px">
+                                    <input type="hidden" class="standard-code" value="{$value.standard_code}">
+                                    <input type="hidden" class="standard-display" value="{$value.standard_display}">
+                                    <input type="hidden" class="select-system" value="{?=isset_or($value.system, '')?}">
+                                    <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
+                                    <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
+                                    <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
+                                    <div class="mapping-detail mapping-summary"></div>
+                                    <button type="button" class="btn btn-default btn-xs btn-open-mapping" data-context="rad" style="margin-top:6px;">
+                                        <i class="fa fa-link"></i> Mapping
+                                    </button>
                                 </td>
                                 <td>
-                                    <select class="form-control input-sm select-system">
-                                        <option value="http://loinc.org" {if: $value.system == 'http://loinc.org'}selected{/if}>LOINC</option>
-                                        <option value="http://snomed.info/sct" {if: $value.system == 'http://snomed.info/sct'}selected{/if}>SNOMED-CT</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <button class="btn btn-xs btn-primary btn-save-rad" data-id="{$value.kd_jenis_prw}">Simpan</button>
+                                    <button class="btn btn-xs btn-danger btn-delete-mapping" data-context="rad" style="display:none;">Hapus</button>
                                 </td>
                             </tr>
                             {/loop}
@@ -102,7 +96,7 @@
                         <thead>
                             <tr>
                                 <th>SIMRS Master (Tindakan)</th>
-                                <th>Pilih SNOMED Code</th>
+                                <th>Detail Mapping (LOINC/SNOMED)</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -111,45 +105,18 @@
                             <tr id="proc-{$value.kd_jenis_prw}" data-nama-tindakan="{$value.nm_perawatan}">
                                 <td>{$value.nm_perawatan}</td>
                                 <td>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default btn-sm btn-ai-snomed" title="Fetch SNOMED dari AI">
-                                                <i class="fa fa-robot"></i> AI
-                                            </button>
-                                        </span>
-                                    </div>
-                                    <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
-                                    <hr style="margin:8px 0;">
-                                    <div class="row" style="margin-left:0;margin-right:0;">
-                                        <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
-                                            <div class="input-group">
-                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
-                                                <span class="input-group-btn">
-                                                    <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
-                                                        <i class="fa fa-robot"></i> AI
-                                                    </button>
-                                                </span>
-                                            </div>
-                                            <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">                                            
-                                        </div>
-                                        <div class="col-xs-4" style="padding-left:0;padding-right:0;">
-                                            <select class="form-control input-sm focal-device-action">
-                                                <option value="">-- Aksi FocalDevice --</option>
-                                                <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>Alat ditanam permanen</option>
-                                                <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>Alat dikeluarkan (biasanya setelah sebelumnya ditanam)</option>
-                                                <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>Alat dilepas</option>
-                                                <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>Alat diganti dengan yang baru</option>
-                                                <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>Alat disesuaikan / di-setting</option>
-                                                <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>Alat diperiksa</option>
-                                                <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>Alat diperbaiki</option>
-                                                <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>Alat dimasukkan (tidak selalu permanen)</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                                    <input type="hidden" class="snomed-code" value="{$value.snomed_code}">
+                                    <input type="hidden" class="snomed-display" value="{$value.snomed_display}">
+                                    <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
+                                    <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
+                                    <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
+                                    <div class="mapping-detail mapping-summary"></div>
+                                    <button type="button" class="btn btn-default btn-xs btn-open-mapping" data-context="proc" style="margin-top:6px;">
+                                        <i class="fa fa-link"></i> Mapping
+                                    </button>
                                 </td>
                                 <td>
-                                    <button class="btn btn-xs btn-primary btn-save-proc" data-id="{$value.kd_jenis_prw}">Simpan</button>
+                                    <button class="btn btn-xs btn-danger btn-delete-mapping" data-context="proc" style="display:none;">Hapus</button>
                                 </td>
                             </tr>
                             {/loop}
@@ -164,7 +131,7 @@
                         <thead>
                             <tr>
                                 <th>SIMRS Master (Tindakan Rawat Inap)</th>
-                                <th>Kode SNOMED</th>
+                                <th>Detail Mapping (LOINC/SNOMED)</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -173,45 +140,18 @@
                             <tr id="proc-ranap-{$value.kd_jenis_prw}" data-nama-tindakan="{$value.nm_perawatan}">
                                 <td>{$value.nm_perawatan}</td>
                                 <td>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default btn-sm btn-ai-snomed" title="Fetch SNOMED dari AI">
-                                                <i class="fa fa-robot"></i> AI
-                                            </button>
-                                        </span>
-                                    </div>
-                                    <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
-                                    <hr style="margin:8px 0;">
-                                    <div class="row" style="margin-left:0;margin-right:0;">
-                                        <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
-                                            <div class="input-group">
-                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
-                                                <span class="input-group-btn">
-                                                    <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
-                                                        <i class="fa fa-robot"></i> AI
-                                                    </button>
-                                                </span>
-                                            </div>
-                                            <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
-                                        </div>
-                                        <div class="col-xs-4" style="padding-left:0;padding-right:0;">
-                                            <select class="form-control input-sm focal-device-action">
-                                                <option value="">-- Aksi FocalDevice --</option>
-                                                <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>Alat ditanam permanen</option>
-                                                <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>Alat dikeluarkan (biasanya setelah sebelumnya ditanam)</option>
-                                                <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>Alat dilepas</option>
-                                                <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>Alat diganti dengan yang baru</option>
-                                                <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>Alat disesuaikan / di-setting</option>
-                                                <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>Alat diperiksa</option>
-                                                <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>Alat diperbaiki</option>
-                                                <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>Alat dimasukkan (tidak selalu permanen)</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                                    <input type="hidden" class="snomed-code" value="{$value.snomed_code}">
+                                    <input type="hidden" class="snomed-display" value="{$value.snomed_display}">
+                                    <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
+                                    <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
+                                    <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
+                                    <div class="mapping-detail mapping-summary"></div>
+                                    <button type="button" class="btn btn-default btn-xs btn-open-mapping" data-context="proc_ranap" style="margin-top:6px;">
+                                        <i class="fa fa-link"></i> Mapping
+                                    </button>
                                 </td>
                                 <td>
-                                    <button class="btn btn-xs btn-primary btn-save-proc-ranap" data-id="{$value.kd_jenis_prw}">Simpan</button>
+                                    <button class="btn btn-xs btn-danger btn-delete-mapping" data-context="proc_ranap" style="display:none;">Hapus</button>
                                 </td>
                             </tr>
                             {/loop}
@@ -226,7 +166,7 @@
                         <thead>
                             <tr>
                                 <th>SIMRS Master (Tindakan Operasi)</th>
-                                <th>Kode SNOMED</th>
+                                <th>Detail Mapping (LOINC/SNOMED)</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -235,45 +175,18 @@
                             <tr id="operasi-{$value.kode_paket}" data-nama-tindakan="{$value.nm_perawatan}">
                                 <td>[{$value.kode_paket}] {$value.nm_perawatan}</td>
                                 <td>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control input-sm snomed-code" value="{$value.snomed_code}" placeholder="Kode SNOMED">
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default btn-sm btn-ai-snomed" title="Fetch SNOMED dari AI">
-                                                <i class="fa fa-robot"></i> AI
-                                            </button>
-                                        </span>
-                                    </div>
-                                    <input type="text" class="form-control input-sm snomed-display" value="{$value.snomed_display}" placeholder="Nama SNOMED" style="margin-top:4px">
-                                    <hr style="margin:8px 0;">
-                                    <div class="row" style="margin-left:0;margin-right:0;">
-                                        <div class="col-xs-8" style="padding-left:0;padding-right:4px;">
-                                            <div class="input-group">
-                                                <input type="text" class="form-control input-sm focal-device-code" value="{$value.focal_device_code}" placeholder="Kode FocalDevice (SNOMED)">
-                                                <span class="input-group-btn">
-                                                    <button type="button" class="btn btn-default btn-sm btn-ai-focal-device" title="Fetch FocalDevice dari AI">
-                                                        <i class="fa fa-robot"></i> AI
-                                                    </button>
-                                                </span>
-                                            </div>
-                                            <input type="text" class="form-control input-sm focal-device-display" value="{$value.focal_device_display}" placeholder="Nama FocalDevice" style="margin-top:4px">
-                                        </div>
-                                        <div class="col-xs-4" style="padding-left:0;padding-right:0;">
-                                            <select class="form-control input-sm focal-device-action">
-                                                <option value="">-- Aksi FocalDevice --</option>
-                                                <option value="implanted" {?=($value['focal_device_action']??'')==='implanted'?'selected':''?}>Ditanam permanen</option>
-                                                <option value="explanted" {?=($value['focal_device_action']??'')==='explanted'?'selected':''?}>Dikeluarkan (biasanya setelah ditanam)</option>
-                                                <option value="removed" {?=($value['focal_device_action']??'')==='removed'?'selected':''?}>Dilepas</option>
-                                                <option value="replaced" {?=($value['focal_device_action']??'')==='replaced'?'selected':''?}>Diganti dengan yang baru</option>
-                                                <option value="adjusted" {?=($value['focal_device_action']??'')==='adjusted'?'selected':''?}>Disesuaikan / di-setting</option>
-                                                <option value="inspected" {?=($value['focal_device_action']??'')==='inspected'?'selected':''?}>Diperiksa</option>
-                                                <option value="repaired" {?=($value['focal_device_action']??'')==='repaired'?'selected':''?}>Diperbaiki</option>
-                                                <option value="inserted" {?=($value['focal_device_action']??'')==='inserted'?'selected':''?}>Alat dimasukkan (tidak selalu permanen)</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                                    <input type="hidden" class="snomed-code" value="{$value.snomed_code}">
+                                    <input type="hidden" class="snomed-display" value="{$value.snomed_display}">
+                                    <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
+                                    <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
+                                    <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
+                                    <div class="mapping-detail mapping-summary"></div>
+                                    <button type="button" class="btn btn-default btn-xs btn-open-mapping" data-context="operasi" style="margin-top:6px;">
+                                        <i class="fa fa-link"></i> Mapping
+                                    </button>
                                 </td>
                                 <td>
-                                    <button class="btn btn-xs btn-primary btn-save-operasi" data-id="{$value.kode_paket}">Simpan</button>
+                                    <button class="btn btn-xs btn-danger btn-delete-mapping" data-context="operasi" style="display:none;">Hapus</button>
                                 </td>
                             </tr>
                             {/loop}
@@ -285,361 +198,424 @@
     </div>
 </div>
 
+<div class="modal fade" id="mappingDetailModal" tabindex="-1" role="dialog" aria-labelledby="mappingDetailModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title" id="mappingDetailModalLabel">Mapping Detail</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modal-context">
+                <div class="form-group">
+                    <label>Tindakan/Pemeriksaan</label>
+                    <input type="text" class="form-control" id="modal-target-name" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Saran AI (5 Pilihan)</label>
+                    <div class="input-group">
+                        <select id="modal-ai-primary-select" class="form-control input-sm">
+                            <option value="">-- Pilih hasil AI --</option>
+                        </select>
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default btn-sm" id="btn-generate-ai-primary"><i class="fa fa-robot"></i> AI x5</button>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Kode Mapping</label>
+                    <input type="text" class="form-control input-sm" id="modal-primary-code">
+                </div>
+                <div class="form-group">
+                    <label>Display Mapping</label>
+                    <input type="text" class="form-control input-sm" id="modal-primary-display">
+                </div>
+                <div class="form-group" id="modal-system-group" style="display:none;">
+                    <label>System</label>
+                    <select id="modal-primary-system" class="form-control input-sm">
+                        <option value="http://loinc.org">LOINC</option>
+                        <option value="http://snomed.info/sct">SNOMED-CT</option>
+                    </select>
+                </div>
+
+                <div id="modal-focal-section" style="display:none;">
+                    <hr>
+                    <div class="form-group">
+                        <label>Master Device</label>
+                        <select id="modal-master-device-select" class="form-control input-sm">
+                            <option value="">-- Pilih Master Device --</option>
+                            {loop: $devices}
+                            <option value="{$value.device_id}" data-display="{$value.nama_alkes}" data-kategori="{$value.kategori}">{$value.nama_alkes} ({$value.device_id})</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Saran AI FocalDevice (5 Pilihan)</label>
+                        <div class="input-group">
+                            <select id="modal-ai-focal-select" class="form-control input-sm">
+                                <option value="">-- Pilih hasil AI FocalDevice --</option>
+                            </select>
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default btn-sm" id="btn-generate-ai-focal"><i class="fa fa-robot"></i> AI x5</button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Focal Device Code</label>
+                        <input type="text" class="form-control input-sm" id="modal-focal-code">
+                    </div>
+                    <div class="form-group">
+                        <label>Focal Device Display</label>
+                        <input type="text" class="form-control input-sm" id="modal-focal-display">
+                    </div>
+                    <div class="form-group">
+                        <label>Aksi FocalDevice</label>
+                        <select id="modal-focal-action" class="form-control input-sm">
+                            <option value="">-- Aksi FocalDevice --</option>
+                            <option value="implanted">Alat ditanam permanen</option>
+                            <option value="explanted">Alat dikeluarkan</option>
+                            <option value="removed">Alat dilepas</option>
+                            <option value="replaced">Alat diganti</option>
+                            <option value="adjusted">Alat disesuaikan</option>
+                            <option value="inspected">Alat diperiksa</option>
+                            <option value="repaired">Alat diperbaiki</option>
+                            <option value="inserted">Alat dimasukkan</option>
+                        <option value="analyze">Alat dianalisis</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btn-clear-mapping-modal" class="btn btn-warning">Kosongkan</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                <button type="button" id="btn-save-mapping-modal" class="btn btn-primary">Simpan Mapping</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-$(document).ready(function() {
+$(function() {
     const AI_REQUEST_TIMEOUT = 20000;
     $('.datatable').DataTable();
+    var activeRow = null;
+    var actionLabelMap = {
+        implanted: 'Alat ditanam permanen', explanted: 'Alat dikeluarkan', removed: 'Alat dilepas',
+        replaced: 'Alat diganti', adjusted: 'Alat disesuaikan', inspected: 'Alat diperiksa',
+        repaired: 'Alat diperbaiki', inserted: 'Alat dimasukkan', analyze: 'Alat dianalisis'
+    };
 
-    function getRowPrimaryText(row, dataAttr) {
-        return row.data(dataAttr) || $.trim(row.find('td').first().text());
+    function isFocalContext(c) { return c === 'lab' || c === 'rad' || c === 'proc' || c === 'proc_ranap' || c === 'operasi'; }
+    function getPrimaryLabel(c) { return c === 'lab' ? 'LOINC' : (c === 'rad' ? 'Kode Radiologi' : 'SNOMED'); }
+    function getRowName(row, c) { return (c === 'lab' || c === 'rad') ? (row.data('nama-pemeriksaan') || $.trim(row.find('td:first').text())) : (row.data('nama-tindakan') || $.trim(row.find('td:first').text())); }
+    function getPrimaryCode(row, c) { return c === 'lab' ? row.find('.loinc-code').val() : (c === 'rad' ? row.find('.standard-code').val() : row.find('.snomed-code').val()); }
+    function getPrimaryDisplay(row, c) { return c === 'lab' ? row.find('.loinc-display').val() : (c === 'rad' ? row.find('.standard-display').val() : row.find('.snomed-display').val()); }
+    function setPrimary(row, c, code, display, system) {
+        if (c === 'lab') { row.find('.loinc-code').val(code); row.find('.loinc-display').val(display); }
+        else if (c === 'rad') { row.find('.standard-code').val(code); row.find('.standard-display').val(display); row.find('.select-system').val(system || ''); }
+        else { row.find('.snomed-code').val(code); row.find('.snomed-display').val(display); }
     }
 
-    $('.btn-ai-snomed').on('click', function() {
-        var button = $(this);
-        var row = button.closest('tr');
-        var namaTindakan = getRowPrimaryText(row, 'nama-tindakan');
-        var originalText = button.html();
-
-        if (!namaTindakan) {
-            alert('Nama tindakan tidak ditemukan.');
-            return;
+    function hasMappingData(row, c) {
+        var hasPrimary = $.trim(getPrimaryCode(row, c) || '') !== '';
+        if (!isFocalContext(c)) {
+            return hasPrimary;
         }
+        var hasFocal = $.trim(row.find('.focal-device-code').val() || '') !== '' ||
+            $.trim(row.find('.focal-device-display').val() || '') !== '' ||
+            $.trim(row.find('.focal-device-action').val() || '') !== '';
+        return hasPrimary || hasFocal;
+    }
 
-        button.html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
+    function updateSummary(row, c) {
+        var code = $.trim(getPrimaryCode(row, c) || ''), display = $.trim(getPrimaryDisplay(row, c) || '');
+        var lines = [];
+        if (code) {
+            lines.push('<div><strong>' + getPrimaryLabel(c) + ':</strong> ' + code + ' - ' + (display || '-') + '</div>');
+            if (c === 'rad') {
+                lines.push('<div><strong>System:</strong> ' + ($.trim(row.find('.select-system').val() || '') || '-') + '</div>');
+            }
+        } else {
+            lines.push('<div class="text-muted">Belum ada mapping kode.</div>');
+        }
+        if (isFocalContext(c)) {
+            var fCode = $.trim(row.find('.focal-device-code').val() || '');
+            var fDisplay = $.trim(row.find('.focal-device-display').val() || '');
+            var fAction = $.trim(row.find('.focal-device-action').val() || '');
+            if (fCode || fDisplay || fAction) {
+                var masterText = fCode ? ($('#modal-master-device-select option[value="' + fCode + '"]').data('display') || '-') : '-';
+                lines.push('<div><strong>Focal Device:</strong> ' + (fCode ? (fCode + ' - ' + (fDisplay || '-')) : '-') + '</div>');
+                lines.push('<div><strong>Master Device:</strong> ' + masterText + '</div>');
+                lines.push('<div><strong>Aksi Focal:</strong> ' + (actionLabelMap[fAction] || fAction || '-') + '</div>');
+            }
+        }
+        row.find('.mapping-summary').html(lines.join(''));
+        var button = row.find('.btn-open-mapping');
+        button.html('<i class="fa fa-link"></i> ' + (code ? 'Ubah Mapping' : 'Mapping'));
+        row.find('.btn-delete-mapping').toggle(hasMappingData(row, c));
+    }
+
+    function appendUniqueOption(select, key, text, attrs) {
+        var opt = $('<option>', { value: key, text: text });
+        $.each(attrs || {}, function(k, v) { opt.attr('data-' + k, v || ''); });
+        select.append(opt);
+    }
+
+    function filterMasterDeviceByContext(context) {
+        var kategori = context === 'lab' ? 'laboratorium' : (context === 'rad' ? 'radiologi' : 'tindakan');
+        $('#modal-master-device-select option').each(function(index) {
+            if (index === 0) {
+                $(this).show();
+                return;
+            }
+            var itemKategori = ($(this).data('kategori') || '').toString().toLowerCase();
+            $(this).toggle(itemKategori === kategori);
+        });
+    }
+
+    function fillChoicesFromResponse(res, mapItemFn, selectEl) {
+        var list = (res && res.status === 'success' && Array.isArray(res.choices)) ? res.choices : [];
+        var count = 0;
+        selectEl.find('option:gt(0)').remove();
+        for (var i = 0; i < list.length; i++) {
+            var mapped = mapItemFn(list[i] || {});
+            if (!mapped || !mapped.key) {
+                continue;
+            }
+            appendUniqueOption(selectEl, mapped.key, mapped.text, mapped.attrs);
+            count++;
+            if (count >= 5) break;
+        }
+        if (count > 0) {
+            selectEl.prop('selectedIndex', 1).trigger('change');
+        }
+        return count;
+    }
+
+    function requestAIChoices(endpoint, payload, mapItemFn, selectEl, button, doneMessage) {
+        var oldText = button.html();
+        button.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Generating...');
         $.ajax({
             type: 'POST',
-            url: "{?=url([ADMIN, 'bpjs_emr', 'fetchAISnomed'])?}",
-            data: {
-                nama_tindakan: namaTindakan,
-                t: "{?=$_SESSION['token']?}"
-            },
+            url: endpoint,
+            data: payload,
             dataType: 'json',
             timeout: AI_REQUEST_TIMEOUT
-        })
-        .done(function(data) {
-            if (data && data.status === 'success' && data.data && data.data.snomed_code) {
-                row.find('.snomed-code').val((data.data.snomed_code || '').toString().trim());
-                row.find('.snomed-display').val((data.data.snomed_display || '').toString().trim());
-                alert('Kode SNOMED berhasil dibuat.');
-            } else {
-                var doneMessage = (data && data.message) ? data.message : 'Kode SNOMED tidak ditemukan';
+        }).done(function(res) {
+            var count = fillChoicesFromResponse(res, mapItemFn, selectEl);
+            if (count > 0) {
                 alert(doneMessage);
-            }
-        })
-        .fail(function(xhr, status) {
-            if (status === 'timeout') {
-                alert('Permintaan generate SNOMED timeout.');
             } else {
-                var message = 'Gagal generate SNOMED.';
-                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                    message = xhr.responseJSON.message;
-                }
-                alert(message);
+                alert((res && res.message) ? res.message : 'Tidak ada saran AI yang valid.');
             }
-        })
-        .always(function() {
-            button.html(originalText).prop('disabled', false);
+        }).fail(function(xhr, status) {
+            if (status === 'timeout') {
+                alert('Permintaan AI timeout.');
+            } else {
+                alert((xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Gagal mengambil saran AI.');
+            }
+        }).always(function() {
+            button.prop('disabled', false).html(oldText);
         });
+    }
+
+    $('.btn-open-mapping').on('click', function() {
+        activeRow = $(this).closest('tr');
+        var ctx = $(this).data('context');
+        $('#modal-context').val(ctx);
+        $('#modal-target-name').val(getRowName(activeRow, ctx));
+        $('#modal-ai-primary-select').html('<option value="">-- Pilih hasil AI --</option>');
+        $('#modal-primary-code').val($.trim(getPrimaryCode(activeRow, ctx) || ''));
+        $('#modal-primary-display').val($.trim(getPrimaryDisplay(activeRow, ctx) || ''));
+        $('#modal-system-group').toggle(ctx === 'rad');
+        $('#modal-primary-system').val($.trim(activeRow.find('.select-system').val() || 'http://loinc.org'));
+
+        $('#modal-focal-section').show();
+        filterMasterDeviceByContext(ctx);
+        $('#modal-ai-focal-select').html('<option value="">-- Pilih hasil AI FocalDevice --</option>');
+        $('#modal-master-device-select').val($.trim(activeRow.find('.focal-device-code').val() || ''));
+        $('#modal-focal-code').val($.trim(activeRow.find('.focal-device-code').val() || ''));
+        $('#modal-focal-display').val($.trim(activeRow.find('.focal-device-display').val() || ''));
+        $('#modal-focal-action').val($.trim(activeRow.find('.focal-device-action').val() || ''));
+        $('#mappingDetailModal').modal('show');
     });
 
-    $('.btn-ai-focal-device').on('click', function() {
-        var button = $(this);
-        var row = button.closest('tr');
-        var namaTindakan = getRowPrimaryText(row, 'nama-tindakan');
-        var originalText = button.html();
-
-        if (!namaTindakan) {
-            alert('Nama tindakan tidak ditemukan.');
-            return;
+    $('#modal-ai-primary-select').on('change', function() {
+        var opt = $(this).find('option:selected');
+        $('#modal-primary-code').val((opt.data('code') || '').toString());
+        $('#modal-primary-display').val((opt.data('display') || '').toString());
+        if ($('#modal-context').val() === 'rad') {
+            var sys = (opt.data('system') || '').toString();
+            if (sys) $('#modal-primary-system').val(sys);
         }
+    });
 
-        button.html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
-        $.ajax({
-            type: 'POST',
-            url: "{?=url([ADMIN, 'bpjs_emr', 'fetchAIFocalDevice'])?}",
-            data: {
-                nama_tindakan: namaTindakan,
-                t: "{?=$_SESSION['token']?}"
+    $('#btn-generate-ai-primary').on('click', function() {
+        var ctx = $('#modal-context').val();
+        var targetName = $.trim($('#modal-target-name').val() || '');
+        if (!targetName) { alert('Target mapping tidak valid.'); return; }
+        var endpoint = "{?=url([ADMIN, 'bpjs_emr', 'fetchAISnomed'])?}";
+        var payload = { nama_tindakan: targetName, t: "{?=$_SESSION['token']?}" };
+        var mapItem = function(item) {
+            var code = (item.snomed_code || '').toString().trim();
+            var display = (item.snomed_display || '').toString().trim();
+            if (!code) return null;
+            return { key: code + '|' + display, text: '[' + code + '] ' + (display || code), attrs: { code: code, display: display } };
+        };
+        if (ctx === 'lab') {
+            endpoint = "{?=url([ADMIN, 'bpjs_emr', 'fetchAILab'])?}";
+            payload = { nama_pemeriksaan: targetName, t: "{?=$_SESSION['token']?}" };
+            mapItem = function(item) {
+                var code = (item.loinc_code || '').toString().trim();
+                var display = (item.loinc_display || '').toString().trim();
+                if (!code) return null;
+                return { key: code + '|' + display, text: '[' + code + '] ' + (display || code), attrs: { code: code, display: display } };
+            };
+        } else if (ctx === 'rad') {
+            endpoint = "{?=url([ADMIN, 'bpjs_emr', 'fetchAIRad'])?}";
+            payload = { nama_pemeriksaan: targetName, t: "{?=$_SESSION['token']?}" };
+            mapItem = function(item) {
+                var code = (item.standard_code || '').toString().trim();
+                var display = (item.standard_display || '').toString().trim();
+                var system = (item.system || '').toString().trim();
+                if (!code) return null;
+                return { key: code + '|' + display + '|' + system, text: '[' + code + '] ' + (display || code), attrs: { code: code, display: display, system: system } };
+            };
+        }
+        requestAIChoices(endpoint, payload, mapItem, $('#modal-ai-primary-select'), $(this), 'Berhasil membuat pilihan AI dari respons choices.');
+    });
+
+    $('#modal-master-device-select').on('change', function() {
+        var selected = $(this).find('option:selected');
+        $('#modal-focal-code').val($.trim($(this).val() || ''));
+        $('#modal-focal-display').val($.trim((selected.data('display') || '').toString()));
+    });
+
+    $('#modal-ai-focal-select').on('change', function() {
+        var opt = $(this).find('option:selected');
+        $('#modal-focal-code').val((opt.data('code') || '').toString());
+        $('#modal-focal-display').val((opt.data('display') || '').toString());
+        var action = (opt.data('action') || '').toString();
+        if (action) $('#modal-focal-action').val(action);
+    });
+
+    $('#btn-generate-ai-focal').on('click', function() {
+        var targetName = $.trim($('#modal-target-name').val() || '');
+        if (!targetName) { alert('Target mapping tidak valid.'); return; }
+        requestAIChoices(
+            "{?=url([ADMIN, 'bpjs_emr', 'fetchAIFocalDevice'])?}",
+            { nama_tindakan: targetName, t: "{?=$_SESSION['token']?}" },
+            function(item) {
+                var code = (item.focal_device_code || '').toString().trim();
+                var display = (item.focal_device_display || '').toString().trim();
+                var action = (item.focal_device_action || '').toString().trim();
+                if (!code && !display) return null;
+                var key = (code || '-') + '|' + (display || '-') + '|' + (action || '-');
+                return { key: key, text: '[' + (code || 'tanpa-kode') + '] ' + (display || 'tanpa display'), attrs: { code: code, display: display, action: action } };
             },
-            dataType: 'json',
-            timeout: AI_REQUEST_TIMEOUT
-        })
-        .done(function(data) {
-            if (data && data.status === 'success' && data.data && data.data.focal_device_code) {
-                row.find('.focal-device-code').val((data.data.focal_device_code || '').toString().trim());
-                row.find('.focal-device-display').val((data.data.focal_device_display || '').toString().trim());
-                var aiAction = (data.data.focal_device_action || '').toString().trim();
-                if (aiAction) {
-                    row.find('.focal-device-action').val(aiAction);
-                }
-                alert('Kode focalDevice berhasil dibuat.');
-            } else {
-                var doneMessage = (data && data.message) ? data.message : 'Kode focalDevice tidak ditemukan';
-                alert(doneMessage);
-            }
-        })
-        .fail(function(xhr, status) {
-            if (status === 'timeout') {
-                alert('Permintaan generate focalDevice timeout.');
-            } else {
-                var message = 'Gagal generate focalDevice.';
-                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                    message = xhr.responseJSON.message;
-                }
-                alert(message);
-            }
-        })
-        .always(function() {
-            button.html(originalText).prop('disabled', false);
+            $('#modal-ai-focal-select'),
+            $(this),
+            'Berhasil membuat pilihan focalDevice dari respons choices.'
+        );
+    });
+
+    $('#btn-clear-mapping-modal').on('click', function() {
+        $('#modal-primary-code, #modal-primary-display, #modal-focal-code, #modal-focal-display').val('');
+        $('#modal-primary-system, #modal-focal-action, #modal-master-device-select').val('');
+        $('#modal-ai-primary-select, #modal-ai-focal-select').prop('selectedIndex', 0);
+    });
+
+    $('#btn-save-mapping-modal').on('click', function() {
+        if (!activeRow) return;
+        var ctx = $('#modal-context').val();
+        setPrimary(activeRow, ctx, $.trim($('#modal-primary-code').val() || ''), $.trim($('#modal-primary-display').val() || ''), $.trim($('#modal-primary-system').val() || ''));
+        activeRow.find('.focal-device-code').val($.trim($('#modal-focal-code').val() || ''));
+        activeRow.find('.focal-device-display').val($.trim($('#modal-focal-display').val() || ''));
+        activeRow.find('.focal-device-action').val($.trim($('#modal-focal-action').val() || ''));
+        persistMappingRow(activeRow, ctx, function() {
+            updateSummary(activeRow, ctx);
+            $('#mappingDetailModal').modal('hide');
+            alert('Mapping berhasil disimpan.');
         });
     });
 
-    $('.btn-ai-loinc').on('click', function() {
-        var button = $(this);
-        var row = button.closest('tr');
-        var namaPemeriksaan = getRowPrimaryText(row, 'nama-pemeriksaan');
-        var originalText = button.html();
-
-        if (!namaPemeriksaan) {
-            alert('Nama pemeriksaan laboratorium tidak ditemukan.');
-            return;
+    function persistMappingRow(row, ctx, onSuccess) {
+        var endpoint = '';
+        var payload = { t: "{?=$_SESSION['token']?}" };
+        if (ctx === 'lab') {
+            endpoint = "{?=url([ADMIN, 'bpjs_emr', 'saveMappingLab'])?}";
+            payload.id_template = row.attr('id').replace('lab-', '');
+            payload.loinc_code = row.find('.loinc-code').val() || '';
+            payload.loinc_display = row.find('.loinc-display').val() || '';
+            payload.focal_device_code = row.find('.focal-device-code').val() || '';
+            payload.focal_device_display = row.find('.focal-device-display').val() || '';
+            payload.focal_device_action = row.find('.focal-device-action').val() || '';
+        } else if (ctx === 'rad') {
+            endpoint = "{?=url([ADMIN, 'bpjs_emr', 'saveMappingRad'])?}";
+            payload.kd_jenis_prw = row.attr('id').replace('rad-', '');
+            payload.standard_code = row.find('.standard-code').val() || '';
+            payload.standard_display = row.find('.standard-display').val() || '';
+            payload.system = row.find('.select-system').val() || '';
+            payload.focal_device_code = row.find('.focal-device-code').val() || '';
+            payload.focal_device_display = row.find('.focal-device-display').val() || '';
+            payload.focal_device_action = row.find('.focal-device-action').val() || '';
+        } else if (ctx === 'proc') {
+            endpoint = "{?=url([ADMIN, 'bpjs_emr', 'saveMappingProc'])?}";
+            payload.kd_jenis_prw = row.attr('id').replace('proc-', '');
+            payload.snomed_code = row.find('.snomed-code').val() || '';
+            payload.snomed_display = row.find('.snomed-display').val() || '';
+            payload.focal_device_code = row.find('.focal-device-code').val() || '';
+            payload.focal_device_display = row.find('.focal-device-display').val() || '';
+            payload.focal_device_action = row.find('.focal-device-action').val() || '';
+        } else if (ctx === 'proc_ranap') {
+            endpoint = "{?=url([ADMIN, 'bpjs_emr', 'saveMappingProcRanap'])?}";
+            payload.kd_jenis_prw = row.attr('id').replace('proc-ranap-', '');
+            payload.snomed_code = row.find('.snomed-code').val() || '';
+            payload.snomed_display = row.find('.snomed-display').val() || '';
+            payload.focal_device_code = row.find('.focal-device-code').val() || '';
+            payload.focal_device_display = row.find('.focal-device-display').val() || '';
+            payload.focal_device_action = row.find('.focal-device-action').val() || '';
+        } else if (ctx === 'operasi') {
+            endpoint = "{?=url([ADMIN, 'bpjs_emr', 'saveMappingOperasi'])?}";
+            payload.kode_paket = row.attr('id').replace('operasi-', '');
+            payload.snomed_code = row.find('.snomed-code').val() || '';
+            payload.snomed_display = row.find('.snomed-display').val() || '';
+            payload.focal_device_code = row.find('.focal-device-code').val() || '';
+            payload.focal_device_display = row.find('.focal-device-display').val() || '';
+            payload.focal_device_action = row.find('.focal-device-action').val() || '';
         }
 
-        button.html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
-        $.ajax({
-            type: 'POST',
-            url: "{?=url([ADMIN, 'bpjs_emr', 'fetchAILab'])?}",
-            data: {
-                nama_pemeriksaan: namaPemeriksaan,
-                t: "{?=$_SESSION['token']?}"
-            },
-            dataType: 'json',
-            timeout: AI_REQUEST_TIMEOUT
-        })
-        .done(function(data) {
-            if (data && data.status === 'success' && data.data && data.data.loinc_code) {
-                row.find('.loinc-code').val((data.data.loinc_code || '').toString().trim());
-                row.find('.loinc-display').val((data.data.loinc_display || '').toString().trim());
-                alert('Kode LOINC berhasil dibuat.');
+        $.post(endpoint, payload, function(res) {
+            if (res == '1') {
+                if (typeof onSuccess === 'function') onSuccess();
             } else {
-                var doneMessage = (data && data.message) ? data.message : 'Kode LOINC tidak ditemukan';
-                alert(doneMessage);
+                alert('Gagal menyimpan mapping.');
             }
-        })
-        .fail(function(xhr, status) {
-            if (status === 'timeout') {
-                alert('Permintaan generate LOINC timeout.');
-            } else {
-                var message = 'Gagal generate LOINC.';
-                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                    message = xhr.responseJSON.message;
-                }
-                alert(message);
-            }
-        })
-        .always(function() {
-            button.html(originalText).prop('disabled', false);
+        }).fail(function() {
+            alert('Terjadi kesalahan saat menyimpan mapping.');
         });
-    });
+    }
 
-    $('.btn-ai-rad').on('click', function() {
-        var button = $(this);
-        var row = button.closest('tr');
-        var namaPemeriksaan = getRowPrimaryText(row, 'nama-pemeriksaan');
-        var originalText = button.html();
+    function clearRowMapping(row, ctx) {
+        setPrimary(row, ctx, '', '', '');
+        row.find('.focal-device-code').val('');
+        row.find('.focal-device-display').val('');
+        row.find('.focal-device-action').val('');
+    }
 
-        if (!namaPemeriksaan) {
-            alert('Nama pemeriksaan radiologi tidak ditemukan.');
-            return;
-        }
+    $('#lab tbody tr').each(function() { updateSummary($(this), 'lab'); });
+    $('#rad tbody tr').each(function() { updateSummary($(this), 'rad'); });
+    $('#proc tbody tr').each(function() { updateSummary($(this), 'proc'); });
+    $('#proc-ranap tbody tr').each(function() { updateSummary($(this), 'proc_ranap'); });
+    $('#operasi tbody tr').each(function() { updateSummary($(this), 'operasi'); });
 
-        button.html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
-        $.ajax({
-            type: 'POST',
-            url: "{?=url([ADMIN, 'bpjs_emr', 'fetchAIRad'])?}",
-            data: {
-                nama_pemeriksaan: namaPemeriksaan,
-                t: "{?=$_SESSION['token']?}"
-            },
-            dataType: 'json',
-            timeout: AI_REQUEST_TIMEOUT
-        })
-        .done(function(data) {
-            if (data && data.status === 'success' && data.data && data.data.standard_code) {
-                row.find('.standard-code').val((data.data.standard_code || '').toString().trim());
-                row.find('.standard-display').val((data.data.standard_display || '').toString().trim());
-                if (data.data.system) {
-                    row.find('.select-system').val((data.data.system || '').toString().trim());
-                }
-                alert('Kode radiologi berhasil dibuat.');
-            } else {
-                var doneMessage = (data && data.message) ? data.message : 'Kode radiologi tidak ditemukan';
-                alert(doneMessage);
-            }
-        })
-        .fail(function(xhr, status) {
-            if (status === 'timeout') {
-                alert('Permintaan generate kode radiologi timeout.');
-            } else {
-                var message = 'Gagal generate kode radiologi.';
-                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                    message = xhr.responseJSON.message;
-                }
-                alert(message);
-            }
-        })
-        .always(function() {
-            button.html(originalText).prop('disabled', false);
-        });
-    });
-
-    // Save Lab
-    $('.btn-save-lab').click(function() {
-        var id = $(this).data('id');
-        var row = $('#lab-'+id);
-        var code = row.find('.loinc-code').val();
-        var display = row.find('.loinc-display').val();
-        
-        if (!code) {
-            alert('Silakan pilih kode LOINC terlebih dahulu.');
-            return;
-        }
-
-        $.post("{?=url([ADMIN, 'bpjs_emr', 'saveMappingLab'])?}", {
-            id_template: id,
-            loinc_code: code,
-            loinc_display: display,
-            t: "{?=$_SESSION['token']?}"
-        }, function(res) {
-            if(res == '1') {
-                alert('Pemetaan Lab disimpan');
-            } else {
-                alert('Gagal menyimpan pemetaan lab');
-            }
-        });
-    });
-
-    // Save Rad
-    $('.btn-save-rad').click(function() {
-        var id = $(this).data('id');
-        var row = $('#rad-'+id);
-        var code = row.find('.standard-code').val();
-        var display = row.find('.standard-display').val();
-        
-        if (!code) {
-            alert('Silakan pilih kode terlebih dahulu.');
-            return;
-        }
-        var system = row.find('.select-system').val();
-
-        $.post("{?=url([ADMIN, 'bpjs_emr', 'saveMappingRad'])?}", {
-            kd_jenis_prw: id,
-            standard_code: code,
-            standard_display: display,
-            system: system,
-            t: "{?=$_SESSION['token']?}"
-        }, function(res) {
-            if(res == '1') {
-                alert('Pemetaan Radiologi disimpan');
-            } else {
-                alert('Gagal menyimpan pemetaan radiologi');
-            }
-        });
-    });
-
-    // Save Proc
-    $('.btn-save-proc').click(function() {
-        var id = $(this).data('id');
-        var row = $('#proc-'+id);
-        var code = row.find('.snomed-code').val();
-        var display = row.find('.snomed-display').val();
-        var focalDeviceCode = row.find('.focal-device-code').val();
-        var focalDeviceDisplay = row.find('.focal-device-display').val();
-        var focalDeviceAction = row.find('.focal-device-action').val();
-        
-        if (!code) {
-            alert('Silakan pilih kode SNOMED terlebih dahulu.');
-            return;
-        }
-
-        $.post("{?=url([ADMIN, 'bpjs_emr', 'saveMappingProc'])?}", {
-            kd_jenis_prw: id,
-            snomed_code: code,
-            snomed_display: display,
-            focal_device_code: focalDeviceCode,
-            focal_device_display: focalDeviceDisplay,
-            focal_device_action: focalDeviceAction,
-            t: "{?=$_SESSION['token']?}"
-        }, function(res) {
-            if(res == '1') {
-                alert('Pemetaan Tindakan disimpan');
-            } else {
-                alert('Gagal menyimpan pemetaan tindakan');
-            }
-        });
-    });
-
-    // Save Proc Ranap
-    $('.btn-save-proc-ranap').click(function() {
-        var id = $(this).data('id');
-        var row = $('#proc-ranap-'+id);
-        var code = row.find('.snomed-code').val();
-        var display = row.find('.snomed-display').val();
-        var focalDeviceCode = row.find('.focal-device-code').val();
-        var focalDeviceDisplay = row.find('.focal-device-display').val();
-        var focalDeviceAction = row.find('.focal-device-action').val();
-
-        if (!code) {
-            alert('Silakan pilih kode SNOMED terlebih dahulu.');
-            return;
-        }
-
-        $.post("{?=url([ADMIN, 'bpjs_emr', 'saveMappingProcRanap'])?}", {
-            kd_jenis_prw: id,
-            snomed_code: code,
-            snomed_display: display,
-            focal_device_code: focalDeviceCode,
-            focal_device_display: focalDeviceDisplay,
-            focal_device_action: focalDeviceAction,
-            t: "{?=$_SESSION['token']?}"
-        }, function(res) {
-            if(res == '1') {
-                alert('Pemetaan Tindakan Rawat Inap disimpan');
-            } else {
-                alert('Gagal menyimpan pemetaan tindakan rawat inap');
-            }
-        });
-    });
-
-    // Save Operasi
-    $('.btn-save-operasi').click(function() {
-        var id = $(this).data('id');
-        var row = $('#operasi-'+id);
-        var code = row.find('.snomed-code').val();
-        var display = row.find('.snomed-display').val();
-        var focalDeviceCode = row.find('.focal-device-code').val();
-        var focalDeviceDisplay = row.find('.focal-device-display').val();
-        var focalDeviceAction = row.find('.focal-device-action').val();
-
-        if (!code) {
-            alert('Silakan pilih kode SNOMED terlebih dahulu.');
-            return;
-        }
-
-        $.post("{?=url([ADMIN, 'bpjs_emr', 'saveMappingOperasi'])?}", {
-            kode_paket: id,
-            snomed_code: code,
-            snomed_display: display,
-            focal_device_code: focalDeviceCode,
-            focal_device_display: focalDeviceDisplay,
-            focal_device_action: focalDeviceAction,
-            t: "{?=$_SESSION['token']?}"
-        }, function(res) {
-            if(res == '1') {
-                alert('Pemetaan Operasi disimpan');
-            } else {
-                alert('Gagal menyimpan pemetaan operasi');
-            }
+    $('.btn-delete-mapping').on('click', function() {
+        var row = $(this).closest('tr');
+        var ctx = $(this).data('context');
+        clearRowMapping(row, ctx);
+        persistMappingRow(row, ctx, function() {
+            updateSummary(row, ctx);
+            alert('Mapping berhasil dihapus.');
         });
     });
 });

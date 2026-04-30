@@ -69,6 +69,7 @@ class Admin extends AdminModule
         // access and cap are already strings from frontend
         if (!isset($_POST['access'])) $_POST['access'] = 'dashboard';
         if (!isset($_POST['cap'])) $_POST['cap'] = '';
+        $_POST['role'] = $this->_normalizeRoleInput($_POST['role'] ?? []);
 
         unset($_POST['save']);
         unset($_POST['status']); // mlite_users table does not have status column
@@ -139,6 +140,7 @@ class Admin extends AdminModule
             if (empty($row['fullname'])) {
                 $row['fullname'] = '----';
             }
+            $row['role'] = implode(', ', $this->_parseRoles($row['role'] ?? ''));
             $row['editURL'] = url([ADMIN, 'users', 'edit', $row['id']]);
             $row['permURL'] = url([ADMIN, 'users', 'permission', $row['id']]);
             $row['delURL']  = url([ADMIN, 'users', 'delete', $row['id']]);
@@ -158,12 +160,12 @@ class Admin extends AdminModule
         if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
           $this->_addInfoUser();
         }
-        $this->_getInfoRole();
         if (!empty($redirectData = getRedirectData())) {
-            $this->assign['form'] = array_map('htmlspecialchars', $redirectData);
+            $this->assign['form'] = $redirectData;
         } else {
             $this->assign['form'] = ['username' => '', 'email' => '', 'fullname' => '', 'description' => '', 'role' => '', 'cap' => ''];
         }
+        $this->_getInfoRole($this->assign['form']['role'] ?? '');
 
         $this->assign['title'] = 'Pengguna baru';
         $this->assign['modules'] = $this->_getModules('all');
@@ -185,11 +187,11 @@ class Admin extends AdminModule
         if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
           $this->_addInfoUser();
         }
-        $this->_getInfoRole();
         $user = $this->db('mlite_users')->oneArray($id);
 
         if (!empty($user) && is_array($user)) {
             $this->assign['form'] = $user;
+            $this->_getInfoRole($user['role'] ?? '');
             $this->assign['title'] = 'Sunting pengguna';
             $this->assign['modules'] = $this->_getModules(isset($user['access']) ? $user['access'] : null);
             $this->assign['cap'] = [];
@@ -249,6 +251,7 @@ class Admin extends AdminModule
             $errors++;
             $this->notify('failure', 'Password terlalu pendek. Minimal 8 karakter serta memuat kombinasi huruf besar, huruf kecil, angka, dan karakter khusus ');
         }
+        $_POST['role'] = $this->_normalizeRoleInput($_POST['role'] ?? []);
         // access to modules
         if ((count($_POST['access']) == count($this->_getModules())) || ($id == 1)) {
             $_POST['access'] = 'all';
@@ -465,14 +468,46 @@ class Admin extends AdminModule
     * @return array
     */
 
-    private function _getInfoRole() {
+    private function _getInfoRole($selectedRoles = null) {
       $role = array('pengguna','kasir','rekammedis','radiologi','laboratorium','paramedis','apoteker','medis','manajemen','admin');
+      $selectedRoles = $this->_parseRoles($selectedRoles);
       if (count($role)) {
         $this->assign['role'] = [];
         foreach($role as $row) {
-            $this->assign['role'][] = $row;
+            $this->assign['role'][] = [
+                'name' => $row,
+                'attr' => in_array($row, $selectedRoles, true) ? 'selected' : ''
+            ];
         }
       }
+    }
+
+    private function _parseRoles($roleValue): array
+    {
+        if (is_array($roleValue)) {
+            return array_values(array_filter(array_map('trim', $roleValue)));
+        }
+
+        if (!is_string($roleValue) || trim($roleValue) === '') {
+            return [];
+        }
+
+        $decoded = json_decode($roleValue, true);
+        if (is_array($decoded)) {
+            return array_values(array_filter(array_map('trim', $decoded)));
+        }
+
+        return array_values(array_filter(array_map('trim', explode(',', $roleValue))));
+    }
+
+    private function _normalizeRoleInput($roleInput): string
+    {
+        $roles = $this->_parseRoles($roleInput);
+        if (empty($roles)) {
+            return '';
+        }
+
+        return implode(',', array_values(array_unique($roles)));
     }
 
     private function _getInfoCap($kd_poli = null)

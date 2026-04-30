@@ -12,98 +12,93 @@ Panel kontrol dan tampilan default sepenuhnya responsif, yang membuatnya dapat d
 
 Masih banyak fitur-fitur tersembunyi untuk kebutuhan pengembangan. Silahkan jelajahi!!
 
-Kebutuhan Sistem
-----------------
+## Kebutuhan Sistem
 
 Persyaratan sistem untuk mLITE  sangat sederhana, sehingga setiap server modern sudah cukup. Berikut persyaratan minimal yang diperlukan
 
-+ Apache 2.2+ dengan `mod_rewrite` atau Nginx
-+ PHP versi 7.4 - 8.3+
-+ MySQL atau MariaDB
+- Apache 2.2+ dengan `mod_rewrite` atau Nginx
+- PHP versi 7.4 - 8.3+
+- MySQL atau MariaDB
 
 Konfigurasi PHP harus memiliki ekstensi berikut:
 
-+ dom
-+ gd
-+ mbstring
-+ pdo
-+ zip
-+ cURL
+- dom
+- gd
+- mbstring
+- pdo
+- zip
+- cURL
 
-Pemasangan
-----------
+## Pemasangan
 
 ### Pemasangan menggunakan composer.
+
 1. Install composer di server/PC dan jalankan perintah composer untuk pemasangan paket utama dan independensi
 
 ```
 $ composer create-project basoro/mlite
 ```
 
-2. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
-
-3. Sesuaikan pengaturan di .env
-
-4. Buat database baru di MySQL/MariaDB dan import file `mlite_db.sql`
-
-5. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
-
-6. Silahkan login dengan Username: admin dan Password: admin
+1. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
+2. Sesuaikan pengaturan di .env
+3. Buat database baru di MySQL/MariaDB dan import file `mlite_db.sql`
+4. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
+5. Silahkan login dengan Username: admin dan Password: admin
 
 ### Pemasangan Manual
-1. Unduh versi terbaru [mLITE] (https://github.com/basoro/mlite).
 
-2. Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Biasanya, file diunggah ke `www`,` htdocs` atau `public_html`.
-
+1. Unduh versi terbaru \[mLITE] (<https://github.com/basoro/mlite>).
+2. Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Biasanya, file diunggah ke `www`, ` htdocs` atau `public_html`.
 3. Install composer di server/PC dan jalankan perintah composer untuk pemasangan independensi
+
 ```
 $ composer install
 ```
 
-4. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
-
-5. Sesuaikan pengaturan di .env
-
-6. Buat database baru di MySQL/MariaDB dan import file `mlite_db.sql` (tambahkan sql-mode = '' pada my.cnf atau jalankan perintah berikut)
+1. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
+2. Sesuaikan pengaturan di .env
+3. Buat database baru di MySQL/MariaDB dan import file `mlite_db.sql` (tambahkan sql-mode = '' pada my.cnf atau jalankan perintah berikut)
 
 ```
 $ sed -i "/user=mysql/a sql-mode = ''" /etc/my.cnf
 ```
 
-7. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
-
-8. Silahkan login dengan Username: admin dan Password: admin
+1. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
+2. Silahkan login dengan Username: admin dan Password: admin
 
 ### Pemasangan menggunakan docker.
-1. Download file release terbaru [mLITE] atau lakukan git clone.
+
+1. Download file release terbaru \[mLITE] atau lakukan git clone.
 
 ```
 $ git clone https://github.com/basoro/mlite.git
 ```
-Sesuaikan environment variable di .env seperti port APP dan MySQL dari default ke port yang anda inginkan (atau biarkan defautl saja). 
 
-2. Jalankan perintah docker-compose
+Sesuaikan environment variable di .env seperti port APP dan MySQL dari default ke port yang anda inginkan (atau biarkan defautl saja).
+
+1. Jalankan perintah docker-compose
+
 ```
 $ cd mlite/docker && docker-compose build && docker-compose up -d
 ```
 
-3. Buka browser Anda dan navigasikan ke alamat URL_ADDRESS:8088.
-
-4. Silahkan login dengan Username: admin dan Password: admin
-
+1. Buka browser Anda dan navigasikan ke alamat URL\_ADDRESS:8088.
+2. Silahkan login dengan Username: admin dan Password: admin
 
 ## Catatan:
+
 Untuk setiap kali update, silahkan jalankan perintah
+
 ```
 $ composer update
 ```
-Ini untuk menambahkan dependensi baru pada aplikasi
 
+Ini untuk menambahkan dependensi baru pada aplikasi
 
 ## Peringatan!
 
-+ Untuk pengguna Apache, pastikan file `.htaccess` juga ada di server. Tanpanya mLITE tidak akan berfungsi.
-+ Untuk pengguna Nginx, tambahkan konfigurasi berikut di pengaturan nginx.conf (atau sejenisnya)
+- Untuk pengguna Apache, pastikan file `.htaccess` juga ada di server. Tanpanya mLITE tidak akan berfungsi.
+- Untuk pengguna Nginx, tambahkan konfigurasi berikut di pengaturan nginx.conf (atau sejenisnya)
 
 ```bash
 location  / {
@@ -156,8 +151,11 @@ location  /lite/admin {
 ```
 
 Untuk masuk ke panel administrasi, tambahkan `/admin/` di akhir URL.
+
 #### Login: `admin` Kata sandi: `admin`
+
 Ini harus diubah segera setelah login untuk alasan keamanan. Juga dapat mengganti nama direktori dengan panel administrasi.  (Anda perlu mengubahnya pada `config.php`)
 
 ## Demo
-Untuk Demo dan Info lebih lanjut di https://mlite.id
+
+Untuk Demo dan Info lebih lanjut di <https://mlite.id>

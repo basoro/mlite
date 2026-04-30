@@ -963,6 +963,7 @@ function renderData(data) {
   // Laboratorium
   var labHtml = '';
   if (data.laboratorium && data.laboratorium.length > 0) {
+    console.log(data.laboratorium);
     data.laboratorium.forEach(function(l) {
       labHtml += `
         <tr>
@@ -970,7 +971,7 @@ function renderData(data) {
           <td>${escapeHtml(l.jam_rawat || '-')}</td>
           <td>${escapeHtml(l.loinc_display || '-')}</td>
           <td>${escapeHtml(l.hasil || '-')}</td>
-          <td>${escapeHtml(l.display_map || '-')}</td>
+          <td>${escapeHtml(l.keterangan || '-')}</td>
         </tr>
       `;
     });
@@ -982,12 +983,13 @@ function renderData(data) {
   // Operasi
   var opHtml = '';
   if (data.operasi && data.operasi.length > 0) {
+    console.log(data.operasi);
     data.operasi.forEach(function(l) {
       opHtml += `
         <tr>
           <td>${escapeHtml(l.tgl_perawatan || '-')}</td>
           <td>${escapeHtml(l.jam_rawat || '-')}</td>
-          <td>${escapeHtml(l.display_simrs || '-')}</td>
+          <td>${escapeHtml(l.snomed_display || '-')}</td>
           <td>${escapeHtml(l.hasil || '-')}</td>
         </tr>
       `;

@@ -50,16 +50,11 @@
     	                <input type="password" name="password" class="form-control" pattern=".{5,}" title="Kata kunci terlalu pendek" {if: isset($users.form.id)}value="********" placeholder="Kata kunci baru" disabled {else}required{/if}/>
     	            </div>
                   <div class="form-group">
-                      <label>Role</label>
-                      <select name="role" class="form-control">
-                        {if: !empty($users.user)}
+                      <label>Role (Bisa lebih dari satu)</label>
+                      <select name="role[]" class="form-control" multiple>
                         {loop: $users.role}
-                          <option value="{?=isset_or($value)?}"{if: $value == $users.form.role} selected{/if}>{?=isset_or($value)?}</option>
+                          <option value="{?=isset_or($value.name)?}" {?=isset_or($value.attr)?}>{?=isset_or($value.name)?}</option>
                         {/loop}
-                        {else}
-                          <option value="pengguna"{if: $users.form.role == 'pengguna'} selected{/if}>Pengguna</option>
-                          <option value="admin"{if: $users.form.role == 'admin'} selected{/if}>Admin</option>
-                        {/if}
                       </select>
                   </div>
                   {if: !empty($users.cap)}
