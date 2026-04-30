@@ -1,0 +1,150 @@
+<article class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title pull-left">{$pacs.title}</h3>
+        <div class="pull-right">
+          <button class="btn btn-success btn-xs" data-toggle="modal" data-target="#uploadModal"><i
+              class="fa fa-upload"></i> Upload Image/DICOM</button>
+          <a href="{?=url([ADMIN, 'mini_pacs', 'manage'])?}" class="btn btn-default btn-xs"><i
+              class="fa fa-refresh"></i> Refresh</a>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+      <div class="panel-body" style="padding: 10px;">
+        <div class="table-responsive">
+          <table class="table pacs-table" id="pacsTable" style="margin-top: 0 !important;">
+            <thead>
+              <tr class="header-labels">
+                <th width="30"><input type="checkbox" id="checkAll"></th>
+                <th width="30"></th>
+                <th>Patient Birth Date</th>
+                <th>Patient Name</th>
+                <th>Patient ID</th>
+                <th>Study Description</th>
+                <th>Study Date</th>
+                <th>Modalities in Study</th>
+                <th>Accession number</th>
+                <th># Ser/Inst</th>
+              </tr>
+              <tr class="filter-row">
+                <th></th>
+                <th></th>
+                <th><input type="text" placeholder="YYYYMMDD" class="column-filter" data-column="1"></th>
+                <th><input type="text" placeholder="John^Doe" class="column-filter" data-column="2"></th>
+                <th><input type="text" placeholder="1234" class="column-filter" data-column="3"></th>
+                <th><input type="text" placeholder="Chest" class="column-filter" data-column="4"></th>
+                <th><input type="text" placeholder="" class="column-filter" data-column="5"></th>
+                <th><select class="column-filter" data-column="6">
+                    <option value="">All</option>
+                    <option value="CR">CR</option>
+                    <option value="CT">CT</option>
+                    <option value="MR">MR</option>
+                    <option value="US">US</option>
+                    <option value="DX">DX</option>
+                    <option value="MG">MG</option>
+                    <option value="PX">PX</option>
+                    <option value="IO">IO</option>
+                    <option value="XA">XA</option>
+                    <option value="RF">RF</option>
+                    <option value="NM">NM</option>
+                    <option value="OT">OT</option>
+                  </select></th>
+                <th><input type="text" placeholder="1234" class="column-filter" data-column="7"></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- Modal Upload -->
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="{?=url([ADMIN, 'mini_pacs', 'upload'])?}" method="post" enctype="multipart/form-data">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="uploadModalLabel">Upload Image atau DICOM</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>No Rawat Pasien</label>
+            <input type="text" class="form-control" name="no_rawat" placeholder="Cth: 2026/01/01/000001" required>
+          </div>
+          <div class="form-group">
+            <label>Modality</label>
+            <select class="form-control" name="modality" required>
+              <option value="CR">CR (Computed Radiography)</option>
+              <option value="CT">CT (Computed Tomography)</option>
+              <option value="MR">MR (Magnetic Resonance)</option>
+              <option value="US">US (Ultrasound)</option>
+              <option value="DX">DX (Digital Radiography)</option>
+              <option value="MG">MG (Mammography)</option>
+              <option value="PX">PX (Panoramic X-Ray)</option>
+              <option value="IO">IO (Intra-oral Radiography)</option>
+              <option value="XA">XA (X-Ray Angiography)</option>
+              <option value="RF">RF (Radio Fluoroscopy)</option>
+              <option value="NM">NM (Nuclear Medicine)</option>
+              <option value="OT">OT (Other)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Pilih Gambar/DICOM (JPG/PNG/DCM)</label>
+            <input type="file" class="form-control" name="file_image" accept=".jpg,.jpeg,.png,.dcm" required>
+            <p class="help-block">File JPG/PNG akan otomatis dikonversi menggunakan img2dcm. File DCM akan disesuaikan
+              datanya.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan / Konversi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Satusehat Response -->
+<div class="modal fade" id="satusehatModal" tabindex="-1" role="dialog" aria-labelledby="satusehatModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="satusehatModalLabel">Respon Satu Sehat</h4>
+      </div>
+      <div class="modal-body">
+        <h5><strong>Respon DICOM (STOW-RS)</strong></h5>
+        <pre><code id="satusehatDicomResponse"></code></pre>
+        <hr>
+        <h5><strong>Respon FHIR (ImagingStudy)</strong></h5>
+        <pre><code id="satusehatFhirResponse"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Viewer -->
+<div class="modal fade" id="viewerModal" tabindex="-1" role="dialog" aria-labelledby="viewerModalLabel">
+  <div class="modal-dialog modal-lg" role="document" style="width: 95vw; height: 95vh; margin: 2.5vh auto;">
+    <div class="modal-content" style="height: 100%;">
+      <div class="modal-header" style="height: 50px; padding: 10px 15px;">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top: 2px;"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="viewerModalLabel">Mini PACS Viewer</h4>
+      </div>
+      <div class="modal-body" style="height: calc(100% - 50px); padding: 0;">
+        <iframe id="viewerIframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
+      </div>
+    </div>
+  </div>
+</div>

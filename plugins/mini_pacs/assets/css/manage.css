@@ -1,0 +1,176 @@
+/* manage.css - PACS Professional UI */
+.pacs-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100% !important;
+}
+
+.pacs-table thead th {
+    background-color: #f1f1f1;
+    color: #333;
+    font-weight: 600;
+    border-bottom: 1px solid #ccc;
+    vertical-align: middle;
+    padding: 8px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.pacs-table td {
+    vertical-align: middle !important;
+    padding: 10px 8px !important;
+    font-size: 13px;
+    border-bottom: 1px solid #eee;
+}
+
+.pacs-table tbody tr {
+    cursor: pointer;
+}
+
+/* Filter Row */
+.filter-row th {
+    background-color: #fff !important;
+    padding: 4px 8px !important;
+}
+
+.filter-row input {
+    width: 100%;
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+}
+
+/* Toolbar Row */
+.toolbar-row th {
+    background-color: #dcdcdc !important;
+    padding: 6px 10px !important;
+}
+
+.pacs-toolbar {
+    display: flex;
+    gap: 4px;
+}
+
+.pacs-toolbar .btn-pacs-tool {
+    padding: 4px 10px;
+    background: #7f8c8d;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.pacs-toolbar .btn-pacs-tool:hover {
+    background: #95a5a6;
+}
+
+.btn-pacs-primary { background: #3498db !important; }
+.btn-pacs-success { background: #27ae60 !important; }
+.btn-pacs-danger { background: #e74c3c !important; }
+
+/* Expansion Row */
+.pacs-details-row {
+    background-color: #f9f9f9;
+}
+
+.pacs-details-container {
+    padding: 15px 30px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.pacs-details-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.pacs-metadata-card {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 30px;
+}
+
+.pacs-meta-item {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dotted #ccc;
+    padding-bottom: 2px;
+}
+
+.pacs-meta-label {
+    font-weight: bold;
+    color: #444;
+    font-size: 12px;
+}
+
+.pacs-meta-val {
+    color: #333;
+    font-size: 12px;
+}
+
+.pacs-details-actions {
+    width: 250px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-left: 20px;
+    align-content: flex-start;
+}
+
+.pacs-details-actions .btn {
+    width: 44px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    background: #7f8c8d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+.pacs-details-actions .btn:hover {
+    background: #95a5a6;
+}
+
+/* Series Table */
+.pacs-series-section {
+    margin-top: 20px;
+}
+
+.pacs-series-table {
+    width: 100%;
+    border-top: 2px solid #444;
+}
+
+.pacs-series-table th {
+    padding: 8px;
+    font-size: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    color: #555;
+    background: #f1f1f1;
+}
+
+.pacs-series-table td {
+    padding: 8px;
+    font-size: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Scroll Custom */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #bbb;
+}
