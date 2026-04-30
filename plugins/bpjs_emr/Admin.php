@@ -1313,19 +1313,106 @@ class Admin extends AdminModule
         
         // Tambah image untuk radiologi
         if (!$isLab) {
-            $observation['image'] = [
-                [
-                    'comment' => $diag['hasil'] ?? '',
-                    'link' => [
-                        'reference' => '',
-                        'display' => ''
+            $sopInstanceUid = trim((string) ($diag['sop_instance_uid'] ?? ''));
+            if ($sopInstanceUid === '') {
+                $sopInstanceUid = $this->resolveMiniPacsSopInstanceUid($diag);
+            }
+            $radiologyImage = $this->buildMiniPacsImageUrl($sopInstanceUid);
+            if ($radiologyImage !== '') {
+                $observation['image'] = [
+                    [
+                        'comment' => $diag['hasil'] ?? '-',
+                        'link' => [
+                            'reference' => $radiologyImage,
+                            'display' => 'Hasil gambar radiologi'
+                        ]
                     ]
-                ]
-            ];
+                ];
+            }
             $observation['conclusion'] = $diag['hasil'] ?? '-';
         }
         
         return $observation;
+    }
+
+    private function resolveMiniPacsSopInstanceUid($diag)
+    {
+        static $sopCacheByNoRawat = [];
+
+        $noRawat = trim((string) ($diag['no_rawat'] ?? ''));
+        if ($noRawat === '') {
+            return '';
+        }
+        if (array_key_exists($noRawat, $sopCacheByNoRawat)) {
+            return $sopCacheByNoRawat[$noRawat];
+        }
+
+        $sopCacheByNoRawat[$noRawat] = '';
+
+        $studies = $this->db('mlite_mini_pacs_study')
+            ->where('no_rawat', $noRawat)
+            ->desc('id')
+            ->toArray();
+
+        foreach (($studies ?: []) as $study) {
+            $studyId = $study['id'] ?? null;
+            if (empty($studyId)) {
+                continue;
+            }
+
+            $seriesList = $this->db('mlite_mini_pacs_series')
+                ->where('study_id', $studyId)
+                ->desc('id')
+                ->toArray();
+
+            foreach (($seriesList ?: []) as $series) {
+                $seriesId = $series['id'] ?? null;
+                if (empty($seriesId)) {
+                    continue;
+                }
+
+                $instances = $this->db('mlite_mini_pacs_instance')
+                    ->where('series_id', $seriesId)
+                    ->desc('id')
+                    ->toArray();
+
+                foreach (($instances ?: []) as $instance) {
+                    $sopUid = trim((string) ($instance['sop_instance_uid'] ?? ''));
+                    if ($sopUid !== '') {
+                        $sopCacheByNoRawat[$noRawat] = $sopUid;
+                        return $sopUid;
+                    }
+                }
+            }
+        }
+
+        return '';
+    }
+
+    private function buildMiniPacsImageUrl($sopInstanceUid)
+    {
+        $sopInstanceUid = trim((string) $sopInstanceUid);
+        if ($sopInstanceUid === '') {
+            return '';
+        }
+
+        $isMono = trim((string) $this->settings->get('mini_pacs.is_mono'));
+        $remoteIp = trim((string) $this->settings->get('mini_pacs.remote_ip'));
+        $baseUrl = '';
+
+        if ($isMono === '0' && $remoteIp !== '') {
+            if (preg_match('#^https?://#i', $remoteIp)) {
+                $baseUrl = $remoteIp;
+            } else {
+                $baseUrl = 'http://' . $remoteIp;
+            }
+        }
+
+        if ($baseUrl === '') {
+            return url('uploads/pacs/' . $sopInstanceUid . '_thumb.jpg');
+        }
+
+        return rtrim($baseUrl, '/') . '/uploads/pacs/' . $sopInstanceUid . '_thumb.jpg';
     }
 
     public function buildFHIRBundle($data)
@@ -2245,6 +2332,15 @@ class Admin extends AdminModule
                     mlite_bpjs_emr_mapping_radiologi.standard_code,
                     mlite_bpjs_emr_mapping_radiologi.standard_display,
                     mlite_bpjs_emr_mapping_radiologi.system,
+                    (
+                        SELECT mpi.sop_instance_uid
+                        FROM mlite_mini_pacs_study mps
+                        INNER JOIN mlite_mini_pacs_series mpss ON mpss.study_id = mps.id
+                        INNER JOIN mlite_mini_pacs_instance mpi ON mpi.series_id = mpss.id
+                        WHERE mps.no_rawat = periksa_radiologi.no_rawat
+                        ORDER BY mpi.id DESC
+                        LIMIT 1
+                    ) AS sop_instance_uid,
                     dokter.nm_dokter
                 FROM periksa_radiologi
                 INNER JOIN mlite_bpjs_emr_mapping_radiologi ON periksa_radiologi.kd_jenis_prw = mlite_bpjs_emr_mapping_radiologi.kd_jenis_prw
@@ -2256,6 +2352,15 @@ class Admin extends AdminModule
             $stmt7 = $this->db()->pdo()->prepare($sql7);
             $stmt7->execute([$no_rawat]);
             $hasil_rad = $stmt7->fetchAll(\PDO::FETCH_ASSOC);
+            if (!empty($hasil_rad)) {
+                foreach ($hasil_rad as $idx => $radItem) {
+                    $sopInstanceUid = trim((string) ($radItem['sop_instance_uid'] ?? ''));
+                    if ($sopInstanceUid === '') {
+                        $sopInstanceUid = $this->resolveMiniPacsSopInstanceUid($radItem);
+                    }
+                    $hasil_rad[$idx]['radiology_image_url'] = $this->buildMiniPacsImageUrl($sopInstanceUid);
+                }
+            }
 
             // Hasil Operasi
             $sql8 = "SELECT 

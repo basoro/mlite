@@ -321,6 +321,7 @@
                     <th>Jam</th>
                     <th>Jenis Pemeriksaan</th>
                     <th>Hasil</th>
+                    <th>Gambar</th>
                   </tr>
                 </thead>
                 <tbody id="tableRadiologi">
@@ -945,18 +946,26 @@ function renderData(data) {
   // Radiologi
   var radHtml = '';
   if (data.radiologi && data.radiologi.length > 0) {
+    console.log(data.radiologi);
     data.radiologi.forEach(function(r) {
+      var imageUrl = (r.radiology_image_url || '').toString().trim();
+      var imageHtml = '-';
+      if (imageUrl) {
+        var safeUrl = escapeHtml(imageUrl);
+        imageHtml = `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" title="Buka gambar ukuran penuh"><img src="${safeUrl}" alt="Thumb Radiologi" style="max-width:120px; max-height:80px; border:1px solid #ddd; border-radius:4px; padding:2px;" onerror="this.style.display='none'; this.parentNode.insertAdjacentHTML('afterend','<span class=&quot;text-muted&quot;>-</span>');"></a>`;
+      }
       radHtml += `
         <tr>
           <td>${escapeHtml(r.tgl_perawatan || '-')}</td>
           <td>${escapeHtml(r.jam_rawat || '-')}</td>
           <td>${escapeHtml(r.standard_display || '-')}</td>
           <td>${escapeHtml(r.hasil || '-')}</td>
+          <td>${imageHtml}</td>
         </tr>
       `;
     });
   } else {
-    radHtml = '<tr><td colspan="4" class="text-center text-muted">Tidak ada pemeriksaan radiologi</td></tr>';
+    radHtml = '<tr><td colspan="5" class="text-center text-muted">Tidak ada pemeriksaan radiologi</td></tr>';
   }
   $('#tableRadiologi').html(radHtml);
   
@@ -1012,7 +1021,7 @@ function escapeHtml(text) {
 <script type="text/javascript">
     $(function () {
         $('.datetimepicker').datetimepicker({
-          defaultDate: '{?=date('Y-m-d')?}',
+          defaultDate: "{?=date('Y-m-d')?}",
           format: 'YYYY-MM-DD',
           locale: 'id'
         });
