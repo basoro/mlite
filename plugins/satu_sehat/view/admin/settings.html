@@ -62,9 +62,9 @@
                         <div class="form-group">
                             <label>PACS Server</label>
                             <select name="satu_sehat[imaging]" class="form-control">
-                                <option value="orthanc" {if: $satu_sehat.imaging=='orthanc' }selected{/if}>Orthanc
+                                <option value="orthanc" {if: $satu_sehat.imaging == 'orthanc'}selected{/if}>Orthanc
                                 </option>
-                                <option value="mini_pacs" {if: $satu_sehat.imaging=='mini_pacs' }selected{/if}>Mini PACS
+                                <option value="mini_pacs" {if: $satu_sehat.imaging == 'mini_pacs'}selected{/if}>Mini PACS
                                 </option>
                             </select>
                         </div>

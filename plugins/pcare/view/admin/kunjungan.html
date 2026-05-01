@@ -216,14 +216,14 @@
    });
 </script>
 <script>
-    {if: isset($_GET['kunjungan']) && isset($_GET['noRujukan']) && $_GET['noRujukan']!=''}
+    {if: isset($_GET['kunjungan']) && isset($_GET['noRujukan']) && $_GET['noRujukan'] != ''}
         $.get("{?=url([ADMIN, 'pcare', 'kunjungan', 'rujukan', $_GET['noRujukan']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['kunjungan']) && isset($_GET['noKartu']) && $_GET['noKartu']!=''}
+    {if: isset($_GET['kunjungan']) && isset($_GET['noKartu']) && $_GET['noKartu'] != ''}
         $.get("{?=url([ADMIN, 'pcare', 'kunjungan', 'peserta', $_GET['noKartu']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');

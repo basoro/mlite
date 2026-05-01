@@ -177,7 +177,7 @@
   <script>
   function panggil(noantrian) {
     var loket = '';
-    {if: isset($_GET['loket']) && $_GET['loket'] !=''}
+    {if: isset($_GET['loket']) && $_GET['loket'] != ''}
   	var loket = "{?=$_GET['loket']?}";
     {/if}
     alert('Panggil ' + loket + ' - ' + noantrian);

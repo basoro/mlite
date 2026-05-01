@@ -56,7 +56,7 @@
 </div>
 
 <script>
-    {if: isset($_GET['statuspulang']) && $_GET['statuspulang'] !==''}
+    {if: isset($_GET['statuspulang']) && $_GET['statuspulang'] ! == ''}
         $.get("{?=url([ADMIN, 'pcare', 'statuspulang', $_GET['statuspulang']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');

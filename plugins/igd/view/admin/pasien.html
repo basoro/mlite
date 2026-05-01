@@ -24,14 +24,14 @@ table th, table td {
           data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}"
           data-nm_pasien="{?=isset_or($value.nm_pasien)?}"
           data-tgl_lahir="{?=isset_or($value.tgl_lahir)?}"
-          data-jk="{if: $value.jk=='L'}Laki-Laki{else}Perempuan{/if}"
+          data-jk="{if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}"
           data-alamat="{?=isset_or($value.alamat)?}"
           data-no_tlp="{?=isset_or($value.no_tlp)?}"
           data-pekerjaan="{?=isset_or($value.pekerjaan)?}">
             <td>{?=isset_or($value.no_rkm_medis)?}</td>
             <td>{?=isset_or($value.nm_pasien)?}</td>
             <td>{?=isset_or($value.tgl_lahir)?}</td>
-            <td>{if: $value.jk=='L'}Laki-Laki{else}Perempuan{/if}</td>
+            <td>{if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
             <td>{?=isset_or($value.alamat)?}</td>
             <td>{?=isset_or($value.no_tlp)?}</td>
           </tr>

@@ -68,7 +68,7 @@
                                         Kirim Parameter
                                     </button>
                                   </form>
-                                  {if: isset($_GET['no_kartu']) && $_GET['no_kartu']!='' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan']!=''}
+                                  {if: isset($_GET['no_kartu']) && $_GET['no_kartu'] != '' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan'] != ''}
                                   <h4 class="m-t-xl">Respons result</h4>
                                   <pre>
                                   </pre>
@@ -99,7 +99,7 @@
                                       Kirim Parameter
                                   </button>
                                 </form>
-                                {if: isset($_GET['nik']) && $_GET['nik']!='' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan']!=''}
+                                {if: isset($_GET['nik']) && $_GET['nik'] != '' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan'] != ''}
                                 <h4 class="m-t-xl">Respons result</h4>
                                 <pre>
                                 </pre>
@@ -130,7 +130,7 @@
                                       Kirim Parameter
                                   </button>
                                 </form>
-                                {if: isset($_GET['nik']) && $_GET['nik']!='' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan']!=''}
+                                {if: isset($_GET['nik']) && $_GET['nik'] != '' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan'] != ''}
                                 <h4 class="m-t-xl">Respons result</h4>
                                 <pre>
                                 </pre>
@@ -161,7 +161,7 @@
                                       Kirim Parameter
                                   </button>
                                 </form>
-                                {if: isset($_GET['nik']) && $_GET['nik']!='' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan']!=''}
+                                {if: isset($_GET['nik']) && $_GET['nik'] != '' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan'] != ''}
                                 <h4 class="m-t-xl">Respons result</h4>
                                 <pre>
                                 </pre>
@@ -179,14 +179,14 @@
 </div>
 
 <script>
-    {if: isset($_GET['no_kartu']) && $_GET['no_kartu']!='' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan']!=''}
+    {if: isset($_GET['no_kartu']) && $_GET['no_kartu'] != '' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan'] != ''}
         $.get("{?=url([ADMIN, 'vclaim', 'bynokartu', $_GET['no_kartu'], $_GET['tgl_pelayanan']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['nik']) && $_GET['nik']!='' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan']!=''}
+    {if: isset($_GET['nik']) && $_GET['nik'] != '' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan'] != ''}
         $.get("{?=url([ADMIN, 'vclaim', 'bynik', $_GET['nik'], $_GET['tgl_pelayanan']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');

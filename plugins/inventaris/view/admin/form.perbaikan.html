@@ -8,7 +8,7 @@
               <form name="user" action="{?=url(ADMIN.'/inventaris/perbaikansimpan/'.@$perbaikan.form.no_permintaan)?}" method="POST" enctype="multipart/form-data">
               <div class="form-group">
                   <label>No. Permintaan</label>
-                  <input type="text" name="no_permintaan" class="form-control" placeholder="Nomor Permintaan" value="{?=isset_or($perbaikan.form.no_permintaan)?}" {if: $perbaikan.form.no_permintaan !=''}readonly{/if}/>
+                  <input type="text" name="no_permintaan" class="form-control" placeholder="Nomor Permintaan" value="{?=isset_or($perbaikan.form.no_permintaan)?}" {if: $perbaikan.form.no_permintaan != ''}readonly{/if}/>
               </div>
               <div class="form-group">
                   <label>Tanggal</label>

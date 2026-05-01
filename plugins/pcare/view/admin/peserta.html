@@ -88,14 +88,14 @@
   </div>
 </div>
 <script>
-    {if: isset($_GET['no_kartu']) && $_GET['no_kartu']!=''}
+    {if: isset($_GET['no_kartu']) && $_GET['no_kartu'] != ''}
         $.get("{?=url([ADMIN, 'pcare', 'peserta', $_GET['no_kartu']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['nomor']) && $_GET['nomor']!='' && $_GET['jeniskartu'] !=''}
+    {if: isset($_GET['nomor']) && $_GET['nomor'] != '' && $_GET['jeniskartu'] != ''}
         $.get("{?=url([ADMIN, 'pcare', 'byjeniskartu', $_GET['jeniskartu'], $_GET['nomor']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');

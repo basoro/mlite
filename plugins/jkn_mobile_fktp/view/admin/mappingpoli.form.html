@@ -16,7 +16,7 @@
           <div class="form-group">
             <label for="kd_poli_rs" class="col-sm-3 control-label">Poli PCare</label>
             <div class="col-sm-9">
-              <input type="text" name="getPoli" id="getPoli" class="form-control" value="{if: $mappingpoli.kd_poli_pcare !=''}{?=isset_or($mappingpoli.kd_poli_pcare)?}: {?=isset_or($mappingpoli.nm_poli_pcare)?}{/if}">
+              <input type="text" name="getPoli" id="getPoli" class="form-control" value="{if: $mappingpoli.kd_poli_pcare != ''}{?=isset_or($mappingpoli.kd_poli_pcare)?}: {?=isset_or($mappingpoli.nm_poli_pcare)?}{/if}">
               <ul class="list-group" id="poliList" style="z-index:1000;position:absolute;width:100%;"></ul>
             </div>
           </div>

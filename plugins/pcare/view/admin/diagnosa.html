@@ -54,7 +54,7 @@
 </div>
 
 <script>
-    {if: isset($_GET['diagnosa']) && $_GET['diagnosa']!=''}
+    {if: isset($_GET['diagnosa']) && $_GET['diagnosa'] != ''}
         $.get("{?=url([ADMIN, 'pcare', 'diagnosa', $_GET['diagnosa']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');

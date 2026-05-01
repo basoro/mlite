@@ -28,7 +28,7 @@
               <td>{?=isset_or($value.no_resep)?}</td>
               <td>{?=isset_or($value.tgl_peresepan)?} {?=isset_or($value.jam_peresepan)?}</td>
               <td colspan="2">
-                <button type="button" class="btn btn-danger btn-xs {if: $value.tgl_perawatan !== '0000-00-00'}disabled{else}hapus_resep_obat{/if}" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_peresepan="{?=isset_or($value.tgl_peresepan)?}" data-jam_peresepan="{?=isset_or($value.jam_peresepan)?}" data-no_resep="{?=isset_or($value.no_resep)?}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>
+                <button type="button" class="btn btn-danger btn-xs {if: $value.tgl_perawatan ! == '0000-00-00'}disabled{else}hapus_resep_obat{/if}" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_peresepan="{?=isset_or($value.tgl_peresepan)?}" data-jam_peresepan="{?=isset_or($value.jam_peresepan)?}" data-no_resep="{?=isset_or($value.no_resep)?}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>
               </td>
             </tr>
             <tr>
@@ -44,7 +44,7 @@
                 <td>{?=isset_or($data.jml)?}</td>
                 <td>{?=isset_or($data.aturan_pakai)?}</td>
                 <td>Rp. <span class="pull-right">{?= number_format(($data.ralan * $data.jml),2,',','.')?}</span></td>
-                <td><button type="button" class="btn btn-danger btn-xs {if: $value.tgl_perawatan !== '0000-00-00'}disabled{else}hapus_resep_dokter{/if}" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-kd_jenis_prw="{?=isset_or($data.kode_brng)?}" data-no_resep="{?=isset_or($value.no_resep)?}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Obat</span></button></td>
+                <td><button type="button" class="btn btn-danger btn-xs {if: $value.tgl_perawatan ! == '0000-00-00'}disabled{else}hapus_resep_dokter{/if}" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-kd_jenis_prw="{?=isset_or($data.kode_brng)?}" data-no_resep="{?=isset_or($value.no_resep)?}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Obat</span></button></td>
               </tr>
             {/loop}
             {/loop}
@@ -236,7 +236,7 @@
               <td>{?=isset_or($value.noorder)?}</td>
               <td>{?=isset_or($value.tgl_permintaan)?} {?=isset_or($value.jam_permintaan)?}</td>
               <td>
-                <button type="button" class="btn btn-danger btn-xs {if: $value.tgl_sampel !== '0000-00-00' || $value.jam_sampel !== '00:00:00'}disabled{else}hapus_permintaan_lab{/if}" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_permintaan="{?=isset_or($value.tgl_permintaan)?}" data-jam_permintaan="{?=isset_or($value.jam_permintaan)?}" data-noorder="{?=isset_or($value.noorder)?}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+                <button type="button" class="btn btn-danger btn-xs {if: $value.tgl_sampel ! == '0000-00-00' || $value.jam_sampel ! == '00:00:00'}disabled{else}hapus_permintaan_lab{/if}" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_permintaan="{?=isset_or($value.tgl_permintaan)?}" data-jam_permintaan="{?=isset_or($value.jam_permintaan)?}" data-noorder="{?=isset_or($value.noorder)?}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
               </td>
             </tr>
             <tr>

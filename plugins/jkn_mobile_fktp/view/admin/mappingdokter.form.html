@@ -16,7 +16,7 @@
           <div class="form-group">
             <label for="kd_dokter_pcare" class="col-sm-3 control-label">Dokter PCare</label>
             <div class="col-sm-9">
-              <input type="text" name="getDokter" id="getDokter" class="form-control" value="{if: $mappingdokter.kd_dokter !=''}{?=isset_or($mappingdokter.kd_dokter_pcare)?}: {?=isset_or($mappingdokter.nm_dokter_pcare)?}{/if}">
+              <input type="text" name="getDokter" id="getDokter" class="form-control" value="{if: $mappingdokter.kd_dokter != ''}{?=isset_or($mappingdokter.kd_dokter_pcare)?}: {?=isset_or($mappingdokter.nm_dokter_pcare)?}{/if}">
               <ul class="list-group" id="dokterList" style="z-index:1000;position:absolute;width:100%;"></ul>
             </div>
           </div>

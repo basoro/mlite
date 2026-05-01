@@ -26,7 +26,7 @@
                 </div>
             </li>                    
             {loop: $modules}
-            {if: $value.name !== 'Dashboard'}
+            {if: $value.name ! == 'Dashboard'}
             <li class="module">
                 <div class="panel panel-default">
                     <a href="{?=isset_or($value.url)?}" class="panel-body text-center">
