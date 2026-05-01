@@ -63,14 +63,25 @@ class PersonalPasien
             $gambar &&
             $img->getInfos('width')
         ) {
+            $newPath = WEBAPPS_PATH . '/photopasien/' . $gambar;
+            $newDir = dirname($newPath);
+
+            if (!is_dir($newDir) && !mkdir($newDir, 0775, true) && !is_dir($newDir)) {
+                error_log('Gagal membuat folder foto pasien: ' . $newDir);
+                return false;
+            }
+
+            if (!$img->save($newPath)) {
+                error_log('Gagal save foto ke: ' . $newPath);
+                return false;
+            }
+
             if (!empty($personalPasien['gambar'])) {
                 $oldPath = WEBAPPS_PATH . '/photopasien/' . $personalPasien['gambar'];
                 if (is_file($oldPath)) {
                     unlink($oldPath);
                 }
             }
-
-            $img->save(WEBAPPS_PATH . '/photopasien/' . $gambar);
         }
 
         return $query;
