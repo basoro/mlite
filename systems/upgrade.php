@@ -1814,12 +1814,41 @@ switch ($version) {
               `created_at` TEXT NOT NULL
             );");
             $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_farmasi_penerimaan_pemesanan ON `mlite_farmasi_penerimaan_obat` (`pemesanan_id`);");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_prosedur` (
+              `kd_jenis_prw` TEXT NOT NULL,
+              `snomed_code` TEXT NOT NULL,
+              `snomed_display` TEXT DEFAULT NULL,
+              `focal_device_code` TEXT DEFAULT NULL,
+              `focal_device_display` TEXT DEFAULT NULL,
+              `focal_device_action` TEXT DEFAULT NULL,
+              PRIMARY KEY (`kd_jenis_prw`)
+            );");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_prosedur_ranap` (
               `kd_jenis_prw` TEXT NOT NULL,
               `snomed_code` TEXT NOT NULL,
               `snomed_display` TEXT DEFAULT NULL,
               `focal_device_code` TEXT DEFAULT NULL,
               `focal_device_display` TEXT DEFAULT NULL,
+              `focal_device_action` TEXT DEFAULT NULL,
+              PRIMARY KEY (`kd_jenis_prw`)
+            );");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_lab` (
+              `id_template` TEXT NOT NULL,
+              `loinc_code` TEXT NOT NULL,
+              `loinc_display` TEXT DEFAULT NULL,
+              `focal_device_code` TEXT DEFAULT NULL,
+              `focal_device_display` TEXT DEFAULT NULL,
+              `focal_device_action` TEXT DEFAULT NULL,
+              PRIMARY KEY (`id_template`)
+            );");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_radiologi` (
+              `kd_jenis_prw` TEXT NOT NULL,
+              `standard_code` TEXT NOT NULL,
+              `standard_display` TEXT DEFAULT NULL,
+              `system` TEXT DEFAULT NULL,
+              `focal_device_code` TEXT DEFAULT NULL,
+              `focal_device_display` TEXT DEFAULT NULL,
+              `focal_device_action` TEXT DEFAULT NULL,
               PRIMARY KEY (`kd_jenis_prw`)
             );");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_operasi` (
@@ -1828,15 +1857,9 @@ switch ($version) {
               `snomed_display` TEXT DEFAULT NULL,
               `focal_device_code` TEXT DEFAULT NULL,
               `focal_device_display` TEXT DEFAULT NULL,
+              `focal_device_action` TEXT DEFAULT NULL,
               PRIMARY KEY (`kode_paket`)
             );");
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_code` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `focal_device_display` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_code` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `focal_device_display` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_code` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `focal_device_display` TEXT DEFAULT NULL"); } catch (\Throwable $e) {}
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_satu_sehat_response` AFTER `id_rad_diagnostic` ADD COLUMN `id_imaging_study` varchar(50) DEFAULT NULL"); } catch (\Throwable $e) {}
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mapping_snomed_icd` (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 no_rawat TEXT NOT NULL,
@@ -1961,12 +1984,41 @@ switch ($version) {
               PRIMARY KEY (`id`),
               KEY `idx_pemesanan_id` (`pemesanan_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_prosedur` (
+              `kd_jenis_prw` varchar(20) NOT NULL,
+              `snomed_code` varchar(20) NOT NULL,
+              `snomed_display` varchar(255) DEFAULT NULL,
+              `focal_device_code` varchar(255) DEFAULT NULL,
+              `focal_device_display` varchar(255) DEFAULT NULL,
+              `focal_device_action` varchar(20) DEFAULT NULL,
+              PRIMARY KEY (`kd_jenis_prw`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_prosedur_ranap` (
               `kd_jenis_prw` varchar(20) NOT NULL,
               `snomed_code` varchar(20) NOT NULL,
               `snomed_display` varchar(255) DEFAULT NULL,
-              `focal_device_code` varchar(20) DEFAULT NULL,
+              `focal_device_code` varchar(255) DEFAULT NULL,
               `focal_device_display` varchar(255) DEFAULT NULL,
+              `focal_device_action` varchar(20) DEFAULT NULL,
+              PRIMARY KEY (`kd_jenis_prw`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_lab` (
+              `id_template` varchar(20) NOT NULL,
+              `loinc_code` varchar(20) NOT NULL,
+              `loinc_display` varchar(255) DEFAULT NULL,
+              `focal_device_code` varchar(255) DEFAULT NULL,
+              `focal_device_display` varchar(255) DEFAULT NULL,
+              `focal_device_action` varchar(20) DEFAULT NULL,
+              PRIMARY KEY (`id_template`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_radiologi` (
+              `kd_jenis_prw` varchar(20) NOT NULL,
+              `standard_code` varchar(20) NOT NULL,
+              `standard_display` varchar(255) DEFAULT NULL,
+              `system` varchar(100) DEFAULT NULL,
+              `focal_device_code` varchar(255) DEFAULT NULL,
+              `focal_device_display` varchar(255) DEFAULT NULL,
+              `focal_device_action` varchar(20) DEFAULT NULL,
               PRIMARY KEY (`kd_jenis_prw`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_operasi` (
@@ -1975,6 +2027,7 @@ switch ($version) {
               `snomed_display` varchar(255) DEFAULT NULL,
               `focal_device_code` varchar(20) DEFAULT NULL,
               `focal_device_display` varchar(255) DEFAULT NULL,
+              `focal_device_action` varchar(20) DEFAULT NULL,
               PRIMARY KEY (`kode_paket`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mapping_snomed_icd` (
@@ -2002,7 +2055,6 @@ switch ($version) {
               KEY `kd_tindakan` (`kd_tindakan`),
               KEY `snomed_concept_id` (`snomed_concept_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
-
 
         }
         $return = '6.3.0';
