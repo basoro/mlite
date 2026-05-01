@@ -1860,6 +1860,64 @@ switch ($version) {
               `focal_device_action` TEXT DEFAULT NULL,
               PRIMARY KEY (`kode_paket`)
             );");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_device` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+              `device_id` TEXT NOT NULL UNIQUE,
+              `nama_alkes` TEXT NOT NULL,
+              `kategori` TEXT DEFAULT 'tindakan',
+              `kode_produk` TEXT DEFAULT NULL,
+              `keterangan` TEXT DEFAULT NULL,
+              `manufacturer` TEXT DEFAULT NULL,
+              `model` TEXT DEFAULT NULL
+            );");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_bpjs_emr_device_nama_alkes` ON `mlite_bpjs_emr_device` (`nama_alkes`);");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_logs` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+              `no_sep` TEXT DEFAULT NULL,
+              `no_rawat` TEXT DEFAULT NULL,
+              `payload_json` TEXT,
+              `payload_encrypted` TEXT,
+              `response` TEXT,
+              `status` TEXT DEFAULT NULL,
+              `created_at` TEXT DEFAULT CURRENT_TIMESTAMP
+            );");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_obat` (
+              `kode_brng` TEXT NOT NULL,
+              `code` TEXT NOT NULL,
+              PRIMARY KEY (`kode_brng`)
+            );");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_uuid_condition` (
+              `kd_penyakit` TEXT NOT NULL,
+              `uuid` TEXT DEFAULT NULL
+            );");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_esignatures` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+              `ref_type` TEXT NOT NULL,
+              `ref_id` TEXT NOT NULL,
+              `signer_role` TEXT NOT NULL,
+              `signer_id` TEXT NOT NULL,
+              `signer_name` TEXT NOT NULL,
+              `signature_path` TEXT NOT NULL,
+              `signature_hash` TEXT NOT NULL,
+              `chain_hash` TEXT DEFAULT NULL,
+              `signed_at` TEXT NOT NULL,
+              `ip_address` TEXT NOT NULL,
+              `user_agent` TEXT NOT NULL,
+              `legal_basis` TEXT,
+              `audit_json` TEXT
+            );");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `ref_idx` ON `mlite_esignatures` (`ref_type`, `ref_id`);");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `hash_idx` ON `mlite_esignatures` (`signature_hash`);");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_sertisign_webhook` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+              `transaction_id` TEXT NOT NULL,
+              `status` TEXT NOT NULL,
+              `document_url` TEXT NOT NULL,
+              `payload` TEXT NOT NULL,
+              `received_at` TEXT NOT NULL
+            );");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `transaction_idx` ON `mlite_sertisign_webhook` (`transaction_id`);");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `status_idx` ON `mlite_sertisign_webhook` (`status`);");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mapping_snomed_icd` (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 no_rawat TEXT NOT NULL,
@@ -2030,6 +2088,69 @@ switch ($version) {
               `focal_device_action` varchar(20) DEFAULT NULL,
               PRIMARY KEY (`kode_paket`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_device` (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `device_id` varchar(50) NOT NULL,
+              `nama_alkes` varchar(150) NOT NULL,
+              `kategori` varchar(50) DEFAULT 'tindakan',
+              `kode_produk` varchar(100) DEFAULT NULL,
+              `keterangan` text DEFAULT NULL,
+              `manufacturer` varchar(255) DEFAULT NULL,
+              `model` varchar(255) DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `uq_device_id` (`device_id`),
+              KEY `idx_nama_alkes` (`nama_alkes`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_logs` (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `no_sep` varchar(50) DEFAULT NULL,
+              `no_rawat` varchar(50) DEFAULT NULL,
+              `payload_json` longtext,
+              `payload_encrypted` longtext,
+              `response` longtext,
+              `status` varchar(20) DEFAULT NULL,
+              `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_obat` (
+              `kode_brng` varchar(20) NOT NULL,
+              `code` varchar(20) NOT NULL,
+              PRIMARY KEY (`kode_brng`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_uuid_condition` (
+              `kd_penyakit` varchar(15) NOT NULL,
+              `uuid` varchar(200) DEFAULT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_esignatures` (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `ref_type` varchar(50) NOT NULL,
+              `ref_id` varchar(50) NOT NULL,
+              `signer_role` varchar(50) NOT NULL,
+              `signer_id` varchar(50) NOT NULL,
+              `signer_name` varchar(255) NOT NULL,
+              `signature_path` varchar(255) NOT NULL,
+              `signature_hash` varchar(255) NOT NULL,
+              `chain_hash` varchar(255) DEFAULT NULL,
+              `signed_at` datetime NOT NULL,
+              `ip_address` varchar(45) NOT NULL,
+              `user_agent` varchar(255) NOT NULL,
+              `legal_basis` text,
+              `audit_json` text,
+              PRIMARY KEY (`id`),
+              KEY `ref_idx` (`ref_type`,`ref_id`),
+              KEY `hash_idx` (`signature_hash`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_sertisign_webhook` (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `transaction_id` varchar(100) NOT NULL,
+              `status` varchar(50) NOT NULL,
+              `document_url` varchar(255) NOT NULL,
+              `payload` text NOT NULL,
+              `received_at` datetime NOT NULL,
+              PRIMARY KEY (`id`),
+              KEY `transaction_idx` (`transaction_id`),
+              KEY `status_idx` (`status`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mapping_snomed_icd` (
               `id` int NOT NULL AUTO_INCREMENT,
               `no_rawat` varchar(20) NOT NULL,
