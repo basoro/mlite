@@ -231,6 +231,23 @@ class Admin extends AdminModule
 
         $input['tgl_registrasi'] = $input['tgl_registrasi'] ?? date('Y-m-d');
         $input['jam_reg'] = $input['jam_reg'] ?? date('H:i:s');
+        $input['kd_pj'] = $input['kd_pj'] ?? '-';
+
+        // Validasi master data dulu agar tidak menghasilkan warning/fatal dan JSON tetap bersih.
+        $pasien = $this->db('pasien')->where('no_rkm_medis', $input['no_rkm_medis'])->oneArray();
+        if (!$pasien) {
+            return ['status' => 'error', 'message' => 'No. RM tidak ditemukan'];
+        }
+
+        $poliklinik = $this->db('poliklinik')->where('kd_poli', $input['kd_poli'])->oneArray();
+        if (!$poliklinik) {
+            return ['status' => 'error', 'message' => 'Kode poli tidak valid'];
+        }
+
+        $dokter = $this->db('dokter')->where('kd_dokter', $input['kd_dokter'])->oneArray();
+        if (!$dokter) {
+            return ['status' => 'error', 'message' => 'Kode dokter tidak valid'];
+        }
 
         $maxRetries = 5;
         $retryCount = 0;
@@ -250,7 +267,7 @@ class Admin extends AdminModule
                         'kd_dokter' => $input['kd_dokter'],
                         'kd_poli' => $input['kd_poli'],
                         'no_reg' => $input['no_reg'],
-                        'kd_pj' => $input['kd_pj'] ?? '-',
+                        'kd_pj' => $input['kd_pj'],
                         'limit_reg' => '0',
                         'waktu_kunjungan' => $input['tgl_registrasi'] . ' ' . $input['jam_reg'],
                         'status' => 'Belum'
@@ -282,11 +299,8 @@ class Admin extends AdminModule
                 $input['almt_pj'] = $input['almt_pj'] ?? '-';
                 $input['hubunganpj'] = $input['hubunganpj'] ?? '-';
 
-                $poliklinik = $this->db('poliklinik')->where('kd_poli', $input['kd_poli'])->oneArray();
                 $input['biaya_reg'] = $poliklinik['registrasi'] ?? 0;
 
-                $pasien = $this->db('pasien')->where('no_rkm_medis', $input['no_rkm_medis'])->oneArray();
-                
                 // Calculate Age
                 $birthDate = new \DateTime($pasien['tgl_lahir']);
                 $today = new \DateTime("today");
@@ -310,9 +324,10 @@ class Admin extends AdminModule
                 $success = true;
                 return ['status' => 'created', 'data' => $input];
 
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $this->db()->pdo()->rollBack();
                 if ($e->getCode() == '23000') {
+                    $lastError = 'Data duplikat atau bentrok nomor registrasi. Silakan coba lagi.';
                     $retryCount++;
                     usleep(100000);
                     continue;
