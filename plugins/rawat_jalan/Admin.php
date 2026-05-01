@@ -317,6 +317,10 @@ class Admin extends AdminModule
                     $input['umurdaftar'] = $m;
                     $input['sttsumur'] = "Bl";
                 }
+                $existingVisit = $this->db('reg_periksa')
+                    ->where('no_rkm_medis', $input['no_rkm_medis'])
+                    ->oneArray();
+                $input['stts_daftar'] = $existingVisit ? 'Lama' : 'Baru';
                 $input['status_poli'] = 'Lama';
 
                 $this->db('reg_periksa')->save($input);
@@ -328,14 +332,15 @@ class Admin extends AdminModule
                 $this->db()->pdo()->rollBack();
                 if ($e->getCode() == '23000') {
                     $errMsg = strtolower((string) $e->getMessage());
+                    $rawErr = trim((string) $e->getMessage());
                     if (strpos($errMsg, 'foreign key') !== false) {
-                        $lastError = 'Validasi referensi gagal (pasien/poli/dokter/penjamin tidak valid).';
+                        $lastError = 'Validasi referensi gagal (pasien/poli/dokter/penjamin tidak valid). Detail: ' . $rawErr;
                     } elseif (strpos($errMsg, 'booking_registrasi.no_rkm_medis') !== false && strpos($errMsg, 'booking_registrasi.tanggal_periksa') !== false) {
-                        $lastError = 'Booking pasien pada tanggal tersebut sudah ada.';
+                        $lastError = 'Booking pasien pada tanggal tersebut sudah ada. Detail: ' . $rawErr;
                     } elseif (strpos($errMsg, 'unique') !== false || strpos($errMsg, 'primary') !== false) {
-                        $lastError = 'Data duplikat atau bentrok nomor registrasi. Silakan coba lagi.';
+                        $lastError = 'Data duplikat atau bentrok nomor registrasi. Detail: ' . $rawErr;
                     } else {
-                        $lastError = 'Constraint database gagal saat membuat booking.';
+                        $lastError = 'Constraint database gagal saat membuat booking. Detail: ' . $rawErr;
                     }
                     $retryCount++;
                     usleep(100000);
@@ -422,7 +427,10 @@ class Admin extends AdminModule
                             'umurdaftar' => $umurdaftar,
                             'sttsumur' => $sttsumur,
                             'status_bayar' => 'Belum Bayar',
-                            'status_poli' => 'Lama'
+                            'status_poli' => 'Lama',
+                            'stts_daftar' => $this->db('reg_periksa')
+                                ->where('no_rkm_medis', $booking['no_rkm_medis'])
+                                ->oneArray() ? 'Lama' : 'Baru'
                         ];
                         
                         if(!$this->db('reg_periksa')->where('no_rkm_medis', $booking['no_rkm_medis'])->where('tgl_registrasi', $booking['tanggal_periksa'])->oneArray()) {
