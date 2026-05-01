@@ -47,6 +47,7 @@ use Plugins\Master\Src\MetodeRacik;
 use Plugins\Master\Src\RuangOk;
 use Plugins\Master\Src\Penyakit;
 use Plugins\Master\Src\Icd9;
+use Plugins\Master\Src\PersonalPasien;
 
 class Admin extends AdminModule
 {
@@ -95,6 +96,7 @@ class Admin extends AdminModule
   protected $ruangok;
   protected $penyakit;
   protected $icd9;
+  protected $personalpasien;
 
     public function init()
     {
@@ -142,6 +144,7 @@ class Admin extends AdminModule
         $this->ruangok = new RuangOk();
         $this->penyakit = new Penyakit();
         $this->icd9 = new Icd9();
+        $this->personalpasien = new PersonalPasien();
     }
 
     public function navigation()
