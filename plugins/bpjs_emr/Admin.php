@@ -107,17 +107,22 @@ class Admin extends AdminModule
         $stmtCount->execute($params);
         $totalRecords = (int) $stmtCount->fetchColumn();
 
-        $paginationParams = http_build_query([
-            's' => $search,
-            'start_date' => $start_date,
-            'end_date' => $end_date
-        ]);
+        $paginationBaseUrl = url([ADMIN, 'bpjs_emr', 'response']);
+        $paginationSeparator = parse_url($paginationBaseUrl, PHP_URL_QUERY) ? '&' : '?';
+        $paginationQuery = 'page=__PAGE__'
+            . '&s=' . rawurlencode((string) $search)
+            . '&start_date=' . rawurlencode((string) $start_date)
+            . '&end_date=' . rawurlencode((string) $end_date);
+        $paginationUrlTemplate = $paginationBaseUrl . $paginationSeparator . $paginationQuery;
+        // Pagination::nav() menggunakan sprintf(); escape % agar query ter-encode aman.
+        $paginationUrl = str_replace('%', '%%', $paginationUrlTemplate);
+        $paginationUrl = str_replace('__PAGE__', '%d', $paginationUrl);
 
         $pagination = new \Systems\Lib\Pagination(
             $page,
             $totalRecords,
             $perpage,
-            url([ADMIN, 'bpjs_emr', 'response', '%d?' . $paginationParams])
+            $paginationUrl
         );
 
         $offset = $pagination->offset();
