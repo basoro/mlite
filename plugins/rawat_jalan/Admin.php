@@ -327,7 +327,16 @@ class Admin extends AdminModule
             } catch (\Throwable $e) {
                 $this->db()->pdo()->rollBack();
                 if ($e->getCode() == '23000') {
-                    $lastError = 'Data duplikat atau bentrok nomor registrasi. Silakan coba lagi.';
+                    $errMsg = strtolower((string) $e->getMessage());
+                    if (strpos($errMsg, 'foreign key') !== false) {
+                        $lastError = 'Validasi referensi gagal (pasien/poli/dokter/penjamin tidak valid).';
+                    } elseif (strpos($errMsg, 'booking_registrasi.no_rkm_medis') !== false && strpos($errMsg, 'booking_registrasi.tanggal_periksa') !== false) {
+                        $lastError = 'Booking pasien pada tanggal tersebut sudah ada.';
+                    } elseif (strpos($errMsg, 'unique') !== false || strpos($errMsg, 'primary') !== false) {
+                        $lastError = 'Data duplikat atau bentrok nomor registrasi. Silakan coba lagi.';
+                    } else {
+                        $lastError = 'Constraint database gagal saat membuat booking.';
+                    }
                     $retryCount++;
                     usleep(100000);
                     continue;
