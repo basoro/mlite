@@ -337,7 +337,10 @@ class Admin extends AdminModule
             }
         }
 
-        return ['status' => 'error', 'message' => htmlspecialchars($lastError ?: 'Terjadi kesalahan sistem.', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')];
+        if (trim((string) $lastError) === '') {
+            $lastError = 'Gagal membuat rawat jalan. Periksa no_rkm_medis, kd_poli, kd_dokter, kd_pj, dan konflik nomor registrasi.';
+        }
+        return ['status' => 'error', 'message' => htmlspecialchars($lastError, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')];
     }
 
     public function apiUpdate($no_rawat = null)
