@@ -274,7 +274,7 @@ class Admin extends AdminModule
                     ];
                     $this->db('booking_registrasi')->save($booking);
                     $this->db()->pdo()->commit();
-                    return ['status' => 'created', 'data' => $booking];
+                    return ['status' => 'success', 'result' => 'created', 'data' => $booking];
                 }
 
                 $input['no_rawat'] = $this->setNoRawat($input['tgl_registrasi']);
@@ -326,7 +326,7 @@ class Admin extends AdminModule
                 $this->db('reg_periksa')->save($input);
                 $this->db()->pdo()->commit();
                 $success = true;
-                return ['status' => 'created', 'data' => $input];
+                return ['status' => 'success', 'result' => 'created', 'data' => $input];
 
             } catch (\Throwable $e) {
                 $this->db()->pdo()->rollBack();
