@@ -283,7 +283,7 @@ class Admin extends AdminModule
                 $input['hubunganpj'] = $input['hubunganpj'] ?? '-';
 
                 $poliklinik = $this->db('poliklinik')->where('kd_poli', $input['kd_poli'])->oneArray();
-                $input['biaya_reg'] = $poliklinik['registrasi'];
+                $input['biaya_reg'] = $poliklinik['registrasi'] ?? 0;
 
                 $pasien = $this->db('pasien')->where('no_rkm_medis', $input['no_rkm_medis'])->oneArray();
                 
@@ -388,7 +388,7 @@ class Admin extends AdminModule
                             'p_jawab' => $pasien['namakeluarga'] ?? '-',
                             'almt_pj' => $pasien['alamatpj'] ?? '-',
                             'hubunganpj' => $pasien['keluarga'] ?? '-',
-                            'biaya_reg' => $poliklinik['registrasi'],
+                            'biaya_reg' => $poliklinik['registrasi'] ?? 0,
                             'stts' => 'Belum',
                             'status_lanjut' => 'Ralan',
                             'kd_pj' => $booking['kd_pj'],
@@ -1305,7 +1305,7 @@ class Admin extends AdminModule
             $_POST['hubunganpj'] = '-';
 
             $poliklinik = $this->db('poliklinik')->where('kd_poli', $_POST['kd_poli'])->oneArray();
-            $_POST['biaya_reg'] = $poliklinik['registrasi'];
+            $_POST['biaya_reg'] = $poliklinik['registrasi'] ?? 0;
 
             $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
 
@@ -1395,7 +1395,7 @@ class Admin extends AdminModule
                   }
 
                   $biaya_reg = $this->db('poliklinik')->where('kd_poli', $row['kd_poli'])->oneArray();
-                  $_POST['biaya_reg'] = $biaya_reg['registrasi'];
+                  $_POST['biaya_reg'] = $biaya_reg['registrasi'] ?? 0;
                   if($_POST['stts_daftar'] == 'Lama') {
                     $_POST['biaya_reg'] = $biaya_reg['registrasilama'];
                   }
