@@ -20,6 +20,185 @@ class Admin extends AdminModule
         ];
     }
 
+    public function apiList()
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'website')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $draw = (int) ($_GET['draw'] ?? 0);
+        $start = max(0, (int) ($_GET['start'] ?? 0));
+        $length = max(1, min(100, (int) ($_GET['length'] ?? 10)));
+        $columnIndex = (int) ($_GET['order'][0]['column'] ?? 0);
+        $columnName = (string) ($_GET['columns'][$columnIndex]['data'] ?? 'published_at');
+        $columnSortOrder = strtolower((string) ($_GET['order'][0]['dir'] ?? 'desc'));
+        $searchValue = is_array($_GET['search'] ?? null) ? (string) ($_GET['search']['value'] ?? '') : (string) ($_GET['search'] ?? '');
+
+        $allowedColumns = ['id', 'title', 'slug', 'status', 'created_at', 'updated_at', 'published_at', 'user_id'];
+        if (!in_array($columnName, $allowedColumns, true)) {
+            $columnName = 'published_at';
+        }
+        if (!in_array($columnSortOrder, ['asc', 'desc'], true)) {
+            $columnSortOrder = 'desc';
+        }
+
+        $baseSql = ' FROM mlite_news ';
+        $whereSql = '';
+        $params = [];
+        if ($searchValue !== '') {
+            $whereSql = ' WHERE title LIKE :search OR slug LIKE :search OR intro LIKE :search OR content LIKE :search ';
+            $params[':search'] = '%' . $searchValue . '%';
+        }
+
+        $stmtTotal = $this->db()->pdo()->prepare('SELECT COUNT(*) AS total FROM mlite_news');
+        $stmtTotal->execute();
+        $total = (int) $stmtTotal->fetchColumn();
+
+        $stmtFiltered = $this->db()->pdo()->prepare('SELECT COUNT(*) AS total' . $baseSql . $whereSql);
+        foreach ($params as $key => $value) {
+            $stmtFiltered->bindValue($key, $value, \PDO::PARAM_STR);
+        }
+        $stmtFiltered->execute();
+        $filteredTotal = (int) $stmtFiltered->fetchColumn();
+
+        $sql = 'SELECT *' . $baseSql . $whereSql . " ORDER BY {$columnName} {$columnSortOrder} LIMIT :start, :length";
+        $stmt = $this->db()->pdo()->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value, \PDO::PARAM_STR);
+        }
+        $stmt->bindValue(':start', $start, \PDO::PARAM_INT);
+        $stmt->bindValue(':length', $length, \PDO::PARAM_INT);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $data = [];
+        foreach ($rows as $row) {
+            $data[] = $this->formatApiNewsRow($row);
+        }
+
+        return [
+            'status' => 'success',
+            'draw' => $draw,
+            'recordsTotal' => $total,
+            'recordsFiltered' => $filteredTotal,
+            'data' => $data,
+            'meta' => [
+                'page' => (int) floor($start / $length) + 1,
+                'per_page' => $length,
+                'total' => $filteredTotal
+            ]
+        ];
+    }
+
+    public function apiShow($id = null)
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'website')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        if (!$id) {
+            return ['status' => 'error', 'message' => 'ID missing'];
+        }
+
+        $row = $this->findNewsByIdentifier($id);
+        if (!$row) {
+            return ['status' => 'error', 'message' => 'Not found'];
+        }
+
+        return ['status' => 'success', 'data' => $this->formatApiNewsRow($row, true)];
+    }
+
+    public function apiCreate()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'website')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = $this->getApiInput();
+        if (empty($input['title']) || empty($input['content'])) {
+            return ['status' => 'error', 'message' => 'Data incomplete'];
+        }
+
+        $payload = $this->prepareNewsPayload($input, null, $username);
+        try {
+            $this->db('mlite_news')->save($payload);
+            $newsId = (int) $this->db()->pdo()->lastInsertId();
+            $this->syncNewsTags($newsId, $input['tags'] ?? []);
+            $created = $this->db('mlite_news')->where('id', $newsId)->oneArray();
+            return ['status' => 'created', 'data' => $this->formatApiNewsRow($created, true)];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')];
+        }
+    }
+
+    public function apiUpdate($id = null)
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_update', 'website')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        if (!$id) {
+            return ['status' => 'error', 'message' => 'ID missing'];
+        }
+
+        $existing = $this->findNewsByIdentifier($id);
+        if (!$existing) {
+            return ['status' => 'error', 'message' => 'Not found'];
+        }
+
+        $input = $this->getApiInput();
+        $payload = $this->prepareNewsPayload($input, (int) $existing['id'], $username, $existing);
+        if (empty($payload)) {
+            return ['status' => 'error', 'message' => 'No data to update'];
+        }
+
+        try {
+            $this->db('mlite_news')->where('id', $existing['id'])->save($payload);
+            if (array_key_exists('tags', $input)) {
+                $this->syncNewsTags((int) $existing['id'], $input['tags']);
+            }
+            $updated = $this->db('mlite_news')->where('id', $existing['id'])->oneArray();
+            return ['status' => 'updated', 'data' => $this->formatApiNewsRow($updated, true)];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')];
+        }
+    }
+
+    public function apiDelete($id = null)
+    {
+        $username = $this->core->checkAuth('DELETE');
+        if (!$this->core->checkPermission($username, 'can_delete', 'website')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        if (!$id) {
+            return ['status' => 'error', 'message' => 'ID missing'];
+        }
+
+        $existing = $this->findNewsByIdentifier($id);
+        if (!$existing) {
+            return ['status' => 'error', 'message' => 'Not found'];
+        }
+
+        try {
+            $this->db('mlite_news_tags_relationship')->delete('news_id', (int) $existing['id']);
+            $this->db('mlite_news')->delete((int) $existing['id']);
+            if (!empty($existing['cover_photo'])) {
+                $cover = UPLOADS . '/website/news/' . basename((string) $existing['cover_photo']);
+                if (is_file($cover)) {
+                    unlink($cover);
+                }
+            }
+            return ['status' => 'deleted', 'id' => (int) $existing['id']];
+        } catch (\PDOException $e) {
+            return ['status' => 'error', 'message' => htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')];
+        }
+    }
+
     public function getManage()
     {
       $sub_modules = [
@@ -29,6 +208,155 @@ class Admin extends AdminModule
         ['name' => 'Pengaturan Website', 'url' => url([ADMIN, 'website', 'settingswebsite']), 'icon' => 'pencil-square', 'desc' => 'Pengaturan website'],
       ];
       return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
+    }
+
+    private function getApiInput()
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) {
+            $input = $_POST;
+        }
+        return is_array($input) ? $input : [];
+    }
+
+    private function findNewsByIdentifier($id)
+    {
+        $id = urldecode((string) $id);
+        if (ctype_digit($id)) {
+            return $this->db('mlite_news')->where('id', (int) $id)->oneArray();
+        }
+        return $this->db('mlite_news')->where('slug', $id)->oneArray();
+    }
+
+    private function ensureUniqueNewsSlug($candidate, $excludeId = null)
+    {
+        $baseSlug = createSlug((string) $candidate);
+        if ($baseSlug === '') {
+            $baseSlug = createSlug('news-' . time());
+        }
+        $slug = $baseSlug;
+        $i = 2;
+        while (true) {
+            $q = $this->db('mlite_news')->where('slug', $slug);
+            if ($excludeId !== null) {
+                $q->where('id', '!=', (int) $excludeId);
+            }
+            if (!$q->oneArray()) {
+                break;
+            }
+            $slug = $baseSlug . '-' . $i++;
+        }
+        return $slug;
+    }
+
+    private function prepareNewsPayload(array $input, $id = null, $username = '', array $existing = null)
+    {
+        $now = strtotime(date('Y-m-d H:i:s'));
+        $allowed = ['title', 'content', 'intro', 'status', 'comments', 'markdown', 'cover_photo', 'slug', 'published_at'];
+        $payload = [];
+        foreach ($allowed as $key) {
+            if (array_key_exists($key, $input)) {
+                $payload[$key] = $input[$key];
+            }
+        }
+
+        if ($existing === null) {
+            $payload['title'] = (string) ($payload['title'] ?? '');
+            $payload['content'] = (string) ($payload['content'] ?? '');
+            $payload['intro'] = (string) ($payload['intro'] ?? '');
+            $payload['status'] = (int) ($payload['status'] ?? 0);
+            $payload['comments'] = isset($payload['comments']) ? (int) ((bool) $payload['comments']) : 1;
+            $payload['markdown'] = isset($payload['markdown']) ? (int) ((bool) $payload['markdown']) : 0;
+            $payload['user_id'] = (int) ($this->db('mlite_users')->where('username', $username)->oneArray()['id'] ?? $this->core->getUserInfo('id'));
+            $payload['created_at'] = $now;
+            $payload['updated_at'] = $now;
+        } else {
+            if (isset($payload['status'])) {
+                $payload['status'] = (int) $payload['status'];
+            }
+            if (isset($payload['comments'])) {
+                $payload['comments'] = (int) ((bool) $payload['comments']);
+            }
+            if (isset($payload['markdown'])) {
+                $payload['markdown'] = (int) ((bool) $payload['markdown']);
+            }
+            $payload['updated_at'] = $now;
+        }
+
+        if (array_key_exists('published_at', $payload)) {
+            if (is_numeric($payload['published_at'])) {
+                $payload['published_at'] = (int) $payload['published_at'];
+            } else {
+                $payload['published_at'] = strtotime((string) $payload['published_at']) ?: $now;
+            }
+        } elseif ($existing === null) {
+            $payload['published_at'] = $now;
+        }
+
+        $slugSource = $payload['slug'] ?? ($payload['title'] ?? ($existing['title'] ?? ''));
+        if ($slugSource !== '') {
+            $payload['slug'] = $this->ensureUniqueNewsSlug((string) $slugSource, $id);
+        }
+
+        if (isset($payload['cover_photo'])) {
+            $payload['cover_photo'] = (string) $payload['cover_photo'];
+        }
+
+        return $payload;
+    }
+
+    private function syncNewsTags($newsId, $tags)
+    {
+        $newsId = (int) $newsId;
+        $this->db('mlite_news_tags_relationship')->delete('news_id', $newsId);
+        if (!is_array($tags)) {
+            return;
+        }
+
+        foreach (array_unique($tags) as $tag) {
+            $tag = trim((string) $tag);
+            if ($tag === '') {
+                continue;
+            }
+            if (preg_match("/[`~!@#$%^&*()_|+\\-=?;:'\\\",.<>\\{\\}\\[\\]\\\\\\/]+/", $tag)) {
+                continue;
+            }
+            $slug = createSlug($tag);
+            $existing = $this->db('mlite_news_tags')->where('slug', $slug)->oneArray();
+            if ($existing) {
+                $tagId = (int) $existing['id'];
+            } else {
+                $this->db('mlite_news_tags')->save(['name' => $tag, 'slug' => $slug]);
+                $tagId = (int) $this->db()->pdo()->lastInsertId();
+            }
+            $this->db('mlite_news_tags_relationship')->save(['news_id' => $newsId, 'tag_id' => $tagId]);
+        }
+    }
+
+    private function formatApiNewsRow(array $row, $withTags = false)
+    {
+        if (!empty($row['user_id'])) {
+            $fullname = $this->core->getUserInfo('fullname', $row['user_id'], true);
+            $username = $this->core->getUserInfo('username', $row['user_id'], true);
+            $row['author_name'] = $fullname ?: $username;
+            $row['author_username'] = $username;
+        } else {
+            $row['author_name'] = '';
+            $row['author_username'] = '';
+        }
+
+        if ($withTags && !empty($row['id'])) {
+            $tagRows = $this->db('mlite_news_tags')
+                ->leftJoin('mlite_news_tags_relationship', 'mlite_news_tags.id = mlite_news_tags_relationship.tag_id')
+                ->where('mlite_news_tags_relationship.news_id', $row['id'])
+                ->select(['mlite_news_tags.name'])
+                ->toArray();
+            $row['tags'] = array_values(array_filter(array_map(function ($item) {
+                return $item['name'] ?? '';
+            }, $tagRows)));
+        }
+
+        return htmlspecialchars_array($row);
     }
 
     public function anyManageNews($page = 1)
