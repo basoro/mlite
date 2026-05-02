@@ -48,6 +48,7 @@ use Plugins\Master\Src\RuangOk;
 use Plugins\Master\Src\Penyakit;
 use Plugins\Master\Src\Icd9;
 use Plugins\Master\Src\PersonalPasien;
+use Plugins\Master\Src\MliteNotifications;
 
 class Admin extends AdminModule
 {
@@ -97,6 +98,7 @@ class Admin extends AdminModule
   protected $penyakit;
   protected $icd9;
   protected $personalpasien;
+  protected $mlitenotifications;
 
     public function init()
     {
@@ -145,6 +147,7 @@ class Admin extends AdminModule
         $this->penyakit = new Penyakit();
         $this->icd9 = new Icd9();
         $this->personalpasien = new PersonalPasien();
+        $this->mlitenotifications = new MliteNotifications();
     }
 
     public function navigation()
