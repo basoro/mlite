@@ -723,7 +723,7 @@ CREATE TABLE `gambar_radiologi` (
   `no_rawat` varchar(17) NOT NULL,
   `tgl_periksa` date NOT NULL,
   `jam` time NOT NULL,
-  `lokasi_gambar` TEXT NOT NULL,
+  `lokasi_gambar` varchar(1000) NOT NULL,
   PRIMARY KEY (`no_rawat`,`tgl_periksa`,`jam`,`lokasi_gambar`),
   CONSTRAINT `gambar_radiologi_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
