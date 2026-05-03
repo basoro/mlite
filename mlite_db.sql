@@ -1,6 +1,3 @@
-SET GLOBAL innodb_file_per_table=ON;
-SET GLOBAL innodb_default_row_format=DYNAMIC;
-
 -- CREATE DATABASE IF NOT EXISTS `mlite`;
 
 
