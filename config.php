@@ -68,8 +68,8 @@ define('WEBAPPS_URL', env('APPURL') ?: 'http://localhost:8000/uploads'); // Sesu
 define('WEBAPPS_PATH', BASE_DIR . '/uploads');
 
 // Multi APP
-define('MULTI_APP', false);
-define('MULTI_APP_REDIRECT', '');
+define('MULTI_APP', env('MULTIAPP') ?: 'false');
+define('MULTI_APP_REDIRECT', env('MULTIAPP_REDIRECT') ?: '');
 
 // Admin cat name
 define('ADMIN', 'admin');
@@ -102,7 +102,7 @@ define('BASIC_MODULES', json_encode([
 ]));
 
 // Developer mode
-define('DEV_MODE', true);
+define('DEV_MODE', env('DEVMODE') ?: 'true');
 
 define('JWT_SECRET', 'mlite_secret_key_change_me');
 
