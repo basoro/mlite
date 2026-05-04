@@ -2934,7 +2934,7 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("144","orthanc","password","orthanc"),
 ("166","afm","username_finger",""),
 ("148","jkn_mobile","kirimantrian","tidak"),
-("149","settings","keamanan","ya"),
+("149","settings","keamanan","tidak"),
 ("165","afm","afm_token","fc4eba4aa3ea79a7bba3070cba848696"),
 ("151","settings","websocket","tidak"),
 ("152","settings","websocket_proxy",""),
