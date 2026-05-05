@@ -1674,9 +1674,11 @@ CREATE TABLE `mlite_bpjs_emr_mapping_lab` (
   `id_template` varchar(20) NOT NULL,
   `loinc_code` varchar(20) NOT NULL,
   `loinc_display` varchar(255) DEFAULT NULL,
+  `master_device_id` int DEFAULT NULL,
   `focal_device_code` varchar(255) DEFAULT NULL,
   `focal_device_display` varchar(255) DEFAULT NULL,
   `focal_device_action` varchar(20) DEFAULT NULL,
+  KEY `idx_mapping_lab_master_device` (`master_device_id`),
   PRIMARY KEY (`id_template`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
@@ -1686,9 +1688,11 @@ CREATE TABLE `mlite_bpjs_emr_mapping_radiologi` (
   `standard_code` varchar(20) NOT NULL,
   `standard_display` varchar(255) DEFAULT NULL,
   `system` varchar(100) DEFAULT NULL,
+  `master_device_id` int DEFAULT NULL,
   `focal_device_code` varchar(255) DEFAULT NULL,
   `focal_device_display` varchar(255) DEFAULT NULL,
   `focal_device_action` varchar(20) DEFAULT NULL,
+  KEY `idx_mapping_rad_master_device` (`master_device_id`),
   PRIMARY KEY (`kd_jenis_prw`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
@@ -1697,9 +1701,11 @@ CREATE TABLE `mlite_bpjs_emr_mapping_prosedur` (
   `kd_jenis_prw` varchar(20) NOT NULL,
   `snomed_code` varchar(20) NOT NULL,
   `snomed_display` varchar(255) DEFAULT NULL,
+  `master_device_id` int DEFAULT NULL,
   `focal_device_code` varchar(255) DEFAULT NULL,
   `focal_device_display` varchar(255) DEFAULT NULL,
   `focal_device_action` varchar(20) DEFAULT NULL,
+  KEY `idx_mapping_proc_master_device` (`master_device_id`),
   PRIMARY KEY (`kd_jenis_prw`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
@@ -1708,9 +1714,11 @@ CREATE TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` (
   `kd_jenis_prw` varchar(20) NOT NULL,
   `snomed_code` varchar(20) NOT NULL,
   `snomed_display` varchar(255) DEFAULT NULL,
+  `master_device_id` int DEFAULT NULL,
   `focal_device_code` varchar(255) DEFAULT NULL,
   `focal_device_display` varchar(255) DEFAULT NULL,
   `focal_device_action` varchar(20) DEFAULT NULL,
+  KEY `idx_mapping_proc_ranap_master_device` (`master_device_id`),
   PRIMARY KEY (`kd_jenis_prw`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
@@ -1719,9 +1727,11 @@ CREATE TABLE `mlite_bpjs_emr_mapping_operasi` (
   `kode_paket` varchar(20) NOT NULL,
   `snomed_code` varchar(20) NOT NULL,
   `snomed_display` varchar(255) DEFAULT NULL,
+  `master_device_id` int DEFAULT NULL,
   `focal_device_code` varchar(255) DEFAULT NULL,
   `focal_device_display` varchar(255) DEFAULT NULL,
   `focal_device_action` varchar(20) DEFAULT NULL,
+  KEY `idx_mapping_operasi_master_device` (`master_device_id`),
   PRIMARY KEY (`kode_paket`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 

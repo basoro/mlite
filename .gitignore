@@ -13,11 +13,11 @@ webapps
 backup/
 plugins/apotek_online
 plugins/simrsp
-plugins/mini_pacs/*.sh
-plugins/mini_pacs/*.json
-plugins/mini_pacs/worklist_monitor.php
-plugins/mini_pacs/receiver.php
-plugins/mini_pacs/systemd/*
+# plugins/mini_pacs/*.sh
+# plugins/mini_pacs/*.json
+# plugins/mini_pacs/worklist_monitor.php
+# plugins/mini_pacs/receiver.php
+# plugins/mini_pacs/systemd/*
 config.php
 themes/mlite
 systems/lib/jasperphp

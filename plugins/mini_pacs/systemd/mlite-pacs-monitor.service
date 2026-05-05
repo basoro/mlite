@@ -1,0 +1,15 @@
+[Unit]
+Description=mLITE Mini PACS - Worklist Monitor Service
+After=network.target
+
+[Service]
+Type=simple
+User=www
+Group=www
+WorkingDirectory=/var/www/html/plugins/mini_pacs
+ExecStart=/usr/local/bin/php /var/www/html/plugins/mini_pacs/worklist_monitor.php
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -748,7 +748,7 @@ class Admin extends AdminModule
                         'status' => 'additional',
                         'div' => $data['registrasi']['diagnosa_awal'] ?? '-'
                     ],
-                    'entry' => null
+                    'entry' => []
                 ],
                 '1' => [  // Index 1
                     'title' => 'Chief complaint',
@@ -765,7 +765,7 @@ class Admin extends AdminModule
                         'status' => 'additional',
                         'div' => $data['composition']['soap']['keluhan']
                     ],
-                    'entry' => null
+                    'entry' => []
                 ],
                 '2' => [  // Index 2
                     'title' => 'Admission diagnosis',
@@ -782,7 +782,7 @@ class Admin extends AdminModule
                         'status' => 'additional',
                         'div' => $data['composition']['soap']['penilaian']
                     ],
-                    'entry' => null
+                    'entry' => []
                 ],
                 '3' => [  // Index 3
                     'title' => 'Discharge Instruction',
@@ -799,7 +799,7 @@ class Admin extends AdminModule
                         'status' => 'additional',
                         'div' => $data['composition']['resume']['edukasi'] ?? '-'
                     ],
-                    'entry' => null
+                    'entry' => []
                 ],
                 // '4' => [  // Index 4
                 //     'title' => 'Medications on Discharge',
@@ -835,7 +835,7 @@ class Admin extends AdminModule
                         'status' => 'additional',
                         'div' => $data['composition']['soap']['rtl'] ?? '-'
                     ],
-                    'entry' => null
+                    'entry' => []
                 ],
                 '5' => [  // Index 5
                     'title' => 'Known allergies',
@@ -852,7 +852,7 @@ class Admin extends AdminModule
                         'status' => 'additional',
                         'div' => $data['composition']['soap']['alergi'] ?? '-'
                     ],
-                    'entry' => null
+                    'entry' => []
                 ],
                 '6' => [  // Index 6
                     'title' => 'Discharge diagnosis',
@@ -869,7 +869,7 @@ class Admin extends AdminModule
                         'status' => 'additional',
                         'div' => $data['composition']['resume']['diganosa_utama'] ?? '-'
                     ],
-                    'entry' => null
+                    'entry' => []
                 ],
                 '7' => [  // Index 7
                     'title' => 'Laboratory results',
@@ -886,7 +886,7 @@ class Admin extends AdminModule
                         'status' => 'additional',
                         'div' => $data['composition']['resume']['hasil_laborat'] ?? '-'
                     ],
-                    'entry' => null
+                    'entry' => []
                 ],
                 '8' => [  // Index 8
                     'title' => 'Radiology results',
@@ -903,7 +903,7 @@ class Admin extends AdminModule
                         'status' => 'additional',
                         'div' => $data['composition']['resume']['pemeriksaan_penunjang'] ?? '-'
                     ],
-                    'entry' => null
+                    'entry' => []
                 ]
             ]
         ];
@@ -1065,7 +1065,7 @@ class Admin extends AdminModule
                 ],
                 'note' => [
                     [
-                        'text' => $proc['keterangan'] ?? ''
+                        'text' => $proc['keterangan'] ?? $procedureDisplay
                     ]
                 ],
                 'subject' => [
@@ -1104,7 +1104,18 @@ class Admin extends AdminModule
             if ($focalDeviceCode !== '') {
                 $focalDeviceDisplay = trim((string) ($proc['focal_device_display'] ?? ''));
                 $focalDeviceAction = trim((string) ($proc['focal_device_action'] ?? ''));
-                $deviceReferenceId = $deviceUuidMap[$focalDeviceCode] ?? $focalDeviceCode;
+                $masterDeviceId = (int) ($proc['master_device_id'] ?? 0);
+                $deviceReferenceId = '';
+                if ($masterDeviceId > 0 && isset($deviceUuidMap['id:' . $masterDeviceId])) {
+                    $deviceReferenceId = $deviceUuidMap['id:' . $masterDeviceId];
+                } elseif (isset($deviceUuidMap['code:' . $focalDeviceCode])) {
+                    $deviceReferenceId = $deviceUuidMap['code:' . $focalDeviceCode];
+                } elseif (isset($deviceUuidMap[$focalDeviceCode])) {
+                    $deviceReferenceId = $deviceUuidMap[$focalDeviceCode];
+                } else {
+                    // Jangan fallback ke kode SNOMED; tetap pakai UUID Device.
+                    $deviceReferenceId = $this->generateBPJSId($jenisPelayanan);
+                }
                 if (!in_array($focalDeviceAction, self::FOCAL_DEVICE_VALID_ACTIONS)) {
                     $focalDeviceAction = 'implanted';
                 }
@@ -1448,7 +1459,7 @@ class Admin extends AdminModule
                 'value' => $data['registrasi']['no_sep']
             ],
             'type' => 'document',
-            'entry' => null
+            'entry' => []
         ];
 
         // 1. Patient Resource
@@ -1518,11 +1529,9 @@ class Admin extends AdminModule
         // 8. Device Resources (dari focal_device pada prosedur)
         $deviceResources = $this->buildDeviceResources($data, $uuids, $deviceUuidMap);
         if (!empty($deviceResources)) {
-            foreach ($deviceResources as $deviceResource) {
-                $bundle['entry'][] = [
-                    'resource' => $deviceResource
-                ];
-            }
+            $bundle['entry'][] = [
+                'resource' => $deviceResources  // Array of Device
+            ];
         }
         
         
@@ -1553,8 +1562,18 @@ class Admin extends AdminModule
         $identifierSystem = $baseUrl . '/device/serial';
 
         foreach ($data['device'] as $device) {
+            $masterDeviceId = (int) ($device['master_device_id'] ?? 0);
             $deviceCode = trim((string) ($device['focal_device_code'] ?? $device['device_id'] ?? ''));
-            $deviceUuid = $deviceUuidMap[$deviceCode] ?? $this->generateBPJSId($jenisPelayanan);
+            $deviceUuid = '';
+            if ($masterDeviceId > 0 && isset($deviceUuidMap['id:' . $masterDeviceId])) {
+                $deviceUuid = $deviceUuidMap['id:' . $masterDeviceId];
+            } elseif ($deviceCode !== '' && isset($deviceUuidMap['code:' . $deviceCode])) {
+                $deviceUuid = $deviceUuidMap['code:' . $deviceCode];
+            } elseif ($deviceCode !== '' && isset($deviceUuidMap[$deviceCode])) {
+                $deviceUuid = $deviceUuidMap[$deviceCode];
+            } else {
+                $deviceUuid = $this->generateBPJSId($jenisPelayanan);
+            }
             $resources[] = [
                 'resourceType' => 'Device',
                 'id' => $deviceUuid,
@@ -1578,7 +1597,7 @@ class Admin extends AdminModule
                     ],
                     'text' => $device['nama_alkes'] ?? ''
                 ],
-                'lotNumber' => '',
+                'lotNumber' => 'ALKES',
                 'manufacturer' => $device['manufacturer'] ?? '',
                 'model' => $device['model'] ?? '',
                 'patient' => [
@@ -1593,16 +1612,65 @@ class Admin extends AdminModule
     private function buildDeviceUuidMap($data, $jenisPelayanan)
     {
         $map = [];
+
+        // Prioritas pemetaan dari semua prosedur agar focalDevice.reference selalu dapat UUID.
+        $allProcs = array_merge(
+            $data['procedure']['tindakan'] ?? [],
+            $data['procedure']['operasi'] ?? [],
+            $data['procedure']['lab'] ?? [],
+            $data['procedure']['radiologi'] ?? []
+        );
+
+        foreach ($allProcs as $proc) {
+            $masterDeviceId = (int) ($proc['master_device_id'] ?? 0);
+            $deviceCode = trim((string) ($proc['focal_device_code'] ?? ''));
+            $key = $masterDeviceId > 0 ? ('id:' . $masterDeviceId) : ($deviceCode !== '' ? ('code:' . $deviceCode) : '');
+            if ($key === '') {
+                continue;
+            }
+            if (!isset($map[$key])) {
+                $map[$key] = $this->generateBPJSId($jenisPelayanan);
+            }
+            $uuid = $map[$key];
+            if ($masterDeviceId > 0 && !isset($map['id:' . $masterDeviceId])) {
+                $map['id:' . $masterDeviceId] = $uuid;
+            }
+            if ($deviceCode !== '') {
+                if (!isset($map['code:' . $deviceCode])) {
+                    $map['code:' . $deviceCode] = $uuid;
+                }
+                if (!isset($map[$deviceCode])) {
+                    $map[$deviceCode] = $uuid;
+                }
+            }
+        }
+
         if (empty($data['device']) || !is_array($data['device'])) {
             return $map;
         }
 
         foreach ($data['device'] as $device) {
+            $masterDeviceId = (int) ($device['master_device_id'] ?? 0);
             $deviceCode = trim((string) ($device['focal_device_code'] ?? $device['device_id'] ?? ''));
-            if ($deviceCode === '' || isset($map[$deviceCode])) {
+            $key = $masterDeviceId > 0 ? ('id:' . $masterDeviceId) : ($deviceCode !== '' ? ('code:' . $deviceCode) : '');
+            if ($key === '') {
                 continue;
             }
-            $map[$deviceCode] = $this->generateBPJSId($jenisPelayanan);
+            if (!isset($map[$key])) {
+                $map[$key] = $this->generateBPJSId($jenisPelayanan);
+            }
+            $uuid = $map[$key];
+            if ($masterDeviceId > 0 && !isset($map['id:' . $masterDeviceId])) {
+                $map['id:' . $masterDeviceId] = $uuid;
+            }
+            if ($deviceCode !== '') {
+                if (!isset($map['code:' . $deviceCode])) {
+                    $map['code:' . $deviceCode] = $uuid;
+                }
+                if (!isset($map[$deviceCode])) {
+                    $map[$deviceCode] = $uuid;
+                }
+            }
         }
 
         return $map;
@@ -2006,6 +2074,7 @@ class Admin extends AdminModule
                     rawat_jl_dr.jam_rawat,
                     mlite_bpjs_emr_mapping_prosedur.snomed_code,
                     mlite_bpjs_emr_mapping_prosedur.snomed_display,
+                    mlite_bpjs_emr_mapping_prosedur.master_device_id,
                     mlite_bpjs_emr_mapping_prosedur.focal_device_code,
                     mlite_bpjs_emr_mapping_prosedur.focal_device_display,
                     mlite_bpjs_emr_mapping_prosedur.focal_device_action,
@@ -2026,6 +2095,7 @@ class Admin extends AdminModule
                     rawat_inap_dr.jam_rawat,
                     mlite_bpjs_emr_mapping_prosedur_ranap.snomed_code,
                     mlite_bpjs_emr_mapping_prosedur_ranap.snomed_display,
+                    mlite_bpjs_emr_mapping_prosedur_ranap.master_device_id,
                     mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_code,
                     mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_display,
                     mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_action,
@@ -2045,6 +2115,7 @@ class Admin extends AdminModule
                     detail_periksa_lab.jam AS jam_rawat,
                     mlite_bpjs_emr_mapping_lab.loinc_code,
                     mlite_bpjs_emr_mapping_lab.loinc_display,
+                    mlite_bpjs_emr_mapping_lab.master_device_id,
                     mlite_bpjs_emr_mapping_lab.focal_device_code,
                     mlite_bpjs_emr_mapping_lab.focal_device_display,
                     mlite_bpjs_emr_mapping_lab.focal_device_action,
@@ -2068,6 +2139,7 @@ class Admin extends AdminModule
                     TIME(operasi.tgl_operasi) AS jam_rawat,
                     mlite_bpjs_emr_mapping_operasi.snomed_code,
                     mlite_bpjs_emr_mapping_operasi.snomed_display,
+                    mlite_bpjs_emr_mapping_operasi.master_device_id,
                     mlite_bpjs_emr_mapping_operasi.focal_device_code,
                     mlite_bpjs_emr_mapping_operasi.focal_device_display,
                     dokter.nm_dokter
@@ -2087,6 +2159,7 @@ class Admin extends AdminModule
                     mlite_bpjs_emr_mapping_radiologi.standard_code,
                     mlite_bpjs_emr_mapping_radiologi.standard_display,
                     mlite_bpjs_emr_mapping_radiologi.system,
+                    mlite_bpjs_emr_mapping_radiologi.master_device_id,
                     mlite_bpjs_emr_mapping_radiologi.focal_device_code,
                     mlite_bpjs_emr_mapping_radiologi.focal_device_display,
                     mlite_bpjs_emr_mapping_radiologi.focal_device_action,
@@ -2106,6 +2179,7 @@ class Admin extends AdminModule
                     rawat_jl_pr.jam_rawat,
                     mlite_bpjs_emr_mapping_prosedur.snomed_code,
                     mlite_bpjs_emr_mapping_prosedur.snomed_display,
+                    mlite_bpjs_emr_mapping_prosedur.master_device_id,
                     mlite_bpjs_emr_mapping_prosedur.focal_device_code,
                     mlite_bpjs_emr_mapping_prosedur.focal_device_display,
                     mlite_bpjs_emr_mapping_prosedur.focal_device_action,
@@ -2124,6 +2198,7 @@ class Admin extends AdminModule
                     rawat_inap_pr.jam_rawat,
                     mlite_bpjs_emr_mapping_prosedur_ranap.snomed_code,
                     mlite_bpjs_emr_mapping_prosedur_ranap.snomed_display,
+                    mlite_bpjs_emr_mapping_prosedur_ranap.master_device_id,
                     mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_code,
                     mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_display,
                     mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_action,
@@ -2155,17 +2230,33 @@ class Admin extends AdminModule
                 $result['procedure']['lab'] ?? [],
                 $result['procedure']['radiologi'] ?? []
             );
-            $seenDeviceCodes = [];
+            $seenDeviceKeys = [];
             foreach ($allProcs as $proc) {
                 $code = trim((string) ($proc['focal_device_code'] ?? ''));
-                if ($code !== '' && !in_array($code, $seenDeviceCodes, true)) {
-                    $seenDeviceCodes[] = $code;
-                    $deviceRow = $this->db('mlite_bpjs_emr_device')
-                        ->where('device_id', $code)
-                        ->oneArray();
+                $masterDeviceId = (int) ($proc['master_device_id'] ?? 0);
+                $deviceKey = $masterDeviceId > 0 ? ('id:' . $masterDeviceId) : ('code:' . $code);
+                if ($code !== '' && !isset($seenDeviceKeys[$deviceKey])) {
+                    $seenDeviceKeys[$deviceKey] = true;
+                    $deviceRow = null;
+                    if ($masterDeviceId > 0) {
+                        $deviceRow = $this->db('mlite_bpjs_emr_device')
+                            ->where('id', $masterDeviceId)
+                            ->oneArray();
+                    }
+                    if (!$deviceRow) {
+                        $deviceRow = $this->db('mlite_bpjs_emr_device')
+                            ->where('device_id', $code)
+                            ->oneArray();
+                    }
                     $fallbackDisplay = trim((string) ($proc['focal_device_display'] ?? ''));
+                    if (!$deviceRow && $fallbackDisplay !== '') {
+                        $deviceRow = $this->db('mlite_bpjs_emr_device')
+                            ->where('nama_alkes', $fallbackDisplay)
+                            ->oneArray();
+                    }
                     if ($deviceRow) {
                         $result['device'][] = array_merge($deviceRow, [
+                            'master_device_id' => (int) ($deviceRow['id'] ?? $masterDeviceId),
                             'focal_device_code' => $code,
                             'focal_device_display' => $fallbackDisplay !== '' ? $fallbackDisplay : trim((string) ($deviceRow['nama_alkes'] ?? ''))
                         ]);
@@ -2179,6 +2270,7 @@ class Admin extends AdminModule
                         'kode_produk' => '',
                         'manufacturer' => '',
                         'model' => '',
+                        'master_device_id' => $masterDeviceId,
                         'focal_device_code' => $code,
                         'focal_device_display' => $fallbackDisplay
                     ];
@@ -2833,6 +2925,7 @@ class Admin extends AdminModule
                 'template_laboratorium.*,
                 COALESCE(mlite_bpjs_emr_mapping_lab.loinc_code, mlite_satu_sehat_mapping_lab.code) as loinc_code,
                 COALESCE(mlite_bpjs_emr_mapping_lab.loinc_display, mlite_satu_sehat_mapping_lab.display) as loinc_display,
+                mlite_bpjs_emr_mapping_lab.master_device_id,
                 mlite_bpjs_emr_mapping_lab.focal_device_code,
                 mlite_bpjs_emr_mapping_lab.focal_device_display,
                 mlite_bpjs_emr_mapping_lab.focal_device_action'
@@ -2848,6 +2941,7 @@ class Admin extends AdminModule
                 COALESCE(mlite_bpjs_emr_mapping_radiologi.standard_code, mlite_satu_sehat_mapping_rad.code) as standard_code,
                 COALESCE(mlite_bpjs_emr_mapping_radiologi.standard_display, mlite_satu_sehat_mapping_rad.display) as standard_display,
                 COALESCE(mlite_bpjs_emr_mapping_radiologi.system, mlite_satu_sehat_mapping_rad.system) as system,
+                mlite_bpjs_emr_mapping_radiologi.master_device_id,
                 mlite_bpjs_emr_mapping_radiologi.focal_device_code,
                 mlite_bpjs_emr_mapping_radiologi.focal_device_display,
                 mlite_bpjs_emr_mapping_radiologi.focal_device_action'
@@ -2858,19 +2952,19 @@ class Admin extends AdminModule
             ->toArray();
 
         $proc = $this->db('jns_perawatan')
-            ->select('jns_perawatan.*, mlite_bpjs_emr_mapping_prosedur.snomed_code, mlite_bpjs_emr_mapping_prosedur.snomed_display, mlite_bpjs_emr_mapping_prosedur.focal_device_code, mlite_bpjs_emr_mapping_prosedur.focal_device_display, mlite_bpjs_emr_mapping_prosedur.focal_device_action')
+            ->select('jns_perawatan.*, mlite_bpjs_emr_mapping_prosedur.snomed_code, mlite_bpjs_emr_mapping_prosedur.snomed_display, mlite_bpjs_emr_mapping_prosedur.master_device_id, mlite_bpjs_emr_mapping_prosedur.focal_device_code, mlite_bpjs_emr_mapping_prosedur.focal_device_display, mlite_bpjs_emr_mapping_prosedur.focal_device_action')
             ->leftJoin('mlite_bpjs_emr_mapping_prosedur', 'jns_perawatan.kd_jenis_prw = mlite_bpjs_emr_mapping_prosedur.kd_jenis_prw')
             ->asc('jns_perawatan.nm_perawatan')
             ->toArray();
 
         $proc_ranap = $this->db('jns_perawatan_inap')
-            ->select('jns_perawatan_inap.*, mlite_bpjs_emr_mapping_prosedur_ranap.snomed_code, mlite_bpjs_emr_mapping_prosedur_ranap.snomed_display, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_code, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_display, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_action')
+            ->select('jns_perawatan_inap.*, mlite_bpjs_emr_mapping_prosedur_ranap.snomed_code, mlite_bpjs_emr_mapping_prosedur_ranap.snomed_display, mlite_bpjs_emr_mapping_prosedur_ranap.master_device_id, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_code, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_display, mlite_bpjs_emr_mapping_prosedur_ranap.focal_device_action')
             ->leftJoin('mlite_bpjs_emr_mapping_prosedur_ranap', 'jns_perawatan_inap.kd_jenis_prw = mlite_bpjs_emr_mapping_prosedur_ranap.kd_jenis_prw')
             ->asc('jns_perawatan_inap.nm_perawatan')
             ->toArray();
 
         $operasi = $this->db('paket_operasi')
-            ->select('paket_operasi.*, mlite_bpjs_emr_mapping_operasi.snomed_code, mlite_bpjs_emr_mapping_operasi.snomed_display, mlite_bpjs_emr_mapping_operasi.focal_device_code, mlite_bpjs_emr_mapping_operasi.focal_device_display, mlite_bpjs_emr_mapping_operasi.focal_device_action')
+            ->select('paket_operasi.*, mlite_bpjs_emr_mapping_operasi.snomed_code, mlite_bpjs_emr_mapping_operasi.snomed_display, mlite_bpjs_emr_mapping_operasi.master_device_id, mlite_bpjs_emr_mapping_operasi.focal_device_code, mlite_bpjs_emr_mapping_operasi.focal_device_display, mlite_bpjs_emr_mapping_operasi.focal_device_action')
             ->leftJoin('mlite_bpjs_emr_mapping_operasi', 'paket_operasi.kode_paket = mlite_bpjs_emr_mapping_operasi.kode_paket')
             ->asc('paket_operasi.nm_perawatan')
             ->toArray();
@@ -2898,6 +2992,7 @@ class Admin extends AdminModule
             'id_template' => $id,
             'loinc_code' => $_POST['loinc_code'],
             'loinc_display' => $_POST['loinc_display'],
+            'master_device_id' => !empty($_POST['master_device_id']) ? (int) $_POST['master_device_id'] : null,
             'focal_device_code' => $_POST['focal_device_code'] ?? '',
             'focal_device_display' => $_POST['focal_device_display'] ?? '',
             'focal_device_action' => $_POST['focal_device_action'] ?? ''
@@ -2927,6 +3022,7 @@ class Admin extends AdminModule
             'standard_code' => $_POST['standard_code'],
             'standard_display' => $_POST['standard_display'],
             'system' => $_POST['system'],
+            'master_device_id' => !empty($_POST['master_device_id']) ? (int) $_POST['master_device_id'] : null,
             'focal_device_code' => $_POST['focal_device_code'] ?? '',
             'focal_device_display' => $_POST['focal_device_display'] ?? '',
             'focal_device_action' => $_POST['focal_device_action'] ?? ''
@@ -2955,6 +3051,7 @@ class Admin extends AdminModule
             'kd_jenis_prw' => $id,
             'snomed_code' => $_POST['snomed_code'],
             'snomed_display' => $_POST['snomed_display'],
+            'master_device_id' => !empty($_POST['master_device_id']) ? (int) $_POST['master_device_id'] : null,
             'focal_device_code' => $_POST['focal_device_code'] ?? '',
             'focal_device_display' => $_POST['focal_device_display'] ?? '',
             'focal_device_action' => $_POST['focal_device_action'] ?? ''
@@ -2983,6 +3080,7 @@ class Admin extends AdminModule
             'kd_jenis_prw' => $id,
             'snomed_code' => $_POST['snomed_code'],
             'snomed_display' => $_POST['snomed_display'],
+            'master_device_id' => !empty($_POST['master_device_id']) ? (int) $_POST['master_device_id'] : null,
             'focal_device_code' => $_POST['focal_device_code'] ?? '',
             'focal_device_display' => $_POST['focal_device_display'] ?? '',
             'focal_device_action' => $_POST['focal_device_action'] ?? ''
@@ -3011,6 +3109,7 @@ class Admin extends AdminModule
             'kode_paket' => $id,
             'snomed_code' => $_POST['snomed_code'],
             'snomed_display' => $_POST['snomed_display'],
+            'master_device_id' => !empty($_POST['master_device_id']) ? (int) $_POST['master_device_id'] : null,
             'focal_device_code' => $_POST['focal_device_code'] ?? '',
             'focal_device_display' => $_POST['focal_device_display'] ?? '',
             'focal_device_action' => $_POST['focal_device_action'] ?? ''

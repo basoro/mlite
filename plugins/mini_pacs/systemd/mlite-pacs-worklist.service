@@ -1,0 +1,15 @@
+[Unit]
+Description=mLITE Mini PACS - DICOM Worklist Service
+After=network.target
+
+[Service]
+Type=simple
+User=www
+Group=www
+WorkingDirectory=/var/www/html/plugins/mini_pacs
+ExecStart=/bin/bash /var/www/html/plugins/mini_pacs/start_worklist.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

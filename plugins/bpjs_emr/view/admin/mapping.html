@@ -34,6 +34,7 @@
                                 <td>
                                     <input type="hidden" class="loinc-code" value="{$value.loinc_code}">
                                     <input type="hidden" class="loinc-display" value="{$value.loinc_display}">
+                                    <input type="hidden" class="master-device-id" value="{?=isset_or($value.master_device_id, '')?}">
                                     <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
                                     <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
                                     <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
@@ -71,6 +72,7 @@
                                     <input type="hidden" class="standard-code" value="{$value.standard_code}">
                                     <input type="hidden" class="standard-display" value="{$value.standard_display}">
                                     <input type="hidden" class="select-system" value="{?=isset_or($value.system, '')?}">
+                                    <input type="hidden" class="master-device-id" value="{?=isset_or($value.master_device_id, '')?}">
                                     <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
                                     <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
                                     <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
@@ -107,6 +109,7 @@
                                 <td>
                                     <input type="hidden" class="snomed-code" value="{$value.snomed_code}">
                                     <input type="hidden" class="snomed-display" value="{$value.snomed_display}">
+                                    <input type="hidden" class="master-device-id" value="{?=isset_or($value.master_device_id, '')?}">
                                     <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
                                     <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
                                     <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
@@ -142,6 +145,7 @@
                                 <td>
                                     <input type="hidden" class="snomed-code" value="{$value.snomed_code}">
                                     <input type="hidden" class="snomed-display" value="{$value.snomed_display}">
+                                    <input type="hidden" class="master-device-id" value="{?=isset_or($value.master_device_id, '')?}">
                                     <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
                                     <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
                                     <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
@@ -177,6 +181,7 @@
                                 <td>
                                     <input type="hidden" class="snomed-code" value="{$value.snomed_code}">
                                     <input type="hidden" class="snomed-display" value="{$value.snomed_display}">
+                                    <input type="hidden" class="master-device-id" value="{?=isset_or($value.master_device_id, '')?}">
                                     <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
                                     <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
                                     <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
@@ -245,7 +250,7 @@
                         <select id="modal-master-device-select" class="form-control input-sm">
                             <option value="">-- Pilih Master Device --</option>
                             {loop: $devices}
-                            <option value="{$value.device_id}" data-display="{$value.nama_alkes}" data-kategori="{$value.kategori}">{$value.nama_alkes} ({$value.device_id})</option>
+                            <option value="{$value.id}" data-device-id="{$value.device_id}" data-display="{$value.nama_alkes}" data-kategori="{$value.kategori}">{$value.nama_alkes} ({$value.device_id})</option>
                             {/loop}
                         </select>
                     </div>
@@ -321,10 +326,82 @@ $(function() {
         if (!isFocalContext(c)) {
             return hasPrimary;
         }
+        var hasMaster = $.trim(row.find('.master-device-id').val() || '') !== '';
         var hasFocal = $.trim(row.find('.focal-device-code').val() || '') !== '' ||
             $.trim(row.find('.focal-device-display').val() || '') !== '' ||
             $.trim(row.find('.focal-device-action').val() || '') !== '';
-        return hasPrimary || hasFocal;
+        return hasPrimary || hasFocal || hasMaster;
+    }
+
+    function resolveMasterDeviceText(masterDeviceId, fCode, fDisplay) {
+        var masterId = $.trim(masterDeviceId || '');
+        var code = $.trim(fCode || '');
+        var display = $.trim(fDisplay || '');
+        var text = '-';
+        var matched = null;
+
+        if (masterId) {
+            matched = $('#modal-master-device-select option[value="' + masterId + '"]');
+            if (matched.length) {
+                text = (matched.data('display') || '').toString().trim() || display || code || '-';
+            }
+        }
+
+        if (code) {
+            matched = $('#modal-master-device-select option[data-device-id="' + code + '"]');
+            if (matched.length) {
+                text = (matched.data('display') || '').toString().trim() || code;
+            }
+        }
+
+        // Fallback: try matching by display when focal code is not device_id
+        if (text === '-' && display) {
+            $('#modal-master-device-select option').each(function() {
+                var optDisplay = ($(this).data('display') || '').toString().trim();
+                if (optDisplay && optDisplay.toLowerCase() === display.toLowerCase()) {
+                    text = optDisplay;
+                    return false;
+                }
+            });
+        }
+
+        // Last fallback: show focal display/code so summary is still visible
+        if (text === '-') {
+            text = display || code || '-';
+        }
+        return text;
+    }
+
+    function syncMasterDeviceSelect(masterDeviceId, fCode, fDisplay) {
+        var masterId = $.trim(masterDeviceId || '');
+        var code = $.trim(fCode || '');
+        var display = $.trim(fDisplay || '');
+        var select = $('#modal-master-device-select');
+
+        if (masterId && select.find('option[value="' + masterId + '"]').length) {
+            select.val(masterId);
+            return;
+        }
+
+        if (code && select.find('option[data-device-id="' + code + '"]').length) {
+            select.val(select.find('option[data-device-id="' + code + '"]').first().val());
+            return;
+        }
+
+        if (display) {
+            var matchedValue = '';
+            select.find('option').each(function() {
+                var optDisplay = ($(this).data('display') || '').toString().trim();
+                if (optDisplay && optDisplay.toLowerCase() === display.toLowerCase()) {
+                    matchedValue = $(this).val();
+                    return false;
+                }
+            });
+            select.val(matchedValue);
+            return;
+        }
+
+        select.val('');
     }
 
     function updateSummary(row, c) {
@@ -339,11 +416,12 @@ $(function() {
             lines.push('<div class="text-muted">Belum ada mapping kode.</div>');
         }
         if (isFocalContext(c)) {
+            var masterId = $.trim(row.find('.master-device-id').val() || '');
             var fCode = $.trim(row.find('.focal-device-code').val() || '');
             var fDisplay = $.trim(row.find('.focal-device-display').val() || '');
             var fAction = $.trim(row.find('.focal-device-action').val() || '');
-            if (fCode || fDisplay || fAction) {
-                var masterText = fCode ? ($('#modal-master-device-select option[value="' + fCode + '"]').data('display') || '-') : '-';
+            if (masterId || fCode || fDisplay || fAction) {
+                var masterText = resolveMasterDeviceText(masterId, fCode, fDisplay);
                 lines.push('<div><strong>Focal Device:</strong> ' + (fCode ? (fCode + ' - ' + (fDisplay || '-')) : '-') + '</div>');
                 lines.push('<div><strong>Master Device:</strong> ' + masterText + '</div>');
                 lines.push('<div><strong>Aksi Focal:</strong> ' + (actionLabelMap[fAction] || fAction || '-') + '</div>');
@@ -433,9 +511,12 @@ $(function() {
         $('#modal-focal-section').show();
         filterMasterDeviceByContext(ctx);
         $('#modal-ai-focal-select').html('<option value="">-- Pilih hasil AI FocalDevice --</option>');
-        $('#modal-master-device-select').val($.trim(activeRow.find('.focal-device-code').val() || ''));
-        $('#modal-focal-code').val($.trim(activeRow.find('.focal-device-code').val() || ''));
-        $('#modal-focal-display').val($.trim(activeRow.find('.focal-device-display').val() || ''));
+        var currentMasterDeviceId = $.trim(activeRow.find('.master-device-id').val() || '');
+        var currentFocalCode = $.trim(activeRow.find('.focal-device-code').val() || '');
+        var currentFocalDisplay = $.trim(activeRow.find('.focal-device-display').val() || '');
+        syncMasterDeviceSelect(currentMasterDeviceId, currentFocalCode, currentFocalDisplay);
+        $('#modal-focal-code').val(currentFocalCode);
+        $('#modal-focal-display').val(currentFocalDisplay);
         $('#modal-focal-action').val($.trim(activeRow.find('.focal-device-action').val() || ''));
         $('#mappingDetailModal').modal('show');
     });
@@ -487,7 +568,7 @@ $(function() {
 
     $('#modal-master-device-select').on('change', function() {
         var selected = $(this).find('option:selected');
-        $('#modal-focal-code').val($.trim($(this).val() || ''));
+        $('#modal-focal-code').val($.trim((selected.data('device-id') || '').toString()));
         $('#modal-focal-display').val($.trim((selected.data('display') || '').toString()));
     });
 
@@ -529,6 +610,7 @@ $(function() {
         if (!activeRow) return;
         var ctx = $('#modal-context').val();
         setPrimary(activeRow, ctx, $.trim($('#modal-primary-code').val() || ''), $.trim($('#modal-primary-display').val() || ''), $.trim($('#modal-primary-system').val() || ''));
+        activeRow.find('.master-device-id').val($.trim($('#modal-master-device-select').val() || ''));
         activeRow.find('.focal-device-code').val($.trim($('#modal-focal-code').val() || ''));
         activeRow.find('.focal-device-display').val($.trim($('#modal-focal-display').val() || ''));
         activeRow.find('.focal-device-action').val($.trim($('#modal-focal-action').val() || ''));
@@ -547,6 +629,7 @@ $(function() {
             payload.id_template = row.attr('id').replace('lab-', '');
             payload.loinc_code = row.find('.loinc-code').val() || '';
             payload.loinc_display = row.find('.loinc-display').val() || '';
+            payload.master_device_id = row.find('.master-device-id').val() || '';
             payload.focal_device_code = row.find('.focal-device-code').val() || '';
             payload.focal_device_display = row.find('.focal-device-display').val() || '';
             payload.focal_device_action = row.find('.focal-device-action').val() || '';
@@ -556,6 +639,7 @@ $(function() {
             payload.standard_code = row.find('.standard-code').val() || '';
             payload.standard_display = row.find('.standard-display').val() || '';
             payload.system = row.find('.select-system').val() || '';
+            payload.master_device_id = row.find('.master-device-id').val() || '';
             payload.focal_device_code = row.find('.focal-device-code').val() || '';
             payload.focal_device_display = row.find('.focal-device-display').val() || '';
             payload.focal_device_action = row.find('.focal-device-action').val() || '';
@@ -564,6 +648,7 @@ $(function() {
             payload.kd_jenis_prw = row.attr('id').replace('proc-', '');
             payload.snomed_code = row.find('.snomed-code').val() || '';
             payload.snomed_display = row.find('.snomed-display').val() || '';
+            payload.master_device_id = row.find('.master-device-id').val() || '';
             payload.focal_device_code = row.find('.focal-device-code').val() || '';
             payload.focal_device_display = row.find('.focal-device-display').val() || '';
             payload.focal_device_action = row.find('.focal-device-action').val() || '';
@@ -572,6 +657,7 @@ $(function() {
             payload.kd_jenis_prw = row.attr('id').replace('proc-ranap-', '');
             payload.snomed_code = row.find('.snomed-code').val() || '';
             payload.snomed_display = row.find('.snomed-display').val() || '';
+            payload.master_device_id = row.find('.master-device-id').val() || '';
             payload.focal_device_code = row.find('.focal-device-code').val() || '';
             payload.focal_device_display = row.find('.focal-device-display').val() || '';
             payload.focal_device_action = row.find('.focal-device-action').val() || '';
@@ -580,6 +666,7 @@ $(function() {
             payload.kode_paket = row.attr('id').replace('operasi-', '');
             payload.snomed_code = row.find('.snomed-code').val() || '';
             payload.snomed_display = row.find('.snomed-display').val() || '';
+            payload.master_device_id = row.find('.master-device-id').val() || '';
             payload.focal_device_code = row.find('.focal-device-code').val() || '';
             payload.focal_device_display = row.find('.focal-device-display').val() || '';
             payload.focal_device_action = row.find('.focal-device-action').val() || '';
