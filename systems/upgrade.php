@@ -1818,6 +1818,7 @@ switch ($version) {
               `kd_jenis_prw` TEXT NOT NULL,
               `snomed_code` TEXT NOT NULL,
               `snomed_display` TEXT DEFAULT NULL,
+              `master_device_id` INTEGER DEFAULT NULL,
               `focal_device_code` TEXT DEFAULT NULL,
               `focal_device_display` TEXT DEFAULT NULL,
               `focal_device_action` TEXT DEFAULT NULL,
@@ -1827,6 +1828,7 @@ switch ($version) {
               `kd_jenis_prw` TEXT NOT NULL,
               `snomed_code` TEXT NOT NULL,
               `snomed_display` TEXT DEFAULT NULL,
+              `master_device_id` INTEGER DEFAULT NULL,
               `focal_device_code` TEXT DEFAULT NULL,
               `focal_device_display` TEXT DEFAULT NULL,
               `focal_device_action` TEXT DEFAULT NULL,
@@ -1836,6 +1838,7 @@ switch ($version) {
               `id_template` TEXT NOT NULL,
               `loinc_code` TEXT NOT NULL,
               `loinc_display` TEXT DEFAULT NULL,
+              `master_device_id` INTEGER DEFAULT NULL,
               `focal_device_code` TEXT DEFAULT NULL,
               `focal_device_display` TEXT DEFAULT NULL,
               `focal_device_action` TEXT DEFAULT NULL,
@@ -1846,6 +1849,7 @@ switch ($version) {
               `standard_code` TEXT NOT NULL,
               `standard_display` TEXT DEFAULT NULL,
               `system` TEXT DEFAULT NULL,
+              `master_device_id` INTEGER DEFAULT NULL,
               `focal_device_code` TEXT DEFAULT NULL,
               `focal_device_display` TEXT DEFAULT NULL,
               `focal_device_action` TEXT DEFAULT NULL,
@@ -1855,6 +1859,7 @@ switch ($version) {
               `kode_paket` TEXT NOT NULL,
               `snomed_code` TEXT NOT NULL,
               `snomed_display` TEXT DEFAULT NULL,
+              `master_device_id` INTEGER DEFAULT NULL,
               `focal_device_code` TEXT DEFAULT NULL,
               `focal_device_display` TEXT DEFAULT NULL,
               `focal_device_action` TEXT DEFAULT NULL,
@@ -1868,7 +1873,9 @@ switch ($version) {
               `kode_produk` TEXT DEFAULT NULL,
               `keterangan` TEXT DEFAULT NULL,
               `manufacturer` TEXT DEFAULT NULL,
-              `model` TEXT DEFAULT NULL
+              `model` TEXT DEFAULT NULL, 
+              'manufacture_date' TEXT NOT NULL, 
+              'expiration_date' TEXT NOT NULL 
             );");
             $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_bpjs_emr_device_nama_alkes` ON `mlite_bpjs_emr_device` (`nama_alkes`);");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_logs` (
@@ -1938,6 +1945,13 @@ switch ($version) {
             $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_mapping_snomed_icd9_no_rawat ON `mlite_mapping_snomed_icd9` (`no_rawat`);");
             $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_mapping_snomed_icd9_kd_tindakan ON `mlite_mapping_snomed_icd9` (`kd_tindakan`);");
             $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS idx_mapping_snomed_icd9_concept_id ON `mlite_mapping_snomed_icd9` (`snomed_concept_id`);");
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_lab` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_radiologi` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacture_date` TEXT NOT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `expiration_date` TEXT NOT NULL;"); } catch (\Exception $e) {}
         } else {
             // Kapabilitas MySQL sejak 6.2.0
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_study` (
@@ -2046,27 +2060,33 @@ switch ($version) {
               `kd_jenis_prw` varchar(20) NOT NULL,
               `snomed_code` varchar(20) NOT NULL,
               `snomed_display` varchar(255) DEFAULT NULL,
+              `master_device_id` int DEFAULT NULL,
               `focal_device_code` varchar(255) DEFAULT NULL,
               `focal_device_display` varchar(255) DEFAULT NULL,
               `focal_device_action` varchar(20) DEFAULT NULL,
+              KEY `idx_mapping_proc_master_device` (`master_device_id`),
               PRIMARY KEY (`kd_jenis_prw`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_prosedur_ranap` (
               `kd_jenis_prw` varchar(20) NOT NULL,
               `snomed_code` varchar(20) NOT NULL,
               `snomed_display` varchar(255) DEFAULT NULL,
+              `master_device_id` int DEFAULT NULL,
               `focal_device_code` varchar(255) DEFAULT NULL,
               `focal_device_display` varchar(255) DEFAULT NULL,
               `focal_device_action` varchar(20) DEFAULT NULL,
+              KEY `idx_mapping_proc_ranap_master_device` (`master_device_id`),
               PRIMARY KEY (`kd_jenis_prw`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_lab` (
               `id_template` varchar(20) NOT NULL,
               `loinc_code` varchar(20) NOT NULL,
               `loinc_display` varchar(255) DEFAULT NULL,
+              `master_device_id` int DEFAULT NULL,
               `focal_device_code` varchar(255) DEFAULT NULL,
               `focal_device_display` varchar(255) DEFAULT NULL,
               `focal_device_action` varchar(20) DEFAULT NULL,
+              KEY `idx_mapping_lab_master_device` (`master_device_id`),
               PRIMARY KEY (`id_template`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_radiologi` (
@@ -2074,18 +2094,22 @@ switch ($version) {
               `standard_code` varchar(20) NOT NULL,
               `standard_display` varchar(255) DEFAULT NULL,
               `system` varchar(100) DEFAULT NULL,
+              `master_device_id` int DEFAULT NULL,
               `focal_device_code` varchar(255) DEFAULT NULL,
               `focal_device_display` varchar(255) DEFAULT NULL,
               `focal_device_action` varchar(20) DEFAULT NULL,
+              KEY `idx_mapping_rad_master_device` (`master_device_id`),
               PRIMARY KEY (`kd_jenis_prw`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_mapping_operasi` (
               `kode_paket` varchar(20) NOT NULL,
               `snomed_code` varchar(20) NOT NULL,
               `snomed_display` varchar(255) DEFAULT NULL,
+              `master_device_id` int DEFAULT NULL,
               `focal_device_code` varchar(20) DEFAULT NULL,
               `focal_device_display` varchar(255) DEFAULT NULL,
               `focal_device_action` varchar(20) DEFAULT NULL,
+              KEY `idx_mapping_operasi_master_device` (`master_device_id`),
               PRIMARY KEY (`kode_paket`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_device` (
@@ -2097,6 +2121,8 @@ switch ($version) {
               `keterangan` text DEFAULT NULL,
               `manufacturer` varchar(255) DEFAULT NULL,
               `model` varchar(255) DEFAULT NULL,
+              'manufacture_date' DATE NOT NULL, 
+              'expiration_date' DATE NOT NULL,
               PRIMARY KEY (`id`),
               UNIQUE KEY `uq_device_id` (`device_id`),
               KEY `idx_nama_alkes` (`nama_alkes`)
@@ -2117,6 +2143,13 @@ switch ($version) {
               `code` varchar(20) NOT NULL,
               PRIMARY KEY (`kode_brng`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_lab` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_radiologi` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacture_date` DATE NOT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `expiration_date` DATE NOT NULL"); } catch (\Exception $e) {}
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_uuid_condition` (
               `kd_penyakit` varchar(15) NOT NULL,
               `uuid` varchar(200) DEFAULT NULL
@@ -2178,12 +2211,31 @@ switch ($version) {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
 
         }
-        $return = '6.3.0';
+
+    case '6.3.0':
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_lab` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_radiologi` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacture_date` TEXT NOT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `expiration_date` TEXT NOT NULL;"); } catch (\Exception $e) {}
+        } else {
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_lab` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_radiologi` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacture_date` DATE NOT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `expiration_date` DATE NOT NULL"); } catch (\Exception $e) {}
+        }        
+        $return = '6.3.1';
         break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '6.3.0';
+        $return = '6.3.1';
     }
 
 return $return;
