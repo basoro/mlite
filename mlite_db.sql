@@ -1651,6 +1651,8 @@ CREATE TABLE `mlite_bpjs_emr_device` (
   `kode_produk` VARCHAR(100) DEFAULT NULL,
   `keterangan` TEXT DEFAULT NULL,
   `manufacturer` VARCHAR(255) DEFAULT NULL,
+  'manufacture_date' DATE NOT NULL, 
+  'expiration_date' DATE NOT NULL, 
   `model` VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_device_id` (`device_id`),

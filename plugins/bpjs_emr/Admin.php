@@ -1600,6 +1600,8 @@ class Admin extends AdminModule
                 'lotNumber' => 'ALKES',
                 'manufacturer' => $device['manufacturer'] ?? '',
                 'model' => $device['model'] ?? '',
+                'manufactureDate' => $device['manufacturer_date'] ?? '2000-01-01', 
+                'expirationDate' => $device['expiration_date'] ?? '2099-01-01', 
                 'patient' => [
                     'reference' => 'Patient/' . $uuids['patient']
                 ]
