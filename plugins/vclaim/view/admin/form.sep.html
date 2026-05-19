@@ -627,7 +627,8 @@
                    ('0' + now.getDate()).slice(-2) +
                    ('0' + now.getHours()).slice(-2);
       var nomr = $('#sep_norm').val().trim();
-      var number = ymdhms + (nomr || '000000');
+      // var number = ymdhms + (nomr || '000000');
+      var number =  $('input:text[name=sep_nomor_skdp]').val();
       console.log(number);
       $('#sep_nomor_rujukan').val(number);
     }

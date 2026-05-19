@@ -88,7 +88,12 @@ class Admin extends AdminModule
         }
 
         $queryJoins = "FROM reg_periksa r
-                       JOIN pasien p ON p.no_rkm_medis = r.no_rkm_medis";
+                       JOIN pasien p ON p.no_rkm_medis = r.no_rkm_medis
+                       INNER JOIN bridging_sep s ON s.no_rawat = r.no_rawat
+                       AND s.jnspelayanan = CASE 
+                           WHEN r.status_lanjut = 'Ralan' THEN '2'
+                           WHEN r.status_lanjut = 'Ranap' THEN '1'
+                       END";
         $queryConditions = "WHERE r.tgl_registrasi BETWEEN :start_date AND :end_date
                             AND r.stts != 'Batal'
                             AND r.kd_pj = 'BPJ'";
@@ -126,7 +131,7 @@ class Admin extends AdminModule
         );
 
         $offset = $pagination->offset();
-        $query = "SELECT r.* " . $queryJoins . " " . $queryConditions . " ORDER BY r.tgl_registrasi DESC, r.jam_reg DESC LIMIT :limit OFFSET :offset";
+        $query = "SELECT r.*, s.no_sep, s.no_kartu, s.no_rujukan " . $queryJoins . " " . $queryConditions . " ORDER BY r.tgl_registrasi DESC, r.jam_reg DESC LIMIT :limit OFFSET :offset";
 
         $stmt = $this->db()->pdo()->prepare($query);
         foreach ($params as $key => $value) {
@@ -140,7 +145,7 @@ class Admin extends AdminModule
         $data_response = [];
         foreach ($records as $row) {
 
-            $erm_response = $this->db('mlite_bpjs_emr_logs')->where('no_rawat', $row['no_rawat'])->oneArray();
+            $erm_response = $this->db('mlite_bpjs_emr_logs')->where('no_rawat', $row['no_rawat'])->where('no_sep', $row['no_sep'])->oneArray();
             $status_lanjut = $row['status_lanjut'];
             $row['no_ktp_pasien'] = $this->core->getPasienInfo('no_ktp', $row['no_rkm_medis']);
             $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
@@ -207,6 +212,7 @@ class Admin extends AdminModule
             ini_set('log_errors', 1);
             
             $no_rawat = $_POST['no_rawat'] ?? '';
+            $no_sep = $_POST['no_sep'] ?? '';
             
             if (empty($no_rawat)) {
                 ob_end_clean();
@@ -214,7 +220,7 @@ class Admin extends AdminModule
                 return;
             }
             
-            $data = $this->getDataERM($no_rawat);
+            $data = $this->getDataERM($no_rawat, $no_sep);
             
             if (empty($data) || empty($data['registrasi'])) {
                 $this->jsonResponse(['success' => false, 'message' => 'Data registrasi tidak ditemukan']);
@@ -1872,7 +1878,7 @@ class Admin extends AdminModule
         return $result;
     }
 
-    public function getDataERM($no_rawat)
+    public function getDataERM($no_rawat, $no_sep = null)
     {
         // $no_rawat = revertNoRawat($no_rawat);
 
@@ -1940,7 +1946,7 @@ class Admin extends AdminModule
                             WHEN reg_periksa.status_lanjut = 'Ranap' THEN '1'
                         END
                     LEFT JOIN kamar_inap ON kamar_inap.no_rawat = reg_periksa.no_rawat
-                    WHERE reg_periksa.no_rawat = '$no_rawat'
+                    WHERE reg_periksa.no_rawat = '$no_rawat' " . ($no_sep ? " AND bridging_sep.no_sep = '$no_sep'" : "") . "
                     LIMIT 1";
 
             $stmt = $this->db()->pdo()->prepare($sql);
@@ -2597,6 +2603,7 @@ class Admin extends AdminModule
             ini_set('display_errors', 0);
             
             $no_rawat = $_POST['no_rawat'] ?? '';
+            $no_sep = $_POST['no_sep'] ?? '';
             
             if (empty($no_rawat)) {
                 ob_end_clean();
@@ -2608,7 +2615,7 @@ class Admin extends AdminModule
             }
             
             // Ambil data lengkap
-            $dataPasien = $this->getDataERM($no_rawat);
+            $dataPasien = $this->getDataERM($no_rawat, $no_sep);
 
             if(empty($dataPasien['registrasi']['no_sep'])){
                 $this->jsonResponse([

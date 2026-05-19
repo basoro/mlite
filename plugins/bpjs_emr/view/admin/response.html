@@ -1,114 +1,109 @@
 <div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Data Response Bridging ERM</h3>
-    </div>
-    <div class="panel-body">
-        <form action="{?=url([ADMIN, 'bpjs_emr', 'response'])?}" method="GET" class="form-inline margin-bottom-20">
-            <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
-            <div class="form-group">
-                <input type="text" name="start_date" class="form-control datetimepicker" value="{$start_date}"
-                    aria-label="Tanggal awal"
-                    placeholder="Tanggal Awal">
-            </div>
-            <div class="form-group">
-                <input type="text" name="end_date" class="form-control datetimepicker" value="{$end_date}"
-                    aria-label="Tanggal akhir"
-                    placeholder="Tanggal Akhir">
-            </div>
-            <div class="form-group">
-                <input type="text" name="s" class="form-control" value="{$s}" aria-label="Pencarian data response"
-                    placeholder="Cari No Rawat/No RM/Nama">
-            </div>
-            <button type="submit" class="btn btn-primary">Cari</button>
-        </form>
-        <div class="row" style="margin-top: 10px;">
-            <div class="col-md-12">
-                <div class="table-responsive">
-                    <table class="table display table-bordered table-striped" width="100%" id="ermTable">
-                        <thead>
-                            <tr>
-                                <th style="white-space: nowrap;">Aksi</th>
-                                <th style="white-space: nowrap;">Tgl. Rawat</th>
-                                <th style="white-space: nowrap;">No. Rawat</th>
-                                <th style="white-space: nowrap;">No. RM</th>
-                                <th style="white-space: nowrap;">Nama Pasien</th>
-                                <th style="white-space: nowrap;">No. KTP Pasien</th>
-                                <th style="white-space: nowrap;">Kd. Dokter</th>
-                                <th style="white-space: nowrap;">Nama Dokter</th>
-                                <th style="white-space: nowrap;">No. KTP Dokter</th>
-                                <th style="white-space: nowrap;">Kd. Poli/Unit</th>
-                                <th style="white-space: nowrap;">Poli/Unit</th>
-                                <th style="white-space: nowrap;">Status Rawat</th>
-                                <th style="white-space: nowrap;">Status Lanjut</th>
-                                <th style="white-space: nowrap;">Status Bayar</th>
-                                <th style="white-space: nowrap;">Tgl. Pulang</th>
-                            </tr>    
-                        </thead>
-                        <tbody>
-                        {if: !empty($data_response)}
-                        {loop: $data_response}
-                        <tr>
-                            <td style="white-space: nowrap;">
-                              <!-- Tombol Lihat Data ERM -->
-                              <button type="button" class="btn btn-xs btn-info cek-kelengkapan-btn" 
-                                      data-no-rawat="{$value.no_rawat}"
-                                      data-nm-pasien="{$value.nm_pasien}"
-                                      data-status="{if: $value.mlite_bpjs_emr_logs && $value.mlite_bpjs_emr_logs.status}{$value.mlite_bpjs_emr_logs.status}{else}Belum{/if}"
-                                      data-toggle="modal" 
-                                      data-target="#cekKelengkapanModal"
-                                      title="Lihat Data ERM">
-                                  <i class="fa fa-eye"></i> Lihat
-                              </button>
+  <div class="panel-heading">
+    <h3 class="panel-title">Data Response Bridging ERM</h3>
+  </div>
+  <div class="panel-body">
+    <form action="{?=url([ADMIN, 'bpjs_emr', 'response'])?}" method="GET" class="form-inline margin-bottom-20">
+      <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+      <div class="form-group">
+        <input type="text" name="start_date" class="form-control datetimepicker" value="{$start_date}"
+          aria-label="Tanggal awal" placeholder="Tanggal Awal">
+      </div>
+      <div class="form-group">
+        <input type="text" name="end_date" class="form-control datetimepicker" value="{$end_date}"
+          aria-label="Tanggal akhir" placeholder="Tanggal Akhir">
+      </div>
+      <div class="form-group">
+        <input type="text" name="s" class="form-control" value="{$s}" aria-label="Pencarian data response"
+          placeholder="Cari No Rawat/No RM/Nama">
+      </div>
+      <button type="submit" class="btn btn-primary">Cari</button>
+    </form>
+    <div class="row" style="margin-top: 10px;">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table class="table display table-bordered table-striped" width="100%" id="ermTable">
+            <thead>
+              <tr>
+                <th style="white-space: nowrap;">Aksi</th>
+                <th style="white-space: nowrap;">Tgl. Rawat</th>
+                <th style="white-space: nowrap;">No. Rawat</th>
+                <th style="white-space: nowrap;">No. RM</th>
+                <th style="white-space: nowrap;">Nama Pasien</th>
+                <th style="white-space: nowrap;">No. KTP Pasien</th>
+                <th style="white-space: nowrap;">Kd. Dokter</th>
+                <th style="white-space: nowrap;">Nama Dokter</th>
+                <th style="white-space: nowrap;">No. KTP Dokter</th>
+                <th style="white-space: nowrap;">Kd. Poli/Unit</th>
+                <th style="white-space: nowrap;">Poli/Unit</th>
+                <th style="white-space: nowrap;">Status Rawat</th>
+                <th style="white-space: nowrap;">Status Lanjut</th>
+                <th style="white-space: nowrap;">Status Bayar</th>
+                <th style="white-space: nowrap;">Tgl. Pulang</th>
+              </tr>
+            </thead>
+            <tbody>
+              {if: !empty($data_response)}
+              {loop: $data_response}
+              <tr>
+                <td style="white-space: nowrap;">
+                  <!-- Tombol Lihat Data ERM -->
+                  <button type="button" class="btn btn-xs btn-info cek-kelengkapan-btn"
+                    data-no-rawat="{$value.no_rawat}" data-nm-pasien="{$value.nm_pasien}"
+                    data-no-sep="{$value.no_sep}"
+                    data-status="{if: $value.mlite_bpjs_emr_logs && $value.mlite_bpjs_emr_logs.status}{$value.mlite_bpjs_emr_logs.status}{else}Belum{/if}"
+                    data-toggle="modal" data-target="#cekKelengkapanModal" title="Lihat Data ERM">
+                    <i class="fa fa-eye"></i> Lihat
+                  </button>
 
-                              <!-- Tombol Log -->
-                              {if: $value.mlite_bpjs_emr_logs && $value.mlite_bpjs_emr_logs.no_sep}
-                              <button type="button" class="btn btn-xs btn-default lihat-log-btn"
-                                      data-no-sep="{$value.mlite_bpjs_emr_logs.no_sep}"
-                                      data-nm-pasien="{$value.nm_pasien}"
-                                      title="Lihat Log Pengiriman">
-                                  <i class="fa fa-list-alt"></i> Log
-                              </button>
-                              {/if}
-                              
-                              <!-- Status Pengiriman -->
-                              {if: $value.mlite_bpjs_emr_logs && $value.mlite_bpjs_emr_logs.status == 'Terkirim'}
-                                  <button class="btn btn-xs btn-success">
-                                      <i class="fa fa-check-circle"></i> Terkirim
-                                  </button>
-                              {else}
-                                  <button class="btn btn-xs btn-warning">
-                                      <i class="fa fa-clock-o"></i> Belum
-                                  </button>
-                              {/if}
-                            </td>
-                            <td style="white-space: nowrap;">{$value.tgl_registrasi}</td>
-                            <td style="white-space: nowrap;">{$value.no_rawat}</td>
-                            <td style="white-space: nowrap;">{$value.no_rkm_medis}</td>
-                            <td style="white-space: nowrap;">{$value.nm_pasien}</td>
-                            <td style="white-space: nowrap;">{$value.no_ktp_pasien}</td>
-                            <td style="white-space: nowrap;">{$value.kd_dokter}</td>
-                            <td style="white-space: nowrap;">{$value.nm_dokter}</td>
-                            <td style="white-space: nowrap;">{$value.no_ktp_dokter}</td>
-                            <td style="white-space: nowrap;">{$value.kd_poli}</td>
-                            <td style="white-space: nowrap;">{$value.nm_poli}</td>
-                            <td style="white-space: nowrap;">{$value.stts}</td>
-                            <td style="white-space: nowrap;">{$value.status_lanjut}</td>
-                            <td style="white-space: nowrap;">{$value.status_bayar}</td>
-                            <td style="white-space: nowrap;">{$value.tgl_pulang}</td>
-                        </tr>
-                        {/loop}
-                        {else}
-                        <tr>
-                            <td colspan="15" class="text-center">Data tidak ditemukan.</td>
-                        </tr>
-                        {/if}
-                    </tbody>
-                </table>
-                </div>
-                {$pagination}
-            </div>
+                  <!-- Tombol Log -->
+                  {if: $value.mlite_bpjs_emr_logs && $value.mlite_bpjs_emr_logs.no_sep}
+                  <button type="button" class="btn btn-xs btn-default lihat-log-btn"
+                    data-no-sep="{$value.mlite_bpjs_emr_logs.no_sep}" data-nm-pasien="{$value.nm_pasien}"
+                    title="Lihat Log Pengiriman">
+                    <i class="fa fa-list-alt"></i> Log
+                  </button>
+                  {/if}
+
+                  <!-- Status Pengiriman -->
+                  {if: $value.mlite_bpjs_emr_logs && $value.mlite_bpjs_emr_logs.status == 'Terkirim'}
+                  <button class="btn btn-xs btn-success">
+                    <i class="fa fa-check-circle"></i> Terkirim
+                  </button>
+                  {else}
+                  <button class="btn btn-xs btn-warning">
+                    <i class="fa fa-clock-o"></i> Belum
+                  </button>
+                  {/if}
+                </td>
+                <td style="white-space: nowrap;">{$value.tgl_registrasi}</td>
+                <td style="white-space: nowrap;">{$value.no_rawat}</td>
+                <td style="white-space: nowrap;">{$value.no_rkm_medis}</td>
+                <td style="white-space: nowrap;">{$value.nm_pasien}</td>
+                <td style="white-space: nowrap;">{$value.no_ktp_pasien}</td>
+                <td style="white-space: nowrap;">{$value.kd_dokter}</td>
+                <td style="white-space: nowrap;">{$value.nm_dokter}</td>
+                <td style="white-space: nowrap;">{$value.no_ktp_dokter}</td>
+                <td style="white-space: nowrap;">{$value.kd_poli}</td>
+                <td style="white-space: nowrap;">{$value.nm_poli}</td>
+                <td style="white-space: nowrap;">{$value.stts}</td>
+                <td style="white-space: nowrap;">{$value.status_lanjut}</td>
+                <td style="white-space: nowrap;">{$value.status_bayar}</td>
+                <td style="white-space: nowrap;">{$value.tgl_pulang}</td>
+              </tr>
+              {/loop}
+              {else}
+              <tr>
+                <td colspan="15" class="text-center">Data tidak ditemukan.</td>
+              </tr>
+              {/if}
+            </tbody>
+          </table>
         </div>
+        {$pagination}
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Modal Cek Data ERM -->
@@ -116,13 +111,14 @@
   <div class="modal-dialog modal-lg" style="width: 90%;" role="document">
     <div class="modal-content">
       <div class="modal-header bg-primary">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="cekKelengkapanModalLabel">
           <i class="fa fa-file-text-o"></i> Data ERM - <span id="modalPasienName"></span>
         </h4>
       </div>
       <div class="modal-body" style="max-height: 600px; overflow-y: auto;">
-        
+
         <!-- Loading -->
         <div id="loadingKelengkapan" class="text-center" style="padding: 50px;">
           <i class="fa fa-spinner fa-spin fa-3x"></i>
@@ -131,9 +127,10 @@
 
         <!-- Content -->
         <div id="contentKelengkapan" style="display: none;">
-          
+
           <!-- Hidden field untuk simpan no_rawat -->
           <input type="hidden" id="hiddenNoRawat">
+          <input type="hidden" id="hiddenNoSep">
 
           <!-- Status Kirim Alert -->
           <div id="statusKirimAlert" class="alert" style="display: none;">
@@ -382,16 +379,18 @@
         <button type="button" class="btn btn-default" data-dismiss="modal">
           <i class="fa fa-times"></i> Tutup
         </button>
-        
+        <button class="btn btn-info" onclick="cetakDataERM()">
+          <i class="fa fa-print"></i> Cetak
+        </button>
         <!-- Tombol Kirim -->
         {if: $value.mlite_bpjs_emr_logs && $value.mlite_bpjs_emr_logs.status == 'Terkirim'}
-          <button type="button" class="btn btn-warning" id="btnKirimERM" onclick="kirimDataERM()">
-            <i class="fa fa-paper-plane"></i> Update Data ERM
-          </button>
+        <button type="button" class="btn btn-warning" id="btnKirimERM" onclick="kirimDataERM()">
+          <i class="fa fa-paper-plane"></i> Update Data ERM
+        </button>
         {else}
-          <button type="button" class="btn btn-primary" id="btnKirimERM" onclick="kirimDataERM()">
-            <i class="fa fa-paper-plane"></i> Kirim ke BPJS
-          </button>
+        <button type="button" class="btn btn-primary" id="btnKirimERM" onclick="kirimDataERM()">
+          <i class="fa fa-paper-plane"></i> Kirim ke BPJS
+        </button>
         {/if}
       </div>
     </div>
@@ -403,7 +402,8 @@
   <div class="modal-dialog modal-lg" style="width: 90%;" role="document">
     <div class="modal-content">
       <div class="modal-header bg-default">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="logModalLabel">
           <i class="fa fa-list-alt"></i> Log Pengiriman - <span id="logModalPasienName"></span>
         </h4>
@@ -414,7 +414,8 @@
           <p>Memuat data log...</p>
         </div>
         <div id="contentLog" style="display: none;">
-          <pre id="logJsonContent" style="background:#f5f5f5; padding:15px; border-radius:4px; font-size:12px; white-space:pre-wrap; word-wrap:break-word; max-height:520px; overflow-y:auto;"></pre>
+          <pre id="logJsonContent"
+            style="background:#f5f5f5; padding:15px; border-radius:4px; font-size:12px; white-space:pre-wrap; word-wrap:break-word; max-height:520px; overflow-y:auto;"></pre>
         </div>
       </div>
       <div class="modal-footer">
@@ -427,337 +428,344 @@
 </div>
 
 <script type="text/javascript">
-// Global variable untuk DataTable instances
-var tableInstances = {};
+  // Global variable untuk DataTable instances
+  var tableInstances = {};
 
-$(document).ready(function(){
-  // Event handler untuk tombol lihat log
-  $(document).on('click', '.lihat-log-btn', function() {
-    var noSep = $(this).data('no-sep');
-    var nmPasien = $(this).data('nm-pasien');
+  $(document).ready(function () {
+    // Event handler untuk tombol lihat log
+    $(document).on('click', '.lihat-log-btn', function () {
+      var noSep = $(this).data('no-sep');
+      var nmPasien = $(this).data('nm-pasien');
 
-    $('#logModalPasienName').text(nmPasien || noSep);
-    $('#logJsonContent').text('');
-    $('#contentLog').hide();
-    $('#loadingLog').show();
-    $('#logModal').modal('show');
+      $('#logModalPasienName').text(nmPasien || noSep);
+      $('#logJsonContent').text('');
+      $('#contentLog').hide();
+      $('#loadingLog').show();
+      $('#logModal').modal('show');
 
-    $.ajax({
-      url: '{?=url([ADMIN, "bpjs_emr", "log"])?}',
-      type: 'GET',
-      data: { no_sep: noSep },
-      dataType: 'json',
-      success: function(response) {
-        $('#loadingLog').hide();
-        
-        // Parse nested JSON strings for better readability
-        if (response && response.data && Array.isArray(response.data)) {
-          response.data.forEach(function(item) {
-            if (item.payload_json && typeof item.payload_json === 'string') {
-              try {
-                item.payload_json = JSON.parse(item.payload_json);
-              } catch(e) {}
-            }
-            if (item.payload_json.fhir_bundle_json && typeof item.payload_json.fhir_bundle_json === 'string') {
-              try {
-                item.payload_json.fhir_bundle_json = JSON.parse(item.payload_json.fhir_bundle_json);
-              } catch(e) {}
-            }
-            if (item.payload_json.request_body && typeof item.payload_json.request_body === 'string') {
-              try {
-                item.payload_json.request_body = JSON.parse(item.payload_json.request_body);
-              } catch(e) {}
-            }
-            if (item.response && typeof item.response === 'string') {
-              try {
-                item.response = JSON.parse(item.response);
-              } catch(e) {}
-            }
-          });
+      $.ajax({
+        url: '{?=url([ADMIN, "bpjs_emr", "log"])?}',
+        type: 'GET',
+        data: { no_sep: noSep },
+        dataType: 'json',
+        success: function (response) {
+          $('#loadingLog').hide();
+
+          // Parse nested JSON strings for better readability
+          if (response && response.data && Array.isArray(response.data)) {
+            response.data.forEach(function (item) {
+              if (item.payload_json && typeof item.payload_json === 'string') {
+                try {
+                  item.payload_json = JSON.parse(item.payload_json);
+                } catch (e) { }
+              }
+              if (item.payload_json.fhir_bundle_json && typeof item.payload_json.fhir_bundle_json === 'string') {
+                try {
+                  item.payload_json.fhir_bundle_json = JSON.parse(item.payload_json.fhir_bundle_json);
+                } catch (e) { }
+              }
+              if (item.payload_json.request_body && typeof item.payload_json.request_body === 'string') {
+                try {
+                  item.payload_json.request_body = JSON.parse(item.payload_json.request_body);
+                } catch (e) { }
+              }
+              if (item.response && typeof item.response === 'string') {
+                try {
+                  item.response = JSON.parse(item.response);
+                } catch (e) { }
+              }
+            });
+          }
+
+          var prettyJson = JSON.stringify(response, null, 2);
+          $('#logJsonContent').text(prettyJson);
+          $('#contentLog').show();
+        },
+        error: function (xhr) {
+          $('#loadingLog').hide();
+          var errText = xhr.responseText || 'Gagal memuat data log';
+          try {
+            var parsed = JSON.parse(errText);
+            errText = JSON.stringify(parsed, null, 2);
+          } catch (e) { }
+          $('#logJsonContent').text(errText);
+          $('#contentLog').show();
         }
-        
-        var prettyJson = JSON.stringify(response, null, 2);
-        $('#logJsonContent').text(prettyJson);
-        $('#contentLog').show();
-      },
-      error: function(xhr) {
-        $('#loadingLog').hide();
-        var errText = xhr.responseText || 'Gagal memuat data log';
-        try {
-          var parsed = JSON.parse(errText);
-          errText = JSON.stringify(parsed, null, 2);
-        } catch(e) {}
-        $('#logJsonContent').text(errText);
-        $('#contentLog').show();
-      }
+      });
+    });
+
+    // Event handler untuk tombol cek kelengkapan
+    $(document).on('click', '.cek-kelengkapan-btn', function () {
+      var noRawat = $(this).data('no-rawat');
+      var nmPasien = $(this).data('nm-pasien');
+      var noSep = $(this).data('no-sep');
+      var status = $(this).data('status');
+
+      $('#modalPasienName').text(nmPasien);
+      $('#hiddenNoRawat').val(noRawat);
+      $('#hiddenNoSep').val(noSep);
+
+      // Reset tombol kirim
+      resetTombolKirim(status);
+
+      // Reset dan destroy DataTables yang ada
+      destroyDataTables();
+
+      $('#contentKelengkapan').hide();
+      $('#loadingKelengkapan').show();
+
+      loadDataERM(noRawat, noSep);
+    });
+
+    // Destroy DataTables saat modal ditutup
+    $('#cekKelengkapanModal').on('hidden.bs.modal', function () {
+      destroyDataTables();
     });
   });
 
-  // Event handler untuk tombol cek kelengkapan
-  $(document).on('click', '.cek-kelengkapan-btn', function() {
-    var noRawat = $(this).data('no-rawat');
-    var nmPasien = $(this).data('nm-pasien');
-    var status = $(this).data('status');
-    
-    $('#modalPasienName').text(nmPasien);
-    $('#hiddenNoRawat').val(noRawat);
-    
-    // Reset tombol kirim
-    resetTombolKirim(status);
-    
-    // Reset dan destroy DataTables yang ada
-    destroyDataTables();
-    
-    $('#contentKelengkapan').hide();
-    $('#loadingKelengkapan').show();
-    
-    loadDataERM(noRawat);
-  });
-  
-  // Destroy DataTables saat modal ditutup
-  $('#cekKelengkapanModal').on('hidden.bs.modal', function () {
-    destroyDataTables();
-  });
-});
+  function destroyDataTables() {
+    // Destroy semua DataTable instances di modal
+    var tables = ['#tableDiagnosaWrapper', '#tableProsedurWrapper', '#tablePemeriksaanWrapper', '#tableTindakanWrapper',
+      '#tableResepWrapper', '#tableRadiologiWrapper', '#tableLabWrapper', '#tableOpWrapper', '#tableOrganizationWrapper'];
 
-function destroyDataTables() {
-  // Destroy semua DataTable instances di modal
-  var tables = ['#tableDiagnosaWrapper', '#tableProsedurWrapper', '#tablePemeriksaanWrapper', '#tableTindakanWrapper', 
-                '#tableResepWrapper', '#tableRadiologiWrapper', '#tableLabWrapper', '#tableOpWrapper', '#tableOrganizationWrapper'];
-  
-  tables.forEach(function(tableId) {
-    if ($.fn.DataTable.isDataTable(tableId)) {
-      $(tableId).DataTable().destroy();
-    }
-  });
-}
-
-function resetTombolKirim(statusKirim = '') {
-  var btn = $('#btnKirimERM');
-  var alertBox = $('#statusKirimAlert');
-  
-  // Reset semua class terlebih dahulu
-  btn.removeClass('btn-primary btn-success btn-danger btn-warning');
-  alertBox.hide();
-  
-  if (statusKirim === 'Terkirim' || statusKirim === 'Sudah Terkirim') {
-    // ✅ Mode UPDATE - sudah pernah terkirim
-    btn
-      .prop('disabled', false)
-      .html('<i class="fa fa-refresh"></i> Update Data ERM')
-      .addClass('btn-warning'); // Warna kuning/orange
-      
-    // Tampilkan alert info
-    alertBox
-      .removeClass('alert-danger alert-success')
-      .addClass('alert-info')
-      .show();
-    $('#statusKirimText').text('Data sudah pernah terkirim. Klik tombol untuk update data terbaru.');
-      
-  } else {
-    // ✅ Mode KIRIM BARU - belum pernah terkirim
-    btn
-      .prop('disabled', false)
-      .html('<i class="fa fa-paper-plane"></i> Kirim ke BPJS')
-      .addClass('btn-primary'); // Warna biru
-  }
-}
-
-function loadDataERM(noRawat) {
-  $.ajax({
-    url: '{?=url([ADMIN, "bpjs_emr", "cekkelengkapan"])?}',
-    type: 'POST',
-    data: { no_rawat: noRawat },
-    dataType: 'json',
-    success: function(response) {
-      $('#loadingKelengkapan').hide();
-      
-      if (!response.success) {
-        alert('Error: ' + (response.message || 'Gagal memuat data'));
-        console.error('Response error:', response);
-        return;
+    tables.forEach(function (tableId) {
+      if ($.fn.DataTable.isDataTable(tableId)) {
+        $(tableId).DataTable().destroy();
       }
-      
-      renderData(response.data);
-      $('#contentKelengkapan').show();
-      
-      // Inisialisasi DataTables untuk tabel di modal
-      initModalDataTables();
-    },
-    error: function(xhr, status, error) {
-      $('#loadingKelengkapan').hide();
-      console.error('AJAX Error:', xhr.responseText);
-      alert('Gagal memuat data: ' + error);
-    }
-  });
-}
-
-function initModalDataTables() {
-  // Inisialisasi DataTables untuk tabel-tabel di modal dengan delay
-  setTimeout(function() {
-    var tableConfigs = {
-      "language": { "search": "", "searchPlaceholder": "Cari..." },
-      "lengthChange": false,
-      "pageLength": 5,
-      "autoWidth": false
-    };
-    
-    // Hanya inisialisasi jika ada data lebih dari 5 baris
-    if ($('#tableDiagnosa tr').length > 5) {
-      $('#tableDiagnosaWrapper').DataTable(tableConfigs);
-    }
-    if ($('#tableProsedur tr').length > 5) {
-      $('#tableProsedurWrapper').DataTable(tableConfigs);
-    }
-    if ($('#tablePemeriksaan tr').length > 5) {
-      $('#tablePemeriksaanWrapper').DataTable(tableConfigs);
-    }
-    if ($('#tableTindakan tr').length > 5) {
-      $('#tableTindakanWrapper').DataTable(tableConfigs);
-    }
-    if ($('#tableResep tr').length > 5) {
-      $('#tableResepWrapper').DataTable(tableConfigs);
-    }
-    if ($('#tableRadiologi tr').length > 5) {
-      $('#tableRadiologiWrapper').DataTable(tableConfigs);
-    }
-    if ($('#tableLab tr').length > 5) {
-      $('#tableLabWrapper').DataTable(tableConfigs);
-    }
-    if ($('#tableOp tr').length > 5) {
-      $('#tableOpWrapper').DataTable(tableConfigs);
-    }
-    if ($('#tableOrganization tr').length > 5) {
-      $('#tableOrganizationWrapper').DataTable(tableConfigs);
-    }
-  }, 100);
-}
-
-// Fungsi Kirim Data ke BPJS
-function kirimDataERM() {
-  var noRawat = $('#hiddenNoRawat').val();
-  
-  if (!noRawat) {
-    alert('No. Rawat tidak ditemukan');
-    return;
+    });
   }
-  
-  // Konfirmasi sebelum kirim
-  if (!confirm('Yakin ingin mengirim data No. Rawat: ' + noRawat + ' ke BPJS?')) {
-    return;
+
+  function resetTombolKirim(statusKirim = '') {
+    var btn = $('#btnKirimERM');
+    var alertBox = $('#statusKirimAlert');
+
+    // Reset semua class terlebih dahulu
+    btn.removeClass('btn-primary btn-success btn-danger btn-warning');
+    alertBox.hide();
+
+    if (statusKirim === 'Terkirim' || statusKirim === 'Sudah Terkirim') {
+      // ✅ Mode UPDATE - sudah pernah terkirim
+      btn
+        .prop('disabled', false)
+        .html('<i class="fa fa-refresh"></i> Update Data ERM')
+        .addClass('btn-warning'); // Warna kuning/orange
+
+      // Tampilkan alert info
+      alertBox
+        .removeClass('alert-danger alert-success')
+        .addClass('alert-info')
+        .show();
+      $('#statusKirimText').text('Data sudah pernah terkirim. Klik tombol untuk update data terbaru.');
+
+    } else {
+      // ✅ Mode KIRIM BARU - belum pernah terkirim
+      btn
+        .prop('disabled', false)
+        .html('<i class="fa fa-paper-plane"></i> Kirim ke BPJS')
+        .addClass('btn-primary'); // Warna biru
+    }
   }
-  
-  // Loading state
-  $('#btnKirimERM')
-    .prop('disabled', true)
-    .html('<i class="fa fa-spinner fa-spin"></i> Mengirim...');
-  
-  $.ajax({
-    url: '{?=url([ADMIN, "bpjs_emr", "kirimbpjs"])?}',
-    type: 'POST',
-    data: { 
-      no_rawat: noRawat
-    },
-    dataType: 'json',
-    success: function(response) {      
-      if (response.success) {
-        // Sukses
-        $('#btnKirimERM')
-          .removeClass('btn-primary')
-          .addClass('btn-success')
-          .html('<i class="fa fa-check"></i> Terkirim');
-        
-        $('#statusKirimAlert')
-          .removeClass('alert-danger alert-info')
-          .addClass('alert-success')
-          .show();
-        $('#statusKirimText').text(response.message || 'Data berhasil dikirim ke BPJS');
-        
-        // Update status di tabel utama
-        updateStatusTabel(noRawat, 'Terkirim');
-        
-        // Tutup modal setelah 2 detik
-        setTimeout(function() {
-          $('#cekKelengkapanModal').modal('hide');
-        }, 2000);
-        
-      } else {
-        // Gagal
+
+  function loadDataERM(noRawat, noSep = '') {
+    $.ajax({
+      url: '{?=url([ADMIN, "bpjs_emr", "cekkelengkapan"])?}',
+      type: 'POST',
+      data: { 
+        no_rawat: noRawat,
+        no_sep: noSep
+      },
+      dataType: 'json',
+      success: function (response) {
+        $('#loadingKelengkapan').hide();
+
+        if (!response.success) {
+          alert('Error: ' + (response.message || 'Gagal memuat data'));
+          console.error('Response error:', response);
+          return;
+        }
+
+        renderData(response.data);
+        $('#contentKelengkapan').show();
+
+        // Inisialisasi DataTables untuk tabel di modal
+        initModalDataTables();
+      },
+      error: function (xhr, status, error) {
+        $('#loadingKelengkapan').hide();
+        console.error('AJAX Error:', xhr.responseText);
+        alert('Gagal memuat data: ' + error);
+      }
+    });
+  }
+
+  function initModalDataTables() {
+    // Inisialisasi DataTables untuk tabel-tabel di modal dengan delay
+    setTimeout(function () {
+      var tableConfigs = {
+        "language": { "search": "", "searchPlaceholder": "Cari..." },
+        "lengthChange": false,
+        "pageLength": 5,
+        "autoWidth": false
+      };
+
+      // Hanya inisialisasi jika ada data lebih dari 5 baris
+      if ($('#tableDiagnosa tr').length > 5) {
+        $('#tableDiagnosaWrapper').DataTable(tableConfigs);
+      }
+      if ($('#tableProsedur tr').length > 5) {
+        $('#tableProsedurWrapper').DataTable(tableConfigs);
+      }
+      if ($('#tablePemeriksaan tr').length > 5) {
+        $('#tablePemeriksaanWrapper').DataTable(tableConfigs);
+      }
+      if ($('#tableTindakan tr').length > 5) {
+        $('#tableTindakanWrapper').DataTable(tableConfigs);
+      }
+      if ($('#tableResep tr').length > 5) {
+        $('#tableResepWrapper').DataTable(tableConfigs);
+      }
+      if ($('#tableRadiologi tr').length > 5) {
+        $('#tableRadiologiWrapper').DataTable(tableConfigs);
+      }
+      if ($('#tableLab tr').length > 5) {
+        $('#tableLabWrapper').DataTable(tableConfigs);
+      }
+      if ($('#tableOp tr').length > 5) {
+        $('#tableOpWrapper').DataTable(tableConfigs);
+      }
+      if ($('#tableOrganization tr').length > 5) {
+        $('#tableOrganizationWrapper').DataTable(tableConfigs);
+      }
+    }, 100);
+  }
+
+  // Fungsi Kirim Data ke BPJS
+  function kirimDataERM() {
+    var noRawat = $('#hiddenNoRawat').val();
+    var noSep = $('#hiddenNoSep').val();
+
+    if (!noRawat) {
+      alert('No. Rawat tidak ditemukan');
+      return;
+    }
+
+    // Konfirmasi sebelum kirim
+    if (!confirm('Yakin ingin mengirim data No. Rawat: ' + noRawat + (noSep ? ' (SEP: ' + noSep + ')' : '') + ' ke BPJS?')) {
+      return;
+    }
+
+    // Loading state
+    $('#btnKirimERM')
+      .prop('disabled', true)
+      .html('<i class="fa fa-spinner fa-spin"></i> Mengirim...');
+
+    $.ajax({
+      url: '{?=url([ADMIN, "bpjs_emr", "kirimbpjs"])?}',
+      type: 'POST',
+      data: {
+        no_rawat: noRawat,
+        no_sep: noSep
+      },
+      dataType: 'json',
+      success: function (response) {
+        if (response.success) {
+          // Sukses
+          $('#btnKirimERM')
+            .removeClass('btn-primary')
+            .addClass('btn-success')
+            .html('<i class="fa fa-check"></i> Terkirim');
+
+          $('#statusKirimAlert')
+            .removeClass('alert-danger alert-info')
+            .addClass('alert-success')
+            .show();
+          $('#statusKirimText').text(response.message || 'Data berhasil dikirim ke BPJS');
+
+          // Update status di tabel utama
+          updateStatusTabel(noRawat, noSep, 'Terkirim');
+
+          // Tutup modal setelah 2 detik
+          setTimeout(function () {
+            $('#cekKelengkapanModal').modal('hide');
+          }, 2000);
+
+        } else {
+          // Gagal
+          $('#btnKirimERM')
+            .prop('disabled', false)
+            .removeClass('btn-primary')
+            .addClass('btn-danger')
+            .html('<i class="fa fa-times"></i> Gagal Kirim');
+
+          $('#statusKirimAlert')
+            .removeClass('alert-success alert-info')
+            .addClass('alert-danger')
+            .show();
+
+          var errorMessage = response.message || 'Gagal mengirim data';
+
+          if (response.metadata && response.metadata.message) {
+            errorMessage = 'BPJS Error: ' + response.metadata.message;
+          } else if (response.parsed && response.parsed.response && response.parsed.response.keterangan) {
+            errorMessage = 'BPJS Info: ' + response.parsed.response.keterangan;
+          } else if (response.parsed && response.parsed.metadata && response.parsed.metadata.message) {
+            errorMessage = 'BPJS Error: ' + response.parsed.metadata.message;
+          }
+
+          $('#statusKirimText').text(errorMessage);
+
+          // Log the full response to help with debugging if we fall into this else block
+          console.log("Full error response:", response);
+        }
+      },
+      error: function (xhr, status, error) {
         $('#btnKirimERM')
           .prop('disabled', false)
           .removeClass('btn-primary')
           .addClass('btn-danger')
-          .html('<i class="fa fa-times"></i> Gagal Kirim');
-        
+          .html('<i class="fa fa-times"></i> Error');
+
         $('#statusKirimAlert')
           .removeClass('alert-success alert-info')
           .addClass('alert-danger')
           .show();
-          
-        var errorMessage = response.message || 'Gagal mengirim data';
-        
-        if (response.metadata && response.metadata.message) {
-            errorMessage = 'BPJS Error: ' + response.metadata.message;
-        } else if (response.parsed && response.parsed.response && response.parsed.response.keterangan) {
-             errorMessage = 'BPJS Info: ' + response.parsed.response.keterangan;
-        } else if (response.parsed && response.parsed.metadata && response.parsed.metadata.message) {
-             errorMessage = 'BPJS Error: ' + response.parsed.metadata.message;
-        }
-        
-        $('#statusKirimText').text(errorMessage);
-        
-        // Log the full response to help with debugging if we fall into this else block
-        console.log("Full error response:", response);
+        $('#statusKirimText').text('Terjadi kesalahan koneksi');
+
+        console.error('Error:', xhr.responseText);
       }
-    },
-    error: function(xhr, status, error) {
-      $('#btnKirimERM')
-        .prop('disabled', false)
-        .removeClass('btn-primary')
-        .addClass('btn-danger')
-        .html('<i class="fa fa-times"></i> Error');
-      
-      $('#statusKirimAlert')
-        .removeClass('alert-success alert-info')
-        .addClass('alert-danger')
-        .show();
-      $('#statusKirimText').text('Terjadi kesalahan koneksi');
-      
-      console.error('Error:', xhr.responseText);
-    }
-  });
-}
+    });
+  }
 
-// Update status di tabel DataTables
-function updateStatusTabel(noRawat, status) {
-  // Cari row yang punya data-no-rawat sesuai
-  var row = $('button[data-no-rawat="' + noRawat + '"]').closest('tr');
-  
-  if (row.length) {
-    var statusCell = row.find('td:eq(0)'); // Kolom pertama (Aksi)
-    var statusLabel = statusCell.find('.label');
-    
-    if (status === 'Terkirim') {
-      statusLabel
-        .removeClass('label-warning')
-        .addClass('label-success')
-        .html('<i class="fa fa-check-circle"></i> Terkirim');
+  // Update status di tabel DataTables
+  function updateStatusTabel(noRawat, noSep, status) {
+    // Cari row yang punya data-no-rawat dan data-no-sep sesuai
+    var row = $('button[data-no-rawat="' + noRawat + '"][data-no-sep="' + noSep + '"]').closest('tr');
+
+    if (row.length) {
+      var statusCell = row.find('td:eq(0)'); // Kolom pertama (Aksi)
+      var statusLabel = statusCell.find('.label');
+
+      if (status === 'Terkirim') {
+        statusLabel
+          .removeClass('label-warning')
+          .addClass('label-success')
+          .html('<i class="fa fa-check-circle"></i> Terkirim');
+      }
     }
   }
-}
 
-function renderData(data) {
-  // Cek apakah data valid
-  if (!data || typeof data !== 'object') {
-    console.error('Data invalid:', data);
-    alert('Data tidak valid');
-    return;
-  }
-  
-  var reg = data.registrasi || {};
-  
-  // Info Pasien
-  var infoHtml = `
+  function renderData(data) {
+    // Cek apakah data valid
+    if (!data || typeof data !== 'object') {
+      console.error('Data invalid:', data);
+      alert('Data tidak valid');
+      return;
+    }
+
+    var reg = data.registrasi || {};
+
+    // Info Pasien
+    var infoHtml = `
     <tr><td width="20%"><strong>No. Rawat</strong></td><td>${escapeHtml(reg.no_rawat || '-')}</td></tr>
     <tr><td width="20%"><strong>No. SEP</strong></td><td>${escapeHtml(reg.no_sep || '-')}</td></tr>
     <tr><td><strong>No. RM</strong></td><td>${escapeHtml(reg.no_rkm_medis || '-')}</td></tr>
@@ -776,14 +784,14 @@ function renderData(data) {
     <tr><td><strong>Tgl Keluar</strong></td><td>${escapeHtml(reg.tgl_keluar || '-')} ${escapeHtml(reg.jam_keluar || '')}</td></tr>
     <tr><td><strong>Diagnosa Awal</strong></td><td>${escapeHtml(reg.diagnosa_awal || '-')}</td></tr>
   `;
-  $('#tableInfoPasien').html(infoHtml);
+    $('#tableInfoPasien').html(infoHtml);
 
-  // Organization
-  var orgHtml = '';
-  var org = data.organization;
+    // Organization
+    var orgHtml = '';
+    var org = data.organization;
 
-  // Cek apakah organization adalah object (bukan array) atau null/undefined
-  if (org && typeof org === 'object' && !Array.isArray(org)) {
+    // Cek apakah organization adalah object (bukan array) atau null/undefined
+    if (org && typeof org === 'object' && !Array.isArray(org)) {
       // Single object
       orgHtml += `
           <tr>
@@ -792,9 +800,9 @@ function renderData(data) {
             <td>${escapeHtml((org.alamat_instansi || '') + ' ' + (org.kecamatan || '') + ' ' + (org.kabupaten || '') + ' ' + (org.kode_pos || ''))}</td>
           </tr>
         `;
-  } else if (Array.isArray(org) && org.length > 0) {
+    } else if (Array.isArray(org) && org.length > 0) {
       // Array (jika di masa depan berubah jadi array)
-      org.forEach(function(p) {
+      org.forEach(function (p) {
         orgHtml += `
           <tr>
             <td>${escapeHtml(p.nama_instansi || '-')}</td>
@@ -803,27 +811,27 @@ function renderData(data) {
           </tr>
         `;
       });
-  } else {
+    } else {
       orgHtml = '<tr><td colspan="3" class="text-center text-muted">Tidak ada data Rumah Sakit</td></tr>';
-  }
-  $('#tableOrganization').html(orgHtml);
-  
-  // Diagnosa - Data dari condition array
-  var diagHtml = '';
-  var diagnosaData = [];
-  
-  // Filter hanya diagnosa (bukan prosedur)
-  if (data.diagnosa && Array.isArray(data.diagnosa)) {
-    diagnosaData = data.diagnosa.filter(function(item) {
-      return item.kode || item.code; // Asumsi diagnosa punya kd_penyakit atau code dari mapping
-    });
-  }
-  
-  if (diagnosaData.length > 0) {
-    diagnosaData.forEach(function(d, i) {
-      diagHtml += `
+    }
+    $('#tableOrganization').html(orgHtml);
+
+    // Diagnosa - Data dari condition array
+    var diagHtml = '';
+    var diagnosaData = [];
+
+    // Filter hanya diagnosa (bukan prosedur)
+    if (data.diagnosa && Array.isArray(data.diagnosa)) {
+      diagnosaData = data.diagnosa.filter(function (item) {
+        return item.kode || item.code; // Asumsi diagnosa punya kd_penyakit atau code dari mapping
+      });
+    }
+
+    if (diagnosaData.length > 0) {
+      diagnosaData.forEach(function (d, i) {
+        diagHtml += `
         <tr>
-          <td>${i+1}</td>
+          <td>${i + 1}</td>
           <td>${escapeHtml(d.kode || '-')}</td>
           <td>${escapeHtml(d.nama || '-')}</td>
           <td>${escapeHtml(d.snomed_concept_id || '-')}</td>
@@ -832,30 +840,30 @@ function renderData(data) {
           <td>${d.prioritas == '1' ? 'Utama' : 'Sekunder'}</td>
         </tr>
       `;
-    });
-  } else {
-    diagHtml = '<tr><td colspan="4" class="text-center text-muted">Tidak ada data diagnosa</td></tr>';
-  }
-  $('#tableDiagnosa').html(diagHtml);
-  
-  // Prosedur - Data dari condition array (prosedur) atau prosedur array terpisah
-  var prosHtml = '';
-  var prosedurData = [];
-  
-  if (data.prosedur && Array.isArray(data.prosedur)) {
-    prosedurData = data.prosedur;
-  } else if (data.condition && Array.isArray(data.condition)) {
-    // Filter prosedur dari condition
-    prosedurData = data.condition.filter(function(item) {
-      return item.kode && !item.kd_penyakit; // Prosedur punya kode tapi tidak punya kd_penyakit
-    });
-  }
-  
-  if (prosedurData.length > 0) {
-    prosedurData.forEach(function(p, i) {
-      prosHtml += `
+      });
+    } else {
+      diagHtml = '<tr><td colspan="4" class="text-center text-muted">Tidak ada data diagnosa</td></tr>';
+    }
+    $('#tableDiagnosa').html(diagHtml);
+
+    // Prosedur - Data dari condition array (prosedur) atau prosedur array terpisah
+    var prosHtml = '';
+    var prosedurData = [];
+
+    if (data.prosedur && Array.isArray(data.prosedur)) {
+      prosedurData = data.prosedur;
+    } else if (data.condition && Array.isArray(data.condition)) {
+      // Filter prosedur dari condition
+      prosedurData = data.condition.filter(function (item) {
+        return item.kode && !item.kd_penyakit; // Prosedur punya kode tapi tidak punya kd_penyakit
+      });
+    }
+
+    if (prosedurData.length > 0) {
+      prosedurData.forEach(function (p, i) {
+        prosHtml += `
         <tr>
-          <td>${i+1}</td>
+          <td>${i + 1}</td>
           <td>${escapeHtml(p.kode || p.snomed_concept_id || '-')}</td>
           <td>${escapeHtml(p.nama || p.snomed_term || '-')}</td>
           <td>${escapeHtml(p.snomed_concept_id || '-')}</td>
@@ -863,17 +871,17 @@ function renderData(data) {
           <td>${p.snomed_concept_id ? 'http://snomed.info/sct' : '-'}</td>
         </tr>
       `;
-    });
-  } else {
-    prosHtml = '<tr><td colspan="6" class="text-center text-muted">Tidak ada data prosedur</td></tr>';
-  }
-  $('#tableProsedur').html(prosHtml);
-  
-  // Pemeriksaan
-  var periksaHtml = '';
-  if (data.pemeriksaan && data.pemeriksaan.length > 0) {
-    data.pemeriksaan.forEach(function(p) {
-      periksaHtml += `
+      });
+    } else {
+      prosHtml = '<tr><td colspan="6" class="text-center text-muted">Tidak ada data prosedur</td></tr>';
+    }
+    $('#tableProsedur').html(prosHtml);
+
+    // Pemeriksaan
+    var periksaHtml = '';
+    if (data.pemeriksaan && data.pemeriksaan.length > 0) {
+      data.pemeriksaan.forEach(function (p) {
+        periksaHtml += `
         <tr>
           <td>${escapeHtml(p.tgl_perawatan || '-')}</td>
           <td>${escapeHtml(p.jam_rawat || p.jam || '-')}</td>
@@ -892,17 +900,17 @@ function renderData(data) {
           <td>${escapeHtml((p.evaluasi || '').substring(0, 50))}${(p.evaluasi || '').length > 50 ? '...' : ''}</td>
         </tr>
       `;
-    });
-  } else {
-    periksaHtml = '<tr><td colspan="15" class="text-center text-muted">Tidak ada data pemeriksaan</td></tr>';
-  }
-  $('#tablePemeriksaan').html(periksaHtml);
+      });
+    } else {
+      periksaHtml = '<tr><td colspan="15" class="text-center text-muted">Tidak ada data pemeriksaan</td></tr>';
+    }
+    $('#tablePemeriksaan').html(periksaHtml);
 
-  // Tindakan
-  var tindkanHtml = '';
-  if (data.procedure.tindakan && data.procedure.tindakan.length > 0) {
-    data.procedure.tindakan.forEach(function(p) {
-      tindkanHtml += `
+    // Tindakan
+    var tindkanHtml = '';
+    if (data.procedure.tindakan && data.procedure.tindakan.length > 0) {
+      data.procedure.tindakan.forEach(function (p) {
+        tindkanHtml += `
         <tr>
           <td>${escapeHtml(p.tgl_perawatan || '-')}</td>
           <td>${escapeHtml(p.jam_rawat || p.jam || '-')}</td>
@@ -913,19 +921,19 @@ function renderData(data) {
           <td>${escapeHtml(p.nm_dokter || '-')}</td>
         </tr>
       `;
-    });
-  } else {
-    tindkanHtml = '<tr><td colspan="10" class="text-center text-muted">Tidak ada data pemeriksaan</td></tr>';
-  }
-  $('#tableTindakan').html(tindkanHtml);
-  
-  // Resep - Data dari obat array
-  var resepHtml = '';
-  var obatData = data.obat || data.resep || [];
-  
-  if (obatData.length > 0) {
-    obatData.forEach(function(r) {
-      resepHtml += `
+      });
+    } else {
+      tindkanHtml = '<tr><td colspan="10" class="text-center text-muted">Tidak ada data pemeriksaan</td></tr>';
+    }
+    $('#tableTindakan').html(tindkanHtml);
+
+    // Resep - Data dari obat array
+    var resepHtml = '';
+    var obatData = data.obat || data.resep || [];
+
+    if (obatData.length > 0) {
+      obatData.forEach(function (r) {
+        resepHtml += `
         <tr>
           <td>${escapeHtml(r.no_resep || '-')}</td>
           <td>${escapeHtml(r.tgl_perawatan || r.tgl_periksa || '-')}</td>
@@ -937,24 +945,24 @@ function renderData(data) {
           <td>${escapeHtml(r.aturan_pakai || '-')}</td>
         </tr>
       `;
-    });
-  } else {
-    resepHtml = '<tr><td colspan="8" class="text-center text-muted">Tidak ada data resep</td></tr>';
-  }
-  $('#tableResep').html(resepHtml);
-  
-  // Radiologi
-  var radHtml = '';
-  if (data.radiologi && data.radiologi.length > 0) {
-    console.log(data.radiologi);
-    data.radiologi.forEach(function(r) {
-      var imageUrl = (r.radiology_image_url || '').toString().trim();
-      var imageHtml = '-';
-      if (imageUrl) {
-        var safeUrl = escapeHtml(imageUrl);
-        imageHtml = `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" title="Buka gambar ukuran penuh"><img src="${safeUrl}" alt="Thumb Radiologi" style="max-width:120px; max-height:80px; border:1px solid #ddd; border-radius:4px; padding:2px;" onerror="this.style.display='none'; this.parentNode.insertAdjacentHTML('afterend','<span class=&quot;text-muted&quot;>-</span>');"></a>`;
-      }
-      radHtml += `
+      });
+    } else {
+      resepHtml = '<tr><td colspan="8" class="text-center text-muted">Tidak ada data resep</td></tr>';
+    }
+    $('#tableResep').html(resepHtml);
+
+    // Radiologi
+    var radHtml = '';
+    if (data.radiologi && data.radiologi.length > 0) {
+      console.log(data.radiologi);
+      data.radiologi.forEach(function (r) {
+        var imageUrl = (r.radiology_image_url || '').toString().trim();
+        var imageHtml = '-';
+        if (imageUrl) {
+          var safeUrl = escapeHtml(imageUrl);
+          imageHtml = `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" title="Buka gambar ukuran penuh"><img src="${safeUrl}" alt="Thumb Radiologi" style="max-width:120px; max-height:80px; border:1px solid #ddd; border-radius:4px; padding:2px;" onerror="this.style.display='none'; this.parentNode.insertAdjacentHTML('afterend','<span class=&quot;text-muted&quot;>-</span>');"></a>`;
+        }
+        radHtml += `
         <tr>
           <td>${escapeHtml(r.tgl_perawatan || '-')}</td>
           <td>${escapeHtml(r.jam_rawat || '-')}</td>
@@ -963,18 +971,18 @@ function renderData(data) {
           <td>${imageHtml}</td>
         </tr>
       `;
-    });
-  } else {
-    radHtml = '<tr><td colspan="5" class="text-center text-muted">Tidak ada pemeriksaan radiologi</td></tr>';
-  }
-  $('#tableRadiologi').html(radHtml);
-  
-  // Laboratorium
-  var labHtml = '';
-  if (data.laboratorium && data.laboratorium.length > 0) {
-    console.log(data.laboratorium);
-    data.laboratorium.forEach(function(l) {
-      labHtml += `
+      });
+    } else {
+      radHtml = '<tr><td colspan="5" class="text-center text-muted">Tidak ada pemeriksaan radiologi</td></tr>';
+    }
+    $('#tableRadiologi').html(radHtml);
+
+    // Laboratorium
+    var labHtml = '';
+    if (data.laboratorium && data.laboratorium.length > 0) {
+      console.log(data.laboratorium);
+      data.laboratorium.forEach(function (l) {
+        labHtml += `
         <tr>
           <td>${escapeHtml(l.tgl_perawatan || '-')}</td>
           <td>${escapeHtml(l.jam_rawat || '-')}</td>
@@ -983,18 +991,18 @@ function renderData(data) {
           <td>${escapeHtml(l.keterangan || '-')}</td>
         </tr>
       `;
-    });
-  } else {
-    labHtml = '<tr><td colspan="5" class="text-center text-muted">Tidak ada pemeriksaan laboratorium</td></tr>';
-  }
-  $('#tableLab').html(labHtml);
+      });
+    } else {
+      labHtml = '<tr><td colspan="5" class="text-center text-muted">Tidak ada pemeriksaan laboratorium</td></tr>';
+    }
+    $('#tableLab').html(labHtml);
 
-  // Operasi
-  var opHtml = '';
-  if (data.operasi && data.operasi.length > 0) {
-    console.log(data.operasi);
-    data.operasi.forEach(function(l) {
-      opHtml += `
+    // Operasi
+    var opHtml = '';
+    if (data.operasi && data.operasi.length > 0) {
+      console.log(data.operasi);
+      data.operasi.forEach(function (l) {
+        opHtml += `
         <tr>
           <td>${escapeHtml(l.tgl_perawatan || '-')}</td>
           <td>${escapeHtml(l.jam_rawat || '-')}</td>
@@ -1002,65 +1010,114 @@ function renderData(data) {
           <td>${escapeHtml(l.hasil || '-')}</td>
         </tr>
       `;
-    });
-  } else {
-    opHtml = '<tr><td colspan="5" class="text-center text-muted">Tidak ada pemeriksaan laboratorium</td></tr>';
+      });
+    } else {
+      opHtml = '<tr><td colspan="5" class="text-center text-muted">Tidak ada pemeriksaan laboratorium</td></tr>';
+    }
+    $('#tableOp').html(opHtml);
   }
-  $('#tableOp').html(opHtml);
-}
 
-// Helper function untuk escape HTML
-function escapeHtml(text) {
-  if (text === null || text === undefined) return '-';
-  var div = document.createElement('div');
-  div.appendChild(document.createTextNode(String(text)));
-  return div.innerHTML;
-}
+  // Helper function untuk cetak data ERM
+  function cetakDataERM() {
+    var content = document.getElementById('contentKelengkapan').innerHTML;
+    var nmPasien = document.getElementById('modalPasienName').innerText;
+    var printWindow = window.open('', '_blank', 'height=600,width=800');
+
+    printWindow.document.write('<html><head><title>Data ERM - ' + nmPasien + '</title>');
+    printWindow.document.write('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">');
+    printWindow.document.write('<style>');
+    printWindow.document.write('body { padding: 20px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }');
+    printWindow.document.write('.panel-heading { font-weight: bold; background: #f5f5f5 !important; padding: 10px; border: 1px solid #ddd; border-bottom: none; }');
+    printWindow.document.write('.panel-body { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; }');
+    printWindow.document.write('.panel-title { margin: 0; font-size: 14px; color: #333; }');
+    printWindow.document.write('.table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }');
+    printWindow.document.write('.table-bordered th, .table-bordered td { border: 1px solid #ddd !important; padding: 8px; }');
+    printWindow.document.write('.bg-primary { background-color: #337ab7 !important; color: white; }');
+    printWindow.document.write('.alert { display: none !important; }'); // Sembunyikan alert saat cetak
+    printWindow.document.write('input[type="hidden"] { display: none !important; }');
+    printWindow.document.write('.text-center { text-align: center; }');
+    printWindow.document.write('hr { border-top: 1px solid #eee; }');
+    printWindow.document.write('@media print { .no-print { display: none; } }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<div class="container-fluid">');
+    printWindow.document.write('<h3 class="text-center">DATA ELEKTRONIK REKAM MEDIS</h3>');
+    printWindow.document.write('<h4 class="text-center">' + nmPasien + '</h4>');
+    printWindow.document.write('<hr>');
+    printWindow.document.write(content);
+    printWindow.document.write('</div>');
+    printWindow.document.write('</body></html>');
+
+    printWindow.document.close();
+    printWindow.focus();
+
+    setTimeout(function () {
+      printWindow.print();
+      printWindow.close();
+    }, 500);
+  }
+
+  // Helper function untuk escape HTML
+  function escapeHtml(text) {
+    if (text === null || text === undefined) return '-';
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(String(text)));
+    return div.innerHTML;
+  }
 </script>
 
 <script type="text/javascript">
-    $(function () {
-        $('.datetimepicker').datetimepicker({
-          defaultDate: "{?=date('Y-m-d')?}",
-          format: 'YYYY-MM-DD',
-          locale: 'id'
-        });
+  $(function () {
+    $('.datetimepicker').datetimepicker({
+      defaultDate: "{?=date('Y-m-d')?}",
+      format: 'YYYY-MM-DD',
+      locale: 'id'
     });
+  });
 </script>
 
 <style>
-/* Styling untuk badge di list group */
-.list-group-item {
+  /* Styling untuk badge di list group */
+  .list-group-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-.list-group-item .badge {
+  }
+
+  .list-group-item .badge {
     margin-left: 10px;
-}
-.badge-success {
+  }
+
+  .badge-success {
     background-color: #5cb85c;
-}
-.badge-danger {
+  }
+
+  .badge-danger {
     background-color: #d9534f;
-}
-.badge-warning {
+  }
+
+  .badge-warning {
     background-color: #f0ad4e;
-}
-.progress-bar-success {
+  }
+
+  .progress-bar-success {
     background-color: #5cb85c;
-}
-.progress-bar-warning {
+  }
+
+  .progress-bar-warning {
     background-color: #f0ad4e;
-}
-.progress-bar-danger {
+  }
+
+  .progress-bar-danger {
     background-color: #d9534f;
-}
-/* Fix untuk modal table */
-#contentKelengkapan .table {
+  }
+
+  /* Fix untuk modal table */
+  #contentKelengkapan .table {
     width: 100% !important;
-}
-#contentKelengkapan .panel {
+  }
+
+  #contentKelengkapan .panel {
     margin-bottom: 15px;
-}
+  }
 </style>
