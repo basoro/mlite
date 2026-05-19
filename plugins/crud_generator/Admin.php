@@ -20,11 +20,11 @@ class Admin extends AdminModule
 
     public function postSaveAddTable()
     {
-      $table_name = $_POST['table_name'];
-      $column_name = $_POST['column_name'];
-      $column_type = $_POST['column_type'];
-      $column_length = $_POST['column_length'];
-      $column_default = $_POST['column_default'];
+      $table_name = isset($_POST['table_name']) ? $_POST['table_name'] : '';
+      $column_name = isset($_POST['column_name']) ? $_POST['column_name'] : [];
+      $column_type = isset($_POST['column_type']) ? $_POST['column_type'] : [];
+      $column_length = isset($_POST['column_length']) ? $_POST['column_length'] : [];
+      $column_default = isset($_POST['column_default']) ? $_POST['column_default'] : [];
       
       $table_data = array();
       for($i=0; $i < count($column_name); $i++){
@@ -62,15 +62,20 @@ class Admin extends AdminModule
         $c_query .= ") ENGINE=InnoDB DEFAULT CHARSET=latin1;";
       }
 
-      $query = $this->db()->pdo()->exec($c_query);
-      
-      $data = array(
-        'status' => 'success', 
-        'msg' => 'Tabel baru telah ditambahkan'
-      );
+      try {
+        $query = $this->db()->pdo()->exec($c_query);
+        $data = array(
+          'status' => 'success', 
+          'msg' => 'Tabel baru telah ditambahkan'
+        );
+      } catch (\PDOException $e) {
+        $data = array(
+          'status' => 'error', 
+          'msg' => 'Gagal membuat tabel: ' . $e->getMessage() . '. Query: ' . $c_query
+        );
+      }
 
       echo json_encode($data); 
-
       exit();
     }    
 
