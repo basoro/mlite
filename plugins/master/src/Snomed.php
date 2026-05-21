@@ -4,8 +4,7 @@ namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
 
-
-class Icd9
+class Snomed
 {
 
     protected function db($table)
@@ -15,31 +14,31 @@ class Icd9
 
     public function getIndex()
     {
-
-      $totalRecords = $this->db('icd9')->count();
+      $totalRecords = $this->db('mlite_snomed')->count();
       $offset         = 10;
       $return['halaman']    = 1;
       $return['jml_halaman']    = ceil($totalRecords / $offset);
       $return['jumlah_data']    = $totalRecords;
 
-      $return['list'] = $this->db('icd9')
-        ->desc('kode')
+      $return['list'] = $this->db('mlite_snomed')
+        ->desc('id')
         ->limit(10)
         ->toArray();
 
       return htmlspecialchars_array($return);
-
     }
 
     public function anyForm()
     {
-        if (isset($_POST['kode'])){
-          $return['form'] = $this->db('icd9')->where('kode', $_POST['kode'])->oneArray();
+        if (isset($_POST['id'])){
+          $return['form'] = $this->db('mlite_snomed')->where('id', $_POST['id'])->oneArray();
+        } else if (isset($_POST['kode'])){
+          $return['form'] = $this->db('mlite_snomed')->where('kode', $_POST['kode'])->oneArray();
         } else {
           $return['form'] = [
+            'id' => '',
             'kode' => '',
-            'deskripsi_panjang' => '',
-            'deskripsi_pendek' => ''
+            'istilah' => ''
           ];
         }
 
@@ -48,29 +47,27 @@ class Icd9
 
     public function anyDisplay()
     {
-
         $perpage = '10';
-        $totalRecords = $this->db('icd9')->count();
+        $totalRecords = $this->db('mlite_snomed')->count();
         $offset         = 10;
         $return['halaman']    = 1;
         $return['jml_halaman']    = ceil($totalRecords / $offset);
         $return['jumlah_data']    = $totalRecords;
 
-        $return['list'] = $this->db('icd9')
-          ->desc('kode')
+        $return['list'] = $this->db('mlite_snomed')
+          ->desc('id')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $query = $this->db('icd9')
+          $query = $this->db('mlite_snomed')
             ->like('kode', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
-            ->orLike('deskripsi_panjang', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
-            ->orLike('deskripsi_pendek', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%');
-            
+            ->orLike('istilah', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%');
+          
           $jumlah_data = $query->count();
           
-          $return['list'] = $query->desc('kode')
+          $return['list'] = $query->desc('id')
             ->offset(0)
             ->limit($perpage)
             ->toArray();
@@ -80,8 +77,8 @@ class Icd9
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('icd9')
-            ->desc('kode')
+          $return['list'] = $this->db('mlite_snomed')
+            ->desc('id')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
@@ -93,17 +90,23 @@ class Icd9
 
     public function postSave()
     {
-      if (!$this->db('icd9')->where('kode', $_POST['kode'])->oneArray()) {
-        $query = $this->db('icd9')->save($_POST);
+      if (empty($_POST['id'])) {
+        $query = $this->db('mlite_snomed')->save($_POST);
       } else {
-        $query = $this->db('icd9')->where('kode', $_POST['kode'])->save($_POST);
+        $query = $this->db('mlite_snomed')->where('id', $_POST['id'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('icd9')->where('kode', $_POST['kode'])->delete();
+      if (isset($_POST['id'])) {
+          return $this->db('mlite_snomed')->where('id', $_POST['id'])->delete();
+      }
+      if (isset($_POST['kode'])) {
+          return $this->db('mlite_snomed')->where('kode', $_POST['kode'])->delete();
+      }
+      return false;
     }
 
 }

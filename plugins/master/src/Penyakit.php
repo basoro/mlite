@@ -16,13 +16,11 @@ class Penyakit
     public function getIndex()
     {
 
-      $totalRecords = $this->db('penyakit')
-        ->select('kd_penyakit')
-        ->toArray();
+      $totalRecords = $this->db('penyakit')->count();
       $offset         = 10;
       $return['halaman']    = 1;
-      $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
-      $return['jumlah_data']    = count($totalRecords);
+      $return['jml_halaman']    = ceil($totalRecords / $offset);
+      $return['jumlah_data']    = $totalRecords;
 
       $return['list'] = $this->db('penyakit')
         ->join('kategori_penyakit', 'kategori_penyakit.kd_ktg=penyakit.kd_ktg')
@@ -58,13 +56,11 @@ class Penyakit
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('penyakit')
-          ->select('kd_penyakit')
-          ->toArray();
+        $totalRecords = $this->db('penyakit')->count();
         $offset         = 10;
         $return['halaman']    = 1;
-        $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
-        $return['jumlah_data']    = count($totalRecords);
+        $return['jml_halaman']    = ceil($totalRecords / $offset);
+        $return['jumlah_data']    = $totalRecords;
 
         $return['list'] = $this->db('penyakit')
           ->join('kategori_penyakit', 'kategori_penyakit.kd_ktg=penyakit.kd_ktg')
@@ -74,19 +70,23 @@ class Penyakit
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('penyakit')
+          $query = $this->db('penyakit')
             ->join('kategori_penyakit', 'kategori_penyakit.kd_ktg=penyakit.kd_ktg')
             ->like('kd_penyakit', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
             ->orLike('nm_penyakit', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
             ->orLike('ciri_ciri', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
             ->orLike('keterangan', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
-            ->orLike('status', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
-            ->desc('kd_penyakit')
+            ->orLike('status', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%');
+            
+          $jumlah_data = $query->count();
+          
+          $return['list'] = $query->desc('kd_penyakit')
             ->offset(0)
             ->limit($perpage)
             ->toArray();
-          $jumlah_data = count($return['list']);
-          $jml_halaman = ceil($jumlah_data / $offset);
+            
+          $return['jumlah_data'] = $jumlah_data;
+          $return['jml_halaman'] = ceil($jumlah_data / $offset);
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);

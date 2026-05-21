@@ -4,8 +4,7 @@ namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
 
-
-class Icd9
+class LoincLab
 {
 
     protected function db($table)
@@ -15,31 +14,35 @@ class Icd9
 
     public function getIndex()
     {
-
-      $totalRecords = $this->db('icd9')->count();
+      $totalRecords = $this->db('mlite_loinc_lab')->count();
       $offset         = 10;
       $return['halaman']    = 1;
       $return['jml_halaman']    = ceil($totalRecords / $offset);
       $return['jumlah_data']    = $totalRecords;
 
-      $return['list'] = $this->db('icd9')
-        ->desc('kode')
+      $return['list'] = $this->db('mlite_loinc_lab')
+        ->desc('Code')
         ->limit(10)
         ->toArray();
 
       return htmlspecialchars_array($return);
-
     }
 
     public function anyForm()
     {
-        if (isset($_POST['kode'])){
-          $return['form'] = $this->db('icd9')->where('kode', $_POST['kode'])->oneArray();
+        if (isset($_POST['Code'])){
+          $return['form'] = $this->db('mlite_loinc_lab')->where('Code', $_POST['Code'])->oneArray();
         } else {
           $return['form'] = [
-            'kode' => '',
-            'deskripsi_panjang' => '',
-            'deskripsi_pendek' => ''
+            'Code' => '',
+            'Display' => '',
+            'Component' => '',
+            'Property' => '',
+            'Timing' => '',
+            'System' => '',
+            'Scale' => '',
+            'Method' => '',
+            'CodeSystem' => 'http://loinc.org'
           ];
         }
 
@@ -48,29 +51,28 @@ class Icd9
 
     public function anyDisplay()
     {
-
         $perpage = '10';
-        $totalRecords = $this->db('icd9')->count();
+        $totalRecords = $this->db('mlite_loinc_lab')->count();
         $offset         = 10;
         $return['halaman']    = 1;
         $return['jml_halaman']    = ceil($totalRecords / $offset);
         $return['jumlah_data']    = $totalRecords;
 
-        $return['list'] = $this->db('icd9')
-          ->desc('kode')
+        $return['list'] = $this->db('mlite_loinc_lab')
+          ->desc('Code')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $query = $this->db('icd9')
-            ->like('kode', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
-            ->orLike('deskripsi_panjang', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
-            ->orLike('deskripsi_pendek', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%');
+          $query = $this->db('mlite_loinc_lab')
+            ->like('Code', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
+            ->orLike('Display', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
+            ->orLike('Component', '%'.htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%');
             
           $jumlah_data = $query->count();
           
-          $return['list'] = $query->desc('kode')
+          $return['list'] = $query->desc('Code')
             ->offset(0)
             ->limit($perpage)
             ->toArray();
@@ -80,8 +82,8 @@ class Icd9
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('icd9')
-            ->desc('kode')
+          $return['list'] = $this->db('mlite_loinc_lab')
+            ->desc('Code')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
@@ -93,17 +95,17 @@ class Icd9
 
     public function postSave()
     {
-      if (!$this->db('icd9')->where('kode', $_POST['kode'])->oneArray()) {
-        $query = $this->db('icd9')->save($_POST);
+      if (!$this->db('mlite_loinc_lab')->where('Code', $_POST['Code'])->oneArray()) {
+        $query = $this->db('mlite_loinc_lab')->save($_POST);
       } else {
-        $query = $this->db('icd9')->where('kode', $_POST['kode'])->save($_POST);
+        $query = $this->db('mlite_loinc_lab')->where('Code', $_POST['Code'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('icd9')->where('kode', $_POST['kode'])->delete();
+      return $this->db('mlite_loinc_lab')->where('Code', $_POST['Code'])->delete();
     }
 
 }

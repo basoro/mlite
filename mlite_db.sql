@@ -2154,6 +2154,28 @@ CREATE TABLE `mlite_login_attempts` (
 INSERT INTO `mlite_login_attempts` VALUES ("127.0.0.1","0","0");
 
 
+CREATE TABLE `mlite_loinc_lab` (
+  `No` int(11) DEFAULT NULL,
+  `Kategori` text,
+  `NamaPemeriksaan` text,
+  `PermintaanHasil` text,
+  `Spesimen` text,
+  `TipeHasilPemeriksaan` text,
+  `Satuan` text,
+  `MetodeAnalisis` text,
+  `Code` varchar(20) NOT NULL,
+  `Display` text,
+  `Component` text,
+  `Property` text,
+  `Timing` text,
+  `System` text,
+  `Scale` text,
+  `Method` text,
+  `UnitOfMeasure` text,
+  `CodeSystem` text,
+  PRIMARY KEY (`Code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
 CREATE TABLE `mlite_loinc_radiologi` (
   `No` text,
   `Kategori` text,
@@ -2173,6 +2195,22 @@ CREATE TABLE `mlite_loinc_radiologi` (
   `BodySiteDisplay` text,
   `BodySiteCodeSystem` text,
   PRIMARY KEY (`Code`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `mlite_kfa` (
+  `kode_kfa` varchar(50) NOT NULL,
+  `nama_kfa` text,
+  `kode_bahan` varchar(50) DEFAULT NULL,
+  `nama_bahan` text,
+  `numerator` varchar(10) DEFAULT NULL,
+  `satuan_num` varchar(10) DEFAULT NULL,
+  `denominator` varchar(10) DEFAULT NULL,
+  `satuan_den` varchar(10) DEFAULT NULL,
+  `nama_satuan_den` varchar(10) DEFAULT NULL,
+  `kode_sediaan` varchar(50) DEFAULT NULL,
+  `nama_sediaan` varchar(100) DEFAULT NULL,
+  `type` enum('obat','alkes') NOT NULL DEFAULT 'obat',
+  PRIMARY KEY (`kode_kfa`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
@@ -3025,6 +3063,14 @@ CREATE TABLE `mlite_subrekening` (
   CONSTRAINT `mlite_subrekening_ibfk_2` FOREIGN KEY (`kd_rek2`) REFERENCES `mlite_rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
+
+CREATE TABLE `mlite_snomed` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `kode` varchar(20) NOT NULL,
+  `istilah` text NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `kode` (`kode`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 CREATE TABLE `mlite_surat_rujukan` (
   `id` int NOT NULL AUTO_INCREMENT,

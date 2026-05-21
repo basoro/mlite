@@ -48,6 +48,10 @@ use Plugins\Master\Src\RuangOk;
 use Plugins\Master\Src\Penyakit;
 use Plugins\Master\Src\Icd9;
 use Plugins\Master\Src\PersonalPasien;
+use Plugins\Master\Src\LoincLab;
+use Plugins\Master\Src\LoincRad;
+use Plugins\Master\Src\Kfa;
+use Plugins\Master\Src\Snomed;
 use Plugins\Master\Src\MliteNotifications;
 
 class Admin extends AdminModule
@@ -98,6 +102,10 @@ class Admin extends AdminModule
   protected $penyakit;
   protected $icd9;
   protected $personalpasien;
+  protected $snomed;
+  protected $loinclab;
+  protected $loincrad;
+  protected $kfa;
   protected $mlitenotifications;
 
     public function init()
@@ -147,6 +155,10 @@ class Admin extends AdminModule
         $this->penyakit = new Penyakit();
         $this->icd9 = new Icd9();
         $this->personalpasien = new PersonalPasien();
+        $this->snomed = new Snomed();
+        $this->loinclab = new LoincLab();
+        $this->loincrad = new LoincRad();
+        $this->kfa = new Kfa();
         $this->mlitenotifications = new MliteNotifications();
     }
 
@@ -180,6 +192,10 @@ class Admin extends AdminModule
             'Kategori Penyakit' => 'kategoripenyakit',
             'ICD 10' => 'penyakit',
             'ICD 9' => 'icd9',
+            'SNOMED CT' => 'snomed',
+            'LOINC Lab' => 'loinclab',
+            'LOINC Radiologi' => 'loincrad',
+            'KFA' => 'kfa',
             'Kategori Perawatan' => 'kategoriperawatan',
             'Kode Satuan' => 'kodesatuan',
             'Master Aturan Pakai' => 'masteraturanpakai',
@@ -497,6 +513,10 @@ class Admin extends AdminModule
         ['name' => 'Status Wajib Pajak', 'url' => url([ADMIN, 'master', 'statuswp']), 'icon' => 'cubes', 'desc' => 'Master status wajib pajak'],
         ['name' => 'Metode Racik', 'url' => url([ADMIN, 'master', 'metoderacik']), 'icon' => 'cubes', 'desc' => 'Master metode racik'],
         ['name' => 'Ruang OK', 'url' => url([ADMIN, 'master', 'ruangok']), 'icon' => 'cubes', 'desc' => 'Master ruang OK'],
+        ['name' => 'Import SNOMED CT', 'url' => url([ADMIN, 'master', 'snomed']), 'icon' => 'download', 'desc' => 'Import master SNOMED CT dari apimed.mlite.id'],
+        ['name' => 'Import LOINC Lab', 'url' => url([ADMIN, 'master', 'loinclab']), 'icon' => 'download', 'desc' => 'Import master LOINC Lab dari apimed.mlite.id'],
+        ['name' => 'Import LOINC Radiologi', 'url' => url([ADMIN, 'master', 'loincrad']), 'icon' => 'download', 'desc' => 'Import master LOINC Radiologi dari apimed.mlite.id'],
+        ['name' => 'Import KFA', 'url' => url([ADMIN, 'master', 'kfa']), 'icon' => 'download', 'desc' => 'Import master KFA dari apimed.mlite.id'],
       ];
       return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
@@ -2761,54 +2781,87 @@ class Admin extends AdminModule
 
     public function getImportICD10()
     {
-        $filename = 'https://basoro.id/downloads/icd10.csv';
-        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv<br>';
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
 
-        $csvData = file_get_contents($filename);
-        if (!$csvData) {
-            echo '['.date('d-m-Y H:i:s').'][error] File tidak ditemukan<br>';
-            exit();
+        $url = 'https://apimed.mlite.id/icd10.json';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor ICD-10 dari ' . $url . '<br>';
+
+        $tempFile = sys_get_temp_dir() . '/icd10_temp.json';
+        
+        if (!file_exists($tempFile) || (time() - filemtime($tempFile) > 86400) || filesize($tempFile) == 0) {
+            echo '['.date('d-m-Y H:i:s').'][info] Mendownload file... (ini mungkin butuh waktu)<br>';
+            $fp = fopen($tempFile, 'w+');
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_FILE, $fp);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 5 menit
+            curl_exec($ch);
+            
+            if (curl_errno($ch)) {
+                echo '['.date('d-m-Y H:i:s').'][error] Download error: ' . curl_error($ch) . '<br>';
+            }
+            
+            curl_close($ch);
+            fclose($fp);
+            
+            if (filesize($tempFile) == 0) {
+                echo '['.date('d-m-Y H:i:s').'][error] File yang didownload kosong.<br>';
+                unlink($tempFile);
+                exit();
+            }
+            
+            echo '['.date('d-m-Y H:i:s').'][info] File didownload (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        } else {
+            echo '['.date('d-m-Y H:i:s').'][info] Menggunakan file cache lokal (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
         }
 
-        $lines = explode(PHP_EOL, $csvData);
-        $chunk_size = 500;
-        $chunks = array_chunk($lines, $chunk_size);
+        echo '['.date('d-m-Y H:i:s').'][info] Memulai proses import seamless...<br>';
 
-        $pdo = $this->core->db()->pdo();
-        $pdo->beginTransaction();
+        try {
+            $items = \JsonMachine\Items::fromFile($tempFile, ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)]);
+            $pdo = $this->core->db()->pdo();
+            
+            $count = 0;
+            $batchSize = 1000;
 
-        echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data...<br>';
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare("REPLACE INTO penyakit 
+                (kd_penyakit, nm_penyakit, ciri_ciri, keterangan, kd_ktg, status) 
+                VALUES (?, ?, '', '', '-', 'Tidak Menular')");
 
-        $stmt = $pdo->prepare("
-            REPLACE INTO penyakit 
-            (kd_penyakit, nm_penyakit, ciri_ciri, keterangan, kd_ktg, status) 
-            VALUES (?, ?, '', '', '-', 'Tidak Menular')
-        ");
+            foreach ($items as $item) {
+                // $item sudah berupa array karena decoder assoc=true
+                $kode = trim($item[0] ?? '');
+                $nama = trim($item[1] ?? '');
 
-        foreach ($chunks as $chunk) {
+                if ($kode === '') continue;
 
-            foreach ($chunk as $line) {
-                if (empty(trim($line))) continue;
+                $stmt->execute([$kode, $nama]);
+                $count++;
 
-                $delimiter = str_contains($line, ';') ? ';' : ',';
-                $data = str_getcsv($line, $delimiter);
-
-                if (!isset($data[0])) continue;
-
-                $kode = trim($data[0]);
-                $nama = trim($data[1] ?? '');
-
-                try {
-                    $stmt->execute([$kode, $nama]);
-                } catch (\Exception $e) {
-                    echo '['.date('d-m-Y H:i:s').'][error] '.$e->getMessage().'<br>';
+                if ($count % $batchSize === 0) {
+                    $pdo->commit();
+                    $pdo->beginTransaction();
+                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data...<br>';
+                    if (ob_get_level() > 0) ob_flush();
+                    flush();
                 }
             }
+
+            if ($pdo->inTransaction()) {
+                $pdo->commit();
+            }
+            echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
+            
+            unlink($tempFile);
+
+        } catch (\Exception $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            echo '['.date('d-m-Y H:i:s').'][error] Terjadi kesalahan: ' . $e->getMessage() . '<br>';
         }
-
-        $pdo->commit();
-
-        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai<br>';
         exit();
     }
 
@@ -2860,54 +2913,87 @@ class Admin extends AdminModule
 
     public function getImportICD9()
     {
-        $filename = 'https://basoro.id/downloads/icd9cm.csv';
-        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv<br>';
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
 
-        $csvData = file_get_contents($filename);
-        if (!$csvData) {
-            echo '['.date('d-m-Y H:i:s').'][error] File tidak ditemukan<br>';
-            exit();
-        }
+        $url = 'https://apimed.mlite.id/icd9.json';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor ICD-9 dari ' . $url . '<br>';
 
-        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan<br>';
-        echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data...<br>';
+        $tempFile = sys_get_temp_dir() . '/icd9_temp.json';
+        
+        if (!file_exists($tempFile) || (time() - filemtime($tempFile) > 86400) || filesize($tempFile) == 0) {
+            echo '['.date('d-m-Y H:i:s').'][info] Mendownload file... (ini mungkin butuh waktu)<br>';
+            $fp = fopen($tempFile, 'w+');
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_FILE, $fp);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 5 menit
+            curl_exec($ch);
 
-        $lines = explode(PHP_EOL, $csvData);
-        $pdo = $this->core->db()->pdo();
-
-        $pdo->beginTransaction();
-
-        $stmt = $pdo->prepare("
-            REPLACE INTO icd9 
-            (kode, deskripsi_panjang, deskripsi_pendek) 
-            VALUES (?, ?, '')
-        ");
-
-        $total = 0;
-
-        foreach ($lines as $line) {
-
-            if (empty(trim($line))) continue;
-
-            $delimiter = str_contains($line, ';') ? ';' : ',';
-            $data = str_getcsv($line, $delimiter);
-
-            if (!isset($data[0])) continue;
-
-            $kode = trim($data[0]);
-            $nama = trim($data[1] ?? '');
-
-            try {
-                $stmt->execute([$kode, $nama]);
-                $total++;
-            } catch (\Exception $e) {
-                echo '['.date('d-m-Y H:i:s').'][error] '.$e->getMessage().'<br>';
+            if (curl_errno($ch)) {
+                echo '['.date('d-m-Y H:i:s').'][error] Download error: ' . curl_error($ch) . '<br>';
             }
+
+            curl_close($ch);
+            fclose($fp);
+
+            if (filesize($tempFile) == 0) {
+                echo '['.date('d-m-Y H:i:s').'][error] File yang didownload kosong.<br>';
+                unlink($tempFile);
+                exit();
+            }
+
+            echo '['.date('d-m-Y H:i:s').'][info] File didownload (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        } else {
+            echo '['.date('d-m-Y H:i:s').'][info] Menggunakan file cache lokal (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
         }
 
-        $pdo->commit();
+        echo '['.date('d-m-Y H:i:s').'][info] Memulai proses import seamless...<br>';
 
-        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai. Total: '.$total.' data<br>';
+        try {
+            $items = \JsonMachine\Items::fromFile($tempFile, ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)]);
+            $pdo = $this->core->db()->pdo();
+            
+            $count = 0;
+            $batchSize = 1000;
+
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare("REPLACE INTO icd9 
+                (kode, deskripsi_panjang, deskripsi_pendek) 
+                VALUES (?, ?, '')");
+
+            foreach ($items as $item) {
+                // $item sudah berupa array karena decoder assoc=true
+                $kode = trim($item[0] ?? '');
+                $nama = trim($item[1] ?? '');
+
+                if ($kode === '') continue;
+
+                $stmt->execute([$kode, $nama]);
+                $count++;
+
+                if ($count % $batchSize === 0) {
+                    $pdo->commit();
+                    $pdo->beginTransaction();
+                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data...<br>';
+                    if (ob_get_level() > 0) ob_flush();
+                    flush();
+                }
+            }
+
+            if ($pdo->inTransaction()) {
+                $pdo->commit();
+            }
+            echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
+            
+            unlink($tempFile);
+
+        } catch (\Exception $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            echo '['.date('d-m-Y H:i:s').'][error] Terjadi kesalahan: ' . $e->getMessage() . '<br>';
+        }
         exit();
     }
 
@@ -2918,6 +3004,585 @@ class Admin extends AdminModule
         exit();
     }
     /* End ICD 9 Section */
+
+    /* Start SNOMED Section */
+    public function getSnomed()
+    {
+      $this->_addHeaderFiles();
+      $this->core->addJS(url([ADMIN, 'master', 'snomedjs']), 'footer');
+      $return = $this->snomed->getIndex();
+      return $this->draw('snomed.html', [
+        'snomed' => $return
+      ]);
+    }
+
+    public function anySnomedForm()
+    {
+        $return = $this->snomed->anyForm();
+        echo $this->draw('snomed.form.html', ['snomed' => $return]);
+        exit();
+    }
+
+    public function anySnomedDisplay()
+    {
+        $return = $this->snomed->anyDisplay();
+        echo $this->draw('snomed.display.html', ['snomed' => $return]);
+        exit();
+    }
+
+    public function postSnomedSave()
+    {
+      $this->snomed->postSave();
+      exit();
+    }
+
+    public function postSnomedHapus()
+    {
+      $this->snomed->postHapus();
+      exit();
+    }
+
+    public function getSnomedJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/snomed.js');
+        exit();
+    }
+
+    public function getImportSnomed()
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+
+        $url = 'https://apimed.mlite.id/snomed.json';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor SNOMED CT dari ' . $url . '<br>';
+
+        $tempFile = sys_get_temp_dir() . '/snomed_temp.json';
+        
+        if (!file_exists($tempFile) || (time() - filemtime($tempFile) > 86400) || filesize($tempFile) == 0) {
+            echo '['.date('d-m-Y H:i:s').'][info] Mendownload file... (ini mungkin butuh waktu)<br>';
+            $fp = fopen($tempFile, 'w+');
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_FILE, $fp);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 600); // 10 menit
+            curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                echo '['.date('d-m-Y H:i:s').'][error] Download error: ' . curl_error($ch) . '<br>';
+            }
+
+            curl_close($ch);
+            fclose($fp);
+
+            if (filesize($tempFile) == 0) {
+                echo '['.date('d-m-Y H:i:s').'][error] File yang didownload kosong.<br>';
+                unlink($tempFile);
+                exit();
+            }
+
+            echo '['.date('d-m-Y H:i:s').'][info] File didownload (' . round(filesize($tempFile) / 1024 / 1024, 2) . ' MB).<br>';
+        } else {
+            echo '['.date('d-m-Y H:i:s').'][info] Menggunakan file cache lokal (' . round(filesize($tempFile) / 1024 / 1024, 2) . ' MB).<br>';
+        }
+
+        echo '['.date('d-m-Y H:i:s').'][info] Memulai proses import seamless...<br>';
+
+        try {
+            $items = \JsonMachine\Items::fromFile($tempFile, ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)]);
+            $pdo = $this->core->db()->pdo();
+            
+            // Clear existing data? User didn't specify, but usually import means refresh.
+            // Let's use REPLACE INTO as I already did, it will update if code exists.
+
+            $count = 0;
+            $batchSize = 1000;
+
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare("REPLACE INTO mlite_snomed (kode, istilah) VALUES (?, ?)");
+
+            foreach ($items as $item) {
+                // $item sudah berupa array karena decoder assoc=true
+                $kode = trim($item['c'] ?? '');
+                $istilah = trim($item['t'] ?? '');
+
+                if ($kode === '' || $istilah === '') continue;
+
+                $stmt->execute([$kode, $istilah]);
+                $count++;
+
+                if ($count % $batchSize === 0) {
+                    $pdo->commit();
+                    $pdo->beginTransaction();
+                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data...<br>';
+                    if (ob_get_level() > 0) ob_flush();
+                    flush();
+                }
+            }
+
+            if ($pdo->inTransaction()) {
+                $pdo->commit();
+            }
+            echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
+            
+            // Hapus file temp setelah selesai
+            unlink($tempFile);
+
+        } catch (\Exception $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            echo '['.date('d-m-Y H:i:s').'][error] Terjadi kesalahan: ' . $e->getMessage() . '<br>';
+        }
+        exit();
+    }
+    /* End LOINC Lab Section */
+
+    /* Start LOINC Rad Section */
+    public function getLoincRad()
+    {
+      $this->_addHeaderFiles();
+      $this->core->addJS(url([ADMIN, 'master', 'loincradjs']), 'footer');
+      $return = $this->loincrad->getIndex();
+      return $this->draw('loincrad.html', [
+        'loincrad' => $return
+      ]);
+    }
+
+    public function anyLoincRadForm()
+    {
+        $return = $this->loincrad->anyForm();
+        echo $this->draw('loincrad.form.html', ['loincrad' => $return]);
+        exit();
+    }
+
+    public function anyLoincRadDisplay()
+    {
+        $return = $this->loincrad->anyDisplay();
+        echo $this->draw('loincrad.display.html', ['loincrad' => $return]);
+        exit();
+    }
+
+    public function postLoincRadSave()
+    {
+      $this->loincrad->postSave();
+      exit();
+    }
+
+    public function postLoincRadHapus()
+    {
+      $this->loincrad->postHapus();
+      exit();
+    }
+
+    public function getLoincRadJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/loincrad.js');
+        exit();
+    }
+
+    public function getImportLoincRad()
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+
+        $url = 'https://apimed.mlite.id/loinc_rad.json';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor LOINC Radiologi dari ' . $url . '<br>';
+
+        $tempFile = sys_get_temp_dir() . '/loinc_rad_temp.json';
+        
+        if (!file_exists($tempFile) || (time() - filemtime($tempFile) > 86400) || filesize($tempFile) == 0) {
+            echo '['.date('d-m-Y H:i:s').'][info] Mendownload file... (ini mungkin butuh waktu)<br>';
+            $fp = fopen($tempFile, 'w+');
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_FILE, $fp);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 5 menit
+            curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                echo '['.date('d-m-Y H:i:s').'][error] Download error: ' . curl_error($ch) . '<br>';
+            }
+
+            curl_close($ch);
+            fclose($fp);
+
+            if (filesize($tempFile) == 0) {
+                echo '['.date('d-m-Y H:i:s').'][error] File yang didownload kosong.<br>';
+                unlink($tempFile);
+                exit();
+            }
+
+            echo '['.date('d-m-Y H:i:s').'][info] File didownload (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        } else {
+            echo '['.date('d-m-Y H:i:s').'][info] Menggunakan file cache lokal (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        }
+
+        echo '['.date('d-m-Y H:i:s').'][info] Memulai proses import seamless...<br>';
+
+        try {
+            $items = \JsonMachine\Items::fromFile($tempFile, ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)]);
+            $pdo = $this->core->db()->pdo();
+            
+            $count = 0;
+            $batchSize = 1000;
+
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare("REPLACE INTO mlite_loinc_radiologi 
+                (No, Kategori, NamaPemeriksaan, PermintaanHasil, Code, Display, Component, Property, Timing, System, Scale, Method, UnitOfMeasure, CodeSystem, BodySiteCode, BodySiteDisplay, BodySiteCodeSystem) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            foreach ($items as $item) {
+                // $item sudah berupa array karena decoder assoc=true
+                $no = $item['No'] ?? null;
+                $kategori = $item['Kategori'] ?? '';
+                $nama_pemeriksaan = $item['Nama_Pemeriksaan'] ?? '';
+                $permintaan_hasil = $item['Permintaan_Hasil'] ?? '';
+                $code = trim($item['Code'] ?? '');
+                $display = $item['Display'] ?? '';
+                $component = $item['Component'] ?? '';
+                $property = $item['Property'] ?? '';
+                $timing = $item['Timing'] ?? '';
+                $system = $item['System'] ?? '';
+                $scale = $item['Scale'] ?? '';
+                $method = $item['Method'] ?? '';
+                $unit_measure = $item['Unit_Of_Measure'] ?? '';
+                $code_system = $item['Code_System'] ?? '';
+                $body_site_code = $item['Body_Site_Code'] ?? '';
+                $body_site_display = $item['Body_Site_Display'] ?? '';
+                $body_site_code_system = $item['Body_Site_Code_System'] ?? '';
+
+                if ($code === '') continue;
+
+                $stmt->execute([
+                    $no, $kategori, $nama_pemeriksaan, $permintaan_hasil, 
+                    $code, $display, $component, $property, $timing, $system, $scale, $method, $unit_measure, $code_system,
+                    $body_site_code, $body_site_display, $body_site_code_system
+                ]);
+                $count++;
+
+                if ($count % $batchSize === 0) {
+                    $pdo->commit();
+                    $pdo->beginTransaction();
+                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data...<br>';
+                    if (ob_get_level() > 0) ob_flush();
+                    flush();
+                }
+            }
+
+            if ($pdo->inTransaction()) {
+                $pdo->commit();
+            }
+            echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
+            
+            // Hapus file temp setelah selesai
+            unlink($tempFile);
+
+        } catch (\Exception $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            echo '['.date('d-m-Y H:i:s').'][error] Terjadi kesalahan: ' . $e->getMessage() . '<br>';
+        }
+        exit();
+    }
+    /* End LOINC Rad Section */
+
+    /* Start KFA Section */
+    public function getKfa()
+    {
+      $this->_addHeaderFiles();
+      $this->core->addJS(url([ADMIN, 'master', 'kfajs']), 'footer');
+      $return = $this->kfa->getIndex();
+      return $this->draw('kfa.html', [
+        'kfa' => $return
+      ]);
+    }
+
+    public function anyKfaForm()
+    {
+        $return = $this->kfa->anyForm();
+        echo $this->draw('kfa.form.html', ['kfa' => $return]);
+        exit();
+    }
+
+    public function anyKfaDisplay()
+    {
+        $return = $this->kfa->anyDisplay();
+        echo $this->draw('kfa.display.html', ['kfa' => $return]);
+        exit();
+    }
+
+    public function postKfaSave()
+    {
+      $this->kfa->postSave();
+      exit();
+    }
+
+    public function postKfaHapus()
+    {
+      $this->kfa->postHapus();
+      exit();
+    }
+
+    public function getKfaJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/kfa.js');
+        exit();
+    }
+
+    public function getImportKfa()
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+
+        $url = 'https://apimed.mlite.id/kfa.json';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor KFA dari ' . $url . '<br>';
+
+        $tempFile = sys_get_temp_dir() . '/kfa_temp.json';
+        
+        if (!file_exists($tempFile) || (time() - filemtime($tempFile) > 86400) || filesize($tempFile) == 0) {
+            echo '['.date('d-m-Y H:i:s').'][info] Mendownload file... (ini mungkin butuh waktu)<br>';
+            $fp = fopen($tempFile, 'w+');
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_FILE, $fp);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 5 menit
+            curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                echo '['.date('d-m-Y H:i:s').'][error] Download error: ' . curl_error($ch) . '<br>';
+            }
+
+            curl_close($ch);
+            fclose($fp);
+
+            if (filesize($tempFile) == 0) {
+                echo '['.date('d-m-Y H:i:s').'][error] File yang didownload kosong.<br>';
+                unlink($tempFile);
+                exit();
+            }
+
+            echo '['.date('d-m-Y H:i:s').'][info] File didownload (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        } else {
+            echo '['.date('d-m-Y H:i:s').'][info] Menggunakan file cache lokal (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        }
+
+        echo '['.date('d-m-Y H:i:s').'][info] Memulai proses import seamless...<br>';
+
+        try {
+            $items = \JsonMachine\Items::fromFile($tempFile, ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)]);
+            $pdo = $this->core->db()->pdo();
+            
+            $count = 0;
+            $batchSize = 1000;
+
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare("REPLACE INTO mlite_kfa 
+                (kode_kfa, nama_kfa, kode_bahan, nama_bahan, numerator, satuan_num, denominator, satuan_den, nama_satuan_den, kode_sediaan, nama_sediaan, type) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            foreach ($items as $item) {
+                // $item sudah berupa array karena decoder assoc=true
+                $kode_kfa = trim($item['kode_kfa'] ?? '');
+                $nama_kfa = $item['nama_kfa'] ?? '';
+                $kode_bahan = $item['kode_bahan'] ?? '';
+                $nama_bahan = $item['nama_bahan'] ?? '';
+                $numerator = $item['numerator'] ?? '';
+                $satuan_num = $item['satuan_num'] ?? '';
+                $denominator = $item['denominator'] ?? '';
+                $satuan_den = $item['satuan_den'] ?? '';
+                $nama_satuan_den = $item['nama_satuan_den'] ?? '';
+                $kode_sediaan = $item['kode_sediaan'] ?? '';
+                $nama_sediaan = $item['nama_sediaan'] ?? '';
+                $type = $item['type'] ?? 'obat';
+
+                if ($kode_kfa === '') continue;
+
+                $stmt->execute([
+                    $kode_kfa, $nama_kfa, $kode_bahan, $nama_bahan, $numerator, $satuan_num, $denominator, $satuan_den, $nama_satuan_den, $kode_sediaan, $nama_sediaan, $type
+                ]);
+                $count++;
+
+                if ($count % $batchSize === 0) {
+                    $pdo->commit();
+                    $pdo->beginTransaction();
+                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data...<br>';
+                    if (ob_get_level() > 0) ob_flush();
+                    flush();
+                }
+            }
+
+            if ($pdo->inTransaction()) {
+                $pdo->commit();
+            }
+            echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
+            
+            // Hapus file temp setelah selesai
+            unlink($tempFile);
+
+        } catch (\Exception $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            echo '['.date('d-m-Y H:i:s').'][error] Terjadi kesalahan: ' . $e->getMessage() . '<br>';
+        }
+        exit();
+    }
+    /* End KFA Section */
+    /* End SNOMED Section */
+
+    /* Start LOINC Lab Section */
+    public function getLoincLab()
+    {
+      $this->_addHeaderFiles();
+      $this->core->addJS(url([ADMIN, 'master', 'loinclabjs']), 'footer');
+      $return = $this->loinclab->getIndex();
+      return $this->draw('loinclab.html', [
+        'loinclab' => $return
+      ]);
+    }
+
+    public function anyLoincLabForm()
+    {
+        $return = $this->loinclab->anyForm();
+        echo $this->draw('loinclab.form.html', ['loinclab' => $return]);
+        exit();
+    }
+
+    public function anyLoincLabDisplay()
+    {
+        $return = $this->loinclab->anyDisplay();
+        echo $this->draw('loinclab.display.html', ['loinclab' => $return]);
+        exit();
+    }
+
+    public function postLoincLabSave()
+    {
+      $this->loinclab->postSave();
+      exit();
+    }
+
+    public function postLoincLabHapus()
+    {
+      $this->loinclab->postHapus();
+      exit();
+    }
+
+    public function getLoincLabJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/loinclab.js');
+        exit();
+    }
+
+    public function getImportLoincLab()
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+
+        $url = 'https://apimed.mlite.id/loinc_lab.json';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor LOINC Lab dari ' . $url . '<br>';
+
+        $tempFile = sys_get_temp_dir() . '/loinc_lab_temp.json';
+        
+        if (!file_exists($tempFile) || (time() - filemtime($tempFile) > 86400) || filesize($tempFile) == 0) {
+            echo '['.date('d-m-Y H:i:s').'][info] Mendownload file... (ini mungkin butuh waktu)<br>';
+            $fp = fopen($tempFile, 'w+');
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_FILE, $fp);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 5 menit
+            curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                echo '['.date('d-m-Y H:i:s').'][error] Download error: ' . curl_error($ch) . '<br>';
+            }
+
+            curl_close($ch);
+            fclose($fp);
+
+            if (filesize($tempFile) == 0) {
+                echo '['.date('d-m-Y H:i:s').'][error] File yang didownload kosong.<br>';
+                unlink($tempFile);
+                exit();
+            }
+
+            echo '['.date('d-m-Y H:i:s').'][info] File didownload (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        } else {
+            echo '['.date('d-m-Y H:i:s').'][info] Menggunakan file cache lokal (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        }
+
+        echo '['.date('d-m-Y H:i:s').'][info] Memulai proses import seamless...<br>';
+
+        try {
+            $items = \JsonMachine\Items::fromFile($tempFile, ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)]);
+            $pdo = $this->core->db()->pdo();
+            
+            $count = 0;
+            $batchSize = 1000;
+
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare("REPLACE INTO mlite_loinc_lab 
+                (No, Kategori, NamaPemeriksaan, PermintaanHasil, Spesimen, TipeHasilPemeriksaan, Satuan, MetodeAnalisis, Code, Display, Component, Property, Timing, System, Scale, Method, UnitOfMeasure, CodeSystem) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            foreach ($items as $item) {
+                // $item sudah berupa array karena decoder assoc=true
+                $no = $item['No'] ?? null;
+                $kategori = $item['Kategori'] ?? '';
+                $nama_pemeriksaan = $item['Nama_Pemeriksaan'] ?? '';
+                $permintaan_hasil = $item['Permintaan_Hasil'] ?? '';
+                $spesimen = $item['Spesimen'] ?? '';
+                $tipe_hasil = $item['Tipe_Hasil_Pemeriksaan'] ?? '';
+                $satuan = $item['Satuan'] ?? '';
+                $metode_analisis = $item['Metode_Analisis'] ?? '';
+                $code = trim($item['Code'] ?? '');
+                $display = $item['Display'] ?? '';
+                $component = $item['Component'] ?? '';
+                $property = $item['Property'] ?? '';
+                $timing = $item['Timing'] ?? '';
+                $system = $item['System'] ?? '';
+                $scale = $item['Scale'] ?? '';
+                $method = $item['Method'] ?? '';
+                $unit_measure = $item['Unit_Of_Measure'] ?? '';
+                $code_system = $item['Code_System'] ?? '';
+
+                if ($code === '') continue;
+
+                $stmt->execute([
+                    $no, $kategori, $nama_pemeriksaan, $permintaan_hasil, $spesimen, $tipe_hasil, $satuan, $metode_analisis,
+                    $code, $display, $component, $property, $timing, $system, $scale, $method, $unit_measure, $code_system
+                ]);
+                $count++;
+
+                if ($count % $batchSize === 0) {
+                    $pdo->commit();
+                    $pdo->beginTransaction();
+                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data...<br>';
+                    if (ob_get_level() > 0) ob_flush();
+                    flush();
+                }
+            }
+
+            if ($pdo->inTransaction()) {
+                $pdo->commit();
+            }
+            echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
+            
+            // Hapus file temp setelah selesai
+            unlink($tempFile);
+
+        } catch (\Exception $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            echo '['.date('d-m-Y H:i:s').'][error] Terjadi kesalahan: ' . $e->getMessage() . '<br>';
+        }
+        exit();
+    }
 
     public function getCSS()
     {

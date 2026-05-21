@@ -2232,10 +2232,114 @@ switch ($version) {
         }        
         $return = '6.3.1';
         break;
+
+    case '6.3.1':
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_snomed` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+              `kode` TEXT NOT NULL UNIQUE,
+              `istilah` TEXT NOT NULL
+            );");
+        } else {
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_snomed` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `kode` varchar(20) NOT NULL,
+              `istilah` text NOT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `kode` (`kode`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+        }
+        $return = '6.3.2';
+        break;
+
+    case '6.3.2':
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_loinc_lab` (
+              `No` INTEGER,
+              `Kategori` TEXT,
+              `NamaPemeriksaan` TEXT,
+              `PermintaanHasil` TEXT,
+              `Spesimen` TEXT,
+              `TipeHasilPemeriksaan` TEXT,
+              `Satuan` TEXT,
+              `MetodeAnalisis` TEXT,
+              `Code` TEXT NOT NULL PRIMARY KEY,
+              `Display` TEXT,
+              `Component` TEXT,
+              `Property` TEXT,
+              `Timing` TEXT,
+              `System` TEXT,
+              `Scale` TEXT,
+              `Method` TEXT,
+              `UnitOfMeasure` TEXT,
+              `CodeSystem` TEXT
+            );");
+        } else {
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_loinc_lab` (
+            `No` int(11) DEFAULT NULL,
+            `Kategori` text,
+            `NamaPemeriksaan` text,
+            `PermintaanHasil` text,
+            `Spesimen` text,
+            `TipeHasilPemeriksaan` text,
+            `Satuan` text,
+            `MetodeAnalisis` text,
+            `Code` varchar(20) NOT NULL,
+            `Display` text,
+            `Component` text,
+            `Property` text,
+            `Timing` text,
+            `System` text,
+            `Scale` text,
+            `Method` text,
+            `UnitOfMeasure` text,
+            `CodeSystem` text,
+            PRIMARY KEY (`Code`)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+
+          $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_loinc_radiologi` (
+             `No` text,
+             `Kategori` text,
+             `NamaPemeriksaan` text,
+             `PermintaanHasil` text,
+             `Code` varchar(100) NOT NULL,
+             `Display` text,
+             `Component` text,
+             `Property` text,
+             `Timing` text,
+             `System` text,
+             `Scale` text,
+             `Method` text,
+             `UnitOfMeasure` text,
+             `CodeSystem` text,
+             `BodySiteCode` text,
+             `BodySiteDisplay` text,
+             `BodySiteCodeSystem` text,
+             PRIMARY KEY (`Code`)
+           ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+
+           $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_kfa` (
+             `kode_kfa` varchar(50) NOT NULL,
+             `nama_kfa` text,
+             `kode_bahan` varchar(50) DEFAULT NULL,
+             `nama_bahan` text,
+             `numerator` varchar(10) DEFAULT NULL,
+             `satuan_num` varchar(10) DEFAULT NULL,
+             `denominator` varchar(10) DEFAULT NULL,
+             `satuan_den` varchar(10) DEFAULT NULL,
+             `nama_satuan_den` varchar(10) DEFAULT NULL,
+             `kode_sediaan` varchar(50) DEFAULT NULL,
+             `nama_sediaan` varchar(100) DEFAULT NULL,
+             `type` enum('obat','alkes') NOT NULL DEFAULT 'obat',
+             PRIMARY KEY (`kode_kfa`)
+           ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+        }
+        $return = '6.3.3';
+        break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '6.3.1';
+        $return = '6.3.3';
     }
 
 return $return;

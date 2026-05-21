@@ -14,7 +14,8 @@
         "phpmailer/phpmailer": "^6.9.1", 
         "mpdf/mpdf": "^8.2", 
         "workerman/workerman": "^4.0",
-        "mpdf/qrcode": "^1.2"
+        "mpdf/qrcode": "^1.2",
+        "halaxa/json-machine": "^1.2"
     },
     "license": "MIT",
     "authors": [
