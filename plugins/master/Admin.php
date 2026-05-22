@@ -513,10 +513,10 @@ class Admin extends AdminModule
         ['name' => 'Status Wajib Pajak', 'url' => url([ADMIN, 'master', 'statuswp']), 'icon' => 'cubes', 'desc' => 'Master status wajib pajak'],
         ['name' => 'Metode Racik', 'url' => url([ADMIN, 'master', 'metoderacik']), 'icon' => 'cubes', 'desc' => 'Master metode racik'],
         ['name' => 'Ruang OK', 'url' => url([ADMIN, 'master', 'ruangok']), 'icon' => 'cubes', 'desc' => 'Master ruang OK'],
-        ['name' => 'Import SNOMED CT', 'url' => url([ADMIN, 'master', 'snomed']), 'icon' => 'download', 'desc' => 'Import master SNOMED CT dari apimed.mlite.id'],
-        ['name' => 'Import LOINC Lab', 'url' => url([ADMIN, 'master', 'loinclab']), 'icon' => 'download', 'desc' => 'Import master LOINC Lab dari apimed.mlite.id'],
-        ['name' => 'Import LOINC Radiologi', 'url' => url([ADMIN, 'master', 'loincrad']), 'icon' => 'download', 'desc' => 'Import master LOINC Radiologi dari apimed.mlite.id'],
-        ['name' => 'Import KFA', 'url' => url([ADMIN, 'master', 'kfa']), 'icon' => 'download', 'desc' => 'Import master KFA dari apimed.mlite.id'],
+        ['name' => 'SNOMED CT', 'url' => url([ADMIN, 'master', 'snomed']), 'icon' => 'cubes', 'desc' => 'Master SNOMED CT'],
+        ['name' => 'LOINC Lab', 'url' => url([ADMIN, 'master', 'loinclab']), 'icon' => 'cubes', 'desc' => 'Master LOINC Lab'],
+        ['name' => 'LOINC Radiologi', 'url' => url([ADMIN, 'master', 'loincrad']), 'icon' => 'cubes', 'desc' => 'Master LOINC Radiologi'],
+        ['name' => 'KFA', 'url' => url([ADMIN, 'master', 'kfa']), 'icon' => 'cubes', 'desc' => 'Master KFA'],
       ];
       return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
