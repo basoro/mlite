@@ -2795,7 +2795,7 @@ class Admin extends AdminModule
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_FILE, $fp);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 5 menit
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
             curl_exec($ch);
             
             if (curl_errno($ch)) {
@@ -2819,7 +2819,18 @@ class Admin extends AdminModule
         echo '['.date('d-m-Y H:i:s').'][info] Memulai proses import seamless...<br>';
 
         try {
-            $items = \JsonMachine\Items::fromFile($tempFile, ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)]);
+            $head = trim((string) file_get_contents($tempFile, false, null, 0, 4096));
+            $opts = ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)];
+            if ($head !== '' && $head[0] === '{') {
+                if (strpos($head, '"data"') !== false) {
+                    $opts['pointer'] = '/data';
+                } elseif (strpos($head, '"items"') !== false) {
+                    $opts['pointer'] = '/items';
+                } elseif (strpos($head, '"results"') !== false) {
+                    $opts['pointer'] = '/results';
+                }
+            }
+            $items = \JsonMachine\Items::fromFile($tempFile, $opts);
             $pdo = $this->core->db()->pdo();
             
             $count = 0;
@@ -2831,7 +2842,6 @@ class Admin extends AdminModule
                 VALUES (?, ?, '', '', '-', 'Tidak Menular')");
 
             foreach ($items as $item) {
-                // $item sudah berupa array karena decoder assoc=true
                 $kode = trim($item[0] ?? '');
                 $nama = trim($item[1] ?? '');
 
@@ -2927,7 +2937,7 @@ class Admin extends AdminModule
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_FILE, $fp);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 5 menit
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
             curl_exec($ch);
 
             if (curl_errno($ch)) {
@@ -2963,7 +2973,6 @@ class Admin extends AdminModule
                 VALUES (?, ?, '')");
 
             foreach ($items as $item) {
-                // $item sudah berupa array karena decoder assoc=true
                 $kode = trim($item[0] ?? '');
                 $nama = trim($item[1] ?? '');
 
@@ -3065,7 +3074,7 @@ class Admin extends AdminModule
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_FILE, $fp);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 600); // 10 menit
+            curl_setopt($ch, CURLOPT_TIMEOUT, 600);
             curl_exec($ch);
 
             if (curl_errno($ch)) {
@@ -3092,9 +3101,6 @@ class Admin extends AdminModule
             $items = \JsonMachine\Items::fromFile($tempFile, ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)]);
             $pdo = $this->core->db()->pdo();
             
-            // Clear existing data? User didn't specify, but usually import means refresh.
-            // Let's use REPLACE INTO as I already did, it will update if code exists.
-
             $count = 0;
             $batchSize = 1000;
 
@@ -3102,7 +3108,6 @@ class Admin extends AdminModule
             $stmt = $pdo->prepare("REPLACE INTO mlite_snomed (kode, istilah) VALUES (?, ?)");
 
             foreach ($items as $item) {
-                // $item sudah berupa array karena decoder assoc=true
                 $kode = trim($item['c'] ?? '');
                 $istilah = trim($item['t'] ?? '');
 
@@ -3125,7 +3130,6 @@ class Admin extends AdminModule
             }
             echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
             
-            // Hapus file temp setelah selesai
             unlink($tempFile);
 
         } catch (\Exception $e) {
@@ -3198,7 +3202,7 @@ class Admin extends AdminModule
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_FILE, $fp);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 5 menit
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
             curl_exec($ch);
 
             if (curl_errno($ch)) {
@@ -3234,7 +3238,6 @@ class Admin extends AdminModule
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             foreach ($items as $item) {
-                // $item sudah berupa array karena decoder assoc=true
                 $no = $item['No'] ?? null;
                 $kategori = $item['Kategori'] ?? '';
                 $nama_pemeriksaan = $item['Nama_Pemeriksaan'] ?? '';
@@ -3276,7 +3279,6 @@ class Admin extends AdminModule
             }
             echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
             
-            // Hapus file temp setelah selesai
             unlink($tempFile);
 
         } catch (\Exception $e) {
@@ -3349,7 +3351,7 @@ class Admin extends AdminModule
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_FILE, $fp);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 5 menit
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
             curl_exec($ch);
 
             if (curl_errno($ch)) {
@@ -3385,19 +3387,19 @@ class Admin extends AdminModule
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             foreach ($items as $item) {
-                // $item sudah berupa array karena decoder assoc=true
-                $kode_kfa = trim($item['kode_kfa'] ?? '');
-                $nama_kfa = $item['nama_kfa'] ?? '';
-                $kode_bahan = $item['kode_bahan'] ?? '';
-                $nama_bahan = $item['nama_bahan'] ?? '';
-                $numerator = $item['numerator'] ?? '';
-                $satuan_num = $item['satuan_num'] ?? '';
-                $denominator = $item['denominator'] ?? '';
-                $satuan_den = $item['satuan_den'] ?? '';
-                $nama_satuan_den = $item['nama_satuan_den'] ?? '';
-                $kode_sediaan = $item['kode_sediaan'] ?? '';
-                $nama_sediaan = $item['nama_sediaan'] ?? '';
-                $type = $item['type'] ?? 'obat';
+                $item = (array) $item;
+                $kode_kfa = trim((string) ($item['kode_kfa'] ?? $item['Kode_KFA'] ?? ''));
+                $nama_kfa = (string) ($item['nama_kfa'] ?? $item['Display_Name'] ?? '');
+                $kode_bahan = (string) ($item['kode_bahan'] ?? $item['Bahan_Baku_Aktif_Kode_KFA'] ?? '');
+                $nama_bahan = (string) ($item['nama_bahan'] ?? $item['Bahan_Baku_Aktif_Display_Name'] ?? '');
+                $numerator = (string) ($item['numerator'] ?? $item['Bahan_Baku_Aktif_Numerator'] ?? '');
+                $satuan_num = (string) ($item['satuan_num'] ?? $item['Bahan_Baku_Aktif_Satuan_Numerator'] ?? '');
+                $denominator = (string) ($item['denominator'] ?? $item['Bahan_Baku_Aktif_Denominator.1'] ?? $item['Bahan_Baku_Aktif_Denominator'] ?? '');
+                $satuan_den = (string) ($item['satuan_den'] ?? $item['Bahan_Baku_Aktif_Satuan_Denominator'] ?? '');
+                $nama_satuan_den = (string) ($item['nama_satuan_den'] ?? $item['Bahan_Baku_Aktif_Nama_Satuan_Denominator'] ?? '');
+                $kode_sediaan = (string) ($item['kode_sediaan'] ?? $item['Bentuk_Sediaan_Kode'] ?? '');
+                $nama_sediaan = (string) ($item['nama_sediaan'] ?? $item['Bentuk_Sediaan_Display_Name'] ?? '');
+                $type = (string) ($item['type'] ?? 'obat');
 
                 if ($kode_kfa === '') continue;
 
@@ -3418,10 +3420,10 @@ class Admin extends AdminModule
             if ($pdo->inTransaction()) {
                 $pdo->commit();
             }
+            if ($count === 0) {
+                echo '['.date('d-m-Y H:i:s').'][warning] Total 0. Struktur field JSON KFA mungkin berbeda dari yang dipakai importer.<br>';
+            }
             echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
-            
-            // Hapus file temp setelah selesai
-            unlink($tempFile);
 
         } catch (\Exception $e) {
             if (isset($pdo) && $pdo->inTransaction()) {
@@ -3494,7 +3496,7 @@ class Admin extends AdminModule
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_FILE, $fp);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 5 menit
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
             curl_exec($ch);
 
             if (curl_errno($ch)) {
@@ -3530,7 +3532,6 @@ class Admin extends AdminModule
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             foreach ($items as $item) {
-                // $item sudah berupa array karena decoder assoc=true
                 $no = $item['No'] ?? null;
                 $kategori = $item['Kategori'] ?? '';
                 $nama_pemeriksaan = $item['Nama_Pemeriksaan'] ?? '';
@@ -3572,7 +3573,6 @@ class Admin extends AdminModule
             }
             echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
             
-            // Hapus file temp setelah selesai
             unlink($tempFile);
 
         } catch (\Exception $e) {

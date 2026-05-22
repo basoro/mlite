@@ -9,6 +9,7 @@
 <h4>Mapping Laboratorium Satu Sehat</h4>
 <form action="{?=url(ADMIN.'/satu_sehat/savelab')?}" method="POST">
     <input type="hidden" name="id_organisasi_satusehat">
+    <input type="hidden" name="kd_jenis_prw" id="kd_jenis_prw" value="">
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="row">
@@ -17,7 +18,7 @@
                         <label>Pilih Perawatan</label>
                         <select name="id_template" id="id_template" class="form-control" data-use-search="true">
                             {loop: $template_laboratorium}
-                            <option value="{?=isset_or($value.id_template)?} : {?=isset_or($value.kd_jenis_prw)?}">[{?=isset_or($value.id_template)?}] - {?=isset_or($value.kd_jenis_prw)?} - {?=isset_or($value.Pemeriksaan)?}</option>
+                            <option value="{?=isset_or($value.id_template)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}">[{?=isset_or($value.id_template)?}] - {?=isset_or($value.kd_jenis_prw)?} - {?=isset_or($value.Pemeriksaan)?}</option>
                             {/loop}
                         </select>
                     </div>
@@ -89,6 +90,12 @@ $('#mapping_lab_satu_sehat table tbody').on('click', 'tr.mapping_lab_satu_sehat'
     console.log('Selected ID Template:', id_template);
 });
 
+$('body').on('change', '#id_template', function () {
+    var opt = $(this).find('option:selected');
+    $('#kd_jenis_prw').val((opt.data('kd_jenis_prw') || '').toString());
+});
+$('#id_template').trigger('change');
+
 $('input[name="hapus"]').on('click', function (e) {
     const confirmDelete = confirm('Apakah Anda yakin ingin menghapus data ini?');
     if (!confirmDelete) {
@@ -107,37 +114,21 @@ var truncate_string = function(str, chars) {
     }
 };
 var $select = $('#select_lab');
-const url = 'https://basoro.id/downloads/LoincLaboratorium.json';
 $select.selectator({
     labels: {
         search: 'Search here...'
     },
     load: function (search, callback) {
-      if (search.length < 3) {
-        callback([{ value: '', text: 'Ketik minimal 3 huruf...' }]);
-        return;
-      }
-
-      fetch(url)
-        .then(res => res.json())
-        .then(data => {
-          dataLab = data; // Simpan data di variabel global
-          console.log(dataLab);
-          const filtered = data.filter(item =>
-            item.Nama_Pemeriksaan && item.Nama_Pemeriksaan.toLowerCase().includes(search.toLowerCase())
-          );
-
-          const options = filtered.map(item => ({
-            value: item.Code,
-            text: item.Nama_Pemeriksaan
-          }));
-
-          callback(options.slice(0, 100)); // Batasi maksimal 100 hasil
-        })
-        .catch(err => {
-          console.error('Gagal mengambil data:', err);
-          callback([]);
-        });
+      if (search.length < this.minSearchLength) return callback();
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var url = baseURL + '/satu_sehat/lookupmaster?t=' + mlite.token + '&type=loinc_lab&q=' + encodeURIComponent(search);
+      $.ajax({
+        url: url,
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) { callback((data || []).slice(0, 100)); },
+        error: function() { callback(); }
+      });
     },
     delay: 300,
     minSearchLength: 3,
@@ -154,131 +145,62 @@ $select.selectator({
 });
 
 $('#select_lab').on('change', function () {
-    const kodeLab = $(this).val();
-    if (!kodeLab) return;
+    var opt = $(this).find('option:selected');
+    var item = opt.data('item_data') || {};
+    var code = (item.code || item.Code || '').toString();
+    var display = (item.display || item.NamaPemeriksaan || '').toString();
+    var system = (item.code_system || item.CodeSystem || 'http://loinc.org').toString();
 
-    // Cari detail di dataKFA berdasarkan kodeKFA
-    const detail = dataLab.find(item => item.Code.toString() === kodeLab.toString());
-
-    if (detail) {
-        console.log('Detail lengkap lab:', detail);
-        $('#detail_lab').html(`
-        <p><label>Kode</label><input type="text" name="code" class="form-control" value="${detail.Code}"></p>
-        <p><label>Nama Pemeriksaan</label><input type="text" name="display" class="form-control" value="${detail.Nama_Pemeriksaan}"></p>
-        <p><label>Code System</label><input type="text" name="code_system" class="form-control" value="${detail.Code_System}"></p>
-        <p><label>Sample Code</label>
-            <div class="input-group">
-                <input type="text" name="sample_code" id="sample_code" class="form-control" value="">
-                <span class="input-group-btn">
-                    <button type="button" id="AIGenerateSampleCode" class="btn btn-primary" title="Generate Sample Code dengan AI">
-                        <i class="fas fa-robot"></i> AI Generate
-                    </button>
-                </span>
-            </div>
-        </p>
-        <p><label>Sample Display</label><input type="text" name="sample_display" class="form-control" value=""></p>
-        <p><label>Sample System</label><input type="text" name="sample_system" class="form-control" value=""></p>
-        `);
-        
-        // Setup button AI Generate setelah elemen dibuat
-        setupAIGenerateButton();
+    if (!code) {
+      $('#detail_lab').html('');
+      return;
     }
-});
 
-// Fungsi untuk setup button AI Generate
-function setupAIGenerateButton() {
-    $('#AIGenerateSampleCode').off('click').on('click', function() {
-        const displayName = $('input[name="display"]').val();
-        const code = $('input[name="code"]').val();
-        
-        if (!displayName) {
-            alert('Nama pemeriksaan tidak ditemukan');
-            return;
-        }
-        
-        // Tambahkan loading indicator
-        const originalText = $(this).html();
-        $(this).html('<i class="fa fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
-        
-        // API Key
-        const apiKey = "{?=$this->core->settings->get('satu_sehat.api_openai')?}";
-        
-        const requestData = {
-            model: "openai/gpt-4o",
-            messages: [
-                {
-                    role: "user", 
-                    content: `Buatkan resource FHIR Specimen (JSON) untuk pemeriksaan laboratorium "${displayName}" dengan kode LOINC ${code}. Struktur WAJIB: resourceType="Specimen", id="{specimen_id}", type.coding (array) dengan system="http://snomed.info/sct", code, dan display; subject.reference="Patient/{patient_id}"; collection.collectedDateTime dalam format ISO8601 (contoh: "2025-10-06T07:45:00+08:00"). Isi code dan display sesuai sampel yang relevan. Balas HANYA dengan objek JSON mentah tanpa backticks/label/teks tambahan.`
-                }
-            ]
-        };
-        
-        fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify(requestData)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.choices && data.choices[0] && data.choices[0].message) {
-                const responseContent = (data.choices[0].message.content || '').trim();
+    $('#detail_lab').html(
+      '<p><label>Kode</label><input type="text" name="code" class="form-control" value="' + code + '"></p>' +
+      '<p><label>Nama Pemeriksaan</label><input type="text" name="display" class="form-control" value="' + display + '"></p>' +
+      '<p><label>Code System</label><input type="text" name="code_system" class="form-control" value="' + system + '"></p>' +
+      '<p><label>Sample (SNOMED-CT)</label><select id="sample_pick" class="form-control"></select></p>' +
+      '<input type="hidden" name="sample_code" id="sample_code" value="">' +
+      '<input type="hidden" name="sample_display" id="sample_display" value="">' +
+      '<input type="hidden" name="sample_system" id="sample_system" value="http://snomed.info/sct">'
+    );
 
-                const extractJSONBlock = (text) => {
-                    // Jika dibungkus kode fence, ambil isi di dalamnya
-                    const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
-                    const raw = fenced ? fenced[1].trim() : text;
-                    // Ambil substring dari { pertama sampai } terakhir
-                    const start = raw.indexOf('{');
-                    const end = raw.lastIndexOf('}');
-                    if (start !== -1 && end !== -1 && end > start) {
-                        const candidate = raw.slice(start, end + 1);
-                        try { return JSON.parse(candidate); } catch (e) {}
-                    }
-                    // Coba parse langsung
-                    try { return JSON.parse(raw); } catch (e) { return null; }
-                };
-
-                const specimenData = extractJSONBlock(responseContent);
-
-                if (specimenData && specimenData.type && specimenData.type.coding && specimenData.type.coding[0]) {
-                    const coding = specimenData.type.coding[0];
-                    const sanitize = (s) => (typeof s === 'string' ? s.replace(/`/g, '').trim() : s);
-                    $('input[name="sample_code"]').val(coding.code || '');
-                    $('input[name="sample_display"]').val(coding.display || '');
-                    $('input[name="sample_system"]').val(sanitize(coding.system) || '');
-                    alert('Data Specimen berhasil di-generate!');
-                } else {
-                    throw new Error('Struktur JSON Specimen tidak valid atau field coding tidak ditemukan');
-                }
-            } else {
-                throw new Error('Invalid response format from API');
-            }
-        })
-        .catch(error => {
-            console.error('Error generating sample code:', error);
-            alert('Gagal generate sample code: ' + error.message);
-        })
-        .finally(() => {
-            // Kembalikan button ke state semula
-            $(this).html(originalText).prop('disabled', false);
+    $('#sample_pick').selectator({
+      labels: { search: 'Cari sampel...' },
+      load: function (search, callback) {
+        if (search.length < this.minSearchLength) return callback();
+        var baseURL = mlite.url + '/' + mlite.admin;
+        var url = baseURL + '/satu_sehat/lookupmaster?t=' + mlite.token + '&type=snomed&q=' + encodeURIComponent(search);
+        $.ajax({
+          url: url,
+          type: 'GET',
+          dataType: 'json',
+          success: function(data) { callback((data || []).slice(0, 100)); },
+          error: function() { callback(); }
         });
+      },
+      delay: 300,
+      minSearchLength: 3,
+      valueField: 'value',
+      textField: 'text'
     });
-}
 
-// Setup button saat halaman pertama kali load (jika detail sudah ada)
-$(document).ready(function() {
-    if ($('#AIGenerateSampleCode').length) {
-        setupAIGenerateButton();
-    }
+    $('#sample_pick').on('change', function() {
+      var sopt = $(this).find('option:selected');
+      var sitem = sopt.data('item_data') || {};
+      var scode = (sitem.code || sitem.value || '').toString();
+      var sdisplay = (sitem.display || '').toString();
+      if (!scode) {
+        $('#sample_code').val('');
+        $('#sample_display').val('');
+        $('#sample_system').val('http://snomed.info/sct');
+        return;
+      }
+      $('#sample_code').val(scode);
+      $('#sample_display').val(sdisplay);
+      $('#sample_system').val('http://snomed.info/sct');
+    });
 });
-
 </script>
   

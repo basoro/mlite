@@ -2581,6 +2581,113 @@ class Admin extends AdminModule
     return $this->draw('mapping.rad.html', ['mapping_rad_satu_sehat' => $mapping_rad, 'jns_perawatan_radiologi' => $jns_perawatan_radiologi]);
   }
 
+  public function getLookupMaster()
+  {
+    header('Content-type: application/json');
+    $type = isset($_GET['type']) ? (string) $_GET['type'] : '';
+    $q = isset($_GET['q']) ? trim((string) $_GET['q']) : '';
+
+    if ($q === '') {
+      echo json_encode([]);
+      exit();
+    }
+
+    $items = [];
+
+    if ($type === 'loinc_lab') {
+      $rows = $this->db('mlite_loinc_lab')
+        ->like('Code', '%'.$q.'%')
+        ->orLike('NamaPemeriksaan', '%'.$q.'%')
+        ->orLike('Display', '%'.$q.'%')
+        ->limit(50)
+        ->toArray();
+
+      foreach ($rows as $row) {
+        $code = trim((string) ($row['Code'] ?? ''));
+        $display = trim((string) ($row['NamaPemeriksaan'] ?? ($row['Display'] ?? '')));
+        if ($code === '') continue;
+        $items[] = [
+          'value' => $code,
+          'text' => '['.$code.'] '.($display !== '' ? $display : $code),
+          'code' => $code,
+          'display' => $display,
+          'code_system' => 'http://loinc.org'
+        ];
+      }
+    } elseif ($type === 'loinc_rad') {
+      $rows = $this->db('mlite_loinc_radiologi')
+        ->like('Code', '%'.$q.'%')
+        ->orLike('NamaPemeriksaan', '%'.$q.'%')
+        ->orLike('Display', '%'.$q.'%')
+        ->limit(50)
+        ->toArray();
+
+      foreach ($rows as $row) {
+        $code = trim((string) ($row['Code'] ?? ''));
+        $display = trim((string) ($row['NamaPemeriksaan'] ?? ($row['Display'] ?? '')));
+        if ($code === '') continue;
+        $items[] = [
+          'value' => $code,
+          'text' => '['.$code.'] '.($display !== '' ? $display : $code),
+          'code' => $code,
+          'display' => $display,
+          'code_system' => 'http://loinc.org',
+          'body_site_code' => (string) ($row['BodySiteCode'] ?? ''),
+          'body_site_display' => (string) ($row['BodySiteDisplay'] ?? ''),
+          'body_site_code_system' => (string) ($row['BodySiteCodeSystem'] ?? '')
+        ];
+      }
+    } elseif ($type === 'snomed') {
+      $rows = $this->db('mlite_snomed')
+        ->like('kode', '%'.$q.'%')
+        ->orLike('istilah', '%'.$q.'%')
+        ->limit(50)
+        ->toArray();
+
+      foreach ($rows as $row) {
+        $code = trim((string) ($row['kode'] ?? ''));
+        $display = trim((string) ($row['istilah'] ?? ''));
+        if ($code === '') continue;
+        $items[] = [
+          'value' => $code,
+          'text' => '['.$code.'] '.($display !== '' ? $display : $code),
+          'code' => $code,
+          'display' => $display,
+          'code_system' => 'http://snomed.info/sct'
+        ];
+      }
+    } elseif ($type === 'kfa') {
+      $rows = $this->db('mlite_kfa')
+        ->like('kode_kfa', '%'.$q.'%')
+        ->orLike('nama_kfa', '%'.$q.'%')
+        ->limit(50)
+        ->toArray();
+
+      foreach ($rows as $row) {
+        $code = trim((string) ($row['kode_kfa'] ?? ''));
+        $display = trim((string) ($row['nama_kfa'] ?? ''));
+        if ($code === '') continue;
+        $items[] = [
+          'kode_kfa' => $code,
+          'nama_kfa' => $display,
+          'text' => '['.$code.'] '.($display !== '' ? $display : $code),
+          'kode_bahan' => (string) ($row['kode_bahan'] ?? ''),
+          'nama_bahan' => (string) ($row['nama_bahan'] ?? ''),
+          'numerator' => (string) ($row['numerator'] ?? ''),
+          'satuan_num' => (string) ($row['satuan_num'] ?? ''),
+          'denominator' => (string) ($row['denominator'] ?? ''),
+          'satuan_den' => (string) ($row['satuan_den'] ?? ''),
+          'nama_satuan_den' => (string) ($row['nama_satuan_den'] ?? ''),
+          'kode_sediaan' => (string) ($row['kode_sediaan'] ?? ''),
+          'nama_sediaan' => (string) ($row['nama_sediaan'] ?? '')
+        ];
+      }
+    }
+
+    echo json_encode(htmlspecialchars_array($items), true);
+    exit();
+  }
+
   public function postSaveRad()
   {
     if (isset($_POST['simpan'])) {
@@ -2620,9 +2727,16 @@ class Admin extends AdminModule
   public function postSaveLab()
   {
     if (isset($_POST['simpan'])) {
-      $parts = explode(":", $_POST['id_template']);
-      $id_template = trim($parts[0]);
-      $kd_jenis_prw = trim($parts[1]);
+      $id_template = (int) ($_POST['id_template'] ?? 0);
+      $kd_jenis_prw = trim((string) ($_POST['kd_jenis_prw'] ?? ''));
+      if ($id_template <= 0) {
+        $this->notify('danger', 'Perawatan belum dipilih');
+        redirect(url([ADMIN, 'satu_sehat', 'mappinglab']));
+      }
+      if ($kd_jenis_prw === '') {
+        $tpl = $this->db('template_laboratorium')->where('id_template', $id_template)->oneArray();
+        $kd_jenis_prw = trim((string) ($tpl['kd_jenis_prw'] ?? ''));
+      }
       $query = $this->db('mlite_satu_sehat_mapping_lab')->save(
         [
           'id_template' => $id_template,
@@ -2644,8 +2758,13 @@ class Admin extends AdminModule
     }
 
     if (isset($_POST['hapus'])) {
+      $id_template = (int) ($_POST['id_template'] ?? 0);
+      if ($id_template <= 0) {
+        $this->notify('danger', 'Perawatan belum dipilih');
+        redirect(url([ADMIN, 'satu_sehat', 'mappinglab']));
+      }
       $query = $this->db('mlite_satu_sehat_mapping_lab')
-        ->where('id_template', $_POST['id_template'])
+        ->where('id_template', $id_template)
         ->delete();
       if ($query) {
         $this->notify('success', 'Mapping laboratorium telah dihapus');
@@ -6206,31 +6325,28 @@ class Admin extends AdminModule
   {
     if (isset($_POST['simpan'])) {
 
-      $cari_obat = $this->searchIdentifierObat($_POST['select_kfa']);
-      $get_drug_form = $this->getCodeDrugForm($cari_obat['result']['uom']['name']);
-      $nama_satuan_den = $cari_obat['result']['uom']['name'];
-      if ($get_drug_form == '') {
-        $get_drug_form = $this->getCodeDrugForm(ucfirst($cari_obat['result']['rute_pemberian']['code']));
-        $nama_satuan_den = ucfirst($cari_obat['result']['rute_pemberian']['code']);
+      $kfa = $this->db('mlite_kfa')->where('kode_kfa', $_POST['select_kfa'])->oneArray();
+      if (!$kfa) {
+        $this->notify('danger', 'Data KFA tidak ditemukan di master. Silakan import master KFA terlebih dahulu.');
+        redirect(url([ADMIN, 'satu_sehat', 'mappingobat']));
       }
-      $numerator_value = $this->regexZatAktif($cari_obat['result']['active_ingredients'][0]['kekuatan_zat_aktif']);
 
       $query = $this->db('mlite_satu_sehat_mapping_obat')->save(
         [
           'kode_brng' => $_POST['kode_brng'],
           'kode_kfa' => $_POST['select_kfa'],
-          'nama_kfa' => $cari_obat['result']['name'],
-          'kode_bahan' => $cari_obat['result']['active_ingredients'][0]['kfa_code'],
-          'nama_bahan' => $cari_obat['result']['active_ingredients'][0]['zat_aktif'],
-          'numerator' => $numerator_value['value'],
-          'satuan_num' => $numerator_value['unit'],
-          'denominator' => 1,
-          'satuan_den' => $get_drug_form,
-          'nama_satuan_den' => $nama_satuan_den,
-          'kode_sediaan' => $cari_obat['result']['dosage_form']['code'],
-          'nama_sediaan' => $cari_obat['result']['dosage_form']['name'],
-          'kode_route' => $cari_obat['result']['rute_pemberian']['code'],
-          'nama_route' => $cari_obat['result']['rute_pemberian']['name'],
+          'nama_kfa' => $kfa['nama_kfa'] ?? null,
+          'kode_bahan' => $kfa['kode_bahan'] ?? null,
+          'nama_bahan' => $kfa['nama_bahan'] ?? null,
+          'numerator' => $kfa['numerator'] ?? null,
+          'satuan_num' => $kfa['satuan_num'] ?? null,
+          'denominator' => $kfa['denominator'] ?? null,
+          'satuan_den' => $kfa['satuan_den'] ?? null,
+          'nama_satuan_den' => $kfa['nama_satuan_den'] ?? null,
+          'kode_sediaan' => $kfa['kode_sediaan'] ?? null,
+          'nama_sediaan' => $kfa['nama_sediaan'] ?? null,
+          'kode_route' => null,
+          'nama_route' => null,
           'type' => $_POST['type'],
         ]
       );

@@ -157,15 +157,14 @@
             if (search.length < this.minSearchLength) return callback();
 
             var baseURL = mlite.url + '/' + mlite.admin;
-            var url = baseURL + '/satu_sehat/mappingobatsearch?t=' + mlite.token + '&keyword=' + encodeURIComponent(search);
+            var url = baseURL + '/satu_sehat/lookupmaster?t=' + mlite.token + '&type=kfa&q=' + encodeURIComponent(search);
 
             $.ajax({
                 url: url,
                 type: 'GET',
                 dataType: 'json',
                 success: function(data) {
-                    // console.log('Data:', data);
-                    callback(data.items.data.slice(0, 100));
+                    callback((data || []).slice(0, 100));
                 },
                 error: function() {
                     callback();
@@ -173,14 +172,14 @@
             });
         },
         delay: 300,
-        minSearchLength: 6,
-        valueField: 'kfa_code',
-        textField: 'name',
+        minSearchLength: 3,
+        valueField: 'kode_kfa',
+        textField: 'text',
         render: {
             option: function (_item, escape) {
                 var html = '';
-                html += '<div class="selectator_option_title">' + ((typeof _item.name !== 'undefined') ? _item.name : '') + '</div>';
-                html += '<div class="selectator_option_subtitle">' + ((typeof _item.manufacturer !== 'undefined') ? truncate_string(escape(strip_tags(_item.manufacturer)), 75) : '') + '</div>';
+                html += '<div class="selectator_option_title">' + ((typeof _item.nama_kfa !== 'undefined') ? _item.nama_kfa : '') + '</div>';
+                html += '<div class="selectator_option_subtitle">' + ((typeof _item.kode_kfa !== 'undefined') ? ('KFA: ' + _item.kode_kfa) : '') + '</div>';
                 return html;
             }
         }
@@ -193,4 +192,3 @@
         modal.find('.modal-body').load(button.attr('href'))
     });
 </script>
-

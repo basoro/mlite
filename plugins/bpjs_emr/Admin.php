@@ -3698,6 +3698,104 @@ class Admin extends AdminModule
         return $result;
     }
 
+    public function getLookupCoding()
+    {
+        header('Content-type: application/json');
+
+        $context = isset($_GET['context']) ? (string) $_GET['context'] : '';
+        $q = isset($_GET['q']) ? trim((string) $_GET['q']) : '';
+
+        if ($q === '') {
+            echo json_encode([]);
+            exit();
+        }
+
+        $items = [];
+
+        if ($context === 'lab') {
+            $rows = $this->db('mlite_loinc_lab')
+                ->like('Code', '%'.$q.'%')
+                ->orLike('NamaPemeriksaan', '%'.$q.'%')
+                ->orLike('Display', '%'.$q.'%')
+                ->limit(30)
+                ->toArray();
+
+            foreach ($rows as $row) {
+                $code = trim((string) ($row['Code'] ?? ''));
+                $display = trim((string) ($row['NamaPemeriksaan'] ?? ($row['Display'] ?? '')));
+                if ($code === '') continue;
+                $items[] = [
+                    'key' => $code . '|http://loinc.org',
+                    'code' => $code,
+                    'display' => $display,
+                    'system' => 'http://loinc.org',
+                    'text' => '[' . $code . '] ' . ($display !== '' ? $display : $code),
+                ];
+            }
+        } elseif ($context === 'rad') {
+            $rows = $this->db('mlite_loinc_radiologi')
+                ->like('Code', '%'.$q.'%')
+                ->orLike('NamaPemeriksaan', '%'.$q.'%')
+                ->orLike('Display', '%'.$q.'%')
+                ->limit(30)
+                ->toArray();
+
+            foreach ($rows as $row) {
+                $code = trim((string) ($row['Code'] ?? ''));
+                $display = trim((string) ($row['NamaPemeriksaan'] ?? ($row['Display'] ?? '')));
+                if ($code === '') continue;
+                $items[] = [
+                    'key' => $code . '|http://loinc.org',
+                    'code' => $code,
+                    'display' => $display,
+                    'system' => 'http://loinc.org',
+                    'text' => '[LOINC ' . $code . '] ' . ($display !== '' ? $display : $code),
+                ];
+            }
+
+            $rows = $this->db('mlite_snomed')
+                ->like('kode', '%'.$q.'%')
+                ->orLike('istilah', '%'.$q.'%')
+                ->limit(30)
+                ->toArray();
+
+            foreach ($rows as $row) {
+                $code = trim((string) ($row['kode'] ?? ''));
+                $display = trim((string) ($row['istilah'] ?? ''));
+                if ($code === '') continue;
+                $items[] = [
+                    'key' => $code . '|http://snomed.info/sct',
+                    'code' => $code,
+                    'display' => $display,
+                    'system' => 'http://snomed.info/sct',
+                    'text' => '[SNOMED ' . $code . '] ' . ($display !== '' ? $display : $code),
+                ];
+            }
+        } else {
+            $rows = $this->db('mlite_snomed')
+                ->like('kode', '%'.$q.'%')
+                ->orLike('istilah', '%'.$q.'%')
+                ->limit(50)
+                ->toArray();
+
+            foreach ($rows as $row) {
+                $code = trim((string) ($row['kode'] ?? ''));
+                $display = trim((string) ($row['istilah'] ?? ''));
+                if ($code === '') continue;
+                $items[] = [
+                    'key' => $code . '|http://snomed.info/sct',
+                    'code' => $code,
+                    'display' => $display,
+                    'system' => 'http://snomed.info/sct',
+                    'text' => '[' . $code . '] ' . ($display !== '' ? $display : $code),
+                ];
+            }
+        }
+
+        echo json_encode(htmlspecialchars_array($items), true);
+        exit();
+    }
+
     private function extractOpenRouterMessageContent($response)
     {
         if (

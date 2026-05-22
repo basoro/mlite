@@ -217,15 +217,10 @@
                     <input type="text" class="form-control" id="modal-target-name" readonly>
                 </div>
                 <div class="form-group">
-                    <label>Saran AI (5 Pilihan)</label>
-                    <div class="input-group">
-                        <select id="modal-ai-primary-select" class="form-control input-sm">
-                            <option value="">-- Pilih hasil AI --</option>
-                        </select>
-                        <span class="input-group-btn">
-                            <button type="button" class="btn btn-default btn-sm" id="btn-generate-ai-primary"><i class="fa fa-robot"></i> AI x5</button>
-                        </span>
-                    </div>
+                    <label>Pilih Kode (Cari)</label>
+                    <select id="modal-ai-primary-select" class="form-control input-sm">
+                        <option value="">-- Cari & pilih --</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Kode Mapping</label>
@@ -255,15 +250,10 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Saran AI FocalDevice (5 Pilihan)</label>
-                        <div class="input-group">
-                            <select id="modal-ai-focal-select" class="form-control input-sm">
-                                <option value="">-- Pilih hasil AI FocalDevice --</option>
-                            </select>
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-default btn-sm" id="btn-generate-ai-focal"><i class="fa fa-robot"></i> AI x5</button>
-                            </span>
-                        </div>
+                        <label>Focal Device (Cari)</label>
+                        <select id="modal-ai-focal-select" class="form-control input-sm">
+                            <option value="">-- Cari & pilih --</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Focal Device Code</label>
@@ -301,14 +291,66 @@
 
 <script>
 $(function() {
-    const AI_REQUEST_TIMEOUT = 20000;
     $('.datatable').DataTable();
     var activeRow = null;
+    var lookupEndpoint = "{?=url([ADMIN, 'bpjs_emr', 'lookupcoding'])?}";
     var actionLabelMap = {
         implanted: 'Alat ditanam permanen', explanted: 'Alat dikeluarkan', removed: 'Alat dilepas',
         replaced: 'Alat diganti', adjusted: 'Alat disesuaikan', inspected: 'Alat diperiksa',
         repaired: 'Alat diperbaiki', inserted: 'Alat dimasukkan', analyze: 'Alat dianalisis'
     };
+
+    function buildLookupUrl(context, q) {
+        var joiner = lookupEndpoint.indexOf('?') === -1 ? '?' : '&';
+        return lookupEndpoint + joiner + 'context=' + encodeURIComponent(context) + '&q=' + encodeURIComponent(q || '');
+    }
+
+    var $primarySelect = $('#modal-ai-primary-select');
+    if ($primarySelect.data('selectator')) {
+        $primarySelect.selectator('destroy');
+    }
+    $primarySelect.selectator({
+        labels: { search: 'Cari kode...' },
+        useSearch: true,
+        load: function (search, callback) {
+            if (search.length < this.minSearchLength) return callback();
+            var ctx = $('#modal-context').val() || '';
+            $.ajax({
+                url: buildLookupUrl(ctx, search),
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) { callback((data || []).slice(0, 100)); },
+                error: function() { callback(); }
+            });
+        },
+        delay: 300,
+        minSearchLength: 3,
+        valueField: 'key',
+        textField: 'text'
+    });
+
+    var $focalSelect = $('#modal-ai-focal-select');
+    if ($focalSelect.data('selectator')) {
+        $focalSelect.selectator('destroy');
+    }
+    $focalSelect.selectator({
+        labels: { search: 'Cari focal device...' },
+        useSearch: true,
+        load: function (search, callback) {
+            if (search.length < this.minSearchLength) return callback();
+            $.ajax({
+                url: buildLookupUrl('snomed', search),
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) { callback((data || []).slice(0, 100)); },
+                error: function() { callback(); }
+            });
+        },
+        delay: 300,
+        minSearchLength: 3,
+        valueField: 'key',
+        textField: 'text'
+    });
 
     function isFocalContext(c) { return c === 'lab' || c === 'rad' || c === 'proc' || c === 'proc_ranap' || c === 'operasi'; }
     function getPrimaryLabel(c) { return c === 'lab' ? 'LOINC' : (c === 'rad' ? 'Kode Radiologi' : 'SNOMED'); }
@@ -451,50 +493,15 @@ $(function() {
         });
     }
 
-    function fillChoicesFromResponse(res, mapItemFn, selectEl) {
-        var list = (res && res.status === 'success' && Array.isArray(res.choices)) ? res.choices : [];
-        var count = 0;
-        selectEl.find('option:gt(0)').remove();
-        for (var i = 0; i < list.length; i++) {
-            var mapped = mapItemFn(list[i] || {});
-            if (!mapped || !mapped.key) {
-                continue;
-            }
-            appendUniqueOption(selectEl, mapped.key, mapped.text, mapped.attrs);
-            count++;
-            if (count >= 5) break;
+    function resetLookupSelect(selectEl, placeholderText, currentKey, currentText) {
+        selectEl.empty();
+        selectEl.append($('<option>', { value: '', text: placeholderText }));
+        if (currentKey) {
+            selectEl.append($('<option>', { value: currentKey, text: currentText || currentKey }).prop('selected', true));
         }
-        if (count > 0) {
-            selectEl.prop('selectedIndex', 1).trigger('change');
+        if (selectEl.data('selectator')) {
+            selectEl.selectator('refresh');
         }
-        return count;
-    }
-
-    function requestAIChoices(endpoint, payload, mapItemFn, selectEl, button, doneMessage) {
-        var oldText = button.html();
-        button.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Generating...');
-        $.ajax({
-            type: 'POST',
-            url: endpoint,
-            data: payload,
-            dataType: 'json',
-            timeout: AI_REQUEST_TIMEOUT
-        }).done(function(res) {
-            var count = fillChoicesFromResponse(res, mapItemFn, selectEl);
-            if (count > 0) {
-                alert(doneMessage);
-            } else {
-                alert((res && res.message) ? res.message : 'Tidak ada saran AI yang valid.');
-            }
-        }).fail(function(xhr, status) {
-            if (status === 'timeout') {
-                alert('Permintaan AI timeout.');
-            } else {
-                alert((xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Gagal mengambil saran AI.');
-            }
-        }).always(function() {
-            button.prop('disabled', false).html(oldText);
-        });
     }
 
     $('.btn-open-mapping').on('click', function() {
@@ -502,18 +509,35 @@ $(function() {
         var ctx = $(this).data('context');
         $('#modal-context').val(ctx);
         $('#modal-target-name').val(getRowName(activeRow, ctx));
-        $('#modal-ai-primary-select').html('<option value="">-- Pilih hasil AI --</option>');
-        $('#modal-primary-code').val($.trim(getPrimaryCode(activeRow, ctx) || ''));
-        $('#modal-primary-display').val($.trim(getPrimaryDisplay(activeRow, ctx) || ''));
+        var currentPrimaryCode = $.trim(getPrimaryCode(activeRow, ctx) || '');
+        var currentPrimaryDisplay = $.trim(getPrimaryDisplay(activeRow, ctx) || '');
+        $('#modal-primary-code').val(currentPrimaryCode);
+        $('#modal-primary-display').val(currentPrimaryDisplay);
         $('#modal-system-group').toggle(ctx === 'rad');
-        $('#modal-primary-system').val($.trim(activeRow.find('.select-system').val() || 'http://loinc.org'));
+        var currentSystem = $.trim(activeRow.find('.select-system').val() || '');
+        if (ctx === 'rad') {
+            currentSystem = currentSystem || 'http://loinc.org';
+            $('#modal-primary-system').val(currentSystem);
+        } else {
+            $('#modal-primary-system').val('http://loinc.org');
+        }
+        var primaryKey = '';
+        if (currentPrimaryCode) {
+            if (ctx === 'lab') primaryKey = currentPrimaryCode + '|http://loinc.org';
+            else if (ctx === 'rad') primaryKey = currentPrimaryCode + '|' + (currentSystem || 'http://loinc.org');
+            else primaryKey = currentPrimaryCode + '|http://snomed.info/sct';
+        }
+        var primaryText = currentPrimaryCode ? ('[' + currentPrimaryCode + '] ' + (currentPrimaryDisplay || currentPrimaryCode)) : '';
+        resetLookupSelect($('#modal-ai-primary-select'), '-- Cari & pilih --', primaryKey, primaryText);
 
         $('#modal-focal-section').show();
         filterMasterDeviceByContext(ctx);
-        $('#modal-ai-focal-select').html('<option value="">-- Pilih hasil AI FocalDevice --</option>');
         var currentMasterDeviceId = $.trim(activeRow.find('.master-device-id').val() || '');
         var currentFocalCode = $.trim(activeRow.find('.focal-device-code').val() || '');
         var currentFocalDisplay = $.trim(activeRow.find('.focal-device-display').val() || '');
+        var focalKey = currentFocalCode ? (currentFocalCode + '|http://snomed.info/sct') : '';
+        var focalText = currentFocalCode ? ('[' + currentFocalCode + '] ' + (currentFocalDisplay || currentFocalCode)) : '';
+        resetLookupSelect($('#modal-ai-focal-select'), '-- Cari & pilih --', focalKey, focalText);
         syncMasterDeviceSelect(currentMasterDeviceId, currentFocalCode, currentFocalDisplay);
         $('#modal-focal-code').val(currentFocalCode);
         $('#modal-focal-display').val(currentFocalDisplay);
@@ -523,47 +547,24 @@ $(function() {
 
     $('#modal-ai-primary-select').on('change', function() {
         var opt = $(this).find('option:selected');
-        $('#modal-primary-code').val((opt.data('code') || '').toString());
-        $('#modal-primary-display').val((opt.data('display') || '').toString());
-        if ($('#modal-context').val() === 'rad') {
-            var sys = (opt.data('system') || '').toString();
-            if (sys) $('#modal-primary-system').val(sys);
-        }
-    });
+        var item = opt.data('item_data') || {};
+        var code = (item.code || '').toString();
+        var display = (item.display || '').toString();
+        var system = (item.system || '').toString();
 
-    $('#btn-generate-ai-primary').on('click', function() {
-        var ctx = $('#modal-context').val();
-        var targetName = $.trim($('#modal-target-name').val() || '');
-        if (!targetName) { alert('Target mapping tidak valid.'); return; }
-        var endpoint = "{?=url([ADMIN, 'bpjs_emr', 'fetchAISnomed'])?}";
-        var payload = { nama_tindakan: targetName, t: "{?=$_SESSION['token']?}" };
-        var mapItem = function(item) {
-            var code = (item.snomed_code || '').toString().trim();
-            var display = (item.snomed_display || '').toString().trim();
-            if (!code) return null;
-            return { key: code + '|' + display, text: '[' + code + '] ' + (display || code), attrs: { code: code, display: display } };
-        };
-        if (ctx === 'lab') {
-            endpoint = "{?=url([ADMIN, 'bpjs_emr', 'fetchAILab'])?}";
-            payload = { nama_pemeriksaan: targetName, t: "{?=$_SESSION['token']?}" };
-            mapItem = function(item) {
-                var code = (item.loinc_code || '').toString().trim();
-                var display = (item.loinc_display || '').toString().trim();
-                if (!code) return null;
-                return { key: code + '|' + display, text: '[' + code + '] ' + (display || code), attrs: { code: code, display: display } };
-            };
-        } else if (ctx === 'rad') {
-            endpoint = "{?=url([ADMIN, 'bpjs_emr', 'fetchAIRad'])?}";
-            payload = { nama_pemeriksaan: targetName, t: "{?=$_SESSION['token']?}" };
-            mapItem = function(item) {
-                var code = (item.standard_code || '').toString().trim();
-                var display = (item.standard_display || '').toString().trim();
-                var system = (item.system || '').toString().trim();
-                if (!code) return null;
-                return { key: code + '|' + display + '|' + system, text: '[' + code + '] ' + (display || code), attrs: { code: code, display: display, system: system } };
-            };
+        if (!code) {
+            var val = (opt.val() || '').toString();
+            var parts = val.split('|');
+            code = (parts[0] || '').toString();
+            system = (parts[1] || '').toString();
+            display = (opt.text() || '').toString().replace(/^\[[^\]]+\]\s*/, '');
         }
-        requestAIChoices(endpoint, payload, mapItem, $('#modal-ai-primary-select'), $(this), 'Berhasil membuat pilihan AI dari respons choices.');
+
+        $('#modal-primary-code').val(code);
+        $('#modal-primary-display').val(display);
+        if ($('#modal-context').val() === 'rad' && system) {
+            $('#modal-primary-system').val(system);
+        }
     });
 
     $('#modal-master-device-select').on('change', function() {
@@ -574,36 +575,24 @@ $(function() {
 
     $('#modal-ai-focal-select').on('change', function() {
         var opt = $(this).find('option:selected');
-        $('#modal-focal-code').val((opt.data('code') || '').toString());
-        $('#modal-focal-display').val((opt.data('display') || '').toString());
-        var action = (opt.data('action') || '').toString();
-        if (action) $('#modal-focal-action').val(action);
-    });
-
-    $('#btn-generate-ai-focal').on('click', function() {
-        var targetName = $.trim($('#modal-target-name').val() || '');
-        if (!targetName) { alert('Target mapping tidak valid.'); return; }
-        requestAIChoices(
-            "{?=url([ADMIN, 'bpjs_emr', 'fetchAIFocalDevice'])?}",
-            { nama_tindakan: targetName, t: "{?=$_SESSION['token']?}" },
-            function(item) {
-                var code = (item.focal_device_code || '').toString().trim();
-                var display = (item.focal_device_display || '').toString().trim();
-                var action = (item.focal_device_action || '').toString().trim();
-                if (!code && !display) return null;
-                var key = (code || '-') + '|' + (display || '-') + '|' + (action || '-');
-                return { key: key, text: '[' + (code || 'tanpa-kode') + '] ' + (display || 'tanpa display'), attrs: { code: code, display: display, action: action } };
-            },
-            $('#modal-ai-focal-select'),
-            $(this),
-            'Berhasil membuat pilihan focalDevice dari respons choices.'
-        );
+        var item = opt.data('item_data') || {};
+        var code = (item.code || '').toString();
+        var display = (item.display || '').toString();
+        if (!code) {
+            var val = (opt.val() || '').toString();
+            var parts = val.split('|');
+            code = (parts[0] || '').toString();
+            display = (opt.text() || '').toString().replace(/^\[[^\]]+\]\s*/, '');
+        }
+        $('#modal-focal-code').val(code);
+        $('#modal-focal-display').val(display);
     });
 
     $('#btn-clear-mapping-modal').on('click', function() {
         $('#modal-primary-code, #modal-primary-display, #modal-focal-code, #modal-focal-display').val('');
         $('#modal-primary-system, #modal-focal-action, #modal-master-device-select').val('');
-        $('#modal-ai-primary-select, #modal-ai-focal-select').prop('selectedIndex', 0);
+        resetLookupSelect($('#modal-ai-primary-select'), '-- Cari & pilih --', '', '');
+        resetLookupSelect($('#modal-ai-focal-select'), '-- Cari & pilih --', '', '');
     });
 
     $('#btn-save-mapping-modal').on('click', function() {
@@ -685,6 +674,7 @@ $(function() {
 
     function clearRowMapping(row, ctx) {
         setPrimary(row, ctx, '', '', '');
+        row.find('.master-device-id').val('');
         row.find('.focal-device-code').val('');
         row.find('.focal-device-display').val('');
         row.find('.focal-device-action').val('');

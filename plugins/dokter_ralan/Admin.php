@@ -1452,10 +1452,13 @@ class Admin extends AdminModule
 
     public function getAjax()
     {
-        header('Content-type: text/html');
+        header('Content-type: application/json');
         $show = isset($_GET['show']) ? $_GET['show'] : "";
+        $array = [];
+        $handled = true;
         switch($show){
         	default:
+          $handled = false;
           break;
           case "databarang":
           $rows = $this->db('databarang')
@@ -1542,6 +1545,28 @@ class Admin extends AdminModule
           }
           echo json_encode(htmlspecialchars_array($array), true);
           break;
+          case "snomed":
+          $phrase = '';
+          if(isset($_GET['s']))
+            $phrase = $_GET['s'];
+
+          $rows = $this->db('mlite_snomed')
+            ->like('kode', '%'.$phrase.'%')
+            ->orLike('istilah', '%'.$phrase.'%')
+            ->limit(30)
+            ->toArray();
+          foreach ($rows as $row) {
+            $array[] = array(
+              'kode' => $row['kode'],
+              'istilah' => $row['istilah'],
+              'text' => $row['kode'] . ' - ' . $row['istilah']
+            );
+          }
+          echo json_encode(htmlspecialchars_array($array), true);
+          break;
+        }
+        if (!$handled) {
+          echo json_encode([], true);
         }
         exit();
     }
