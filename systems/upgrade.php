@@ -2274,6 +2274,43 @@ switch ($version) {
               `UnitOfMeasure` TEXT,
               `CodeSystem` TEXT
             );");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_loinc_radiologi` (
+              `No` TEXT,
+              `Kategori` TEXT,
+              `NamaPemeriksaan` TEXT,
+              `PermintaanHasil` TEXT,
+              `Code` TEXT PRIMARY KEY,
+              `Display` TEXT,
+              `Component` TEXT,
+              `Property` TEXT,
+              `Timing` TEXT,
+              `System` TEXT,
+              `Scale` TEXT,
+              `Method` TEXT,
+              `UnitOfMeasure` TEXT,
+              `CodeSystem` TEXT,
+              `BodySiteCode` TEXT,
+              `BodySiteDisplay` TEXT,
+              `BodySiteCodeSystem` TEXT
+            );");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_kfa` (
+              `kode_kfa` TEXT PRIMARY KEY,
+              `nama_kfa` TEXT,
+              `kode_bahan` TEXT,
+              `nama_bahan` TEXT,
+              `numerator` TEXT,
+              `satuan_num` TEXT,
+              `denominator` TEXT,
+              `satuan_den` TEXT,
+              `nama_satuan_den` TEXT,
+              `kode_sediaan` TEXT,
+              `nama_sediaan` TEXT,
+              `type` TEXT NOT NULL DEFAULT 'obat'
+                  CHECK (type IN ('obat', 'alkes'))
+            );");
+
         } else {
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_loinc_lab` (
             `No` int(11) DEFAULT NULL,
