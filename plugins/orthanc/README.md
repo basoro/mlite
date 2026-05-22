@@ -39,15 +39,9 @@ Dokumentasi singkat penggunaan modul **Orthanc** di mLITE.
      - **Password**: kata sandi Orthanc
    - Simpan pengaturan. Koneksi akan digunakan saat mengambil data PACS pasien.
 
-2. **Konfigurasi AI API (Opsional)**
-   - Isi **AI API Key** dan **AI API URL** untuk mengaktifkan fitur analisis AI pada gambar radiologi.
-   - Gunakan tombol **Test OpenAI** untuk memverifikasi bahwa API key dan URL valid sebelum menyimpan.
-   - AI API URL harus menggunakan protokol HTTPS dan domain publik (tidak boleh IP lokal).
-
-3. **Keamanan URL**
+2. **Keamanan URL**
    - Plugin memvalidasi semua URL yang digunakan untuk mengambil gambar dari Orthanc.
    - Hanya URL yang hostnya sesuai dengan server Orthanc yang dikonfigurasi yang diizinkan.
-   - AI API URL harus berupa HTTPS dengan host publik.
 
 ## Catatan
 

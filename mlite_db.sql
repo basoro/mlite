@@ -3037,7 +3037,6 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("201","satu_sehat","praktisiapotek",""),
 ("202","satu_sehat","praktisilab",""),
 ("203","satu_sehat","praktisirad",""),
-("204","satu_sehat","api_openai",""),
 ("205","sertisign","api_host","https://api-stag.sertisign.id/"),
 ("206","sertisign","api_key",""),
 ("207","veronisa","username",""),
