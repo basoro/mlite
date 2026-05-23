@@ -241,7 +241,7 @@ class Admin extends AdminModule
 
     $statusMap = [];
     $statusRows = $this->db('mlite_veronisa')
-      ->where('no_rawat', $noRawatList)
+      ->in('no_rawat', $noRawatList)
       ->desc('id')
       ->toArray();
     foreach ($statusRows as $st) {
@@ -249,13 +249,13 @@ class Admin extends AdminModule
     }
 
     $sepMap = [];
-    $sepRows = $this->db('bridging_sep')->where('no_rawat', $noRawatList)->toArray();
+    $sepRows = $this->db('bridging_sep')->in('no_rawat', $noRawatList)->toArray();
     foreach ($sepRows as $s) {
       $sepMap[$s['no_rawat']] = $s['no_sep'] ?? '';
     }
 
     $logRows = $this->db('mlite_apotek_online_resep_response_log')
-      ->where('no_rawat', $noRawatList)
+      ->in('no_rawat', $noRawatList)
       ->select('no_rawat')
       ->toArray();
     $logMap = array_flip(array_column($logRows, 'no_rawat'));
