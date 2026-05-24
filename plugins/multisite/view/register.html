@@ -40,43 +40,7 @@
         </div>
         <button type="submit" class="btn btn-primary btn-block">Buat Aplikasi</button>
       </form>
-      <hr>
-      <div id="result" class="muted"></div>
     </div>
   </div>
-  <script src="{?=url('/assets/jscripts/jquery.min.js')?}"></script>
-  <script>
-    (function(){
-      var $form = $('#form-daftar');
-      var $result = $('#result');
-      $form.on('submit', function(e){
-        e.preventDefault();
-        $result.text('Memproses...');
-        $.post($form.attr('action'), $form.serialize())
-          .done(function(res){
-            if(typeof res === 'string'){
-              try{ res = JSON.parse(res); }catch(e){}
-            }
-            if(res && res.status === 'success'){
-              $result.html(
-                '<div class="alert alert-success">Berhasil dibuat. Admin: <strong>' + res.username + '</strong><br>' +
-                '<a href="' + res.admin_url + '" target="_blank">' + res.admin_url + '</a></div>'
-              );
-            }else{
-              $result.html('<div class="alert alert-danger">' + (res && res.message ? res.message : 'Gagal') + '</div>');
-            }
-          })
-          .fail(function(xhr){
-            var msg = 'Gagal';
-            try{
-              var r = JSON.parse(xhr.responseText);
-              if(r && r.message){ msg = r.message; }
-            }catch(e){}
-            $result.html('<div class="alert alert-danger">' + msg + '</div>');
-          });
-      });
-    })();
-  </script>
 </body>
 </html>
-

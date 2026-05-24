@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{$multisite.title}</title>
+  <link rel="stylesheet" href="{?=url('/assets/css/bootstrap.min.css')?}">
+  <style>
+    body{background:#f5f7fb}
+    .wrap{max-width:720px;margin:40px auto}
+    .card{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:20px}
+    .muted{color:#6c757d}
+    .kv{display:flex;gap:10px;flex-wrap:wrap}
+    .kv .k{min-width:140px;color:#6c757d}
+    .kv .v{font-weight:600;word-break:break-word}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h3>{$multisite.heading}</h3>
+      <p class="muted">{$multisite.subheading}</p>
+
+      {if: $multisite.success}
+      <div class="alert alert-success">
+        {$multisite.message}
+      </div>
+
+      <div class="kv">
+        <div class="k">Subdomain</div>
+        <div class="v">{$multisite.data.subdomain}</div>
+      </div>
+      <div class="kv">
+        <div class="k">Database</div>
+        <div class="v">{$multisite.data.db_name}</div>
+      </div>
+      <div class="kv">
+        <div class="k">URL Aplikasi</div>
+        <div class="v"><a href="{$multisite.data.tenant_url}" target="_blank">{$multisite.data.tenant_url}</a></div>
+      </div>
+      <div class="kv">
+        <div class="k">URL Admin</div>
+        <div class="v"><a href="{$multisite.data.admin_url}" target="_blank">{$multisite.data.admin_url}</a></div>
+      </div>
+      <div class="kv">
+        <div class="k">Username Admin</div>
+        <div class="v">{$multisite.data.admin_username}</div>
+      </div>
+
+      <hr>
+      <h4>Langkah Selanjutnya</h4>
+      <ol>
+        {loop: $multisite.next_steps}
+        <li>{$value}</li>
+        {/loop}
+      </ol>
+
+      <a class="btn btn-primary" href="{$multisite.data.admin_url}" target="_blank">Buka Admin</a>
+      <a class="btn btn-default" href="{?=url('daftar')?}">Buat Tenant Lain</a>
+
+      {else}
+      <div class="alert alert-danger">
+        {$multisite.message}
+      </div>
+      <a class="btn btn-default" href="{?=url('daftar')?}">Kembali</a>
+      {/if}
+    </div>
+  </div>
+</body>
+</html>
+

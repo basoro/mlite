@@ -58,6 +58,9 @@
 
 <script>
   (function () {
+    var toggleUrl = '{?=url([ADMIN, "multisite", "togglestatus"])?}';
+    var deleteUrl = '{?=url([ADMIN, "multisite", "deletetenant"])?}';
+
     function post(url, data, cb) {
       var xhr = new XMLHttpRequest();
       xhr.open('POST', url, true);
@@ -73,17 +76,11 @@
       xhr.send(body);
     }
 
-    function tokenUrl(path) {
-      var base = '{?=url([ADMIN, "multisite"])?}';
-      var joiner = base.indexOf('?') === -1 ? '?' : '&';
-      return base + '/' + path + joiner + 't=' + encodeURIComponent(window.mlite ? (window.mlite.token || '') : '');
-    }
-
     document.querySelectorAll('.btn-toggle').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var id = btn.getAttribute('data-id');
         var status = btn.getAttribute('data-status');
-        post(tokenUrl('togglestatus'), { id: id, status: status }, function () {
+        post(toggleUrl, { id: id, status: status }, function () {
           location.reload();
         });
       });
@@ -93,11 +90,10 @@
       btn.addEventListener('click', function () {
         if (!confirm('Hapus tenant dari registry? Database tenant tidak dihapus otomatis.')) return;
         var id = btn.getAttribute('data-id');
-        post(tokenUrl('deletetenant'), { id: id }, function () {
+        post(deleteUrl, { id: id }, function () {
           location.reload();
         });
       });
     });
   })();
 </script>
-

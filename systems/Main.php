@@ -24,6 +24,33 @@ abstract class Main
     public function __construct()
     {
         $this->setSession();
+        if (!defined('DBDRIVER') || DBDRIVER !== 'sqlite') {
+            $tenant = Multisite::subdomain();
+            if ($tenant !== '' && Multisite::enabled()) {
+                try {
+                    $pdoPlatform = new \PDO(
+                        "mysql:host=" . DBHOST . ";port=" . DBPORT . ";dbname=" . DBNAME . ";charset=utf8mb4",
+                        DBUSER,
+                        DBPASS,
+                        [
+                            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+                        ]
+                    );
+                    $st = $pdoPlatform->prepare("SELECT status FROM mlite_multisite_tenants WHERE subdomain = ? LIMIT 1");
+                    $st->execute([$tenant]);
+                    $row = $st->fetch();
+                    $active = $row && ((int) ($row['status'] ?? 0) === 1);
+                    if (!$active) {
+                        http_response_code(404);
+                        header('Content-Type: text/plain; charset=utf-8');
+                        echo 'Not Found';
+                        exit;
+                    }
+                } catch (\Throwable $e) {
+                }
+            }
+        }
         $dbName = DBNAME;
         if (!defined('DBDRIVER') || DBDRIVER !== 'sqlite') {
             $dbName = Multisite::tenantDbName(DBNAME);
