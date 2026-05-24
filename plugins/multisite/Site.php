@@ -105,7 +105,7 @@ class Site extends SiteModule
         if ($base === '') {
             $this->respondError('Konfigurasi domain multisite belum benar.', 400);
         }
-        $dbName = $subdomain . '_' . DBNAME;
+        $dbName = DBNAME . '_' . $subdomain;
 
         try {
             set_time_limit(0);

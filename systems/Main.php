@@ -26,6 +26,7 @@ abstract class Main
         $this->setSession();
         if (!defined('DBDRIVER') || DBDRIVER !== 'sqlite') {
             $tenant = Multisite::subdomain();
+            $tenantDbName = null;
             if ($tenant !== '' && Multisite::enabled()) {
                 try {
                     $pdoPlatform = new \PDO(
@@ -37,23 +38,30 @@ abstract class Main
                             \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
                         ]
                     );
-                    $st = $pdoPlatform->prepare("SELECT status FROM mlite_multisite_tenants WHERE subdomain = ? LIMIT 1");
+                    $st = $pdoPlatform->prepare("SELECT status, db_name, is_installed FROM mlite_multisite_tenants WHERE subdomain = ? LIMIT 1");
                     $st->execute([$tenant]);
                     $row = $st->fetch();
-                    $active = $row && ((int) ($row['status'] ?? 0) === 1);
+                    $active = $row
+                        && ((int) ($row['status'] ?? 0) === 1)
+                        && ((int) ($row['is_installed'] ?? 0) === 1);
                     if (!$active) {
                         http_response_code(404);
                         header('Content-Type: text/plain; charset=utf-8');
                         echo 'Not Found';
                         exit;
                     }
+                    $tenantDbName = (string) ($row['db_name'] ?? '');
                 } catch (\Throwable $e) {
                 }
             }
         }
         $dbName = DBNAME;
         if (!defined('DBDRIVER') || DBDRIVER !== 'sqlite') {
-            $dbName = Multisite::tenantDbName(DBNAME);
+            if (!empty($tenantDbName)) {
+                $dbName = $tenantDbName;
+            } else {
+                $dbName = Multisite::tenantDbName(DBNAME);
+            }
         }
         $dsn = "mysql:host=".DBHOST.";port=".DBPORT.";dbname=".$dbName."";
         if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {

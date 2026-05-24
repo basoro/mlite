@@ -114,6 +114,6 @@ class Multisite
         if ($sub === '') {
             return $defaultDbName;
         }
-        return $sub . '_' . $defaultDbName;
+        return $defaultDbName . '_' . $sub;
     }
 }
