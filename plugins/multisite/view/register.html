@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daftar mLITE</title>
+  <link rel="stylesheet" href="{?=url('/assets/css/bootstrap.min.css')?}">
+  <style>
+    body{background:#f5f7fb}
+    .wrap{max-width:560px;margin:40px auto}
+    .card{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:20px}
+    .muted{color:#6c757d}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h3>Daftar Instansi</h3>
+      <p class="muted">Buat aplikasi mLITE Anda dengan subdomain <strong>.{$multisite.base_domain}</strong></p>
+      <form method="post" action="{?=url('daftar/save')?}" id="form-daftar">
+        <div class="form-group">
+          <label>Subdomain</label>
+          <div class="input-group">
+            <input type="text" name="subdomain" class="form-control" placeholder="contoh: barabai" required>
+            <div class="input-group-addon">.{$multisite.base_domain}</div>
+          </div>
+          <small class="muted">Karakter: huruf kecil, angka, minus. Reserved: {$multisite.reserved}</small>
+        </div>
+        <div class="form-group">
+          <label>Nama Instansi</label>
+          <input type="text" name="nama_instansi" class="form-control" placeholder="Nama Puskesmas/Klinik">
+        </div>
+        <div class="form-group">
+          <label>Email Admin</label>
+          <input type="email" name="email" class="form-control" placeholder="email@contoh.id">
+        </div>
+        <div class="form-group">
+          <label>Password Admin</label>
+          <input type="password" name="password" class="form-control" placeholder="minimal 6 karakter" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Buat Aplikasi</button>
+      </form>
+      <hr>
+      <div id="result" class="muted"></div>
+    </div>
+  </div>
+  <script src="{?=url('/assets/jscripts/jquery.min.js')?}"></script>
+  <script>
+    (function(){
+      var $form = $('#form-daftar');
+      var $result = $('#result');
+      $form.on('submit', function(e){
+        e.preventDefault();
+        $result.text('Memproses...');
+        $.post($form.attr('action'), $form.serialize())
+          .done(function(res){
+            if(typeof res === 'string'){
+              try{ res = JSON.parse(res); }catch(e){}
+            }
+            if(res && res.status === 'success'){
+              $result.html(
+                '<div class="alert alert-success">Berhasil dibuat. Admin: <strong>' + res.username + '</strong><br>' +
+                '<a href="' + res.admin_url + '" target="_blank">' + res.admin_url + '</a></div>'
+              );
+            }else{
+              $result.html('<div class="alert alert-danger">' + (res && res.message ? res.message : 'Gagal') + '</div>');
+            }
+          })
+          .fail(function(xhr){
+            var msg = 'Gagal';
+            try{
+              var r = JSON.parse(xhr.responseText);
+              if(r && r.message){ msg = r.message; }
+            }catch(e){}
+            $result.html('<div class="alert alert-danger">' + msg + '</div>');
+          });
+      });
+    })();
+  </script>
+</body>
+</html>
+

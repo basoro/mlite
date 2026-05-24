@@ -2328,7 +2328,8 @@ INSERT INTO `mlite_modules` VALUES ("1","settings","9"),
 ("49","satu_sehat","44"),
 ("50","sertisign","45"),
 ("51","surat","46"),
-("52","utd","47");
+("52","utd","47"),
+("53","multisite","49");
 
 
 CREATE TABLE `mlite_news` (

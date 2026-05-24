@@ -24,7 +24,11 @@ abstract class Main
     public function __construct()
     {
         $this->setSession();
-        $dsn = "mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."";
+        $dbName = DBNAME;
+        if (!defined('DBDRIVER') || DBDRIVER !== 'sqlite') {
+            $dbName = Multisite::tenantDbName(DBNAME);
+        }
+        $dsn = "mysql:host=".DBHOST.";port=".DBPORT.";dbname=".$dbName."";
         if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
             $dsn = "sqlite:".DBNAME;
         }

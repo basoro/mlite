@@ -63,9 +63,62 @@ define('DBUSER', $db_user);
 define('DBPASS', $db_pass);
 define('DBNAME', $db_name);
 
-// URL Webapps
-define('WEBAPPS_URL', env('APPURL') ?: 'http://localhost:8000/uploads'); // Sesuaikan http://mlite.loc dengan domain atau IP Address server
-define('WEBAPPS_PATH', BASE_DIR . '/uploads');
+function multisite_host(): string
+{
+    $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
+    $host = preg_replace('/:\d+$/', '', $host);
+    return (string) $host;
+}
+
+function multisite_subdomain(): string
+{
+    if (strtolower((string) env('MULTISITE_ENABLE', '')) !== 'true') {
+        return '';
+    }
+    $base = strtolower(trim((string) env('MULTISITE_DOMAIN', '')));
+    if ($base === '') {
+        return '';
+    }
+    $host = multisite_host();
+    if ($host === '' || $host === $base || $host === 'www.' . $base) {
+        return '';
+    }
+    $suffix = '.' . $base;
+    if (!str_ends_with($host, $suffix)) {
+        return '';
+    }
+    $sub = substr($host, 0, -strlen($suffix));
+    if ($sub === '' || strpos($sub, '.') !== false) {
+        return '';
+    }
+    if (!preg_match('/^[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/', $sub)) {
+        return '';
+    }
+    $reserved = array_filter(array_map('trim', explode(',', (string) env('MULTISITE_RESERVED_SUBDOMAINS', 'www,admin,api,static,assets,cdn,mail'))));
+    if (in_array($sub, $reserved, true)) {
+        return '';
+    }
+    return $sub;
+}
+
+function multisite_base_url(): string
+{
+    $appUrl = trim((string) env('APPURL', ''));
+    if ($appUrl !== '') {
+        return rtrim($appUrl, '/');
+    }
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
+    $scheme = $isHttps ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    return $scheme . '://' . $host;
+}
+
+$multisiteTenant = multisite_subdomain();
+$webappsSuffix = $multisiteTenant !== '' ? '/' . $multisiteTenant : '';
+
+define('WEBAPPS_URL', multisite_base_url() . '/uploads' . $webappsSuffix);
+define('WEBAPPS_PATH', BASE_DIR . '/uploads' . $webappsSuffix);
 
 // Multi APP
 define('MULTI_APP', env('MULTIAPP') ?: 'false');
@@ -81,7 +134,7 @@ define('THEMES', BASE_DIR . '/themes');
 define('MODULES', BASE_DIR . '/plugins');
 
 // Uploads path
-define('UPLOADS', BASE_DIR . '/uploads');
+define('UPLOADS', WEBAPPS_PATH);
 
 // Lock files
 define('FILE_LOCK', false);
