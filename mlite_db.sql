@@ -2060,7 +2060,7 @@ CREATE TABLE `mlite_esignatures` (
   PRIMARY KEY (`id`),
   KEY `ref_idx` (`ref_type`,`ref_id`),
   KEY `hash_idx` (`signature_hash`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_geolocation_presensi` (
@@ -2798,7 +2798,7 @@ CREATE TABLE `mlite_sertisign_webhook` (
   PRIMARY KEY (`id`),
   KEY `transaction_idx` (`transaction_id`),
   KEY `status_idx` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `mlite_mapping_snomed_icd` (
