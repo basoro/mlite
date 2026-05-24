@@ -6,18 +6,29 @@
   <title>Daftar mLITE</title>
   <link rel="stylesheet" href="{?=url('/assets/css/bootstrap.min.css')?}">
   <style>
-    body{background:#f5f7fb}
-    .wrap{max-width:560px;margin:40px auto}
-    .card{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:20px}
+    body{background:radial-gradient(1200px 600px at 20% 0%, #e8f5ff 0%, #f5f7fb 55%, #f8fbff 100%)}
+    .wrap{max-width:720px;margin:40px auto;padding:0 16px}
+    .card{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:14px;padding:22px;box-shadow:0 12px 30px rgba(16,24,40,.08)}
     .muted{color:#6c757d}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}
+    .badge-soft{display:inline-block;padding:6px 10px;border-radius:999px;background:#e7f3ff;color:#0b62d6;font-weight:600}
+    .hp{position:absolute;left:-9999px;top:-9999px;height:1px;width:1px;opacity:0}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <h3>Daftar Instansi</h3>
+      <div class="top">
+        <h3 style="margin:0;">Daftar Instansi</h3>
+        <span class="badge-soft">Multisite</span>
+      </div>
       <p class="muted">Buat aplikasi mLITE Anda dengan subdomain <strong>.{$multisite.base_domain}</strong></p>
       <form method="post" action="{?=url('daftar/save')?}" id="form-daftar">
+        <input type="hidden" name="csrf" value="{$multisite.csrf}">
+        <div class="hp">
+          <label>Website</label>
+          <input type="text" name="website" value="">
+        </div>
         <div class="form-group">
           <label>Subdomain</label>
           <div class="input-group">
@@ -38,7 +49,16 @@
           <label>Password Admin</label>
           <input type="password" name="password" class="form-control" placeholder="minimal 6 karakter" required>
         </div>
+        <div class="form-group">
+          <label>Captcha</label>
+          <div class="input-group">
+            <div class="input-group-addon">{$multisite.captcha_question}</div>
+            <input type="text" name="captcha" class="form-control" placeholder="Jawaban" required>
+          </div>
+          <small class="muted">Untuk keamanan, jawab pertanyaan di atas.</small>
+        </div>
         <button type="submit" class="btn btn-primary btn-block">Buat Aplikasi</button>
+        <p class="muted" style="margin-top:10px;margin-bottom:0;">Dengan mendaftar, Anda menyetujui penggunaan subdomain dan pembuatan database untuk tenant Anda.</p>
       </form>
     </div>
   </div>

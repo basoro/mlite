@@ -98,6 +98,13 @@ Fitur:
 
 ## Troubleshooting
 
+## Keamanan
+
+- Form pendaftaran menggunakan CSRF token berbasis session.
+- Terdapat honeypot field untuk memblokir bot sederhana.
+- Captcha sederhana (pertanyaan matematika) untuk mengurangi spam.
+- Rate limit berbasis IP (blokir sementara jika terlalu banyak percobaan).
+
 ### 1) `404 Not Found nginx` saat akses `/daftar`
 
 Penyebab:
@@ -157,4 +164,3 @@ Penyebab:
 Solusi:
 
 - Pastikan `MYSQLDATABASE` benar dan schema sudah di-import.
-

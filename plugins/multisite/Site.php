@@ -22,12 +22,21 @@ class Site extends SiteModule
             return 'Not Found';
         }
 
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+        $_SESSION['multisite_csrf'] = bin2hex(random_bytes(16));
+        [$captchaQuestion, $captchaAnswer] = $this->generateCaptcha();
+        $_SESSION['multisite_captcha'] = $captchaAnswer;
+
         $this->setTemplate(false);
         header('Content-Type: text/html; charset=utf-8');
         echo $this->draw('register.html', [
             'multisite' => [
                 'base_domain' => Multisite::baseDomain(),
                 'reserved' => (string) \env('MULTISITE_RESERVED_SUBDOMAINS', 'www,admin,api,static,assets,cdn,mail'),
+                'csrf' => $_SESSION['multisite_csrf'],
+                'captcha_question' => $captchaQuestion,
             ],
         ]);
         exit;
@@ -48,6 +57,22 @@ class Site extends SiteModule
         $nama = trim((string) ($_POST['nama_instansi'] ?? ''));
         $email = trim((string) ($_POST['email'] ?? ''));
         $password = (string) ($_POST['password'] ?? '');
+        $honeypot = trim((string) ($_POST['website'] ?? ''));
+        $csrf = (string) ($_POST['csrf'] ?? '');
+        $captcha = trim((string) ($_POST['captcha'] ?? ''));
+
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+        if ($honeypot !== '') {
+            $this->respondError('Permintaan tidak valid.', 400);
+        }
+        if ($csrf === '' || empty($_SESSION['multisite_csrf']) || !hash_equals((string) $_SESSION['multisite_csrf'], $csrf)) {
+            $this->respondError('Sesi pendaftaran tidak valid. Silakan ulangi dari halaman pendaftaran.', 400);
+        }
+        if ($captcha === '' || empty($_SESSION['multisite_captcha']) || (string) $_SESSION['multisite_captcha'] !== $captcha) {
+            $this->respondError('Captcha salah. Silakan coba lagi.', 400);
+        }
 
         if ($subdomain === '' || !preg_match('/^[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/', $subdomain)) {
             $this->respondError('Subdomain tidak valid.', 400);
@@ -70,6 +95,9 @@ class Site extends SiteModule
 
         try {
             set_time_limit(0);
+
+            $this->ensureRateLimitTable();
+            $this->checkRateLimit();
 
             $pdoServer = new PDO(
                 "mysql:host=" . DBHOST . ";port=" . DBPORT . ";charset=utf8mb4",
@@ -167,6 +195,68 @@ class Site extends SiteModule
             $this->respondSuccess($payload);
         } catch (\Throwable $e) {
             $this->respondError($e->getMessage(), 400);
+        }
+    }
+
+    private function generateCaptcha(): array
+    {
+        $a = random_int(2, 20);
+        $b = random_int(2, 20);
+        if (random_int(0, 1) === 0) {
+            return ["Berapa {$a} + {$b} ?", (string) ($a + $b)];
+        }
+        if ($a < $b) {
+            [$a, $b] = [$b, $a];
+        }
+        return ["Berapa {$a} - {$b} ?", (string) ($a - $b)];
+    }
+
+    private function ensureRateLimitTable(): void
+    {
+        $this->db()->pdo()->exec("
+            CREATE TABLE IF NOT EXISTS `mlite_multisite_rate_limits` (
+                `id` int NOT NULL AUTO_INCREMENT,
+                `ip` varchar(64) NOT NULL,
+                `attempts` int NOT NULL DEFAULT 0,
+                `blocked_until` datetime DEFAULT NULL,
+                `updated_at` datetime DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `ip` (`ip`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC
+        ");
+    }
+
+    private function checkRateLimit(): void
+    {
+        $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+        if ($ip === '') {
+            return;
+        }
+        $now = date('Y-m-d H:i:s');
+        $row = $this->db('mlite_multisite_rate_limits')->where('ip', $ip)->oneArray();
+        if ($row && !empty($row['blocked_until']) && strtotime((string) $row['blocked_until']) > time()) {
+            $this->respondError('Terlalu banyak percobaan. Silakan coba lagi nanti.', 429);
+        }
+        $attempts = (int) ($row['attempts'] ?? 0);
+        $attempts++;
+        $blockedUntil = null;
+        if ($attempts >= 10) {
+            $blockedUntil = date('Y-m-d H:i:s', time() + 15 * 60);
+            $attempts = 0;
+        }
+        if ($row) {
+            $this->db('mlite_multisite_rate_limits')->where('ip', $ip)->save([
+                'attempts' => $attempts,
+                'blocked_until' => $blockedUntil,
+                'updated_at' => $now,
+            ]);
+        } else {
+            $this->db('mlite_multisite_rate_limits')->save([
+                'ip' => $ip,
+                'attempts' => $attempts,
+                'blocked_until' => $blockedUntil,
+                'updated_at' => $now,
+            ]);
         }
     }
 
