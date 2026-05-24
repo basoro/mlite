@@ -9,9 +9,26 @@ class Multisite
         return strtolower((string) \env('MULTISITE_ENABLE', '')) === 'true';
     }
 
+    public static function baseDomains(): array
+    {
+        $raw = strtolower(trim((string) \env('MULTISITE_DOMAIN', '')));
+        if ($raw === '') {
+            return [];
+        }
+        $parts = array_filter(array_map('trim', preg_split('/[,\s]+/', $raw)));
+        $domains = [];
+        foreach ($parts as $d) {
+            if ($d !== '') {
+                $domains[] = $d;
+            }
+        }
+        return array_values(array_unique($domains));
+    }
+
     public static function baseDomain(): string
     {
-        return strtolower(trim((string) \env('MULTISITE_DOMAIN', '')));
+        $domains = self::baseDomains();
+        return $domains[0] ?? '';
     }
 
     public static function host(): string
@@ -26,18 +43,19 @@ class Multisite
         if (!self::enabled()) {
             return '';
         }
-        $base = self::baseDomain();
+        $host = self::host();
+        if ($host === '') {
+            return '';
+        }
+
+        $base = self::matchedBaseDomain();
         if ($base === '') {
             return '';
         }
-        $host = self::host();
-        if ($host === '' || $host === $base || $host === 'www.' . $base) {
+        if ($host === $base || $host === 'www.' . $base) {
             return '';
         }
         $suffix = '.' . $base;
-        if (!str_ends_with($host, $suffix)) {
-            return '';
-        }
         $sub = substr($host, 0, -strlen($suffix));
         if ($sub === '' || strpos($sub, '.') !== false) {
             return '';
@@ -52,17 +70,42 @@ class Multisite
         return $sub;
     }
 
+    public static function matchedBaseDomain(): string
+    {
+        if (!self::enabled()) {
+            return '';
+        }
+        $host = self::host();
+        foreach (self::baseDomains() as $base) {
+            if ($base === '') {
+                continue;
+            }
+            if ($host === $base || $host === 'www.' . $base) {
+                return $base;
+            }
+            $suffix = '.' . $base;
+            if (str_ends_with($host, $suffix)) {
+                return $base;
+            }
+        }
+        return '';
+    }
+
     public static function isPlatformHost(): bool
     {
         if (!self::enabled()) {
             return false;
         }
-        $base = self::baseDomain();
-        if ($base === '') {
-            return false;
-        }
         $host = self::host();
-        return $host === $base || $host === 'www.' . $base;
+        foreach (self::baseDomains() as $base) {
+            if ($base === '') {
+                continue;
+            }
+            if ($host === $base || $host === 'www.' . $base) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static function tenantDbName(string $defaultDbName): string
@@ -74,4 +117,3 @@ class Multisite
         return $sub . '_' . $defaultDbName;
     }
 }
-

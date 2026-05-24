@@ -75,18 +75,30 @@ function multisite_subdomain(): string
     if (strtolower((string) env('MULTISITE_ENABLE', '')) !== 'true') {
         return '';
     }
-    $base = strtolower(trim((string) env('MULTISITE_DOMAIN', '')));
-    if ($base === '') {
-        return '';
-    }
     $host = multisite_host();
-    if ($host === '' || $host === $base || $host === 'www.' . $base) {
+    if ($host === '') {
         return '';
     }
+
+    $basesRaw = strtolower(trim((string) env('MULTISITE_DOMAIN', '')));
+    $bases = array_filter(array_map('trim', preg_split('/[,\s]+/', $basesRaw)));
+    if (empty($bases)) {
+        return '';
+    }
+
+    $base = '';
+    foreach ($bases as $candidate) {
+        if ($candidate === '') continue;
+        if ($host === $candidate || $host === 'www.' . $candidate || str_ends_with($host, '.' . $candidate)) {
+            $base = $candidate;
+            break;
+        }
+    }
+    if ($base === '' || $host === $base || $host === 'www.' . $base) {
+        return '';
+    }
+
     $suffix = '.' . $base;
-    if (!str_ends_with($host, $suffix)) {
-        return '';
-    }
     $sub = substr($host, 0, -strlen($suffix));
     if ($sub === '' || strpos($sub, '.') !== false) {
         return '';
@@ -158,7 +170,7 @@ define('BASIC_MODULES', json_encode([
 ]));
 
 // Developer mode
-define('DEV_MODE', env('DEVMODE') ?: 'true');
+define('DEV_MODE', false);
 
 define('JWT_SECRET', 'mlite_secret_key_change_me');
 
