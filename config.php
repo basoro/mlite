@@ -120,6 +120,9 @@ $webappsSuffix = $multisiteTenant !== '' ? '/' . $multisiteTenant : '';
 define('WEBAPPS_URL', multisite_base_url() . '/uploads' . $webappsSuffix);
 define('WEBAPPS_PATH', BASE_DIR . '/uploads' . $webappsSuffix);
 
+define('BACKUPS_URL', multisite_base_url() . '/backups' . ($multisiteTenant !== '' ? '/' . $multisiteTenant : '/_platform'));
+define('BACKUP_DIR', BASE_DIR . '/backups' . ($multisiteTenant !== '' ? '/' . $multisiteTenant : '/_platform'));
+
 // Multi APP
 define('MULTI_APP', env('MULTIAPP') ?: 'false');
 define('MULTI_APP_REDIRECT', env('MULTIAPP_REDIRECT') ?: '');

@@ -881,9 +881,9 @@ class Admin extends AdminModule
 	    $get_table->execute();
 	    $result = $get_table->fetchAll();
 
-        $backup_files = glob('../backups/*.sql.gz');
+        $backup_files = glob(BACKUP_DIR . '/*.sql.gz');
         // $backup_files = pathinfo($backup_files);
-        return $this->draw('backup.restore.html', ['databases' => htmlspecialchars_array($result), 'files' => $backup_files]);
+        return $this->draw('backup.restore.html', ['databases' => htmlspecialchars_array($result), 'files' => $backup_files, 'backup_url' => BACKUPS_URL]);
     }
 
     public function getBackupDatabase()
@@ -964,8 +964,9 @@ class Admin extends AdminModule
              exit();
         }
 
-        if (file_exists('../backups/' . $file_name)) {
-            unlink('../backups/' . $file_name);
+        $path = rtrim((string) BACKUP_DIR, '/').'/'.$file_name;
+        if (file_exists($path)) {
+            unlink($path);
         }
         exit();
     }

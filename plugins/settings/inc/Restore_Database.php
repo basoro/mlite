@@ -4,7 +4,9 @@ namespace Plugins\Settings\Inc;
 /**
  * Define database parameters here
  */
-define("BACKUP_DIR", BASE_DIR . '/backups'); // Comment this line to use same script's directory ('.')
+if (!defined('BACKUP_DIR')) {
+    define("BACKUP_DIR", BASE_DIR . '/backups');
+}
 define("CHARSET", 'utf8');
 define("DISABLE_FOREIGN_KEY_CHECKS", true); // Set to true if you are having foreign key constraint fails
 

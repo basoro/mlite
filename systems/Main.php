@@ -42,6 +42,10 @@ abstract class Main
             mkdir(UPLOADS, 0777);
         }
 
+        if (defined('BACKUP_DIR') && !is_dir(BACKUP_DIR)) {
+            mkdir(BACKUP_DIR, 0777, true);
+        }
+
         if (!is_dir(WEBAPPS_PATH."/berkasrawat")) {
             mkdir(WEBAPPS_PATH."/berkasrawat", 0777);
         }

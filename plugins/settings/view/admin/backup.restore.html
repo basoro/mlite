@@ -75,7 +75,7 @@
     $('#download_database').on('click', function(event) {
         var file_name = $('input[name="files"]:checked').val();
         event.preventDefault();
-        window.open(mlite.url + '/backups/' + file_name, file_name);
+        window.open('{$backup_url}/' + file_name, file_name);
     });
     $('#delete_database').on('click', function(event) {
         var file_name = $('input[name="files"]:checked').val();

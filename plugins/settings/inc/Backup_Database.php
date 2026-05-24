@@ -4,7 +4,9 @@ namespace Plugins\Settings\Inc;
 /**
  * Define database parameters here
  */
-define("BACKUP_DIR", BASE_DIR . '/backups'); 
+if (!defined('BACKUP_DIR')) {
+    define("BACKUP_DIR", BASE_DIR . '/backups');
+}
 define("TABLES", '*'); // Full backup
 // define("TABLES", 'poliklinik, kamar'); // Partial backup
 define('IGNORE_TABLES',array(
