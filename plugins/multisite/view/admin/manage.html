@@ -1,0 +1,103 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Kelola Multisite</h3>
+      </div>
+      <div class="panel-body">
+        <div class="alert alert-info">
+          <div><strong>Status:</strong> {if: $multisite.enabled}Aktif{else}Nonaktif{/if}</div>
+          <div><strong>Domain:</strong> {$multisite.base_domain}</div>
+          <div><strong>URL Pendaftaran:</strong> <a href="{?=url('daftar')?}" target="_blank">{?=url('daftar')?}</a></div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Subdomain</th>
+                <th>DB Name</th>
+                <th>Email Admin</th>
+                <th>Status</th>
+                <th>Dibuat</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $multisite.tenants}
+              <tr>
+                <td>{$value.id}</td>
+                <td>{$value.subdomain}</td>
+                <td>{$value.db_name}</td>
+                <td>{$value.admin_email}</td>
+                <td>{if: $value.status == 1}Aktif{else}Nonaktif{/if}</td>
+                <td>{$value.created_at}</td>
+                <td style="white-space:nowrap;">
+                  {if: $value.status == 1}
+                  <button type="button" class="btn btn-xs btn-warning btn-toggle" data-id="{$value.id}" data-status="0">Nonaktifkan</button>
+                  {else}
+                  <button type="button" class="btn btn-xs btn-success btn-toggle" data-id="{$value.id}" data-status="1">Aktifkan</button>
+                  {/if}
+                  <button type="button" class="btn btn-xs btn-danger btn-delete" data-id="{$value.id}">Hapus</button>
+                </td>
+              </tr>
+              {/loop}
+              {if: empty($multisite.tenants)}
+              <tr>
+                <td colspan="7" class="text-center">Belum ada tenant.</td>
+              </tr>
+              {/if}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    function post(url, data, cb) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', url, true);
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          try { cb(null, JSON.parse(xhr.responseText || '{}')); } catch (e) { cb(e); }
+        }
+      };
+      var body = Object.keys(data).map(function (k) {
+        return encodeURIComponent(k) + '=' + encodeURIComponent(data[k]);
+      }).join('&');
+      xhr.send(body);
+    }
+
+    function tokenUrl(path) {
+      var base = '{?=url([ADMIN, "multisite"])?}';
+      var joiner = base.indexOf('?') === -1 ? '?' : '&';
+      return base + '/' + path + joiner + 't=' + encodeURIComponent(window.mlite ? (window.mlite.token || '') : '');
+    }
+
+    document.querySelectorAll('.btn-toggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        var status = btn.getAttribute('data-status');
+        post(tokenUrl('togglestatus'), { id: id, status: status }, function () {
+          location.reload();
+        });
+      });
+    });
+
+    document.querySelectorAll('.btn-delete').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (!confirm('Hapus tenant dari registry? Database tenant tidak dihapus otomatis.')) return;
+        var id = btn.getAttribute('data-id');
+        post(tokenUrl('deletetenant'), { id: id }, function () {
+          location.reload();
+        });
+      });
+    });
+  })();
+</script>
+

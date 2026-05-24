@@ -271,6 +271,9 @@ class Admin extends AdminModule
                 if (!is_array($details)) {
                     $details = [];
                 }
+                if (!empty($details['hidden'])) {
+                    continue;
+                }
 
                 // Add default values for required keys to prevent undefined array key warnings
                 $details = array_merge([

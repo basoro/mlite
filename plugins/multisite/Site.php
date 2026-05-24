@@ -151,13 +151,23 @@ class Site extends SiteModule
                 ? 'https'
                 : 'http';
             $tenantUrl = $scheme . '://' . $subdomain . '.' . Multisite::baseDomain();
+            $adminUrl = $tenantUrl . '/' . ADMIN . '/';
 
             header('Content-Type: application/json');
             echo json_encode([
                 'status' => 'success',
-                'tenant_url' => $tenantUrl,
-                'admin_url' => $tenantUrl . '/' . ADMIN . '/',
-                'username' => $adminUsername,
+                'message' => 'Tenant berhasil dibuat.',
+                'data' => [
+                    'subdomain' => $subdomain,
+                    'db_name' => $dbName,
+                    'tenant_url' => $tenantUrl,
+                    'admin_url' => $adminUrl,
+                    'admin_username' => $adminUsername,
+                ],
+                'next_steps' => [
+                    'Buka admin_url untuk login.',
+                    'Login menggunakan admin_username dan password yang Anda buat saat pendaftaran.',
+                ],
             ]);
             exit;
         } catch (\Throwable $e) {

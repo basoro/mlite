@@ -8,6 +8,7 @@ return [
     'version'       =>  '1.0',
     'compatibility' =>  '6.*.*',
     'icon'          =>  'sitemap',
+    'hidden'        =>  true,
     'pages'         =>  ['Pendaftaran' => 'daftar'],
     'install'       =>  function () use ($core) {
         if (DBDRIVER === 'sqlite') {
@@ -39,4 +40,3 @@ return [
         }
     }
 ];
-
