@@ -101,11 +101,9 @@ Ini untuk menambahkan dependensi baru pada aplikasi
 - Untuk pengguna Nginx, tambahkan konfigurasi berikut di pengaturan nginx.conf (atau sejenisnya)
 
 ```bash
-location  / {
-    index  index.php;
-    if (!-e $request_filename) {
-        rewrite / /index.php last;
-    }
+location / {
+    index index.php;
+    try_files $uri $uri/ /index.php?$args;
 }
 
 location ^~ /systems/data/ {
@@ -129,9 +127,7 @@ Jika ada didalam folder, misalnya `lite`
 ```bash
 location  /lite {
     index  index.php;
-    if (!-e $request_filename) {
-        rewrite / /lite/index.php last;
-    }
+    try_files $uri $uri/ /lite/index.php?$args;
 }
 
 location ^~ /lite/systems/data/ {
