@@ -1041,7 +1041,7 @@ class Admin extends AdminModule
     
                 // Prepare ingredient row (hide prices)
                 $row['nomor'] = ''; 
-                $row['nama_brng'] = "&nbsp;&nbsp;&nbsp;&nbsp; - " . $row['nama_brng'];
+                $row['nama_brng'] = str_repeat("\u{00A0}", 4) . ' - ' . $row['nama_brng'];
                 $row['total'] = 0;
                 $row['embalase'] = 0;
                 $row['tuslah'] = 0;
