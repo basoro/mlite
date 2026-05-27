@@ -2172,7 +2172,7 @@ switch ($version) {
               PRIMARY KEY (`id`),
               KEY `ref_idx` (`ref_type`,`ref_id`),
               KEY `hash_idx` (`signature_hash`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;");
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_sertisign_webhook` (
               `id` int NOT NULL AUTO_INCREMENT,
               `transaction_id` varchar(100) NOT NULL,
@@ -2183,7 +2183,7 @@ switch ($version) {
               PRIMARY KEY (`id`),
               KEY `transaction_idx` (`transaction_id`),
               KEY `status_idx` (`status`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;");
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mapping_snomed_icd` (
               `id` int NOT NULL AUTO_INCREMENT,
               `no_rawat` varchar(20) NOT NULL,
