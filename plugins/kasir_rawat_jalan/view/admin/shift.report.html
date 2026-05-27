@@ -1,0 +1,157 @@
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <h3 class="panel-title">Rekap Shift Kasir</h3>
+  </div>
+  <div class="panel-body">
+    <form method="get" action="{?= url([ADMIN,'kasir_rawat_jalan','shiftreport']) ?}">
+      <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+      <div class="row">
+        <div class="col-md-4">
+          <label>Mulai</label>
+          <input type="text" class="form-control tanggal_jam" name="awal" value="{?=isset_or($awal)?}">
+        </div>
+        <div class="col-md-4">
+          <label>Selesai</label>
+          <input type="text" class="form-control tanggal_jam" name="akhir" value="{?=isset_or($akhir)?}">
+        </div>
+        <div class="col-md-4">
+          <label>&nbsp;</label>
+          <div>
+            <button type="submit" class="btn btn-primary">Terapkan</button>
+            <a class="btn btn-default" href="{?= url([ADMIN,'kasir_rawat_jalan','shiftreportexport']) ?}&awal={?=isset_or($awal)?}&akhir={?=isset_or($akhir)?}">Export CSV</a>
+            <button type="button" class="btn btn-warning" onclick="printContent('laporan_shift')">Cetak</button>
+          </div>
+        </div>
+      </div>
+    </form>
+    <hr>
+    <div id="kop_print" style="display:none;">
+      <div style="width:960px;">
+        <table style="width:100%;">
+          <thead>
+            <tr>
+              <th style="text-align:left;">
+                <img src="{?=url()?}/{?=isset_or($settings.logo)?}" height="80px" style="margin-right: 20px;" alt="">
+              </th>
+              <th style="text-align:left;" width="100%">
+                  <p style="margin:0;">
+                    <span style="font-size: 22px;">{?=isset_or($settings.nama_instansi)?}</span><br>
+                    <span style="font-size: 14px;">Alamat: {?=isset_or($settings.alamat)?} - {?=isset_or($settings.kota)?} - {?=isset_or($settings.propinsi)?}</span><br>
+                    <span style="font-size: 14px;">Telepon: {?=isset_or($settings.nomor_telepon)?} - Email: {?=isset_or($settings.email)?}</span>
+                  </p>
+              </th>
+            </tr>
+            <tr>
+              <th colspan="2">
+                <hr style="border-bottom: 2px solid #000;padding-top:3px;">
+              </th>
+            </tr>
+            <tr>
+              <th colspan="2">
+                <div style="text-align:center;font-size:16px;margin:10px 0 0 0;"><b>REKAP SHIFT KASIR RAWAT JALAN</b></div>
+                <div style="text-align:center;font-size:13px;margin:4px 0 10px 0;">Periode {?=isset_or($awal)?} s/d {?=isset_or($akhir)?}</div>
+              </th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+    <div id="laporan_shift">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>ID Shift</th>
+            <th>ID Kasir</th>
+            <th>Nama Kasir</th>
+            <th>Waktu Buka</th>
+            <th>Waktu Tutup</th>
+            <th>Status</th>
+            <th>Kas Awal</th>
+            <th>Total Transaksi</th>
+            <th>Kas Akhir</th>
+            <th>Selisih</th>
+            <th>Keterangan</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+        <tfoot>
+          <tr>
+            <th colspan="6" class="text-right">Total</th>
+            <th id="t_kas_awal"></th>
+            <th id="t_total"></th>
+            <th id="t_kas_akhir"></th>
+            <th id="t_selisih"></th>
+            <th></th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <script>
+      (function(){
+        var rows = {?= json_encode($rows ?? []) ?};
+        var tbody = document.getElementById('rows');
+        var tKasAwal = 0;
+        var tTotal = 0;
+        var tKasAkhir = 0;
+        var tSelisih = 0;
+
+        function fmt(n){
+          return Number(n || 0).toLocaleString('id-ID',{minimumFractionDigits:2, maximumFractionDigits:2});
+        }
+
+        if (Array.isArray(rows)) {
+          rows.forEach(function(r){
+            var kasAwal = Number(r.kas_awal || 0);
+            var total = Number(r.total_transaksi || 0);
+            var kasAkhir = Number(r.kas_akhir || 0);
+            var selisih = Number(r.selisih || 0);
+            var status = r.waktu_tutup ? 'Tertutup' : 'Terbuka';
+
+            tKasAwal += kasAwal;
+            tTotal += total;
+            tKasAkhir += kasAkhir;
+            tSelisih += selisih;
+
+            var tr = document.createElement('tr');
+            tr.innerHTML =
+              '<td>'+ (r.id_shift || '') +'</td>'+
+              '<td>'+ (r.user_id || '') +'</td>'+
+              '<td>'+ (r.nama_kasir || '') +'</td>'+
+              '<td>'+ (r.waktu_buka || '') +'</td>'+
+              '<td>'+ (r.waktu_tutup || '') +'</td>'+
+              '<td>'+ status +'</td>'+
+              '<td class="text-right">'+ fmt(kasAwal) +'</td>'+
+              '<td class="text-right">'+ fmt(total) +'</td>'+
+              '<td class="text-right">'+ fmt(kasAkhir) +'</td>'+
+              '<td class="text-right">'+ fmt(selisih) +'</td>'+
+              '<td>'+ (r.keterangan || '') +'</td>';
+            tbody.appendChild(tr);
+          });
+        }
+
+        document.getElementById('t_kas_awal').innerText = fmt(tKasAwal);
+        document.getElementById('t_total').innerText = fmt(tTotal);
+        document.getElementById('t_kas_akhir').innerText = fmt(tKasAkhir);
+        document.getElementById('t_selisih').innerText = fmt(tSelisih);
+      })();
+
+      function printContent(el){
+        var restore = document.body.innerHTML;
+        var kop = document.getElementById('kop_print') ? document.getElementById('kop_print').innerHTML : '';
+        var content = document.getElementById(el).innerHTML;
+        document.body.innerHTML = kop + content;
+        window.print();
+        document.body.innerHTML = restore;
+      }
+    </script>
+    <script type="text/javascript">
+      $(function () {
+          $('.tanggal_jam').datetimepicker({
+            defaultDate: '{?=date('Y-m-d H:i:s')?}',
+            format: 'YYYY-MM-DD HH:mm:ss',
+            locale: 'id'
+          });
+      });
+    </script>
+  </div>
+</div>

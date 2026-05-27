@@ -17,6 +17,7 @@ class Admin extends AdminModule
             'Kelola'   => 'manage',
             'Kasir'    => 'shift',
             'Laporan'  => 'report',
+            'Rekap Shift' => 'shiftreport',
         ];
     }
 
@@ -2298,7 +2299,7 @@ class Admin extends AdminModule
         $detailStmt->execute([$awal, $akhir]);
         $details = $detailStmt->fetchAll();
 
-        return $this->draw('report.html', ['awal' => $awal, 'akhir' => $akhir, 'rows' => $rows, 'details' => $details]);
+        return $this->draw('report.html', ['awal' => $awal, 'akhir' => $akhir, 'rows' => $rows, 'details' => $details, 'settings' => $this->settings('settings')]);
     }
 
     public function anyReportExport()
@@ -2313,6 +2314,34 @@ class Admin extends AdminModule
         echo "id_user,nama_kasir,kd_billing,jumlah_harus_bayar,waktu\n";
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             echo $row['id_user'].",".($row['nama_kasir'] ?? '').",".$row['kd_billing'].",".$row['jumlah_harus_bayar'].",".$row['waktu']."\n";
+        }
+        exit();
+    }
+
+    public function anyShiftReport()
+    {
+        $this->_addHeaderFiles();
+        $awal = isset($_GET['awal']) ? $_GET['awal'] : date('Y-m-d').' 00:00:00';
+        $akhir = isset($_GET['akhir']) ? $_GET['akhir'] : date('Y-m-d').' 23:59:59';
+        $pdo = $this->db()->pdo();
+        $stmt = $pdo->prepare("SELECT s.id_shift, s.user_id, COALESCE(p.nama, u.fullname) AS nama_kasir, s.waktu_buka, s.waktu_tutup, IFNULL(s.kas_awal,0) kas_awal, IFNULL(s.total_transaksi,0) total_transaksi, IFNULL(s.kas_akhir,0) kas_akhir, IFNULL(s.selisih,0) selisih, s.keterangan FROM mlite_kasir_shift s LEFT JOIN mlite_users u ON u.id=s.user_id LEFT JOIN pegawai p ON p.nik=u.username WHERE (s.waktu_buka BETWEEN ? AND ?) OR (s.waktu_tutup BETWEEN ? AND ?) OR (s.waktu_buka <= ? AND (s.waktu_tutup IS NULL OR s.waktu_tutup >= ?)) ORDER BY s.waktu_buka ASC, s.id_shift ASC");
+        $stmt->execute([$awal, $akhir, $awal, $akhir, $awal, $akhir]);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->draw('shift.report.html', ['awal' => $awal, 'akhir' => $akhir, 'rows' => $rows, 'settings' => $this->settings('settings')]);
+    }
+
+    public function anyShiftReportExport()
+    {
+        $awal = isset($_GET['awal']) ? $_GET['awal'] : date('Y-m-d').' 00:00:00';
+        $akhir = isset($_GET['akhir']) ? $_GET['akhir'] : date('Y-m-d').' 23:59:59';
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="rekap_shift_kasir.csv"');
+        $pdo = $this->db()->pdo();
+        $stmt = $pdo->prepare("SELECT s.id_shift, s.user_id, COALESCE(p.nama, u.fullname) AS nama_kasir, s.waktu_buka, s.waktu_tutup, IFNULL(s.kas_awal,0) kas_awal, IFNULL(s.total_transaksi,0) total_transaksi, IFNULL(s.kas_akhir,0) kas_akhir, IFNULL(s.selisih,0) selisih, s.keterangan FROM mlite_kasir_shift s LEFT JOIN mlite_users u ON u.id=s.user_id LEFT JOIN pegawai p ON p.nik=u.username WHERE (s.waktu_buka BETWEEN ? AND ?) OR (s.waktu_tutup BETWEEN ? AND ?) OR (s.waktu_buka <= ? AND (s.waktu_tutup IS NULL OR s.waktu_tutup >= ?)) ORDER BY s.waktu_buka ASC, s.id_shift ASC");
+        $stmt->execute([$awal, $akhir, $awal, $akhir, $awal, $akhir]);
+        echo "id_shift,user_id,nama_kasir,waktu_buka,waktu_tutup,kas_awal,total_transaksi,kas_akhir,selisih,keterangan\n";
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            echo ($row['id_shift'] ?? '').",".($row['user_id'] ?? '').",\"".str_replace('\"', '\"\"', (string)($row['nama_kasir'] ?? ''))."\",".($row['waktu_buka'] ?? '').",".($row['waktu_tutup'] ?? '').",".($row['kas_awal'] ?? 0).",".($row['total_transaksi'] ?? 0).",".($row['kas_akhir'] ?? 0).",".($row['selisih'] ?? 0).",\"".str_replace('\"', '\"\"', (string)($row['keterangan'] ?? ''))."\"\n";
         }
         exit();
     }
