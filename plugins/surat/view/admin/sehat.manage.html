@@ -45,6 +45,7 @@
                                 <td>{?=isset_or($value.keperluan)?}</td>
                                 <td>{?=isset_or($value.dokter)?}</td>
                                 <td class="text-center">
+                                    <a href="{?=isset_or($value.printURL)?}" class="btn btn-info btn-xs" target="_blank"><i class="fa fa-print"></i> Cetak</a>
                                     <a href="{?=isset_or($value.editURL)?}" class="btn btn-warning btn-xs"><i class="fa fa-edit"></i> Edit</a>
                                     <a href="{?=isset_or($value.deleteURL)?}" class="btn btn-danger btn-xs" onclick="return confirm('Yakin ingin menghapus?')"><i class="fa fa-trash"></i> Hapus</a>
                                 </td>
