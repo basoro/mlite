@@ -69,6 +69,7 @@ class Admin extends AdminModule
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
+                $row['printURL'] = url([ADMIN, 'surat', 'suratrujukan', convertNorawat($row['no_rawat'])]);
                 $row['editURL'] = url([ADMIN, 'surat', 'rujukanedit', $row['id']]);
                 $row['deleteURL'] = url([ADMIN, 'surat', 'rujukanhapus', $row['id']]);
                 $this->assign['list'][] = $row;
@@ -374,6 +375,7 @@ class Admin extends AdminModule
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
+                $row['printURL'] = url([ADMIN, 'surat', 'suratsehat', convertNorawat($row['no_rawat'])]);
                 $row['editURL'] = url([ADMIN, 'surat', 'sehatedit', $row['id']]);
                 $row['deleteURL'] = url([ADMIN, 'surat', 'sehathapus', $row['id']]);
                 $this->assign['list'][] = $row;
