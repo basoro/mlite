@@ -24,7 +24,6 @@ class Admin extends AdminModule
             'Pengaturan'          => 'manage',
             'Umum'          => 'general',
             'Tema' => 'theme',
-            'Pembaruan'          => 'updates',
             'Backup & Restore'   => 'backuprestore',
         ];
     }
@@ -34,7 +33,6 @@ class Admin extends AdminModule
       $sub_modules = [
         ['name' => 'Pengaturan Umum', 'url' => url([ADMIN, 'settings', 'general']), 'icon' => 'wrench', 'desc' => 'Pengaturan umum mLITE'],
         ['name' => 'Tema Publik', 'url' => url([ADMIN, 'settings', 'theme']), 'icon' => 'cubes', 'desc' => 'Pengaturan tema tampilan publik'],
-        ['name' => 'Pembaruan Sistem', 'url' => url([ADMIN, 'settings', 'updates']), 'icon' => 'cubes', 'desc' => 'Pembaruan sistem'],
         ['name' => 'Backup & Restore', 'url' => url([ADMIN, 'settings', 'backuprestore']), 'icon' => 'database', 'desc' => 'Backup dan restore database'],
       ];
       return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
@@ -312,6 +310,8 @@ class Admin extends AdminModule
             $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
             redirect(url([ADMIN, 'settings', 'manage']));
         }
+        $this->notify('failure', 'Fitur pembaruan dinonaktifkan pada branch multisite.');
+        redirect(url([ADMIN, 'settings', 'manage']));
 
         $this->tpl->set('allow_curl', intval(function_exists('curl_init')));
         $settings = $this->settings('settings');
