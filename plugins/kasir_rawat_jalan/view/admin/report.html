@@ -26,6 +26,37 @@
     </form>
 
     <hr>
+    <div id="kop_print" style="display:none;">
+      <div style="width:960px;">
+        <table style="width:100%;">
+          <thead>
+            <tr>
+              <th style="text-align:left;">
+                <img src="{?=url()?}/{?=isset_or($settings.logo)?}" height="80px" style="margin-right: 20px;" alt="">
+              </th>
+              <th style="text-align:left;" width="100%">
+                  <p style="margin:0;">
+                    <span style="font-size: 22px;">{?=isset_or($settings.nama_instansi)?}</span><br>
+                    <span style="font-size: 14px;">Alamat: {?=isset_or($settings.alamat)?} - {?=isset_or($settings.kota)?} - {?=isset_or($settings.propinsi)?}</span><br>
+                    <span style="font-size: 14px;">Telepon: {?=isset_or($settings.nomor_telepon)?} - Email: {?=isset_or($settings.email)?}</span>
+                  </p>
+              </th>
+            </tr>
+            <tr>
+              <th colspan="2">
+                <hr style="border-bottom: 2px solid #000;padding-top:3px;">
+              </th>
+            </tr>
+            <tr>
+              <th colspan="2">
+                <div style="text-align:center;font-size:16px;margin:10px 0 0 0;"><b>LAPORAN KASIR RAWAT JALAN</b></div>
+                <div style="text-align:center;font-size:13px;margin:4px 0 10px 0;">Periode {?=isset_or($awal)?} s/d {?=isset_or($akhir)?}</div>
+              </th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
     <div id="laporan">
     <table class="table table-striped">
       <thead>
@@ -91,8 +122,9 @@
 
       function printContent(el){
         var restore = document.body.innerHTML;
+        var kop = document.getElementById('kop_print') ? document.getElementById('kop_print').innerHTML : '';
         var content = document.getElementById(el).innerHTML;
-        document.body.innerHTML = content;
+        document.body.innerHTML = kop + content;
         window.print();
         document.body.innerHTML = restore;
       }
