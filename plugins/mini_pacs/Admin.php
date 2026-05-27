@@ -70,7 +70,7 @@ class Admin extends AdminModule
         if (!$this->_isMono()) {
             $this->_addHeaderFiles();
             $this->assign['title'] = 'Detail PACS Study';
-            $response = $this->_remoteCall('GET', '/admin/api/mini_pacs/detail/' . $id);
+            $response = $this->_remoteCall('GET', '/' . ADMIN . '/api/mini_pacs/detail/' . $id);
             if (is_array($response) && isset($response['status']) && $response['status'] === 'success') {
                 $this->assign['study'] = $response['study'];
                 $this->assign['series'] = $response['series'];
@@ -101,7 +101,7 @@ class Admin extends AdminModule
     public function apiList()
     {
         if (!$this->_isMono()) {
-            $response = $this->_remoteCall('POST', '/admin/api/mini_pacs/list', $_POST);
+            $response = $this->_remoteCall('POST', '/' . ADMIN . '/api/mini_pacs/list', $_POST);
             if (!is_array($response) || !isset($response['data'])) {
                 echo json_encode([
                     "draw" => intval($_POST['draw'] ?? 0),
@@ -201,7 +201,7 @@ class Admin extends AdminModule
     {
         if (!$this->_isMono()) {
             header('Content-Type: application/json');
-            $response = $this->_remoteCall('GET', '/admin/api/mini_pacs/studylist', $_GET);
+            $response = $this->_remoteCall('GET', '/' . ADMIN . '/api/mini_pacs/studylist', $_GET);
             echo json_encode($response);
             exit();
         }
@@ -251,7 +251,7 @@ class Admin extends AdminModule
     {
         if (!$this->_isMono()) {
             header('Content-Type: application/json');
-            $response = $this->_remoteCall('GET', '/admin/api/mini_pacs/studydetail/' . $id);
+            $response = $this->_remoteCall('GET', '/' . ADMIN . '/api/mini_pacs/studydetail/' . $id);
             echo json_encode($response);
             exit();
         }
@@ -287,7 +287,7 @@ class Admin extends AdminModule
     {
         if (!$this->_isMono()) {
             header('Content-Type: application/json');
-            $response = $this->_remoteCall('GET', '/admin/api/mini_pacs/seriesdetail/' . $id);
+            $response = $this->_remoteCall('GET', '/' . ADMIN . '/api/mini_pacs/seriesdetail/' . $id);
             echo json_encode($response);
             exit();
         }
@@ -313,7 +313,7 @@ class Admin extends AdminModule
     public function apiInstanceJpg($id)
     {
         if (!$this->_isMono()) {
-            $response = $this->_remoteCall('GET', '/admin/api/mini_pacs/instancejpg/' . $id);
+            $response = $this->_remoteCall('GET', '/' . ADMIN . '/api/mini_pacs/instancejpg/' . $id);
             header('Content-Type: image/jpeg');
             echo $response;
             exit();
@@ -363,7 +363,7 @@ class Admin extends AdminModule
     {
         if (!$this->_isMono()) {
             header('Content-Type: application/json');
-            $response = $this->_remoteCall('GET', '/admin/api/mini_pacs/detail/' . $id);
+            $response = $this->_remoteCall('GET', '/' . ADMIN . '/api/mini_pacs/detail/' . $id);
             echo json_encode($response);
             exit();
         }
@@ -436,7 +436,7 @@ class Admin extends AdminModule
     public function anyDelete($id = null)
     {
         if (!$this->_isMono()) {
-            $response = $this->_remoteCall('GET', '/admin/api/mini_pacs/delete/' . $id);
+            $response = $this->_remoteCall('GET', '/' . ADMIN . '/api/mini_pacs/delete/' . $id);
             if (is_array($response) && (($response['status'] ?? '') === 'success' || (isset($response['raw']) && strpos($response['raw'], 'sukses') !== false))) {
                 $this->notify('success', 'Hapus sukses (remote)');
             } else {
@@ -797,7 +797,7 @@ class Admin extends AdminModule
             return null;
         }
 
-        $url = $remote_ip . '/admin/api/login';
+        $url = $remote_ip . '/' . ADMIN . '/api/login';
         if (strpos($url, 'http') !== 0) {
             $url = 'http://' . $url;
         }
@@ -1088,7 +1088,7 @@ class Admin extends AdminModule
     {
         if (!$this->_isMono()) {
             header('Content-Type: application/json');
-            $response = $this->_remoteCall('POST', '/admin/api/mini_pacs/store', json_decode(file_get_contents('php://input'), true));
+            $response = $this->_remoteCall('POST', '/' . ADMIN . '/api/mini_pacs/store', json_decode(file_get_contents('php://input'), true));
             echo json_encode($response);
             exit();
         }
@@ -1163,7 +1163,7 @@ class Admin extends AdminModule
             if (isset($_FILES['file_image'])) {
                 $data['file_image'] = new \CURLFile($_FILES['file_image']['tmp_name'], $_FILES['file_image']['type'], $_FILES['file_image']['name']);
             }
-            $response = $this->_remoteCall('POST', '/admin/api/mini_pacs/apiupload', $data);
+            $response = $this->_remoteCall('POST', '/' . ADMIN . '/api/mini_pacs/apiupload', $data);
             if (is_array($response) && (($response['status'] ?? '') === 'success' || (isset($response['raw']) && strpos($response['raw'], 'sukses') !== false))) {
                 $this->notify('success', 'Upload sukses (remote)');
             } else {
@@ -1386,7 +1386,7 @@ class Admin extends AdminModule
             } elseif (isset($_FILES['file'])) {
                 $data['file_image'] = new \CURLFile($_FILES['file']['tmp_name'], $_FILES['file']['type'], $_FILES['file']['name']);
             }
-            $response = $this->_remoteCall('POST', '/admin/api/mini_pacs/apiupload', $data);
+            $response = $this->_remoteCall('POST', '/' . ADMIN . '/api/mini_pacs/apiupload', $data);
             echo json_encode($response);
             exit();
         }
@@ -1844,8 +1844,7 @@ class Admin extends AdminModule
         header('Content-type: text/javascript');
 
         if (!$this->_isMono()) {
-            $response = $this->_remoteCall('GET', '/admin/api/mini_pacs/detail/' . $studyId);
-            $studyData = [];
+            $response = $this->_remoteCall('GET', '/' . ADMIN . '/api_pacs/detail/' . $studyId);
             if ($response['status'] === 'success') {
                 foreach ($response['series'] as $s) {
                     $instanceIds = [];
@@ -1862,7 +1861,7 @@ class Admin extends AdminModule
             }
             // Actually, I should use apiOhifJson or similar if I want full data.
             // Or I can just proxy getJavascriptviewer call itself.
-            $response = $this->_remoteCall('GET', '/admin/api/mini_pacs/javascriptviewer/' . $studyId);
+            $response = $this->_remoteCall('GET', '/' . ADMIN . '/api_pacs/javascriptviewer/' . $studyId);
             echo $response;
             exit();
         }
@@ -2118,7 +2117,7 @@ class Admin extends AdminModule
     {
         if (!$this->_isMono()) {
             header('Content-Type: application/json');
-            $response = $this->_remoteCall('GET', '/admin/api/mini_pacs/ohifjson/' . $studyId);
+            $response = $this->_remoteCall('GET', '/' . ADMIN . '/api_pacs/ohifjson/' . $studyId);
             echo json_encode($response);
             exit();
         }
@@ -2440,7 +2439,7 @@ class Admin extends AdminModule
     public function apiDicomFile($id)
     {
         if (!$this->_isMono()) {
-            $response = $this->_remoteCall('GET', '/admin/api/mini_pacs/dicomfile/' . $id);
+            $response = $this->_remoteCall('GET', '/' . ADMIN . '/api_pacs/dicomfile/' . $id);
             header('Content-Type: application/dicom');
             echo $response;
             exit();
