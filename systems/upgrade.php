@@ -1874,8 +1874,8 @@ switch ($version) {
               `keterangan` TEXT DEFAULT NULL,
               `manufacturer` TEXT DEFAULT NULL,
               `model` TEXT DEFAULT NULL, 
-              'manufacture_date' TEXT NOT NULL, 
-              'expiration_date' TEXT NOT NULL 
+              `manufacture_date` TEXT DEFAULT NULL,
+              `expiration_date` TEXT DEFAULT NULL
             );");
             $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_bpjs_emr_device_nama_alkes` ON `mlite_bpjs_emr_device` (`nama_alkes`);");
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_logs` (
@@ -1950,8 +1950,8 @@ switch ($version) {
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacture_date` TEXT NOT NULL;"); } catch (\Exception $e) {}
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `expiration_date` TEXT NOT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacture_date` TEXT DEFAULT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `expiration_date` TEXT DEFAULT NULL;"); } catch (\Exception $e) {}
         } else {
             // Kapabilitas MySQL sejak 6.2.0
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_mini_pacs_study` (
@@ -2121,8 +2121,8 @@ switch ($version) {
               `keterangan` text DEFAULT NULL,
               `manufacturer` varchar(255) DEFAULT NULL,
               `model` varchar(255) DEFAULT NULL,
-              'manufacture_date' DATE NOT NULL, 
-              'expiration_date' DATE NOT NULL,
+              `manufacture_date` DATE DEFAULT NULL,
+              `expiration_date` DATE DEFAULT NULL,
               PRIMARY KEY (`id`),
               UNIQUE KEY `uq_device_id` (`device_id`),
               KEY `idx_nama_alkes` (`nama_alkes`)
@@ -2148,8 +2148,8 @@ switch ($version) {
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacture_date` DATE NOT NULL"); } catch (\Exception $e) {}
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `expiration_date` DATE NOT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacture_date` DATE DEFAULT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `expiration_date` DATE DEFAULT NULL"); } catch (\Exception $e) {}
             $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bpjs_emr_uuid_condition` (
               `kd_penyakit` varchar(15) NOT NULL,
               `uuid` varchar(200) DEFAULT NULL
@@ -2219,16 +2219,16 @@ switch ($version) {
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `master_device_id` INTEGER DEFAULT NULL;"); } catch (\Exception $e) {}
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacture_date` TEXT NOT NULL;"); } catch (\Exception $e) {}
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `expiration_date` TEXT NOT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacture_date` TEXT DEFAULT NULL;"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `expiration_date` TEXT DEFAULT NULL;"); } catch (\Exception $e) {}
         } else {
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_lab` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_radiologi` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_prosedur_ranap` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
             try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_mapping_operasi` ADD COLUMN `master_device_id` int DEFAULT NULL"); } catch (\Exception $e) {}
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacture_date` DATE NOT NULL"); } catch (\Exception $e) {}
-            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `expiration_date` DATE NOT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `manufacture_date` DATE DEFAULT NULL"); } catch (\Exception $e) {}
+            try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_bpjs_emr_device` ADD COLUMN `expiration_date` DATE DEFAULT NULL"); } catch (\Exception $e) {}
         }        
         $return = '6.3.1';
         break;
