@@ -66,6 +66,87 @@ Admin mengelola master data dan konfigurasi:
    - Atur akun default modul keuangan (mis. akun kredit layanan).
    - Simpan perubahan konfigurasi.
 
+## Simulasi Penggunaan Tanpa Data Dummy (Tahun 2026)
+
+Bagian ini contoh alur pengisian jika Anda memulai dari nol (tanpa “Data Dummy Keuangan”) untuk tahun 2026.
+
+### A. Pengaturan Akun Rekening
+
+Buat minimal beberapa akun berikut:
+
+- **1101 Kas Umum** (Aktiva; tipe: N; saldo normal/balance: D)
+- **1201 Bank** (opsional) (Aktiva; tipe: N; balance: D)
+- **3101 Modal Disetor** (Modal; tipe: N; balance: K)
+- **4101 Pendapatan Jasa** (Pendapatan; tipe: R; balance: K)
+- **5101 Biaya Operasional** (Beban; tipe: R; balance: D)
+- **2101 Hutang Usaha** (opsional) (Hutang; tipe: N; balance: K)
+
+Catatan:
+- Tipe **N** = akun Neraca (Aktiva/Hutang/Modal).
+- Tipe **R** = akun Laba-Rugi (Pendapatan/Beban).
+
+### B. Pengaturan Rekening Tahun (Saldo Awal 2026)
+
+Menu: **Keuangan → Rekening Tahun** → pilih tahun **2026**.
+
+Contoh saldo awal yang seimbang:
+- 1101 Kas Umum = 10.000.000
+- 3101 Modal Disetor = 10.000.000
+
+Jika saldo awal tidak seimbang, laporan Neraca akan menampilkan peringatan selisih.
+
+### C. Pengaturan Kegiatan (Pengaturan Rekening / Input Kegiatan)
+
+Menu: **Keuangan → Pengaturan Rekening**.
+
+Tujuan kegiatan adalah pengelompokan aktivitas (umumnya untuk pelaporan arus kas/kegiatan).
+
+Contoh set minimal:
+- Penerimaan Jasa → mapping rekening **4101**
+- Biaya Operasional → mapping rekening **5101**
+- Pembelian Kredit (opsional) → mapping rekening **2101** atau rekening beban terkait
+
+### D. Contoh Pengisian Jurnal (Dana Masuk & Dana Keluar)
+
+Menu: **Keuangan → Posting Jurnal** (atau input jurnal sesuai alur di instalasi Anda).
+
+Pastikan setiap jurnal memiliki minimal 2 baris dan **Total Debet = Total Kredit**.
+
+#### 1) Dana Masuk (Penerimaan Jasa Tunai)
+
+- Tanggal: 2026-01-05
+- Keterangan: Penerimaan jasa tunai
+- Detail:
+  - Debet 1101 Kas Umum = 2.000.000
+  - Kredit 4101 Pendapatan Jasa = 2.000.000
+
+#### 2) Dana Keluar (Biaya Operasional Dibayar Tunai)
+
+- Tanggal: 2026-01-06
+- Keterangan: Bayar listrik/ATK
+- Detail:
+  - Debet 5101 Biaya Operasional = 500.000
+  - Kredit 1101 Kas Umum = 500.000
+
+#### 3) Dana Keluar (Pembelian Kredit / Timbul Hutang) (Opsional)
+
+- Tanggal: 2026-01-10
+- Keterangan: Pembelian perlengkapan secara kredit
+- Detail:
+  - Debet 5101 Biaya Operasional = 1.200.000
+  - Kredit 2101 Hutang Usaha = 1.200.000
+
+### E. Cara Validasi Output Laporan
+
+- **Buku Besar**:
+  - Pilih 1101 untuk melihat saldo kas (saldo awal + mutasi).
+  - Pilih 4101 untuk melihat total pendapatan.
+  - Pilih 5101 untuk melihat total biaya.
+- **Neraca Keuangan** (periode 01-01-2026 s/d tanggal akhir):
+  - Aktiva harus sama dengan Pasiva + Modal (laba/rugi periode muncul sebagai penyesuaian modal).
+- **Cash Flow**:
+  - Jurnal “Dana Masuk” muncul di arus masuk, jurnal “Dana Keluar” muncul di arus keluar.
+
 ## Catatan
 
 - Gunakan data akun dan jurnal yang valid agar laporan Cash Flow dan Neraca akurat.
