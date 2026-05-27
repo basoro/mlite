@@ -8,11 +8,7 @@
     <div class="panel panel-default">
       <div class="panel-heading">
         <form action="" method="get">
-          {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
-          <a href="{?=url()?}/{?=ADMIN?}/keuangan/bukubesar?action=print&tgl_awal={?=$tgl_awal?}&tgl_akhir={?=$tgl_akhir?}&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
-          {else}
-          <a href="{?=url()?}/{?=ADMIN?}/keuangan/bukubesar?action=print&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
-          {/if}
+          <a href="{?=url()?}/{?=ADMIN?}/keuangan/bukubesar?action=print&tgl_awal={?=$tgl_awal?}&tgl_akhir={?=$tgl_akhir?}&kd_rek={?=$kd_rek_filter?}&show_saldo_akhir={?=$show_saldo_akhir?}&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
           <div class="btn-group pull-right" style="margin-top:-8px;">
             <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-calendar"></i><span class="hidden-xs"> Filter</span>
@@ -36,6 +32,12 @@
                 </select>
               </li>
               <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                <label style="font-weight:normal;margin-bottom:0;">
+                  <input type="checkbox" name="show_saldo_akhir" value="1" {if: $show_saldo_akhir == 1}checked{/if}>
+                  Tampilkan saldo akhir per rekening
+                </label>
+              </li>
+              <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
                 <input type="submit" class="btn btn-primary btn-block" value="Submit">
                 <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
               </li>
@@ -51,32 +53,75 @@
               <tr>
                 <th>No. Jurnal</th>
                 <th>Tanggal</th>
+                {if: empty($kd_rek_filter)}
+                <th>Akun</th>
+                {/if}
                 <th>Keterangan</th>
                 <th>Debet</th>
                 <th>Kredit</th>
                 <th>Saldo</th>
+                <th>Saldo Normal</th>
               </tr>
             </thead>
             <tbody>
               {if: $bukubesar}
               {loop: $bukubesar}
+              {if: isset($value.row_type) && $value.row_type == 'saldo_akhir'}
+              <tr class="success">
+              {else}
+              {if: isset($value.row_type) && $value.row_type == 'saldo_awal'}
+              <tr class="active">
+              {else}
               <tr>
+              {/if}
+              {/if}
                 <td>{?=isset_or($value.no_jurnal)?}</td>
                 <td>{?=isset_or($value.tgl_jurnal)?}</td>
-                <td>{?=isset_or($value.keterangan)?}</td>
+                {if: empty($kd_rek_filter)}
+                <td>{?=isset_or($value.kd_rek)?} - {?=isset_or($value.nm_rek)?}</td>
+                {/if}
+                <td>
+                  {if: isset($value.row_type) && ($value.row_type == 'saldo_awal' || $value.row_type == 'saldo_akhir')}
+                  <strong>{?=isset_or($value.keterangan)?}</strong>
+                  {else}
+                  {?=isset_or($value.keterangan)?}
+                  {/if}
+                </td>
                 <td><span class="pull-right">{?= number_format($value.debet,2,',','.')?}</span></td>
                 <td><span class="pull-right">{?= number_format($value.kredit,2,',','.')?}</span></td>
                 <td><span class="pull-right">{?= number_format($value.saldo,2,',','.')?}</span></td>
+                <td><span class="pull-right">{?=isset_or($value.saldo_sisi)?} {?= number_format((float) isset_or($value.saldo_normal),2,',','.')?}</span></td>
               </tr>
               {/loop}
               {else} 
               <tr>
-                <td colspan="6">Belum ada data buku besar.</td>
+                {if: empty($kd_rek_filter)}
+                <td colspan="8">Belum ada data buku besar.</td>
+                {else}
+                <td colspan="7">Belum ada data buku besar.</td>
+                {/if}
               </tr>
               {/if}
             </tbody>
           </table>
         </div>
+        {if: isset($summary)}
+        <div class="well well-sm" style="margin-top:10px;">
+          <div><strong>Ringkasan Buku Besar</strong></div>
+          <div>Jumlah rekening: {?= (int) isset_or($summary.rekening_count)?}</div>
+          <div>Total debet: {?= number_format((float) isset_or($summary.total_debet),2,',','.')?}</div>
+          <div>Total kredit: {?= number_format((float) isset_or($summary.total_kredit),2,',','.')?}</div>
+          {if: $show_saldo_akhir == 1}
+          {if: empty($kd_rek_filter)}
+          <div>Total saldo akhir (D): {?= number_format((float) isset_or($summary.saldo_akhir_d),2,',','.')?}</div>
+          <div>Total saldo akhir (K): {?= number_format((float) isset_or($summary.saldo_akhir_k),2,',','.')?}</div>
+          <div>Saldo akhir (net): {?=isset_or($summary.saldo_akhir_net_side)?} {?= number_format((float) isset_or($summary.saldo_akhir_net_amount),2,',','.')?}</div>
+          {else}
+          <div>Saldo akhir: {?=isset_or($summary.saldo_akhir_side)?} {?= number_format((float) isset_or($summary.saldo_akhir_amount),2,',','.')?}</div>
+          {/if}
+          {/if}
+        </div>
+        {/if}
       </div>
     </div>
   </div>
@@ -86,6 +131,10 @@
       $('.tanggal').datetimepicker({
         format: 'YYYY-MM-DD',
         locale: 'id'
+      });
+
+      $(document).on('click', '.dropdown-menu', function (e) {
+        e.stopPropagation();
       });
   });
 </script>

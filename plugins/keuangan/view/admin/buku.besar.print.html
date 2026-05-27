@@ -43,11 +43,7 @@
 					<hr style="margin-top:0;">
 					<p>
             <b>Laporan Buku Besar</b><br>
-            {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
-            Periode {?=date('d-m-Y', strtotime($_GET['tgl_awal']))?} s/d {?=date('d-m-Y', strtotime($_GET['tgl_akhir']))?}
-            {else}
-            Periode {?=date('d-m-Y')?} s/d {?=date('d-m-Y')?}
-            {/if}
+            Periode {?=date('d-m-Y', strtotime($_GET['tgl_awal'] ?? date('Y-m-d')))?} s/d {?=date('d-m-Y', strtotime($_GET['tgl_akhir'] ?? date('Y-m-d')))?}
           </p>
 				</header>
 				<div class="">
@@ -56,10 +52,14 @@
               <tr>
 								<th>No. Jurnal</th>
                 <th>Tanggal</th>
+                {if: empty($kd_rek_filter)}
+                <th>Akun</th>
+                {/if}
                 <th>Keterangan</th>
                 <th>Debet</th>
                 <th>Kredit</th>
                 <th>Saldo</th>
+                <th>Saldo Normal</th>
               </tr>
             </thead>
             <tbody>
@@ -67,15 +67,42 @@
               <tr>
 								<td>{?=isset_or($value.no_jurnal)?}</td>
                 <td>{?=isset_or($value.tgl_jurnal)?}</td>
-                <td>{?=isset_or($value.keterangan)?}</td>
+                {if: empty($kd_rek_filter)}
+                <td>{?=isset_or($value.kd_rek)?} - {?=isset_or($value.nm_rek)?}</td>
+                {/if}
+                <td>
+                  {if: isset($value.row_type) && ($value.row_type == 'saldo_awal' || $value.row_type == 'saldo_akhir')}
+                  <strong>{?=isset_or($value.keterangan)?}</strong>
+                  {else}
+                  {?=isset_or($value.keterangan)?}
+                  {/if}
+                </td>
 								<td><span class="pull-right">{?= number_format($value.debet,2,',','.')?}</span></td>
                 <td><span class="pull-right">{?= number_format($value.kredit,2,',','.')?}</span></td>
                 <td><span class="pull-right">{?= number_format($value.saldo,2,',','.')?}</span></td>
+                <td><span class="pull-right">{?=isset_or($value.saldo_sisi)?} {?= number_format((float) isset_or($value.saldo_normal),2,',','.')?}</span></td>
               </tr>
               {/loop}
             </tbody>
           </table>
         </div>
+        {if: isset($summary)}
+        <div style="margin-top:10px; text-align:left;">
+          <div><strong>Ringkasan Buku Besar</strong></div>
+          <div>Jumlah rekening: {?= (int) isset_or($summary.rekening_count)?}</div>
+          <div>Total debet: {?= number_format((float) isset_or($summary.total_debet),2,',','.')?}</div>
+          <div>Total kredit: {?= number_format((float) isset_or($summary.total_kredit),2,',','.')?}</div>
+          {if: $show_saldo_akhir == 1}
+          {if: empty($kd_rek_filter)}
+          <div>Total saldo akhir (D): {?= number_format((float) isset_or($summary.saldo_akhir_d),2,',','.')?}</div>
+          <div>Total saldo akhir (K): {?= number_format((float) isset_or($summary.saldo_akhir_k),2,',','.')?}</div>
+          <div>Saldo akhir (net): {?=isset_or($summary.saldo_akhir_net_side)?} {?= number_format((float) isset_or($summary.saldo_akhir_net_amount),2,',','.')?}</div>
+          {else}
+          <div>Saldo akhir: {?=isset_or($summary.saldo_akhir_side)?} {?= number_format((float) isset_or($summary.saldo_akhir_amount),2,',','.')?}</div>
+          {/if}
+          {/if}
+        </div>
+        {/if}
       </center>
 		</div>
 

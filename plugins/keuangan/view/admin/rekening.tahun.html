@@ -32,6 +32,16 @@
     </div>
     <div class="col-md-6">
       <div id="display">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <form action="" method="get" class="form-inline" style="margin:0;">
+              <label style="margin-right:6px;">Tahun</label>
+              <input type="number" name="tahun" class="form-control input-sm" style="width:120px;" value="{?=isset_or($tahun_filter)?}" min="2000" max="2100">
+              <input type="submit" class="btn btn-primary btn-sm" value="Tampilkan">
+              <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+            </form>
+          </div>
+        </div>
         <div class="table-responsive no-margin" id="rekeningtahun">
           <table class="table table-striped table-bordered no-padding">
             <thead>

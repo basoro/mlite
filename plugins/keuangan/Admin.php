@@ -96,12 +96,16 @@ class Admin extends AdminModule
       $this->core->addJS(url([ADMIN, 'keuangan', 'akunrekeningjs']), 'footer');
       $this->_addHeaderFiles();
       $curr_year = date('Y');
+      $year = isset($_GET['tahun']) ? (int) $_GET['tahun'] : (int) $curr_year;
+      if ($year < 2000 || $year > ((int) date('Y') + 5)) {
+        $year = (int) $curr_year;
+      }
       $akunrekening = $this->db('mlite_rekening')->toArray();
       $rekeningtahun = $this->db('mlite_rekeningtahun')
       ->join('mlite_rekening', 'mlite_rekening.kd_rek=mlite_rekeningtahun.kd_rek')
-      ->where('thn', $curr_year)
+      ->where('thn', $year)
       ->toArray();
-      return $this->draw('rekening.tahun.html', ['akunrekening' => $akunrekening, 'rekeningtahun' => $rekeningtahun]);
+      return $this->draw('rekening.tahun.html', ['akunrekening' => $akunrekening, 'rekeningtahun' => $rekeningtahun, 'tahun_filter' => $year]);
     }
 
     public function postSaveRekeningTahun()
@@ -215,8 +219,10 @@ class Admin extends AdminModule
       }
 
       $kd_rek = isset($_GET['kd_rek']) ? $_GET['kd_rek'] : '';
+      $showSaldoAkhir = !empty($_GET['show_saldo_akhir']);
+      $showSaldoAkhirInt = $showSaldoAkhir ? 1 : 0;
 
-      $sql = "SELECT mlite_detailjurnal.no_jurnal, tgl_jurnal, keterangan, debet, kredit, mlite_rekening.balance FROM mlite_detailjurnal JOIN mlite_jurnal ON mlite_detailjurnal.no_jurnal = mlite_jurnal.no_jurnal JOIN mlite_rekening ON mlite_detailjurnal.kd_rek = mlite_rekening.kd_rek WHERE (mlite_jurnal.tgl_jurnal BETWEEN ? AND ?)";
+      $sql = "SELECT mlite_detailjurnal.no_jurnal, tgl_jurnal, keterangan, debet, kredit, mlite_detailjurnal.kd_rek, mlite_rekening.nm_rek, mlite_rekening.balance FROM mlite_detailjurnal JOIN mlite_jurnal ON mlite_detailjurnal.no_jurnal = mlite_jurnal.no_jurnal JOIN mlite_rekening ON mlite_detailjurnal.kd_rek = mlite_rekening.kd_rek WHERE (mlite_jurnal.tgl_jurnal BETWEEN ? AND ?)";
       $params = [$tgl_awal, $tgl_akhir];
 
       if(!empty($kd_rek)) {
@@ -224,21 +230,256 @@ class Admin extends AdminModule
         $params[] = $kd_rek;
       }
 
-      $sql .= " ORDER BY mlite_detailjurnal.no_jurnal ASC";
+      if (!empty($kd_rek)) {
+        $sql .= " ORDER BY mlite_jurnal.tgl_jurnal ASC, mlite_detailjurnal.no_jurnal ASC";
+      } else {
+        $sql .= " ORDER BY mlite_detailjurnal.kd_rek ASC, mlite_jurnal.tgl_jurnal ASC, mlite_detailjurnal.no_jurnal ASC";
+      }
 
       $query = $this->db()->pdo()->prepare($sql);
       $query->execute($params);
-      $bukubesar = $query->fetchAll(\PDO::FETCH_ASSOC);
-      $saldo = 0;
-      foreach ($bukubesar as $key => $row) {
-        $debet = (float)$row['debet'];
-        $kredit = (float)$row['kredit'];
-        if ($row['balance'] === 'D') {
-          $saldo += ($debet - $kredit);
-        } else {
-          $saldo += ($kredit - $debet);
+      $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
+      $bukubesar = [];
+      $summary = [
+        'rekening_count' => 0,
+        'total_debet' => 0,
+        'total_kredit' => 0,
+        'saldo_akhir_d' => 0,
+        'saldo_akhir_k' => 0,
+        'saldo_akhir_net' => 0,
+        'saldo_akhir_side' => '',
+        'saldo_akhir_amount' => 0,
+        'saldo_akhir_net_side' => '',
+        'saldo_akhir_net_amount' => 0,
+      ];
+
+      if (!empty($kd_rek)) {
+        $saldo = 0;
+        $tahun = (int) date('Y', strtotime($tgl_awal));
+        $saldoAwalRow = $this->db('mlite_rekeningtahun')->where('thn', $tahun)->where('kd_rek', $kd_rek)->oneArray();
+        $saldoAwal = (float) ($saldoAwalRow['saldo_awal'] ?? 0);
+
+        $rekeningRow = $this->db('mlite_rekening')->where('kd_rek', $kd_rek)->oneArray();
+        $nmRek = (string) ($rekeningRow['nm_rek'] ?? '');
+        $balance = (string) ($rekeningRow['balance'] ?? 'D');
+
+        $awalTahun = $tahun . '-01-01';
+        $sqlMutasi = "
+          SELECT COALESCE(SUM(
+            CASE
+              WHEN r.balance = 'D' THEN COALESCE(jd.debet, 0) - COALESCE(jd.kredit, 0)
+              ELSE COALESCE(jd.kredit, 0) - COALESCE(jd.debet, 0)
+            END
+          ), 0) AS mutasi
+          FROM mlite_detailjurnal jd
+          JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
+          JOIN mlite_rekening r ON r.kd_rek = jd.kd_rek
+          WHERE jd.kd_rek = ?
+            AND j.tgl_jurnal >= ?
+            AND j.tgl_jurnal < ?
+        ";
+        $stMutasi = $this->db()->pdo()->prepare($sqlMutasi);
+        $stMutasi->execute([$kd_rek, $awalTahun, $tgl_awal]);
+        $mutasi = (float) (($stMutasi->fetch()['mutasi'] ?? 0));
+
+        $saldo = $saldoAwal + $mutasi;
+        $saldoAbs = abs($saldo);
+        $saldoSisi = $saldo >= 0 ? $balance : ($balance === 'D' ? 'K' : 'D');
+        $summary['rekening_count'] = 1;
+        $bukubesar[] = [
+          'no_jurnal' => '',
+          'tgl_jurnal' => $tgl_awal,
+          'kd_rek' => $kd_rek,
+          'nm_rek' => $nmRek,
+          'keterangan' => 'Saldo awal',
+          'debet' => 0,
+          'kredit' => 0,
+          'balance' => $balance,
+          'saldo' => $saldo,
+          'saldo_normal' => $saldoAbs,
+          'saldo_sisi' => $saldoSisi,
+          'row_type' => 'saldo_awal',
+        ];
+        foreach ($rows as $row) {
+          $debet = (float) ($row['debet'] ?? 0);
+          $kredit = (float) ($row['kredit'] ?? 0);
+          if (($row['balance'] ?? '') === 'D') {
+            $saldo += ($debet - $kredit);
+          } else {
+            $saldo += ($kredit - $debet);
+          }
+          $row['saldo'] = $saldo;
+          $rowBalance = (string) ($row['balance'] ?? $balance);
+          $row['saldo_normal'] = abs((float) $saldo);
+          $row['saldo_sisi'] = $saldo >= 0 ? $rowBalance : ($rowBalance === 'D' ? 'K' : 'D');
+          $row['row_type'] = 'mutasi';
+          $summary['total_debet'] += $debet;
+          $summary['total_kredit'] += $kredit;
+          $bukubesar[] = $row;
         }
-        $bukubesar[$key]['saldo'] = $saldo;
+
+        $saldoAbs = abs((float) $saldo);
+        $saldoSisi = $saldo >= 0 ? $balance : ($balance === 'D' ? 'K' : 'D');
+        if ($showSaldoAkhir) {
+          $bukubesar[] = [
+            'no_jurnal' => '',
+            'tgl_jurnal' => $tgl_akhir,
+            'kd_rek' => $kd_rek,
+            'nm_rek' => $nmRek,
+            'keterangan' => 'Saldo akhir',
+            'debet' => 0,
+            'kredit' => 0,
+            'balance' => $balance,
+            'saldo' => $saldo,
+            'saldo_normal' => $saldoAbs,
+            'saldo_sisi' => $saldoSisi,
+            'row_type' => 'saldo_akhir',
+          ];
+        }
+
+        if ($saldoSisi === 'D') {
+          $summary['saldo_akhir_d'] = $saldoAbs;
+          $summary['saldo_akhir_net'] = $saldoAbs;
+        } else {
+          $summary['saldo_akhir_k'] = $saldoAbs;
+          $summary['saldo_akhir_net'] = -$saldoAbs;
+        }
+        $summary['saldo_akhir_side'] = $saldoSisi;
+        $summary['saldo_akhir_amount'] = $saldoAbs;
+        $summary['saldo_akhir_net_side'] = $saldoSisi;
+        $summary['saldo_akhir_net_amount'] = $saldoAbs;
+      } else {
+        $tahun = (int) date('Y', strtotime($tgl_awal));
+        $awalTahun = $tahun . '-01-01';
+
+        $saldoAwalRows = $this->db('mlite_rekeningtahun')->where('thn', $tahun)->toArray();
+        $saldoAwalMap = [];
+        foreach ($saldoAwalRows as $r) {
+          $saldoAwalMap[(string) $r['kd_rek']] = (float) ($r['saldo_awal'] ?? 0);
+        }
+
+        $sqlMutasiAll = "
+          SELECT jd.kd_rek, COALESCE(SUM(
+            CASE
+              WHEN r.balance = 'D' THEN COALESCE(jd.debet, 0) - COALESCE(jd.kredit, 0)
+              ELSE COALESCE(jd.kredit, 0) - COALESCE(jd.debet, 0)
+            END
+          ), 0) AS mutasi
+          FROM mlite_detailjurnal jd
+          JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
+          JOIN mlite_rekening r ON r.kd_rek = jd.kd_rek
+          WHERE j.tgl_jurnal >= ?
+            AND j.tgl_jurnal < ?
+          GROUP BY jd.kd_rek
+        ";
+        $stMutasiAll = $this->db()->pdo()->prepare($sqlMutasiAll);
+        $stMutasiAll->execute([$awalTahun, $tgl_awal]);
+        $mutasiMap = [];
+        foreach ($stMutasiAll->fetchAll(\PDO::FETCH_ASSOC) as $m) {
+          $mutasiMap[(string) $m['kd_rek']] = (float) ($m['mutasi'] ?? 0);
+        }
+
+        $rowsByKd = [];
+        $kdSet = [];
+        foreach ($rows as $row) {
+          $k = (string) ($row['kd_rek'] ?? '');
+          if ($k === '') {
+            continue;
+          }
+          $rowsByKd[$k][] = $row;
+          $kdSet[$k] = true;
+        }
+        foreach (array_keys($saldoAwalMap) as $k) {
+          $kdSet[$k] = true;
+        }
+        $kds = array_keys($kdSet);
+        sort($kds);
+
+        $saldoPerKd = [];
+        foreach ($kds as $k) {
+          $saldoPerKd[$k] = (float) ($saldoAwalMap[$k] ?? 0) + (float) ($mutasiMap[$k] ?? 0);
+        }
+
+        foreach ($kds as $k) {
+          $hasRows = !empty($rowsByKd[$k]);
+          $hasSaldoAwal = abs((float) ($saldoAwalMap[$k] ?? 0)) > 0.000001;
+          if (!$hasRows && !$hasSaldoAwal) {
+            continue;
+          }
+
+          $rekeningRow = $this->db('mlite_rekening')->where('kd_rek', $k)->oneArray();
+          $nmRek = (string) ($rekeningRow['nm_rek'] ?? '');
+          $balance = (string) ($rekeningRow['balance'] ?? 'D');
+
+          $summary['rekening_count']++;
+          $saldoAbs = abs((float) $saldoPerKd[$k]);
+          $saldoSisi = $saldoPerKd[$k] >= 0 ? $balance : ($balance === 'D' ? 'K' : 'D');
+          $bukubesar[] = [
+            'no_jurnal' => '',
+            'tgl_jurnal' => $tgl_awal,
+            'kd_rek' => $k,
+            'nm_rek' => $nmRek,
+            'keterangan' => 'Saldo awal',
+            'debet' => 0,
+            'kredit' => 0,
+            'balance' => $balance,
+            'saldo' => $saldoPerKd[$k],
+            'saldo_normal' => $saldoAbs,
+            'saldo_sisi' => $saldoSisi,
+            'row_type' => 'saldo_awal',
+          ];
+
+          foreach (($rowsByKd[$k] ?? []) as $row) {
+            $debet = (float) ($row['debet'] ?? 0);
+            $kredit = (float) ($row['kredit'] ?? 0);
+            if (($row['balance'] ?? '') === 'D') {
+              $saldoPerKd[$k] += ($debet - $kredit);
+            } else {
+              $saldoPerKd[$k] += ($kredit - $debet);
+            }
+            $row['saldo'] = $saldoPerKd[$k];
+            $rowBalance = (string) ($row['balance'] ?? $balance);
+            $row['saldo_normal'] = abs((float) $saldoPerKd[$k]);
+            $row['saldo_sisi'] = $saldoPerKd[$k] >= 0 ? $rowBalance : ($rowBalance === 'D' ? 'K' : 'D');
+            $row['row_type'] = 'mutasi';
+            $summary['total_debet'] += $debet;
+            $summary['total_kredit'] += $kredit;
+            $bukubesar[] = $row;
+          }
+
+          $saldoAkhirAbs = abs((float) $saldoPerKd[$k]);
+          $saldoAkhirSisi = $saldoPerKd[$k] >= 0 ? $balance : ($balance === 'D' ? 'K' : 'D');
+          if ($showSaldoAkhir) {
+            $bukubesar[] = [
+              'no_jurnal' => '',
+              'tgl_jurnal' => $tgl_akhir,
+              'kd_rek' => $k,
+              'nm_rek' => $nmRek,
+              'keterangan' => 'Saldo akhir',
+              'debet' => 0,
+              'kredit' => 0,
+              'balance' => $balance,
+              'saldo' => $saldoPerKd[$k],
+              'saldo_normal' => $saldoAkhirAbs,
+              'saldo_sisi' => $saldoAkhirSisi,
+              'row_type' => 'saldo_akhir',
+            ];
+          }
+
+          if ($saldoAkhirSisi === 'D') {
+            $summary['saldo_akhir_d'] += $saldoAkhirAbs;
+            $summary['saldo_akhir_net'] += $saldoAkhirAbs;
+          } else {
+            $summary['saldo_akhir_k'] += $saldoAkhirAbs;
+            $summary['saldo_akhir_net'] -= $saldoAkhirAbs;
+          }
+        }
+
+        $net = (float) $summary['saldo_akhir_net'];
+        $netAbs = abs($net);
+        $netSisi = $net >= 0 ? 'D' : 'K';
+        $summary['saldo_akhir_net_side'] = $netSisi;
+        $summary['saldo_akhir_net_amount'] = $netAbs;
       }
 
       $akunrekening = $this->db('mlite_rekening')->toArray();
@@ -246,7 +487,10 @@ class Admin extends AdminModule
       if(isset($_GET['action']) && $_GET['action'] == 'print') {
         echo $this->draw('buku.besar.print.html', [
           'bukubesar' => $bukubesar,
-          'action' => url([ADMIN,'keuangan','bukubesar'])
+          'action' => url([ADMIN,'keuangan','bukubesar']),
+          'kd_rek_filter' => $kd_rek,
+          'show_saldo_akhir' => $showSaldoAkhirInt,
+          'summary' => $summary,
         ]);
         exit();
       } else {
@@ -254,8 +498,10 @@ class Admin extends AdminModule
           'bukubesar' => $bukubesar,
           'akunrekening' => $akunrekening,
           'kd_rek_filter' => $kd_rek,
+          'show_saldo_akhir' => $showSaldoAkhirInt,
           'tgl_awal' => htmlspecialchars($tgl_awal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
           'tgl_akhir' => htmlspecialchars($tgl_akhir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+          'summary' => $summary,
         ]);
       }
     }
@@ -287,23 +533,30 @@ class Admin extends AdminModule
           array("tipe" => "M", "arus_kas" => "Kegiatan Pendanaan"),
       );
 
+      $cashAccounts = ['1101', '1102', '1103', '1104', '1105'];
+      $cashPlaceholders = implode(',', array_fill(0, count($cashAccounts), '?'));
+
       // Hitung saldo awal kas dari akun kas (1101-1105) sebelum periode
       $query_saldo_awal = "
           SELECT COALESCE(SUM(
               CASE
-                  WHEN r.balance = 'D' THEN COALESCE(jd.debet, 0) - COALESCE(jd.kredit, 0)
-                  ELSE COALESCE(jd.kredit, 0) - COALESCE(jd.debet, 0)
+                  WHEN j.tgl_jurnal < ? THEN
+                    CASE
+                        WHEN r.balance = 'D' THEN COALESCE(jd.debet, 0) - COALESCE(jd.kredit, 0)
+                        ELSE COALESCE(jd.kredit, 0) - COALESCE(jd.debet, 0)
+                    END
+                  ELSE 0
               END
           ), 0) as saldo_kas
           FROM mlite_rekening r
           LEFT JOIN mlite_detailjurnal jd ON r.kd_rek = jd.kd_rek
-          LEFT JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal AND j.tgl_jurnal < ?
-          WHERE r.kd_rek IN ('1101', '1102', '1103', '1104', '1105')
+          LEFT JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
+          WHERE r.kd_rek IN ($cashPlaceholders)
           AND r.tipe = 'N'
       ";
 
       $stmt_saldo = $this->db()->pdo()->prepare($query_saldo_awal);
-      $stmt_saldo->execute([$tgl_awal]);
+      $stmt_saldo->execute(array_merge([$tgl_awal], $cashAccounts));
       $result_saldo = $stmt_saldo->fetch();
       $saldo_awal_kas = $result_saldo['saldo_kas'] ?? 0;
 
@@ -311,84 +564,135 @@ class Admin extends AdminModule
       $total_debet = 0;
       $total_saldo_kredit = 0;
       $total_saldo_debet = 0;
-      $n = 1;
 
+      $sqlJurnal = "
+        SELECT
+          j.no_jurnal,
+          j.tgl_jurnal,
+          jd.kd_rek,
+          r.nm_rek,
+          r.tipe,
+          r.balance,
+          jd.debet,
+          jd.kredit
+        FROM mlite_jurnal j
+        JOIN mlite_detailjurnal jd ON jd.no_jurnal = j.no_jurnal
+        JOIN mlite_rekening r ON r.kd_rek = jd.kd_rek
+        WHERE j.tgl_jurnal >= ? AND j.tgl_jurnal <= ?
+          AND j.no_jurnal IN (
+            SELECT DISTINCT no_jurnal FROM mlite_detailjurnal WHERE kd_rek IN ($cashPlaceholders)
+          )
+        ORDER BY j.tgl_jurnal ASC, j.no_jurnal ASC
+      ";
+      $stmtJurnal = $this->db()->pdo()->prepare($sqlJurnal);
+      $stmtJurnal->execute(array_merge([$tgl_awal, $tgl_akhir], $cashAccounts));
+      $detail = $stmtJurnal->fetchAll(\PDO::FETCH_ASSOC);
+
+      $byJurnal = [];
+      foreach ($detail as $r) {
+        $no = (string) ($r['no_jurnal'] ?? '');
+        if ($no === '') {
+          continue;
+        }
+        $byJurnal[$no][] = $r;
+      }
+
+      $agg = [
+        'R' => ['masuk' => [], 'keluar' => []],
+        'N' => ['masuk' => [], 'keluar' => []],
+        'M' => ['masuk' => [], 'keluar' => []],
+      ];
+
+      foreach ($byJurnal as $noJurnal => $lines) {
+        $cashDelta = 0.0;
+        foreach ($lines as $ln) {
+          $kd = (string) ($ln['kd_rek'] ?? '');
+          if (in_array($kd, $cashAccounts, true)) {
+            $cashDelta += (float) ($ln['debet'] ?? 0) - (float) ($ln['kredit'] ?? 0);
+          }
+        }
+        if (abs($cashDelta) < 0.000001) {
+          continue;
+        }
+
+        $isIn = $cashDelta > 0;
+        $weights = [];
+        $totalWeight = 0.0;
+        foreach ($lines as $ln) {
+          $kd = (string) ($ln['kd_rek'] ?? '');
+          if ($kd === '' || in_array($kd, $cashAccounts, true)) {
+            continue;
+          }
+          $debet = (float) ($ln['debet'] ?? 0);
+          $kredit = (float) ($ln['kredit'] ?? 0);
+          $w = $isIn ? max($kredit - $debet, 0) : max($debet - $kredit, 0);
+          if ($w <= 0) {
+            continue;
+          }
+          $weights[] = [$ln, $w];
+          $totalWeight += $w;
+        }
+
+        if ($totalWeight <= 0) {
+          continue;
+        }
+
+        foreach ($weights as $item) {
+          [$ln, $w] = $item;
+          $tipe = (string) ($ln['tipe'] ?? '');
+          if (!isset($agg[$tipe])) {
+            continue;
+          }
+          $kd = (string) ($ln['kd_rek'] ?? '');
+          $nm = (string) ($ln['nm_rek'] ?? '');
+          $amount = abs($cashDelta) * ($w / $totalWeight);
+
+          $bucket = $isIn ? 'masuk' : 'keluar';
+          if (!isset($agg[$tipe][$bucket][$kd])) {
+            $agg[$tipe][$bucket][$kd] = [
+              'kd_rek' => $kd,
+              'nm_rek' => $nm,
+              'kredit_all' => 0,
+              'debet_all' => 0,
+              'saldo_awal' => 0,
+            ];
+          }
+
+          if ($isIn) {
+            $agg[$tipe][$bucket][$kd]['kredit_all'] += $amount;
+          } else {
+            $agg[$tipe][$bucket][$kd]['debet_all'] += $amount;
+          }
+        }
+      }
+
+      $n = 1;
       foreach ($rows_aruskas as $row) {
+        $tipe = (string) ($row['tipe'] ?? '');
         $row['nomor'] = $n++;
         $row['total_masuk'] = 0;
         $row['total_keluar'] = 0;
         $row['total_saldo_awal_masuk'] = 0;
         $row['total_saldo_awal_keluar'] = 0;
 
-        // Arus kas masuk (transaksi yang menambah kas) dalam periode
-        $query_masuk = "
-            SELECT
-                jd.kd_rek,
-                r.nm_rek,
-                r.tipe,
-                r.balance,
-                SUM(CASE
-                    WHEN jd.kd_rek IN ('1101', '1102', '1103', '1104', '1105') THEN jd.debet
-                    ELSE jd.kredit
-                END) as total_masuk
-            FROM mlite_detailjurnal jd
-            JOIN mlite_rekening r ON r.kd_rek = jd.kd_rek
-            JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
-            WHERE r.tipe = ?
-            AND j.tgl_jurnal >= ? AND j.tgl_jurnal <= ?
-            AND ((jd.kd_rek IN ('1101', '1102', '1103', '1104', '1105') AND jd.debet > 0)
-                 OR (jd.kd_rek NOT IN ('1101', '1102', '1103', '1104', '1105') AND jd.kredit > 0))
-            GROUP BY jd.kd_rek, r.nm_rek, r.tipe, r.balance
-            HAVING total_masuk > 0
-        ";
-
-        $stmt_masuk = $this->db()->pdo()->prepare($query_masuk);
-        $stmt_masuk->execute([$row['tipe'], $tgl_awal, $tgl_akhir]);
-        $rows_masuk = $stmt_masuk->fetchAll();
-
-        $row['jurnal_masuk'] = [];
-        foreach ($rows_masuk as $row_masuk) {
-          $row_masuk['kredit_all'] = $row_masuk['total_masuk'];
-          $row_masuk['saldo_awal'] = 0;
-          $row['total_masuk'] += $row_masuk['total_masuk'];
-          $row['jurnal_masuk'][] = $row_masuk;
-          $total_kredit += $row_masuk['total_masuk'];
+        $row['jurnal_masuk'] = array_values($agg[$tipe]['masuk'] ?? []);
+        usort($row['jurnal_masuk'], function ($a, $b) {
+          return strcmp((string) ($a['kd_rek'] ?? ''), (string) ($b['kd_rek'] ?? ''));
+        });
+        foreach ($row['jurnal_masuk'] as $m) {
+          $row['total_masuk'] += (float) ($m['kredit_all'] ?? 0);
         }
 
-        // Arus kas keluar (transaksi yang mengurangi kas) dalam periode
-        $query_keluar = "
-            SELECT
-                jd.kd_rek,
-                r.nm_rek,
-                r.tipe,
-                r.balance,
-                SUM(CASE
-                    WHEN jd.kd_rek IN ('1101', '1102', '1103', '1104', '1105') THEN jd.kredit
-                    ELSE jd.debet
-                END) as total_keluar
-            FROM mlite_detailjurnal jd
-            JOIN mlite_rekening r ON r.kd_rek = jd.kd_rek
-            JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
-            WHERE r.tipe = ?
-            AND j.tgl_jurnal >= ? AND j.tgl_jurnal <= ?
-            AND ((jd.kd_rek IN ('1101', '1102', '1103', '1104', '1105') AND jd.kredit > 0)
-                 OR (jd.kd_rek NOT IN ('1101', '1102', '1103', '1104', '1105') AND jd.debet > 0))
-            GROUP BY jd.kd_rek, r.nm_rek, r.tipe, r.balance
-            HAVING total_keluar > 0
-        ";
-
-        $stmt_keluar = $this->db()->pdo()->prepare($query_keluar);
-        $stmt_keluar->execute([$row['tipe'], $tgl_awal, $tgl_akhir]);
-        $rows_keluar = $stmt_keluar->fetchAll();
-
-        $row['jurnal_keluar'] = [];
-        foreach ($rows_keluar as $row_keluar) {
-          $row_keluar['debet_all'] = $row_keluar['total_keluar'];
-          $row_keluar['saldo_awal'] = 0;
-          $row['total_keluar'] += $row_keluar['total_keluar'];
-          $row['jurnal_keluar'][] = $row_keluar;
-          $total_debet += $row_keluar['total_keluar'];
+        $row['jurnal_keluar'] = array_values($agg[$tipe]['keluar'] ?? []);
+        usort($row['jurnal_keluar'], function ($a, $b) {
+          return strcmp((string) ($a['kd_rek'] ?? ''), (string) ($b['kd_rek'] ?? ''));
+        });
+        foreach ($row['jurnal_keluar'] as $k) {
+          $row['total_keluar'] += (float) ($k['debet_all'] ?? 0);
         }
+
+        $total_kredit += $row['total_masuk'];
+        $total_debet += $row['total_keluar'];
 
         $aruskas[] = $row;
       }
@@ -446,57 +750,69 @@ class Admin extends AdminModule
       $total_hutang_jangka_panjang = 0;
       $total_modal = 0;
 
-      // Query untuk mendapatkan saldo awal rekening (sebelum periode)
-      $query_saldo_awal = "
-          SELECT 
-              r.kd_rek,
-              r.nm_rek,
-              r.balance as saldo_normal,
-              COALESCE(SUM(jd.debet), 0) as total_debet_awal,
-              COALESCE(SUM(jd.kredit), 0) as total_kredit_awal,
-              CASE 
-                  WHEN r.balance = 'D' THEN COALESCE(SUM(jd.debet), 0) - COALESCE(SUM(jd.kredit), 0)
-                  ELSE COALESCE(SUM(jd.kredit), 0) - COALESCE(SUM(jd.debet), 0)
-              END as saldo_awal
-          FROM mlite_rekening r
-          LEFT JOIN mlite_detailjurnal jd ON r.kd_rek = jd.kd_rek
-          LEFT JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal AND j.tgl_jurnal < ?
-          WHERE r.tipe IN ('N', 'M')
-          GROUP BY r.kd_rek, r.nm_rek, r.balance
+      $tahun = (int) date('Y', strtotime($tgl_awal));
+      $awalTahun = $tahun . '-01-01';
+
+      $saldo_awal_tahun = [];
+      $sqlSaldoAwalTahun = "
+        SELECT rt.kd_rek, rt.saldo_awal
+        FROM mlite_rekeningtahun rt
+        JOIN mlite_rekening r ON r.kd_rek = rt.kd_rek
+        WHERE rt.thn = ?
+          AND r.tipe IN ('N', 'M')
       ";
-      
-      $stmt_awal = $this->db()->pdo()->prepare($query_saldo_awal);
-      $stmt_awal->execute([$tgl_awal]);
-      $saldo_awal_data = [];
-      foreach($stmt_awal->fetchAll() as $row) {
-          $saldo_awal_data[$row['kd_rek']] = $row['saldo_awal'];
+      $stSaldoAwalTahun = $this->db()->pdo()->prepare($sqlSaldoAwalTahun);
+      $stSaldoAwalTahun->execute([$tahun]);
+      foreach ($stSaldoAwalTahun->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        $saldo_awal_tahun[(string) $row['kd_rek']] = (float) ($row['saldo_awal'] ?? 0);
       }
 
-      // Query untuk mendapatkan mutasi dalam periode
-      $query_mutasi = "
-          SELECT 
-              r.kd_rek,
-              r.nm_rek,
-              r.balance as saldo_normal,
-              COALESCE(SUM(jd.debet), 0) as total_debet_periode,
-              COALESCE(SUM(jd.kredit), 0) as total_kredit_periode,
-              CASE 
-                  WHEN r.balance = 'D' THEN COALESCE(SUM(jd.debet), 0) - COALESCE(SUM(jd.kredit), 0)
-                  ELSE COALESCE(SUM(jd.kredit), 0) - COALESCE(SUM(jd.debet), 0)
-              END as mutasi_periode
-          FROM mlite_rekening r
-          LEFT JOIN mlite_detailjurnal jd ON r.kd_rek = jd.kd_rek
-          LEFT JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
-          WHERE r.tipe IN ('N', 'M')
-          AND j.tgl_jurnal >= ? AND j.tgl_jurnal <= ?
-          GROUP BY r.kd_rek, r.nm_rek, r.balance
+      $sqlMutasi = "
+        SELECT
+          jd.kd_rek,
+          COALESCE(SUM(
+            CASE
+              WHEN r.balance = 'D' THEN COALESCE(jd.debet, 0) - COALESCE(jd.kredit, 0)
+              ELSE COALESCE(jd.kredit, 0) - COALESCE(jd.debet, 0)
+            END
+          ), 0) AS mutasi
+        FROM mlite_detailjurnal jd
+        JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
+        JOIN mlite_rekening r ON r.kd_rek = jd.kd_rek
+        WHERE r.tipe IN ('N', 'M')
+          AND j.tgl_jurnal >= ?
+          AND j.tgl_jurnal < ?
+        GROUP BY jd.kd_rek
       ";
-      
-      $stmt_mutasi = $this->db()->pdo()->prepare($query_mutasi);
-      $stmt_mutasi->execute([$tgl_awal, $tgl_akhir]);
-      $mutasi_data = [];
-      foreach($stmt_mutasi->fetchAll() as $row) {
-          $mutasi_data[$row['kd_rek']] = $row['mutasi_periode'];
+      $stMutasiBefore = $this->db()->pdo()->prepare($sqlMutasi);
+      $stMutasiBefore->execute([$awalTahun, $tgl_awal]);
+      $mutasi_before = [];
+      foreach ($stMutasiBefore->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        $mutasi_before[(string) $row['kd_rek']] = (float) ($row['mutasi'] ?? 0);
+      }
+
+      $sqlMutasiPeriode = "
+        SELECT
+          jd.kd_rek,
+          COALESCE(SUM(
+            CASE
+              WHEN r.balance = 'D' THEN COALESCE(jd.debet, 0) - COALESCE(jd.kredit, 0)
+              ELSE COALESCE(jd.kredit, 0) - COALESCE(jd.debet, 0)
+            END
+          ), 0) AS mutasi
+        FROM mlite_detailjurnal jd
+        JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
+        JOIN mlite_rekening r ON r.kd_rek = jd.kd_rek
+        WHERE r.tipe IN ('N', 'M')
+          AND j.tgl_jurnal >= ?
+          AND j.tgl_jurnal <= ?
+        GROUP BY jd.kd_rek
+      ";
+      $stMutasiPeriode = $this->db()->pdo()->prepare($sqlMutasiPeriode);
+      $stMutasiPeriode->execute([$tgl_awal, $tgl_akhir]);
+      $mutasi_periode = [];
+      foreach ($stMutasiPeriode->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        $mutasi_periode[(string) $row['kd_rek']] = (float) ($row['mutasi'] ?? 0);
       }
 
       // Ambil semua rekening aktif
@@ -506,8 +822,9 @@ class Admin extends AdminModule
       $result = $stmt_rekening->fetchAll();
       foreach($result as $rek) {
         // Hitung saldo akhir = saldo awal + mutasi periode
-        $saldo_awal = isset($saldo_awal_data[$rek['kd_rek']]) ? $saldo_awal_data[$rek['kd_rek']] : 0;
-        $mutasi = isset($mutasi_data[$rek['kd_rek']]) ? $mutasi_data[$rek['kd_rek']] : 0;
+        $kdRek = (string) ($rek['kd_rek'] ?? '');
+        $saldo_awal = (float) ($saldo_awal_tahun[$kdRek] ?? 0) + (float) ($mutasi_before[$kdRek] ?? 0);
+        $mutasi = (float) ($mutasi_periode[$kdRek] ?? 0);
         $saldo_akhir = $saldo_awal + $mutasi;
         
         // Skip akun dengan saldo 0
@@ -579,7 +896,7 @@ class Admin extends AdminModule
       // Hitung laba rugi periode berjalan untuk penyesuaian modal
       $query_labarugi = "
           SELECT 
-              COALESCE(SUM(CASE WHEN r.balance = 'K' THEN jd.kredit - jd.debet ELSE jd.debet - jd.kredit END), 0) as laba_rugi
+              COALESCE(SUM(COALESCE(jd.kredit, 0) - COALESCE(jd.debet, 0)), 0) as laba_rugi
           FROM mlite_rekening r
           LEFT JOIN mlite_detailjurnal jd ON r.kd_rek = jd.kd_rek
           LEFT JOIN mlite_jurnal j ON j.no_jurnal = jd.no_jurnal
@@ -594,6 +911,15 @@ class Admin extends AdminModule
       
       // Tambahkan laba rugi ke total modal
       $total_modal += $laba_rugi;
+      if (abs((float) $laba_rugi) >= 0.01) {
+        $modal[] = [
+          'kd_rek' => '',
+          'nm_rek' => 'Laba/Rugi Periode',
+          'saldo' => (float) $laba_rugi,
+          'saldo_awal' => 0,
+          'mutasi' => (float) $laba_rugi
+        ];
+      }
       
       // Hitung total aktiva dan pasiva
       $total_aktiva = $total_aktiva_lancar + $total_aktiva_tetap;
@@ -662,6 +988,17 @@ class Admin extends AdminModule
 
     public function postInsertDummyKeuangan()
     {
+        $akunKegiatan = [
+            ['kegiatan' => 'Penerimaan Pasien Rawat Jalan', 'kd_rek' => '4101'],
+            ['kegiatan' => 'Penerimaan Pasien Rawat Inap', 'kd_rek' => '4102'],
+            ['kegiatan' => 'Penerimaan Penjualan Obat & BHP', 'kd_rek' => '4103'],
+            ['kegiatan' => 'Penerimaan Laboratorium', 'kd_rek' => '4104'],
+            ['kegiatan' => 'Penerimaan Radiologi', 'kd_rek' => '4105'],
+            ['kegiatan' => 'Pembayaran Gaji Karyawan', 'kd_rek' => '5101'],
+            ['kegiatan' => 'Pembelian Obat & BHP', 'kd_rek' => '5201'],
+            ['kegiatan' => 'Pembayaran Biaya Operasional', 'kd_rek' => '5301'],
+        ];
+
         $rekeningtahun = [
             ['thn' => 2025, 'kd_rek' => '1101', 'saldo_awal' => 50000000],
             ['thn' => 2025, 'kd_rek' => '1201', 'saldo_awal' => 200000000],
@@ -768,6 +1105,9 @@ class Admin extends AdminModule
         foreach ($rekeningtahun as $item) {
             $requiredRekening[$item['kd_rek']] = true;
         }
+        foreach ($akunKegiatan as $item) {
+            $requiredRekening[$item['kd_rek']] = true;
+        }
         foreach ($detailjurnal as $item) {
             $requiredRekening[$item['kd_rek']] = true;
         }
@@ -802,11 +1142,31 @@ class Admin extends AdminModule
             }
 
             $insertedRekeningTahun = 0;
+            $updatedRekeningTahun = 0;
             foreach ($rekeningtahun as $item) {
                 $exists = $this->db('mlite_rekeningtahun')->where('thn', $item['thn'])->where('kd_rek', $item['kd_rek'])->oneArray();
                 if (empty($exists)) {
                     $this->db('mlite_rekeningtahun')->save($item);
                     $insertedRekeningTahun++;
+                } else {
+                    $current = (float) ($exists['saldo_awal'] ?? 0);
+                    $next = (float) ($item['saldo_awal'] ?? 0);
+                    if (abs($current - $next) >= 0.01) {
+                        $this->db('mlite_rekeningtahun')
+                            ->where('thn', $item['thn'])
+                            ->where('kd_rek', $item['kd_rek'])
+                            ->save(['saldo_awal' => $item['saldo_awal']]);
+                        $updatedRekeningTahun++;
+                    }
+                }
+            }
+
+            $insertedAkunKegiatan = 0;
+            foreach ($akunKegiatan as $item) {
+                $exists = $this->db('mlite_akun_kegiatan')->where('kegiatan', $item['kegiatan'])->oneArray();
+                if (empty($exists)) {
+                    $this->db('mlite_akun_kegiatan')->save($item);
+                    $insertedAkunKegiatan++;
                 }
             }
 
@@ -835,7 +1195,7 @@ class Admin extends AdminModule
             }
 
             $this->db()->pdo()->commit();
-            $this->notify('success', 'Data dummy keuangan diproses. Insert baru: rekening tahun '.$insertedRekeningTahun.', jurnal '.$insertedJurnal.', detail jurnal '.$insertedDetail.'.');
+            $this->notify('success', 'Data dummy keuangan diproses. Rekening tahun: insert '.$insertedRekeningTahun.', update '.$updatedRekeningTahun.'. Akun kegiatan: insert '.$insertedAkunKegiatan.'. Jurnal: insert '.$insertedJurnal.'. Detail jurnal: insert '.$insertedDetail.'.');
         } catch (\Exception $e) {
             $this->db()->pdo()->rollBack();
             $this->notify('failure', 'Insert data dummy keuangan gagal: '.$e->getMessage());
