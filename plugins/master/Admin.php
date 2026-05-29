@@ -2784,66 +2784,34 @@ class Admin extends AdminModule
         set_time_limit(0);
         ini_set('memory_limit', '512M');
 
-        $url = 'https://apimed.mlite.id/icd10.json';
+        $url = 'https://basoro.id/downloads/mlite_inacbg_codes.csv';
         echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor ICD-10 dari ' . $url . '<br>';
 
-        $tempFile = sys_get_temp_dir() . '/icd10_temp.json';
-        
-        if (!file_exists($tempFile) || (time() - filemtime($tempFile) > 86400) || filesize($tempFile) == 0) {
-            echo '['.date('d-m-Y H:i:s').'][info] Mendownload file... (ini mungkin butuh waktu)<br>';
-            $fp = fopen($tempFile, 'w+');
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_FILE, $fp);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
-            curl_exec($ch);
-            
-            if (curl_errno($ch)) {
-                echo '['.date('d-m-Y H:i:s').'][error] Download error: ' . curl_error($ch) . '<br>';
-            }
-            
-            curl_close($ch);
-            fclose($fp);
-            
-            if (filesize($tempFile) == 0) {
-                echo '['.date('d-m-Y H:i:s').'][error] File yang didownload kosong.<br>';
-                unlink($tempFile);
-                exit();
-            }
-            
-            echo '['.date('d-m-Y H:i:s').'][info] File didownload (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
-        } else {
-            echo '['.date('d-m-Y H:i:s').'][info] Menggunakan file cache lokal (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        $csvData = file_get_contents($url);
+        if (!$csvData) {
+            echo '['.date('d-m-Y H:i:s').'][error] Gagal mendownload file CSV.<br>';
+            exit();
         }
 
-        echo '['.date('d-m-Y H:i:s').'][info] Memulai proses import seamless...<br>';
+        $lines = explode(PHP_EOL, $csvData);
+        $pdo = $this->core->db()->pdo();
+        
+        $count = 0;
+        $batchSize = 1000;
+        $pdo->beginTransaction();
 
-        try {
-            $head = trim((string) file_get_contents($tempFile, false, null, 0, 4096));
-            $opts = ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)];
-            if ($head !== '' && $head[0] === '{') {
-                if (strpos($head, '"data"') !== false) {
-                    $opts['pointer'] = '/data';
-                } elseif (strpos($head, '"items"') !== false) {
-                    $opts['pointer'] = '/items';
-                } elseif (strpos($head, '"results"') !== false) {
-                    $opts['pointer'] = '/results';
-                }
-            }
-            $items = \JsonMachine\Items::fromFile($tempFile, $opts);
-            $pdo = $this->core->db()->pdo();
+        $stmt = $pdo->prepare("REPLACE INTO penyakit 
+            (kd_penyakit, nm_penyakit, ciri_ciri, keterangan, kd_ktg, status) 
+            VALUES (?, ?, '', '', '-', 'Tidak Menular')");
+
+        foreach ($lines as $line) {
+            if (empty(trim($line))) continue;
+            $data = str_getcsv($line);
             
-            $count = 0;
-            $batchSize = 1000;
-
-            $pdo->beginTransaction();
-            $stmt = $pdo->prepare("REPLACE INTO penyakit 
-                (kd_penyakit, nm_penyakit, ciri_ciri, keterangan, kd_ktg, status) 
-                VALUES (?, ?, '', '', '-', 'Tidak Menular')");
-
-            foreach ($items as $item) {
-                $kode = trim($item[0] ?? '');
-                $nama = trim($item[1] ?? '');
+            // Index 4 is the system type
+            if (isset($data[4]) && strpos($data[4], 'ICD_10') !== false) {
+                $kode = trim($data[1] ?? '');
+                $nama = trim($data[3] ?? '');
 
                 if ($kode === '') continue;
 
@@ -2853,25 +2821,17 @@ class Admin extends AdminModule
                 if ($count % $batchSize === 0) {
                     $pdo->commit();
                     $pdo->beginTransaction();
-                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data...<br>';
+                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data ICD-10...<br>';
                     if (ob_get_level() > 0) ob_flush();
                     flush();
                 }
             }
-
-            if ($pdo->inTransaction()) {
-                $pdo->commit();
-            }
-            echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
-            
-            unlink($tempFile);
-
-        } catch (\Exception $e) {
-            if (isset($pdo) && $pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
-            echo '['.date('d-m-Y H:i:s').'][error] Terjadi kesalahan: ' . $e->getMessage() . '<br>';
         }
+
+        if ($pdo->inTransaction()) {
+            $pdo->commit();
+        }
+        echo '['.date('d-m-Y H:i:s').'][info] Impor ICD-10 selesai! Total: ' . $count . ' data.<br>';
         exit();
     }
 
@@ -2926,55 +2886,34 @@ class Admin extends AdminModule
         set_time_limit(0);
         ini_set('memory_limit', '512M');
 
-        $url = 'https://apimed.mlite.id/icd9.json';
+        $url = 'https://basoro.id/downloads/mlite_inacbg_codes.csv';
         echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor ICD-9 dari ' . $url . '<br>';
 
-        $tempFile = sys_get_temp_dir() . '/icd9_temp.json';
-        
-        if (!file_exists($tempFile) || (time() - filemtime($tempFile) > 86400) || filesize($tempFile) == 0) {
-            echo '['.date('d-m-Y H:i:s').'][info] Mendownload file... (ini mungkin butuh waktu)<br>';
-            $fp = fopen($tempFile, 'w+');
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_FILE, $fp);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
-            curl_exec($ch);
-
-            if (curl_errno($ch)) {
-                echo '['.date('d-m-Y H:i:s').'][error] Download error: ' . curl_error($ch) . '<br>';
-            }
-
-            curl_close($ch);
-            fclose($fp);
-
-            if (filesize($tempFile) == 0) {
-                echo '['.date('d-m-Y H:i:s').'][error] File yang didownload kosong.<br>';
-                unlink($tempFile);
-                exit();
-            }
-
-            echo '['.date('d-m-Y H:i:s').'][info] File didownload (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
-        } else {
-            echo '['.date('d-m-Y H:i:s').'][info] Menggunakan file cache lokal (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        $csvData = file_get_contents($url);
+        if (!$csvData) {
+            echo '['.date('d-m-Y H:i:s').'][error] Gagal mendownload file CSV.<br>';
+            exit();
         }
 
-        echo '['.date('d-m-Y H:i:s').'][info] Memulai proses import seamless...<br>';
+        $lines = explode(PHP_EOL, $csvData);
+        $pdo = $this->core->db()->pdo();
+        
+        $count = 0;
+        $batchSize = 1000;
+        $pdo->beginTransaction();
 
-        try {
-            $items = \JsonMachine\Items::fromFile($tempFile, ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)]);
-            $pdo = $this->core->db()->pdo();
+        $stmt = $pdo->prepare("REPLACE INTO icd9 
+            (kode, deskripsi_panjang, deskripsi_pendek) 
+            VALUES (?, ?, '')");
+
+        foreach ($lines as $line) {
+            if (empty(trim($line))) continue;
+            $data = str_getcsv($line);
             
-            $count = 0;
-            $batchSize = 1000;
-
-            $pdo->beginTransaction();
-            $stmt = $pdo->prepare("REPLACE INTO icd9 
-                (kode, deskripsi_panjang, deskripsi_pendek) 
-                VALUES (?, ?, '')");
-
-            foreach ($items as $item) {
-                $kode = trim($item[0] ?? '');
-                $nama = trim($item[1] ?? '');
+            // Index 4 is the system type
+            if (isset($data[4]) && strpos($data[4], 'ICD_9') !== false) {
+                $kode = trim($data[1] ?? '');
+                $nama = trim($data[3] ?? '');
 
                 if ($kode === '') continue;
 
@@ -2984,25 +2923,17 @@ class Admin extends AdminModule
                 if ($count % $batchSize === 0) {
                     $pdo->commit();
                     $pdo->beginTransaction();
-                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data...<br>';
+                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data ICD-9...<br>';
                     if (ob_get_level() > 0) ob_flush();
                     flush();
                 }
             }
-
-            if ($pdo->inTransaction()) {
-                $pdo->commit();
-            }
-            echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
-            
-            unlink($tempFile);
-
-        } catch (\Exception $e) {
-            if (isset($pdo) && $pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
-            echo '['.date('d-m-Y H:i:s').'][error] Terjadi kesalahan: ' . $e->getMessage() . '<br>';
         }
+
+        if ($pdo->inTransaction()) {
+            $pdo->commit();
+        }
+        echo '['.date('d-m-Y H:i:s').'][info] Impor ICD-9 selesai! Total: ' . $count . ' data.<br>';
         exit();
     }
 

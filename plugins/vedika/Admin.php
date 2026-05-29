@@ -5037,21 +5037,34 @@ class Admin extends AdminModule
       }
   }
 
-  private function GroupingDRG($nomor_sep){	
+  public function postGroupingDRG()
+  {
+      $nomor_sep = $_POST['nomor_sep'];
+      $special_cmg = $_POST['special_cmg'] ?? '';
+      echo $this->GroupingDRG($nomor_sep, $special_cmg);
+      exit();
+  }
+
+  private function GroupingDRG($nomor_sep, $special_cmg = ''){	
+      $stage = ($special_cmg == '') ? "1" : "2";
       $request ='{
                       "metadata": {
                           "method":"grouper",
-                          "stage":"1",
+                          "stage":"'.$stage.'",
                           "grouper":"idrg"
                       },
                       "data": {
-                          "nomor_sep":"'.$nomor_sep.'"
+                          "nomor_sep":"'.$nomor_sep.'"';
+      if ($special_cmg != '') {
+          $request .= ', "special_cmg":"'.$special_cmg.'"';
+      }
+      $request .= '
                       }
                   }';
       $msg= $this->Request($request);
       $this->db('mlite_eklaim_logs')->save([
           'nomor_sep' => $nomor_sep,
-          'method' => "grouper_idrg", 
+          'method' => "grouper_idrg_stage_".$stage, 
           'request_data' => $request,
           'response_data' => json_encode($msg), 
           'created_at' => date('Y-m-d H:i:s'),
@@ -5265,6 +5278,36 @@ class Admin extends AdminModule
         ]);
     }    
     exit();    
+  }
+
+  public function postGetIdrCodesByCodes()
+  {
+    header('Content-Type: application/json');
+    $input = json_decode(file_get_contents('php://input'), true);
+    $codes = $input['codes'] ?? [];
+    
+    if (empty($codes)) { 
+        echo json_encode(['success' => true, 'data' => []]); 
+        exit(); 
+    }
+    
+    $placeholders = str_repeat('?,', count($codes) - 1) . '?';
+    $sql = "SELECT id, code, code2, description, `system`, validcode, accpdx, asterisk, im 
+            FROM mlite_idr_codes 
+            WHERE code IN ($placeholders) OR code2 IN ($placeholders)";
+    
+    // Duplicate codes for both IN clauses
+    $allParams = array_merge($codes, $codes);
+    
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute($allParams);
+    $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    
+    echo json_encode([
+        'success' => true, 
+        'data' => htmlspecialchars_array($results)
+    ]);
+    exit();
   }
 
   private function InacbgToDRG($nomor_sep,$diagnosainacbg,$procedureinacbg){	

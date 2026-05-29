@@ -102,6 +102,9 @@
                         <i class="fa fa-cogs"></i>
                         Grouping iDRG
                     </button>
+                    <button class="btn btn-default" id="btn-sync-inacbgs" title="Ambil data dari form utama">
+                        <i class="fa fa-refresh"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -116,37 +119,61 @@
             <div class="panel-body">
                 <!-- Tabel hasil sesuai lampiran -->
                 <div class="table-responsive">
-                    <table class="table">
+                    <table class="table table-bordered">
+                        <thead style="background-color: #f5f5f5;">
+                            <tr>
+                                <th colspan="5" style="text-align: center; font-weight: bold; border-bottom: 2px solid #ddd;">Hasil Grouping iDRG</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             <tr>
-                                <td style="font-weight:bold;width:150px;">Info</td>
-                                <td id="groupingInfo" colspan="2">-</td>
+                                <td style="font-weight:bold; width: 15%;">Info</td>
+                                <td id="groupingInfo" colspan="4">-</td>
                             </tr>
                             <tr>
                                 <td style="font-weight:bold;">Jenis Rawat</td>
-                                <td id="groupingJenisRawat" colspan="2">-</td>
+                                <td id="groupingJenisRawat" colspan="4">-</td>
                             </tr>
                             <tr>
                                 <td style="font-weight:bold;">MDC</td>
-                                <td id="groupingMDC">-</td>
-                                <td id="groupingMDCNumber" style="text-align:right;">-</td>
+                                <td id="groupingMDC" style="width: 45%; border-right: none;">-</td>
+                                <td id="groupingMDCNumber" style="width: 10%; border-left: none;">-</td>
+                                <td colspan="2"></td>
                             </tr>
                             <tr>
                                 <td style="font-weight:bold;">DRG</td>
-                                <td id="groupingDRG">-</td>
-                                <td id="groupingDRGCode" style="text-align:right;">-</td>
+                                <td id="groupingDRG" style="border-right: none;">-</td>
+                                <td id="groupingDRGCode" style="border-left: none;">-</td>
+                                <td style="width: 20%; font-weight: bold; border-right: none; text-align: right;">DRG Cost Weight:</td>
+                                <td id="groupingCostWeight" style="width: 10%; text-align: right; color: blue; font-weight: bold; border-left: none;">-</td>
+                            </tr>
+                            <tr id="idrgSpecialOptionsRow" style="display:none;">
+                                <td id="groupingTopupLabel" style="font-weight:bold;">Top-up</td>
+                                <td style="border-right: none;">
+                                    <select class="form-control" id="idrgSpecialOptionsSelect" style="width: 100%;">
+                                        <option value="">- Pilihan Topup -</option>
+                                    </select>
+                                </td>
+                                <td id="groupingTopupCode" style="border-left: none; border-right: none; text-align: center;">-</td>
+                                <td style="font-weight: bold; border-right: none; text-align: right;">Top Up Cost Weight:</td>
+                                <td id="groupingTopupCostWeight" style="text-align: right; color: blue; font-weight: bold; border-left: none;">-</td>
                             </tr>
                             <tr>
-                                <td style="font-weight:bold;">Cost Weight ** )</td>
-                                <td id="groupingCostWeight" colspan="2">-</td>
+                                <td style="font-weight:bold;">NBR</td>
+                                <td id="groupingNBR" style="color: blue; font-weight: bold; border-right: none;">-</td>
+                                <td style="border-left: none; border-right: none;"></td>
+                                <td style="font-weight: bold; border-right: none; text-align: right;">Total Cost Weight:</td>
+                                <td id="groupingTotalCostWeight" style="text-align: right; color: blue; font-weight: bold; border-left: none;">-</td>
                             </tr>
                             <tr>
-                                <td style="font-weight:bold;">NBR ** )	</td>
-                                <td id="groupingNBR" colspan="2">-</td>
+                                <td style="font-weight:bold;">Total Klaim</td>
+                                <td colspan="2" style="border-right: none;"></td>
+                                <td style="font-weight: bold; border-right: none; text-align: right;">Rp</td>
+                                <td id="groupingTotalKlaim" style="text-align: right; color: blue; font-weight: bold; border-left: none;">-</td>
                             </tr>
                             <tr>
                                 <td style="font-weight:bold;">Status</td>
-                                <td id="groupingStatus" colspan="2">-</td>
+                                <td id="groupingStatus" colspan="4">-</td>
                             </tr>
                         </tbody>
                     </table>
@@ -462,6 +489,148 @@
 </script>
 <script>
     var baseURL = mlite.url + '/' + mlite.admin;
+    
+    window.autoFillFromInacbgs = function(forceRefresh = false) {
+        console.log('autoFillFromInacbgs triggered, forceRefresh:', forceRefresh);
+        
+        // Cek beberapa kemungkinan selector untuk mendapatkan data dari form utama
+        let diagnosaVal = $('#diagnosa').val() || $('input[name="diagnosa"]').val();
+        let procedureVal = $('#procedure').val() || $('input[name="procedure"]').val();
+        
+        // Jika tidak ditemukan di local DOM, coba cari di parent window (jika modal)
+        if (!diagnosaVal && window.parent && window.parent.$) {
+            diagnosaVal = window.parent.$('#diagnosa').val() || window.parent.$('input[name="diagnosa"]').val();
+        }
+        if (!procedureVal && window.parent && window.parent.$) {
+            procedureVal = window.parent.$('#procedure').val() || window.parent.$('input[name="procedure"]').val();
+        }
+        
+        console.log('Diagnosa value found:', diagnosaVal);
+        console.log('Procedure value found:', procedureVal);
+        
+        if (!diagnosaVal && !procedureVal) {
+            console.log('No diagnosa or procedure found to autofill');
+            return;
+        }
+        
+        const diagnosaCodes = diagnosaVal ? diagnosaVal.split('#').filter(c => c.trim() !== '').map(c => c.trim().toUpperCase()) : [];
+        const procedureCodes = procedureVal ? procedureVal.split('#').filter(c => c.trim() !== '').map(c => c.trim().toUpperCase()) : [];
+        
+        // Untuk lookup ke server, kirim versi dengan titik dan tanpa titik agar pencarian akurat
+        const allCodes = [];
+        [...diagnosaCodes, ...procedureCodes].forEach(code => {
+            allCodes.push(code);
+            const noDot = code.replace(/\./g, '');
+            if (noDot !== code) allCodes.push(noDot);
+        });
+        
+        console.log('Processed codes for lookup (including no-dot versions):', allCodes);
+        
+        if (allCodes.length === 0) return;
+        
+        // Tampilkan loader saat sync
+        if (typeof showIdrgLoader === 'function') showIdrgLoader('Sinkronisasi data dari form utama...');
+        
+        $.ajax({
+            url: baseURL + '/vedika/getidrcodesbycodes?t=' + mlite.token,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ codes: allCodes }),
+            success: function(response) {
+                if (typeof hideIdrgLoader === 'function') hideIdrgLoader();
+                console.log('Lookup response from server:', response);
+                
+                if (response.success && response.data) {
+                    const codeMap = {};
+                    response.data.forEach(item => {
+                        if (item.code) codeMap[item.code.toUpperCase()] = item;
+                        if (item.code2) codeMap[item.code2.toUpperCase()] = item;
+                        if (item.code) {
+                            const codeNoDot = item.code.replace(/\./g, '').toUpperCase();
+                            if (!codeMap[codeNoDot]) codeMap[codeNoDot] = item;
+                        }
+                    });
+                    
+                    let idrgPopulated = false;
+                    let inacbgPopulated = false;
+
+                    // Jika forceRefresh atau tabel kosong, kita proses
+                    // Untuk mempermudah, kita hapus dulu "empty-table" rows
+                    
+                    // Populate iDRG Diagnosis
+                    if (forceRefresh || $('#diagnosisTableBody tr:not(:has(.empty-table))').length === 0) {
+                        if (forceRefresh) $('#diagnosisTableBody').empty().append('<tr><td colspan="4" class="empty-table"><i class="fa fa-clipboard-list"></i><p>Belum ada diagnosa yang dipilih</p></td></tr>');
+                        diagnosaCodes.forEach(code => {
+                            const match = codeMap[code] || codeMap[code.replace(/\./g, '')];
+                            if (match) {
+                                addDiagnosisToTable(match, 'diagnosisTableBody', false);
+                                idrgPopulated = true;
+                            } else {
+                                console.warn('No match found for diagnosis code:', code);
+                            }
+                        });
+                    }
+                    
+                    // Populate INACBG Diagnosis
+                    if (forceRefresh || $('#inacbgDiagnosisTableBody tr:not(:has(.empty-table))').length === 0) {
+                        if (forceRefresh) $('#inacbgDiagnosisTableBody').empty().append('<tr><td colspan="4" class="empty-table"><i class="fa fa-clipboard-list"></i><p>Belum ada diagnosa yang dipilih</p></td></tr>');
+                        diagnosaCodes.forEach(code => {
+                            const match = codeMap[code] || codeMap[code.replace(/\./g, '')];
+                            if (match) {
+                                addDiagnosisToTable(match, 'inacbgDiagnosisTableBody', true);
+                                inacbgPopulated = true;
+                            }
+                        });
+                    }
+                    
+                    // Populate iDRG Procedure
+                    if (forceRefresh || $('#procedureTableBody tr:not(:has(.empty-table))').length === 0) {
+                        if (forceRefresh) $('#procedureTableBody').empty().append('<tr><td colspan="5" class="empty-table"><i class="fa fa-tools"></i><p>Belum ada prosedur yang dipilih</p></td></tr>');
+                        procedureCodes.forEach(code => {
+                            const match = codeMap[code] || codeMap[code.replace(/\./g, '')];
+                            if (match) {
+                                addProcedureToTable(match, 'procedureTableBody', false);
+                                idrgPopulated = true;
+                            }
+                        });
+                    }
+                    
+                    // Populate INACBG Procedure
+                    if (forceRefresh || $('#inacbgProcedureTableBody tr:not(:has(.empty-table))').length === 0) {
+                        if (forceRefresh) $('#inacbgProcedureTableBody').empty().append('<tr><td colspan="4" class="empty-table"><i class="fa fa-clipboard-list"></i><p>Belum ada prosedur yang dipilih</p></td></tr>');
+                        procedureCodes.forEach(code => {
+                            const match = codeMap[code] || codeMap[code.replace(/\./g, '')];
+                            if (match) {
+                                addProcedureToTable(match, 'inacbgProcedureTableBody', true);
+                                inacbgPopulated = true;
+                            }
+                        });
+                    }
+
+                    if (idrgPopulated) $('#idrgSection').show();
+                    if (inacbgPopulated) $('#inacbgSection').show();
+                    
+                    console.log('Autofill complete. iDRG Populated:', idrgPopulated, 'INACBG Populated:', inacbgPopulated);
+                    if (typeof updateValidationStatus === 'function') updateValidationStatus();
+                    
+                    if (forceRefresh && (idrgPopulated || inacbgPopulated)) {
+                        if (typeof showSuccessMessage === 'function') showSuccessMessage('Data berhasil disinkronisasi dari form utama.');
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                if (typeof hideIdrgLoader === 'function') hideIdrgLoader();
+                console.error('Autofill lookup failed:', error);
+            }
+        });
+    }
+
+    // Bind the sync button menggunakan event delegation agar lebih robust
+    $(document).on('click', '#btn-sync-inacbgs', function() {
+        console.log('Sync button clicked, triggering forced autofill');
+        autoFillFromInacbgs(true);
+    });
+
     $('#idrgSection').show();
     $('#procedureValidationStatus').show();
     // Tampilkan hasil grouping saat tombol Grouping iDRG diklik
@@ -715,7 +884,7 @@
           tarif_poli_eks: tarif_poli_eks
         } ,function(data) {
           var data = JSON.parse(data);
-          console.log(data);
+          console.log('Response dari server eklaim (Grouping iDRG Stage 1):', data);
         //   alert('Data klaim nomor SEP ' + nosep + ' telah disimpan!!');
           // tutup loader setelah alert
           if(data.metadata.message=="Ok"){
@@ -803,7 +972,26 @@
         drgElement.text(drgDescription);
         mdcNumberElement.text(mdcNumber);
         drgCodeElement.text(drgCode);
+
+        // Populate Special iDRG Options
+        const specialOptions = res.special_cmg_option || res.topup_options || [];
+        populateIdrgSpecialOptions(specialOptions, res);
         
+        // Calculate Total Cost Weight and Total Klaim if not present
+        const drgCostWeight = parseFloat(res.cost_weight) || 0;
+        let totalCostWeight = parseFloat(res.total_cost_weight) || drgCostWeight;
+        
+        // Update Total Cost Weight and Total Klaim display
+        $('#groupingCostWeight').text(`** ${drgCostWeight.toFixed(2)}`);
+        $('#groupingTotalCostWeight').text(`** ${totalCostWeight.toFixed(2)}`);
+        
+        const nbrValue = parseInt(res.nbr.replace(/[^0-9]/g, '')) || 0;
+        const totalKlaim = Math.round(nbrValue * totalCostWeight);
+        $('#groupingTotalKlaim').text(`** ${formatCurrency(totalKlaim.toString())}`);
+        
+        // Format NBR with comma
+        $('#groupingNBR').text(`** ${formatCurrency(nbrValue.toString())}`);
+
         // Deteksi error menggunakan helper function
         const isError = isGroupingError(mdcDescription, drgDescription, mdcNumber, drgCode);
         
@@ -824,6 +1012,89 @@
         $('html, body').animate({
             scrollTop: $('#groupingResults').offset().top - 100
         }, 500);        
+    }
+
+    function populateIdrgSpecialOptions(specialOptions, res = {}) {
+        const select = $('#idrgSpecialOptionsSelect');
+        const row = $('#idrgSpecialOptionsRow');
+        const label = $('#groupingTopupLabel');
+        const codeCell = $('#groupingTopupCode');
+        const weightCell = $('#groupingTopupCostWeight');
+        
+        // Simpan nilai yang sedang terpilih
+        const currentValue = select.val();
+        
+        select.empty().append('<option value="">- Pilihan Topup -</option>');
+        
+        // Reset dynamic fields
+        label.text('Top-up');
+        codeCell.text('-');
+        weightCell.text('-');
+        
+        if (specialOptions && specialOptions.length > 0) {
+            row.show();
+            specialOptions.forEach(option => {
+                const isSelected = currentValue === option.code ? 'selected' : '';
+                select.append(`<option value="${option.code}" data-type="${option.type || ''}" data-weight="${option.cost_weight || 0}" ${isSelected}>${option.description}</option>`);
+                
+                // Jika terpilih (setelah grouping stage 2), update fields
+                if (isSelected) {
+                    const type = option.type ? option.type.charAt(0).toUpperCase() + option.type.slice(1) : '';
+                    label.text(`Top-up ${type}`);
+                    codeCell.text(option.code);
+                    weightCell.text(`** ${parseFloat(option.cost_weight).toFixed(2)}`);
+                }
+            });
+            
+            // Add event listener for select
+            select.off('change').on('change', function() {
+                const selectedOption = $(this).find('option:selected');
+                const type = selectedOption.data('type');
+                const weight = selectedOption.data('weight');
+                const code = $(this).val();
+                
+                if (code) {
+                    const typeFormatted = type ? type.charAt(0).toUpperCase() + type.slice(1) : '';
+                    label.text(`Top-up ${typeFormatted}`);
+                    codeCell.text(code);
+                    weightCell.text(`** ${parseFloat(weight).toFixed(2)}`);
+                } else {
+                    label.text('Top-up');
+                    codeCell.text('-');
+                    weightCell.text('-');
+                }
+                
+                performIdrgGroupingStage2();
+            });
+        } else {
+            row.hide();
+        }
+    }
+
+    function performIdrgGroupingStage2() {
+        const nomorSep = $('#nosep').val();
+        const specialCmg = $('#idrgSpecialOptionsSelect').val();
+        
+        if (specialCmg === undefined) return;
+        
+        showProcessingMessage('Sedang memproses Grouping iDRG Stage 2...');
+        
+        $.post(baseURL + '/vedika/groupingdrg?t=' + mlite.token, {
+            nomor_sep: nomorSep,
+            special_cmg: specialCmg
+        }, function(data) {
+            const res = JSON.parse(data);
+            console.log('Response dari server eklaim (Grouping iDRG Stage 2):', res);
+            if (res.metadata.message === "Ok") {
+                displayIdrgGroupingResults(res.response_idrg);
+            } else {
+                showErrorMessage('Grouping Stage 2 gagal: ' + res.metadata.message);
+            }
+            hideProcessingMessage();
+        }).fail(function() {
+            showErrorMessage('Gagal menghubungi server untuk Grouping Stage 2');
+            hideProcessingMessage();
+        });
     }
 
     function processINACBG() {
@@ -1203,7 +1474,7 @@
         
         // Populate basic information untuk INACBG
         const currentDate = new Date().toLocaleString('id-ID');
-        var eklaim_kelasrs = '{?=$this->core->settings->get('vedika.eklaim_kelasrs')?}';
+        var eklaim_kelasrs = '{?=$this->core->settings->get("vedika.eklaim_kelasrs")?}';
 
         var kelas = eklaim_kelasrs.charAt(0);        // → 'A'
         var jenis = eklaim_kelasrs.charAt(1) === 'P' ? 'PEMERINTAH' : 'SWASTA';
@@ -1253,7 +1524,7 @@
         $('#inacbgGroupingChronic').text('-');
         
         // Populate Special CMG Options
-        const specialOptions = data.special_cmg_option || [];
+        const specialOptions = data.special_cmg_option || data.topup_options || [];
         populateSpecialOptions(specialOptions);
         
         // Set Total Klaim
@@ -1863,7 +2134,7 @@
 
                             displayInacbgGroupingResults(data_inacbg_grouper_final);
 
-                            const specialOptions = parsedResponse.special_cmg_option || [];
+                            const specialOptions = parsedResponse.special_cmg_option || parsedResponse.topup_options || [];
                             populateSpecialOptions(specialOptions);
 
 
@@ -2187,6 +2458,21 @@
             });
         }
     })();
+
+    $(function() {
+        console.log('DOM ready in idrg.html, setting up autofill');
+        const modal = $('#moduleModal');
+        if (modal.length && !modal.hasClass('in')) {
+            console.log('Modal found but not shown, waiting for shown.bs.modal');
+            modal.one('shown.bs.modal', function() {
+                console.log('Modal shown, starting autofill delay');
+                setTimeout(autoFillFromInacbgs, 800);
+            });
+        } else {
+            console.log('Modal already shown or not used, starting autofill delay');
+            setTimeout(autoFillFromInacbgs, 800);
+        }
+    });
 
     function showSuccessMessage(message) {
         const notification = `
@@ -3572,6 +3858,6 @@
         const overlay = document.getElementById('idrgLoaderOverlay');
         if (overlay) overlay.style.display = 'none';
     }
-    
+
 
 </script>
