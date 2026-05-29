@@ -893,7 +893,7 @@
         <tr>
           <td>{if: isset($get_claim_data.response.data.nama_pasien)}{?=isset_or($get_claim_data.response.data.nama_pasien)?}{/if}</td>
           <td>{if: isset($get_claim_data.response.data.nomor_kartu)}{?=isset_or($get_claim_data.response.data.nomor_kartu)?}{/if}</td>
-          <td>{if: isset($get_claim_data.response.data.nomor_sep)}<a href="{?=url([ADMIN,'vedika','klaimpdf','{?=isset_or($get_claim_data.response.data.nomor_sep)?}'])?}" target="_blank">{?=isset_or($get_claim_data.response.data.nomor_sep)?}</a>{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.nomor_sep)}<a href="{?=url([ADMIN,'vedika','klaimpdf',$get_claim_data.response.data.nomor_sep])?}" target="_blank">{?=isset_or($get_claim_data.response.data.nomor_sep)?}</a>{/if}</td>
           <td>{if: isset($get_claim_data.response.data.nama_dokter)}{?=isset_or($get_claim_data.response.data.nama_dokter)?}{/if}</td>
           <td>{if: isset($get_claim_data.response.data.diagnosa)}{?=isset_or($get_claim_data.response.data.diagnosa)?}{/if}</td>
           <td>{if: isset($get_claim_data.response.data.procedure)}{?=isset_or($get_claim_data.response.data.procedure)?}{/if}</td>

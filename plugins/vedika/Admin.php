@@ -4014,7 +4014,7 @@ class Admin extends AdminModule
     }
     //echo json_encode($adl, true);
     $hide_input_data = false;
-    if ($get_claim_data && $get_claim_data['response']['data']['grouper']['response_idrg']['status_cd'] == 'final') {
+    if ($get_claim_data && ($get_claim_data['response']['data']['grouper']['response_idrg']['status_cd'] ?? '') == 'final') {
       $hide_input_data = true;
     }
     echo $this->draw('inacbgs.html', [
@@ -4041,7 +4041,7 @@ class Admin extends AdminModule
       'biaya_add_payment_pct' => $total_biaya_add_payment_pct,
       'get_claim_data' => $get_claim_data,
       'penyakit' => $penyakit,
-      'prosedur' => htmlspecialchars_array($prosedur),
+      'prosedur' => $prosedur,
       'adl' => $adl,
       'hide_input_data' => $hide_input_data
     ]);
@@ -5875,21 +5875,28 @@ class Admin extends AdminModule
         $array[] = str_getcsv($line);
     }
 
-    foreach ($array as $data){   
-      $id = $data[0];
-      $code = $data[1];
-      $code2 = $data[2];
-      $description = $data[3];
-      $system = $data[4];
-      $validcode = $data[5];
-      $accpdx = $data[6];
-      $asterisk = $data[7];
-      $im = $data[8];
-      $value_query[] = "('".$id."','".$code."','".$code2."','".str_replace("'","\'",$description)."','".$system."','".$validcode."','".$accpdx."','".$asterisk."','".$im."')";
+    $value_query = [];
+    $pdo = $this->core->db()->pdo();
+    foreach ($array as $data){
+      if(!isset($data[8])) continue;
+      $id = $pdo->quote($data[0]);
+      $code = $pdo->quote($data[1]);
+      $code2 = $pdo->quote($data[2]);
+      $description = $pdo->quote($data[3]);
+      $system = $pdo->quote($data[4]);
+      $validcode = $pdo->quote($data[5]);
+      $accpdx = $pdo->quote($data[6]);
+      $asterisk = $pdo->quote($data[7]);
+      $im = $pdo->quote($data[8]);
+      $value_query[] = "($id,$code,$code2,$description,$system,$validcode,$accpdx,$asterisk,$im)";
+    }
+    if (empty($value_query)) {
+      echo '['.date('d-m-Y H:i:s').'][info] Tidak ada data untuk dimasukkan'."<br>";
+      exit();
     }
     $str = implode(",", $value_query);
     echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
-    $result = $this->core->db()->pdo()->exec("INSERT INTO mlite_idr_codes (id, code, code2, description, `system`, `validcode`, `accpdx`, `asterisk`, `im`) VALUES $str ON DUPLICATE KEY UPDATE id=VALUES(id)");
+    $result = $pdo->exec("REPLACE INTO mlite_idr_codes (id, code, code2, description, `system`, `validcode`, `accpdx`, `asterisk`, `im`) VALUES $str");
     if($result) {
       echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
     } else {
@@ -5997,18 +6004,25 @@ class Admin extends AdminModule
         $array[] = str_getcsv($line);
     }
 
-    foreach ($array as $data){   
-      $id = $data[0];
-      $code = $data[1];
-      $code2 = $data[2];
-      $description = $data[3];
-      $system = $data[4];
-      $validcode = $data[5];
-      $value_query[] = "('".$id."','".$code."','".$code2."','".str_replace("'","\'",$description)."','".$system."','".$validcode."')";
+    $value_query = [];
+    $pdo = $this->core->db()->pdo();
+    foreach ($array as $data){
+      if(!isset($data[5])) continue;
+      $id = $pdo->quote($data[0]);
+      $code = $pdo->quote($data[1]);
+      $code2 = $pdo->quote($data[2]);
+      $description = $pdo->quote($data[3]);
+      $system = $pdo->quote($data[4]);
+      $validcode = $pdo->quote($data[5]);
+      $value_query[] = "($id,$code,$code2,$description,$system,$validcode)";
+    }
+    if (empty($value_query)) {
+      echo '['.date('d-m-Y H:i:s').'][info] Tidak ada data untuk dimasukkan'."<br>";
+      exit();
     }
     $str = implode(",", $value_query);
     echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
-    $result = $this->core->db()->pdo()->exec("INSERT INTO mlite_inacbg_codes (id, code, code2, description, `system`, `validcode`) VALUES $str ON DUPLICATE KEY UPDATE id=VALUES(id)");
+    $result = $pdo->exec("REPLACE INTO mlite_inacbg_codes (id, code, code2, description, `system`, `validcode`) VALUES $str");
     if($result) {
       echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
     } else {
