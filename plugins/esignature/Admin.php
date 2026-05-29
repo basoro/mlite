@@ -147,104 +147,133 @@ class Admin extends AdminModule
             ->where('ref_id', $ref_id)
             ->toArray();
             
+        $latest_sig = $this->db('mlite_esignatures')
+            ->where('ref_type', $ref_type)
+            ->where('ref_id', $ref_id)
+            ->desc('id')
+            ->oneArray();
+
         // Use mPDF (Standard in mLITE)
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8', 
             'format' => 'A4', 
-            'margin_top' => 25,
-            'margin_bottom' => 25,
-            'margin_left' => 30,
+            'margin_top' => 15,
+            'margin_bottom' => 15,
+            'margin_left' => 20,
             'margin_right' => 20
         ]);
 
         // Watermark
-        $mpdf->SetWatermarkText('SIGNED ELECTRONICALLY');
+        // $mpdf->SetWatermarkText('SIGNED ELECTRONICALLY');
         $mpdf->showWatermarkText = true;
         $mpdf->watermark_font = 'DejaVuSansCondensed';
         $mpdf->watermarkTextAlpha = 0.05;
 
-        $html = '
-        <style>
-            body { font-family: sans-serif; }
-            .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
-            .content { margin-bottom: 30px; }
-            .signature-box { border: 1px solid #ccc; padding: 10px; display: inline-block; width: 50%; margin: 5px; vertical-align: top; }
-            .footer { border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px; font-size: 0.8em; color: #666; }
+        // Check if this is a known surat type
+        $surat_types = ['surat.sakit', 'surat.rujukan', 'surat.sehat'];
+        if (in_array($ref_type, $surat_types)) {
+            $no_rawat = revertNoRawat($ref_id);
+            $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat);
+            $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
             
-            /* CSS from riwayat.perawatan.html */
-            table td, table th { padding: 5px; }
-            .tbl_form { border-collapse: collapse; }
-            .tbl_form td { border: 1px solid #000; }
-        </style>
-        
-        <div class="content">';
-        
-        // Load external content
-        $contentFile = WEBAPPS_PATH . '/../admin/tmp/'.$ref_type.'.html';
-        if (file_exists($contentFile)) {
-            $rawContent = file_get_contents($contentFile);
+            $pasien = $this->db('pasien')
+              ->join('kelurahan', 'kelurahan.kd_kel=pasien.kd_kel')
+              ->join('kecamatan', 'kecamatan.kd_kec=pasien.kd_kec')
+              ->join('kabupaten', 'kabupaten.kd_kab=pasien.kd_kab')
+              ->join('propinsi', 'propinsi.kd_prop=pasien.kd_prop')
+              ->where('no_rkm_medis', $no_rkm_medis)
+              ->oneArray();
             
-            // Clean up: Remove <del> tags and modal elements that shouldn't be in PDF
-            $rawContent = preg_replace('/<del>.*?<\/del>/s', '', $rawContent);
-            $rawContent = preg_replace('/<div class="modal-header">.*?<\/div>/s', '', $rawContent);
-            $rawContent = preg_replace('/<div class="modal-footer">.*?<\/div>/s', '', $rawContent);
-            $rawContent = preg_replace('/<a.*?class="btn.*?>.*?<\/a>/s', '', $rawContent); // Remove buttons
+            $nm_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
+            $sip_dokter = $this->core->getDokterInfo('no_ijn_praktek', $kd_dokter);
             
-            $html .= $rawContent;
+            $table_map = [
+                'surat.sakit' => 'mlite_surat_sakit',
+                'surat.rujukan' => 'mlite_surat_rujukan',
+                'surat.sehat' => 'mlite_surat_sehat'
+            ];
+            
+            $surat_data = $this->db($table_map[$ref_type])->where('no_rawat', $no_rawat)->oneArray();
+            
+            $this->tpl->set('pasien', $this->tpl->noParse_array(htmlspecialchars_array($pasien)));
+            $this->tpl->set('nm_dokter', $nm_dokter);
+            $this->tpl->set('sip_dokter', $sip_dokter);
+            $this->tpl->set('no_rawat', $no_rawat);
+            $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($this->settings('settings'))));
+            $this->tpl->set('surat', $surat_data);
+            $this->tpl->set('esignature', $latest_sig);
+            
+            $template_file = MODULES.'/esignature/view/admin/templates/'.$ref_type.'.html';
+            $html = $this->tpl->draw($template_file, true);
         } else {
-            $html .= '<p>Konten riwayat perawatan tidak ditemukan.</p>';
-        }
-
-        $html .= '</div>
-        <div class="signer">
-        <h3>Tanda Tangan Elektronik:</h3>
-        <div style="width: 100%;">';
-
-        foreach ($signatures as $sig) {
-            $path = WEBAPPS_PATH . '/berkas/esignature/' . $sig['signature_path'];
-            $verifyUrl = url(['esignature', 'verify', $sig['signature_hash']]);
-
-            if (file_exists($path)) {
-                $html .= '
-                <div class="signature-box">
-                    <table width="100%">
-                        <tr>
-                            <td width="60%" align="center">
-                                <img src="'.$path.'" height="80" /><br>
-                                <strong>'.$sig['signer_name'].'</strong><br>
-                                <small>'.$sig['signer_role'].'</small><br>
-                                <small>'.date('d-m-Y H:i', strtotime($sig['signed_at'])).'</small>
-                            </td>
-                            <td width="40%" align="center">
-                                <barcode code="'.$verifyUrl.'" type="QR" class="barcode" size="0.8" error="M" disableborder="1" />
-                                <br>
-                                <br>
-                                <small>Scan to Verify</small>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="font-size: 8px; color: #888; word-break: break-all;text-align: center;">
-                                Hash: '.substr($sig['signature_hash'], 0, 20).'...
-                            </td>
-                            <td>
-                            </td>
-                        </tr>
-                    </table>
-                </div>';
+            // Original generic logic
+            $html = '
+            <style>
+                body { font-family: sans-serif; }
+                .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+                .content { margin-bottom: 30px; }
+                .signature-box { border: 1px solid #ccc; padding: 10px; display: inline-block; width: 45%; margin: 5px; vertical-align: top; }
+                .footer { border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px; font-size: 0.8em; color: #666; }
+                table td, table th { padding: 5px; }
+                .tbl_form { border-collapse: collapse; }
+                .tbl_form td { border: 1px solid #000; }
+            </style>
+            
+            <div class="content">';
+            
+            // Load external content
+            $contentFile = WEBAPPS_PATH . '/../admin/tmp/'.$ref_type.'.html';
+            if (file_exists($contentFile)) {
+                $rawContent = file_get_contents($contentFile);
+                $rawContent = preg_replace('/<del>.*?<\/del>/s', '', $rawContent);
+                $rawContent = preg_replace('/<div class="modal-header">.*?<\/div>/s', '', $rawContent);
+                $rawContent = preg_replace('/<div class="modal-footer">.*?<\/div>/s', '', $rawContent);
+                $rawContent = preg_replace('/<a.*?class="btn.*?>.*?<\/a>/s', '', $rawContent);
+                $html .= $rawContent;
+            } else {
+                $html .= '<p>Konten tidak ditemukan.</p>';
             }
+
+            $html .= '</div>
+            <div class="signer">
+            <h3>Tanda Tangan Elektronik:</h3>
+            <div style="width: 100%;">';
+
+            foreach ($signatures as $sig) {
+                $path = WEBAPPS_PATH . '/berkas/esignature/' . $sig['signature_path'];
+                $verifyUrl = url(['esignature', 'verify', $sig['signature_hash']]);
+
+                if (file_exists($path)) {
+                    $html .= '
+                    <div class="signature-box">
+                        <table width="100%">
+                            <tr>
+                                <td width="60%" align="center">
+                                    <img src="'.$path.'" height="60" /><br>
+                                    <strong>'.$sig['signer_name'].'</strong><br>
+                                    <small>'.$sig['signer_role'].'</small><br>
+                                    <small>'.date('d-m-Y H:i', strtotime($sig['signed_at'])).'</small>
+                                </td>
+                                <td width="40%" align="center">
+                                    <barcode code="'.$verifyUrl.'" type="QR" class="barcode" size="0.7" error="M" disableborder="1" />
+                                    <br>
+                                    <small>Verify</small>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>';
+                }
+            }
+            $html .= '</div></div>';
         }
-        
-        $html .= '</div>';
 
         $mpdf->shrink_tables_to_fit = 1;
         $mpdf->use_kwt = true;
-
         $mpdf->WriteHTML($html);
 
-        // Footer with global QR if needed or page numbers
         $mpdf->SetHTMLFooter('
-        <p style="font-size: 9px; color: #888; word-break: break-all;">
-            Dokumen ini resmi dan telah ditandatangani secara elektronik sesuai dengan Peraturan Direktur '.$this->settings('settings.nama_instansi').' dan '.$sig['legal_basis'].'
+        <p style="font-size: 8px; color: #888;">
+            Dokumen ini resmi dan telah ditandatangani secara elektronik sesuai dengan UU ITE No 11 Tahun 2008.
         </p>
         <div class="footer">
             <table width="100%">
@@ -255,7 +284,6 @@ class Admin extends AdminModule
             </table>
         </div>');
 
-        // Check if uploads/berkasrawat/pages/upload exists, if not create it
         $uploadDir = WEBAPPS_PATH . '/berkasrawat/pages/upload/';
         if (!file_exists($uploadDir)) {
             mkdir($uploadDir, 0777, true);
@@ -265,19 +293,16 @@ class Admin extends AdminModule
         $fileName = 'doc_'.$ref_id.'_'.$timestamp.'.pdf';
         $filePath = $uploadDir . $fileName;
 
-        // Save to file
         $mpdf->Output($filePath, 'F');
 
-        // Insert to berkas_digital_perawatan
         if (file_exists($filePath)) {
             $this->db('berkas_digital_perawatan')->save([
-                'no_rawat' => revertNorawat($ref_id), // Assuming ref_id is no_rawat
-                'kode' => $this->settings('esignature.kode_berkasdigital'), // Example code for E-Signed Doc, adjust as needed
+                'no_rawat' => revertNoRawat($ref_id),
+                'kode' => $this->settings('esignature', 'kode_berkasdigital'),
                 'lokasi_file' => 'pages/upload/' . $fileName
             ]);
         }
 
-        // Also output to browser
         $mpdf->Output($fileName, 'I');
         exit;
     }
