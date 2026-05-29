@@ -1635,8 +1635,10 @@ public function postHapusResepResponse()
     if (!empty($this->_getSEPInfo('no_sep', $no_rawat))) {
       $print_sep['bridging_sep'] = $this->db('bridging_sep')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
       $print_sep['bpjs_prb'] = $this->db('bpjs_prb')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
-      $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
-      $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
+      $print_sep['batas_rujukan'] = '';
+      if (!empty($print_sep['bridging_sep']['tglrujukan'])) {
+          $print_sep['batas_rujukan'] = date('Y-m-d', strtotime($print_sep['bridging_sep']['tglrujukan'] . ' +85 days'));
+      }
       switch ($print_sep['bridging_sep']['klsnaik']) {
         case '2':
           $print_sep['kelas_naik'] = 'Kelas VIP';

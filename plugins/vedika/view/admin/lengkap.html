@@ -96,6 +96,10 @@
                             <a href="#" class="btn btn-danger btn-xs bridging_inacbgs" data-no_rawat="{?=convertNorawat($value.no_rawat)?}">
                               <i class="fa fa-refresh"></i> Grouping Inacbgs
                             </a>
+                            <br>
+                            <a href="#" class="btn btn-primary btn-xs erm_bpjs" data-no-rawat="{$value.no_rawat}" data-nm-pasien="{?=$value.nm_pasien?}" data-no-sep="{?=$value.no_sep?}" data-status="{?=isset_or($value.mlite_bpjs_emr_logs.status)?}">
+                              <i class="fa fa-eye"></i> Lihat ERM BPJS
+                            </a>
                             <br><br><br>
                             <div class="">
                               {loop: $value.pegawai as $data}
@@ -228,10 +232,657 @@
         </div>
     </div>
 </div>
+<!-- Modal Cek Data ERM -->
+<div class="modal fade" id="cekKelengkapanModal" tabindex="-1" role="dialog" aria-labelledby="cekKelengkapanModalLabel">
+  <div class="modal-dialog modal-lg" style="width: 90%;" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-primary">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="cekKelengkapanModalLabel">
+          <i class="fa fa-file-text-o"></i> Data ERM - <span id="modalPasienName"></span>
+        </h4>
+      </div>
+      <div class="modal-body" style="max-height: 600px; overflow-y: auto;">
+
+        <!-- Loading -->
+        <div id="loadingKelengkapan" class="text-center" style="padding: 50px;">
+          <i class="fa fa-spinner fa-spin fa-3x"></i>
+          <p>Memuat data...</p>
+        </div>
+
+        <!-- Content -->
+        <div id="contentKelengkapan" style="display: none;">
+
+          <!-- Hidden field untuk simpan no_rawat -->
+          <input type="hidden" id="hiddenNoRawat">
+          <input type="hidden" id="hiddenNoSep">
+
+          <!-- Status Kirim Alert -->
+          <div id="statusKirimAlert" class="alert" style="display: none;">
+            <i class="fa fa-info-circle"></i> <span id="statusKirimText"></span>
+          </div>
+
+          <!-- Info Pasien -->
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h5 class="panel-title"><i class="fa fa-user"></i> Data Pasien & Kunjungan</h5>
+            </div>
+            <div class="panel-body">
+              <table class="table table-bordered table-striped">
+                <tbody id="tableInfoPasien">
+                  <!-- Diisi via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Organization -->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h5 class="panel-title"><i class="fa fa-stethoscope"></i> Organization</h5>
+            </div>
+            <div class="panel-body">
+              <table class="table table-bordered table-striped table-sm" id="tableOrganizationWrapper">
+                <thead>
+                  <tr>
+                    <th>Rumah Sakit</th>
+                    <th>Kontak</th>
+                    <th>Alamat</th>
+                  </tr>
+                </thead>
+                <tbody id="tableOrganization">
+                  <!-- Diisi via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Diagnosa -->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h5 class="panel-title"><i class="fa fa-stethoscope"></i> Diagnosa (ICD-10)</h5>
+            </div>
+            <div class="panel-body">
+              <table class="table table-bordered table-striped table-sm" id="tableDiagnosaWrapper">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Kode</th>
+                    <th>Nama Penyakit</th>
+                    <th>Code Map (SNOMED)</th>
+                    <th>Nama Map (SNOMED)</th>
+                    <th>System Map</th>
+                    <th>Prioritas</th>
+                  </tr>
+                </thead>
+                <tbody id="tableDiagnosa">
+                  <!-- Diisi via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Prosedur -->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h5 class="panel-title"><i class="fa fa-medkit"></i> Prosedur/Tindakan (ICD-9)</h5>
+            </div>
+            <div class="panel-body">
+              <table class="table table-bordered table-striped table-sm" id="tableProsedurWrapper">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Kode</th>
+                    <th>Nama Prosedur</th>
+                    <th>Code Map</th>
+                    <th>Nama Map</th>
+                    <th>System</th>
+                  </tr>
+                </thead>
+                <tbody id="tableProsedur">
+                  <!-- Diisi via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Pemeriksaan/Vital Sign -->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h5 class="panel-title"><i class="fa fa-heartbeat"></i> Pemeriksaan & Vital Sign (Composition)</h5>
+            </div>
+            <div class="panel-body">
+              <table class="table table-bordered table-striped table-sm" id="tablePemeriksaanWrapper">
+                <thead>
+                  <tr>
+                    <th>Tgl</th>
+                    <th>Jam</th>
+                    <th>TD</th>
+                    <th>Nadi</th>
+                    <th>RR</th>
+                    <th>Suhu</th>
+                    <th>TB</th>
+                    <th>BB</th>
+                    <th>Keluhan</th>
+                    <th>Pemeriksaan</th>
+                    <th>Alergi</th>
+                    <th>Penilaian</th>
+                    <th>RTL</th>
+                    <th>Instruksi</th>
+                    <th>Evaluasi</th>
+                  </tr>
+                </thead>
+                <tbody id="tablePemeriksaan">
+                  <!-- Diisi via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tindakan -->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h5 class="panel-title"><i class="fa fa-heartbeat"></i> Tindakan</h5>
+            </div>
+            <div class="panel-body">
+              <table class="table table-bordered table-striped table-sm" id="tableTindakanWrapper">
+                <thead>
+                  <tr>
+                    <th>Tgl</th>
+                    <th>Jam</th>
+                    <th>Code Map</th>
+                    <th>Tindakan</th>
+                    <th>Tindakan Map</th>
+                    <th>System</th>
+                    <th>Dokter</th>
+                  </tr>
+                </thead>
+                <tbody id="tableTindakan">
+                  <!-- Diisi via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Resep -->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h5 class="panel-title"><i class="fa fa-flask"></i> Resep Obat</h5>
+            </div>
+            <div class="panel-body">
+              <table class="table table-bordered table-striped table-sm" id="tableResepWrapper">
+                <thead>
+                  <tr>
+                    <th>No Resep</th>
+                    <th>Tanggal</th>
+                    <th>Jam</th>
+                    <th>Dokter</th>
+                    <th>Kode Obat</th>
+                    <th>Obat</th>
+                    <th>Jumlah</th>
+                    <th>Aturan Pakai</th>
+                  </tr>
+                </thead>
+                <tbody id="tableResep">
+                  <!-- Diisi via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Radiologi -->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h5 class="panel-title"><i class="fa fa-x-ray"></i> Pemeriksaan Radiologi</h5>
+            </div>
+            <div class="panel-body">
+              <table class="table table-bordered table-striped table-sm" id="tableRadiologiWrapper">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Jam</th>
+                    <th>Jenis Pemeriksaan</th>
+                    <th>Hasil</th>
+                    <th>Gambar</th>
+                  </tr>
+                </thead>
+                <tbody id="tableRadiologi">
+                  <!-- Diisi via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Laboratorium -->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h5 class="panel-title"><i class="fa fa-vial"></i> Pemeriksaan Laboratorium</h5>
+            </div>
+            <div class="panel-body">
+              <table class="table table-bordered table-striped table-sm" id="tableLabWrapper">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Jam</th>
+                    <th>Jenis Pemeriksaan</th>
+                    <th>Nilai</th>
+                    <th>Keterangan</th>
+                  </tr>
+                </thead>
+                <tbody id="tableLab">
+                  <!-- Diisi via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Operasi -->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h5 class="panel-title"><i class="fa fa-vial"></i> Tindakan Operasi</h5>
+            </div>
+            <div class="panel-body">
+              <table class="table table-bordered table-striped table-sm" id="tableOpWrapper">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Jam</th>
+                    <th>Tindakan</th>
+                    <th>Laporan Operasi</th>
+                  </tr>
+                </thead>
+                <tbody id="tableOp">
+                  <!-- Diisi via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+          <i class="fa fa-times"></i> Tutup
+        </button>
+        <button class="btn btn-info" onclick="cetakDataERM()">
+          <i class="fa fa-print"></i> Cetak
+        </button>
+        {if: $value.mlite_bpjs_emr_logs && $value.mlite_bpjs_emr_logs.status == 'Terkirim'}
+        <button type="button" class="btn btn-warning" id="btnKirimERM" onclick="kirimDataERM()">
+          <i class="fa fa-paper-plane"></i> Update Data ERM
+        </button>
+        {else}
+        <button type="button" class="btn btn-primary" id="btnKirimERM" onclick="kirimDataERM()">
+          <i class="fa fa-paper-plane"></i> Kirim ke BPJS
+        </button>
+        {/if}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    // Event handler untuk tombol cek kelengkapan
+    $(document).on('click', '.erm_bpjs', function (e) {
+      e.preventDefault();
+      var noRawat = $(this).data('no-rawat');
+      var nmPasien = $(this).data('nm-pasien');
+      var noSep = $(this).data('no-sep');
+      var status = $(this).data('status');
+
+      $('#modalPasienName').text(nmPasien);
+      $('#hiddenNoRawat').val(noRawat);
+      $('#hiddenNoSep').val(noSep);
+
+      // Reset tombol kirim
+      resetTombolKirim(status);
+
+      // Reset dan destroy DataTables yang ada
+      destroyDataTables();
+
+      $('#contentKelengkapan').hide();
+      $('#loadingKelengkapan').show();
+      $('#cekKelengkapanModal').modal('show');
+
+      loadDataERM(noRawat, noSep);
+    });
+
+    // Destroy DataTables saat modal ditutup
+    $('#cekKelengkapanModal').on('hidden.bs.modal', function () {
+      destroyDataTables();
+    });
+  });
+
+  function destroyDataTables() {
+    var tables = ['#tableDiagnosaWrapper', '#tableProsedurWrapper', '#tablePemeriksaanWrapper', '#tableTindakanWrapper',
+      '#tableResepWrapper', '#tableRadiologiWrapper', '#tableLabWrapper', '#tableOpWrapper', '#tableOrganizationWrapper'];
+
+    tables.forEach(function (tableId) {
+      if ($.fn.DataTable.isDataTable(tableId)) {
+        $(tableId).DataTable().destroy();
+      }
+    });
+  }
+
+  function resetTombolKirim(statusKirim = '') {
+    var btn = $('#btnKirimERM');
+    var alertBox = $('#statusKirimAlert');
+
+    btn.removeClass('btn-primary btn-success btn-danger btn-warning');
+    alertBox.hide();
+
+    if (statusKirim === 'Terkirim' || statusKirim === 'Sudah Terkirim') {
+      btn
+        .prop('disabled', false)
+        .html('<i class="fa fa-refresh"></i> Update Data ERM')
+        .addClass('btn-warning');
+
+      alertBox
+        .removeClass('alert-danger alert-success')
+        .addClass('alert-info')
+        .show();
+      $('#statusKirimText').text('Data sudah pernah terkirim. Klik tombol untuk update data terbaru.');
+
+    } else {
+      btn
+        .prop('disabled', false)
+        .html('<i class="fa fa-paper-plane"></i> Kirim ke BPJS')
+        .addClass('btn-primary');
+    }
+  }
+
+  function loadDataERM(noRawat, noSep = '') {
+    $.ajax({
+      url: '{?=url([ADMIN, "bpjs_emr", "cekkelengkapan"])?}',
+      type: 'POST',
+      data: { 
+        no_rawat: noRawat,
+        no_sep: noSep
+      },
+      dataType: 'json',
+      success: function (response) {
+        $('#loadingKelengkapan').hide();
+
+        if (!response.success) {
+          alert('Error: ' + (response.message || 'Gagal memuat data'));
+          return;
+        }
+
+        renderData(response.data);
+        $('#contentKelengkapan').show();
+        initModalDataTables();
+      },
+      error: function (xhr, status, error) {
+        $('#loadingKelengkapan').hide();
+        alert('Gagal memuat data: ' + error);
+      }
+    });
+  }
+
+  function initModalDataTables() {
+    setTimeout(function () {
+      var tableConfigs = {
+        "language": { "search": "", "searchPlaceholder": "Cari..." },
+        "lengthChange": false,
+        "pageLength": 5,
+        "autoWidth": false
+      };
+
+      if ($('#tableDiagnosa tr').length > 5) $('#tableDiagnosaWrapper').DataTable(tableConfigs);
+      if ($('#tableProsedur tr').length > 5) $('#tableProsedurWrapper').DataTable(tableConfigs);
+      if ($('#tablePemeriksaan tr').length > 5) $('#tablePemeriksaanWrapper').DataTable(tableConfigs);
+      if ($('#tableTindakan tr').length > 5) $('#tableTindakanWrapper').DataTable(tableConfigs);
+      if ($('#tableResep tr').length > 5) $('#tableResepWrapper').DataTable(tableConfigs);
+      if ($('#tableRadiologi tr').length > 5) $('#tableRadiologiWrapper').DataTable(tableConfigs);
+      if ($('#tableLab tr').length > 5) $('#tableLabWrapper').DataTable(tableConfigs);
+      if ($('#tableOp tr').length > 5) $('#tableOpWrapper').DataTable(tableConfigs);
+      if ($('#tableOrganization tr').length > 5) $('#tableOrganizationWrapper').DataTable(tableConfigs);
+    }, 100);
+  }
+
+  function kirimDataERM() {
+    var noRawat = $('#hiddenNoRawat').val();
+    var noSep = $('#hiddenNoSep').val();
+
+    if (!noRawat) {
+      alert('No. Rawat tidak ditemukan');
+      return;
+    }
+
+    if (!confirm('Yakin ingin mengirim data No. Rawat: ' + noRawat + (noSep ? ' (SEP: ' + noSep + ')' : '') + ' ke BPJS?')) {
+      return;
+    }
+
+    $('#btnKirimERM')
+      .prop('disabled', true)
+      .html('<i class="fa fa-spinner fa-spin"></i> Mengirim...');
+
+    $.ajax({
+      url: '{?=url([ADMIN, "bpjs_emr", "kirimbpjs"])?}',
+      type: 'POST',
+      data: {
+        no_rawat: noRawat,
+        no_sep: noSep
+      },
+      dataType: 'json',
+      success: function (response) {
+        if (response.success) {
+          $('#btnKirimERM')
+            .removeClass('btn-primary')
+            .addClass('btn-success')
+            .html('<i class="fa fa-check"></i> Terkirim');
+
+          $('#statusKirimAlert')
+            .removeClass('alert-danger alert-info')
+            .addClass('alert-success')
+            .show();
+          $('#statusKirimText').text(response.message || 'Data berhasil dikirim ke BPJS');
+
+          setTimeout(function () {
+            $('#cekKelengkapanModal').modal('hide');
+          }, 2000);
+
+        } else {
+          $('#btnKirimERM')
+            .prop('disabled', false)
+            .removeClass('btn-primary')
+            .addClass('btn-danger')
+            .html('<i class="fa fa-times"></i> Gagal Kirim');
+
+          $('#statusKirimAlert')
+            .removeClass('alert-success alert-info')
+            .addClass('alert-danger')
+            .show();
+
+          var errorMessage = response.message || 'Gagal mengirim data';
+          $('#statusKirimText').text(errorMessage);
+        }
+      },
+      error: function (xhr, status, error) {
+        $('#btnKirimERM')
+          .prop('disabled', false)
+          .removeClass('btn-primary')
+          .addClass('btn-danger')
+          .html('<i class="fa fa-times"></i> Error');
+
+        $('#statusKirimAlert')
+          .removeClass('alert-success alert-info')
+          .addClass('alert-danger')
+          .show();
+        $('#statusKirimText').text('Terjadi kesalahan koneksi');
+      }
+    });
+  }
+
+  function renderData(data) {
+    if (!data || typeof data !== 'object') return;
+
+    var reg = data.registrasi || {};
+    var infoHtml = `
+      <tr><td width="20%"><strong>No. Rawat</strong></td><td>${escapeHtml(reg.no_rawat || '-')}</td></tr>
+      <tr><td width="20%"><strong>No. SEP</strong></td><td>${escapeHtml(reg.no_sep || '-')}</td></tr>
+      <tr><td><strong>No. RM</strong></td><td>${escapeHtml(reg.no_rkm_medis || '-')}</td></tr>
+      <tr><td><strong>Nama Pasien</strong></td><td>${escapeHtml(reg.nm_pasien || '-')}</td></tr>
+      <tr><td><strong>No. KTP</strong></td><td>${escapeHtml(reg.no_ktp_pasien || '-')}</td></tr>
+      <tr><td><strong>Jenis Kelamin</strong></td><td>${reg.jk == 'L' ? 'Laki-laki' : (reg.jk == 'P' ? 'Perempuan' : '-')}</td></tr>
+      <tr><td><strong>Tgl Lahir</strong></td><td>${escapeHtml(reg.tgl_lahir || '-')}</td></tr>
+      <tr><td><strong>Alamat</strong></td><td>${escapeHtml(reg.alamat_lengkap || reg.alamat || '-')}</td></tr>
+      <tr><td><strong>Tgl Registrasi</strong></td><td>${escapeHtml(reg.tgl_registrasi || '-')} ${escapeHtml(reg.jam_reg || '')}</td></tr>
+      <tr><td><strong>Poli/Unit</strong></td><td>${escapeHtml(reg.nm_poli || '-')}</td></tr>
+      <tr><td><strong>Dokter</strong></td><td>${escapeHtml(reg.nm_dokter || '-')}</td></tr>
+      <tr><td><strong>No. KTP Dokter</strong></td><td>${escapeHtml(reg.no_ktp_dokter || '-')}</td></tr>
+      <tr><td><strong>Status Lanjut</strong></td><td>${escapeHtml(reg.status_lanjut || '-')}</td></tr>
+      <tr><td><strong>Status</strong></td><td>${escapeHtml(reg.stts || '-')}</td></tr>
+      <tr><td><strong>Tgl Masuk</strong></td><td>${escapeHtml(reg.tgl_masuk || '-')} ${escapeHtml(reg.jam_masuk || '')}</td></tr>
+      <tr><td><strong>Tgl Keluar</strong></td><td>${escapeHtml(reg.tgl_keluar || '-')} ${escapeHtml(reg.jam_keluar || '')}</td></tr>
+      <tr><td><strong>Diagnosa Awal</strong></td><td>${escapeHtml(reg.diagnosa_awal || '-')}</td></tr>
+    `;
+    $('#tableInfoPasien').html(infoHtml);
+
+    // Organization
+    var orgHtml = '';
+    var org = data.organization;
+    if (org && typeof org === 'object' && !Array.isArray(org)) {
+      orgHtml += `<tr><td>${escapeHtml(org.nama_instansi || '-')}</td><td>${escapeHtml(org.kontak || '-')}</td><td>${escapeHtml((org.alamat_instansi || '') + ' ' + (org.kecamatan || '') + ' ' + (org.kabupaten || '') + ' ' + (org.kode_pos || ''))}</td></tr>`;
+    } else if (Array.isArray(org) && org.length > 0) {
+      org.forEach(function (p) {
+        orgHtml += `<tr><td>${escapeHtml(p.nama_instansi || '-')}</td><td>${escapeHtml(p.kontak || '-')}</td><td>${escapeHtml((p.alamat_instansi || '') + ' ' + (p.kecamatan || '') + ' ' + (p.kabupaten || '') + ' ' + (p.kode_pos || ''))}</td></tr>`;
+      });
+    } else {
+      orgHtml = '<tr><td colspan="3" class="text-center text-muted">Tidak ada data Rumah Sakit</td></tr>';
+    }
+    $('#tableOrganization').html(orgHtml);
+
+    // Diagnosa
+    var diagHtml = '';
+    var diagnosaData = (data.diagnosa && Array.isArray(data.diagnosa)) ? data.diagnosa : [];
+    if (diagnosaData.length > 0) {
+      diagnosaData.forEach(function (d, i) {
+        diagHtml += `<tr><td>${i + 1}</td><td>${escapeHtml(d.kode || '-')}</td><td>${escapeHtml(d.nama || '-')}</td><td>${escapeHtml(d.snomed_concept_id || '-')}</td><td>${escapeHtml(d.snomed_term || '-')}</td><td>${escapeHtml(d.system || '-')}</td><td>${d.prioritas == '1' ? 'Utama' : 'Sekunder'}</td></tr>`;
+      });
+    } else {
+      diagHtml = '<tr><td colspan="7" class="text-center text-muted">Tidak ada data diagnosa</td></tr>';
+    }
+    $('#tableDiagnosa').html(diagHtml);
+
+    // Prosedur
+    var prosHtml = '';
+    var prosedurData = (data.prosedur && Array.isArray(data.prosedur)) ? data.prosedur : [];
+    if (prosedurData.length > 0) {
+      prosedurData.forEach(function (p, i) {
+        prosHtml += `<tr><td>${i + 1}</td><td>${escapeHtml(p.kode || p.snomed_concept_id || '-')}</td><td>${escapeHtml(p.nama || p.snomed_term || '-')}</td><td>${escapeHtml(p.snomed_concept_id || '-')}</td><td>${escapeHtml(p.snomed_term || '-')}</td><td>${p.snomed_concept_id ? 'http://snomed.info/sct' : '-'}</td></tr>`;
+      });
+    } else {
+      prosHtml = '<tr><td colspan="6" class="text-center text-muted">Tidak ada data prosedur</td></tr>';
+    }
+    $('#tableProsedur').html(prosHtml);
+
+    // Pemeriksaan
+    var periksaHtml = '';
+    if (data.pemeriksaan && data.pemeriksaan.length > 0) {
+      data.pemeriksaan.forEach(function (p) {
+        periksaHtml += `<tr><td>${escapeHtml(p.tgl_perawatan || '-')}</td><td>${escapeHtml(p.jam_rawat || p.jam || '-')}</td><td>${escapeHtml(p.tensi || '-')}</td><td>${escapeHtml(p.nadi || '-')}</td><td>${escapeHtml(p.respirasi || '-')}</td><td>${escapeHtml(p.suhu_tubuh || '-')}</td><td>${escapeHtml(p.tinggi || '-')}</td><td>${escapeHtml(p.berat || '-')}</td><td>${escapeHtml(p.keluhan || '')}</td><td>${escapeHtml(p.pemeriksaan || '')}</td><td>${escapeHtml(p.alergi || '')}</td><td>${escapeHtml(p.penilaian || '')}</td><td>${escapeHtml(p.rtl || '')}</td><td>${escapeHtml(p.instruksi || '')}</td><td>${escapeHtml(p.evaluasi || '')}</td></tr>`;
+      });
+    } else {
+      periksaHtml = '<tr><td colspan="15" class="text-center text-muted">Tidak ada data pemeriksaan</td></tr>';
+    }
+    $('#tablePemeriksaan').html(periksaHtml);
+
+    // Tindakan
+    var tindkanHtml = '';
+    if (data.procedure && data.procedure.tindakan && data.procedure.tindakan.length > 0) {
+      data.procedure.tindakan.forEach(function (p) {
+        tindkanHtml += `<tr><td>${escapeHtml(p.tgl_perawatan || '-')}</td><td>${escapeHtml(p.jam_rawat || p.jam || '-')}</td><td>${escapeHtml(p.snomed_code || '-')}</td><td>${escapeHtml(p.snomed_display || '-')}</td><td>${escapeHtml(p.snomed_display || '-')}</td><td>${escapeHtml(p.system || 'http://snomed.info/sct')}</td><td>${escapeHtml(p.nm_dokter || '-')}</td></tr>`;
+      });
+    } else {
+      tindkanHtml = '<tr><td colspan="7" class="text-center text-muted">Tidak ada data tindakan</td></tr>';
+    }
+    $('#tableTindakan').html(tindkanHtml);
+
+    // Resep
+    var resepHtml = '';
+    var obatData = data.obat || data.resep || [];
+    if (obatData.length > 0) {
+      obatData.forEach(function (r) {
+        resepHtml += `<tr><td>${escapeHtml(r.no_resep || '-')}</td><td>${escapeHtml(r.tgl_perawatan || r.tgl_periksa || '-')}</td><td>${escapeHtml(r.jam || '-')}</td><td>${escapeHtml(r.nm_dokter || '-')}</td><td>${escapeHtml(r.kode_brng || '-')}</td><td>${escapeHtml(r.nama_brng || r.nm_barang || '-')}</td><td>${escapeHtml(r.jml || '-')}</td><td>${escapeHtml(r.aturan_pakai || '-')}</td></tr>`;
+      });
+    } else {
+      resepHtml = '<tr><td colspan="8" class="text-center text-muted">Tidak ada data resep</td></tr>';
+    }
+    $('#tableResep').html(resepHtml);
+
+    // Radiologi
+    var radHtml = '';
+    if (data.radiologi && data.radiologi.length > 0) {
+      data.radiologi.forEach(function (r) {
+        var imageUrl = (r.radiology_image_url || '').toString().trim();
+        var imageHtml = imageUrl ? `<a href="${escapeHtml(imageUrl)}" target="_blank"><img src="${escapeHtml(imageUrl)}" style="max-width:120px;"></a>` : '-';
+        radHtml += `<tr><td>${escapeHtml(r.tgl_perawatan || '-')}</td><td>${escapeHtml(r.jam_rawat || '-')}</td><td>${escapeHtml(r.standard_display || '-')}</td><td>${escapeHtml(r.hasil || '-')}</td><td>${imageHtml}</td></tr>`;
+      });
+    } else {
+      radHtml = '<tr><td colspan="5" class="text-center text-muted">Tidak ada pemeriksaan radiologi</td></tr>';
+    }
+    $('#tableRadiologi').html(radHtml);
+
+    // Laboratorium
+    var labHtml = '';
+    if (data.laboratorium && data.laboratorium.length > 0) {
+      data.laboratorium.forEach(function (l) {
+        labHtml += `<tr><td>${escapeHtml(l.tgl_perawatan || '-')}</td><td>${escapeHtml(l.jam_rawat || '-')}</td><td>${escapeHtml(l.loinc_display || '-')}</td><td>${escapeHtml(l.hasil || '-')}</td><td>${escapeHtml(l.keterangan || '-')}</td></tr>`;
+      });
+    } else {
+      labHtml = '<tr><td colspan="5" class="text-center text-muted">Tidak ada pemeriksaan laboratorium</td></tr>';
+    }
+    $('#tableLab').html(labHtml);
+
+    // Operasi
+    var opHtml = '';
+    if (data.operasi && data.operasi.length > 0) {
+      data.operasi.forEach(function (l) {
+        opHtml += `<tr><td>${escapeHtml(l.tgl_perawatan || '-')}</td><td>${escapeHtml(l.jam_rawat || '-')}</td><td>${escapeHtml(l.snomed_display || '-')}</td><td>${escapeHtml(l.hasil || '-')}</td></tr>`;
+      });
+    } else {
+      opHtml = '<tr><td colspan="4" class="text-center text-muted">Tidak ada tindakan operasi</td></tr>';
+    }
+    $('#tableOp').html(opHtml);
+  }
+
+  function cetakDataERM() {
+    var content = document.getElementById('contentKelengkapan').innerHTML;
+    var nmPasien = document.getElementById('modalPasienName').innerText;
+    var printWindow = window.open('', '_blank', 'height=600,width=800');
+    printWindow.document.write('<html><head><title>Data ERM - ' + nmPasien + '</title>');
+    printWindow.document.write('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">');
+    printWindow.document.write('<style>body{padding:20px;}.panel-heading{font-weight:bold;background:#f5f5f5!important;padding:10px;border:1px solid #ddd;}.panel-body{border:1px solid #ddd;padding:15px;margin-bottom:20px;}.table-bordered th,.table-bordered td{border:1px solid #ddd!important;padding:8px;}.bg-primary{background-color:#337ab7!important;color:white;}.alert,input[type="hidden"]{display:none!important;}.text-center{text-align:center;}</style>');
+    printWindow.document.write('</head><body><div class="container-fluid"><h3 class="text-center">DATA ELEKTRONIK REKAM MEDIS</h3><h4 class="text-center">' + nmPasien + '</h4><hr>' + content + '</div></body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(function () { printWindow.print(); printWindow.close(); }, 500);
+  }
+
+  function escapeHtml(text) {
+    if (text === null || text === undefined) return '-';
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(String(text)));
+    return div.innerHTML;
+  }
+</script>
+
+<style>
+  #contentKelengkapan .table { width: 100% !important; }
+  #contentKelengkapan .panel { margin-bottom: 15px; }
+  /* Styling untuk badge di list group */
+  .badge-success { background-color: #5cb85c; }
+  .badge-danger { background-color: #d9534f; }
+  .badge-warning { background-color: #f0ad4e; }
+</style>
+
 <script>
   $( function() {
     $('.tanggal').datetimepicker({
-      defaultDate: '{?=date('Y-m-d')?}',
+      defaultDate: "{?=date('Y-m-d')?}",
       format: 'YYYY-MM-DD',
       locale: 'id'
     });

@@ -341,6 +341,27 @@ class Admin extends AdminModule
                 $this->settings('settings', 'update_changelog', $obj['body']);
                 $this->tpl->set('update_version', $obj['tag_name']);
             }
+        } elseif (isset($_POST['upgrade_local'])) {
+            $upgradeFile = BASE_DIR . '/systems/upgrade.php';
+            if (!is_file($upgradeFile)) {
+                $this->tpl->set('error', "File upgrade tidak ditemukan: systems/upgrade.php");
+                return $this->draw('update.html');
+            }
+
+            $version = $this->settings->get('settings.version');
+            $new_version = include($upgradeFile);
+
+            if ($new_version === true || $new_version === 1) {
+                // upgrade script didn't return a version number
+                $new_version = $version; 
+            }
+
+            $this->settings('settings', 'version', $new_version);
+            $this->settings('settings', 'update_check', time());
+
+            $this->notify('success', 'Upgrade lokal berhasil dijalankan.');
+            redirect(url([ADMIN, 'settings', 'updates']));
+
         } elseif (isset($_POST['update_nightly'])) {
             if (!class_exists("ZipArchive")) {
                 $this->tpl->set('error', "ZipArchive is required to update mLITE.");

@@ -1483,6 +1483,7 @@ class Admin extends AdminModule
         $row['berkasPasien'] = url([ADMIN, 'vedika', 'berkaspasien', $this->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
         $row['berkasPerawatan'] = url([ADMIN, 'vedika', 'berkasperawatan', $this->convertNorawat($row['no_rawat'])]);
         $row['pegawai'] = $this->db('mlite_vedika_feedback')->join('pegawai','pegawai.nik=mlite_vedika_feedback.username')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('mlite_vedika_feedback.id')->limit(1)->toArray();
+        $row['mlite_bpjs_emr_logs'] = $this->db('mlite_bpjs_emr_logs')->where('no_rawat', $row['no_rawat'])->where('no_sep', $row['no_sep'])->oneArray();
         //$row['pegawai'] = $this->core->getPegawaiInfo('nama', $row['username']);
         if ($row['status_lanjut'] == 'Ranap') {
           $_get_kamar_inap = $this->db('kamar_inap')->where('no_rawat', $row['no_rawat'])->limit(1)->desc('tgl_keluar')->toArray();
@@ -2565,8 +2566,10 @@ class Admin extends AdminModule
     if (!empty($this->_getSEPInfo('no_sep', $no_rawat))) {
       $print_sep['bridging_sep'] = $this->db('bridging_sep')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
       $print_sep['bpjs_prb'] = $this->db('bpjs_prb')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
-      $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
-      $print_sep['batas_rujukan'] = isset($batas_rujukan['batas_rujukan']) ? $batas_rujukan['batas_rujukan'] : '';
+      $print_sep['batas_rujukan'] = '';
+      if (!empty($print_sep['bridging_sep']['tglrujukan'])) {
+          $print_sep['batas_rujukan'] = date('Y-m-d', strtotime($print_sep['bridging_sep']['tglrujukan'] . ' +85 days'));
+      }
       switch ($print_sep['bridging_sep']['klsnaik']) {
         case '2':
           $print_sep['kelas_naik'] = 'Kelas VIP';
