@@ -38,7 +38,13 @@
             </tr>
             <tr>
                 <td><strong>Tautan Dokumen:</strong></td>
-                <td style="word-break: break-all; font-family: monospace;"><a href="{?=url(WEBAPPS_URL.'/berkasrawat/'.$berkas_perawatan.lokasi_file)?}">[DOKUMEN DIGITAL]</a></td>
+                <td style="word-break: break-all; font-family: monospace;">
+                    {if: isset($berkas_perawatan.lokasi_file)}
+                        <a href="{?=url(WEBAPPS_URL.'/berkasrawat/'.$berkas_perawatan.lokasi_file)?}">[DOKUMEN DIGITAL]</a>
+                    {else}
+                        -
+                    {/if}
+                </td>
             </tr>
             <tr>
                 <td><strong>Legal Basis:</strong></td>
