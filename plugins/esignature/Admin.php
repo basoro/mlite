@@ -13,10 +13,37 @@ class Admin extends AdminModule
         ];
     }
 
-    public function getManage()
+    public function anyManage($page = 1)
     {
-        $signatures = $this->db('mlite_esignatures')->desc('id')->limit(50)->toArray();
-        return $this->draw('manage.html', ['signatures' => htmlspecialchars_array($signatures)]);
+        $perpage = '10';
+        $phrase = '';
+        if (isset($_POST['s'])) {
+            $phrase = $_POST['s'];
+        }
+
+        // pagination
+        $totalRecords = $this->db('mlite_esignatures')
+            ->like('signer_name', '%' . $phrase . '%')
+            ->orLike('ref_id', '%' . $phrase . '%')
+            ->toArray();
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'esignature', 'manage', '%d']));
+        $this->assign['pagination'] = $pagination->nav('pagination', '5');
+        $this->assign['totalRecords'] = count($totalRecords);
+
+        $offset = $pagination->offset();
+        $signatures = $this->db('mlite_esignatures')
+            ->like('signer_name', '%' . $phrase . '%')
+            ->orLike('ref_id', '%' . $phrase . '%')
+            ->desc('id')
+            ->offset($offset)
+            ->limit($perpage)
+            ->toArray();
+
+        return $this->draw('manage.html', [
+            'signatures' => htmlspecialchars_array($signatures),
+            'pagination' => $this->assign['pagination'],
+            'phrase' => $phrase
+        ]);
     }
 
     public function getSettings()
