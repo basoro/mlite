@@ -1,56 +1,92 @@
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <div class="pull-right">
-            <form action="{?=url([ADMIN, 'esignature', 'manage'])?}" method="post" class="form-inline">
-                <div class="input-group">
-                    <input type="text" name="s" class="form-control input-sm" placeholder="Cari..." value="{?=isset_or($phrase)?}">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default btn-sm" type="submit">Cari</button>
-                    </span>
-                </div>
-            </form>
-        </div>
-        <h3 class="panel-title">Audit Log Tanda Tangan Elektronik</h3>
-    </div>
-    <div class="panel-body">
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Ref</th>
-                        <th>Penandatangan</th>
-                        <th>Waktu</th>
-                        <th>Hash</th>
-                        <th>IP Address</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {loop: $signatures}
-                    <tr>
-                        <td>{?=isset_or($value.id)?}</td>
-                        <td>{?=isset_or($value.ref_type)?} #{?=isset_or($value.ref_id)?}</td>
-                        <td>
-                            <b>{?=isset_or($value.signer_name)?}</b><br>
-                            <small>{?=isset_or($value.signer_role)?}</small>
-                        </td>
-                        <td>{?=isset_or($value.signed_at)?}</td>
-                        <td>
-                            <small style="font-family:monospace;">{?=substr($value.signature_hash, 0, 10)?}...</small>
-                        </td>
-                        <td>{?=isset_or($value.ip_address)?}</td>
-                        <td>
-                            <a href="{?=url(['esignature', 'verify', $value.signature_hash])?}" target="_blank" class="btn btn-xs btn-info">Verifikasi</a>
-                            <a href="{?=url([ADMIN, 'esignature', 'generatepdf', $value.ref_type, $value.ref_id])?}" target="_blank" class="btn btn-xs btn-default"><i class="fa fa-file-pdf-o"></i> PDF</a>
-                        </td>
-                    </tr>
-                    {/loop}
-                </tbody>
-            </table>
-        </div>
-        <div class="text-center">
-            {?=isset_or($pagination)?}
-        </div>
-    </div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<div class="row">
+					<div class="col-md-8">
+						<h3 class="panel-title" style="line-height: 30px;">Audit Log Tanda Tangan Elektronik</h3>
+					</div>
+					<div class="col-md-4">
+						<form action="{?=url([ADMIN, 'esignature', 'manage'])?}" method="post">
+							<div class="input-group">
+								<input type="text" name="s" class="form-control input-sm" placeholder="Cari penandatangan atau referensi..." value="{?=isset_or($phrase)?}">
+								<span class="input-group-btn">
+									<button class="btn btn-primary btn-sm" type="submit">Cari</button>
+								</span>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="panel-body" style="padding: 0;">
+				<div class="table-responsive">
+					<table class="table table-striped table-hover" style="margin-bottom: 0;">
+						<thead>
+							<tr class="active">
+								<th class="text-center" width="50">ID</th>
+								<th width="200">Referensi</th>
+								<th>Penandatangan</th>
+								<th width="180">Waktu</th>
+								<th width="120">Hash</th>
+								<th width="120">IP Address</th>
+								<th class="text-center" width="150">Aksi</th>
+							</tr>
+						</thead>
+						<tbody>
+							{if: count($signatures) > 0}
+								{loop: $signatures}
+								<tr>
+									<td class="text-center">{?=isset_or($value.id)?}</td>
+									<td>
+										<span class="label label-default">{?=isset_or($value.ref_type)?}</span><br>
+										<small class="text-muted">#{?=isset_or($value.ref_id)?}</small>
+									</td>
+									<td>
+										<strong>{?=isset_or($value.signer_name)?}</strong><br>
+										<span class="text-info" style="font-size: 0.85em;">{?=isset_or($value.signer_role)?}</span>
+									</td>
+									<td>{?=date('d-m-Y H:i:s', strtotime($value.signed_at))?}<br><small class="text-muted">WIB</small></td>
+									<td>
+										<code title="{?=isset_or($value.signature_hash)?}" style="cursor:help;">{?=substr($value.signature_hash, 0, 8)?}...</code>
+									</td>
+									<td><small>{?=isset_or($value.ip_address)?}</small></td>
+									<td class="text-center">
+										<div class="btn-group">
+											<a href="{?=url(['esignature', 'verify', $value.signature_hash])?}" target="_blank" class="btn btn-xs btn-info" title="Verifikasi"><i class="fa fa-check-circle"></i> Verifikasi</a>
+											<a href="{?=url([ADMIN, 'esignature', 'generatepdf', $value.ref_type, $value.ref_id])?}" target="_blank" class="btn btn-xs btn-default" title="Unduh PDF"><i class="fa fa-file-pdf-o"></i> PDF</a>
+										</div>
+									</td>
+								</tr>
+								{/loop}
+							{else}
+								<tr>
+									<td colspan="7" class="text-center">Data tidak ditemukan.</td>
+								</tr>
+							{/if}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			{if: isset($pagination)}
+			<div class="panel-footer">
+				<div class="row">
+					<div class="col-md-6">
+						<p class="text-muted" style="margin-top: 5px;">Total Data: <strong>{?=isset_or($totalRecords)?}</strong></p>
+					</div>
+					<div class="col-md-6 text-right">
+						{?=isset_or($pagination)?}
+					</div>
+				</div>
+			</div>
+			{/if}
+		</div>
+	</div>
 </div>
+
+<style>
+	.panel-title { font-weight: bold; color: #444; }
+	.table thead th { vertical-align: middle !important; border-bottom: 2px solid #ddd !important; }
+	.table tbody td { vertical-align: middle !important; }
+	.pagination { margin: 0 !important; }
+	code { background-color: #f9f2f4; color: #c7254e; padding: 2px 4px; border-radius: 4px; }
+</style>

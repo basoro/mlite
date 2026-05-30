@@ -5,6 +5,8 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    protected $assign = [];
+
     public function navigation()
     {
         return [
