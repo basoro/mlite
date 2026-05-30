@@ -1,0 +1,93 @@
+<style>
+    body { font-family: sans-serif; font-size: 10pt; color: #000; }
+    .header { width: 100%; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 5px; }
+    .logo { width: 60px; }
+    .instansi { font-size: 14pt; font-weight: bold; }
+    .alamat { font-size: 9pt; }
+    .title { text-align: center; font-size: 14pt; font-weight: bold; margin: 10px 0; border-bottom: 1px solid #000; display: inline-block; width: 100px; left: 50%; transform: translateX(-50%); position: relative; }
+    .info-table td { padding: 2px; }
+    .prescription-container { margin-top: 10px; }
+    .prescription-item { margin-bottom: 10px; position: relative; }
+    .r-sign { font-size: 16pt; font-weight: bold; width: 30px; display: inline-block; vertical-align: top; }
+    .item-content { display: inline-block; width: 90%; vertical-align: top; }
+    .footer { margin-top: 20px; width: 100%; }
+    .signature { text-align: center; width: 200px; float: right; }
+    .line { border-bottom: 1px solid #000; margin: 2px 0; }
+    .double-line { border-bottom: 3px double #000; margin: 5px 0; }
+</style>
+
+<div class="header">
+    <table width="100%">
+        <tr>
+            <td width="15%"><img src="{?=url()?}/{?=isset_or($settings.logo)?}" class="logo"></td>
+            <td width="85%" align="center">
+                <div class="instansi">{?=isset_or($settings.nama_instansi)?}</div>
+                <div class="alamat">
+                    {?=isset_or($settings.alamat)?}, {?=isset_or($settings.kota)?}, {?=isset_or($settings.propinsi)?}<br>
+                    Telepon: {?=isset_or($settings.nomor_telepon)?} - Email: {?=isset_or($settings.email)?}
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<table class="info-table" width="100%">
+    <tr>
+        <td width="120">Nama Pasien</td><td width="10">:</td><td style="font-weight: bold;">{?=isset_or($pasien.nm_pasien)?}</td>
+    </tr>
+    <tr>
+        <td>No. R.M.</td><td>:</td><td>{?=isset_or($pasien.no_rkm_medis)?}</td>
+    </tr>
+    <tr>
+        <td>No. Rawat</td><td>:</td><td>{?=isset_or($no_rawat)?}</td>
+    </tr>
+    <tr>
+        <td>Jenis Pasien</td><td>:</td><td>{?=isset_or($penjab.png_jawab)?}</td>
+    </tr>
+    <tr>
+        <td>Pemberi Resep</td><td>:</td><td>{?=isset_or($nm_dokter)?}</td>
+    </tr>
+    <tr>
+        <td>No. Resep</td><td>:</td><td>{?=isset_or($no_resep)?}</td>
+    </tr>
+</table>
+
+<div class="line"></div>
+
+<div style="text-align: center; font-weight: bold; font-size: 12pt; margin: 5px 0;">RESEP</div>
+
+<div class="prescription-container">
+    {loop: $detail}
+    <div class="prescription-item">
+        <table width="100%">
+            <tr>
+                <td width="30" valign="top" style="font-size: 16pt; font-weight: bold;">R/</td>
+                <td valign="top">
+                    <table width="100%">
+                        <tr>
+                            <td>{?=isset_or($value.nama_brng)?}</td>
+                            <td align="right">{?=isset_or($value.jml)?} {?=isset_or($value.satuan)?}</td>
+                        </tr>
+                    </table>
+                    <div style="border-bottom: 1px dashed #000; width: 150px; margin: 3px 0;"></div>
+                    <div>{?=isset_or($value.aturan_pakai)?}</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {/loop}
+</div>
+
+<div class="footer">
+    <div class="signature">
+        {?=isset_or($settings.kota)?}, {?=isset_or($tanggal)?}<br>
+        <br>
+        {if: isset($esignature)}
+            <barcode code="{?=url(['esignature', 'verify', $esignature.signature_hash])?}" type="QR" size="0.8" error="M" disableborder="1" /><br>
+        {else}
+            <br><br><br>
+        {/if}
+        <br>
+        <strong>{?=isset_or($nm_dokter)?}</strong>
+    </div>
+</div>

@@ -170,10 +170,53 @@ class Admin extends AdminModule
         $mpdf->watermarkTextAlpha = 0.05;
 
         // Check if this is a known surat type
-        $surat_types = ['surat.sakit', 'surat.rujukan', 'surat.sehat'];
+        $surat_types = ['surat.sakit', 'surat.rujukan', 'surat.sehat', 'resep'];
         if (in_array($ref_type, $surat_types)) {
-            $no_rawat = revertNoRawat($ref_id);
-            $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat);
+            if ($ref_type == 'resep') {
+                $resep_obat = $this->db('resep_obat')->where('no_resep', $ref_id)->oneArray();
+                $no_rawat = $resep_obat['no_rawat'];
+                $no_resep = $ref_id;
+                $kd_dokter = $resep_obat['kd_dokter'];
+                $tanggal = dateIndonesia($resep_obat['tgl_peresepan']);
+                
+                // Get detail (non-racikan and racikan)
+                $detail = [];
+                
+                // Non-racikan
+                $rows_obat = $this->db('resep_dokter')
+                    ->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')
+                    ->where('no_resep', $no_resep)
+                    ->toArray();
+                foreach ($rows_obat as $row) {
+                    $detail[] = [
+                        'nama_brng' => $row['nama_brng'],
+                        'jml' => $row['jml'],
+                        'satuan' => $this->db('kodesatuan')->where('kode_sat', $row['kode_sat'])->oneArray()['satuan'] ?? '',
+                        'aturan_pakai' => $row['aturan_pakai']
+                    ];
+                }
+                
+                // Racikan
+                $rows_racikan = $this->db('resep_dokter_racikan')
+                    ->where('no_resep', $no_resep)
+                    ->toArray();
+                foreach ($rows_racikan as $row) {
+                    $detail[] = [
+                        'nama_brng' => $row['nama_racik'],
+                        'jml' => $row['jml_dr'],
+                        'satuan' => 'Racik',
+                        'aturan_pakai' => $row['aturan_pakai']
+                    ];
+                }
+                
+                $this->tpl->set('no_resep', $no_resep);
+                $this->tpl->set('tanggal', $tanggal);
+                $this->tpl->set('detail', $detail);
+            } else {
+                $no_rawat = revertNoRawat($ref_id);
+                $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat);
+            }
+            
             $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
             
             $pasien = $this->db('pasien')
@@ -184,26 +227,31 @@ class Admin extends AdminModule
               ->where('no_rkm_medis', $no_rkm_medis)
               ->oneArray();
             
+            $kd_pj = $this->core->getRegPeriksaInfo('kd_pj', $no_rawat);
+            $penjab = $this->db('penjab')->where('kd_pj', $kd_pj)->oneArray();
+            
             $nm_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
             $sip_dokter = $this->core->getDokterInfo('no_ijn_praktek', $kd_dokter);
             
-            $table_map = [
-                'surat.sakit' => 'mlite_surat_sakit',
-                'surat.rujukan' => 'mlite_surat_rujukan',
-                'surat.sehat' => 'mlite_surat_sehat'
-            ];
-            
-            $surat_data = $this->db($table_map[$ref_type])->where('no_rawat', $no_rawat)->oneArray();
+            if ($ref_type != 'resep') {
+                $table_map = [
+                    'surat.sakit' => 'mlite_surat_sakit',
+                    'surat.rujukan' => 'mlite_surat_rujukan',
+                    'surat.sehat' => 'mlite_surat_sehat'
+                ];
+                $surat_data = $this->db($table_map[$ref_type])->where('no_rawat', $no_rawat)->oneArray();
+                $this->tpl->set('surat', $surat_data);
+            }
             
             $this->tpl->set('pasien', $this->tpl->noParse_array(htmlspecialchars_array($pasien)));
+            $this->tpl->set('penjab', $penjab);
             $this->tpl->set('nm_dokter', $nm_dokter);
             $this->tpl->set('sip_dokter', $sip_dokter);
             $this->tpl->set('no_rawat', $no_rawat);
             $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($this->settings('settings'))));
-            $this->tpl->set('surat', $surat_data);
             $this->tpl->set('esignature', $latest_sig);
             
-            $template_file = MODULES.'/esignature/view/admin/templates/'.$ref_type.'.html';
+            $template_file = MODULES.'/esignature/view/admin/templates/'.($ref_type == 'resep' ? 'resep' : $ref_type).'.html';
             $html = $this->tpl->draw($template_file, true);
         } else {
             // Original generic logic
@@ -297,7 +345,7 @@ class Admin extends AdminModule
 
         if (file_exists($filePath)) {
             $this->db('berkas_digital_perawatan')->save([
-                'no_rawat' => revertNoRawat($ref_id),
+                'no_rawat' => (isset($no_rawat) ? $no_rawat : revertNoRawat($ref_id)),
                 'kode' => $this->settings('esignature', 'kode_berkasdigital'),
                 'lokasi_file' => 'pages/upload/' . $fileName
             ]);
