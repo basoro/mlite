@@ -2377,6 +2377,24 @@ CREATE TABLE `mlite_clinical_pathway_audit` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
+CREATE TABLE `mlite_clinical_pathway_cppt_template` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `kd_penyakit` varchar(10) NOT NULL,
+  `ppra` varchar(100) NOT NULL,
+  `subjective` text NOT NULL,
+  `objective` text NOT NULL,
+  `assessment` text NOT NULL,
+  `plan` text NOT NULL,
+  `aktif` enum('Ya','Tidak') NOT NULL DEFAULT 'Ya',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `cppt_template_kd_penyakit` (`kd_penyakit`),
+  KEY `cppt_template_aktif` (`aktif`),
+  CONSTRAINT `fk_cppt_template_penyakit` FOREIGN KEY (`kd_penyakit`) REFERENCES `penyakit` (`kd_penyakit`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 CREATE TABLE `mlite_mini_pacs_instance` (
   `id` int NOT NULL AUTO_INCREMENT,
   `series_id` int NOT NULL,

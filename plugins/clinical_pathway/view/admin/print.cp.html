@@ -168,6 +168,36 @@
     border-bottom: 1px solid #333;
     height: 18px;
   }
+  .cppt-sheet {
+    margin-top: 18px;
+    page-break-before: always;
+  }
+  .cppt-title {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .cppt-subtitle {
+    font-size: 12px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .cppt-table th,
+  .cppt-table td {
+    border: 1px solid #666;
+    padding: 6px;
+    vertical-align: top;
+  }
+  .cppt-table th {
+    text-align: center;
+    font-weight: bold;
+    background: #f2f2f2;
+  }
+  .cppt-text {
+    white-space: pre-line;
+  }
   @media print {
     .print-actions {
       display: none;
@@ -328,13 +358,51 @@
         <br>
         ({?=isset_or($print.care_team.perawat, '........................')?})
       </td>
-      <td>
-        <div>Pelaksana Verifikasi</div>
-        <br><br><br>
-        <span class="sign-line"></span>
-        <br>
-        ({?=isset_or($print.verification_user, '........................')?})
-      </td>
     </tr>
   </table>
 </div>
+
+{if: $print.cppt_template}
+<div class="sheet cppt-sheet">
+  <div class="cppt-title">Lampiran Template CPPT</div>
+  <div class="cppt-subtitle">Acuan Pengisian SOAP/CPPT PPRA berdasarkan diagnosis utama pasien</div>
+
+  <table class="cp-meta" style="margin-bottom:10px;">
+    <tr>
+      <td class="label">No. Rawat</td>
+      <td class="value">{?=isset_or($print.header.no_rawat, '-')?}</td>
+      <td class="label narrow">PPRA</td>
+      <td class="value">{?=isset_or($print.cppt_template.ppra, '-')?}</td>
+    </tr>
+    <tr>
+      <td class="label narrow">Kode ICD</td>
+      <td class="value">{?=isset_or($print.cppt_template.kd_penyakit, '-')?}</td>
+      <td class="label narrow">Diagnosa</td>
+      <td class="value">{?=isset_or($print.cppt_template.nm_penyakit, '-')?}</td>
+    </tr>
+  </table>
+
+  <table class="cppt-table">
+    <thead>
+      <tr>
+        <th style="width:16%;">Kode ICD</th>
+        <th style="width:16%;">Diagnosa</th>
+        <th style="width:17%;">S</th>
+        <th style="width:17%;">O</th>
+        <th style="width:17%;">A</th>
+        <th style="width:17%;">P</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{?=isset_or($print.cppt_template.kd_penyakit, '-')?}</td>
+        <td>{?=isset_or($print.cppt_template.nm_penyakit, '-')?}</td>
+        <td class="cppt-text">{?=isset_or($print.cppt_template.subjective, '-')?}</td>
+        <td class="cppt-text">{?=isset_or($print.cppt_template.objective, '-')?}</td>
+        <td class="cppt-text">{?=isset_or($print.cppt_template.assessment, '-')?}</td>
+        <td class="cppt-text">{?=isset_or($print.cppt_template.plan, '-')?}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{/if}

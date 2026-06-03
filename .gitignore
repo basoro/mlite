@@ -1,4 +1,5 @@
 .DS_Store
+.trae/
 config.php
 admin/tmp
 admin/pla.php

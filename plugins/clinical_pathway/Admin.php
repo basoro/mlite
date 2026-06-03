@@ -25,6 +25,7 @@ class Admin extends AdminModule
             'Dashboard' => 'manage',
             'Master CP' => 'master',
             'Template Harian' => 'template',
+            'Template CPPT' => 'cppttemplate',
             'Mapping ICD' => 'mapping',
             'Evidence Engine' => 'evidence',
             'Generator CP' => 'generator',
@@ -140,6 +141,42 @@ class Admin extends AdminModule
         }
 
         redirect(url([ADMIN, 'clinical_pathway', 'template']) . '&cp_id=' . $cpId);
+    }
+
+    public function anyCppttemplate()
+    {
+        $this->_addHeaderFiles();
+
+        $selectedId = (int) ($_GET['id'] ?? 0);
+        $selected = $selectedId ? $this->getCpptTemplateRow($selectedId) : [];
+
+        return $this->draw('cppt.template.html', [
+            'selected' => htmlspecialchars_array($selected),
+            'rows' => htmlspecialchars_array($this->getCpptTemplateList()),
+            'ppra_options' => $this->getCpptPpraOptions($selected['ppra'] ?? '')
+        ]);
+    }
+
+    public function postSavecppttemplate()
+    {
+        $result = $this->saveCpptTemplate($_POST);
+
+        $this->notify($result['status'] ? 'success' : 'failure', $result['message']);
+        redirect(url([ADMIN, 'clinical_pathway', 'cppttemplate']));
+    }
+
+    public function getDeletecppttemplate($id)
+    {
+        $row = $this->db('mlite_clinical_pathway_cppt_template')->oneArray('id', (int) $id);
+
+        if ($row) {
+            $this->db('mlite_clinical_pathway_cppt_template')->delete((int) $id);
+            $this->notify('success', 'Template CPPT berhasil dihapus.');
+        } else {
+            $this->notify('failure', 'Template CPPT tidak ditemukan.');
+        }
+
+        redirect(url([ADMIN, 'clinical_pathway', 'cppttemplate']));
     }
 
     public function anyMapping()
@@ -560,6 +597,117 @@ class Admin extends AdminModule
     protected function getCpOptions()
     {
         return $this->db('mlite_clinical_pathway')->asc('nama_cp')->toArray();
+    }
+
+    protected function getCpptTemplateList()
+    {
+        $sql = "SELECT t.*, py.nm_penyakit
+                FROM mlite_clinical_pathway_cppt_template t
+                LEFT JOIN penyakit py ON py.kd_penyakit = t.kd_penyakit
+                ORDER BY t.aktif DESC, t.ppra ASC, t.kd_penyakit ASC";
+
+        return $this->pdo()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    protected function getCpptPpraOptions($selected = '')
+    {
+        $options = [
+            'PPRA',
+            'Medis',
+            'Keperawatan',
+            'Farmasi Klinis',
+            'Gizi',
+            'Rehab Medik',
+            'Edukasi'
+        ];
+
+        $selected = trim((string) $selected);
+        if ($selected !== '' && !in_array($selected, $options, true)) {
+            $options[] = $selected;
+        }
+
+        sort($options);
+
+        return $options;
+    }
+
+    protected function getCpptTemplateRow($id)
+    {
+        $sql = "SELECT t.*, py.nm_penyakit
+                FROM mlite_clinical_pathway_cppt_template t
+                LEFT JOIN penyakit py ON py.kd_penyakit = t.kd_penyakit
+                WHERE t.id = ?
+                LIMIT 1";
+
+        $stmt = $this->pdo()->prepare($sql);
+        $stmt->execute([(int) $id]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+    }
+
+    protected function saveCpptTemplate($data)
+    {
+        $now = date('Y-m-d H:i:s');
+        $kdPenyakit = strtoupper(trim((string) ($data['kd_penyakit'] ?? '')));
+        $subjective = trim((string) ($data['subjective'] ?? ''));
+        $objective = trim((string) ($data['objective'] ?? ''));
+        $assessment = trim((string) ($data['assessment'] ?? ''));
+        $plan = trim((string) ($data['plan'] ?? ''));
+        $ppra = trim((string) ($data['ppra'] ?? ''));
+        $aktif = ($data['aktif'] ?? 'Ya') === 'Tidak' ? 'Tidak' : 'Ya';
+
+        if ($kdPenyakit === '' || $ppra === '' || $subjective === '' || $objective === '' || $assessment === '' || $plan === '') {
+            return ['status' => false, 'message' => 'Kode ICD, kategori PPRA, S, O, A, dan P wajib diisi.'];
+        }
+
+        if (!in_array($ppra, $this->getCpptPpraOptions($ppra), true)) {
+            return ['status' => false, 'message' => 'Kategori PPRA tidak valid.'];
+        }
+
+        $diagnosis = $this->db('penyakit')->oneArray('kd_penyakit', $kdPenyakit);
+        if (!$diagnosis) {
+            return ['status' => false, 'message' => 'Kode ICD tidak ditemukan pada master penyakit.'];
+        }
+
+        $payload = [
+            'kd_penyakit' => $kdPenyakit,
+            'ppra' => $ppra,
+            'subjective' => $subjective,
+            'objective' => $objective,
+            'assessment' => $assessment,
+            'plan' => $plan,
+            'aktif' => $aktif,
+            'updated_at' => $now
+        ];
+
+        $duplicate = $this->db('mlite_clinical_pathway_cppt_template')
+            ->where('kd_penyakit', $kdPenyakit)
+            ->oneArray();
+
+        if (!empty($data['id'])) {
+            $id = (int) $data['id'];
+            if ($duplicate && (int) $duplicate['id'] !== $id) {
+                return ['status' => false, 'message' => 'Template CPPT untuk ICD ini sudah ada.'];
+            }
+
+            $saved = $this->db('mlite_clinical_pathway_cppt_template')->where('id', $id)->save($payload);
+            return [
+                'status' => (bool) $saved,
+                'message' => $saved ? 'Template CPPT berhasil diperbarui.' : 'Template CPPT gagal diperbarui.'
+            ];
+        }
+
+        if ($duplicate) {
+            return ['status' => false, 'message' => 'Template CPPT untuk ICD ini sudah ada.'];
+        }
+
+        $payload['created_at'] = $now;
+        $saved = $this->db('mlite_clinical_pathway_cppt_template')->save($payload);
+
+        return [
+            'status' => (bool) $saved,
+            'message' => $saved ? 'Template CPPT berhasil disimpan.' : 'Template CPPT gagal disimpan.'
+        ];
     }
 
     protected function saveMaster($data)
@@ -2354,18 +2502,65 @@ class Admin extends AdminModule
             return [];
         }
 
+        $diagnoses = $this->getPatientDiagnoses($noRawat, $header['status_lanjut']);
+
         return [
             'header' => $header,
             'hospital' => $this->getHospitalProfile(),
             'tariffs' => $this->getHospitalTariffSummary($noRawat, $header['status_lanjut']),
             'care_team' => $this->getCareTeamByNoRawat($noRawat, $header['status_lanjut'], $header['tgl_registrasi'], $header['kd_dokter'] ?? null),
-            'diagnoses' => $this->getPatientDiagnoses($noRawat, $header['status_lanjut']),
+            'diagnoses' => $diagnoses,
+            'cppt_template' => $this->getPrintableCpptTemplate($diagnoses, $header['kd_penyakit'] ?? ''),
             'days' => $this->getPrintableExecutionDays((int) $header['clinical_pathway_patient_id'], (int) $header['target_los']),
             'matrix' => $this->getPrintableMatrixRows((int) $header['clinical_pathway_patient_id'], (int) $header['target_los']),
             'variances' => $this->getPrintableVariances((int) $header['clinical_pathway_patient_id']),
             'verification_user' => $_SESSION['fullname'] ?? ($_SESSION['username'] ?? ''),
             'pdf_url' => url([ADMIN, 'clinical_pathway', 'pdfcp']) . '&no_rawat=' . urlencode($noRawat)
         ];
+    }
+
+    protected function getPrintableCpptTemplate(array $diagnoses, $fallbackCode = '')
+    {
+        $codes = [];
+        foreach ($diagnoses as $diagnosis) {
+            $code = strtoupper(trim((string) ($diagnosis['kd_penyakit'] ?? '')));
+            if ($code !== '' && !in_array($code, $codes, true)) {
+                $codes[] = $code;
+            }
+        }
+
+        $fallbackCode = strtoupper(trim((string) $fallbackCode));
+        if ($fallbackCode !== '' && !in_array($fallbackCode, $codes, true)) {
+            $codes[] = $fallbackCode;
+        }
+
+        if (!$codes) {
+            return [];
+        }
+
+        foreach ($codes as $code) {
+            $row = $this->getCpptTemplateByDiagnosisCode($code);
+            if ($row) {
+                return $row;
+            }
+        }
+
+        return [];
+    }
+
+    protected function getCpptTemplateByDiagnosisCode($kdPenyakit)
+    {
+        $sql = "SELECT t.*, py.nm_penyakit
+                FROM mlite_clinical_pathway_cppt_template t
+                LEFT JOIN penyakit py ON py.kd_penyakit = t.kd_penyakit
+                WHERE t.kd_penyakit = ?
+                  AND t.aktif = 'Ya'
+                LIMIT 1";
+
+        $stmt = $this->pdo()->prepare($sql);
+        $stmt->execute([strtoupper(trim((string) $kdPenyakit))]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
     }
 
     protected function getHospitalProfile()

@@ -1,0 +1,115 @@
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">{if: isset_or($selected.id)}Edit{else}Tambah{/if} Template CPPT</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{?=url([ADMIN, 'clinical_pathway', 'savecppttemplate'])?}" method="POST">
+          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+          <input type="hidden" name="id" value="{?=isset_or($selected.id)?}">
+
+          <div class="form-group">
+            <label>Kode ICD</label>
+            <input type="text" name="kd_penyakit" class="form-control" value="{?=isset_or($selected.kd_penyakit)?}" placeholder="contoh: N39.0" required>
+            <p class="help-block">Gunakan kode diagnosis dari master penyakit mLITE.</p>
+          </div>
+
+          <div class="form-group">
+            <label>Diagnosa</label>
+            <input type="text" class="form-control" value="{?=isset_or($selected.nm_penyakit)?}" readonly placeholder="Nama diagnosa akan tampil jika kode ICD valid">
+          </div>
+
+          <div class="form-group">
+            <label>Kategori PPRA</label>
+            <select name="ppra" class="form-control" required>
+              <option value="">-- pilih kategori PPRA --</option>
+              {loop: $ppra_options}
+              <option value="{$value}" {if: isset_or($selected.ppra) == $value}selected{/if}>{$value}</option>
+              {/loop}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>S (Subjective)</label>
+            <textarea name="subjective" class="form-control" rows="4" required>{?=isset_or($selected.subjective)?}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label>O (Objective)</label>
+            <textarea name="objective" class="form-control" rows="4" required>{?=isset_or($selected.objective)?}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label>A (Assessment)</label>
+            <textarea name="assessment" class="form-control" rows="3" required>{?=isset_or($selected.assessment)?}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label>P (Plan)</label>
+            <textarea name="plan" class="form-control" rows="4" required>{?=isset_or($selected.plan)?}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Status</label>
+            <select name="aktif" class="form-control">
+              <option value="Ya" {if: isset_or($selected.aktif, 'Ya') == 'Ya'}selected{/if}>Aktif</option>
+              <option value="Tidak" {if: isset_or($selected.aktif) == 'Tidak'}selected{/if}>Tidak Aktif</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-success btn-block">Simpan Template CPPT</button>
+          {if: isset_or($selected.id)}
+          <a href="{?=url([ADMIN, 'clinical_pathway', 'cppttemplate'])?}" class="btn btn-default btn-block">Batal Edit</a>
+          {/if}
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Master Template CPPT</h3>
+      </div>
+      <div class="panel-body">
+        <p class="text-muted">Template ini menjadi acuan pengisian SOAP/CPPT oleh PPRA. Jika diagnosis utama pasien cocok dengan kode ICD di bawah, maka template akan dicetak otomatis sebagai lampiran pada halaman terakhir Clinical Pathway.</p>
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered dataTables">
+            <thead>
+              <tr>
+                <th>PPRA</th>
+                <th>Kode ICD</th>
+                <th>Diagnosa</th>
+                <th>S</th>
+                <th>O</th>
+                <th>A</th>
+                <th>P</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $rows}
+              <tr>
+                <td>{?=isset_or($value.ppra)?}</td>
+                <td>{?=isset_or($value.kd_penyakit)?}</td>
+                <td>{?=isset_or($value.nm_penyakit)?}</td>
+                <td>{?=isset_or($value.subjective)?}</td>
+                <td>{?=isset_or($value.objective)?}</td>
+                <td>{?=isset_or($value.assessment)?}</td>
+                <td>{?=isset_or($value.plan)?}</td>
+                <td>{?=isset_or($value.aktif)?}</td>
+                <td>
+                  <a href="{?=url([ADMIN, 'clinical_pathway', 'cppttemplate'])?}&id={$value.id}" class="btn btn-xs btn-primary">Edit</a>
+                  <a href="{?=url([ADMIN, 'clinical_pathway', 'deletecppttemplate', $value.id])?}" class="btn btn-xs btn-danger" onclick="return confirm('Hapus template CPPT ini?');">Hapus</a>
+                </td>
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

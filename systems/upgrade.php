@@ -2528,6 +2528,23 @@ switch ($version) {
           CONSTRAINT `fk_cp_audit_cp` FOREIGN KEY (`clinical_pathway_id`) REFERENCES `mlite_clinical_pathway` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
 
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway_cppt_template` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `kd_penyakit` varchar(10) NOT NULL,
+          `ppra` varchar(100) NOT NULL,
+          `subjective` text NOT NULL,
+          `objective` text NOT NULL,
+          `assessment` text NOT NULL,
+          `plan` text NOT NULL,
+          `aktif` enum('Ya','Tidak') NOT NULL DEFAULT 'Ya',
+          `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+          `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          PRIMARY KEY (`id`),
+          UNIQUE KEY `cppt_template_kd_penyakit` (`kd_penyakit`),
+          KEY `cppt_template_aktif` (`aktif`),
+          CONSTRAINT `fk_cppt_template_penyakit` FOREIGN KEY (`kd_penyakit`) REFERENCES `penyakit` (`kd_penyakit`) ON UPDATE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+
         try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_clinical_pathway_activity` ADD COLUMN `uraian_kegiatan` varchar(255) DEFAULT NULL AFTER `kategori`"); } catch (\Exception $e) {}
         try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_clinical_pathway_activity` ADD COLUMN `keterangan` text DEFAULT NULL AFTER `item_nama`"); } catch (\Exception $e) {}
 
@@ -2535,10 +2552,34 @@ switch ($version) {
 
         $return = '6.3.4';
         break;
+
+    case '6.3.4':
+
+        $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway_cppt_template` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `kd_penyakit` varchar(10) NOT NULL,
+          `ppra` varchar(100) NOT NULL,
+          `subjective` text NOT NULL,
+          `objective` text NOT NULL,
+          `assessment` text NOT NULL,
+          `plan` text NOT NULL,
+          `aktif` enum('Ya','Tidak') NOT NULL DEFAULT 'Ya',
+          `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+          `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          PRIMARY KEY (`id`),
+          UNIQUE KEY `cppt_template_kd_penyakit` (`kd_penyakit`),
+          KEY `cppt_template_aktif` (`aktif`),
+          CONSTRAINT `fk_cppt_template_penyakit` FOREIGN KEY (`kd_penyakit`) REFERENCES `penyakit` (`kd_penyakit`) ON UPDATE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+
+        try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_clinical_pathway_cppt_template` ADD COLUMN `ppra` varchar(100) NOT NULL DEFAULT '' AFTER `kd_penyakit`"); } catch (\Exception $e) {}
+
+        $return = '6.3.5';
+        break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '6.3.4';
+        $return = '6.3.5';
     }
 
 return $return;
