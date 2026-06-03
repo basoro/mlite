@@ -59,9 +59,37 @@ Dokumentasi singkat penggunaan modul **Kasir Rawat Jalan** di mLITE.
    - Sistem mendukung pengiriman faktur via email setelah pembayaran selesai.
    - Pastikan konfigurasi email (SMTP) sudah diatur di pengaturan sistem mLITE.
 
+## Fitur Lock Billing
+
+- Modul kasir rawat jalan sekarang memiliki mekanisme **closing billing** untuk mencegah perubahan transaksi setelah kondisi tertentu terpenuhi.
+- Lock ini berlaku pada proses yang berkaitan dengan uang, seperti:
+  - tambah rincian billing manual
+  - hapus rincian billing
+  - simpan billing/faktur
+  - pembuatan nota
+  - pencetakan bukti pembayaran/invoice baru
+
+### Aturan Lock
+
+- Jika `reg_periksa.status_bayar = Sudah Bayar`, maka seluruh transaksi yang berkaitan dengan uang akan dikunci.
+- Jika `reg_periksa.stts != Sudah`, maka kasir tidak dapat membuat billing baru, nota, atau bukti pembayaran.
+- Jika billing sudah pernah tersimpan sebelumnya, cetak ulang billing tetap dapat dilakukan selama tidak terkena pembatasan proses baru.
+
+### Bypass Admin
+
+- Jika user yang login memiliki role `admin`, maka sistem **mengabaikan lock billing**.
+- Admin tetap dapat:
+  - menambah rincian
+  - menghapus rincian
+  - menyimpan billing
+  - membuat nota
+  - mencetak invoice
+- Bypass ini dibuat agar admin tetap bisa melakukan koreksi atau intervensi operasional bila diperlukan.
+
 ## Catatan
 
 - Shift kasir harus dibuka terlebih dahulu sebelum transaksi pembayaran dapat diproses.
 - Setiap transaksi tercatat dengan nomor rawat dan waktu billing; verifikasi rincian sebelum menyimpan untuk menghindari duplikasi.
 - Billing besar dan billing kecil dapat dicetak ulang dari halaman rincian pasien selama data masih tersimpan.
 - Berbeda dengan rawat inap, komponen rawat jalan tidak mencakup biaya tambahan akomodasi/kamar.
+- Jika tombol simpan atau cetak nonaktif, periksa lebih dulu `status_bayar`, `stts` pemeriksaan, dan role user yang sedang login.
