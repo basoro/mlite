@@ -43,18 +43,6 @@ class Admin extends AdminModule
 
     protected function getBillingClosingState($noRawat)
     {
-        if ($this->userIsAdmin()) {
-            return [
-                'exists' => true,
-                'billing_exists' => false,
-                'is_paid' => false,
-                'is_exam_closed' => true,
-                'edit_locked' => false,
-                'print_locked' => false,
-                'message' => ''
-            ];
-        }
-
         $noRawat = trim((string) $noRawat);
         if ($noRawat === '') {
             return [
@@ -81,6 +69,19 @@ class Admin extends AdminModule
             ->where('no_rawat', $noRawat)
             ->like('kd_billing', 'RI%')
             ->oneArray();
+
+        if ($this->userIsAdmin()) {
+            return [
+                'exists' => true,
+                'registration' => $registration,
+                'billing_exists' => $billingExists,
+                'is_paid' => (($registration['status_bayar'] ?? '') === 'Sudah Bayar'),
+                'is_exam_closed' => (($registration['stts'] ?? '') === 'Sudah'),
+                'edit_locked' => false,
+                'print_locked' => false,
+                'message' => ''
+            ];
+        }
 
         $isPaid = (($registration['status_bayar'] ?? '') === 'Sudah Bayar');
         $isExamClosed = (($registration['stts'] ?? '') === 'Sudah');

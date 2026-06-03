@@ -47,19 +47,26 @@
           <div class="col-md-3">
             <div class="form-group">
               <label>Kode Supplier</label>
-              <input type="text" name="supplier_kode" class="form-control" placeholder="Opsional">
+              <select name="supplier_kode" id="supplier_kode" class="form-control" required>
+                <option value="">- Pilih Supplier Master -</option>
+                {loop: $supplier_master}
+                <option value="{?=isset_or($value.kode_industri)?}" data-nama="{?=isset_or($value.nama_industri)?}">
+                  {?=isset_or($value.kode_industri)?} - {?=isset_or($value.nama_industri)?}
+                </option>
+                {/loop}
+              </select>
             </div>
           </div>
           <div class="col-md-3">
             <div class="form-group">
               <label>Nama Supplier</label>
-              <input type="text" name="supplier" class="form-control" required>
+              <input type="text" name="supplier_nama" id="supplier_nama" class="form-control" readonly placeholder="Terisi otomatis dari master industri farmasi">
             </div>
           </div>
           <div class="col-md-6">
             <div class="form-group">
               <label>Catatan</label>
-              <textarea name="catatan" class="form-control" rows="2"></textarea>
+              <input type="text" name="catatan" class="form-control" rows="2">
             </div>
           </div>
         </form>
@@ -128,5 +135,10 @@
       "scrollX": true,
       dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
     });
+
+    $('#supplier_kode').on('change', function(){
+      var supplierNama = $(this).find('option:selected').data('nama') || '';
+      $('#supplier_nama').val(supplierNama);
+    }).trigger('change');
   });
 </script>

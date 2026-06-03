@@ -65,7 +65,7 @@ Petugas farmasi menggunakan modul ini untuk operasional harian gudang:
 1. **Pengaturan Depo Farmasi**
    - Buka submenu **Pengaturan**.
    - Atur kode bangsal untuk setiap depo: **Depo Ralan**, **Depo IGD**, **Depo Ranap**, dan **Gudang Utama**.
-   - Isi **Keterangan Etiket**, **Embalase**, dan **Tuslah** sesuai kebijakan farmasi rumah sakit.
+   - Isi **Keterangan Etiket**, **Embalase**, **Tuslah**, dan **Pajak Obat (%)** sesuai kebijakan farmasi rumah sakit.
    - Simpan pengaturan.
 
 2. **Manajemen Data Barang**
@@ -88,3 +88,4 @@ Petugas farmasi menggunakan modul ini untuk operasional harian gudang:
 - Darurat Stok membantu memantau ketersediaan obat secara real-time; perhatikan daftar ini setiap hari.
 - Surat Pemesanan Obat/BMHP dapat dicetak dalam format PDF langsung dari halaman Pemesanan.
 - Data pemberian obat pasien bersumber dari resep yang diinput di modul Dokter (Ralan/IGD/Ranap).
+- Pajak obat dihitung otomatis berdasarkan persentase pada Pengaturan Modul Farmasi dan diterapkan pada transaksi obat yang bersumber dari `databarang`.

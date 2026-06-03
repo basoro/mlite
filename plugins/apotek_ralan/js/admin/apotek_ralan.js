@@ -866,8 +866,8 @@ $(document).on("click", ".pilih_barang_modal", function(){
                         var $btn = $('button[data-no_resep="' + currentNoResep + '"][data-no_racik="' + currentNoRacik + '"][data-tipe="racikan"]');
                         var $tbody = $btn.closest('tbody.resep-group');
                         
-                        var ralan = parseFloat(result.ralan);
-                        var formattedRalan = isNaN(ralan) ? '0' : ralan.toLocaleString('id-ID');
+                        var totalHarga = parseFloat(result.total_harga !== undefined ? result.total_harga : result.ralan);
+                        var formattedRalan = isNaN(totalHarga) ? '0' : totalHarga.toLocaleString('id-ID');
                         
                         var newRow = '<tr class="item-row" data-nama_brng="' + result.nama_brng + '" data-stok="999" data-jml="' + result.jml + '" data-kandungan="' + result.kandungan + '" data-kapasitas="' + result.kapasitas + '" data-ralan="' + result.ralan + '">' +
                             '<td>' + result.nama_brng + '</td>' +
@@ -929,16 +929,16 @@ $(document).on("click", ".pilih_barang_modal", function(){
                                     var $tbody = $btn.closest('tbody.resep-group');
     
                                     // Buat baris baru
-                                    var ralan = parseFloat(result.ralan);
-                                    var formattedRalan = isNaN(ralan) ? '0' : ralan.toLocaleString('id-ID');
+                                    var totalHarga = parseFloat(result.total_harga !== undefined ? result.total_harga : result.ralan);
+                                    var formattedRalan = isNaN(totalHarga) ? '0' : totalHarga.toLocaleString('id-ID');
     
-                                    var newRow = '<tr class="item-row" data-nama_brng="' + result.nama_brng + '" data-stok="999" data-jml="' + result.jml + '">' +
+                                    var newRow = '<tr class="item-row" data-nama_brng="' + result.nama_brng + '" data-stok="999" data-jml="' + result.jml + '" data-ralan="' + result.ralan + '">' +
                                         '<td>' + result.nama_brng + '</td>' +
                                         '<td><input type="number" class="form-control input-sm jumlah_obat" data-kode_brng="' + result.kode_brng + '" value="' + result.jml + '" style="width: 50px;"></td>' +
                                         '<td>' + result.aturan_pakai + ' <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="' + result.kode_brng + '" data-no_rawat="' + currentNoRawat + '" data-tgl_peresepan="' + currentTglPeresepan + '" data-jam_peresepan="' + currentJamPeresepan + '" data-tipe="nonracikan"><i class="fa fa-print"></i></button> <button type="button" class="btn btn-danger btn-xs hapus_obat" data-kode_brng="' + result.kode_brng + '" data-no_rawat="' + currentNoRawat + '" data-tgl_peresepan="' + currentTglPeresepan + '" data-jam_peresepan="' + currentJamPeresepan + '" data-jml="' + result.jml + '"><i class="fa fa-trash"></i></button></td>' +
                                         '<td><input type="text" class="form-control input-sm embalase" data-kode_brng="' + result.kode_brng + '" value="' + result.embalase + '" style="width: 80px;"></td>' +
                                         '<td><input type="text" class="form-control input-sm tuslah" data-kode_brng="' + result.kode_brng + '" value="' + result.tuslah + '" style="width: 80px;"></td>' +
-                                        '<td>Rp. <span class="pull-right">' + formattedRalan + '</span></td>' +
+                                        '<td>Rp. <span class="pull-right total_harga_display">' + formattedRalan + '</span></td>' +
                                         '</tr>';
                                         
                                     $tbody.append(newRow);

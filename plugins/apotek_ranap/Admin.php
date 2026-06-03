@@ -7,6 +7,33 @@ class Admin extends AdminModule
 {
     protected $assign = [];
 
+    protected function getDrugTaxPercent()
+    {
+        $taxPercent = $this->settings->get('farmasi.pajak_obat_persen');
+        $taxPercent = is_numeric($taxPercent) ? (float) $taxPercent : 0;
+
+        return max(0, min(100, $taxPercent));
+    }
+
+    protected function calculateDrugUnitPrice($basePrice)
+    {
+        $basePrice = (float) $basePrice;
+        return round($basePrice + (($basePrice * $this->getDrugTaxPercent()) / 100), 2);
+    }
+
+    protected function calculateDrugSubtotal($basePrice, $quantity)
+    {
+        return round($this->calculateDrugUnitPrice($basePrice) * (float) $quantity, 2);
+    }
+
+    protected function calculateDrugGrandTotal($basePrice, $quantity, $embalase = 0, $tuslah = 0)
+    {
+        return round(
+            $this->calculateDrugSubtotal($basePrice, $quantity) + (float) $embalase + (float) $tuslah,
+            2
+        );
+    }
+
     public function navigation()
     {
         return [
@@ -171,11 +198,11 @@ class Admin extends AdminModule
             'no_rawat' => $_POST['no_rawat'],
             'kode_brng' => $_POST['kd_jenis_prw'],
             'h_beli' => $get_databarang['h_beli'],
-            'biaya_obat' => $_POST['biaya'],
+            'biaya_obat' => $this->calculateDrugUnitPrice($_POST['biaya']),
             'jml' => $_POST['jml'],
             'embalase' => $embalase,
             'tuslah' => $tuslah,
-            'total' => ($_POST['biaya'] * $_POST['jml']) + $embalase + $tuslah,
+            'total' => $this->calculateDrugSubtotal($_POST['biaya'], $_POST['jml']),
             'status' => 'Ranap',
             'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
             'no_batch' => $get_gudangbarang['no_batch'],
@@ -263,11 +290,11 @@ class Admin extends AdminModule
                   'no_rawat' => $_POST['no_rawat'],
                   'kode_brng' => $kode_brng_val,
                   'h_beli' => $kapasitas['h_beli'],
-                  'biaya_obat' => $kapasitas['dasar'],
+                  'biaya_obat' => $this->calculateDrugUnitPrice($kapasitas['dasar']),
                   'jml' => $jml,
                   'embalase' => $this->settings->get('farmasi.embalase'),
                   'tuslah' => $this->settings->get('farmasi.tuslah'),
-                  'total' => $kapasitas['dasar'] * $jml,
+                  'total' => $this->calculateDrugSubtotal($kapasitas['dasar'], $jml),
                   'status' => 'Ranap',
                   'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
                   'no_batch' => $get_gudangbarang['no_batch'],
@@ -424,11 +451,11 @@ class Admin extends AdminModule
               'no_rawat' => $_POST['no_rawat'],
               'kode_brng' => $item['kode_brng'],
               'h_beli' => $get_databarang['h_beli'],
-              'biaya_obat' => $get_databarang['dasar'],
+              'biaya_obat' => $this->calculateDrugUnitPrice($get_databarang['dasar']),
               'jml' => $jumlah,
               'embalase' => $embalase,
               'tuslah' => $tuslah,
-              'total' => ($get_databarang['dasar'] * $jumlah) + $embalase + $tuslah,
+              'total' => $this->calculateDrugSubtotal($get_databarang['dasar'], $jumlah),
               'status' => 'Ranap',
               'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
               'no_batch' => $get_gudangbarang['no_batch'],
@@ -536,11 +563,11 @@ class Admin extends AdminModule
               'no_rawat' => $no_rawat,
               'kode_brng' => $kode_brng,
               'h_beli' => $get_databarang['h_beli'],
-              'biaya_obat' => $get_databarang['dasar'],
+              'biaya_obat' => $this->calculateDrugUnitPrice($get_databarang['dasar']),
               'jml' => $jml,
               'embalase' => $embalase,
               'tuslah' => $tuslah,
-              'total' => ($get_databarang['dasar'] * $jml) + $embalase + $tuslah,
+              'total' => $this->calculateDrugSubtotal($get_databarang['dasar'], $jml),
               'status' => 'Ranap',
               'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
               'no_batch' => $get_gudangbarang['no_batch'],
@@ -563,7 +590,8 @@ class Admin extends AdminModule
             'jml' => htmlspecialchars($jml, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'kandungan' => htmlspecialchars($kandungan, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'kapasitas' => htmlspecialchars($kapasitas, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-            'ralan' => isset($get_databarang['dasar']) ? $get_databarang['dasar'] : 0,
+            'ralan' => isset($get_databarang['dasar']) ? $this->calculateDrugUnitPrice($get_databarang['dasar']) : 0,
+            'total_harga' => isset($get_databarang['dasar']) ? $this->calculateDrugGrandTotal($get_databarang['dasar'], $jml, $embalase, $tuslah) : 0,
             'embalase' => htmlspecialchars($embalase, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'tuslah' => htmlspecialchars($tuslah, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
           ]);
@@ -612,11 +640,11 @@ class Admin extends AdminModule
             'no_rawat' => $no_rawat,
             'kode_brng' => $_POST['kode_brng'],
             'h_beli' => $get_databarang['h_beli'],
-            'biaya_obat' => $get_databarang['dasar'],
+            'biaya_obat' => $this->calculateDrugUnitPrice($get_databarang['dasar']),
             'jml' => $_POST['jml'],
             'embalase' => $this->settings->get('farmasi.embalase'),
             'tuslah' => $this->settings->get('farmasi.tuslah'),
-            'total' => ($get_databarang['dasar'] * $_POST['jml']) + $embalase + $tuslah,
+            'total' => $this->calculateDrugSubtotal($get_databarang['dasar'], $_POST['jml']),
             'status' => 'Ranap',
             'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
             'no_batch' => $get_gudangbarang['no_batch'],
@@ -634,7 +662,8 @@ class Admin extends AdminModule
 
         $get_databarang['jml'] = htmlspecialchars($_POST['jml'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $get_databarang['aturan_pakai'] = htmlspecialchars($_POST['aturan_pakai'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $get_databarang['ralan'] = ($get_databarang['dasar'] * $_POST['jml']) + $embalase + $tuslah;
+        $get_databarang['ralan'] = $this->calculateDrugUnitPrice($get_databarang['dasar']);
+        $get_databarang['total_harga'] = $this->calculateDrugGrandTotal($get_databarang['dasar'], $_POST['jml'], $embalase, $tuslah);
         $get_databarang['embalase'] = htmlspecialchars($embalase, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $get_databarang['tuslah'] = htmlspecialchars($tuslah, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         echo json_encode(htmlspecialchars_array($get_databarang));
@@ -878,7 +907,12 @@ class Admin extends AdminModule
           $jml_value = isset($value['jml']) ? floatval($value['jml']) : 0;
           $dasar_value = isset($value['dasar']) ? floatval($value['dasar']) : 0;
           
-          $value['ranap'] = ($jml_value * $dasar_value) + $this->settings->get('farmasi.embalase') + $this->settings->get('farmasi.tuslah');
+          $value['ranap'] = $this->calculateDrugGrandTotal(
+            $dasar_value,
+            $jml_value,
+            $this->settings->get('farmasi.embalase'),
+            $this->settings->get('farmasi.tuslah')
+          );
           $jumlah_total_resep += floatval($value['ranap']);
         }
 
@@ -918,7 +952,12 @@ class Admin extends AdminModule
           ->where('no_resep', $row['no_resep'])
           ->toArray();
         foreach ($row['resep_dokter_racikan_detail'] as &$value) {
-          $value['ranap'] = ($value['jml'] * $value['dasar']) + $this->settings->get('farmasi.embalase') + $this->settings->get('farmasi.tuslah');
+          $value['ranap'] = $this->calculateDrugGrandTotal(
+            $value['dasar'],
+            $value['jml'],
+            $this->settings->get('farmasi.embalase'),
+            $this->settings->get('farmasi.tuslah')
+          );
           $jumlah_total_resep_racikan += floatval($value['ranap']);
         }
 
@@ -1040,7 +1079,7 @@ class Admin extends AdminModule
                 'kode_brng' => $row['kode_brng'],
                 'nama_brng'  => $row['nama_brng'],
                 'stok'  => $row['stok'],
-                'ralan'  => $row['ralan']
+                'ralan'  => $this->calculateDrugUnitPrice(isset($row['ralan']) ? $row['ralan'] : $row['dasar'])
             );
           }
           echo json_encode(htmlspecialchars_array($array), true);
@@ -1663,11 +1702,11 @@ class Admin extends AdminModule
                   'no_rawat' => $no_rawat,
                   'kode_brng' => $item['kode_brng'],
                   'h_beli' => $get_databarang['h_beli'],
-                  'biaya_obat' => $get_databarang['dasar'],
+                  'biaya_obat' => $this->calculateDrugUnitPrice($get_databarang['dasar']),
                   'jml' => $jumlah,
                   'embalase' => $embalase,
                   'tuslah' => $tuslah,
-                  'total' => ($get_databarang['dasar'] * $jumlah) + $embalase + $tuslah,
+                  'total' => $this->calculateDrugSubtotal($get_databarang['dasar'], $jumlah),
                   'status' => 'Ranap',
                   'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
                   'no_batch' => $get_gudangbarang['no_batch'],

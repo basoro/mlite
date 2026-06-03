@@ -2531,6 +2531,8 @@ switch ($version) {
         try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_clinical_pathway_activity` ADD COLUMN `uraian_kegiatan` varchar(255) DEFAULT NULL AFTER `kategori`"); } catch (\Exception $e) {}
         try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_clinical_pathway_activity` ADD COLUMN `keterangan` text DEFAULT NULL AFTER `item_nama`"); } catch (\Exception $e) {}
 
+        try { $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'pajak_obat_persen', '0')"); } catch (\Exception $e) {}
+
         $return = '6.3.4';
         break;
     }

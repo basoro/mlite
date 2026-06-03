@@ -50,6 +50,11 @@
                       <label>Tuslah</label>
                       <input type="text" class="form-control" name="farmasi[tuslah]" value="{?=isset_or($settings.farmasi.tuslah, '')?}">
                     </div>
+                    <div class="form-group">
+                      <label>Pajak Obat (%)</label>
+                      <input type="number" step="0.01" min="0" max="100" class="form-control" name="farmasi[pajak_obat_persen]" value="{?=isset_or($settings.farmasi.pajak_obat_persen, '0')?}">
+                      <p class="help-block">Persentase pajak transaksi obat. Nilai ini dihitung otomatis pada harga obat dari `databarang` saat transaksi farmasi diproses.</p>
+                    </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>
             </div>

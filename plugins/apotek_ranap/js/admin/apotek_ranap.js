@@ -713,8 +713,8 @@ $(document).on("click", ".pilih_barang_modal", function(){
                         var $btn = $('button[data-no_resep="' + currentNoResep + '"][data-no_racik="' + currentNoRacik + '"][data-tipe="racikan"]');
                         var $tbody = $btn.closest('tbody.resep-group');
                         
-                        var ralan = parseFloat(result.ralan);
-                        var formattedRalan = isNaN(ralan) ? '0' : ralan.toLocaleString('id-ID');
+                        var totalHarga = parseFloat(result.total_harga !== undefined ? result.total_harga : result.ralan);
+                        var formattedRalan = isNaN(totalHarga) ? '0' : totalHarga.toLocaleString('id-ID');
                         
                         var newRow = '<tr class="item-row" data-nama_brng="' + result.nama_brng + '" data-stok="999" data-jml="' + result.jml + '" data-kandungan="' + result.kandungan + '" data-kapasitas="' + result.kapasitas + '" data-ralan="' + result.ralan + '">' +
                             '<td>' + result.nama_brng + '</td>' +
@@ -776,8 +776,8 @@ $(document).on("click", ".pilih_barang_modal", function(){
                                     var $tbody = $btn.closest('tbody.resep-group');
     
                                     // Buat baris baru
-                                    var ralan = parseFloat(result.ralan);
-                                    var formattedRalan = isNaN(ralan) ? '0' : ralan.toLocaleString('id-ID');
+                                    var totalHarga = parseFloat(result.total_harga !== undefined ? result.total_harga : result.ralan);
+                                    var formattedRalan = isNaN(totalHarga) ? '0' : totalHarga.toLocaleString('id-ID');
     
                                     var newRow = '<tr class="item-row" data-nama_brng="' + result.nama_brng + '" data-stok="999" data-jml="' + result.jml + '" data-ralan="' + result.ralan + '">' +
                                         '<td>' + result.nama_brng + '</td>' +
