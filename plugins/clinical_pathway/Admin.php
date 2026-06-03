@@ -153,8 +153,34 @@ class Admin extends AdminModule
         return $this->draw('cppt.template.html', [
             'selected' => htmlspecialchars_array($selected),
             'rows' => htmlspecialchars_array($this->getCpptTemplateList()),
-            'ppra_options' => $this->getCpptPpraOptions($selected['ppra'] ?? '')
+            'ppra_options' => $this->getCpptPpraOptions($selected['ppra'] ?? ''),
+            'diagnosis_lookup_url' => url([ADMIN, 'clinical_pathway', 'diagnosiscpptlookup'])
         ]);
+    }
+
+    public function getDiagnosiscpptlookup()
+    {
+        $keyword = trim((string) ($_GET['q'] ?? ''));
+        $rows = $this->searchDiagnoses($keyword, 50);
+        $result = [];
+
+        foreach ($rows as $row) {
+            $code = trim((string) ($row['kd_penyakit'] ?? ''));
+            $name = trim((string) ($row['nm_penyakit'] ?? ''));
+            if ($code === '') {
+                continue;
+            }
+
+            $result[] = [
+                'value' => $code,
+                'text' => $code . ' - ' . $name,
+                'name' => $name
+            ];
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($result);
+        exit();
     }
 
     public function postSavecppttemplate()
@@ -682,12 +708,13 @@ class Admin extends AdminModule
 
         $duplicate = $this->db('mlite_clinical_pathway_cppt_template')
             ->where('kd_penyakit', $kdPenyakit)
+            ->where('ppra', $ppra)
             ->oneArray();
 
         if (!empty($data['id'])) {
             $id = (int) $data['id'];
             if ($duplicate && (int) $duplicate['id'] !== $id) {
-                return ['status' => false, 'message' => 'Template CPPT untuk ICD ini sudah ada.'];
+                return ['status' => false, 'message' => 'Template CPPT untuk kombinasi ICD dan PPRA ini sudah ada.'];
             }
 
             $saved = $this->db('mlite_clinical_pathway_cppt_template')->where('id', $id)->save($payload);
@@ -698,7 +725,7 @@ class Admin extends AdminModule
         }
 
         if ($duplicate) {
-            return ['status' => false, 'message' => 'Template CPPT untuk ICD ini sudah ada.'];
+            return ['status' => false, 'message' => 'Template CPPT untuk kombinasi ICD dan PPRA ini sudah ada.'];
         }
 
         $payload['created_at'] = $now;
@@ -2539,9 +2566,9 @@ class Admin extends AdminModule
         }
 
         foreach ($codes as $code) {
-            $row = $this->getCpptTemplateByDiagnosisCode($code);
-            if ($row) {
-                return $row;
+            $rows = $this->getCpptTemplateByDiagnosisCode($code);
+            if ($rows) {
+                return $rows;
             }
         }
 
@@ -2555,12 +2582,12 @@ class Admin extends AdminModule
                 LEFT JOIN penyakit py ON py.kd_penyakit = t.kd_penyakit
                 WHERE t.kd_penyakit = ?
                   AND t.aktif = 'Ya'
-                LIMIT 1";
+                ORDER BY t.ppra ASC, t.id ASC";
 
         $stmt = $this->pdo()->prepare($sql);
         $stmt->execute([strtoupper(trim((string) $kdPenyakit))]);
 
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     protected function getHospitalProfile()

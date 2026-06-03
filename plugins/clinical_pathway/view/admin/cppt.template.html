@@ -11,13 +11,18 @@
 
           <div class="form-group">
             <label>Kode ICD</label>
-            <input type="text" name="kd_penyakit" class="form-control" value="{?=isset_or($selected.kd_penyakit)?}" placeholder="contoh: N39.0" required>
-            <p class="help-block">Gunakan kode diagnosis dari master penyakit mLITE.</p>
+            <select name="kd_penyakit" id="cppt_kd_penyakit" class="form-control" required>
+              <option value="">-- cari kode ICD dari master penyakit --</option>
+              {if: isset_or($selected.kd_penyakit)}
+              <option value="{?=isset_or($selected.kd_penyakit)?}" data-name="{?=isset_or($selected.nm_penyakit)?}" selected>{?=isset_or($selected.kd_penyakit)?} - {?=isset_or($selected.nm_penyakit)?}</option>
+              {/if}
+            </select>
+            <p class="help-block">Cari berdasarkan kode ICD atau nama diagnosis dari master tabel `penyakit`.</p>
           </div>
 
           <div class="form-group">
             <label>Diagnosa</label>
-            <input type="text" class="form-control" value="{?=isset_or($selected.nm_penyakit)?}" readonly placeholder="Nama diagnosa akan tampil jika kode ICD valid">
+            <input type="text" id="cppt_nama_penyakit" class="form-control" value="{?=isset_or($selected.nm_penyakit)?}" readonly placeholder="Nama diagnosa akan tampil otomatis dari master penyakit">
           </div>
 
           <div class="form-group">
@@ -75,7 +80,7 @@
       <div class="panel-body">
         <p class="text-muted">Template ini menjadi acuan pengisian SOAP/CPPT oleh PPRA. Jika diagnosis utama pasien cocok dengan kode ICD di bawah, maka template akan dicetak otomatis sebagai lampiran pada halaman terakhir Clinical Pathway.</p>
         <div class="table-responsive">
-          <table class="table table-striped table-bordered dataTables">
+          <table class="table table-striped table-bordered dataTables" style="width:100%;">
             <thead>
               <tr>
                 <th>PPRA</th>
@@ -113,3 +118,61 @@
     </div>
   </div>
 </div>
+
+<script>
+  $(function () {
+    var $diagnosisSelect = $('#cppt_kd_penyakit');
+    var $diagnosisName = $('#cppt_nama_penyakit');
+    var lookupUrl = '{?=isset_or($diagnosis_lookup_url)?}';
+
+    function syncDiagnosisName() {
+      var $selected = $diagnosisSelect.find('option:selected');
+      var selectedName = $selected.data('name') || '';
+      if (!selectedName) {
+        var selectedText = $selected.text() || '';
+        if (selectedText.indexOf(' - ') !== -1) {
+          selectedName = selectedText.split(' - ').slice(1).join(' - ');
+        }
+      }
+      $diagnosisName.val(selectedName);
+    }
+
+    if ($diagnosisSelect.data('selectator')) {
+      $diagnosisSelect.selectator('destroy');
+    }
+
+    $diagnosisSelect.selectator({
+      labels: {
+        search: 'Cari kode ICD atau nama diagnosis...'
+      },
+      useSearch: true,
+      delay: 300,
+      minSearchLength: 2,
+      valueField: 'value',
+      textField: 'text',
+      load: function (search, callback) {
+        if (search.length < this.minSearchLength) {
+          return callback();
+        }
+
+        $.ajax({
+          url: lookupUrl,
+          type: 'GET',
+          dataType: 'json',
+          data: {
+            q: search
+          },
+          success: function (data) {
+            callback((data || []).slice(0, 50));
+          },
+          error: function () {
+            callback();
+          }
+        });
+      }
+    });
+
+    $diagnosisSelect.on('change', syncDiagnosisName);
+    syncDiagnosisName();
+  });
+</script>

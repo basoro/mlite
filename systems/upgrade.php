@@ -2540,7 +2540,7 @@ switch ($version) {
           `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
           `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           PRIMARY KEY (`id`),
-          UNIQUE KEY `cppt_template_kd_penyakit` (`kd_penyakit`),
+          UNIQUE KEY `cppt_template_kd_penyakit_ppra` (`kd_penyakit`,`ppra`),
           KEY `cppt_template_aktif` (`aktif`),
           CONSTRAINT `fk_cppt_template_penyakit` FOREIGN KEY (`kd_penyakit`) REFERENCES `penyakit` (`kd_penyakit`) ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
@@ -2567,12 +2567,14 @@ switch ($version) {
           `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
           `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           PRIMARY KEY (`id`),
-          UNIQUE KEY `cppt_template_kd_penyakit` (`kd_penyakit`),
+          UNIQUE KEY `cppt_template_kd_penyakit_ppra` (`kd_penyakit`,`ppra`),
           KEY `cppt_template_aktif` (`aktif`),
           CONSTRAINT `fk_cppt_template_penyakit` FOREIGN KEY (`kd_penyakit`) REFERENCES `penyakit` (`kd_penyakit`) ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
 
         try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_clinical_pathway_cppt_template` ADD COLUMN `ppra` varchar(100) NOT NULL DEFAULT '' AFTER `kd_penyakit`"); } catch (\Exception $e) {}
+        try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_clinical_pathway_cppt_template` DROP INDEX `cppt_template_kd_penyakit`"); } catch (\Exception $e) {}
+        try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_clinical_pathway_cppt_template` ADD UNIQUE KEY `cppt_template_kd_penyakit_ppra` (`kd_penyakit`,`ppra`)"); } catch (\Exception $e) {}
 
         $return = '6.3.5';
         break;

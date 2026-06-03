@@ -371,37 +371,41 @@
     <tr>
       <td class="label">No. Rawat</td>
       <td class="value">{?=isset_or($print.header.no_rawat, '-')?}</td>
-      <td class="label narrow">PPRA</td>
-      <td class="value">{?=isset_or($print.cppt_template.ppra, '-')?}</td>
+      <td class="label narrow">Jumlah PPRA</td>
+      <td class="value">{?=count($print.cppt_template)?} Template</td>
     </tr>
     <tr>
       <td class="label narrow">Kode ICD</td>
-      <td class="value">{?=isset_or($print.cppt_template.kd_penyakit, '-')?}</td>
+      <td class="value">{?=isset_or($print.cppt_template[0].kd_penyakit, '-')?}</td>
       <td class="label narrow">Diagnosa</td>
-      <td class="value">{?=isset_or($print.cppt_template.nm_penyakit, '-')?}</td>
+      <td class="value">{?=isset_or($print.cppt_template[0].nm_penyakit, '-')?}</td>
     </tr>
   </table>
 
   <table class="cppt-table">
     <thead>
       <tr>
-        <th style="width:16%;">Kode ICD</th>
-        <th style="width:16%;">Diagnosa</th>
-        <th style="width:17%;">S</th>
-        <th style="width:17%;">O</th>
-        <th style="width:17%;">A</th>
+        <th style="width:12%;">PPRA</th>
+        <th style="width:12%;">Kode ICD</th>
+        <th style="width:14%;">Diagnosa</th>
+        <th style="width:15%;">S</th>
+        <th style="width:15%;">O</th>
+        <th style="width:15%;">A</th>
         <th style="width:17%;">P</th>
       </tr>
     </thead>
     <tbody>
+      {loop: $print.cppt_template}
       <tr>
-        <td>{?=isset_or($print.cppt_template.kd_penyakit, '-')?}</td>
-        <td>{?=isset_or($print.cppt_template.nm_penyakit, '-')?}</td>
-        <td class="cppt-text">{?=isset_or($print.cppt_template.subjective, '-')?}</td>
-        <td class="cppt-text">{?=isset_or($print.cppt_template.objective, '-')?}</td>
-        <td class="cppt-text">{?=isset_or($print.cppt_template.assessment, '-')?}</td>
-        <td class="cppt-text">{?=isset_or($print.cppt_template.plan, '-')?}</td>
+        <td>{?=isset_or($value.ppra, '-')?}</td>
+        <td>{?=isset_or($value.kd_penyakit, '-')?}</td>
+        <td>{?=isset_or($value.nm_penyakit, '-')?}</td>
+        <td class="cppt-text">{?=isset_or($value.subjective, '-')?}</td>
+        <td class="cppt-text">{?=isset_or($value.objective, '-')?}</td>
+        <td class="cppt-text">{?=isset_or($value.assessment, '-')?}</td>
+        <td class="cppt-text">{?=isset_or($value.plan, '-')?}</td>
       </tr>
+      {/loop}
     </tbody>
   </table>
 </div>
