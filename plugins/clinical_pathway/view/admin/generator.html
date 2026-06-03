@@ -1,0 +1,355 @@
+<div class="row">
+  <div class="col-md-5">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Generator Template Otomatis</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{?=url([ADMIN, 'clinical_pathway', 'generatetemplate'])?}" method="POST">
+          <div class="form-group">
+            <label>Master CP</label>
+            <select name="clinical_pathway_id" class="form-control" required>
+              <option value="">-- pilih master CP --</option>
+              {loop: $cp_options}
+              <option value="{$value.id}" {if: $cp_id == $value.id}selected{/if}>{$value.kode_cp} - {$value.nama_cp}</option>
+              {/loop}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Diagnosis ICD-10</label>
+            <select name="icd" class="form-control" required>
+              <option value="">-- pilih diagnosis --</option>
+              {loop: $top_icd}
+              <option value="{$value.kd_penyakit}" {if: $icd == $value.kd_penyakit}selected{/if}>{$value.kd_penyakit} - {$value.nm_penyakit} ({$value.jumlah})</option>
+              {/loop}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success btn-block">Generate Template Harian</button>
+        </form>
+        <hr>
+        <a href="{?=url([ADMIN, 'clinical_pathway', 'generator'])?}&cp_id={$cp_id}&icd={$icd}" class="btn btn-default btn-block">Refresh Preview</a>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Generator CP Pasien</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{?=url([ADMIN, 'clinical_pathway', 'generatepatient'])?}" method="POST">
+          <!-- <input type="hidden" name="t" value="{?=$_SESSION['token']?}"> -->
+          <div class="form-group">
+            <label>No. Rawat</label>
+            <input type="text" name="no_rawat" class="form-control" value="{$no_rawat}" placeholder="2026/05/20/000005" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Generate CP Otomatis</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <a data-toggle="collapse" href="#cpSeederAccordion" aria-expanded="false" aria-controls="cpSeederAccordion" style="display:block; text-decoration:none;">
+            Import Seeder Dummy
+          </a>
+        </h3>
+      </div>
+      <div id="cpSeederAccordion" class="panel-collapse collapse">
+        <div class="panel-body">
+          <form action="{?=url([ADMIN, 'clinical_pathway', 'importseeder'])?}" method="POST">
+            <div class="form-group">
+              <label>Pilih Seeder</label>
+              <select name="seeder_file" class="form-control" required>
+                <option value="">-- pilih file seeder --</option>
+                {loop: $seeder_options}
+                <option value="{$value.file}">{$value.label}</option>
+                {/loop}
+              </select>
+            </div>
+            <div class="alert alert-info">
+              <strong>File tersedia:</strong>
+              <ul class="no-margin" style="padding-left:18px;">
+                {loop: $seeder_options}
+                <li><strong>{$value.label}</strong>: {$value.description}</li>
+                {/loop}
+              </ul>
+            </div>
+            <button type="submit" class="btn btn-warning btn-block">Import Seeder Ke Database</button>
+          </form>
+          <form action="{?=url([ADMIN, 'clinical_pathway', 'rollbackseeder'])?}" method="POST" onsubmit="return confirm('Rollback akan menghapus seluruh data dummy Clinical Pathway yang sudah diimport. Lanjutkan?');" style="margin-top:10px;">
+            <button type="submit" class="btn btn-danger btn-block">Rollback Dummy Seeder</button>
+          </form>
+          <hr>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Preview Template Evidence</h3>
+      </div>
+      <div class="panel-body">
+        {if: $preview}
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="well well-sm">
+              <strong>Master CP</strong><br>
+              {$preview.cp.nama_cp}
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="well well-sm">
+              <strong>ICD-10</strong><br>
+              {$preview.icd}
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="well well-sm">
+              <strong>Kasus 3 Tahun</strong><br>
+              {?=isset_or($preview.case_profile.total_kasus, 0)?}
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th>Hari</th>
+                <th>Kategori</th>
+                <th>Aktivitas</th>
+                <th>Evidence</th>
+                <th>Wajib</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $preview.activities}
+              <tr>
+                <td>{?=isset_or($value.hari_ke)?}</td>
+                <td>{?=isset_or($value.kategori)?}</td>
+                <td>{?=isset_or($value.item_nama)?}</td>
+                <td>{?=isset_or($value.evidence_percentage)?}% ({?=isset_or($value.evidence_status)?})</td>
+                <td>{?=isset_or($value.wajib)?}</td>
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+        </div>
+        {else}
+        <p class="text-muted">Pilih master CP dan ICD untuk melihat preview template otomatis berbasis data historis.</p>
+        {/if}
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Preview Pasien</h3>
+      </div>
+      <div class="panel-body">
+        {if: $patient_preview}
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="well well-sm">
+              <strong>No. Rawat</strong><br>
+              {?=isset_or($patient_preview.registration.no_rawat, '-')?}
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="well well-sm">
+              <strong>No. RM</strong><br>
+              {?=isset_or($patient_preview.registration.no_rkm_medis, '-')?}
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="well well-sm">
+              <strong>Pasien</strong><br>
+              {?=isset_or($patient_preview.registration.nm_pasien, '-')?}
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="well well-sm">
+              <strong>Status Layanan</strong><br>
+              {?=isset_or($patient_preview.registration.status_lanjut, '-')?}
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-6">
+            <h4 style="margin-top:0;">Identitas & Registrasi</h4>
+            <table class="table table-striped table-bordered">
+              <tbody>
+                <tr>
+                  <th width="35%">Jenis Kelamin</th>
+                  <td>{?=isset_or($patient_preview.registration.jk, '-')?}</td>
+                </tr>
+                <tr>
+                  <th>Tanggal Lahir / Umur</th>
+                  <td>
+                    {?=isset_or($patient_preview.registration.tgl_lahir, '-')?}
+                    / {?=isset_or($patient_preview.registration.umur_display, '-')?}
+                  </td>
+                </tr>
+                <tr>
+                  <th>Tanggal Masuk</th>
+                  <td>{?=isset_or($patient_preview.registration.tanggal_registrasi_display, '-')?}</td>
+                </tr>
+                <tr>
+                  <th>Status Registrasi</th>
+                  <td>{?=isset_or($patient_preview.registration.stts, '-')?}</td>
+                </tr>
+                <tr>
+                  <th>Dokter DPJP</th>
+                  <td>{?=isset_or($patient_preview.registration.nm_dokter, '-')?}</td>
+                </tr>
+                <tr>
+                  <th>Penjamin</th>
+                  <td>{?=isset_or($patient_preview.registration.png_jawab, '-')?}</td>
+                </tr>
+                <tr>
+                  <th>{if: $patient_preview.registration.status_lanjut == 'Ranap'}Bangsal / Kamar{else}Poliklinik{/if}</th>
+                  <td>
+                    {if: $patient_preview.registration.status_lanjut == 'Ranap'}
+                    {?=isset_or($patient_preview.service_location.nm_bangsal, '-')?}
+                    / {?=isset_or($patient_preview.service_location.kd_kamar, '-')?}
+                    {else}
+                    {?=isset_or($patient_preview.registration.nm_poli, '-')?}
+                    {/if}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-sm-6">
+            <h4 style="margin-top:0;">Ringkasan Clinical Pathway</h4>
+            <table class="table table-striped table-bordered">
+              <tbody>
+                <tr>
+                  <th width="35%">CP Terpilih</th>
+                  <td>{?=isset_or($patient_preview.matched_cp.nama_cp, '-')?}</td>
+                </tr>
+                <tr>
+                  <th>Kode CP</th>
+                  <td>{?=isset_or($patient_preview.matched_cp.kode_cp, '-')?}</td>
+                </tr>
+                <tr>
+                  <th>ICD Mapping</th>
+                  <td>{?=isset_or($patient_preview.matched_cp.kd_penyakit, '-')?}</td>
+                </tr>
+                <tr>
+                  <th>Confidence</th>
+                  <td>{?=isset_or($patient_preview.matched_cp.confidence_score, 0)?}</td>
+                </tr>
+                <tr>
+                  <th>Target LOS</th>
+                  <td>{?=isset_or($patient_preview.matched_cp.target_los, 0)?} hari</td>
+                </tr>
+                <tr>
+                  <th>Target Tarif</th>
+                  <td>
+                    {if: isset_or($patient_preview.matched_cp.target_tarif)}
+                    Rp {?=number_format((float) isset_or($patient_preview.matched_cp.target_tarif, 0), 0, ',', '.')?}
+                    {else}
+                    -
+                    {/if}
+                  </td>
+                </tr>
+                <tr>
+                  <th>Tarif RS Saat Ini</th>
+                  <td>Rp {?=number_format((float) isset_or($patient_preview.tariffs.rs_total, 0), 0, ',', '.')?}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {if: $patient_preview.existing_cp}
+        <div class="alert alert-info">
+          <strong>CP Pasien Sudah Tergenerate.</strong>
+          Status: <strong>{?=isset_or($patient_preview.existing_cp.status, '-')?}</strong>,
+          Mulai: <strong>{?=isset_or($patient_preview.existing_cp.tanggal_mulai, '-')?}</strong>,
+          Kepatuhan: <strong>{?=isset_or($patient_preview.existing_cp.compliance_percentage, 0)?}%</strong>
+          ({?=isset_or($patient_preview.existing_cp.kategori_kepatuhan, '-')?}),
+          Planned: <strong>{?=isset_or($patient_preview.existing_cp.planned_activity, 0)?}</strong>,
+          Completed: <strong>{?=isset_or($patient_preview.existing_cp.completed_activity, 0)?}</strong>,
+          Missed: <strong>{?=isset_or($patient_preview.existing_cp.missed_activity, 0)?}</strong>
+        </div>
+        {/if}
+
+        <p style="margin-bottom:15px;">
+          {if: $patient_preview.existing_cp}
+          <a href="{?=url([ADMIN, 'clinical_pathway', 'printcp'])?}&no_rawat={?=urlencode(isset_or($patient_preview.registration.no_rawat))?}" class="btn btn-primary" target="_blank">
+            <i class="fa fa-print"></i> Cetak Hasil CP
+          </a>
+          <a href="{?=url([ADMIN, 'clinical_pathway', 'pdfcp'])?}&no_rawat={?=urlencode(isset_or($patient_preview.registration.no_rawat))?}" class="btn btn-danger" target="_blank">
+            <i class="fa fa-file-pdf-o"></i> Export PDF
+          </a>
+          {/if}
+        </p>
+
+        <div class="row">
+          <div class="col-sm-6">
+            <h4 style="margin-top:0;">Tim Perawatan</h4>
+            <table class="table table-striped table-bordered">
+              <tbody>
+                <tr>
+                  <th width="35%">Dokter</th>
+                  <td>{?=isset_or($patient_preview.care_team.dokter, '-')?}</td>
+                </tr>
+                <tr>
+                  <th>Perawat</th>
+                  <td>{?=isset_or($patient_preview.care_team.perawat, '-')?}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-sm-6">
+            <h4 style="margin-top:0;">Ringkasan Biaya</h4>
+            <table class="table table-striped table-bordered">
+              <tbody>
+                <tr>
+                  <th width="35%">Registrasi</th>
+                  <td>Rp {?=number_format((float) isset_or($patient_preview.tariffs.components.registrasi, 0), 0, ',', '.')?}</td>
+                </tr>
+                <tr>
+                  <th>Rawat</th>
+                  <td>
+                    Rp {?=number_format((float) (isset_or($patient_preview.tariffs.components.rawat_jalan, 0) + isset_or($patient_preview.tariffs.components.rawat_inap, 0)), 0, ',', '.')?}
+                  </td>
+                </tr>
+                <tr>
+                  <th>Lab + Radiologi</th>
+                  <td>
+                    Rp {?=number_format((float) (isset_or($patient_preview.tariffs.components.laboratorium, 0) + isset_or($patient_preview.tariffs.components.radiologi, 0)), 0, ',', '.')?}
+                  </td>
+                </tr>
+                <tr>
+                  <th>Obat + Operasi</th>
+                  <td>
+                    Rp {?=number_format((float) (isset_or($patient_preview.tariffs.components.obat, 0) + isset_or($patient_preview.tariffs.components.obat_operasi, 0) + isset_or($patient_preview.tariffs.components.operasi, 0)), 0, ',', '.')?}
+                  </td>
+                </tr>
+                <tr>
+                  <th>Total Tarif RS</th>
+                  <td><strong>Rp {?=number_format((float) isset_or($patient_preview.tariffs.rs_total, 0), 0, ',', '.')?}</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <h4>Diagnosis Pasien</h4>
+        <ul class="list-group">
+          {loop: $patient_preview.diagnoses}
+          <li class="list-group-item">{$value.kd_penyakit} - {$value.nm_penyakit} <span class="badge">Prioritas {$value.prioritas}</span></li>
+          {/loop}
+        </ul>
+        {else}
+        <p class="text-muted">Masukkan nomor rawat untuk melihat CP yang akan dipilih otomatis berdasarkan mapping ICD.</p>
+        {/if}
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,340 @@
+<style>
+  body {
+    margin: 10px;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 11px;
+    color: #111;
+    background: #fff;
+  }
+  .print-actions {
+    margin-bottom: 12px;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .btn-print,
+  .btn-pdf {
+    display: inline-block;
+    padding: 8px 12px;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 3px;
+    border: 1px solid #333;
+    font-size: 12px;
+  }
+  .btn-print {
+    background: #333;
+  }
+  .btn-pdf {
+    background: #b22222;
+    border-color: #7f1616;
+    margin-left: 6px;
+  }
+  .sheet {
+    border: 1px solid #666;
+    padding: 6px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .cp-header td,
+  .cp-meta td,
+  .cp-matrix th,
+  .cp-matrix td,
+  .signature-table td {
+    border: 1px solid #666;
+    vertical-align: top;
+    padding: 3px 5px;
+  }
+  .cp-header {
+    margin-bottom: 0;
+  }
+  .logo-box {
+    width: 82px;
+    text-align: center;
+    vertical-align: middle !important;
+  }
+  .logo-box img {
+    max-width: 58px;
+    max-height: 58px;
+  }
+  .header-title {
+    text-align: center;
+    vertical-align: middle !important;
+  }
+  .header-title .main-title {
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .header-title .sub-title {
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  .header-title .hospital-line {
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  .doc-box {
+    width: 130px;
+    font-size: 10px;
+  }
+  .cp-meta {
+    margin-bottom: 0;
+  }
+  .cp-meta .label {
+    width: 120px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  .cp-meta .narrow {
+    width: 85px;
+  }
+  .cp-meta .value {
+    font-weight: bold;
+  }
+  .cp-matrix {
+    margin-top: 0;
+  }
+  .cp-matrix thead {
+    display: table-header-group;
+  }
+  .cp-matrix th {
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: #f2f2f2;
+  }
+  .category-cell {
+    width: 180px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  .group-cell {
+    width: 150px;
+    font-weight: bold;
+  }
+  .activity-cell {
+    width: 340px;
+  }
+  .day-col {
+    width: 34px;
+    text-align: center;
+    vertical-align: middle !important;
+    padding: 0 !important;
+  }
+  .day-mark {
+    text-align: center;
+    vertical-align: middle !important;
+    padding: 0 !important;
+    background: #fff;
+  }
+  .day-mark.active {
+    background: #cfcfcf;
+  }
+  .day-mark.completed {
+    background: #b9b9b9;
+  }
+  .day-mark.missed {
+    background: #dddddd;
+  }
+  .day-mark.planned {
+    background: #efefef;
+  }
+  .note-cell {
+    width: 210px;
+  }
+  .footer-variant td {
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  .signature-table {
+    margin-top: 18px;
+    border: none;
+  }
+  .signature-table td {
+    border: none;
+    width: 33.33%;
+    text-align: center;
+    vertical-align: top;
+    padding-top: 18px;
+    height: 120px;
+  }
+  .sign-line {
+    display: inline-block;
+    min-width: 170px;
+    border-bottom: 1px solid #333;
+    height: 18px;
+  }
+  @media print {
+    .print-actions {
+      display: none;
+    }
+    body {
+      margin: 0;
+    }
+    .sheet {
+      border: none;
+      padding: 0;
+    }
+  }
+</style>
+<script>
+  function cetakCP() {
+    window.print();
+  }
+</script>
+
+{if: $mode == 'html'}
+<div class="print-actions">
+  <button type="button" class="btn-print" onclick="cetakCP()">Cetak</button>
+  <a href="{?=isset_or($print.pdf_url)?}" class="btn-pdf" target="_blank">Export PDF</a>
+</div>
+{/if}
+
+<div class="sheet">
+  <table class="cp-header">
+    <tr>
+      <td class="logo-box">
+        {if: isset_or($print.hospital.logo_url)}
+        <img src="{?=isset_or($print.hospital.logo_url)?}" height="60" alt="Logo RS">
+        {/if}
+      </td>
+      <td class="header-title">
+        <div class="main-title">Clinical Pathway</div>
+        <div class="sub-title">{?=isset_or($print.header.nama_cp, 'Clinical Pathway')?}</div>
+        <div class="hospital-line">{?=isset_or($print.hospital.nama_instansi)?}</div>
+      </td>
+      <td class="doc-box">
+        <strong>No. Dok:</strong> CP/{?=isset_or($print.header.kode_cp, '-')?}<br>
+        <strong>Status:</strong> {?=isset_or($print.header.status, '-')?}<br>
+        <strong>Tgl Cetak:</strong> {?=date('d-m-Y H:i')?}
+      </td>
+    </tr>
+  </table>
+  <br>
+  <table class="cp-meta">
+    <tr>
+      <td class="label">Nama Pasien</td>
+      <td class="value">{?=isset_or($print.header.nm_pasien, '-')?}</td>
+      <td class="label narrow">Tanggal Lahir</td>
+      <td class="value">{?=isset_or($print.header.tgl_lahir, '-')?}</td>
+      <td class="label narrow">No RM</td>
+      <td class="value">{?=isset_or($print.header.no_rkm_medis, '-')?}</td>
+    </tr>
+    <tr>
+      <td class="label">Tanggal Masuk/Jam</td>
+      <td class="value">{?=isset_or($print.header.tgl_registrasi, '-')?} {?=substr((string) isset_or($print.header.tanggal_mulai, ''), 11, 5)?}</td>
+      <td class="label narrow">Tanggal Keluar/Jam</td>
+      <td class="value">{?=isset_or($print.header.tanggal_selesai, '-')?}</td>
+      <td class="label narrow">Status Layanan</td>
+      <td class="value">{?=isset_or($print.header.status_lanjut, '-')?}</td>
+    </tr>
+    <tr>
+      <td class="label">Diagnosa Awal</td>
+      <td class="value">{?=isset_or($print.header.nama_cp, '-')?}</td>
+      <td class="label narrow">Kode ICD 10</td>
+      <td class="value">{?=isset_or($print.header.kd_penyakit, '-')?}</td>
+      <td class="label narrow">Rencana Rawat</td>
+      <td class="value">{?=isset_or($print.header.target_los, 0)?} Hari</td>
+    </tr>
+    <tr>
+      <td class="label">Diagnosa Utama</td>
+      <td class="value">
+        {if: $print.diagnoses}
+        {?=isset_or($print.diagnoses[0].nm_penyakit, '-')?}
+        {else}
+        -
+        {/if}
+      </td>
+      <td class="label narrow">Kepatuhan</td>
+      <td class="value">{?=isset_or($print.header.compliance_percentage, 0)?}%</td>
+      <td class="label narrow">Confidence</td>
+      <td class="value">{?=isset_or($print.header.confidence_score, 0)?}</td>
+    </tr>
+    <tr>
+      <td class="label">Tarif RS</td>
+      <td class="value">Rp {?=number_format((float) isset_or($print.tariffs.rs_total, 0), 0, ',', '.')?}</td>
+      <td colspan="2" class="label narrow">Tarif INACBG's</td>
+      <td colspan="2" class="value">{?=isset_or($print.tariffs.inacbg_total, '-')?}</td>
+    </tr>
+  </table>
+  <br>
+  <table class="cp-matrix">
+    <thead>
+      <tr>
+        <th rowspan="3" class="category-cell">Kegiatan</th>
+        <th rowspan="3" class="group-cell">Uraian Kegiatan</th>
+        <th rowspan="3" class="activity-cell">Intervensi / Aktivitas</th>
+        <th colspan="{?=count($print.matrix.days)?}">Hari Rawat</th>
+        <th rowspan="3" class="note-cell">Keterangan</th>
+      </tr>
+      <tr>
+        {loop: $print.matrix.days}
+        <th class="day-col">{?=isset_or($value)?}</th>
+        {/loop}
+      </tr>
+      <tr>
+        {loop: $print.matrix.days}
+        <th class="day-col">&nbsp;</th>
+        {/loop}
+      </tr>
+    </thead>
+    <tbody>
+      {if: $print.matrix.rows}
+      {loop: $print.matrix.rows}
+      <tr>
+        {if: $value.show_section}
+        <td rowspan="{?=isset_or($value.section_rowspan, 1)?}" class="category-cell">{?=isset_or($value.section_display, isset_or($value.section, '-'))?}</td>
+        {/if}
+        <td class="group-cell">{?=isset_or($value.group_display, isset_or($value.group, '-'))?}</td>
+        <td class="activity-cell">{?=isset_or($value.activity, '-')?}</td>
+        {loop: $value.days}
+        <td class="day-mark {if: $value.active}{?=strtolower(isset_or($value.status, 'active'))?}{else}empty{/if}">{if: $value.active}&nbsp;{/if}</td>
+        {/loop}
+        <td class="note-cell">{?=isset_or($value.note, '-')?}</td>
+      </tr>
+      {/loop}
+      {else}
+      <tr>
+        <td colspan="{?=count($print.matrix.days)+4?}" style="text-align:center;">Belum ada data Clinical Pathway untuk dicetak.</td>
+      </tr>
+      {/if}
+      <tr class="footer-variant">
+        <td colspan="3">Varian</td>
+        {loop: $print.matrix.days}
+        <td class="day-mark">&nbsp;</td>
+        {/loop}
+        <td>&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class="signature-table">
+    <tr>
+      <td>
+        <div>Dokter Penanggung Jawab Pelayanan</div>
+        <br><br><br>
+        <span class="sign-line"></span>
+        <br>
+        ({?=isset_or($print.care_team.dokter, '........................')?})
+      </td>
+      <td>
+        <div>Perawat Penanggung Jawab</div>
+        <br><br><br>
+        <span class="sign-line"></span>
+        <br>
+        ({?=isset_or($print.care_team.perawat, '........................')?})
+      </td>
+      <td>
+        <div>Pelaksana Verifikasi</div>
+        <br><br><br>
+        <span class="sign-line"></span>
+        <br>
+        ({?=isset_or($print.verification_user, '........................')?})
+      </td>
+    </tr>
+  </table>
+</div>

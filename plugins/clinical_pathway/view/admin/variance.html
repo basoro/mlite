@@ -1,0 +1,43 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Daftar Variance Clinical Pathway</h3>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive no-margin">
+          <table class="table table-striped table-bordered dataTables" width="100%">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>No. Rawat</th>
+                <th>Pasien</th>
+                <th>Clinical Pathway</th>
+                <th>Kategori</th>
+                <th>Penyebab</th>
+                <th>Deskripsi</th>
+                <th>Severity</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $rows}
+              <tr>
+                <td>{?=isset_or($value.tanggal_variance)?}</td>
+                <td>{?=isset_or($value.no_rawat)?}</td>
+                <td>{?=isset_or($value.nm_pasien)?}</td>
+                <td>{?=isset_or($value.nama_cp)?}</td>
+                <td>{?=isset_or($value.kategori_variance)?}</td>
+                <td>{?=isset_or($value.penyebab)?}</td>
+                <td>{?=isset_or($value.deskripsi)?}</td>
+                <td>{?=isset_or($value.severity)?}</td>
+                <td>{?=isset_or($value.status_tindak_lanjut)?}</td>
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

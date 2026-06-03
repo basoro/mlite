@@ -1,0 +1,213 @@
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Pilih Master CP</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{?=url([ADMIN, 'clinical_pathway', 'template'])?}" method="GET">
+          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+          <div class="form-group">
+            <label>Clinical Pathway</label>
+            <select name="cp_id" class="form-control" required>
+              <option value="">-- pilih master CP --</option>
+              {loop: $cp_options}
+              <option value="{$value.id}" {if: $cp_id == $value.id}selected{/if}>{$value.kode_cp} - {$value.nama_cp}</option>
+              {/loop}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Tampilkan Template</button>
+        </form>
+      </div>
+    </div>
+
+    {if: $cp_id}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Tambah Hari Template</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{?=url([ADMIN, 'clinical_pathway', 'saveday'])?}" method="POST">
+          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+          <input type="hidden" name="clinical_pathway_id" value="{$cp_id}">
+          <div class="form-group">
+            <label>Hari Ke</label>
+            <input type="number" name="hari_ke" class="form-control" min="1" value="1" required>
+          </div>
+          <div class="form-group">
+            <label>Label Hari</label>
+            <input type="text" name="label_hari" class="form-control" placeholder="Hari ke-1 / Masuk / Persiapan Pulang">
+          </div>
+          <div class="form-group">
+            <label>Tujuan Harian</label>
+            <textarea name="tujuan_harian" class="form-control" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-success btn-block">Simpan Hari</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Tambah Aktivitas</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{?=url([ADMIN, 'clinical_pathway', 'saveactivity'])?}" method="POST">
+          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+          <input type="hidden" name="clinical_pathway_id" value="{$cp_id}">
+          <div class="form-group">
+            <label>Hari Template</label>
+            <select name="clinical_pathway_day_id" class="form-control" required>
+              <option value="">-- pilih hari --</option>
+              {loop: $day_options}
+              <option value="{$value.id}">Hari {$value.hari_ke} - {$value.label_hari}</option>
+              {/loop}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Kategori</label>
+            <select name="kategori" class="form-control">
+              {loop: $categories}
+              <option value="{$value}">{$value}</option>
+              {/loop}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Nama Aktivitas</label>
+            <input type="text" name="item_nama" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Uraian Kegiatan</label>
+            <input type="text" name="uraian_kegiatan" class="form-control" placeholder="contoh: a. Asesmen Awal Medis / Monitoring / Edukasi Pulang">
+          </div>
+          <div class="form-group">
+            <label>Keterangan</label>
+            <textarea name="keterangan" class="form-control" rows="3" placeholder="catatan cetak pathway, instruksi singkat, atau penjelasan tambahan"></textarea>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Sumber Tabel</label>
+                <input type="text" name="sumber_tabel" class="form-control" placeholder="periksa_lab / resep_dokter">
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Kode Item</label>
+                <input type="text" name="item_kode" class="form-control" placeholder="kode tarif / kode obat / ICD9">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label>Frekuensi</label>
+                <input type="number" name="evidence_frequency" class="form-control" value="0">
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label>Persentase</label>
+                <input type="number" step="0.01" name="evidence_percentage" class="form-control" value="0">
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label>Urutan</label>
+                <input type="number" name="urutan" class="form-control" value="0">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Evidence Status</label>
+                <select name="evidence_status" class="form-control">
+                  <option value="Wajib">Wajib</option>
+                  <option value="Direkomendasikan">Direkomendasikan</option>
+                  <option value="Opsional">Opsional</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Wajib</label>
+                <select name="wajib" class="form-control">
+                  <option value="Ya">Ya</option>
+                  <option value="Tidak">Tidak</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success btn-block">Simpan Aktivitas</button>
+        </form>
+      </div>
+    </div>
+    {/if}
+  </div>
+
+  <div class="col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Template Harian {if: isset_or($selected_cp.nama_cp)}- {?=isset_or($selected_cp.nama_cp)?}{/if}</h3>
+      </div>
+      <div class="panel-body">
+        {if: $cp_id}
+        {if: $days}
+        {loop: $days}
+        <div class="panel panel-default cp-day-panel">
+          <div class="panel-heading">
+            <div class="pull-right">
+              <a href="{?=url([ADMIN, 'clinical_pathway', 'deleteday', $value.id])?}&cp_id={$cp_id}" class="btn btn-xs btn-danger" onclick="return confirm('Hapus hari template ini?');">Hapus Hari</a>
+            </div>
+            <strong>Hari {$value.hari_ke}</strong> - {$value.label_hari}
+          </div>
+          <div class="panel-body">
+            <p class="text-muted">{$value.tujuan_harian}</p>
+            <div class="table-responsive">
+              <table class="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th>Kategori</th>
+                    <th>Uraian Kegiatan</th>
+                    <th>Aktivitas</th>
+                    <th>Keterangan</th>
+                    <th>Sumber</th>
+                    <th>Kode</th>
+                    <th>Evidence</th>
+                    <th>Wajib</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loop: $value.activities}
+                  <tr>
+                    <td>{?=isset_or($value.kategori)?}</td>
+                    <td>{?=isset_or($value.uraian_kegiatan)?}</td>
+                    <td>{?=isset_or($value.item_nama)?}</td>
+                    <td>{?=isset_or($value.keterangan)?}</td>
+                    <td>{?=isset_or($value.sumber_tabel)?}</td>
+                    <td>{?=isset_or($value.item_kode)?}</td>
+                    <td>{?=isset_or($value.evidence_percentage)?}% ({?=isset_or($value.evidence_status)?})</td>
+                    <td>{?=isset_or($value.wajib)?}</td>
+                    <td>
+                      <a href="{?=url([ADMIN, 'clinical_pathway', 'deleteactivity', $value.id])?}&cp_id={$cp_id}" class="btn btn-xs btn-danger" onclick="return confirm('Hapus aktivitas ini?');">Hapus</a>
+                    </td>
+                  </tr>
+                  {/loop}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        {/loop}
+        {else}
+        <p class="text-muted">Belum ada template harian untuk master CP ini.</p>
+        {/if}
+        {else}
+        <p class="text-muted">Pilih master CP untuk melihat dan mengelola template harian.</p>
+        {/if}
+      </div>
+    </div>
+  </div>
+</div>

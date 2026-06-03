@@ -1,0 +1,119 @@
+<div class="row">
+  <div class="col-md-3">
+    <div class="panel panel-primary cp-panel-stat">
+      <div class="panel-body">
+        <div class="cp-stat-label">Total Master CP</div>
+        <div class="cp-stat-value">{$stats.total_cp}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="panel panel-success cp-panel-stat">
+      <div class="panel-body">
+        <div class="cp-stat-label">Pasien Aktif</div>
+        <div class="cp-stat-value">{$stats.active_patient}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="panel panel-warning cp-panel-stat">
+      <div class="panel-body">
+        <div class="cp-stat-label">Variance Open</div>
+        <div class="cp-stat-value">{$stats.variance_open}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="panel panel-info cp-panel-stat">
+      <div class="panel-body">
+        <div class="cp-stat-label">Rata-rata Kepatuhan</div>
+        <div class="cp-stat-value">{$stats.avg_compliance}%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Clinical Pathway Engine</h3>
+      </div>
+      <div class="panel-body">
+        <p>Modul ini mengelola master Clinical Pathway, template aktivitas harian, mapping ICD-10, evidence engine historis 3 tahun, serta generator CP otomatis berdasarkan diagnosis pasien.</p>
+        <div class="row">
+          <div class="col-sm-3">
+            <a href="{?=url([ADMIN, 'clinical_pathway', 'master'])?}" class="btn btn-primary btn-block">Master CP</a>
+          </div>
+          <div class="col-sm-3">
+            <a href="{?=url([ADMIN, 'clinical_pathway', 'template'])?}" class="btn btn-info btn-block">Template Harian</a>
+          </div>
+          <div class="col-sm-3">
+            <a href="{?=url([ADMIN, 'clinical_pathway', 'mapping'])?}" class="btn btn-warning btn-block">Mapping ICD</a>
+          </div>
+          <div class="col-sm-3">
+            <a href="{?=url([ADMIN, 'clinical_pathway', 'generator'])?}" class="btn btn-success btn-block">Generator CP</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Pasien CP Terakhir</h3>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive no-margin">
+          <table class="table table-striped table-bordered dataTables" width="100%">
+            <thead>
+              <tr>
+                <th>No. Rawat</th>
+                <th>Pasien</th>
+                <th>Clinical Pathway</th>
+                <th>Tanggal Mulai</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $recent_generators}
+              <tr>
+                <td>{?=isset_or($value.no_rawat)?}</td>
+                <td>{?=isset_or($value.nm_pasien)?}</td>
+                <td>{?=isset_or($value.nama_cp)?}</td>
+                <td>{?=isset_or($value.tanggal_mulai)?}</td>
+                <td>{?=isset_or($value.status)?}</td>
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Top Diagnosis 3 Tahun</h3>
+      </div>
+      <div class="panel-body cp-list-scroll">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th>ICD-10</th>
+              <th>Diagnosis</th>
+              <th>Kasus</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loop: $top_icd}
+            <tr>
+              <td>{?=isset_or($value.kd_penyakit)?}</td>
+              <td>{?=isset_or($value.nm_penyakit)?}</td>
+              <td>{?=isset_or($value.jumlah)?}</td>
+            </tr>
+            {/loop}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

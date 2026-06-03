@@ -1,0 +1,131 @@
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Evidence Engine</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{?=url([ADMIN, 'clinical_pathway', 'evidence'])?}" method="GET">
+          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+          <div class="form-group">
+            <label>Pilih Diagnosis ICD-10</label>
+            <select name="icd" class="form-control">
+              <option value="">-- pilih diagnosis --</option>
+              {loop: $top_icd}
+              <option value="{$value.kd_penyakit}" {if: $icd == $value.kd_penyakit}selected{/if}>{$value.kd_penyakit} - {$value.nm_penyakit} ({$value.jumlah})</option>
+              {/loop}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success btn-block">Analisis Data Historis</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Analisis Data Historis 3 Tahun {if: $icd}- {$icd}{/if}</h3>
+      </div>
+      <div class="panel-body">
+        {if: $icd}
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="well well-sm">
+              <strong>Jumlah Kasus</strong><br>
+              {?=isset_or($summary.case_profile.total_kasus, 0)?}
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="well well-sm">
+              <strong>Rata-rata LOS</strong><br>
+              {?=isset_or($summary.case_profile.avg_los, 0)?} hari
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="well well-sm">
+              <strong>Kematian</strong><br>
+              {?=isset_or($summary.case_profile.meninggal, 0)?}
+            </div>
+          </div>
+        </div>
+
+        <h4>Evidence Score</h4>
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th>Aktivitas</th>
+                <th>Frekuensi</th>
+                <th>Persentase</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $summary.evidence_score}
+              <tr>
+                <td>{?=isset_or($value.aktivitas)?}</td>
+                <td>{?=isset_or($value.frekuensi)?}</td>
+                <td>{?=isset_or($value.persentase)?}%</td>
+                <td><span class="label label-default">{?=isset_or($value.status)?}</span></td>
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <h4>Top Laboratorium</h4>
+            <ul class="list-group">
+              {loop: $summary.top_labs}
+              <li class="list-group-item">
+                {?=isset_or($value.aktivitas)?}
+                <span class="badge">{?=isset_or($value.frekuensi)?}</span>
+              </li>
+              {/loop}
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4>Top Radiologi</h4>
+            <ul class="list-group">
+              {loop: $summary.top_radiology}
+              <li class="list-group-item">
+                {?=isset_or($value.aktivitas)?}
+                <span class="badge">{?=isset_or($value.frekuensi)?}</span>
+              </li>
+              {/loop}
+            </ul>
+          </div>
+        </div>
+
+        <div class="row m-t-20">
+          <div class="col-md-6">
+            <h4>Top Obat</h4>
+            <ul class="list-group">
+              {loop: $summary.top_drugs}
+              <li class="list-group-item">
+                {?=isset_or($value.aktivitas)?}
+                <span class="badge">{?=isset_or($value.frekuensi)?}</span>
+              </li>
+              {/loop}
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4>Top Tindakan</h4>
+            <ul class="list-group">
+              {loop: $summary.top_procedures}
+              <li class="list-group-item">
+                {?=isset_or($value.aktivitas)?}
+                <span class="badge">{?=isset_or($value.frekuensi)?}</span>
+              </li>
+              {/loop}
+            </ul>
+          </div>
+        </div>
+        {else}
+        <p class="text-muted">Pilih diagnosis ICD-10 untuk menjalankan analisis historis 3 tahun terakhir sebagai dasar pembentukan Clinical Pathway.</p>
+        {/if}
+      </div>
+    </div>
+  </div>
+</div>
