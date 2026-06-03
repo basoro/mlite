@@ -11,6 +11,27 @@ class Admin extends AdminModule
 {
     public $assign = [];
 
+    protected function userIsAdmin()
+    {
+        $role = $this->core->getUserInfo('role', null, true);
+
+        if (is_array($role)) {
+            return in_array('admin', array_map('trim', $role), true);
+        }
+
+        if (is_string($role) && trim($role) !== '') {
+            $decoded = json_decode($role, true);
+            if (is_array($decoded)) {
+                return in_array('admin', array_map('trim', $decoded), true);
+            }
+
+            $roles = array_map('trim', explode(',', $role));
+            return in_array('admin', $roles, true);
+        }
+
+        return $this->core->getUserInfo('role') === 'admin';
+    }
+
     public function navigation()
     {
         return [
@@ -19,6 +40,85 @@ class Admin extends AdminModule
             'Laporan'  => 'report',
             'Rekap Shift' => 'shiftreport',
         ];
+    }
+
+    protected function getBillingClosingState($noRawat)
+    {
+        if ($this->userIsAdmin()) {
+            return [
+                'exists' => true,
+                'billing_exists' => false,
+                'is_paid' => false,
+                'is_exam_closed' => true,
+                'edit_locked' => false,
+                'print_locked' => false,
+                'message' => ''
+            ];
+        }
+
+        $noRawat = trim((string) $noRawat);
+        if ($noRawat === '') {
+            return [
+                'exists' => false,
+                'billing_exists' => false,
+                'edit_locked' => true,
+                'print_locked' => true,
+                'message' => 'Nomor rawat tidak valid.'
+            ];
+        }
+
+        $registration = $this->db('reg_periksa')->where('no_rawat', $noRawat)->oneArray();
+        if (!$registration) {
+            return [
+                'exists' => false,
+                'billing_exists' => false,
+                'edit_locked' => true,
+                'print_locked' => true,
+                'message' => 'Data registrasi pasien tidak ditemukan.'
+            ];
+        }
+
+        $billingExists = (bool) $this->db('mlite_billing')
+            ->where('no_rawat', $noRawat)
+            ->like('kd_billing', 'RJ%')
+            ->oneArray();
+
+        $isPaid = (($registration['status_bayar'] ?? '') === 'Sudah Bayar');
+        $isExamClosed = (($registration['stts'] ?? '') === 'Sudah');
+
+        $message = '';
+        if ($isPaid) {
+            $message = 'Billing sudah closing. Semua transaksi yang berkaitan dengan uang dikunci karena status bayar sudah lunas.';
+        } elseif (!$isExamClosed) {
+            $message = 'Billing belum dapat diproses. Status periksa belum selesai, sehingga kasir tidak dapat membuat nota atau bukti pembayaran.';
+        }
+
+        return [
+            'exists' => true,
+            'registration' => $registration,
+            'billing_exists' => $billingExists,
+            'is_paid' => $isPaid,
+            'is_exam_closed' => $isExamClosed,
+            'edit_locked' => ($isPaid || !$isExamClosed),
+            'print_locked' => (!$billingExists && !$isExamClosed),
+            'message' => $message
+        ];
+    }
+
+    protected function respondBillingLock(array $billingControl, $json = false)
+    {
+        $message = $billingControl['message'] ?? 'Billing sedang dikunci.';
+
+        if ($json) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'error',
+                'message' => $message
+            ]);
+        } else {
+            echo $message;
+        }
+        exit();
     }
 
     public function apiBillingList()
@@ -91,6 +191,7 @@ class Admin extends AdminModule
              exit;
         }
         $no_rawat = revertNorawat($no_rawat);
+        $billingControl = $this->getBillingClosingState($no_rawat);
 
         // Basic Info
         $reg_periksa = $this->db('reg_periksa')
@@ -284,7 +385,8 @@ class Admin extends AdminModule
             'data' => [
                 'registrasi' => $reg_periksa,
                 'details' => $details,
-                'total' => $total_biaya
+                'total' => $total_biaya,
+                'billing_control' => $billingControl
             ]
         ], JSON_PRETTY_PRINT);
         exit;
@@ -431,6 +533,11 @@ class Admin extends AdminModule
 
     public function postSaveDetail()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if ($billingControl['edit_locked']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
       if($_POST['kat'] == 'tindakan') {
         $jns_perawatan = $this->db('jns_perawatan')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
         if($_POST['provider'] == 'rawat_jl_dr') {
@@ -595,11 +702,18 @@ class Admin extends AdminModule
           ]);
       }
 
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success']);
       exit();
     }
 
     public function postHapusDetail()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if ($billingControl['edit_locked']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
       if($_POST['provider'] == 'rawat_jl_dr') {
         $this->db('rawat_jl_dr')
         ->where('no_rawat', $_POST['no_rawat'])
@@ -624,11 +738,18 @@ class Admin extends AdminModule
         ->where('jam_rawat', $_POST['jam_rawat'])
         ->delete();
       }
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success']);
       exit();
     }
 
     public function postHapusLaboratorium()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if ($billingControl['edit_locked']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
       $this->db('periksa_lab')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
@@ -636,11 +757,18 @@ class Admin extends AdminModule
       ->where('jam', $_POST['jam_rawat'])
       ->where('status', 'Ralan')
       ->delete();
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success']);
       exit();
     }
 
     public function postHapusRadiologi()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if ($billingControl['edit_locked']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
       $this->db('periksa_radiologi')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
@@ -648,11 +776,18 @@ class Admin extends AdminModule
       ->where('jam', $_POST['jam_rawat'])
       ->where('status', 'Ralan')
       ->delete();
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success']);
       exit();
     }
 
     public function postHapusObat()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if ($billingControl['edit_locked']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
       $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
 
       $this->db('gudangbarang')
@@ -690,11 +825,14 @@ class Admin extends AdminModule
         ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
         ->delete();
 
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success']);
       exit();
     }
 
     public function anyRincian()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
 
       $cek_laboratorium = $this->db('mlite_modules')->where('dir', 'laboratorium')->oneArray();
       $cek_radiologi = $this->db('mlite_modules')->where('dir', 'radiologi')->oneArray();
@@ -956,7 +1094,8 @@ class Admin extends AdminModule
         'jumlah_total_obat_pulang' => $jumlah_total_obat_pulang,
         'tambahan_biaya' => $tambahan_biaya,
         'jumlah_total_tambahan' => $jumlah_total_tambahan,
-        'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
+        'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+        'billing_control' => htmlspecialchars_array($billingControl)
       ]);
       exit();
     }
@@ -1069,6 +1208,11 @@ class Admin extends AdminModule
 
     public function postSave()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if ($billingControl['edit_locked']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
       $_POST['id_user']	= $this->core->getUserInfo('id');
 
       if($this->settings('keuangan', 'jurnal_kasir') == 1) {
@@ -1283,6 +1427,11 @@ class Admin extends AdminModule
       if($query) {
         $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->update(['status_bayar' => 'Sudah Bayar']);
       }
+      header('Content-Type: application/json');
+      echo json_encode([
+        'status' => $query ? 'success' : 'error',
+        'message' => $query ? 'Billing berhasil disimpan.' : 'Billing gagal disimpan.'
+      ]);
       exit();
     }
 
@@ -1293,6 +1442,11 @@ class Admin extends AdminModule
         if (!$this->core->checkPermission($username, 'can_create', 'kasir_rawat_jalan')) {
             echo json_encode(['status' => 'error', 'message' => 'You do not have permission to access this resource']);
             exit;
+        }
+
+        $billingControl = $this->getBillingClosingState($payload['no_rawat'] ?? '');
+        if ($billingControl['edit_locked']) {
+            $this->respondBillingLock($billingControl, true);
         }
 
         $payload['id_user'] = $this->db('mlite_users')->where('username', $username)->oneArray()['id'];
@@ -1542,6 +1696,11 @@ class Admin extends AdminModule
     {
         try {
             $payload = json_decode(file_get_contents('php://input'), true);
+            $billingControl = $this->getBillingClosingState($payload['no_rawat'] ?? '');
+            if ($billingControl['edit_locked']) {
+                $this->respondBillingLock($billingControl, true);
+            }
+
             $type = $payload['type'] ?? '';
             
             if ($type === 'tindakan') {
@@ -1646,6 +1805,11 @@ class Admin extends AdminModule
         $kat = $payload['kat'] ?? '';
 
         try {
+            $billingControl = $this->getBillingClosingState($payload['no_rawat'] ?? '');
+            if ($billingControl['edit_locked']) {
+                $this->respondBillingLock($billingControl, true);
+            }
+
             if($kat == 'tindakan') {
                 $jns_perawatan = $this->db('jns_perawatan')->where('kd_jenis_prw', $payload['kd_jenis_prw'])->oneArray();
                 if($payload['provider'] == 'rawat_jl_dr') {
@@ -1903,13 +2067,36 @@ class Admin extends AdminModule
       $settings = $this->settings('settings');
       $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
       $show = isset($_GET['show']) ? $_GET['show'] : "";
+      $noRawat = isset($_GET['no_rawat']) ? $_GET['no_rawat'] : ($_POST['no_rawat'] ?? '');
+      $billingControl = $this->getBillingClosingState($noRawat);
       switch($show){
        default:
-        if($this->db('mlite_billing')->where('no_rawat', $_POST['no_rawat'])->like('kd_billing', 'RJ%')->oneArray()) {
-          echo 'OK';
+        header('Content-Type: application/json');
+        if ($billingControl['print_locked']) {
+          echo json_encode([
+            'status' => 'error',
+            'message' => $billingControl['message']
+          ]);
+          exit();
+        }
+
+        if($billingControl['billing_exists']) {
+          echo json_encode([
+            'status' => 'success',
+            'message' => 'OK'
+          ]);
+        } else {
+          echo json_encode([
+            'status' => 'error',
+            'message' => 'Data faktur belum disimpan. Silahkan simpan dulu sebelum mencetak.'
+          ]);
         }
         break;
         case "besar":
+        if (!$billingControl['billing_exists']) {
+          echo 'Data faktur belum disimpan. Silahkan simpan dulu sebelum mencetak.';
+          exit();
+        }
         $result = $this->db('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
 
         $result_detail['poliklinik'] = $this->db('poliklinik')
@@ -2152,6 +2339,10 @@ class Admin extends AdminModule
         echo $html;
         break;
         case "kecil":
+        if (!$billingControl['billing_exists']) {
+          echo 'Data faktur belum disimpan. Silahkan simpan dulu sebelum mencetak.';
+          exit();
+        }
         $result = $this->db('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
         $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
         $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();

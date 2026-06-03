@@ -1,4 +1,9 @@
-<div class="dokter_ralan_view">
+<div class="dokter_ralan_view" data-edit-locked="{?=isset_or($billing_control.edit_locked)?}" data-print-locked="{?=isset_or($billing_control.print_locked)?}" data-lock-message="{?=isset_or($billing_control.message)?}">
+    {if: !empty($billing_control.message)}
+    <div class="alert alert-warning">
+      {?=isset_or($billing_control.message)?}
+    </div>
+    {/if}
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Rekap Billing</a></li>
         <li role="presentation"><a href="#pendaftaran" aria-controls="home" role="tab" data-toggle="tab">Kamar</a></li>
@@ -118,7 +123,7 @@
                   <td>{?=isset_or($value.nm_perawatan)?}</td>
                   <td>{?=isset_or($value.provider)?}</td>
                   <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
-                  <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}" data-tgl_perawatan="{?=isset_or($value.tgl_perawatan)?}" data-jam_rawat="{?=isset_or($value.jam_rawat)?}" data-provider="{if: $value.provider == 'Dokter'}rawat_inap_dr{elseif: $value.provider == 'Perawat'}rawat_inap_pr{else}rawat_inap_drpr{/if}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
+                  <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}" data-tgl_perawatan="{?=isset_or($value.tgl_perawatan)?}" data-jam_rawat="{?=isset_or($value.jam_rawat)?}" data-provider="{if: $value.provider == 'Dokter'}rawat_inap_dr{elseif: $value.provider == 'Perawat'}rawat_inap_pr{else}rawat_inap_drpr{/if}" {if: !empty($billing_control.edit_locked)}disabled{/if}><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
                 </tr>
                 {/loop}
               </tbody>
@@ -153,7 +158,7 @@
                   <td>{if: $value.jml > 0}{?=isset_or($value.jml)?}{/if}</td>
                   <td>Rp. <span class="pull-right">{?= number_format(($value.biaya_obat * $value.jml),2,',','.')?}</span></td>
                   <td colspan="2">
-                    <button type="button" class="btn btn-danger btn-xs hapus_obat" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_peresepan="{?=isset_or($value.tgl_perawatan)?}" data-jam_peresepan="{?=isset_or($value.jam)?}" data-kode_brng="{?=isset_or($value.kode_brng)?}" data-jml="{?=isset_or($value.jml)?}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+                    <button type="button" class="btn btn-danger btn-xs hapus_obat" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_peresepan="{?=isset_or($value.tgl_perawatan)?}" data-jam_peresepan="{?=isset_or($value.jam)?}" data-kode_brng="{?=isset_or($value.kode_brng)?}" data-jml="{?=isset_or($value.jml)?}" {if: !empty($billing_control.edit_locked)}disabled{/if}><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
                   </td>
                 </tr>
                 {/loop}
@@ -197,7 +202,7 @@
                   <td>{?=isset_or($value.nm_perawatan)?}</td>
                   <td>Rp. <span class="pull-right">{?= number_format($value.biaya,2,',','.')?}</span></td>
                   <td colspan="2">
-                    <button type="button" class="btn btn-danger btn-xs hapus_laboratorium" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_periksa="{?=isset_or($value.tgl_periksa)?}" data-jam_periksa="{?=isset_or($value.jam)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+                    <button type="button" class="btn btn-danger btn-xs hapus_laboratorium" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_periksa="{?=isset_or($value.tgl_periksa)?}" data-jam_periksa="{?=isset_or($value.jam)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}" {if: !empty($billing_control.edit_locked)}disabled{/if}><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
                   </td>
                 </tr>
                 {/loop}
@@ -231,7 +236,7 @@
                   <td>{?=isset_or($value.nm_perawatan)?}</td>
                   <td>Rp. <span class="pull-right">{?= number_format($value.biaya,2,',','.')?}</span></td>
                   <td colspan="2">
-                    <button type="button" class="btn btn-danger btn-xs hapus_radiologi" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_periksa="{?=isset_or($value.tgl_periksa)?}" data-jam_periksa="{?=isset_or($value.jam)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+                    <button type="button" class="btn btn-danger btn-xs hapus_radiologi" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_periksa="{?=isset_or($value.tgl_periksa)?}" data-jam_periksa="{?=isset_or($value.jam)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}" {if: !empty($billing_control.edit_locked)}disabled{/if}><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
                   </td>
                 </tr>
                 {/loop}
@@ -312,7 +317,7 @@
                   <td>1</td>
                   <td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
                   <td>
-                    <button type="button" class="btn btn-danger btn-xs hapus_tambahan_biaya" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-nama_biaya="{?=isset_or($value.nama_biaya)?}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+                    <button type="button" class="btn btn-danger btn-xs hapus_tambahan_biaya" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-nama_biaya="{?=isset_or($value.nama_biaya)?}" {if: !empty($billing_control.edit_locked)}disabled{/if}><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
                   </td>
                 </tr>
                 {/loop}
@@ -347,7 +352,7 @@
     <div class="form-group">
       <label class="col-sm-5 control-label">Potongan</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Potongan Faktur" value="" name="potongan_faktur" id="potongan_faktur2" maxlength="15" tabindex="1" />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Potongan Faktur" value="" name="potongan_faktur" id="potongan_faktur2" maxlength="15" tabindex="1" {if: !empty($billing_control.edit_locked)}disabled{/if} />
       </div>
     </div>
     <div class="form-group">
@@ -360,7 +365,7 @@
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Bayar</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Jumlah Bayar" value="0" name="jumlah_bayar" id="jumlah_bayar2" maxlength="15" tabindex="2" />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Jumlah Bayar" value="0" name="jumlah_bayar" id="jumlah_bayar2" maxlength="15" tabindex="2" {if: !empty($billing_control.edit_locked)}disabled{/if} />
       </div>
     </div>
     <div class="form-group">
@@ -373,7 +378,7 @@
     <div class="form-group">
       <label for="keterangan" class="col-sm-5 control-label">Cara Bayar</label>
       <div class="col-sm-7">
-        <select class="form-control" name="keterangan" id="keterangan">
+        <select class="form-control" name="keterangan" id="keterangan" {if: !empty($billing_control.edit_locked)}disabled{/if}>
           <option value="Tunai">Tunai</option>
           <option value="Kurang Bayar">Kurang Bayar</option>
           <option value="Belum Bayar">Belum Bayar</option>
@@ -382,9 +387,9 @@
     </div>
   </div>
   <div class="pull-right">
-    <button type="button" name="button" class="btn btn-success" id="simpan_billing"><span class="fa fa-save"></span><span class="hidden-xs"> Simpan</span></button>
-    <button type="button" name="button" class="btn btn-primary" id="cetak_billing_kecil" data-no_rawat="{?=isset_or($no_rawat)?}"><span class="fa fa-file-o"></span><span class="hidden-xs"> Nota</span></button>
-    <button type="button" name="button" class="btn btn-info" id="cetak_billing" data-no_rawat="{?=isset_or($no_rawat)?}"><span class="fa fa-file"></span><span class="hidden-xs"> Invoice</span></button>
+    <button type="button" name="button" class="btn btn-success" id="simpan_billing" {if: !empty($billing_control.edit_locked)}disabled{/if}><span class="fa fa-save"></span><span class="hidden-xs"> Simpan</span></button>
+    <button type="button" name="button" class="btn btn-primary" id="cetak_billing_kecil" data-no_rawat="{?=isset_or($no_rawat)?}" {if: !empty($billing_control.print_locked)}disabled{/if}><span class="fa fa-file-o"></span><span class="hidden-xs"> Nota</span></button>
+    <button type="button" name="button" class="btn btn-info" id="cetak_billing" data-no_rawat="{?=isset_or($no_rawat)?}" {if: !empty($billing_control.print_locked)}disabled{/if}><span class="fa fa-file"></span><span class="hidden-xs"> Invoice</span></button>
     <button type="button" name="button" class="btn btn-warning" id="selesai_billing"><span class="fa fa-check"></span><span class="hidden-xs"> Selesai</span></button>
   </div>
 </div>
