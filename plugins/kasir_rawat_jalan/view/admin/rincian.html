@@ -150,7 +150,10 @@
                       <td>{?=isset_or($value.jam_bayar)?}</td>
                       <td>{?=isset_or($value.metode)?}</td>
                       <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.jumlah_bayar,0),2,',','.')?}</span></td>
-                      <td><a class="btn btn-default btn-xs" target="_blank" href="{?=url([ADMIN,'kasir_rawat_jalan','kuitansisplit'])?}?show=kecil&pembayaran_id={?=isset_or($value.id)?}">Cetak</a></td>
+                      <td width="150px;">
+                        <a class="btn btn-default btn-xs" target="_blank" href="{?=url([ADMIN,'kasir_rawat_jalan','kuitansisplit'])?}&show=kecil&pembayaran_id={?=isset_or($value.id)?}"><i class="fa fa-print"></i> Kecil</a>
+                        <a class="btn btn-info btn-xs" target="_blank" href="{?=url([ADMIN,'kasir_rawat_jalan','kuitansisplit'])?}&show=besar&pembayaran_id={?=isset_or($value.id)?}"><i class="fa fa-print"></i> Besar</a>
+                      </td>
                     </tr>
                     {/loop}
                     {if: empty($split_history)}

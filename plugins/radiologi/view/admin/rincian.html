@@ -64,6 +64,16 @@
   }
 </style>
 <h4>Rincian Pemeriksaan</h4>
+<div class="row" style="margin-bottom:10px;">
+  <div class="col-sm-4">
+    <select class="form-control input-sm" id="parsial_metode_rad">
+      <option value="Tunai">Tunai</option>
+      <option value="Transfer">Transfer</option>
+      <option value="QRIS">QRIS</option>
+      <option value="EDC">EDC</option>
+    </select>
+  </div>
+</div>
 <div class="table-responsive no-margin">
   <table class="table table-striped table-bordered no-padding" width="100%">
     <thead>
@@ -133,6 +143,25 @@
       </tr>
       {/loop}
       {/if}
+      <tr>
+        <td></td>
+        <td colspan="2">
+          <div class="row">
+            <div class="col-sm-4">
+              <div><strong>Terbayar:</strong> Rp. {?= number_format(isset_or($value.parsial_paid,0),2,',','.')?}</div>
+              <div><strong>Sisa:</strong> Rp. {?= number_format(isset_or($value.parsial_remaining,0),2,',','.')?}</div>
+            </div>
+            <div class="col-sm-8">
+              <div class="input-group input-group-sm">
+                <input type="text" class="form-control parsial_amount_rad" value="{?= number_format(isset_or($value.parsial_remaining,0),0,',','.')?}" {if: empty($value.parsial_remaining)}disabled{/if}>
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-success bayar_parsial_rad" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}" data-tgl_periksa="{?=isset_or($value.tgl_periksa)?}" data-jam="{?=isset_or($value.jam)?}" data-status="{?=isset_or($value.status_periksa)?}" {if: empty($value.parsial_remaining)}disabled{/if}>Bayar Parsial</button>
+                </span>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
       {/loop}
     </tbody>
     <tfoot>
@@ -143,6 +172,41 @@
     </tfoot>
   </table>
 </div>
+{if: isset_or($parsial_history)}
+<h4>Riwayat Pembayaran Parsial</h4>
+<div class="table-responsive no-margin" style="margin-bottom:15px;">
+  <table class="table table-striped table-bordered no-padding" width="100%">
+    <thead>
+      <tr>
+        <th width="30px;">No</th>
+        <th width="120px;">Tanggal</th>
+        <th width="90px;">Jam</th>
+        <th width="120px;">Metode</th>
+        <th>Jumlah</th>
+        <th width="90px;">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {loop: $parsial_history}
+      <tr>
+        <td>{?=$counter?}.</td>
+        <td>{?=isset_or($value.tgl_bayar)?}</td>
+        <td>{?=isset_or($value.jam_bayar)?}</td>
+        <td>{?=isset_or($value.metode)?}</td>
+        <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.jumlah_bayar,0),2,',','.')?}</span></td>
+        <td width="150px;">
+          <a class="btn btn-default btn-xs" target="_blank" href="{?=url([ADMIN,'radiologi','notaparsial'])?}&show=kecil&pembayaran_id={?=isset_or($value.id)?}"><i class="fa fa-print"></i> Kecil</a>
+          <a class="btn btn-info btn-xs" target="_blank" href="{?=url([ADMIN,'radiologi','notaparsial'])?}&show=besar&pembayaran_id={?=isset_or($value.id)?}"><i class="fa fa-print"></i> Besar</a>
+        </td>
+      </tr>
+      {/loop}
+      {if: empty($parsial_history)}
+      <tr><td colspan="6" class="text-center">Belum ada pembayaran parsial.</td></tr>
+      {/if}
+    </tbody>
+  </table>
+</div>
+{/if}
 <br>
 
 {if: !empty($mini_pacs)}

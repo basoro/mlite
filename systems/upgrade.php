@@ -2599,11 +2599,22 @@ switch ($version) {
           `pembayaran_id` int(11) NOT NULL,
           `kelompok` varchar(30) NOT NULL,
           `jumlah_alokasi` double NOT NULL DEFAULT 0,
+          `ref_modul` varchar(30) DEFAULT NULL,
+          `kd_jenis_prw` varchar(15) DEFAULT NULL,
+          `tgl_periksa` date DEFAULT NULL,
+          `jam` time DEFAULT NULL,
+          `status_periksa` varchar(10) DEFAULT NULL,
           PRIMARY KEY (`id`),
           KEY `idx_billing_pembayaran_detail_pembayaran` (`pembayaran_id`),
           KEY `idx_billing_pembayaran_detail_kelompok` (`kelompok`),
           CONSTRAINT `fk_billing_pembayaran_detail_header` FOREIGN KEY (`pembayaran_id`) REFERENCES `mlite_billing_pembayaran` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+
+        try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_billing_pembayaran_detail` ADD COLUMN `ref_modul` varchar(30) DEFAULT NULL AFTER `jumlah_alokasi`"); } catch (\Exception $e) {}
+        try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_billing_pembayaran_detail` ADD COLUMN `kd_jenis_prw` varchar(15) DEFAULT NULL AFTER `ref_modul`"); } catch (\Exception $e) {}
+        try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_billing_pembayaran_detail` ADD COLUMN `tgl_periksa` date DEFAULT NULL AFTER `kd_jenis_prw`"); } catch (\Exception $e) {}
+        try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_billing_pembayaran_detail` ADD COLUMN `jam` time DEFAULT NULL AFTER `tgl_periksa`"); } catch (\Exception $e) {}
+        try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_billing_pembayaran_detail` ADD COLUMN `status_periksa` varchar(10) DEFAULT NULL AFTER `jam`"); } catch (\Exception $e) {}
 
         $return = '6.3.6';
         break;

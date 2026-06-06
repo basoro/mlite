@@ -11,6 +11,71 @@ class Admin extends AdminModule
 {
   protected array $assign = [];
 
+  protected function getParsialPaidMap($noRawat, $kelompok, $refModul)
+  {
+    try {
+      $pdo = $this->core->db()->pdo();
+      $stmt = $pdo->prepare("SELECT d.kd_jenis_prw, d.tgl_periksa, d.jam, d.status_periksa, SUM(d.jumlah_alokasi) AS total
+        FROM mlite_billing_pembayaran_detail d
+        INNER JOIN mlite_billing_pembayaran h ON h.id = d.pembayaran_id
+        WHERE h.no_rawat = ? AND d.kelompok = ? AND d.ref_modul = ?
+        GROUP BY d.kd_jenis_prw, d.tgl_periksa, d.jam, d.status_periksa");
+      $stmt->execute([$noRawat, $kelompok, $refModul]);
+      $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $map = [];
+      foreach ($rows as $r) {
+        $k = (string) ($r['kd_jenis_prw'] ?? '');
+        $tgl = (string) ($r['tgl_periksa'] ?? '');
+        $jam = (string) ($r['jam'] ?? '');
+        $st = (string) ($r['status_periksa'] ?? '');
+        if ($k === '' || $tgl === '' || $jam === '' || $st === '') {
+          continue;
+        }
+        $map[$k.'|'.$tgl.'|'.$jam.'|'.$st] = (float) ($r['total'] ?? 0);
+      }
+      return $map;
+    } catch (\Exception $e) {
+      return [];
+    }
+  }
+
+  protected function setOrderPaidStatusLab($noRawat, $kdJenisPrw, $status, $tglPeriksa, $jamPeriksa, $isPaid)
+  {
+    try {
+      $noorder = $this->db('permintaan_lab')
+        ->where('no_rawat', $noRawat)
+        ->where('status', strtolower($status))
+        ->where('tgl_permintaan', $tglPeriksa)
+        ->where('jam_permintaan', $jamPeriksa)
+        ->oneArray()['noorder'] ?? '';
+      if ($noorder === '') {
+        return;
+      }
+      $this->db('permintaan_pemeriksaan_lab')
+        ->where('noorder', $noorder)
+        ->where('kd_jenis_prw', $kdJenisPrw)
+        ->save(['stts_bayar' => $isPaid ? 'Sudah Bayar' : 'Belum Bayar']);
+    } catch (\Exception $e) {
+    }
+  }
+
+  protected function getParsialHistory($noRawat)
+  {
+    try {
+      $pdo = $this->core->db()->pdo();
+      $stmt = $pdo->prepare("SELECT h.id, h.tgl_bayar, h.jam_bayar, h.metode, h.jumlah_bayar, h.id_user, h.keterangan
+        FROM mlite_billing_pembayaran h
+        INNER JOIN mlite_billing_pembayaran_detail d ON d.pembayaran_id = h.id
+        WHERE h.no_rawat = ? AND d.kelompok = 'LAB' AND d.ref_modul = 'laboratorium'
+        GROUP BY h.id
+        ORDER BY h.tgl_bayar DESC, h.jam_bayar DESC, h.id DESC");
+      $stmt->execute([(string) $noRawat]);
+      return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    } catch (\Exception $e) {
+      return [];
+    }
+  }
+
   public function navigation()
   {
     return [
@@ -1451,6 +1516,194 @@ class Admin extends AdminModule
     exit();
   }
 
+  public function postBayarParsial()
+  {
+    $username = $this->core->checkAuth('POST');
+    if (!$this->core->checkPermission($username, 'can_update', 'laboratorium')) {
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'error', 'message' => 'Anda tidak punya izin untuk melakukan pembayaran.']);
+      exit();
+    }
+
+    $noRawat = trim((string) ($_POST['no_rawat'] ?? ''));
+    $kdJenisPrw = trim((string) ($_POST['kd_jenis_prw'] ?? ''));
+    $tglPeriksa = trim((string) ($_POST['tgl_periksa'] ?? ''));
+    $jamPeriksa = trim((string) ($_POST['jam'] ?? ''));
+    $status = trim((string) ($_POST['status'] ?? 'Ralan'));
+    $metode = trim((string) ($_POST['metode'] ?? 'Tunai'));
+    $jumlah = (float) str_replace(',', '.', (string) ($_POST['jumlah_bayar'] ?? 0));
+
+    if ($noRawat === '' || $kdJenisPrw === '' || $tglPeriksa === '' || $jamPeriksa === '' || $jumlah <= 0) {
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'error', 'message' => 'Data pembayaran tidak valid.']);
+      exit();
+    }
+
+    $total = 0;
+    try {
+      $row = $this->db('periksa_lab')
+        ->where('no_rawat', $noRawat)
+        ->where('kd_jenis_prw', $kdJenisPrw)
+        ->where('tgl_periksa', $tglPeriksa)
+        ->where('jam', $jamPeriksa)
+        ->where('status', $status)
+        ->oneArray();
+      $total = (float) ($row['biaya'] ?? 0);
+    } catch (\Exception $e) {
+      $total = 0;
+    }
+
+    if ($total <= 0) {
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'error', 'message' => 'Data tindakan laboratorium tidak ditemukan.']);
+      exit();
+    }
+
+    $paidMap = $this->getParsialPaidMap($noRawat, 'LAB', 'laboratorium');
+    $key = $kdJenisPrw.'|'.$tglPeriksa.'|'.$jamPeriksa.'|'.$status;
+    $paid = (float) ($paidMap[$key] ?? 0);
+    $remaining = $total - $paid;
+    if ($remaining < 0) {
+      $remaining = 0;
+    }
+    if ($remaining <= 0) {
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'error', 'message' => 'Tindakan laboratorium ini sudah lunas.']);
+      exit();
+    }
+    if ($jumlah > $remaining) {
+      $jumlah = $remaining;
+    }
+
+    try {
+      $pdo = $this->core->db()->pdo();
+      $pdo->beginTransaction();
+
+      $stmt = $pdo->prepare("INSERT INTO mlite_billing_pembayaran (no_rawat, tgl_bayar, jam_bayar, metode, jumlah_bayar, id_user, keterangan)
+        VALUES (?, ?, ?, ?, ?, ?, ?)");
+      $stmt->execute([
+        $noRawat,
+        date('Y-m-d'),
+        date('H:i:s'),
+        $metode !== '' ? $metode : 'Tunai',
+        $jumlah,
+        (int) $this->core->getUserInfo('id'),
+        'Parsial Laboratorium'
+      ]);
+      $pembayaranId = (int) $pdo->lastInsertId();
+
+      $stmt = $pdo->prepare("INSERT INTO mlite_billing_pembayaran_detail (pembayaran_id, kelompok, jumlah_alokasi, ref_modul, kd_jenis_prw, tgl_periksa, jam, status_periksa)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+      $stmt->execute([$pembayaranId, 'LAB', $jumlah, 'laboratorium', $kdJenisPrw, $tglPeriksa, $jamPeriksa, $status]);
+
+      $pdo->commit();
+    } catch (\Exception $e) {
+      try { $this->core->db()->pdo()->rollBack(); } catch (\Exception $x) {}
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan pembayaran parsial.']);
+      exit();
+    }
+
+    $paidAfter = $paid + $jumlah;
+    $remainingAfter = $total - $paidAfter;
+    if ($remainingAfter < 0) {
+      $remainingAfter = 0;
+    }
+    $this->setOrderPaidStatusLab($noRawat, $kdJenisPrw, $status, $tglPeriksa, $jamPeriksa, ($remainingAfter <= 0 && $total > 0));
+
+    header('Content-Type: application/json');
+    echo json_encode(['status' => 'success', 'message' => 'Pembayaran parsial berhasil disimpan.', 'pembayaran_id' => $pembayaranId]);
+    exit();
+  }
+
+  public function anyNotaParsial()
+  {
+    $username = $this->core->checkAuth('GET');
+    if (!$this->core->checkPermission($username, 'can_read', 'laboratorium')) {
+      echo 'Anda tidak punya izin.';
+      exit();
+    }
+
+    $settings = $this->settings('settings');
+    $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+    $pembayaranId = (int) ($_GET['pembayaran_id'] ?? 0);
+    if ($pembayaranId <= 0) {
+      echo 'ID pembayaran tidak valid.';
+      exit();
+    }
+
+    $pdo = $this->core->db()->pdo();
+
+    try {
+      $stmt = $pdo->prepare("SELECT h.id, h.no_rawat, h.tgl_bayar, h.jam_bayar, h.metode, h.jumlah_bayar, h.id_user, h.keterangan,
+        COALESCE(p.nama, u.fullname) AS nama_kasir
+        FROM mlite_billing_pembayaran h
+        LEFT JOIN mlite_users u ON u.id = h.id_user
+        LEFT JOIN pegawai p ON p.nik = u.username
+        WHERE h.id = ?");
+      $stmt->execute([$pembayaranId]);
+      $pembayaran = $stmt->fetch(\PDO::FETCH_ASSOC);
+    } catch (\Exception $e) {
+      $pembayaran = null;
+    }
+
+    if (!$pembayaran) {
+      echo 'Data pembayaran tidak ditemukan.';
+      exit();
+    }
+
+    $noRawat = (string) ($pembayaran['no_rawat'] ?? '');
+
+    try {
+      $stmt = $pdo->prepare("SELECT d.kd_jenis_prw, d.tgl_periksa, d.jam, d.status_periksa, d.jumlah_alokasi, pl.nm_perawatan
+        FROM mlite_billing_pembayaran_detail d
+        LEFT JOIN jns_perawatan_lab pl ON pl.kd_jenis_prw = d.kd_jenis_prw
+        WHERE d.pembayaran_id = ? AND d.kelompok = 'LAB' AND d.ref_modul = 'laboratorium'
+        ORDER BY d.id ASC");
+      $stmt->execute([$pembayaranId]);
+      $detail = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    } catch (\Exception $e) {
+      $detail = [];
+    }
+
+    $totalDetail = 0;
+    foreach ($detail as $d) {
+      $totalDetail += (float) ($d['jumlah_alokasi'] ?? 0);
+    }
+
+    $reg = $this->db('reg_periksa')->where('no_rawat', $noRawat)->oneArray();
+    $pasien = [];
+    if (!empty($reg['no_rkm_medis'])) {
+      $pasien = $this->db('pasien')->where('no_rkm_medis', $reg['no_rkm_medis'])->oneArray();
+    }
+
+    $namaKasir = trim((string) ($pembayaran['nama_kasir'] ?? ''));
+    if ($namaKasir === '') {
+      $namaKasir = $this->core->getUserInfo('fullname', null, true);
+    }
+
+    $show = isset($_GET['show']) ? (string) $_GET['show'] : 'kecil';
+    if ($show === 'besar') {
+      echo $this->draw('nota_parsial.besar.html', [
+        'pembayaran' => htmlspecialchars_array($pembayaran),
+        'detail' => htmlspecialchars_array($detail),
+        'pasien' => htmlspecialchars_array($pasien),
+        'nama_kasir' => htmlspecialchars($namaKasir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+        'total_detail' => $totalDetail
+      ]);
+    } else {
+      echo $this->draw('nota_parsial.kecil.html', [
+        'pembayaran' => htmlspecialchars_array($pembayaran),
+        'detail' => htmlspecialchars_array($detail),
+        'pasien' => htmlspecialchars_array($pasien),
+        'nama_kasir' => htmlspecialchars($namaKasir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+        'total_detail' => $totalDetail
+      ]);
+    }
+    exit();
+  }
+
   public function anyRincian()
   {
 
@@ -1495,8 +1748,15 @@ class Admin extends AdminModule
 
     $periksa_lab = [];
     $no_lab = 1;
+    $parsialPaidMap = $this->getParsialPaidMap($_POST['no_rawat'], 'LAB', 'laboratorium');
     foreach ($rows_periksa_lab as $row) {
       $row['nomor'] = $no_lab++;
+      $key = ((string) ($row['kd_jenis_prw'] ?? '')).'|'.((string) ($row['tgl_periksa'] ?? '')).'|'.((string) ($row['jam'] ?? '')).'|'.((string) ($_POST['status'] ?? ''));
+      $row['parsial_paid'] = (float) ($parsialPaidMap[$key] ?? 0);
+      $row['parsial_remaining'] = (float) ($row['biaya'] ?? 0) - (float) ($row['parsial_paid'] ?? 0);
+      if ($row['parsial_remaining'] < 0) {
+        $row['parsial_remaining'] = 0;
+      }
       $row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
         ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
         ->where('detail_periksa_lab.no_rawat', $_POST['no_rawat'])
@@ -1509,13 +1769,15 @@ class Admin extends AdminModule
 
     $pasien = $this->db('pasien')->where('no_rkm_medis', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))->oneArray();
     $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+    $parsialHistory = $this->getParsialHistory($_POST['no_rawat']);
 
     echo $this->draw('rincian.html', [
       'periksa_lab' => $periksa_lab,
       'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
       'laboratorium' => htmlspecialchars_array($laboratorium),
       'pasien' => $pasien,
-      'reg_periksa' => $reg_periksa
+      'reg_periksa' => $reg_periksa,
+      'parsial_history' => htmlspecialchars_array($parsialHistory)
     ]);
     exit();
   }
