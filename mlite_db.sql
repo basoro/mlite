@@ -1643,6 +1643,31 @@ CREATE TABLE `mlite_billing` (
   PRIMARY KEY (`id_billing`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `mlite_billing_pembayaran` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `no_rawat` varchar(17) NOT NULL,
+  `tgl_bayar` date NOT NULL,
+  `jam_bayar` time NOT NULL,
+  `metode` varchar(30) NOT NULL DEFAULT 'Tunai',
+  `jumlah_bayar` double NOT NULL DEFAULT 0,
+  `id_user` int(11) DEFAULT NULL,
+  `keterangan` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_billing_pembayaran_rawat` (`no_rawat`),
+  KEY `idx_billing_pembayaran_tgl` (`tgl_bayar`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `mlite_billing_pembayaran_detail` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pembayaran_id` int(11) NOT NULL,
+  `kelompok` varchar(30) NOT NULL,
+  `jumlah_alokasi` double NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `idx_billing_pembayaran_detail_pembayaran` (`pembayaran_id`),
+  KEY `idx_billing_pembayaran_detail_kelompok` (`kelompok`),
+  CONSTRAINT `fk_billing_pembayaran_detail_header` FOREIGN KEY (`pembayaran_id`) REFERENCES `mlite_billing_pembayaran` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
 CREATE TABLE `mlite_bpjs_emr_device` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `device_id` VARCHAR(50) NOT NULL,

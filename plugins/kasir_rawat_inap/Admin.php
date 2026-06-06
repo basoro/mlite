@@ -83,7 +83,11 @@ class Admin extends AdminModule
             ];
         }
 
+        $splitLock = $this->getSplitBillSummaryForLocking($noRawat, 'Ranap');
         $isPaid = (($registration['status_bayar'] ?? '') === 'Sudah Bayar');
+        if ($splitLock !== null) {
+            $isPaid = ((float) ($splitLock['total_sisa'] ?? 0) <= 0) && ((float) ($splitLock['total_tagihan'] ?? 0) > 0);
+        }
         $isExamClosed = (($registration['stts'] ?? '') === 'Sudah');
 
         $message = '';
@@ -91,6 +95,8 @@ class Admin extends AdminModule
             $message = 'Billing sudah closing. Semua transaksi yang berkaitan dengan uang dikunci karena status bayar sudah lunas.';
         } elseif (!$isExamClosed) {
             $message = 'Billing belum dapat diproses. Status periksa belum selesai, sehingga kasir tidak dapat membuat nota atau bukti pembayaran.';
+        } elseif ($splitLock !== null && ((float) ($splitLock['total_sisa'] ?? 0) > 0) && (($registration['status_bayar'] ?? '') === 'Sudah Bayar')) {
+            $message = 'Terdapat tagihan susulan. Kasir dapat memproses pembayaran parsial per kelompok billing.';
         }
 
         return [
@@ -119,6 +125,184 @@ class Admin extends AdminModule
             echo $message;
         }
         exit();
+    }
+
+    protected function getSplitBillPaidByKelompok($noRawat)
+    {
+        try {
+            $stmt = $this->core->db()->pdo()->prepare("SELECT d.kelompok, SUM(d.jumlah_alokasi) AS total
+                FROM mlite_billing_pembayaran_detail d
+                INNER JOIN mlite_billing_pembayaran h ON h.id = d.pembayaran_id
+                WHERE h.no_rawat = ?
+                GROUP BY d.kelompok");
+            $stmt->execute([$noRawat]);
+            $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $result = [];
+            foreach ($rows as $r) {
+                $k = strtoupper(trim((string) ($r['kelompok'] ?? '')));
+                if ($k === '') {
+                    continue;
+                }
+                $result[$k] = (float) ($r['total'] ?? 0);
+            }
+            return $result;
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    protected function getSplitBillHistory($noRawat)
+    {
+        try {
+            $stmt = $this->core->db()->pdo()->prepare("SELECT id, tgl_bayar, jam_bayar, metode, jumlah_bayar, id_user, keterangan
+                FROM mlite_billing_pembayaran
+                WHERE no_rawat = ?
+                ORDER BY tgl_bayar DESC, jam_bayar DESC, id DESC");
+            $stmt->execute([$noRawat]);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    protected function buildSplitBillSummary($noRawat, array $totals)
+    {
+        $paid = $this->getSplitBillPaidByKelompok($noRawat);
+
+        $map = [
+            'ADMIN' => 'Administrasi/Kamar',
+            'TINDAKAN' => 'Tindakan',
+            'OBAT' => 'Obat & BHP',
+            'LAB' => 'Laboratorium',
+            'RAD' => 'Radiologi',
+            'OPERASI' => 'Operasi',
+            'TAMBAHAN' => 'Tambahan/Lain-lain'
+        ];
+
+        $groups = [];
+        $totalTagihan = 0;
+        $totalTerbayar = 0;
+        $totalSisa = 0;
+
+        foreach ($map as $code => $label) {
+            $total = (float) ($totals[$code] ?? 0);
+            $paidAmt = (float) ($paid[$code] ?? 0);
+            $remaining = $total - $paidAmt;
+            if ($remaining < 0) {
+                $remaining = 0;
+            }
+
+            $groups[] = [
+                'kelompok' => $code,
+                'label' => $label,
+                'total' => $total,
+                'paid' => $paidAmt,
+                'remaining' => $remaining,
+                'status' => ($remaining <= 0 ? 'Lunas' : ($paidAmt > 0 ? 'Parsial' : 'Open'))
+            ];
+
+            $totalTagihan += $total;
+            $totalTerbayar += $paidAmt;
+            $totalSisa += $remaining;
+        }
+
+        return [
+            'groups' => $groups,
+            'total_tagihan' => $totalTagihan,
+            'total_terbayar' => $totalTerbayar,
+            'total_sisa' => $totalSisa
+        ];
+    }
+
+    protected function calculateSplitBillGroupTotals($noRawat, $status = 'Ranap')
+    {
+        try {
+            $pdo = $this->core->db()->pdo();
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(ttl_biaya),0) AS total FROM kamar_inap WHERE no_rawat = ?");
+            $stmt->execute([$noRawat]);
+            $kamar = (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(biaya_rawat),0) AS total FROM rawat_inap_dr WHERE no_rawat = ?");
+            $stmt->execute([$noRawat]);
+            $tindakan = (float) ($stmt->fetchColumn() ?: 0);
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(biaya_rawat),0) AS total FROM rawat_inap_pr WHERE no_rawat = ?");
+            $stmt->execute([$noRawat]);
+            $tindakan += (float) ($stmt->fetchColumn() ?: 0);
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(biaya_rawat),0) AS total FROM rawat_inap_drpr WHERE no_rawat = ?");
+            $stmt->execute([$noRawat]);
+            $tindakan += (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(total + embalase + tuslah),0) AS total FROM detail_pemberian_obat WHERE no_rawat = ? AND status = ?");
+            $stmt->execute([$noRawat, $status]);
+            $obat = (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(biaya),0) AS total FROM periksa_lab WHERE no_rawat = ? AND status = ?");
+            $stmt->execute([$noRawat, $status]);
+            $lab = (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(biaya),0) AS total FROM periksa_radiologi WHERE no_rawat = ? AND status = ?");
+            $stmt->execute([$noRawat, $status]);
+            $rad = (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(
+                biayaoperator1+biayaoperator2+biayaoperator3+
+                biayaasisten_operator1+biayaasisten_operator2+
+                biayadokter_anak+biayaperawaat_resusitas+
+                biayadokter_anestesi+biayaasisten_anestesi+
+                biayabidan+biayaperawat_luar
+            ),0) AS total FROM operasi WHERE no_rawat = ? AND status = ?");
+            $stmt->execute([$noRawat, $status]);
+            $operasi = (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(hargasatuan * jumlah),0) AS total FROM beri_obat_operasi WHERE no_rawat = ?");
+            $stmt->execute([$noRawat]);
+            $operasiObat = (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(total),0) AS total FROM resep_pulang WHERE no_rawat = ?");
+            $stmt->execute([$noRawat]);
+            $obatPulang = (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(besar_biaya),0) AS total FROM tambahan_biaya WHERE no_rawat = ?");
+            $stmt->execute([$noRawat]);
+            $tambahan = (float) ($stmt->fetchColumn() ?: 0);
+
+            return [
+                'ADMIN' => $kamar,
+                'TINDAKAN' => $tindakan,
+                'OBAT' => $obat,
+                'LAB' => $lab,
+                'RAD' => $rad,
+                'OPERASI' => ($operasi + $operasiObat),
+                'TAMBAHAN' => ($obatPulang + $tambahan)
+            ];
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    protected function getSplitBillSummaryForLocking($noRawat, $status = 'Ranap')
+    {
+        try {
+            $totals = $this->calculateSplitBillGroupTotals($noRawat, $status);
+            if (!$totals) {
+                return null;
+            }
+            return $this->buildSplitBillSummary($noRawat, $totals);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    protected function updateStatusBayarFromSplitSummary($noRawat, array $summary)
+    {
+        $totalSisa = (float) ($summary['total_sisa'] ?? 0);
+        $totalTagihan = (float) ($summary['total_tagihan'] ?? 0);
+        $statusBayar = ($totalTagihan > 0 && $totalSisa <= 0) ? 'Sudah Bayar' : 'Belum Bayar';
+        try {
+            $this->db('reg_periksa')->where('no_rawat', $noRawat)->save(['status_bayar' => $statusBayar]);
+        } catch (\Exception $e) {
+        }
     }
 
     public function apiBilling($no_rawat)
@@ -1302,6 +1486,18 @@ class Admin extends AdminModule
         $resep_pulang[] = $row;
       }
 
+      $splitTotals = [
+        'ADMIN' => (float) $jumlah_total_bangsal,
+        'TINDAKAN' => (float) $jumlah_total,
+        'OBAT' => (float) ($jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah),
+        'LAB' => (float) $jumlah_total_lab,
+        'RAD' => (float) $jumlah_total_radiologi,
+        'OPERASI' => (float) ($jumlah_total_operasi + $jumlah_total_obat_operasi),
+        'TAMBAHAN' => (float) ($jumlah_total_obat_pulang + $jumlah_total_tambahan)
+      ];
+      $splitBill = $this->buildSplitBillSummary($_POST['no_rawat'], $splitTotals);
+      $splitHistory = $this->getSplitBillHistory($_POST['no_rawat']);
+
       echo $this->draw('rincian.html', [
         'rawat_inap_dr' => $rawat_inap_dr,
         'rawat_inap_pr' => $rawat_inap_pr,
@@ -1325,7 +1521,9 @@ class Admin extends AdminModule
         'jumlah_total_operasi' => $jumlah_total_operasi,
         'jumlah_total_obat_operasi' => $jumlah_total_obat_operasi,
         'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-        'billing_control' => htmlspecialchars_array($billingControl)
+        'billing_control' => htmlspecialchars_array($billingControl),
+        'split_bill' => $splitBill,
+        'split_history' => $splitHistory
       ]);
       exit();
     }
@@ -1444,6 +1642,88 @@ class Admin extends AdminModule
 
       exit();
 
+    }
+
+    public function postSplitpay()
+    {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if (!$billingControl['exists']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
+      if (!$this->userIsAdmin() && !($billingControl['is_exam_closed'] ?? false)) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
+      if (!$this->userIsAdmin() && ($billingControl['edit_locked'] ?? false) && ($billingControl['is_paid'] ?? false)) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
+      $noRawat = trim((string) ($_POST['no_rawat'] ?? ''));
+      $kelompok = strtoupper(trim((string) ($_POST['kelompok'] ?? '')));
+      $metode = trim((string) ($_POST['metode'] ?? 'Tunai'));
+      $jumlah = (float) str_replace(',', '.', (string) ($_POST['jumlah_bayar'] ?? 0));
+
+      $allowed = ['ADMIN', 'TINDAKAN', 'OBAT', 'LAB', 'RAD', 'OPERASI', 'TAMBAHAN'];
+      if ($noRawat === '' || $kelompok === '' || !in_array($kelompok, $allowed, true) || $jumlah <= 0) {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Data pembayaran split bill tidak valid.']);
+        exit();
+      }
+
+      $totals = $this->calculateSplitBillGroupTotals($noRawat, 'Ranap');
+      $summary = $this->buildSplitBillSummary($noRawat, $totals);
+      $remaining = 0;
+      foreach (($summary['groups'] ?? []) as $g) {
+        if (($g['kelompok'] ?? '') === $kelompok) {
+          $remaining = (float) ($g['remaining'] ?? 0);
+          break;
+        }
+      }
+      if ($remaining <= 0) {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Kelompok billing sudah lunas.']);
+        exit();
+      }
+      if ($jumlah > $remaining) {
+        $jumlah = $remaining;
+      }
+
+      try {
+        $pdo = $this->core->db()->pdo();
+        $pdo->beginTransaction();
+
+        $stmt = $pdo->prepare("INSERT INTO mlite_billing_pembayaran (no_rawat, tgl_bayar, jam_bayar, metode, jumlah_bayar, id_user, keterangan)
+          VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([
+          $noRawat,
+          date('Y-m-d'),
+          date('H:i:s'),
+          $metode !== '' ? $metode : 'Tunai',
+          $jumlah,
+          (int) $this->core->getUserInfo('id'),
+          'Split bill'
+        ]);
+
+        $pembayaranId = (int) $pdo->lastInsertId();
+
+        $stmt = $pdo->prepare("INSERT INTO mlite_billing_pembayaran_detail (pembayaran_id, kelompok, jumlah_alokasi) VALUES (?, ?, ?)");
+        $stmt->execute([$pembayaranId, $kelompok, $jumlah]);
+
+        $pdo->commit();
+      } catch (\Exception $e) {
+        try { $this->core->db()->pdo()->rollBack(); } catch (\Exception $x) {}
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan pembayaran split bill.']);
+        exit();
+      }
+
+      $summary = $this->buildSplitBillSummary($noRawat, $this->calculateSplitBillGroupTotals($noRawat, 'Ranap'));
+      $this->updateStatusBayarFromSplitSummary($noRawat, $summary);
+
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success', 'message' => 'Pembayaran split bill berhasil disimpan.']);
+      exit();
     }
 
     public function postSave()
