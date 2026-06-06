@@ -155,10 +155,23 @@ class Admin extends AdminModule
     protected function getSplitBillHistory($noRawat)
     {
         try {
-            $stmt = $this->core->db()->pdo()->prepare("SELECT id, tgl_bayar, jam_bayar, metode, jumlah_bayar, id_user, keterangan
-                FROM mlite_billing_pembayaran
-                WHERE no_rawat = ?
-                ORDER BY tgl_bayar DESC, jam_bayar DESC, id DESC");
+            $stmt = $this->core->db()->pdo()->prepare("SELECT h.id, h.tgl_bayar, h.jam_bayar, h.metode, h.jumlah_bayar, h.id_user, h.keterangan,
+                GROUP_CONCAT(DISTINCT d.kelompok ORDER BY d.id SEPARATOR ', ') AS kelompok,
+                GROUP_CONCAT(DISTINCT CASE d.kelompok
+                    WHEN 'ADMIN' THEN 'Administrasi/Registrasi'
+                    WHEN 'TINDAKAN' THEN 'Tindakan'
+                    WHEN 'OBAT' THEN 'Obat & BHP'
+                    WHEN 'LAB' THEN 'Laboratorium'
+                    WHEN 'RAD' THEN 'Radiologi'
+                    WHEN 'OPERASI' THEN 'Operasi'
+                    WHEN 'TAMBAHAN' THEN 'Tambahan/Lain-lain'
+                    ELSE d.kelompok
+                END ORDER BY d.id SEPARATOR ', ') AS kelompok_label
+                FROM mlite_billing_pembayaran h
+                LEFT JOIN mlite_billing_pembayaran_detail d ON d.pembayaran_id = h.id
+                WHERE h.no_rawat = ?
+                GROUP BY h.id
+                ORDER BY h.tgl_bayar DESC, h.jam_bayar DESC, h.id DESC");
             $stmt->execute([$noRawat]);
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Exception $e) {
