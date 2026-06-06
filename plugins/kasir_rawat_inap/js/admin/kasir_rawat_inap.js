@@ -739,45 +739,6 @@ $("#rincian").on("input","#jumlah_bayar2", function(event){
 });
 // end jumlah bayar
 
-$("#rincian").on("keyup", ".split_amount", function(event){
-  event.preventDefault();
-  this.value = formatRupiah(this.value, 'Rp.');
-});
-
-$("#rincian").on("click", ".split_pay", function(event){
-  var baseURL = mlite.url + '/' + mlite.admin;
-  event.preventDefault();
-  var no_rawat = $('input:text[name=no_rawat]').val();
-  var kelompok = $(this).attr('data-kelompok');
-  var metode = $('#split_metode').val() || 'Tunai';
-  var jumlah_bayar = $(this).closest('.input-group').find('.split_amount').val();
-  jumlah_bayar = (jumlah_bayar || '0').replace(/\.|R|p/g,'');
-  if (Number(jumlah_bayar) <= 0) {
-    alert('Jumlah bayar wajib diisi.');
-    return;
-  }
-
-  bootbox.confirm("Simpan pembayaran split bill untuk kelompok ini?", function(result){
-    if (result) {
-      var url = baseURL + '/kasir_rawat_inap/splitpay?t=' + mlite.token;
-      $.post(url, {
-        no_rawat: no_rawat,
-        kelompok: kelompok,
-        metode: metode,
-        jumlah_bayar: jumlah_bayar
-      }, function(data) {
-        var response = parseKasirResponse(data);
-        if (response && response.status === 'error') {
-          showKasirNotif('danger', response.message);
-          return;
-        }
-        refreshKasirRincian(baseURL, no_rawat);
-        showKasirNotif('success', (response && response.message) ? response.message : 'Pembayaran split bill berhasil disimpan.');
-      });
-    }
-  });
-});
-
 // tombol simpan semua yang dibawah di klick
 $("#rincian").on("click","#simpan_billing", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
