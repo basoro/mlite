@@ -72,10 +72,16 @@
             </table>
           </div>
           {if: isset_or($split_bill.groups)}
-          <div class="panel panel-info" style="margin-top:15px;">
-            <div class="panel-heading">
-              <strong>Split Bill per Kelompok</strong>
+          <div class="panel-group" id="splitBillAccordion" role="tablist" aria-multiselectable="true" style="margin-top:15px;">
+          <div class="panel panel-info">
+            <div class="panel-heading" role="tab" id="splitBillHeading">
+              <h4 class="panel-title" style="margin:0;">
+                <a role="button" data-toggle="collapse" data-parent="#splitBillAccordion" href="#splitBillCollapse" aria-expanded="false" aria-controls="splitBillCollapse">
+                  <strong>Split Bill per Kelompok</strong>
+                </a>
+              </h4>
             </div>
+            <div id="splitBillCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="splitBillHeading">
             <div class="panel-body">
               <div class="row" style="margin-bottom:10px;">
                 <div class="col-sm-4">
@@ -132,6 +138,7 @@
                       <th width="90px;">Jam</th>
                       <th width="120px;">Metode</th>
                       <th>Jumlah</th>
+                      <th width="90px;">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -142,16 +149,19 @@
                       <td>{?=isset_or($value.jam_bayar)?}</td>
                       <td>{?=isset_or($value.metode)?}</td>
                       <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.jumlah_bayar,0),2,',','.')?}</span></td>
+                      <td><a class="btn btn-default btn-xs" target="_blank" href="{?=url([ADMIN,'kasir_rawat_inap','kuitansisplit'])?}?show=kecil&pembayaran_id={?=isset_or($value.id)?}">Cetak</a></td>
                     </tr>
                     {/loop}
                     {if: empty($split_history)}
-                    <tr><td colspan="5" class="text-center">Belum ada pembayaran split bill.</td></tr>
+                    <tr><td colspan="6" class="text-center">Belum ada pembayaran split bill.</td></tr>
                     {/if}
                   </tbody>
                 </table>
               </div>
               {/if}
             </div>
+            </div>
+          </div>
           </div>
           {/if}
         </div>

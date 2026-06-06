@@ -1939,6 +1939,110 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function anyKuitansiSplit()
+    {
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+      $pembayaranId = (int) ($_GET['pembayaran_id'] ?? 0);
+      if ($pembayaranId <= 0) {
+        echo 'ID pembayaran tidak valid.';
+        exit();
+      }
+
+      $pdo = $this->core->db()->pdo();
+
+      try {
+        $stmt = $pdo->prepare("SELECT h.id, h.no_rawat, h.tgl_bayar, h.jam_bayar, h.metode, h.jumlah_bayar, h.id_user, h.keterangan,
+          COALESCE(p.nama, u.fullname) AS nama_kasir
+          FROM mlite_billing_pembayaran h
+          LEFT JOIN mlite_users u ON u.id = h.id_user
+          LEFT JOIN pegawai p ON p.nik = u.username
+          WHERE h.id = ?");
+        $stmt->execute([$pembayaranId]);
+        $pembayaran = $stmt->fetch(\PDO::FETCH_ASSOC);
+      } catch (\Exception $e) {
+        $pembayaran = null;
+      }
+
+      if (!$pembayaran) {
+        echo 'Data pembayaran tidak ditemukan.';
+        exit();
+      }
+
+      $noRawat = (string) ($pembayaran['no_rawat'] ?? '');
+      $billingControl = $this->getBillingClosingState($noRawat);
+      if (!$billingControl['exists']) {
+        $this->respondBillingLock($billingControl, false);
+      }
+
+      if (!$this->userIsAdmin() && !($billingControl['is_exam_closed'] ?? false)) {
+        $this->respondBillingLock($billingControl, false);
+      }
+
+      try {
+        $stmt = $pdo->prepare("SELECT kelompok, jumlah_alokasi FROM mlite_billing_pembayaran_detail WHERE pembayaran_id = ? ORDER BY id ASC");
+        $stmt->execute([$pembayaranId]);
+        $detail = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      } catch (\Exception $e) {
+        $detail = [];
+      }
+
+      $labelMap = [
+        'ADMIN' => 'Administrasi/Kamar',
+        'TINDAKAN' => 'Tindakan',
+        'OBAT' => 'Obat & BHP',
+        'LAB' => 'Laboratorium',
+        'RAD' => 'Radiologi',
+        'OPERASI' => 'Operasi',
+        'TAMBAHAN' => 'Tambahan/Lain-lain'
+      ];
+
+      $detailDisplay = [];
+      $totalDetail = 0;
+      foreach ($detail as $d) {
+        $kelompok = strtoupper(trim((string) ($d['kelompok'] ?? '')));
+        $jumlah = (float) ($d['jumlah_alokasi'] ?? 0);
+        $totalDetail += $jumlah;
+        $detailDisplay[] = [
+          'kelompok' => $kelompok,
+          'label' => $labelMap[$kelompok] ?? $kelompok,
+          'jumlah_alokasi' => $jumlah
+        ];
+      }
+
+      $reg = $this->db('reg_periksa')->where('no_rawat', $noRawat)->oneArray();
+      $pasien = [];
+      if (!empty($reg['no_rkm_medis'])) {
+        $pasien = $this->db('pasien')->where('no_rkm_medis', $reg['no_rkm_medis'])->oneArray();
+      }
+
+      $namaKasir = trim((string) ($pembayaran['nama_kasir'] ?? ''));
+      if ($namaKasir === '') {
+        $namaKasir = $this->core->getUserInfo('fullname', null, true);
+      }
+
+      $show = isset($_GET['show']) ? (string) $_GET['show'] : 'kecil';
+      if ($show === 'besar') {
+        echo $this->draw('kuitansi_split.besar.html', [
+          'pembayaran' => htmlspecialchars_array($pembayaran),
+          'detail' => htmlspecialchars_array($detailDisplay),
+          'pasien' => htmlspecialchars_array($pasien),
+          'nama_kasir' => htmlspecialchars($namaKasir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+          'total_detail' => $totalDetail
+        ]);
+      } else {
+        echo $this->draw('kuitansi_split.kecil.html', [
+          'pembayaran' => htmlspecialchars_array($pembayaran),
+          'detail' => htmlspecialchars_array($detailDisplay),
+          'pasien' => htmlspecialchars_array($pasien),
+          'nama_kasir' => htmlspecialchars($namaKasir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+          'total_detail' => $totalDetail
+        ]);
+      }
+      exit();
+    }
+
     public function postKirimEmail() {
       $email = $_POST['email'];
       $nama_lengkap = $_POST['receiver'];
