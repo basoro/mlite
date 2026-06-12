@@ -841,7 +841,7 @@
                       <img src="{?=url('uploads/pacs/'.$ins.sop_instance_uid.'_thumb.jpg')?}"
                         style="width: 100%; height: 100%; object-fit: cover;">
                       {else}
-                      <i class="fa fa-picture-o fa-3x" style="color: #4bd396;"></i>
+                        {if: $this->core->getSettings('mini_pacs', 'is_mono') == '0'}<img src="{?=$this->core->getSettings('mini_pacs', 'remote_ip')?}/uploads/pacs/{$ins.sop_instance_uid}_thumb.jpg" style="width: 100%; height: 100%; object-fit: cover;">{/if}
                       {/if}
                 </div>
                 {/loop}
