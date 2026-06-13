@@ -68,9 +68,15 @@ class Admin extends AdminModule
 
     $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis',revertNoRawat($no_rawat));
     if($status == 'fktp') {
-      $kd_dokter_bpjs = $this->db('maping_dokter_pcare')->where('kd_dokter', $this->core->getRegPeriksaInfo('kd_dokter',revertNoRawat($no_rawat)))->oneArray()['kd_dokter_pcare'];
+      $dokterMap = $this->db('maping_dokter_pcare')
+        ->where('kd_dokter', $this->core->getRegPeriksaInfo('kd_dokter', revertNoRawat($no_rawat)))
+        ->oneArray();
+      $kd_dokter_bpjs = (string) ($dokterMap['kd_dokter_pcare'] ?? '0');
     } else {
-      $kd_dokter_bpjs = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $this->core->getRegPeriksaInfo('kd_dokter',revertNoRawat($no_rawat)))->oneArray()['kd_dokter_bpjs'];
+      $dokterMap = $this->db('maping_dokter_dpjpvclaim')
+        ->where('kd_dokter', $this->core->getRegPeriksaInfo('kd_dokter', revertNoRawat($no_rawat)))
+        ->oneArray();
+      $kd_dokter_bpjs = (string) ($dokterMap['kd_dokter_bpjs'] ?? '0');
     }
     date_default_timezone_set('UTC');
     $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
@@ -95,19 +101,34 @@ class Admin extends AdminModule
     }
     $json = json_decode($output, true);
     // echo $output;
-    $riwayat['url'] = '';
-    if($json['metaData']['code'] == '200') {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
-        $riwayat = json_decode($decompress, true);
-      }
-      $message = $json['metaData']['code'];
-    } else {
-      $message = $json['metaData']['message'];
+    if (!is_array($json)) {
+      $json = [];
     }
-    echo $this->draw('riwayat.html', ['url' => htmlspecialchars_array($riwayat['url']), 'message' => htmlspecialchars_array($message)]);
+
+    $meta = $json['metaData'] ?? [];
+    $code = (string) ($meta['code'] ?? '');
+    $message = $code !== '' ? $code : 'Gagal mengambil riwayat iCare.';
+    $riwayat = ['url' => ''];
+
+    if ($code === '200') {
+      $response = $json['response'] ?? '';
+      $stringDecrypt = $response !== '' ? stringDecrypt($key, $response) : '';
+      if ($stringDecrypt !== '') {
+        $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent($stringDecrypt);
+        $parsed = json_decode((string) $decompress, true);
+        if (is_array($parsed)) {
+          $riwayat = $parsed;
+        }
+      }
+    } else {
+      $message = (string) ($meta['message'] ?? $message);
+    }
+
+    $urlRiwayat = (string) ($riwayat['url'] ?? '');
+    echo $this->draw('riwayat.html', [
+      'url' => htmlspecialchars($urlRiwayat, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+      'message' => htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
+    ]);
     exit();
   }
 
