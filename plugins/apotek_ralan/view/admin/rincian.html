@@ -77,7 +77,79 @@
   </table>
 </div>
 <br>
+{if: $billing_parsial_enabled == 'true'}
+<h4>Pembayaran Parsial Obat</h4>
+<div class="row">
+  <div class="col-md-6">
+    <table class="table table-striped table-bordered no-padding" width="100%">
+      <tbody>
+        <tr>
+          <th style="width:200px;">Total Tagihan Obat</th>
+          <td>Rp. <span class="pull-right">{?= number_format(isset_or($parsial_total_obat,0),2,',','.')?}</span></td>
+        </tr>
+        <tr>
+          <th>Sudah Dibayar</th>
+          <td>Rp. <span class="pull-right">{?= number_format(isset_or($parsial_paid_obat,0),2,',','.')?}</span></td>
+        </tr>
+        <tr>
+          <th>Sisa</th>
+          <td>Rp. <span class="pull-right">{?= number_format(isset_or($parsial_remaining_obat,0),2,',','.')?}</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-6">
+    <div class="form-inline">
+      <input type="hidden" name="no_rawat_parsial_obat" value="{?=isset_or($no_rawat)?}">
+      <select class="form-control input-sm" name="metode_parsial_obat" style="min-width:160px;">
+        <option value="Tunai">Tunai</option>
+        <option value="Transfer">Transfer</option>
+        <option value="QRIS">QRIS</option>
+        <option value="EDC">EDC</option>
+      </select>
+      <input type="number" class="form-control input-sm" name="jumlah_bayar_parsial_obat" placeholder="Nominal bayar" style="min-width:180px;" min="0" step="0.01">
+      <button type="button" class="btn btn-success btn-sm bayar_parsial_obat" data-no_rawat="{?=isset_or($no_rawat)?}"><i class="fa fa-money"></i> Bayar</button>
+    </div>
+  </div>
+</div>
+
+<h5>Riwayat Pembayaran Parsial Obat</h5>
+<div class="table-responsive no-margin">
+  <table class="table table-striped table-bordered no-padding" width="100%">
+    <thead>
+      <tr>
+        <th width="30px;">No</th>
+        <th width="140px;">Tanggal</th>
+        <th width="90px;">Jam</th>
+        <th width="120px;">Metode</th>
+        <th>Jumlah</th>
+        <th width="120px;">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {loop: $parsial_history_obat}
+      <tr>
+        <td>{?=$counter?}.</td>
+        <td>{?=isset_or($value.tgl_bayar)?}</td>
+        <td>{?=isset_or($value.jam_bayar)?}</td>
+        <td>{?=isset_or($value.metode)?}</td>
+        <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.jumlah_obat,0),2,',','.')?}</span></td>
+        <td>
+          <div class="btn-group btn-group-xs" role="group">
+            <a class="btn btn-default" target="_blank" href="{?=url([ADMIN,'apotek_ralan','notaparsial'])?}&show=kecil&pembayaran_id={?=isset_or($value.id)?}"><i class="fa fa-print"></i> Kecil</a>
+            <a class="btn btn-info" target="_blank" href="{?=url([ADMIN,'apotek_ralan','notaparsial'])?}&show=besar&pembayaran_id={?=isset_or($value.id)?}"><i class="fa fa-print"></i> Besar</a>
+          </div>
+        </td>
+      </tr>
+      {/loop}
+      {if: empty($parsial_history_obat)}
+      <tr><td colspan="6" class="text-center">Belum ada pembayaran parsial obat.</td></tr>
+      {/if}
+    </tbody>
+  </table>
+</div>
 <hr>  
+{/if}
 <h4>e-Resep</h4>
 <h5>Non Racikan</h5>
 <div class="table-responsive no-margin">

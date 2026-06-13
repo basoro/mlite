@@ -11,6 +11,15 @@ class Admin extends AdminModule
 {
   protected array $assign = [];
 
+  protected function isBillingParsialEnabled()
+  {
+    $val = $this->settings->get('settings.billing_parsial');
+    if ($val === null || $val === '') {
+      return true;
+    }
+    return ((string) $val) === 'true';
+  }
+
   protected function getParsialPaidMap($noRawat, $kelompok, $refModul)
   {
     try {
@@ -1400,6 +1409,12 @@ class Admin extends AdminModule
       exit();
     }
 
+    if (!$this->isBillingParsialEnabled()) {
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'error', 'message' => 'Fitur billing parsial tidak diaktifkan.']);
+      exit();
+    }
+
     $noRawat = trim((string) ($_POST['no_rawat'] ?? ''));
     $kdJenisPrw = trim((string) ($_POST['kd_jenis_prw'] ?? ''));
     $tglPeriksa = trim((string) ($_POST['tgl_periksa'] ?? ''));
@@ -1496,6 +1511,11 @@ class Admin extends AdminModule
     $username = $this->core->checkAuth('GET');
     if (!$this->core->checkPermission($username, 'can_read', 'radiologi')) {
       echo 'Anda tidak punya izin.';
+      exit();
+    }
+
+    if (!$this->isBillingParsialEnabled()) {
+      echo 'Fitur billing parsial tidak diaktifkan.';
       exit();
     }
 
@@ -1657,7 +1677,8 @@ class Admin extends AdminModule
     $periksa_radiologi = [];
     $jumlah_total_radiologi = 0;
     $no_radiologi = 1;
-    $parsialPaidMap = $this->getParsialPaidMap($_POST['no_rawat'], 'RAD', 'radiologi');
+    $billingParsialEnabled = $this->isBillingParsialEnabled();
+    $parsialPaidMap = $billingParsialEnabled ? $this->getParsialPaidMap($_POST['no_rawat'], 'RAD', 'radiologi') : [];
     foreach ($rows_periksa_radiologi as $row) {
       $jumlah_total_radiologi += $row['biaya'];
       $row['nomor'] = $no_radiologi++;
@@ -1697,7 +1718,7 @@ class Admin extends AdminModule
         $mp['series'] = $series;
     }
     unset($mp);
-    $parsialHistory = $this->getParsialHistory($_POST['no_rawat']);
+    $parsialHistory = $billingParsialEnabled ? $this->getParsialHistory($_POST['no_rawat']) : [];
 
     echo $this->draw('rincian.html', [
       'periksa_radiologi' => htmlspecialchars_array($periksa_radiologi), 
@@ -1705,6 +1726,7 @@ class Admin extends AdminModule
       'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), 
       'radiologi' => htmlspecialchars_array($radiologi),
       'mini_pacs' => htmlspecialchars_array($mini_pacs),
+      'billing_parsial_enabled' => $billingParsialEnabled ? 'true' : 'false',
       'parsial_history' => htmlspecialchars_array($parsialHistory)
     ]);
     exit();

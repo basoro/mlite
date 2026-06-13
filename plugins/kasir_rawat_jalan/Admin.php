@@ -128,6 +128,15 @@ class Admin extends AdminModule
         exit();
     }
 
+    protected function isBillingParsialEnabled()
+    {
+        $val = $this->settings->get('settings.billing_parsial');
+        if ($val === null || $val === '') {
+            return true;
+        }
+        return ((string) $val) === 'true';
+    }
+
     protected function getSplitBillPaidByKelompok($noRawat)
     {
         try {
@@ -306,6 +315,9 @@ class Admin extends AdminModule
     protected function getSplitBillSummaryForLocking($noRawat, $status = 'Ralan')
     {
         try {
+            if (!$this->isBillingParsialEnabled()) {
+                return null;
+            }
             $totals = $this->calculateSplitBillGroupTotals($noRawat, $status);
             if (!$totals) {
                 return null;
@@ -1279,17 +1291,22 @@ class Admin extends AdminModule
         $tambahan_biaya[] = $row;
       }
 
-      $splitTotals = [
-        'ADMIN' => (float) $biaya_registrasi,
-        'TINDAKAN' => (float) $jumlah_total,
-        'OBAT' => (float) ($jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah),
-        'LAB' => (float) $jumlah_total_lab,
-        'RAD' => (float) $jumlah_total_radiologi,
-        'OPERASI' => (float) ($jumlah_total_operasi + $jumlah_total_obat_operasi),
-        'TAMBAHAN' => (float) ($jumlah_total_obat_pulang + $jumlah_total_tambahan)
-      ];
-      $splitBill = $this->buildSplitBillSummary($_POST['no_rawat'], $splitTotals);
-      $splitHistory = $this->getSplitBillHistory($_POST['no_rawat']);
+      $billingParsialEnabled = $this->isBillingParsialEnabled();
+      $splitBill = null;
+      $splitHistory = [];
+      if ($billingParsialEnabled) {
+        $splitTotals = [
+          'ADMIN' => (float) $biaya_registrasi,
+          'TINDAKAN' => (float) $jumlah_total,
+          'OBAT' => (float) ($jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah),
+          'LAB' => (float) $jumlah_total_lab,
+          'RAD' => (float) $jumlah_total_radiologi,
+          'OPERASI' => (float) ($jumlah_total_operasi + $jumlah_total_obat_operasi),
+          'TAMBAHAN' => (float) ($jumlah_total_obat_pulang + $jumlah_total_tambahan)
+        ];
+        $splitBill = $this->buildSplitBillSummary($_POST['no_rawat'], $splitTotals);
+        $splitHistory = $this->getSplitBillHistory($_POST['no_rawat']);
+      }
 
       echo $this->draw('rincian.html', [
         'rawat_jl_dr' => $rawat_jl_dr,
@@ -1315,6 +1332,7 @@ class Admin extends AdminModule
         'jumlah_total_tambahan' => $jumlah_total_tambahan,
         'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
         'billing_control' => htmlspecialchars_array($billingControl),
+        'billing_parsial_enabled' => $billingParsialEnabled ? 'true' : 'false',
         'split_bill' => $splitBill,
         'split_history' => $splitHistory
       ]);
@@ -1429,6 +1447,12 @@ class Admin extends AdminModule
 
     public function postSplitpay()
     {
+      if (!$this->isBillingParsialEnabled()) {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Fitur billing parsial/split bill tidak diaktifkan.']);
+        exit();
+      }
+
       $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
       if (!$billingControl['exists']) {
         $this->respondBillingLock($billingControl, true);

@@ -7,6 +7,15 @@ class Admin extends AdminModule
 {
     protected array $assign = [];
 
+    protected function isBillingParsialEnabled()
+    {
+        $val = $this->settings->get('settings.billing_parsial');
+        if ($val === null || $val === '') {
+            return true;
+        }
+        return ((string) $val) === 'true';
+    }
+
     protected function getDrugTaxPercent()
     {
         $taxPercent = $this->settings->get('farmasi.pajak_obat_persen');
@@ -32,6 +41,38 @@ class Admin extends AdminModule
             $this->calculateDrugSubtotal($basePrice, $quantity) + (float) $embalase + (float) $tuslah,
             2
         );
+    }
+
+    protected function getParsialPaidTotalObat($noRawat)
+    {
+        try {
+            $stmt = $this->core->db()->pdo()->prepare("SELECT COALESCE(SUM(d.jumlah_alokasi), 0) AS total
+              FROM mlite_billing_pembayaran_detail d
+              INNER JOIN mlite_billing_pembayaran h ON h.id = d.pembayaran_id
+              WHERE h.no_rawat = ? AND d.kelompok = 'OBAT'");
+            $stmt->execute([(string) $noRawat]);
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+            return (float) ($row['total'] ?? 0);
+        } catch (\Exception $e) {
+            return 0;
+        }
+    }
+
+    protected function getParsialHistoryObat($noRawat)
+    {
+        try {
+            $stmt = $this->core->db()->pdo()->prepare("SELECT h.id, h.tgl_bayar, h.jam_bayar, h.metode, h.id_user, h.keterangan,
+              COALESCE(SUM(d.jumlah_alokasi), 0) AS jumlah_obat
+              FROM mlite_billing_pembayaran h
+              INNER JOIN mlite_billing_pembayaran_detail d ON d.pembayaran_id = h.id AND d.kelompok = 'OBAT'
+              WHERE h.no_rawat = ?
+              GROUP BY h.id
+              ORDER BY h.tgl_bayar DESC, h.jam_bayar DESC, h.id DESC");
+            $stmt->execute([(string) $noRawat]);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     public function navigation()
@@ -897,7 +938,7 @@ class Admin extends AdminModule
         $data_barang = $this->db('databarang')->where('kode_brng', $row['kode_brng'])->oneArray();
         $row['nama_brng'] = $data_barang['nama_brng'] ?? '';
         $row['ralan'] = $data_barang['ralan'] ?? 0;
-        $jumlah_total_obat += floatval($row['total']);
+        $jumlah_total_obat += (float) ($row['total'] ?? 0) + (float) ($row['embalase'] ?? 0) + (float) ($row['tuslah'] ?? 0);
         $detail_pemberian_obat[] = $row;
       }
 
@@ -929,7 +970,7 @@ class Admin extends AdminModule
              
              if($detail) {
                  $detail['kandungan'] = isset($map['kandungan']) ? $map['kandungan'] : '';
-                 $jumlah_total_obat2 += floatval($detail['total']);
+                 $jumlah_total_obat2 += (float) ($detail['total'] ?? 0) + (float) ($detail['embalase'] ?? 0) + (float) ($detail['tuslah'] ?? 0);
                  $row['detail_pemberian_obat'][] = $detail;
              }
         }
@@ -937,7 +978,211 @@ class Admin extends AdminModule
         $detail_pemberian_obat2[] = $row;
       }
 
-      echo $this->draw('rincian.html', ['jumlah_total_resep' => $jumlah_total_resep, 'jumlah_total_obat' => $jumlah_total_obat, 'jumlah_total_obat2' => $jumlah_total_obat2, 'resep' => htmlspecialchars_array($resep), 'resep_racikan' => htmlspecialchars_array($resep_racikan), 'jumlah_total_resep_racikan' => $jumlah_total_resep_racikan, 'detail_pemberian_obat' => htmlspecialchars_array($detail_pemberian_obat), 'detail_pemberian_obat_racikan' => htmlspecialchars_array($detail_pemberian_obat2), 'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
+      $pasien = $this->db('pasien')->where('no_rkm_medis', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))->oneArray();
+      $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+      $billingParsialEnabled = $this->isBillingParsialEnabled();
+      $parsialTotal = (float) $jumlah_total_obat + (float) $jumlah_total_obat2;
+      $parsialPaid = $billingParsialEnabled ? (float) $this->getParsialPaidTotalObat($_POST['no_rawat']) : 0;
+      $parsialRemaining = $parsialTotal - $parsialPaid;
+      if ($parsialRemaining < 0) {
+        $parsialRemaining = 0;
+      }
+      if (!$billingParsialEnabled) {
+        $parsialRemaining = 0;
+      }
+      $parsialHistory = $billingParsialEnabled ? $this->getParsialHistoryObat($_POST['no_rawat']) : [];
+
+      echo $this->draw('rincian.html', [
+        'jumlah_total_resep' => $jumlah_total_resep,
+        'jumlah_total_obat' => $jumlah_total_obat,
+        'jumlah_total_obat2' => $jumlah_total_obat2,
+        'resep' => htmlspecialchars_array($resep),
+        'resep_racikan' => htmlspecialchars_array($resep_racikan),
+        'jumlah_total_resep_racikan' => $jumlah_total_resep_racikan,
+        'detail_pemberian_obat' => htmlspecialchars_array($detail_pemberian_obat),
+        'detail_pemberian_obat_racikan' => htmlspecialchars_array($detail_pemberian_obat2),
+        'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+        'pasien' => $pasien,
+        'reg_periksa' => $reg_periksa,
+        'billing_parsial_enabled' => $billingParsialEnabled ? 'true' : 'false',
+        'parsial_total_obat' => $parsialTotal,
+        'parsial_paid_obat' => $parsialPaid,
+        'parsial_remaining_obat' => $parsialRemaining,
+        'parsial_history_obat' => htmlspecialchars_array($parsialHistory)
+      ]);
+      exit();
+    }
+
+    public function postBayarparsial()
+    {
+      if (!$this->isBillingParsialEnabled()) {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Fitur billing parsial tidak diaktifkan.']);
+        exit();
+      }
+
+      $noRawat = trim((string) ($_POST['no_rawat'] ?? ''));
+      $metode = trim((string) ($_POST['metode'] ?? 'Tunai'));
+      $jumlah = (float) str_replace(',', '.', (string) ($_POST['jumlah_bayar'] ?? 0));
+
+      if ($noRawat === '' || $jumlah <= 0) {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Data pembayaran tidak valid.']);
+        exit();
+      }
+
+      $total = 0;
+      try {
+        $stmt = $this->core->db()->pdo()->prepare("SELECT COALESCE(SUM(total + embalase + tuslah), 0) AS total FROM detail_pemberian_obat WHERE no_rawat = ? AND status = 'Ralan'");
+        $stmt->execute([$noRawat]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $total = (float) ($row['total'] ?? 0);
+      } catch (\Exception $e) {
+        $total = 0;
+      }
+
+      if ($total <= 0) {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Tidak ada tagihan obat untuk rawat ini.']);
+        exit();
+      }
+
+      $paid = (float) $this->getParsialPaidTotalObat($noRawat);
+      $remaining = $total - $paid;
+      if ($remaining < 0) {
+        $remaining = 0;
+      }
+      if ($remaining <= 0) {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Tagihan obat sudah lunas.']);
+        exit();
+      }
+      if ($jumlah > $remaining) {
+        $jumlah = $remaining;
+      }
+
+      try {
+        $pdo = $this->core->db()->pdo();
+        $pdo->beginTransaction();
+
+        $stmt = $pdo->prepare("INSERT INTO mlite_billing_pembayaran (no_rawat, tgl_bayar, jam_bayar, metode, jumlah_bayar, id_user, keterangan)
+          VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([
+          $noRawat,
+          date('Y-m-d'),
+          date('H:i:s'),
+          $metode !== '' ? $metode : 'Tunai',
+          $jumlah,
+          (int) $this->core->getUserInfo('id'),
+          'Parsial Obat'
+        ]);
+        $pembayaranId = (int) $pdo->lastInsertId();
+
+        $stmt = $pdo->prepare("INSERT INTO mlite_billing_pembayaran_detail (pembayaran_id, kelompok, jumlah_alokasi, ref_modul, kd_jenis_prw, tgl_periksa, jam, status_periksa)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$pembayaranId, 'OBAT', $jumlah, 'apotek_ralan', null, null, null, null]);
+
+        $pdo->commit();
+      } catch (\Exception $e) {
+        try { $this->core->db()->pdo()->rollBack(); } catch (\Exception $x) {}
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan pembayaran parsial.']);
+        exit();
+      }
+
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success', 'message' => 'Pembayaran parsial berhasil disimpan.', 'pembayaran_id' => $pembayaranId]);
+      exit();
+    }
+
+    public function anyNotaparsial()
+    {
+      $username = $this->core->checkAuth('GET');
+      if (!$this->core->checkPermission($username, 'can_read', 'apotek_ralan')) {
+        echo 'Anda tidak punya izin.';
+        exit();
+      }
+
+      if (!$this->isBillingParsialEnabled()) {
+        echo 'Fitur billing parsial tidak diaktifkan.';
+        exit();
+      }
+
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+      $pembayaranId = (int) ($_GET['pembayaran_id'] ?? 0);
+      if ($pembayaranId <= 0) {
+        echo 'ID pembayaran tidak valid.';
+        exit();
+      }
+
+      $pdo = $this->core->db()->pdo();
+      try {
+        $stmt = $pdo->prepare("SELECT h.id, h.no_rawat, h.tgl_bayar, h.jam_bayar, h.metode, h.jumlah_bayar, h.id_user, h.keterangan,
+          COALESCE(p.nama, u.fullname) AS nama_kasir
+          FROM mlite_billing_pembayaran h
+          LEFT JOIN mlite_users u ON u.id = h.id_user
+          LEFT JOIN pegawai p ON p.nik = u.username
+          WHERE h.id = ?");
+        $stmt->execute([$pembayaranId]);
+        $pembayaran = $stmt->fetch(\PDO::FETCH_ASSOC);
+      } catch (\Exception $e) {
+        $pembayaran = null;
+      }
+
+      if (!$pembayaran) {
+        echo 'Data pembayaran tidak ditemukan.';
+        exit();
+      }
+
+      $noRawat = (string) ($pembayaran['no_rawat'] ?? '');
+
+      try {
+        $stmt = $pdo->prepare("SELECT d.id, d.jumlah_alokasi, 'Obat & BHP' AS nm_perawatan
+          FROM mlite_billing_pembayaran_detail d
+          WHERE d.pembayaran_id = ? AND d.kelompok = 'OBAT'
+          ORDER BY d.id ASC");
+        $stmt->execute([$pembayaranId]);
+        $detail = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      } catch (\Exception $e) {
+        $detail = [];
+      }
+
+      $totalDetail = 0;
+      foreach ($detail as $d) {
+        $totalDetail += (float) ($d['jumlah_alokasi'] ?? 0);
+      }
+
+      $reg = $this->db('reg_periksa')->where('no_rawat', $noRawat)->oneArray();
+      $pasien = [];
+      if (!empty($reg['no_rkm_medis'])) {
+        $pasien = $this->db('pasien')->where('no_rkm_medis', $reg['no_rkm_medis'])->oneArray();
+      }
+
+      $namaKasir = trim((string) ($pembayaran['nama_kasir'] ?? ''));
+      if ($namaKasir === '') {
+        $namaKasir = $this->core->getUserInfo('fullname', null, true);
+      }
+
+      $show = isset($_GET['show']) ? (string) $_GET['show'] : 'kecil';
+      if ($show === 'besar') {
+        echo $this->draw('nota_parsial.besar.html', [
+          'pembayaran' => htmlspecialchars_array($pembayaran),
+          'detail' => htmlspecialchars_array($detail),
+          'pasien' => htmlspecialchars_array($pasien),
+          'nama_kasir' => htmlspecialchars($namaKasir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+          'total_detail' => $totalDetail
+        ]);
+      } else {
+        echo $this->draw('nota_parsial.kecil.html', [
+          'pembayaran' => htmlspecialchars_array($pembayaran),
+          'detail' => htmlspecialchars_array($detail),
+          'pasien' => htmlspecialchars_array($pasien),
+          'nama_kasir' => htmlspecialchars($namaKasir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+          'total_detail' => $totalDetail
+        ]);
+      }
       exit();
     }
 

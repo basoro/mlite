@@ -2615,6 +2615,7 @@ switch ($version) {
         try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_billing_pembayaran_detail` ADD COLUMN `tgl_periksa` date DEFAULT NULL AFTER `kd_jenis_prw`"); } catch (\Exception $e) {}
         try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_billing_pembayaran_detail` ADD COLUMN `jam` time DEFAULT NULL AFTER `tgl_periksa`"); } catch (\Exception $e) {}
         try { $this->core->db()->pdo()->exec("ALTER TABLE `mlite_billing_pembayaran_detail` ADD COLUMN `status_periksa` varchar(10) DEFAULT NULL AFTER `jam`"); } catch (\Exception $e) {}
+        try { $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'billing_parsial', 'false')"); } catch (\Exception $e) {}
 
         $return = '6.3.6';
         break;

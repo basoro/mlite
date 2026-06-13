@@ -3046,7 +3046,7 @@ CREATE TABLE `mlite_settings` (
   `value` TEXT NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `module` (`module`,`field`)
-) ENGINE=MyISAM AUTO_INCREMENT=217 DEFAULT CHARSET=utf8mb4;
+) ENGINE=MyISAM AUTO_INCREMENT=221 DEFAULT CHARSET=utf8mb4;
 
 
 INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/logo.png"),
@@ -3262,7 +3262,8 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("216","keuangan","akun_debet_kas","1101"),
 ("217","bpjs_emr","kecamatan",""),
 ("218","satu_sehat","imaging",""),
-("219","farmasi","pajak_obat_persen","0");
+("219","farmasi","pajak_obat_persen","0"),
+("220","settings","billing_parsial","false");
 
 
 CREATE TABLE `mlite_subrekening` (

@@ -230,6 +230,17 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label>Aktifkan Billing Parsial/Split Bill</label>
+                        <div class="radio">
+                            <label class="radio-inline">
+                               <input type="radio" name="billing_parsial" value="false" {if: $settings.billing_parsial == 'false'}checked{/if} /> Tidak
+                            </label>
+                            <label class="radio-inline">
+                               <input type="radio" name="billing_parsial" value="true" {if: $settings.billing_parsial == 'true' || empty($settings.billing_parsial)}checked{/if} /> Ya
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label>Aktifkan Websocket</label>
                         <div class="radio">
                             <label class="radio-inline">

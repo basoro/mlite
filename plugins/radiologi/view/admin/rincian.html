@@ -64,6 +64,7 @@
   }
 </style>
 <h4>Rincian Pemeriksaan</h4>
+{if: $billing_parsial_enabled == 'true'}
 <div class="row" style="margin-bottom:10px;">
   <div class="col-sm-4">
     <select class="form-control input-sm" id="parsial_metode_rad">
@@ -74,6 +75,7 @@
     </select>
   </div>
 </div>
+{/if}
 <div class="table-responsive no-margin">
   <table class="table table-striped table-bordered no-padding" width="100%">
     <thead>
@@ -151,6 +153,7 @@
               <div><strong>Terbayar:</strong> Rp. {?= number_format(isset_or($value.parsial_paid,0),2,',','.')?}</div>
               <div><strong>Sisa:</strong> Rp. {?= number_format(isset_or($value.parsial_remaining,0),2,',','.')?}</div>
             </div>
+            {if: $billing_parsial_enabled == 'true'}
             <div class="col-sm-8">
               <div class="input-group input-group-sm">
                 <input type="text" class="form-control parsial_amount_rad" value="{?= number_format(isset_or($value.parsial_remaining,0),0,',','.')?}" {if: empty($value.parsial_remaining)}disabled{/if}>
@@ -159,6 +162,7 @@
                 </span>
               </div>
             </div>
+            {/if}
           </div>
         </td>
       </tr>
@@ -172,7 +176,7 @@
     </tfoot>
   </table>
 </div>
-{if: isset_or($parsial_history)}
+{if: $billing_parsial_enabled == 'true' && isset_or($parsial_history)}
 <h4>Riwayat Pembayaran Parsial</h4>
 <div class="table-responsive no-margin" style="margin-bottom:15px;">
   <table class="table table-striped table-bordered no-padding" width="100%">

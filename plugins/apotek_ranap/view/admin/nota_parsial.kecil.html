@@ -1,0 +1,97 @@
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <title>Nota Pembayaran Parsial Obat</title>
+    <meta charset="UTF-8">
+    <link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <style>
+      th,td {padding:0px 0px 0px 10px;}
+      .float{
+        position:fixed;
+        width:120px;
+        height:40px;
+        bottom:40px;
+        right:40px;
+        background-color:#4C9A2A;
+        color:#FFF;
+        text-align:center;
+        box-shadow: 2px 2px 3px #999;
+      }
+      .float2{
+        position:fixed;
+        width:120px;
+        height:40px;
+        bottom:90px;
+        right:40px;
+        text-align:center;
+        box-shadow: 2px 2px 3px #999;
+      }
+    </style>
+    <script>
+      function printContent(el){
+        var restorepage = document.body.innerHTML;
+        var printcontent = document.getElementById(el).innerHTML;
+        document.body.innerHTML = printcontent;
+        window.print();
+        document.body.innerHTML = restorepage; window.close();
+      }
+    </script>
+  </head>
+  <body>
+    <div id="nota">
+      <center>
+        <table style="font-size: 8pt;" rules="rows">
+          <tr>
+            <td align="center"><strong style="font-size: 15pt;">{?=isset_or($settings.nama_instansi)?}</strong></td>
+          </tr>
+          <tr>
+            <td align="center"><p style="font-size: 8pt;">{?=isset_or($settings.alamat)?}</p></td>
+          </tr>
+          <tr>
+            <td align="center">
+              NOTA PEMBAYARAN PARSIAL OBAT<br>
+              ID Pembayaran : {?=isset_or($pembayaran.id)?}<br>
+              No Rawat : {?=isset_or($pembayaran.no_rawat)?}<br>
+              Tanggal : {?=isset_or($pembayaran.tgl_bayar)?} {?=isset_or($pembayaran.jam_bayar)?}<br>
+              Metode : {?=isset_or($pembayaran.metode)?}<br>
+              Nama Pasien : {?=isset_or($pasien.nm_pasien)?}<br>
+              No RM : {?=isset_or($pasien.no_rkm_medis)?}<br>
+              Alamat : {?=isset_or($pasien.alamat)?}<br>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <table style="width:100%; font-size:8pt;">
+                {loop: $detail}
+                <tr>
+                  <td>{?=isset_or($value.nm_perawatan)?}</td>
+                  <td align="right">Rp. {?= number_format(isset_or($value.jumlah_alokasi,0),2,',','.')?}</td>
+                </tr>
+                {/loop}
+                <tr>
+                  <td align="right"><strong>Total</strong></td>
+                  <td align="right"><strong>Rp. {?= number_format(isset_or($total_detail,0),2,',','.')?}</strong></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-size: 9pt;"><i>Terbilang : # {?=terbilang(isset_or($total_detail,0),3,"")?} Rupiah # </i></td>
+          </tr>
+          <tr>
+            <td>
+              <p align="center">{?=isset_or($settings.kota)?}, {?=date('d-m-Y')?}<br>
+                Kasir<br><br><br>
+                {?=isset_or($nama_kasir)?}<br>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </center>
+    </div>
+    <button onclick="printContent('nota')" type="button" class="btn btn-danger center-block float"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+    <a target="_blank" href="{?=url([ADMIN,'apotek_ranap','notaparsial'])?}?show=besar&pembayaran_id={?=isset_or($pembayaran.id)?}" class="btn btn-info center-block float2">Versi Besar</a>
+  </body>
+</html>
+

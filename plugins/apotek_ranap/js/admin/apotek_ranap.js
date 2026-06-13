@@ -883,6 +883,54 @@ $("#rincian").on("click",".hapus_obat_racikan", function(event){
   });
 });
 
+$("#rincian").on("click", ".bayar_parsial_obat", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var no_rawat = $(this).attr("data-no_rawat");
+  if(!no_rawat) {
+    no_rawat = $('input:hidden[name=no_rawat_parsial_obat]').val();
+  }
+  var metode = $('select[name=metode_parsial_obat]').val();
+  var jumlah = $('input[name=jumlah_bayar_parsial_obat]').val();
+
+  if(!jumlah || parseFloat(jumlah) <= 0) {
+    alert('Nominal bayar masih kosong!');
+    return;
+  }
+
+  var url = baseURL + '/apotek_ranap/bayarparsial?t=' + mlite.token;
+  $.post(url, {
+    no_rawat: no_rawat,
+    metode: metode,
+    jumlah_bayar: jumlah
+  }, function(data) {
+    var res = data;
+    try {
+      if (typeof data === 'string') {
+        res = JSON.parse(data);
+      }
+    } catch (e) {
+      res = {status: 'error', message: 'Respon tidak valid.'};
+    }
+
+    if (res.status === 'success') {
+      window.open(baseURL + '/apotek_ranap/notaparsial?show=kecil&pembayaran_id=' + res.pembayaran_id + '&t=' + mlite.token);
+      var url2 = baseURL + '/apotek_ranap/rincian?t=' + mlite.token;
+      $.post(url2, {no_rawat: no_rawat}, function(html) {
+        $("#rincian").html(html).show();
+      });
+      $('input[name=jumlah_bayar_parsial_obat]').val('');
+      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      (res.message ? res.message : "Pembayaran parsial berhasil disimpan.")+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+    } else {
+      alert(res.message ? res.message : 'Gagal menyimpan pembayaran parsial.');
+    }
+  });
+});
+
 function bersih(){
   $('input:text[name=no_rawat]').val("");
   $('input:text[name=no_rkm_medis]').val("");
