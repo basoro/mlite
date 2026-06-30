@@ -1,0 +1,196 @@
+<div style="font-size:11px; color:#111; font-family:sans-serif;">
+  <table style="width:100%; border-collapse:collapse;">
+    <tr>
+      <td style="width:80px; vertical-align:top;">
+        <img width="70" src="{?=url()?}/{?=isset_or($settings.logo)?}">
+      </td>
+      <td style="vertical-align:top;">
+        <div style="font-size:15px; font-weight:bold;">{?=isset_or($settings.nama_instansi)?}</div>
+        <div>{?=isset_or($settings.alamat)?}</div>
+        <div>Telp. {?=isset_or($settings.nomor_telepon)?} | Email: {?=isset_or($settings.email)?}</div>
+        <div>{?=isset_or($settings.kota)?} - {?=isset_or($settings.propinsi)?}</div>
+        <div style="font-size:16px; font-weight:bold; margin-top:4px;">LEMBAR TELAAH RESEP</div>
+      </td>
+    </tr>
+  </table>
+
+  <div style="height:8px;"></div>
+
+  <table style="width:100%; border-collapse:collapse;">
+    <tr>
+      <td style="width:110px; white-space:nowrap; padding:1px 4px; vertical-align:top;">No. RM</td>
+      <td style="width:10px; padding:1px 4px; vertical-align:top;">:</td>
+      <td>{?=isset_or($header.no_rkm_medis)?}</td>
+      <td style="width:110px; white-space:nowrap; padding:1px 4px; vertical-align:top;">Pemberi Resep</td>
+      <td style="width:10px; padding:1px 4px; vertical-align:top;">:</td>
+      <td>{?=isset_or($header.nm_dokter)?}</td>
+    </tr>
+    <tr>
+      <td style="width:110px; white-space:nowrap; padding:1px 4px; vertical-align:top;">No. Rawat</td>
+      <td style="padding:1px 4px; vertical-align:top;">:</td>
+      <td>{?=isset_or($header.no_rawat)?}</td>
+      <td style="width:110px; white-space:nowrap; padding:1px 4px; vertical-align:top;">{?=isset_or($header.unit_layanan_label)?}</td>
+      <td style="padding:1px 4px; vertical-align:top;">:</td>
+      <td>{?=isset_or($header.unit_layanan)?}</td>
+    </tr>
+    <tr>
+      <td style="width:110px; white-space:nowrap; padding:1px 4px; vertical-align:top;">Nama Pasien</td>
+      <td style="padding:1px 4px; vertical-align:top;">:</td>
+      <td>{?=isset_or($header.nm_pasien)?} ({?=isset_or($header.umur_lengkap)?})</td>
+      <td style="width:110px; white-space:nowrap; padding:1px 4px; vertical-align:top;">No. Resep</td>
+      <td style="padding:1px 4px; vertical-align:top;">:</td>
+      <td>{?=isset_or($header.no_resep)?} ({?=isset_or($header.tanggal_peresepan_display)?})</td>
+    </tr>
+    <tr>
+      <td style="width:110px; white-space:nowrap; padding:1px 4px; vertical-align:top;">Alamat</td>
+      <td style="padding:1px 4px; vertical-align:top;">:</td>
+      <td>{?=isset_or($header.alamat)?}</td>
+      <td style="width:110px; white-space:nowrap; padding:1px 4px; vertical-align:top;">Cara Bayar</td>
+      <td style="padding:1px 4px; vertical-align:top;">:</td>
+      <td>{?=isset_or($header.cara_bayar)?}</td>
+    </tr>
+  </table>
+
+  <div style="height:8px;"></div>
+
+  <table style="width:100%; border-collapse:collapse;">
+    <thead>
+      <tr>
+        <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold; width:28%;">NAMA OBAT</th>
+        <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold; width:42%;">KETERANGAN</th>
+        <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold;">CARA PAKAI</th>
+      </tr>
+    </thead>
+    <tbody>
+      {loop: $detail}
+      <tr>
+        <td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; vertical-align:top;">{?=isset_or($value.nama_obat)?}</td>
+        <td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; vertical-align:top;">{?=isset_or($value.keterangan)?}</td>
+        <td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; vertical-align:top;">{?=isset_or($value.cara_pakai)?}</td>
+      </tr>
+      {/loop}
+      <tr>
+        <td colspan="2" style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:right;"><b>Jumlah Total Biaya Resep</b></td>
+        <td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;"><b>Rp {?=isset_or($header.total_biaya_resep)?}</b></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="height:8px;"></div>
+
+  <table style="width:100%; border-collapse:collapse;">
+    <tr>
+      <td style="width:34%; padding-right:6px; vertical-align:top;">
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th colspan="3" style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold;">TELAAH RESEP</th>
+            </tr>
+            <tr>
+              <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold;">Kelangkapan Administratif Resep</th>
+              <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold; width:30px;">Ya</th>
+              <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold; width:30px;">Tidak</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Nama pasien</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.nama_pasien_yes)?}</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.nama_pasien_no)?}</td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Umur pasien</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.umur_pasien_yes)?}</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.umur_pasien_no)?}</td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Alamat pasien</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.alamat_pasien_yes)?}</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.alamat_pasien_no)?}</td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Berat badan</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.berat_badan_yes)?}</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.berat_badan_no)?}</td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Nama dokter</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.nama_dokter_yes)?}</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.nama_dokter_no)?}</td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Paraf dokter</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.paraf_dokter_yes)?}</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.paraf_dokter_no)?}</td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Tanggal penulisan resep</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.tanggal_resep_yes)?}</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.tanggal_resep_no)?}</td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Nama dan jumlah obat</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.nama_obat_yes)?}</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.nama_obat_no)?}</td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Signatura/aturan pakai obat</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.aturan_pakai_yes)?}</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.aturan_pakai_no)?}</td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Ruangan / poliklinik</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.unit_yes)?}</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.unit_no)?}</td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Tulisan jelas terbaca</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.tulisan_yes)?}</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center;">{?=isset_or($checklist.tulisan_no)?}</td></tr>
+          </tbody>
+        </table>
+      </td>
+      <td style="width:23%; padding-right:6px; vertical-align:top;">
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th colspan="3" style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold;">TELAAH RESEP</th>
+            </tr>
+            <tr>
+              <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold;">Kelengkapan</th>
+              <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold; width:30px;">Ya</th>
+              <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold; width:30px;">Tidak</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;"><b>Syarat Farmasetika</b></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Tepat rute</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Tepat dosis</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;"><b>Syarat Farmasi Klinis</b></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Interaksi obat</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Duplikasi</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; height:101px;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+          </tbody>
+        </table>
+      </td>
+      <td style="width:20%; padding-right:6px; vertical-align:top;">
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th colspan="3" style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold;">TELAAH OBAT</th>
+            </tr>
+            <tr>
+              <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold;">Telaah 5 benar</th>
+              <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold; width:30px;">Ya</th>
+              <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold; width:30px;">Tidak</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Benar pasien</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Benar obat</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Benar dosis</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Benar rute / cara</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Benar waktu</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; height:69px;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+          </tbody>
+        </table>
+      </td>
+      <td style="width:23%; vertical-align:top;">
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th colspan="3" style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold;">VERIFIKASI RESEP</th>
+            </tr>
+            <tr>
+              <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold;">Verifikasi 5 benar</th>
+              <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold; width:30px;">Ya</th>
+              <th style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px; text-align:center; font-weight:bold; width:30px;">Tidak</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Benar pasien</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Benar obat</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Benar dosis</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Benar rute / cara</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; padding:3px 4px;">Benar waktu</td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+            <tr><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca; height:69px;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td><td style="border-top:1px solid #cacaca; border-bottom:1px solid #cacaca;"></td></tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <table style="width:100%; border-collapse:collapse;">
+    <tr>
+      <td style="border:none; text-align:center; padding-top:14px;">Petugas</td>
+      <td style="border:none; text-align:center; padding-top:14px;">Tenaga Teknis Kefarmasian/Asisten</td>
+      <td style="border:none; text-align:center; padding-top:14px;">Verifikator 1</td>
+      <td style="border:none; text-align:center; padding-top:14px;">Verifikator 2</td>
+      <td style="border:none; text-align:center; padding-top:14px;">Tanda Tangan Penerima Obat</td>
+    </tr>
+    <tr>
+      <td style="border:none; text-align:center; padding-top:14px;"><div style="border-top:1px solid #cacaca; margin-top:32px; height:1px;"></div></td>
+      <td style="border:none; text-align:center; padding-top:14px;"><div style="border-top:1px solid #cacaca; margin-top:32px; height:1px;"></div></td>
+      <td style="border:none; text-align:center; padding-top:14px;"><div style="border-top:1px solid #cacaca; margin-top:32px; height:1px;"></div></td>
+      <td style="border:none; text-align:center; padding-top:14px;"><div style="border-top:1px solid #cacaca; margin-top:32px; height:1px;"></div></td>
+      <td style="border:none; text-align:center; padding-top:14px;"><div style="border-top:1px solid #cacaca; margin-top:32px; height:1px;"></div></td>
+    </tr>
+  </table>
+</div>

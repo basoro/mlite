@@ -1582,6 +1582,158 @@ class Admin extends AdminModule
       exit;
     }
 
+    public function getCetakTelaahResep($no_resep)
+    {
+      $embalase = (float) $this->settings->get('farmasi.embalase');
+      $tuslah = (float) $this->settings->get('farmasi.tuslah');
+
+      $header = $this->db('resep_obat')
+        ->select('resep_obat.*')
+        ->select('reg_periksa.no_reg')
+        ->select('reg_periksa.umurdaftar')
+        ->select('reg_periksa.sttsumur')
+        ->select('pasien.no_rkm_medis')
+        ->select('pasien.nm_pasien')
+        ->select('pasien.alamat')
+        ->select('dokter.nm_dokter')
+        ->select('penjab.png_jawab')
+        ->select('bangsal.nm_bangsal')
+        ->select('kamar.kd_kamar')
+        ->join('reg_periksa', 'reg_periksa.no_rawat = resep_obat.no_rawat')
+        ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+        ->join('dokter', 'dokter.kd_dokter = resep_obat.kd_dokter')
+        ->join('penjab', 'penjab.kd_pj = reg_periksa.kd_pj')
+        ->join('kamar_inap', 'kamar_inap.no_rawat = resep_obat.no_rawat')
+        ->join('kamar', 'kamar.kd_kamar = kamar_inap.kd_kamar')
+        ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
+        ->where('resep_obat.no_resep', $no_resep)
+        ->where('kamar_inap.stts_pulang', '-')
+        ->oneArray();
+
+      if (!$header) {
+        echo 'Data resep tidak ditemukan.';
+        exit;
+      }
+
+      $detail = [];
+      $totalBiayaResep = 0;
+
+      $nonRacikan = $this->db('resep_dokter')
+        ->select('resep_dokter.*')
+        ->select('databarang.nama_brng')
+        ->select('databarang.dasar')
+        ->join('databarang', 'databarang.kode_brng = resep_dokter.kode_brng')
+        ->where('resep_dokter.no_resep', $no_resep)
+        ->toArray();
+
+      foreach ($nonRacikan as $item) {
+        $basePrice = (float) ($item['dasar'] ?? $item['ranap'] ?? $item['ralan'] ?? 0);
+        $unitPrice = $this->calculateDrugUnitPrice($basePrice);
+        $grandTotal = $this->calculateDrugGrandTotal($basePrice, $item['jml'] ?? 0, $embalase, $tuslah);
+        $totalBiayaResep += $grandTotal;
+        $detail[] = [
+          'nama_obat' => $item['nama_brng'] ?? '',
+          'keterangan' => number_format((float) ($item['jml'] ?? 0), 0, ',', '.') . ' x ' . number_format($unitPrice, 0, ',', '.') . ' + ' . number_format($embalase, 0, ',', '.') . ' + ' . number_format($tuslah, 0, ',', '.') . ' = ' . number_format($grandTotal, 0, ',', '.'),
+          'cara_pakai' => $item['aturan_pakai'] ?: '-'
+        ];
+      }
+
+      $racikan = $this->db('resep_dokter_racikan')
+        ->where('no_resep', $no_resep)
+        ->toArray();
+
+      foreach ($racikan as $racik) {
+        $racikanDetail = $this->db('resep_dokter_racikan_detail')
+          ->select('resep_dokter_racikan_detail.*')
+          ->select('databarang.nama_brng')
+          ->select('databarang.dasar')
+          ->join('databarang', 'databarang.kode_brng = resep_dokter_racikan_detail.kode_brng')
+          ->where('resep_dokter_racikan_detail.no_resep', $no_resep)
+          ->where('resep_dokter_racikan_detail.no_racik', $racik['no_racik'])
+          ->toArray();
+
+        $racikanTotal = 0;
+        $racikanItems = [];
+        foreach ($racikanDetail as $racikanItem) {
+          $basePrice = (float) ($racikanItem['dasar'] ?? $racikanItem['ranap'] ?? $racikanItem['ralan'] ?? 0);
+          $racikanTotal += $this->calculateDrugGrandTotal($basePrice, $racikanItem['jml'] ?? 0, $embalase, $tuslah);
+          if (!empty($racikanItem['nama_brng'])) {
+            $racikanItems[] = $racikanItem['nama_brng'];
+          }
+        }
+
+        $totalBiayaResep += $racikanTotal;
+        $detail[] = [
+          'nama_obat' => trim(($racik['nama_racik'] ?? 'Racikan') . ' (Racikan)'),
+          'keterangan' => (!empty($racikanItems) ? implode(', ', $racikanItems) . ' | ' : '') . 'Total = ' . number_format($racikanTotal, 0, ',', '.'),
+          'cara_pakai' => $racik['aturan_pakai'] ?: '-'
+        ];
+      }
+
+      $semuaAturanPakaiTerisi = true;
+      foreach ($detail as $item) {
+        if (empty($item['cara_pakai']) || $item['cara_pakai'] === '-') {
+          $semuaAturanPakaiTerisi = false;
+          break;
+        }
+      }
+
+      $header['umur_lengkap'] = trim(($header['umurdaftar'] ?? '') . ' ' . ($header['sttsumur'] ?? ''));
+      $header['tanggal_peresepan_display'] = (!empty($header['tgl_peresepan']) && $header['tgl_peresepan'] !== '0000-00-00' ? dateIndonesia($header['tgl_peresepan']) : '-') . (!empty($header['jam_peresepan']) ? ' ' . $header['jam_peresepan'] : '');
+      $header['unit_layanan_label'] = 'Ruangan';
+      $header['unit_layanan'] = trim(($header['nm_bangsal'] ?? '-') . (!empty($header['kd_kamar']) ? ' / ' . $header['kd_kamar'] : ''));
+      $header['cara_bayar'] = $header['png_jawab'] ?? '-';
+      $header['nomor_antrian'] = !empty($header['no_reg']) ? str_pad((string) $header['no_reg'], 3, '0', STR_PAD_LEFT) : '-';
+      $header['tanggal_cetak'] = dateIndonesia(date('Y-m-d'));
+      $header['total_biaya_resep'] = number_format($totalBiayaResep, 0, ',', '.');
+
+      $checklist = [
+        'nama_pasien_yes' => !empty($header['nm_pasien']) ? 'v' : '',
+        'nama_pasien_no' => empty($header['nm_pasien']) ? 'v' : '',
+        'umur_pasien_yes' => !empty(trim($header['umur_lengkap'])) ? 'v' : '',
+        'umur_pasien_no' => empty(trim($header['umur_lengkap'])) ? 'v' : '',
+        'alamat_pasien_yes' => !empty($header['alamat']) ? 'v' : '',
+        'alamat_pasien_no' => empty($header['alamat']) ? 'v' : '',
+        'berat_badan_yes' => '',
+        'berat_badan_no' => '',
+        'nama_dokter_yes' => !empty($header['nm_dokter']) ? 'v' : '',
+        'nama_dokter_no' => empty($header['nm_dokter']) ? 'v' : '',
+        'paraf_dokter_yes' => '',
+        'paraf_dokter_no' => '',
+        'tanggal_resep_yes' => !empty($header['tgl_peresepan']) && $header['tgl_peresepan'] !== '0000-00-00' ? 'v' : '',
+        'tanggal_resep_no' => empty($header['tgl_peresepan']) || $header['tgl_peresepan'] === '0000-00-00' ? 'v' : '',
+        'nama_obat_yes' => !empty($detail) ? 'v' : '',
+        'nama_obat_no' => empty($detail) ? 'v' : '',
+        'aturan_pakai_yes' => $semuaAturanPakaiTerisi ? 'v' : '',
+        'aturan_pakai_no' => !$semuaAturanPakaiTerisi ? 'v' : '',
+        'unit_yes' => !empty($header['unit_layanan']) && $header['unit_layanan'] !== '-' ? 'v' : '',
+        'unit_no' => empty($header['unit_layanan']) || $header['unit_layanan'] === '-' ? 'v' : '',
+        'tulisan_yes' => '',
+        'tulisan_no' => '',
+      ];
+
+      $html = $this->draw('cetak.telaah_resep.html', [
+        'settings' => $this->settings('settings'),
+        'header' => htmlspecialchars_array($header),
+        'detail' => htmlspecialchars_array($detail),
+        'checklist' => htmlspecialchars_array($checklist)
+      ]);
+
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4-L',
+        'margin_left' => 8,
+        'margin_right' => 8,
+        'margin_top' => 8,
+        'margin_bottom' => 8
+      ]);
+
+      $mpdf->WriteHTML($this->core->setPrintCss(), \Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($html, \Mpdf\HTMLParserMode::HTML_BODY);
+      $mpdf->Output();
+      exit;
+    }
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');
