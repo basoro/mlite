@@ -444,43 +444,43 @@
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Tagihan</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_obat_pulang + $jumlah_total_tambahan)?}" name="jumlah_total" maxlength="11" disabled>
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=isset_or($total_tagihan, ($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_obat_pulang + $jumlah_total_tambahan))?}" name="jumlah_total" maxlength="11" disabled>
       </div>
-      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_obat_pulang + $jumlah_total_tambahan),3,"")?}" name="terbilang_jumlah_total" disabled >
+      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(isset_or($total_tagihan, ($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_obat_pulang + $jumlah_total_tambahan)),3,"")?}" name="terbilang_jumlah_total" disabled >
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Potongan</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Potongan Faktur" value="" name="potongan_faktur" id="potongan_faktur2" maxlength="15" tabindex="1" {if: !empty($billing_control.edit_locked)}disabled{/if} />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Potongan Faktur" value="{?=isset_or($potongan_aktif, 0)?}" name="potongan_faktur" id="potongan_faktur2" maxlength="15" tabindex="1" {if: !empty($billing_control.edit_locked)}disabled{/if} />
       </div>
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Harus Bayar</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_obat_pulang + $jumlah_total_tambahan)?}" name="jumlah_harus_bayar" maxlength="11" disabled />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=isset_or($jumlah_harus_bayar_aktif, isset_or($total_tagihan, ($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_obat_pulang + $jumlah_total_tambahan)))?}" name="jumlah_harus_bayar" maxlength="11" disabled />
       </div>
-      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_obat_pulang + $jumlah_total_tambahan),3,"")?}" name="terbilang_jumlah_harus_bayar" disabled >
+      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(isset_or($jumlah_harus_bayar_aktif, isset_or($total_tagihan, ($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_obat_pulang + $jumlah_total_tambahan))),3,"")?}" name="terbilang_jumlah_harus_bayar" disabled >
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Bayar</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Jumlah Bayar" value="0" name="jumlah_bayar" id="jumlah_bayar2" maxlength="15" tabindex="2" {if: !empty($billing_control.edit_locked)}disabled{/if} />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Jumlah Bayar" value="{?=isset_or($jumlah_bayar_aktif, 0)?}" name="jumlah_bayar" id="jumlah_bayar2" maxlength="15" tabindex="2" {if: !empty($billing_control.edit_locked)}disabled{/if} />
       </div>
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Kembalian</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold"  placeholder="Kembalian" value="0" name="kembalian" disabled maxlength="11" />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold"  placeholder="Kembalian" value="{?=isset_or($kembalian_aktif, 0)?}" name="kembalian" disabled maxlength="11" />
       </div>
-      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" name="terbilang_kembalian" disabled >
+      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" name="terbilang_kembalian" value="{if: isset_or($jumlah_bayar_aktif, 0) < isset_or($jumlah_harus_bayar_aktif, isset_or($total_tagihan, 0))}Kurang Bayar{elseif: !empty($kembalian_aktif)}{?=terbilang($kembalian_aktif,3,"")?}{/if}" disabled >
     </div>
     <div class="form-group">
       <label for="keterangan" class="col-sm-5 control-label">Cara Bayar</label>
       <div class="col-sm-7">
         <select class="form-control" name="keterangan" id="keterangan" {if: !empty($billing_control.edit_locked)}disabled{/if}>
-          <option value="Tunai">Tunai</option>
-          <option value="Kurang Bayar">Kurang Bayar</option>
-          <option value="Belum Bayar">Belum Bayar</option>
+          <option value="Tunai" {if: isset_or($billing_terakhir.keterangan, 'Tunai') == 'Tunai'}selected{/if}>Tunai</option>
+          <option value="Kurang Bayar" {if: isset_or($billing_terakhir.keterangan) == 'Kurang Bayar'}selected{/if}>Kurang Bayar</option>
+          <option value="Belum Bayar" {if: isset_or($billing_terakhir.keterangan) == 'Belum Bayar'}selected{/if}>Belum Bayar</option>
         </select>
       </div>
     </div>

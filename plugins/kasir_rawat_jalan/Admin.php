@@ -1291,6 +1291,31 @@ class Admin extends AdminModule
         $tambahan_biaya[] = $row;
       }
 
+      $totalTagihan = (float) $biaya_registrasi
+        + (float) $jumlah_total
+        + (float) $jumlah_total_obat
+        + (float) $jumlah_total_embalase
+        + (float) $jumlah_total_tuslah
+        + (float) $jumlah_total_lab
+        + (float) $jumlah_total_radiologi
+        + (float) $jumlah_total_operasi
+        + (float) $jumlah_total_obat_operasi
+        + (float) $jumlah_total_obat_pulang
+        + (float) $jumlah_total_tambahan;
+
+      $billingTerakhir = $this->db('mlite_billing')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->like('kd_billing', 'RJ%')
+        ->desc('id_billing')
+        ->oneArray();
+
+      $potonganAktif = (float) ($billingTerakhir['potongan'] ?? 0);
+      $jumlahHarusBayarAktif = isset($billingTerakhir['jumlah_harus_bayar'])
+        ? (float) $billingTerakhir['jumlah_harus_bayar']
+        : max(0, $totalTagihan - $potonganAktif);
+      $jumlahBayarAktif = (float) ($billingTerakhir['jumlah_bayar'] ?? 0);
+      $kembalianAktif = $jumlahBayarAktif - $jumlahHarusBayarAktif;
+
       $billingParsialEnabled = $this->isBillingParsialEnabled();
       $splitBill = null;
       $splitHistory = [];
@@ -1330,6 +1355,12 @@ class Admin extends AdminModule
         'jumlah_total_obat_pulang' => $jumlah_total_obat_pulang,
         'tambahan_biaya' => $tambahan_biaya,
         'jumlah_total_tambahan' => $jumlah_total_tambahan,
+        'total_tagihan' => $totalTagihan,
+        'billing_terakhir' => htmlspecialchars_array($billingTerakhir ?? []),
+        'potongan_aktif' => $potonganAktif,
+        'jumlah_harus_bayar_aktif' => $jumlahHarusBayarAktif,
+        'jumlah_bayar_aktif' => $jumlahBayarAktif,
+        'kembalian_aktif' => $kembalianAktif > 0 ? $kembalianAktif : 0,
         'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
         'billing_control' => htmlspecialchars_array($billingControl),
         'billing_parsial_enabled' => $billingParsialEnabled ? 'true' : 'false',
