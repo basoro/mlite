@@ -15,6 +15,34 @@
                       <input type="text" style="display: none;" name="no_surkon" id="no_surkon" class="form-control" />
                   </div>
               </div>
+              <div class="col-md-12 prb">
+                <div class="form-group">
+                  <label for="prb">Kode PRB</label>
+                      <select class="form-control" name="id_prb" id="id_prb">
+                        <option value="01">01. Diabetes Melitus</option>
+                        <option value="02">02. Hipertensi</option>
+                        <option value="03">03. Asma</option>
+                        <option value="04">04. Penyakit Jantung</option>
+                        <option value="05">05. PPOK</option>
+                        <option value="06">06. Skizofrenia</option>
+                        <option value="07">07. Stroke</option>
+                        <option value="08">08. Epilepsi</option>
+                        <option value="09">09. SLE</option>
+                      </select>
+                </div>
+                <div class="form-group">
+                    <label>Sistolik (mmHg)</label>
+                    <input type="text" name="tdsis" id="tdsis" class="form-control" placeholder="Angka . Cth : 20" value=""/>
+                </div>
+                <div class="form-group">
+                    <label>Diastolik (mmHg)</label>
+                    <input type="text" name="tddias" id="tddias" class="form-control" placeholder="Angka . Cth : 20" value=""/>
+                </div>
+                <div class="form-group">
+                    <label>Gula Darah Puasa (mg/dL)</label>
+                    <input type="text" name="gdp" id="gdp" class="form-control" placeholder="Angka . Cth : 20" value=""/>
+                </div>
+              </div>
               <div class="col-md-6 dokter">
                   <div class="form-group">
                       <label>Dokter</label>
@@ -93,6 +121,13 @@
   $(document).ready(function() {
     var baseURL = mlite.url + '/' + mlite.admin;
     $("#kontroldisplay").show().load(baseURL + '/vclaim/kontroldisplay/{?=isset_or($no_kartu)?}?t=' + mlite.token);
+    var prolanis_prb = $('.prolainis_peserta').text();
+    console.log(prolanis_prb);
+    if(prolanis_prb == 'Potensi PRB'){
+      $('.prb').show();
+    }else{
+      $('.prb').hide();
+    }
   });
 
   $("#form_skontrol").on("click","#simpan_kontrol", function(event){
@@ -100,20 +135,21 @@
     event.preventDefault();
     var no_sep          = $('#no_sep').val();
     var no_surkon       = $('#no_surkon').val();
+    var id_prb          = $('#id_prb').val();
     var tanggal_surat   = $('#tanggal_rujukan').val();
     var tanggal_periksa = $('#tanggal_datang').val();
     var poli            = $('#poli').val();
     var dokter          = $('#dokter').val();
 
     var url = baseURL + '/vclaim/savekontrol?t=' + mlite.token;
-
     $.post(url,{
       no_sep: no_sep,
       no_surkon: no_surkon,
       tanggal_surat : tanggal_surat,
       tanggal_periksa : tanggal_periksa,
       dokter : dokter,
-      poli : poli
+      poli : poli,
+      id_prb : id_prb
     } ,function(data) {
         alert(data);
         $("#kontroldisplay").show().load(baseURL + '/vclaim/kontroldisplay/{?=isset_or($no_kartu)?}?t=' + mlite.token);

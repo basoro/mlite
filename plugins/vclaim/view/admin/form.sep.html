@@ -613,6 +613,17 @@
       $('#sep_norm').val(no_mr_span.trim());
     }
   });
+  $("#sep_asal_rujukan_nama").on("focus click",function(event){
+    event.preventDefault();
+    var sep_asal_rujukan_nama = $('#sep_asal_rujukan_nama').val();
+    if (sep_asal_rujukan_nama && sep_asal_rujukan_nama.trim() !== '') {
+      return;
+    }
+    var prov_umum_peserta_text = $('#prov_umum_peserta').text();
+    if (prov_umum_peserta_text && prov_umum_peserta_text.trim() !== '') {
+      $('#sep_asal_rujukan_nama').val(prov_umum_peserta_text.trim());
+    }
+  });
   $("#sep_nomor_rujukan").on("focus click",function(event){
     event.preventDefault();
     var no_rujukan = $('#sep_nomor_rujukan').val();
@@ -927,7 +938,7 @@ async function openFrista(noka) {
     var poli = $(this).attr("data-poli");
     var diagnosa = $(this).attr("data-diagnosa");
     var tgl_sep = $(this).attr("data-tgl_sep");
-
+    console.log(diagnosa);
     $('input:text[name=get_no_sep]').val(no_sep);
     $('input:text[name=sep_nomor_rujukan]').val(no_rujukan);
     if(poli == 'null') {
@@ -935,7 +946,7 @@ async function openFrista(noka) {
     } else {
       $('input:text[name=sep_spesialis_nama]').val(poli);
     }
-    $('input:text[name=sep_diagnosa_nama]').val(diagnosa);
+    $('input:text[name=sep_diagnosa_kode]').val(diagnosa);
     $('input:text[name=sep_tanggal_sep]').val(tgl_sep);
 
     $("#no_sep_input").removeAttr('hidden');
@@ -1006,11 +1017,12 @@ async function openFrista(noka) {
     var kddpjppelayanan = $('#sep_dpjp_pelayanan_kode').val();
     var nmdpjppelayanan = $('#sep_dpjp_pelayanan_nama').val();
     var prolanis_prb = $('.prolainis_peserta').text();
-
+    var no_sep = $('#get_no_sep').val();
     $.ajax({
       type: "POST",
       url: "{?=url([ADMIN,'vclaim','savesep'])?}",
       data: {
+        no_sep:no_sep,
         no_rawat : no_rawat,
         tglsep: tglsep,
         tglrujukan: tglrujukan,
@@ -1386,7 +1398,9 @@ async function openFrista(noka) {
                 output+="No. Rjk : " + histori[i].noRujukan + "<br/>";
                 output+="PPK Pelayanan : " + histori[i].ppkPelayanan;
                 output+="</div>";
-                output+="<div class=\"panel-footer\"><button class=\"btn btn-success btn-xs ubah_sep\" data-diagnosa=" + histori[i].diagnosa + " data-poli=" + poli + " data-tgl_sep=" + histori[i].tglSep + " data-no_sep=" + histori[i].noSep + " data-no_rujukan=" + histori[i].noRujukan + ">Ubah</button> <button class=\"btn btn-danger btn-xs hapus_sep\" data-no_sep=" + histori[i].noSep + ">Hapus</button> <button class=\"btn btn-primary btn-xs print_sep\" data-no_sep=" + histori[i].noSep + ">Cetak</button>";
+                output+="<div class=\"panel-footer\"><button class=\"btn btn-success btn-xs ubah_sep\" data-diagnosa=" + histori[i].diagnosa + " data-poli=" + poli + " data-tgl_sep=" + histori[i].tglSep + " data-no_sep=" + histori[i].noSep + " data-no_rujukan=" + histori[i].noRujukan + ">Ubah</button>";
+                output+="<button class=\"btn btn-danger btn-xs hapus_sep\" data-no_sep=" + histori[i].noSep + ">Hapus</button>";
+                output+="<button class=\"btn btn-primary btn-xs print_sep\" data-no_sep=" + histori[i].noSep + ">Cetak</button>";
                 if(histori[i].jnsPelayanan == 1) {
                   output+=" <button class=\"btn btn-warning text-primary btn-xs sep_pulang\" data-no_sep=" + histori[i].noSep + " id=\"sep_pulang_" + histori[i].noSep + "\">Pulang</button>";
                 }
