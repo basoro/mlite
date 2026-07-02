@@ -104,75 +104,128 @@ class Admin extends AdminModule
     $_POST['nmppkpelayanan'] = $this->settings->get('settings.nama_instansi');
     $_POST['sep_user']  = $this->core->getUserInfo('fullname', null, true);
 
-    $data = [
-      'request' => [
-        't_sep' => [
-          'noKartu' => $_POST['no_kartu'],
-          'tglSep' => $_POST['tglsep'],
-          'ppkPelayanan' => $_POST['kdppkpelayanan'],
-          'jnsPelayanan' => $_POST['jnspelayanan'],
-          'klsRawat' => [
-            'klsRawatHak' => $_POST['klsrawat'],
-            'klsRawatNaik' => '',
-            'pembiayaan' => '',
-            'penanggungJawab' => ''
-          ],
-          'noMR' => $_POST['nomr'],
-          'rujukan' => [
-            'asalRujukan' => $_POST['asal_rujukan'],
-            'tglRujukan' => $_POST['tglrujukan'],
-            'noRujukan' => $_POST['norujukan'],
-            'ppkRujukan' => $_POST['kdppkrujukan']
-          ],
-          'catatan' => $_POST['catatan'],
-          'diagAwal' => $_POST['diagawal'],
-          'poli' => [
-            'tujuan' => $_POST['kdpolitujuan'],
-            'eksekutif' => $_POST['eksekutif']
-          ],
-          'cob' => [
-            'cob' => $_POST['cob']
-          ],
-          'katarak' => [
-            'katarak' => $_POST['katarak']
-          ],
-          'jaminan' => [
-            'lakaLantas' => $_POST['lakalantas'],
-            'noLP' => $_POST['noLp'],
-            'penjamin' => [
-              'tglKejadian' => $_POST['tglkkl'],
-              'keterangan' => $_POST['keterangankkl'],
-              'suplesi' => [
-                'suplesi' => $_POST['suplesi'],
-                'noSepSuplesi' => $_POST['no_sep_suplesi'],
-                'lokasiLaka' => [
-                  'kdPropinsi' => $_POST['kdprop'],
-                  'kdKabupaten' => $_POST['kdkab'],
-                  'kdKecamatan' => $_POST['kdkec']
+    #model
+    if (empty($_POST['no_sep'])) {
+      $data = [
+        'request' => [
+          't_sep' => [
+            'noKartu' => $_POST['no_kartu'],
+            'tglSep' => $_POST['tglsep'],
+            'ppkPelayanan' => $_POST['kdppkpelayanan'],
+            'jnsPelayanan' => $_POST['jnspelayanan'],
+            'klsRawat' => [
+              'klsRawatHak' => $_POST['klsrawat'],
+              'klsRawatNaik' => '',
+              'pembiayaan' => '',
+              'penanggungJawab' => ''
+            ],
+            'noMR' => $_POST['nomr'],
+            'rujukan' => [
+              'asalRujukan' => $_POST['asal_rujukan'],
+              'tglRujukan' => $_POST['tglrujukan'],
+              'noRujukan' => $_POST['norujukan'],
+              'ppkRujukan' => $_POST['kdppkrujukan']
+            ],
+            'catatan' => $_POST['catatan'],
+            'diagAwal' => $_POST['diagawal'],
+            'poli' => [
+              'tujuan' => $_POST['kdpolitujuan'],
+              'eksekutif' => $_POST['eksekutif']
+            ],
+            'cob' => [
+              'cob' => $_POST['cob']
+            ],
+            'katarak' => [
+              'katarak' => $_POST['katarak']
+            ],
+            'jaminan' => [
+              'lakaLantas' => $_POST['lakalantas'],
+              'noLP' => $_POST['noLp'],
+              'penjamin' => [
+                'tglKejadian' => $_POST['tglkkl'],
+                'keterangan' => $_POST['keterangankkl'],
+                'suplesi' => [
+                  'suplesi' => $_POST['suplesi'],
+                  'noSepSuplesi' => $_POST['no_sep_suplesi'],
+                  'lokasiLaka' => [
+                    'kdPropinsi' => $_POST['kdprop'],
+                    'kdKabupaten' => $_POST['kdkab'],
+                    'kdKecamatan' => $_POST['kdkec']
+                  ]
                 ]
               ]
-            ]
-          ],
-          'tujuanKunj' => $_POST['tujuanKunj'],
-          'flagProcedure' => $_POST['flagProcedure'],
-          'kdPenunjang' => $_POST['kdPenunjang'],
-          'assesmentPel' => $_POST['assesmentPel'],
-          'skdp' => [
-            'noSurat' => $_POST['noskdp'],
-            'kodeDPJP' => $_POST['kddpjp']
-          ],
-          'dpjpLayan' => $_POST['kddpjppelayanan'],
-          'noTelp' => $_POST['notelep'],
-          'user' => $_POST['sep_user']
+            ],
+            'tujuanKunj' => $_POST['tujuanKunj'],
+            'flagProcedure' => $_POST['flagProcedure'],
+            'kdPenunjang' => $_POST['kdPenunjang'],
+            'assesmentPel' => $_POST['assesmentPel'],
+            'skdp' => [
+              'noSurat' => $_POST['noskdp'],
+              'kodeDPJP' => $_POST['kddpjp']
+            ],
+            'dpjpLayan' => $_POST['kddpjppelayanan'],
+            'noTelp' => $_POST['notelep'],
+            'user' => $_POST['sep_user']
+          ]
         ]
-      ]
-    ];
+      ];
+      $url = $this->api_url . 'SEP/2.0/insert';
+    } else {
+      $data = [
+        'request' => [
+          't_sep' => [
+            'noSep' => $_POST['no_sep'],
+            'klsRawat' => [
+              'klsRawatHak' => $_POST['klsrawat'],
+              'klsRawatNaik' => isset($_POST['klsnaik']) ? $_POST['klsnaik'] : '',
+              'pembiayaan' => isset($_POST['pembiayaan']) ? $_POST['pembiayaan'] : '',
+              'penanggungJawab' => isset($_POST['pjnaikkelas']) ? $_POST['pjnaikkelas'] : ''
+            ],
+            'noMR' => $_POST['nomr'],
+            'catatan' => $_POST['catatan'],
+            'diagAwal' => $_POST['diagawal'],
+            'poli' => [
+              'tujuan' => $_POST['kdpolitujuan'],
+              'eksekutif' => $_POST['eksekutif']
+            ],
+            'cob' => [
+              'cob' => $_POST['cob']
+            ],
+            'katarak' => [
+              'katarak' => $_POST['katarak']
+            ],
+            'jaminan' => [
+              'lakaLantas' => $_POST['lakalantas'],
+              'penjamin' => [
+                'tglKejadian' => $_POST['tglkkl'],
+                'keterangan' => $_POST['keterangankkl'],
+                'suplesi' => [
+                  'suplesi' => $_POST['suplesi'],
+                  'noSepSuplesi' => $_POST['no_sep_suplesi'],
+                  'lokasiLaka' => [
+                    'kdPropinsi' => $_POST['kdprop'],
+                    'kdKabupaten' => $_POST['kdkab'],
+                    'kdKecamatan' => $_POST['kdkec']
+                  ]
+                ]
+              ]
+            ],
+            'dpjpLayan' => $_POST['kddpjppelayanan'],
+            'noTelp' => $_POST['notelep'],
+            'user' => $_POST['sep_user']
+          ]
+        ]
+      ];
+      $url = $this->api_url . 'SEP/2.0/update';
+    }
 
     $data = json_encode($data);
     // echo $data;
-
-    $url = $this->api_url . 'SEP/2.0/insert';
-    $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+    if (empty($_POST['no_sep'])) {
+      $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+    } else {
+      $output = BpjsService::put($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+    }
     $data = json_decode($output, true);
 
     if ($data == NULL) {
@@ -1780,7 +1833,7 @@ class Admin extends AdminModule
           	},
           	"response": ' . $decompress . '}';
       if($code == '200'){
-        $update = $this->db('bridging_sep')->where('no_sep', $_POST['no_sep'])->update([
+        $update = $this->db('bridging_sep')->where('no_sep', $_POST['sep'])->update([
           'tglpulang' => $_POST['tanggal_pulang']
         ]);
       }
@@ -1963,7 +2016,7 @@ class Admin extends AdminModule
     exit();
   }
 
-  public function postDeleteRujukan($data = [])
+  public function postDeleteRujukan($data = [],$isReturn = true)
   {
     date_default_timezone_set('UTC');
     $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
@@ -1972,7 +2025,9 @@ class Admin extends AdminModule
     $url = $this->api_url . 'Rujukan/delete';
     $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode(htmlspecialchars_array($json));
+    if($isReturn){
+      return $json;
+    }
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -3094,7 +3149,10 @@ class Admin extends AdminModule
           'kodeDokter' => $_POST['dokter'],
           'poliKontrol' => $_POST['poli'],
           'tglRencanaKontrol' => $_POST['tanggal_periksa'],
-          'user' => $_POST['sep_user']
+          'user' => $_POST['sep_user'],
+          'formPRB' => [
+            'kdStatusPRB' => $_POST['id_prb'],
+          ]
         ]
       ];
       $statusUrl = 'insert';
@@ -3113,7 +3171,6 @@ class Admin extends AdminModule
       $statusUrl = 'Update';
       $method = 'put';
     }
-
     $data = json_encode($data);
 
     $url = $this->api_url . 'RencanaKontrol/' . $statusUrl;
@@ -3227,7 +3284,7 @@ class Admin extends AdminModule
   public function getRujukKeluar($no_kartu)
   {
     $this->_addHeaderFiles();
-    $rujuk_keluar = $this->db('bridging_rujukan_bpjs')
+    $rujuk_keluar = $this->db('bridging_rujukan_bpjs')->select(['bridging_rujukan_bpjs.*', 'bridging_sep.no_kartu', 'bridging_sep.no_rawat'])
       ->join('bridging_sep', 'bridging_sep.no_sep=bridging_rujukan_bpjs.no_sep')
       ->where('bridging_sep.no_kartu', $no_kartu)
       ->toArray();
@@ -3240,12 +3297,38 @@ class Admin extends AdminModule
   public function getRujukKeluarDisplay($no_kartu)
   {
     $rujuk_keluar = $this->db('bridging_rujukan_bpjs')
+      ->select(['bridging_rujukan_bpjs.*', 'bridging_sep.no_kartu', 'bridging_sep.no_rawat'])
       ->join('bridging_sep', 'bridging_sep.no_sep=bridging_rujukan_bpjs.no_sep')
       ->where('bridging_sep.no_kartu', $no_kartu)
       ->toArray();
     $this->tpl->set('rujuk_keluar', $this->tpl->noParse_array(htmlspecialchars_array($rujuk_keluar)));
     $this->tpl->set('no_kartu', $no_kartu);
     echo $this->draw('rujukkeluar.display.html');
+    exit();
+  }
+
+  public function postDeleteRujukKeluar()
+  {
+    $no_sep = $_POST['no_sep'];
+    $no_rujukan = $_POST['no_rujukan'];
+    $data = [
+      'request' => [
+        "t_rujukan" => [
+                "noRujukan" => $no_rujukan,
+                "user" => "Coba Ws"
+        ]
+      ]
+    ];
+    $output = $this->postDeleteRujukan(json_encode($data));
+    if ($output == NULL) {
+      echo 'Koneksi ke server BPJS terputus. Silahkan ulangi beberapa saat lagi!';
+    } else if ($output['metaData']['code'] == 200) {
+      $this->db('bridging_rujukan_bpjs')->where('no_sep', $no_sep)->where('no_rujukan', $no_rujukan)->delete();
+      echo 'Data Rujukan telah dihapus!!';
+    } else {
+      echo htmlspecialchars($output['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+      $this->db('bridging_rujukan_bpjs')->where('no_sep', $no_sep)->where('no_rujukan', $no_rujukan)->delete();
+    }
     exit();
   }
 
@@ -3300,7 +3383,7 @@ class Admin extends AdminModule
         'jnsPelayanan' => $_POST['jns_rujuk'],
         'diagRujukan' => $_POST['sep_diagnosa_kode_rujuk'],
         'nama_diagRujukan' => $_POST['sep_diagnosa_nama_rujuk'],
-        'tipeRujukan' => $_POST['tanggal_periksa'],
+        'tipeRujukan' => $_POST['tipe_rujuk'],
         'poliRujukan' => $_POST['sep_spesialis_kode_rujuk'],
         'nama_poliRujukan' => $_POST['sep_spesialis_nama_rujuk'],
         'user' => $_POST['sep_user'],

@@ -1269,7 +1269,7 @@ class Admin extends AdminModule
     $this->assign['searchUrl'] =  url([ADMIN, 'vedika', 'index', $type, $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
     $this->assign['ralanUrl'] =  url([ADMIN, 'vedika', 'index', 'ralan', $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
     $this->assign['ranapUrl'] =  url([ADMIN, 'vedika', 'index', 'ranap', $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
-    return $this->draw('index.html', ['tab' => $type, 'vedika' => htmlspecialchars_array($this->assign)]);
+    return $this->draw('index.html', ['tab' => $type, 'vedika' => $this->assign]);
   }
 
   public function anyLengkap($type = 'ralan', $page = 1)

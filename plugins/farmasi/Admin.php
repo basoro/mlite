@@ -1213,6 +1213,7 @@ class Admin extends AdminModule
     {
         header('Content-type: text/javascript');
         echo $this->draw(MODULES.'/farmasi/js/admin/daruratstok.js');
+        // echo $this->draw(MODULES.'/farmasi/js/admin/farmasi.js');
         exit();
     }
     /* End Darurat Stok Section */
