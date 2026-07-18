@@ -1,0 +1,99 @@
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{$permintaan.title}</h3>
+            </div>
+            <div class="panel-body">
+                <p>{$permintaan.description}</p>
+                <form method="post" action="{$permintaan.formURL}" target="_blank">
+                    <div class="form-group">
+                        <label>No. Rawat</label>
+                        <input type="text" name="no_rawat" class="form-control" value="{$permintaan.form.no_rawat}" placeholder="{$permintaan.example}" required>
+                    </div>
+                    <p class="help-block">Format yang didukung: <code>YYYY/MM/DD/XXXXXX</code> atau tanpa <code>/</code>.</p>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-print"></i> {$permintaan.buttonText}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{if: $permintaan.showHistory}
+<div class="row" style="margin-top: 10px;">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3 class="panel-title" style="padding-top: 5px;">
+                            Riwayat &mdash; <small>{$permintaan.total} data</small>
+                        </h3>
+                    </div>
+                    <div class="col-md-6">
+                        <form method="get" action="{$permintaan.searchURL}" class="form-inline pull-right">
+                            <input type="hidden" name="t" value="{?=htmlspecialchars(isset($_GET['t']) ? $_GET['t'] : '', ENT_QUOTES)?}">
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control" name="s" value="{$permintaan.phrase}" placeholder="Cari nama / no. surat / no. RM...">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body" style="padding: 0;">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered" style="margin-bottom: 0;">
+                        <thead>
+                            <tr>
+                                <th>No. Surat</th>
+                                <th>No. Rawat</th>
+                                <th>Nama Pasien</th>
+                                <th>No. RM</th>
+                                <th>Dokter</th>
+                                <th class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $permintaan.list}
+                            <tr>
+                                <td>{$value.nomor_surat}</td>
+                                <td>{$value.no_rawat}</td>
+                                <td>{$value.nm_pasien}</td>
+                                <td>{$value.no_rkm_medis}</td>
+                                <td>{$value.dokter}</td>
+                                <td class="text-center" style="white-space: nowrap;">
+                                    {if: $value.printURL}
+                                    <a href="{$value.printURL}" class="btn btn-primary btn-xs" target="_blank"><i class="fa fa-print"></i> Cetak</a>
+                                    {/if}
+                                    {if: $value.editURL}
+                                    <a href="{$value.editURL}" class="btn btn-warning btn-xs"><i class="fa fa-edit"></i> Edit</a>
+                                    {/if}
+                                    {if: $value.deleteURL}
+                                    <a href="{$value.deleteURL}" class="btn btn-danger btn-xs" onclick="return confirm('Yakin ingin menghapus data ini?')"><i class="fa fa-trash"></i> Hapus</a>
+                                    {/if}
+                                </td>
+                            </tr>
+                            {/loop}
+                            {if: !$permintaan.list}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Tidak ada data</td>
+                            </tr>
+                            {/if}
+                        </tbody>
+                    </table>
+                </div>
+                {if: $permintaan.pagination}
+                <div style="padding: 10px 15px;">
+                    {$permintaan.pagination}
+                </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+{/if}

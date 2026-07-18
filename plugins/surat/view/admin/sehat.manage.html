@@ -10,9 +10,9 @@
                         <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($sehat.totalRecords)?}</h3>
                     </div>
                     <div class="col-md-6">
-                        <form method="post" action="{?=isset_or($sehat.searchURL)?}" class="form-inline pull-right">
+                        <form method="post" action="{$sehat.searchURL}" class="form-inline pull-right">
                             <div class="input-group">
-                                <input type="text" class="form-control" name="s" value="{?=isset_or($sehat.phrase)?}" placeholder="Cari...">
+                                <input type="text" class="form-control" name="s" value="{$sehat.phrase}" placeholder="Cari...">
                                 <div class="input-group-btn">
                                     <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
                                 </div>
@@ -37,27 +37,29 @@
                         <tbody>
                             {loop: $sehat.list}
                             <tr>
-                                <td>{?=isset_or($value.nomor_surat)?}</td>
-                                <td>{?=isset_or($value.no_rawat)?}</td>
-                                <td>{?=isset_or($value.no_rkm_medis)?}</td>
-                                <td>{?=isset_or($value.nm_pasien)?}</td>
-                                <td>{?=isset_or($value.tanggal)?}</td>
-                                <td>{?=isset_or($value.keperluan)?}</td>
-                                <td>{?=isset_or($value.dokter)?}</td>
+                                <td>{$value.nomor_surat}</td>
+                                <td>{$value.no_rawat}</td>
+                                <td>{$value.no_rkm_medis}</td>
+                                <td>{$value.nm_pasien}</td>
+                                <td>{$value.tanggal}</td>
+                                <td>{$value.keperluan}</td>
+                                <td>{$value.dokter}</td>
                                 <td class="text-center">
-                                    <a href="{?=isset_or($value.printURL)?}" class="btn btn-info btn-xs" target="_blank"><i class="fa fa-print"></i> Cetak</a>
-                                    <a href="{?=isset_or($value.editURL)?}" class="btn btn-warning btn-xs"><i class="fa fa-edit"></i> Edit</a>
-                                    <a href="{?=isset_or($value.deleteURL)?}" class="btn btn-danger btn-xs" onclick="return confirm('Yakin ingin menghapus?')"><i class="fa fa-trash"></i> Hapus</a>
+                                    <a href="{$value.editURL}" class="btn btn-warning btn-xs"><i class="fa fa-edit"></i> Edit</a>
+                                    <a href="{$value.deleteURL}" class="btn btn-danger btn-xs" onclick="return confirm('Yakin ingin menghapus?')"><i class="fa fa-trash"></i> Hapus</a>
+                                    {if: $value.printURL}
+                                    <a href="{$value.printURL}" class="btn btn-primary btn-xs" target="_blank"><i class="fa fa-print"></i> Cetak</a>
+                                    {/if}
                                 </td>
                             </tr>
                             {/loop}
                         </tbody>
                     </table>
                 </div>
-                {?=isset_or($sehat.pagination)?}
+                {$sehat.pagination}
                 <div class="row">
                     <div class="col-md-12">
-                        <a href="{?=isset_or($sehat.addURL)?}" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Surat Sehat</a>
+                        <a href="{$sehat.addURL}" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Surat Sehat</a>
                     </div>
                 </div>
             </div>

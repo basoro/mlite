@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{$verification.title}</title>
+  <style>
+    :root {
+      --bg: #eef4f2;
+      --card: #ffffff;
+      --ink: #113133;
+      --muted: #61767a;
+      --line: #d6e2df;
+      --valid: #1f7a5a;
+      --draft: #a36b0a;
+      --invalid: #a32929;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top right, #d6ebe4 0, transparent 28%),
+        linear-gradient(180deg, #f7fbfa 0%, var(--bg) 100%);
+      color: var(--ink);
+    }
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 16px 40px rgba(17, 49, 51, 0.08);
+      overflow: hidden;
+    }
+    .hero {
+      padding: 24px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, #f7fcfb 0%, #edf7f4 100%);
+    }
+    .hero-top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .hero-top img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 8px;
+    }
+    .hero-top h1 {
+      margin: 0 0 6px;
+      font-size: 24px;
+    }
+    .hero-top p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .status {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .status.valid { background: var(--valid); }
+    .status.draft { background: var(--draft); }
+    .status.invalid { background: var(--invalid); }
+    .hero-note {
+      margin: 12px 0 0;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .content {
+      padding: 24px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      background: #fbfdfc;
+    }
+    .item-label {
+      margin: 0 0 6px;
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .item-value {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+    .summary {
+      margin-top: 18px;
+      border-radius: 14px;
+      padding: 18px;
+      background: #f4faf8;
+      border: 1px solid var(--line);
+      line-height: 1.7;
+    }
+    .footer {
+      margin-top: 22px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    @media (max-width: 640px) {
+      .hero-top {
+        align-items: flex-start;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="hero">
+        <div class="hero-top">
+          {if: $verification.logo_url}
+          <img src="{$verification.logo_url}" alt="{$verification.nama_instansi}">
+          {/if}
+          <div>
+            <h1>{$verification.nama_instansi}</h1>
+            <p>{$verification.alamat_instansi}</p>
+            <p>Telp: {$verification.nomor_telepon} | Email: {$verification.email}</p>
+          </div>
+        </div>
+        <span class="status {$verification.status_class}">{$verification.status_label}</span>
+        <p class="hero-note">{$verification.status_text}</p>
+      </div>
+
+      <div class="content">
+        <div class="grid">
+          <div class="item">
+            <p class="item-label">Jenis Surat</p>
+            <p class="item-value">{$verification.jenis_surat}</p>
+          </div>
+          {if: $verification.show_nomor_surat}
+          <div class="item">
+            <p class="item-label">Nomor Surat</p>
+            <p class="item-value">{$verification.nomor_surat}</p>
+          </div>
+          {/if}
+          <div class="item">
+            <p class="item-label">No. Rekam Medis</p>
+            <p class="item-value">{$verification.no_rekam_medis}</p>
+          </div>
+          <div class="item">
+            <p class="item-label">Nama Pasien</p>
+            <p class="item-value">{$verification.nama_pasien}</p>
+          </div>
+          {if: $verification.show_no_rawat}
+          <div class="item">
+            <p class="item-label">No. Rawat</p>
+            <p class="item-value">{$verification.no_rawat}</p>
+          </div>
+          {/if}
+          <div class="item">
+            <p class="item-label">Dokter</p>
+            <p class="item-value">{$verification.dokter}</p>
+          </div>
+          <div class="item">
+            <p class="item-label">SIP Dokter</p>
+            <p class="item-value">{$verification.sip_dokter}</p>
+          </div>
+          <div class="item">
+            <p class="item-label">{$verification.keperluan_label}</p>
+            <p class="item-value">{$verification.keperluan_value}</p>
+          </div>
+          <div class="item">
+            <p class="item-label">{$verification.tanggal_label}</p>
+            <p class="item-value">{$verification.tanggal_value}</p>
+          </div>
+        </div>
+
+        {if: $verification.keterangan_value}
+        <div class="grid" style="margin-top: 14px;">
+          <div class="item" style="grid-column: 1 / -1;">
+            <p class="item-label">Keterangan</p>
+            <p class="item-value">{$verification.keterangan_value}</p>
+          </div>
+        </div>
+        {/if}
+
+        <div class="summary">
+          {$verification.ringkasan}
+        </div>
+
+        <div class="footer">
+          Token verifikasi: {$verification.token}
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Resume Medis - {$pasien.nm_pasien}</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; margin: 0; padding: 10px 15px; color: #000; }
+        .no-print { margin-bottom: 10px; }
+        .no-print button { font-size: 13px; padding: 6px 14px; cursor: pointer; border: none; border-radius: 3px; color: #fff; background: #337ab7; }
+        .no-print button:hover { background: #286090; }
+
+        .kop { width: 100%; border-bottom: 3px solid #000; margin-bottom: 8px; padding-bottom: 6px; }
+        .kop td { vertical-align: middle; }
+        .kop-logo { width: 70px; height: auto; }
+        .kop-text { text-align: center; }
+        .kop-text .instansi { font-size: 18px; font-weight: bold; text-transform: uppercase; }
+        .kop-text .alamat { font-size: 10px; margin-top: 2px; }
+
+        .judul { text-align: center; font-size: 15px; font-weight: bold; text-decoration: underline; letter-spacing: 1px; margin: 8px 0 10px; text-transform: uppercase; }
+
+        .section { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
+        .section th { background: #e8e8e8; font-size: 10.5px; text-transform: uppercase; padding: 4px 6px; text-align: left; border: 1px solid #999; }
+        .section td { border: 1px solid #999; padding: 4px 6px; vertical-align: top; line-height: 1.5; }
+        .lbl { width: 160px; font-weight: normal; }
+        .sep { width: 8px; text-align: center; }
+
+        .ttd { margin-top: 20px; float: right; text-align: center; width: 230px; font-size: 11px; }
+        .ttd-space { height: 55px; }
+
+        @media print {
+            body { padding: 5mm 8mm; }
+            .no-print { display: none !important; }
+            @page { size: A4 portrait; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <button onclick="window.print()">&#128424; Cetak</button>
+    <button onclick="window.close()" style="background:#6c757d; margin-left:5px;">Tutup</button>
+</div>
+
+<table class="kop">
+    <tr>
+        <td width="10%">
+            <img src="{?=url()?}/{$settings.logo}" class="kop-logo" onerror="this.style.display='none'">
+        </td>
+        <td class="kop-text">
+            <div class="instansi">{$settings.nama_instansi}</div>
+            <div class="alamat">
+                {$settings.alamat}, {$settings.kota}, {$settings.propinsi}<br>
+                Telp: {$settings.nomor_telepon} &nbsp;|&nbsp; Email: {$settings.email}
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div class="judul">Resume Medis</div>
+
+<!-- IDENTITAS PASIEN -->
+<table class="section">
+    <tr><th colspan="3">Identitas Pasien</th></tr>
+    <tr>
+        <td class="lbl">No. Rekam Medis</td>
+        <td class="sep">:</td>
+        <td><strong>{$pasien.no_rkm_medis}</strong></td>
+    </tr>
+    <tr>
+        <td class="lbl">No. Kunjungan</td>
+        <td class="sep">:</td>
+        <td>{$no_rawat}</td>
+    </tr>
+    <tr>
+        <td class="lbl">Nama Pasien</td>
+        <td class="sep">:</td>
+        <td><strong>{$pasien.nm_pasien}</strong></td>
+    </tr>
+    <tr>
+        <td class="lbl">Jenis Kelamin</td>
+        <td class="sep">:</td>
+        <td>{if: $pasien.jk == 'L'}Laki-laki{elseif: $pasien.jk == 'P'}Perempuan{else}-{/if}</td>
+    </tr>
+    <tr>
+        <td class="lbl">Tanggal Lahir</td>
+        <td class="sep">:</td>
+        <td>{$pasien.tgl_lahir}</td>
+    </tr>
+    <tr>
+        <td class="lbl">Penjamin</td>
+        <td class="sep">:</td>
+        <td>{$reg.png_jawab}</td>
+    </tr>
+    <tr>
+        <td class="lbl">Alamat</td>
+        <td class="sep">:</td>
+        <td>{$pasien.alamat}</td>
+    </tr>
+</table>
+
+<!-- DATA KUNJUNGAN -->
+<table class="section">
+    <tr><th colspan="3">Data Kunjungan</th></tr>
+    <tr>
+        <td class="lbl">Tanggal Masuk</td>
+        <td class="sep">:</td>
+        <td>{$reg.tgl_registrasi} pukul {$reg.jam_reg}</td>
+    </tr>
+    <tr>
+        <td class="lbl">Unit / Poli</td>
+        <td class="sep">:</td>
+        <td>{$reg.nm_poli}</td>
+    </tr>
+    <tr>
+        <td class="lbl">Dokter DPJP</td>
+        <td class="sep">:</td>
+        <td>{$reg.nm_dokter}</td>
+    </tr>
+</table>
+
+<!-- ANAMNESIS -->
+<table class="section">
+    <tr><th colspan="3">Anamnesis</th></tr>
+    <tr>
+        <td class="lbl">Keluhan Utama</td>
+        <td class="sep">:</td>
+        <td>{?=nl2br(htmlspecialchars(isset_or($resume.keluhan_utama, isset_or($pemfis.keluhan, '-'))))?}</td>
+    </tr>
+</table>
+
+<!-- PEMERIKSAAN FISIK -->
+<table class="section">
+    <tr><th colspan="6">Pemeriksaan Fisik</th></tr>
+    <tr>
+        <td class="lbl">Tekanan Darah</td>
+        <td class="sep">:</td>
+        <td>{?=isset_or($pemfis.tensi, '-')?} mmHg</td>
+        <td class="lbl">GCS</td>
+        <td class="sep">:</td>
+        <td>{?=isset_or($pemfis.gcs, '-')?}</td>
+    </tr>
+    <tr>
+        <td class="lbl">Nadi</td>
+        <td class="sep">:</td>
+        <td>{?=isset_or($pemfis.nadi, '-')?} x/mnt</td>
+        <td class="lbl">Berat / Tinggi</td>
+        <td class="sep">:</td>
+        <td>{?=isset_or($pemfis.berat, '-')?} kg / {?=isset_or($pemfis.tinggi, '-')?} cm</td>
+    </tr>
+    <tr>
+        <td class="lbl">Suhu</td>
+        <td class="sep">:</td>
+        <td>{?=isset_or($pemfis.suhu_tubuh, '-')?} °C</td>
+        <td class="lbl">Kesadaran</td>
+        <td class="sep">:</td>
+        <td>{?=isset_or($pemfis.kesadaran, '-')?}</td>
+    </tr>
+    <tr>
+        <td class="lbl">Respirasi (RR)</td>
+        <td class="sep">:</td>
+        <td>{?=isset_or($pemfis.respirasi, '-')?} x/mnt</td>
+        <td class="lbl">SpO₂</td>
+        <td class="sep">:</td>
+        <td>{?=isset_or($pemfis.spo2, '-')?}</td>
+    </tr>
+</table>
+
+{if: $lab_html}
+<!-- HASIL PEMERIKSAAN PENUNJANG -->
+<table class="section">
+    <tr><th colspan="3">Hasil Pemeriksaan Penunjang</th></tr>
+    <tr>
+        <td class="lbl" style="vertical-align:top;">Laboratorium</td>
+        <td class="sep" style="vertical-align:top;">:</td>
+        <td>{$lab_html}</td>
+    </tr>
+</table>
+{/if}
+
+<!-- DIAGNOSA -->
+<table class="section">
+    <tr><th colspan="3">Diagnosa</th></tr>
+    <tr>
+        <td class="lbl">Diagnosa Masuk</td>
+        <td class="sep">:</td>
+        <td>{?=isset_or($resume.keluhan_utama, '-')?}</td>
+    </tr>
+    <tr>
+        <td class="lbl" style="vertical-align:top;">Diagnosa Keluar (ICD-10)</td>
+        <td class="sep" style="vertical-align:top;">:</td>
+        <td>{$diagnosa_html}</td>
+    </tr>
+</table>
+
+<!-- TINDAKAN MEDIS -->
+<table class="section">
+    <tr><th colspan="3">Tindakan Medis</th></tr>
+    <tr>
+        <td class="lbl" style="vertical-align:top;">Prosedur / Tindakan (ICD-9)</td>
+        <td class="sep" style="vertical-align:top;">:</td>
+        <td>{$prosedur_html}</td>
+    </tr>
+</table>
+
+<!-- TERAPI / PENGOBATAN -->
+<table class="section">
+    <tr><th colspan="3">Terapi / Pengobatan</th></tr>
+    <tr>
+        <td class="lbl" style="vertical-align:top;">Obat yang Diberikan</td>
+        <td class="sep" style="vertical-align:top;">:</td>
+        <td>{$obat_html}</td>
+    </tr>
+</table>
+
+<!-- KONDISI SAAT KELUAR -->
+<table class="section">
+    <tr><th colspan="3">Kondisi Saat Keluar</th></tr>
+    <tr>
+        <td class="lbl">Status Keluar</td>
+        <td class="sep">:</td>
+        <td>{?=isset_or($resume.kondisi_pulang, '-')?}</td>
+    </tr>
+    <tr>
+        <td class="lbl">Instruksi Lanjutan</td>
+        <td class="sep">:</td>
+        <td>{?=nl2br(htmlspecialchars(isset_or($resume.instruksi_lanjutan, '-')))?}</td>
+    </tr>
+</table>
+
+<div class="ttd">
+    {$settings.kota}, {?=date('d F Y')?}<br>
+    Dokter Penanggung Jawab,
+    <div id="qrcode_resume" style="margin: 8px auto; width: 70px;"></div>
+    <strong>{$reg.nm_dokter}</strong>
+</div>
+
+<div style="clear:both;"></div>
+
+<script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+<script src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+<script src="{?=url()?}/assets/jscripts/qrcode.js"></script>
+<script>
+jQuery('#qrcode_resume').qrcode({
+    width: 70,
+    height: 70,
+    text: "{$reg.nm_dokter}"
+});
+</script>
+
+</body>
+</html>

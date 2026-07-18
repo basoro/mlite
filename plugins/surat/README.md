@@ -1,6 +1,6 @@
 # Plugin Surat-Surat
 
-Dokumentasi singkat penggunaan modul **Surat-Surat** di mLITE untuk penerbitan surat rujukan, surat keterangan sakit, dan surat keterangan sehat pasien.
+Dokumentasi singkat penggunaan modul **Surat-Surat** di mLITE untuk penerbitan surat rujukan, surat keterangan sakit, surat keterangan sehat, dan surat bebas narkoba pasien.
 
 ## Akses Modul
 
@@ -9,8 +9,13 @@ Dokumentasi singkat penggunaan modul **Surat-Surat** di mLITE untuk penerbitan s
 - Pilih submenu sesuai kebutuhan:
   - Kelola
   - Surat Rujukan
+  - Surat Rujukan Lab
+  - Surat Rujukan Radiologi
   - Surat Sakit
   - Surat Sehat
+  - Surat Bebas Narkoba
+  - Surat Kematian
+  - Surat Kontrol
 
 ## Panduan Pengguna (Petugas)
 
@@ -34,7 +39,25 @@ Dokumentasi singkat penggunaan modul **Surat-Surat** di mLITE untuk penerbitan s
    - Klik **Simpan**.
    - Cetak surat dari halaman kunjungan Rawat Jalan melalui menu **Surat Keterangan Sehat**.
 
-4. **Pencarian Surat**
+4. **Surat Bebas Narkoba**
+   - Buka submenu **Surat Bebas Narkoba**.
+   - Isi nomor surat, no rawat, data pasien, tanggal pemeriksaan, hasil pemeriksaan, dan keperluan surat.
+   - Klik **Simpan**.
+   - Surat juga dapat dibuka dari dropdown **No. RM > Surat-Surat** pada modul pelayanan.
+
+5. **Surat Kontrol**
+   - Buka submenu **Surat Kontrol**.
+   - Isi No. Rawat, klik **Cetak Surat Kontrol**.
+   - Data pasien terisi otomatis; lengkapi tanggal kontrol berikutnya, poli tujuan, dokter tujuan, dan keterangan.
+   - Klik **Simpan** lalu **Cetak Surat** untuk mencetak.
+   - Surat juga dapat dibuka dari dropdown **No. RM > Surat-Surat** pada modul pelayanan.
+
+6. **Surat Rujukan Lab / Radiologi**
+   - Buka submenu **Surat Rujukan Lab** atau **Surat Rujukan Radiologi**.
+   - Masukkan **No. Rawat** pasien.
+   - Klik tombol cetak untuk membuka surat permintaan pemeriksaan.
+
+7. **Pencarian Surat**
    - Setiap submenu dilengkapi kolom pencarian berdasarkan nomor surat atau nama pasien.
    - Gunakan tombol **Edit** untuk mengubah data dan **Hapus** untuk menghapus surat.
 
@@ -59,4 +82,5 @@ Dokumentasi singkat penggunaan modul **Surat-Surat** di mLITE untuk penerbitan s
 - Nomor surat diisi manual; pastikan menggunakan format penomoran yang konsisten sesuai kebijakan fasilitas kesehatan.
 - Data dokter dan SIP dokter diambil otomatis dari data kunjungan (no rawat) yang terhubung ke tabel `reg_periksa`, `dokter`, dan `pasien`.
 - Surat dicetak langsung dari browser; gunakan fungsi print browser atau tombol Print yang tersedia di halaman cetak.
-- Satu no rawat hanya dapat memiliki satu surat per jenis (rujukan/sakit/sehat); data lama akan tertimpa jika disimpan ulang dengan no rawat yang sama.
+- Satu no rawat hanya dapat memiliki satu surat per jenis saat disimpan dari halaman cetak; data lama akan tertimpa jika disimpan ulang dengan no rawat yang sama.
+- Template cetak surat sekarang menampilkan **No. Rekam Medis** agar identitas pasien konsisten di setiap surat.

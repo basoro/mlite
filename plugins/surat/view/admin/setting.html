@@ -1,0 +1,48 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-cogs"></i> Pengaturan Nomor Surat</h3>
+      </div>
+      <div class="panel-body">
+        <form method="POST" action="{?=url([ADMIN, 'surat', 'setting'])?}">
+          <div class="form-group">
+            <label>Prefix Surat</label>
+            <input type="text" class="form-control" name="prefix_surat" value="{$prefix_surat}" style="max-width:300px;" placeholder="Contoh: PRANA">
+            <small class="help-block">Kode klinik yang muncul di semua nomor surat, contoh: 001/<b>PRANA</b>/VII/2026. Berlaku sama untuk semua jenis surat.</small>
+          </div>
+
+          <hr>
+
+          <p><b>Nomor Urut per Jenis Surat</b></p>
+          <p class="text-muted" style="font-size:12px;">
+            Ini adalah nomor urut BERIKUTNYA yang akan dipakai untuk surat baru dari jenis tersebut. Tiap jenis surat punya urutannya sendiri-sendiri,
+            jadi membuat satu jenis surat tidak akan membuat nomor jenis surat lain meloncat. Nomor ini juga otomatis kembali ke 001 setiap awal bulan
+            (per jenis surat), mengikuti bulan/tahun yang tertulis di format nomor surat.
+          </p>
+
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Jenis Surat</th>
+                <th style="width:200px;">Nomor Berikutnya</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $types}
+              <tr>
+                <td>{$value.label}</td>
+                <td>
+                  <input type="text" class="form-control" name="nomor[{$value.type}]" value="{$value.nomor}">
+                </td>
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+
+          <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Simpan Pengaturan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
